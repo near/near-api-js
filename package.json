@@ -32,7 +32,7 @@
   "keywords": [],
   "license": "MIT",
   "scripts": {
-    "generate-protos": "../scripts/generate_js_transaction_proto.sh",
+    "generate-protos": "scripts/generate_js_transaction_proto.sh",
     "build": "npm run generate-protos && browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
     "test": "npm run generate-protos && jest test",
     "lint": "eslint .",
