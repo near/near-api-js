@@ -74,7 +74,7 @@ class NearClient {
             id: Date.now().toString(),
         };
         const response = await this.nearConnection.request('', request);
-        const code = response.result.response.code || 0;
+        const code = (response.result.response ? response.result.response.code : response.result.code) || 0;
         if (code != 0) {
             const log = response.result.response.log;
             const error = new Error(`Error calling ${method} with ${params}, error code: ${code}.\nMessage: ${log}`);
