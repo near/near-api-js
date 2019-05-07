@@ -1,0 +1,28 @@
+image: node:10
+
+variables:
+  NODE_ENV: ci
+
+stages:
+  - build
+  - test
+
+cache:
+  paths:
+    - node_modules/
+
+install_dependencies:
+  stage: build
+  script:
+    - npm install
+  artifacts:
+    paths:
+      - node_modules/
+
+test:
+  stage: test
+  script: npm test
+
+lint:
+  stage: test
+  script: npm run lint
