@@ -16,8 +16,7 @@ cache:
 install_dependencies:
   stage: build
   script:
-    - mkdir -p nearcore/runtime/protos/protos
-    - curl https://raw.githubusercontent.com/nearprotocol/nearcore/master/runtime/protos/protos/signed_transaction.proto -o nearcore/runtime/protos/protos/signed_transaction.proto
+    - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
     - npm install
   artifacts:
     paths:
