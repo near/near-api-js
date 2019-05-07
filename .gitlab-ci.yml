@@ -2,6 +2,7 @@ image: node:10
 
 variables:
   NODE_ENV: ci
+  NEARCORE_DIR: nearcore
 
 stages:
   - build
@@ -9,11 +10,14 @@ stages:
 
 cache:
   paths:
+    - nearcore/
     - node_modules/
 
 install_dependencies:
   stage: build
   script:
+    - mkdir -p nearcore/runtime/protos/protos
+    - curl https://raw.githubusercontent.com/nearprotocol/nearcore/master/runtime/protos/protos/signed_transaction.proto -o nearcore/runtime/protos/protos/signed_transaction.proto
     - npm install
   artifacts:
     paths:
