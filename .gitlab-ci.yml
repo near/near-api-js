@@ -25,7 +25,7 @@ install_dependencies:
 
 test:
   stage: test
-  script: npm test
+  script: NODE_ENV=development npm test
 
 lint:
   stage: test
