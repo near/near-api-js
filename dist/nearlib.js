@@ -631,22 +631,16 @@ class NearClient {
             args = {};
         }
         const serializedArgs = Buffer.from(JSON.stringify(args)).toString('hex');
-        const result = await this.jsonRpcRequest('abci_query', [`call/${contractAccountId}/${methodName}`, serializedArgs, '0', false]);
-        const response = result.response;
-        let logs = [];
-        if (response.log !== undefined && response.log.length > 0) {
-            logs = response.log.split('\n');
+        try {
+            const result = await this.jsonRpcRequest('abci_query', [`call/${contractAccountId}/${methodName}`, serializedArgs, '0', false]);
+            const response = result.response;
+            _printLogs(contractAccountId, response.log);
+            const json = JSON.parse(_base64ToBuffer(response.value).toString());
+            return json;
+        } catch(e) {
+            _printLogs(contractAccountId, e.log);
+            throw e;
         }
-        logs.forEach(line => {
-            console.log(`[${contractAccountId}]: ${line}`);
-        });
-        // If error, raise exception after printing logs.
-        const code = response.code || 0;
-        if (code != 0) {
-            throw Error(response.info);
-        }
-        const json = JSON.parse(_base64ToBuffer(response.value).toString());
-        return json;
     }
 
     async getTransactionStatus(transactionHash) {
@@ -674,8 +668,12 @@ class NearClient {
             id: Date.now().toString(),
         };
         const response = await this.nearConnection.request('', request);
-        if (response.error) {
-            throw Error(`Error calling ${method} with ${params}: ${response.error.message}.\nFull response: ${JSON.stringify(response)}`);
+        const code = response.result.response.code || 0;
+        if (code != 0) {
+            const log = response.result.response.log;
+            const error = new Error(`Error calling ${method} with ${params}, error code: ${code}.\nMessage: ${log}`);
+            error.log = log;
+            throw error;
         }
         return response.result;
     }
@@ -683,6 +681,16 @@ class NearClient {
     async request(methodName, params) {
         return this.nearConnection.request(methodName, params);
     }
+}
+
+function _printLogs(contractAccountId, log) {
+    let logs = [];
+    if (log !== undefined && log.length > 0) {
+        logs = log.split('\n');
+    }
+    logs.forEach(line => {
+        console.log(`[${contractAccountId}]: ${line}`);
+    });
 }
 
 module.exports = NearClient;
