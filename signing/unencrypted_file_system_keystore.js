@@ -1,5 +1,4 @@
 const fs = require('fs');
-const keyDir = './neardev';
 const AccountInfo = require('./account_info');
 const {promisify} = require('util');
 
@@ -18,8 +17,11 @@ class UnencryptedFileSystemKeyStore {
      * @param {string} keypair 
      */
     async setKey(accountId, keypair) {
-        if (!await promisify(fs.exists)(keyDir)){
-            await promisify(fs.mkdir)(keyDir);
+        if (!await promisify(fs.exists)(this.keyDir)){
+            await promisify(fs.mkdir)(this.keyDir);
+        }
+        if (!await promisify(fs.exists)(this.keyDir + "/" + this.networkId)){
+            await promisify(fs.mkdir)(this.keyDir + "/" + this.networkId);
         }
         const accountInfo = new AccountInfo(accountId, keypair, this.networkId);
         const keyFileContent = accountInfo.toJSON();
@@ -43,15 +45,16 @@ class UnencryptedFileSystemKeyStore {
      * Returns all account ids for a particular network.
      */
     async getAccountIds() {
-        if (!await promisify(fs.exists)(keyDir)) {
+        if (!await promisify(fs.exists)(this.keyDir)) {
+            return [];
+        }
+        if (!await promisify(fs.exists)(this.keyDir + "/" + this.networkId)) {
             return [];
         }
         const result = [];
-        const dir = await promisify(fs.readdir)(keyDir);
+        const dir = await promisify(fs.readdir)(this.keyDir + "/" + this.networkId);
         for (let i = 0; i < dir.length; i++) {
-            if (dir[i].startsWith(this.networkId + '_')) {
-                result.push(dir[i].substring(this.networkId.length + 1));
-            }
+            result.push(dir[i]);
         }
         return result;
     }
@@ -64,7 +67,7 @@ class UnencryptedFileSystemKeyStore {
      * Returns the key file path. The convention is to store the keys in file {networkId}.json
      */
     getKeyFilePath(accountId) {
-        return keyDir + '/' + this.networkId + '_' + accountId;
+        return this.keyDir + '/' + this.networkId + '/' + accountId;
     }
 
     async getRawKey(accountId) {

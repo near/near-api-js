@@ -10,12 +10,12 @@ describe('Unencrypted file system keystore', () => {
     let keyStore;
 
     beforeAll(async () => {
-        keyStore = new UnencryptedFileSystemKeyStore('../tests', NETWORK_ID_SINGLE_KEY);
+        keyStore = new UnencryptedFileSystemKeyStore('keys', NETWORK_ID_SINGLE_KEY);
         await keyStore.setKey(ACCOUNT_ID_SINGLE_KEY, KEYPAIR_SINGLE_KEY);
     });
 
     test('Get all keys with empty network returns empty list', async () => {
-        const emptyList = await new UnencryptedFileSystemKeyStore('../tests', 'emptynetowrk').getAccountIds();
+        const emptyList = await new UnencryptedFileSystemKeyStore('keys', 'emptynetowrk').getAccountIds();
         expect(emptyList).toEqual([]);
     });  
     
@@ -36,7 +36,7 @@ describe('Unencrypted file system keystore', () => {
 
     test('Add two keys to network and retrieve them', async () => {
         const networkId = 'twoKeyNetwork';
-        const newNetworkKeystore = new UnencryptedFileSystemKeyStore('../tests', networkId);
+        const newNetworkKeystore = new UnencryptedFileSystemKeyStore('keys', networkId);
         const accountId1 = 'acc1';
         const accountId2 = 'acc2';
         const key1Expected = new KeyPair('p1', 's1');
