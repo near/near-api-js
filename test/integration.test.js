@@ -19,7 +19,7 @@ beforeAll(async () => {
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: networkId,
         deps: { keyStore, storage },
-    })
+    });
     nearjs = await dev.connect(config);
     account = new Account(nearjs.nearClient);
 });
