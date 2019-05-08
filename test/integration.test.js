@@ -7,6 +7,8 @@ let account;
 let keyStore;
 let networkId;
 
+const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
+
 beforeAll(async () => {
     // To avoid nonce collisions with promise test on alice
     await sleep(3000);
@@ -14,12 +16,11 @@ beforeAll(async () => {
     networkId = 'somenetwork';
     keyStore = new InMemoryKeyStore(networkId);
     const storage = createFakeStorage();
-    nearjs = await dev.connect({
-        nodeUrl: 'http://localhost:3030',
-        useDevAccount: true,
+    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: networkId,
         deps: { keyStore, storage },
-    });
+    })
+    nearjs = await dev.connect(config);
     account = new Account(nearjs.nearClient);
 });
 
@@ -183,7 +184,7 @@ describe('with access key', function () {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(contractId, keyWithRandomSeed);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractId, data));
 
@@ -257,7 +258,7 @@ describe('with deployed contract', () => {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed, networkId);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         contract = await nearjs.loadContract(contractName, {

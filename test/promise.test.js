@@ -8,15 +8,16 @@ let mainTestAccountName;
 let keyStore;
 let storage;
 
+const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
+
 beforeAll(async () => {
     keyStore = new InMemoryKeyStore('somenetwork');
     storage = createFakeStorage();
-    nearjs = await dev.connect({
-        nodeUrl: 'http://localhost:3030',
-        useDevAccount: true,
+    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
+        networkId: 'somenetwork',
         deps: { keyStore, storage },
-        network: 'somenetwork'
-    });
+    })
+    nearjs = await dev.connect(config);
 
     account = new Account(nearjs.nearClient);
 
@@ -50,7 +51,7 @@ describe('with promises', () => {
             mainTestAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         return await nearjs.loadContract(contractName, {
