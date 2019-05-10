@@ -25,7 +25,7 @@ beforeAll(async () => {
     const createAccountResponse = await account.createAccount(
         mainTestAccountName,
         keyWithRandomSeed.getPublicKey(),
-        1000,
+        1000000000,
         aliceAccountName);
     await nearjs.waitForTransactionResult(createAccountResponse);
     await keyStore.setKey(mainTestAccountName, keyWithRandomSeed);
@@ -50,7 +50,7 @@ describe('with promises', () => {
             mainTestAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync('../tests/hello.wasm'')];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         return await nearjs.loadContract(contractName, {

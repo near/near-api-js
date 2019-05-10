@@ -145,7 +145,7 @@ test('create account and then view account returns the created account', async (
 
 test('create account with a new key and then view account returns the created account', async () => {
     const newAccountName = await generateUniqueString('create.randomkey.test');
-    const amount = 2;
+    const amount = 1000000;
     const aliceAccountBeforeCreation = await account.viewAccount(aliceAccountName);
     const createAccountResponse = await account.createAccountWithRandomKey(
         newAccountName,
@@ -164,7 +164,7 @@ test('create account with a new key and then view account returns the created ac
     };
     expect(result).toEqual(expectedAccount);
     const aliceAccountAfterCreation = await account.viewAccount(aliceAccountName);
-    expect(aliceAccountAfterCreation.amount).toBe(aliceAccountBeforeCreation.amount - amount);
+    expect(aliceAccountAfterCreation.amount).toBeLessThan(aliceAccountBeforeCreation.amount - amount);
 });
 
 describe('with access key', function () {
@@ -183,7 +183,7 @@ describe('with access key', function () {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(contractId, keyWithRandomSeed);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync('../tests/hello.wasm'')];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractId, data));
 
@@ -257,7 +257,7 @@ describe('with deployed contract', () => {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed, networkId);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync('../tests/hello.wasm'')];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         contract = await nearjs.loadContract(contractName, {
