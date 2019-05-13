@@ -57,6 +57,18 @@ class KeyPair {
         return result;
     }
 
+     /**
+      * Reconstruct a keypair from url params. Keys need to be encoded in bs58
+      * @param {string} url 
+      */
+    static fromUrl(url) {      
+        const parsedUrl = new URL(url);
+        const result = new KeyPair(
+            parsedUrl.searchParams.get("publicKey"),
+            parsedUrl.searchParams.get("secretKey"));
+        return result;
+    }
+
     /**
      * Encode a buffer as string using bs58
      * @param {Buffer} buffer 

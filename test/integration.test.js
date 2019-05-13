@@ -212,8 +212,10 @@ describe('with access key', function () {
     });
 
     test('make function calls using access key', async () => {
-        // Adding access key
-        const keyForAccessKey = KeyPair.fromRandomSeed();
+        // Adding access key from a wallet url
+        const url =
+            "https://app.near.ai/fdoeyiuyv/?publicKey=22skMptHjFWNyuEWY22ftn2AbLPSYpmYwGJRGwpNHbTV&secretKey=2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw";
+        const keyForAccessKey = KeyPair.fromUrl(url);
         const addAccessKeyResponse = await account.addAccessKey(
             newAccountId,
             keyForAccessKey.getPublicKey(),
@@ -237,7 +239,6 @@ describe('with access key', function () {
         const getValueResult2 = await contract.getValue();
         expect(getValueResult2).toEqual(setCallValue2);
     });
-
 });
 
 describe('with deployed contract', () => {
