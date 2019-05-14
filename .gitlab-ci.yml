@@ -4,6 +4,7 @@ variables:
   NODE_ENV: ci
   NEARCORE_DIR: nearcore
   SKIP_DEV_CONNECT_TESTS: "true"
+  HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:
   - build
@@ -20,6 +21,7 @@ install_dependencies:
     - rm -rf nearcore/
     - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
     - npm install
+    - cd nearcore/tests/hello && npm install && npm run build
   artifacts:
     paths:
       - node_modules/
