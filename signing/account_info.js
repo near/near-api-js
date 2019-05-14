@@ -15,7 +15,7 @@ class AccountInfo {
      * @param {Object} json 
      */
     static fromJson(json) {
-        if (!json.public_key || !json.secret_key || !json.account_id || !json.network_id) {
+        if (!json.public_key || !json.secret_key || !json.account_id) {
             throw 'Invalid account info format. Please ensure it contains public_key, secret_key, and account_id".';
         }
         return new AccountInfo(json.account_id, new KeyPair(json.public_key, json.secret_key), json.network_id);
