@@ -29,7 +29,9 @@ test('test creating default config', async () => {
     Near.createDefaultConfig();
 });
 
-describe('dev connect', () => {
+// TODO: Make 'dev connect' tests run on nearlib CI (i.e. with shared testnet)
+const devConnectDescribe = process.env.SKIP_DEV_CONNECT_TESTS ? xdescribe : describe;
+devConnectDescribe('dev connect', () => {
     let deps;
     let options;
     beforeEach(async () => {

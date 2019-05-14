@@ -3,6 +3,7 @@ image: node:10
 variables:
   NODE_ENV: ci
   NEARCORE_DIR: nearcore
+  SKIP_DEV_CONNECT_TESTS: "true"
 
 stages:
   - build
