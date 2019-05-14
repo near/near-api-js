@@ -19,7 +19,7 @@ install_dependencies:
   stage: build
   script:
     - rm -rf nearcore/
-    - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
+    - git clone --depth 1 --branch j-starttendermintsh https://github.com/nearprotocol/nearcore.git nearcore
     - npm install
     - cd nearcore/tests/hello && npm install && npm run build
   artifacts:
