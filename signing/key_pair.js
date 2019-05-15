@@ -1,6 +1,6 @@
-
 const bs58 = require('bs58');
 const nacl = require('tweetnacl');
+const ed2curve = require('./ed2curve');
 
 /**
  * This class provides key pair functionality (generating key pairs, encoding key pairs).
@@ -25,6 +25,16 @@ class KeyPair {
     }
 
     /**
+     * Get the Curve25519 public key.
+     */
+    getPublicKeyCurve25519() {
+        if (!this.publicKeyCurve25519) {
+            this.publicKeyCurve25519 = KeyPair.encodeBufferInBs58(ed2curve.convertPublicKey(bs58.decode(this.publicKey)));
+        }
+        return this.publicKeyCurve25519;
+    }
+
+    /**
      * Get the secret key.
      * @example
      *  // Passing existing key into a function to store in local storage
@@ -37,6 +47,16 @@ class KeyPair {
      */
     getSecretKey() {
         return this.secretKey;
+    }
+
+    /**
+     * Get the Curve25519 secret key.
+     */
+    getSecretKeyCurve25519() {
+        if (!this.secretKeyCurve25519) {
+            this.secretKeyCurve25519 = KeyPair.encodeBufferInBs58(ed2curve.convertSecretKey(bs58.decode(this.secretKey)));
+        }
+        return this.secretKeyCurve25519;
     }
 
     /**
