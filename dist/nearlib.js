@@ -15281,15 +15281,18 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
 class WalletAccount {
 
     constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new nearlib.BrowserLocalStorageKeystore()) {
-        this._walletBaseUrl =  walletBaseUrl;
+        this._walletBaseUrl = walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = keyStore;
 
         this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');
+    }
 
+    async signIn() {
         if (!this.isSignedIn()) {
-            this._completeSignInWithAccessKey();
+            await this._completeSignInWithAccessKey();
         }
+        return this.getAccountId();
     }
 
     /**
