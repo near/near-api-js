@@ -50,7 +50,7 @@ describe('with promises', () => {
             mainTestAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed);
-        const data = [...fs.readFileSync('/Users/zaver/Projects/nearcore/tests/hello.wasm')];
+        const data = [...fs.readFileSync('../tests/hello.wasm')];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         return await nearjs.loadContract(contractName, {

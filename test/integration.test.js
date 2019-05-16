@@ -185,7 +185,7 @@ describe('with access key', function () {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(contractId, keyWithRandomSeed);
-        const data = [...fs.readFileSync('/Users/zaver/Projects/nearcore/tests/hello.wasm')];
+        const data = [...fs.readFileSync('../tests/hello.wasm')];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractId, data));
 
@@ -259,7 +259,7 @@ describe('with deployed contract', () => {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed, networkId);
-        const data = [...fs.readFileSync('/Users/zaver/Projects/nearcore/tests/hello.wasm')];
+        const data = [...fs.readFileSync('../tests/hello.wasm')];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         contract = await nearjs.loadContract(contractName, {
