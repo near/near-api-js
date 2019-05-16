@@ -28,7 +28,7 @@ test('KeyPair sharedSecret', async () => {
 test('KeyPair encrypt/decrypt box', async () => {
     var boxed = encryptBox("hello mike", keyPair.keySecCurve25519, keyPair2.keyPubCurve25519);
     var unboxed = decryptBox(boxed, keyPair2.keySecCurve25519, keyPair.keyPubCurve25519);
-    expect("hello mike").toEqual(unboxed);  
+    expect("hello mike").toEqual(unboxed.toString('utf8'));  
 });
 
 test('KeyPair encrypt/decrypt box after', async () => {
@@ -38,5 +38,5 @@ test('KeyPair encrypt/decrypt box after', async () => {
 
     var boxed = encryptBoxAfter("hello joe", shared_secret_1);
     var unboxed = decryptBoxAfter(boxed, shared_secret_2);
-    expect("hello joe").toEqual(unboxed);
+    expect("hello joe").toEqual(unboxed.toString('utf8'));
 });
