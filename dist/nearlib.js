@@ -621,7 +621,7 @@ class NearClient {
         const buffer = SignedTransaction.encode(signedTransaction).finish();
         const transaction = _arrayBufferToBase64(buffer);
         const params = [transaction];
-        const response = await this.jsonRpcRequest('broadcast_tx_async', params);
+        const response = await this.jsonRpcRequest('broadcast_tx_sync', params);
         response.hash = Buffer.from(response.hash, 'hex');
         return response;
     }

@@ -233,7 +233,7 @@ class Near {
         options.changeMethods.forEach((methodName) => {
             contract[methodName] = async function (args) {
                 args = args || {};
-                const response = await near.scheduleFunctionCall(0, options.sender, contractAccountId, methodName, args);
+                const response = await near.scheduleFunctionCall(1000000000, options.sender, contractAccountId, methodName, args);
                 return near.waitForTransactionResult(response.hash, { contractAccountId });
             };
         });
