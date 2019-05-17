@@ -350,6 +350,8 @@ const {
 
 const MAX_STATUS_POLL_ATTEMPTS = 10;
 const STATUS_POLL_PERIOD_MS = 2000;
+// Default amount to be send with the function calls.
+const DEFAULT_FUNC_CALL_AMOUNT = 1000000000;
 
 /**
  * Javascript library for interacting with near.
@@ -573,7 +575,7 @@ class Near {
         options.changeMethods.forEach((methodName) => {
             contract[methodName] = async function (args) {
                 args = args || {};
-                const response = await near.scheduleFunctionCall(1000000000, options.sender, contractAccountId, methodName, args);
+                const response = await near.scheduleFunctionCall(DEFAULT_FUNC_CALL_AMOUNT, options.sender, contractAccountId, methodName, args);
                 return near.waitForTransactionResult(response.hash, { contractAccountId });
             };
         });
@@ -668,6 +670,9 @@ class NearClient {
             id: Date.now().toString(),
         };
         const response = await this.nearConnection.request('', request);
+        if (!response.result) {
+            throw new Error('Unexpected response: ' + JSON.stringify(response));
+        }
         const code = (response.result.response ? response.result.response.code : response.result.code) || 0;
         if (code != 0) {
             const log = response.result.response.log;
@@ -14940,6 +14945,16 @@ class BrowserLocalStorageKeystore {
             BrowserLocalStorageKeystore.storageKeyForSecretKey(accountId), key.getSecretKey());
     }
 
+    /**
+     * Removes the key from local storage for a given id. Please be sure to store the key somewhere before doing this
+     * to prevent permanent key loss.
+     * @param {string} accountId
+     */
+    async removeKey(accountId) {
+        this.localStorage.removeItem(BrowserLocalStorageKeystore.storageKeyForPublicKey(accountId));
+        this.localStorage.removeItem(BrowserLocalStorageKeystore.storageKeyForSecretKey(accountId));
+    }
+
     async setKeyFromJson(json) {
         const accountInfo =  AccountInfo.fromJson(json);
         if (this.networkId != accountInfo.networkId) {
@@ -14989,6 +15004,12 @@ class InMemoryKeyStore {
 
     async getKey(accountId) {
         return this.keys[accountId  + '_' + this.networkId];
+    }
+
+    async removeKey(accountId) {
+        if (this.getKey(accountId)) {
+            this.setKey(accountId, undefined);
+        }
     }
 
     async clear() {
@@ -15245,15 +15266,12 @@ module.exports = WalletAccessKey;
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
  */
 
-const { sha256 } = require('js-sha256');
 const { FunctionCallTransaction } = require('./protos');
 
-const EMBED_WALLET_URL_SUFFIX = '/embed/';
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
-const RANDOM_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-const REQUEST_ID_LENGTH = 32;
 
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
+const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
 /**
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
@@ -15267,16 +15285,15 @@ const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
  */
 class WalletAccount {
 
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com') {
-        this._walletBaseUrl = walletBaseUrl;
+    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new nearlib.BrowserLocalStorageKeystore()) {
+        this._walletBaseUrl =  walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+        this._keyStore = keyStore;
 
-        this._initHtmlElements();
-        this._signatureRequests = {};
         this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');
 
         if (!this.isSignedIn()) {
-            this._tryInitFromUrl();
+            this._completeSignInWithAccessKey();
         }
     }
 
@@ -15319,8 +15336,35 @@ class WalletAccount {
         newUrl.searchParams.set('success_url', success_url || currentUrl.href);
         newUrl.searchParams.set('failure_url', failure_url || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
-        window.location.replace(newUrl.toString());
+        if (!this.getAccountId() || !this._keyStore.getKey(this.getAccountId())) {
+            const accessKey = nearlib.KeyPair.fromRandomSeed();
+            newUrl.searchParams.set('public_key', accessKey.getPublicKey());
+            this._keyStore.setKey(PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey).then(window.location.replace(newUrl.toString()));
+        }
     }
+
+    /**
+     * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
+     */
+    _completeSignInWithAccessKey() {
+        let currentUrl = new URL(window.location.href);
+        let publicKey = currentUrl.searchParams.get('public_key') || '';
+        let accountId = currentUrl.searchParams.get('account_id') || '';
+        if (accountId && publicKey) {
+            this._moveKeyFromTempToPermanent(accountId, publicKey);
+        }
+    }
+
+    async _moveKeyFromTempToPermanent(accountId, publicKey) {
+        let keyPair = await this._keyStore.getKey(PENDING_ACCESS_KEY_PREFIX + publicKey);
+        this._authData = {
+            accountId
+        };
+        window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
+        await this._keyStore.setKey(accountId, keyPair);
+        await this._keyStore.removeKey(PENDING_ACCESS_KEY_PREFIX + publicKey);
+    }
+
     /**
      * Sign out from the current account
      * @example
@@ -15329,89 +15373,6 @@ class WalletAccount {
     signOut() {
         this._authData = {};
         window.localStorage.removeItem(this._authDataKey);
-    }
-
-    _tryInitFromUrl() {
-        let currentUrl = new URL(window.location.href);
-        let authToken = currentUrl.searchParams.get('auth_token') || '';
-        let accountId = currentUrl.searchParams.get('account_id') || '';
-        if (!!authToken && !!accountId) {
-            this._authData = {
-                authToken,
-                accountId,
-            };
-            window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
-        }
-    }
-
-    _initHtmlElements() {
-        // Wallet iframe
-        const iframe = document.createElement('iframe');
-        iframe.style = 'display: none;';
-        iframe.src = this._walletBaseUrl + EMBED_WALLET_URL_SUFFIX;
-        document.body.appendChild(iframe);
-        this._walletWindow = iframe.contentWindow;
-
-        // Message Event
-        window.addEventListener('message', this.receiveMessage.bind(this), false);
-    }
-
-    receiveMessage(event) {
-        if (!this._walletBaseUrl.startsWith(event.origin)) {
-            // Only processing wallet messages.
-            console.log('Wallet account ignoring message from ' + event.origin);
-            return;
-        }
-        let data;
-        try {
-            data = JSON.parse(event.data);
-        } catch (e) {
-            console.error('Can\'t parse the result', event.data, e);
-            return;
-        }
-        const request_id = data.request_id || '';
-        if (!(request_id in this._signatureRequests)) {
-            console.error('Request ID' + request_id + ' was not found');
-            return;
-        }
-        let signatureRequest = this._signatureRequests[request_id];
-        delete this._signatureRequests[request_id];
-
-        if (data.success) {
-            signatureRequest.resolve(data.result);
-        } else {
-            signatureRequest.reject(data.error);
-        }
-    }
-
-    _randomRequestId() {
-        var result = '';
-
-        for (var i = 0; i < REQUEST_ID_LENGTH; i++) {
-            result += RANDOM_ALPHABET.charAt(Math.floor(Math.random() * RANDOM_ALPHABET.length));
-        }
-
-        return result;
-    }
-
-    _remoteSign(hash, methodName, args) {
-        // TODO(#482): Add timeout.
-        return new Promise((resolve, reject) => {
-            const request_id = this._randomRequestId();
-            this._signatureRequests[request_id] = {
-                request_id,
-                resolve,
-                reject,
-            };
-            this._walletWindow.postMessage(JSON.stringify({
-                action: 'sign_transaction',
-                token: this._authData.authToken,
-                method_name: methodName,
-                args: args || {},
-                hash,
-                request_id,
-            }), this._walletBaseUrl);
-        });
     }
 
     /**
@@ -15427,10 +15388,10 @@ class WalletAccount {
         const body = FunctionCallTransaction.decode(buffer);
         let methodName = Buffer.from(body.methodName).toString();
         let args = JSON.parse(Buffer.from(body.args).toString());
-        let signature = await this._remoteSign(sha256.array(buffer), methodName, args);
-        return {
-            signature,
-        };
+        const signer = new nearlib.SimpleKeyStoreSigner(this._keyStore);
+        let signature = await signer.signBuffer(buffer, originator);
+        console.log(signature);
+        return signature;
     }
 
 }
@@ -15438,4 +15399,4 @@ class WalletAccount {
 module.exports = WalletAccount;
 
 }).call(this,require("buffer").Buffer)
-},{"./protos":67,"buffer":21,"js-sha256":40}]},{},[2]);
+},{"./protos":67,"buffer":21}]},{},[2]);

@@ -7,6 +7,10 @@ let account;
 let keyStore;
 let networkId;
 
+const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+
 beforeAll(async () => {
     // To avoid nonce collisions with promise test on alice
     await sleep(3000);
@@ -14,12 +18,11 @@ beforeAll(async () => {
     networkId = 'somenetwork';
     keyStore = new InMemoryKeyStore(networkId);
     const storage = createFakeStorage();
-    nearjs = await dev.connect({
-        nodeUrl: 'http://localhost:3030',
-        useDevAccount: true,
+    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: networkId,
         deps: { keyStore, storage },
     });
+    nearjs = await dev.connect(config);
     account = new Account(nearjs.nearClient);
 });
 
@@ -28,7 +31,9 @@ test('test creating default config', async () => {
     Near.createDefaultConfig();
 });
 
-describe('dev connect', () => {
+// TODO: Make 'dev connect' tests run on nearlib CI (i.e. with shared testnet)
+const devConnectDescribe = process.env.SKIP_DEV_CONNECT_TESTS ? xdescribe : describe;
+devConnectDescribe('dev connect', () => {
     let deps;
     let options;
     beforeEach(async () => {
@@ -185,7 +190,7 @@ describe('with access key', function () {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(contractId, keyWithRandomSeed);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractId, data));
 
@@ -259,7 +264,7 @@ describe('with deployed contract', () => {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed, networkId);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         contract = await nearjs.loadContract(contractName, {
@@ -332,7 +337,8 @@ describe('with deployed contract', () => {
         expect(logs).toEqual([`[${contractName}]: LOG: loooog1`, `[${contractName}]: LOG: loooog2`]);
     });
 
-    test('can get assert message from method result', async () => {
+    const failedAssertTest = process.env.SKIP_FAILED_ASSERT_TEST ? xtest : test;
+    failedAssertTest('can get assert message from method result', async () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail/);
         expect(logs.length).toBe(3);
         expect(logs[0]).toEqual(`[${contractName}]: LOG: log before assert`);

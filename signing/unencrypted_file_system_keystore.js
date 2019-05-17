@@ -39,6 +39,12 @@ class UnencryptedFileSystemKeyStore {
         return AccountInfo.fromJson(json).keyPair;
     }
 
+    async removeKey(accountId) {
+        if (await promisify(fs.exists)(this.getKeyFilePath(accountId))) {
+            fs.unlink(this.getKeyFilePath(accountId));
+        }
+    }
+
     /**
      * Returns all account ids for a particular network.
      */
