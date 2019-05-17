@@ -333,7 +333,8 @@ describe('with deployed contract', () => {
         expect(logs).toEqual([`[${contractName}]: LOG: loooog1`, `[${contractName}]: LOG: loooog2`]);
     });
 
-    test('can get assert message from method result', async () => {
+    const failedAssertTest = process.env.SKIP_FAILED_ASSERT_TEST ? xtest : test;
+    failedAssertTest('can get assert message from method result', async () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail/);
         expect(logs.length).toBe(3);
         expect(logs[0]).toEqual(`[${contractName}]: LOG: log before assert`);
