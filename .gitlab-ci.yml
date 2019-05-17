@@ -19,7 +19,7 @@ cache:
 install_dependencies:
   stage: build
   script:
-    - rm -rf nearcore/
+    - rm -rf nearcore/ # nearcore/ gets cached
     - git clone --depth 1 --branch j-starttendermintsh https://github.com/nearprotocol/nearcore.git nearcore
     - rm -rf nearcore/nearlib
     - npm install
