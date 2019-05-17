@@ -9,6 +9,8 @@ let networkId;
 
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+
 beforeAll(async () => {
     // To avoid nonce collisions with promise test on alice
     await sleep(3000);
