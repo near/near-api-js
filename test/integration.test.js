@@ -167,7 +167,7 @@ test('create account with a new key and then view account returns the created ac
     };
     expect(result).toEqual(expectedAccount);
     const aliceAccountAfterCreation = await account.viewAccount(aliceAccountName);
-    expect(aliceAccountAfterCreation.amount).toBeLessThan(aliceAccountBeforeCreation.amount - amount);
+    expect(aliceAccountAfterCreation.amount).toBeLessThanOrEqual(aliceAccountBeforeCreation.amount - amount);
 });
 
 describe('with access key', function () {
