@@ -2,6 +2,10 @@ image: node:10
 
 variables:
   NODE_ENV: ci
+  NEARCORE_DIR: nearcore
+  SKIP_DEV_CONNECT_TESTS: "true"
+  SKIP_FAILED_ASSERT_TEST: "true"
+  HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:
   - build
@@ -9,19 +13,24 @@ stages:
 
 cache:
   paths:
+    - nearcore/
     - node_modules/
 
 install_dependencies:
   stage: build
   script:
+    - rm -rf nearcore/ # nearcore/ gets cached
+    - git clone --depth 1 --branch j-starttendermintsh https://github.com/nearprotocol/nearcore.git nearcore
+    - rm -rf nearcore/nearlib
     - npm install
+    - cd nearcore/tests/hello && npm install && npm run build
   artifacts:
     paths:
       - node_modules/
 
 test:
   stage: test
-  script: npm test
+  script: NODE_ENV=development npm test
 
 lint:
   stage: test
