@@ -169,7 +169,7 @@ test('create account with a new key and then view account returns the created ac
     };
     expect(result).toEqual(expectedAccount);
     const aliceAccountAfterCreation = await account.viewAccount(aliceAccountName);
-    expect(aliceAccountAfterCreation.amount).toBeLessThanOrEqual(aliceAccountBeforeCreation.amount - amount);
+    expect(aliceAccountAfterCreation.amount).toBe(aliceAccountBeforeCreation.amount - amount);
 });
 
 describe('with access key', function () {
@@ -178,6 +178,8 @@ describe('with access key', function () {
     let contractId = 'test_contract_' + Date.now();
     let newAccountId;
     let newAccountKeyPair;
+
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 200000;
 
     beforeAll(async () => {
         const keyWithRandomSeed = KeyPair.fromRandomSeed();
@@ -206,7 +208,7 @@ describe('with access key', function () {
         const createAccountResponse = await account.createAccount(
             newAccountId,
             newAccountKeyPair.getPublicKey(),
-            0,
+            5000000000,
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(newAccountId, newAccountKeyPair);
@@ -225,7 +227,7 @@ describe('with access key', function () {
             contractId,
             '',  // methodName
             '',  // fundingOwner
-            0,  // fundingAmount
+            4000000000,  // fundingAmount
         );
         await nearjs.waitForTransactionResult(addAccessKeyResponse);
         // Replacing public key for the account with the access key
@@ -258,7 +260,7 @@ describe('with deployed contract', () => {
         const createAccountResponse = await account.createAccount(
             contractName,
             keyWithRandomSeed.getPublicKey(),
-            10,
+            5000000000,
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed, networkId);
@@ -293,7 +295,7 @@ describe('with deployed contract', () => {
 
         const setCallValue = await generateUniqueString('setCallPrefix');
         const scheduleResult = await nearjs.scheduleFunctionCall(
-            0,
+            1000000000,
             aliceAccountName,
             contractName,
             'setValue', // this is the function defined in hello.wasm file that we are calling

@@ -350,6 +350,10 @@ const {
 
 const MAX_STATUS_POLL_ATTEMPTS = 10;
 const STATUS_POLL_PERIOD_MS = 2000;
+// Default amount of tokens to be send with the function calls. Used to pay for the fees
+// incurred while running the contract execution. The unused amount will be refunded back to
+// the originator.
+const DEFAULT_FUNC_CALL_AMOUNT = 1000000000;
 
 /**
  * Javascript library for interacting with near.
@@ -573,7 +577,7 @@ class Near {
         options.changeMethods.forEach((methodName) => {
             contract[methodName] = async function (args) {
                 args = args || {};
-                const response = await near.scheduleFunctionCall(0, options.sender, contractAccountId, methodName, args);
+                const response = await near.scheduleFunctionCall(DEFAULT_FUNC_CALL_AMOUNT, options.sender, contractAccountId, methodName, args);
                 return near.waitForTransactionResult(response.hash, { contractAccountId });
             };
         });
@@ -621,7 +625,7 @@ class NearClient {
         const buffer = SignedTransaction.encode(signedTransaction).finish();
         const transaction = _arrayBufferToBase64(buffer);
         const params = [transaction];
-        const response = await this.jsonRpcRequest('broadcast_tx_async', params);
+        const response = await this.jsonRpcRequest('broadcast_tx_sync', params);
         response.hash = Buffer.from(response.hash, 'hex');
         return response;
     }

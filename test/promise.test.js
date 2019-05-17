@@ -26,7 +26,7 @@ beforeAll(async () => {
     const createAccountResponse = await account.createAccount(
         mainTestAccountName,
         keyWithRandomSeed.getPublicKey(),
-        1000000000,
+        1000000000000,
         aliceAccountName);
     await nearjs.waitForTransactionResult(createAccountResponse);
     await keyStore.setKey(mainTestAccountName, keyWithRandomSeed);
@@ -40,7 +40,7 @@ describe('with promises', () => {
     let contractName1 = 'test_' + Math.random();
     let contractName2 = 'test_' + Math.random();
 
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 200000;
 
     const deploy = async (contractName) => {
         const keyWithRandomSeed = KeyPair.fromRandomSeed();
@@ -88,10 +88,10 @@ describe('with promises', () => {
             receiver: contractName1,
             methodName: 'callbackWithName',
             args: null,
-            additionalMana: 0,
+            balance: 500000000,
             callback: null,
             callbackArgs: null,
-            callbackAdditionalMana: 0,
+            callbackBalance: 0,
         }});
         expect(result.status).toBe('Completed');
         const lastResult = await contract1.getLastResult();
@@ -106,10 +106,10 @@ describe('with promises', () => {
             receiver: contractName1,
             methodName: 'callbackWithName',
             args: null,
-            additionalMana: 0,
+            balance: 500000000,
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackAdditionalMana: 0,
+            callbackBalance: 100000000,
         }});
         expect(result.status).toBe('Completed');
         const lastResult1 = await contract1.getLastResult();
@@ -135,15 +135,15 @@ describe('with promises', () => {
                 receiver: contractName2,
                 methodName: 'callbackWithName',
                 args: null,
-                additionalMana: 0,
+                balance: 100000000,
                 callback: null,
                 callbackArgs: null,
-                callbackAdditionalMana: 0,
+                callbackBalance: 0,
             },
-            additionalMana: 1,
+            balance: 500000000,
             callback: null,
             callbackArgs: null,
-            callbackAdditionalMana: 0,
+            callbackBalance: 0,
         }});
         expect(result.status).toBe('Completed');
         const lastResult2 = await contract2.getLastResult();
@@ -161,15 +161,15 @@ describe('with promises', () => {
                 receiver: contractName2,
                 methodName: 'callbackWithName',
                 args: null,
-                additionalMana: 0,
+                balance: 200000000,
                 callback: 'callbackWithName',
                 callbackArgs: null,
-                callbackAdditionalMana: 0,
+                callbackBalance: 100000000,
             },
-            additionalMana: 2,
+            balance: 500000000,
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackAdditionalMana: 0,
+            callbackBalance: 100000000,
         }});
         expect(result.status).toBe('Completed');
         const lastResult2 = await contract2.getLastResult();
@@ -203,15 +203,15 @@ describe('with promises', () => {
                 receiver: contractName,
                 methodName: 'callbackWithName',
                 args: null,
-                additionalMana: 0,
+                balance: 200000000,
                 callback: 'callbackWithName',
                 callbackArgs: null,
-                callbackAdditionalMana: 0,
+                callbackBalance: 100000000,
             },
-            additionalMana: 2,
+            balance: 500000000,
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackAdditionalMana: 0,
+            callbackBalance: 100000000,
         }});
         expect(result.status).toBe('Completed');
         const lastResult1 = await contract1.getLastResult();
@@ -243,15 +243,15 @@ describe('with promises', () => {
                 receiver: contractName2,
                 methodName: 'callbackWithName',
                 args: null,
-                additionalMana: 0,
+                balance: 100000000,
                 callback: null,
                 callbackArgs: null,
-                callbackAdditionalMana: 0,
+                callbackBalance: 0,
             },
-            additionalMana: 1,
+            balance: 500000000,
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackAdditionalMana: 0,
+            callbackBalance: 100000000,
         }});
         expect(result.status).toBe('Completed');
         const lastResult2 = await contract2.getLastResult();
@@ -274,10 +274,10 @@ describe('with promises', () => {
             receiver: contractName1,
             methodName: '',  // Deposit (no execution)
             args: null,
-            additionalMana: 0,
+            balance: 500000000,
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackAdditionalMana: 0,
+            callbackBalance: 100000000,
         }});
         expect(result.status).toBe('Completed');
         const lastResult = await contract.getLastResult();
@@ -298,15 +298,15 @@ describe('with promises', () => {
                 receiver: contractName2,
                 methodName: '',  // Deposit (no execution)
                 args: null,
-                additionalMana: 0,
+                balance: 0,
                 callback: null,
                 callbackArgs: null,
-                callbackAdditionalMana: 0,
+                callbackBalance: 0,
             },
-            additionalMana: 1,
+            balance: 500000000,
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackAdditionalMana: 0,
+            callbackBalance: 100000000,
         }});
         expect(result.status).toBe('Completed');
         const lastResult = await contract.getLastResult();
