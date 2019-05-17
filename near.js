@@ -10,7 +10,9 @@ const {
 
 const MAX_STATUS_POLL_ATTEMPTS = 10;
 const STATUS_POLL_PERIOD_MS = 2000;
-// Default amount to be send with the function calls.
+// Default amount of tokens to be send with the function calls. Used to pay for the fees
+// incurred while running the contract execution. The unused amount will be refunded back to
+// the originator.
 const DEFAULT_FUNC_CALL_AMOUNT = 1000000000;
 
 /**
