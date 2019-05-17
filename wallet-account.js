@@ -20,14 +20,12 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
  * window.walletAccount = new nearlib.WalletAccount(config.contractName, walletBaseUrl);
  */
 class WalletAccount {
-
     constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new BrowserLocalStorageKeystore()) {
-        this._walletBaseUrl =  walletBaseUrl;
+        this._walletBaseUrl = walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = keyStore;
 
         this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');
-
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
         }
@@ -87,16 +85,16 @@ class WalletAccount {
         let publicKey = currentUrl.searchParams.get('public_key') || '';
         let accountId = currentUrl.searchParams.get('account_id') || '';
         if (accountId && publicKey) {
+            this._authData = {
+                accountId
+            };
+            window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
             this._moveKeyFromTempToPermanent(accountId, publicKey);
         }
     }
 
     async _moveKeyFromTempToPermanent(accountId, publicKey) {
         let keyPair = await this._keyStore.getKey(PENDING_ACCESS_KEY_PREFIX + publicKey);
-        this._authData = {
-            accountId
-        };
-        window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
         await this._keyStore.setKey(accountId, keyPair);
         await this._keyStore.removeKey(PENDING_ACCESS_KEY_PREFIX + publicKey);
     }
