@@ -350,6 +350,10 @@ const {
 
 const MAX_STATUS_POLL_ATTEMPTS = 10;
 const STATUS_POLL_PERIOD_MS = 2000;
+// Default amount of tokens to be send with the function calls. Used to pay for the fees
+// incurred while running the contract execution. The unused amount will be refunded back to
+// the originator.
+const DEFAULT_FUNC_CALL_AMOUNT = 1000000000;
 
 /**
  * Javascript library for interacting with near.
@@ -573,7 +577,7 @@ class Near {
         options.changeMethods.forEach((methodName) => {
             contract[methodName] = async function (args) {
                 args = args || {};
-                const response = await near.scheduleFunctionCall(0, options.sender, contractAccountId, methodName, args);
+                const response = await near.scheduleFunctionCall(DEFAULT_FUNC_CALL_AMOUNT, options.sender, contractAccountId, methodName, args);
                 return near.waitForTransactionResult(response.hash, { contractAccountId });
             };
         });
@@ -621,7 +625,7 @@ class NearClient {
         const buffer = SignedTransaction.encode(signedTransaction).finish();
         const transaction = _arrayBufferToBase64(buffer);
         const params = [transaction];
-        const response = await this.jsonRpcRequest('broadcast_tx_async', params);
+        const response = await this.jsonRpcRequest('broadcast_tx_sync', params);
         response.hash = Buffer.from(response.hash, 'hex');
         return response;
     }
@@ -668,6 +672,9 @@ class NearClient {
             id: Date.now().toString(),
         };
         const response = await this.nearConnection.request('', request);
+        if (!response.result) {
+            throw new Error('Unexpected response: ' + JSON.stringify(response));
+        }
         const code = (response.result.response ? response.result.response.code : response.result.code) || 0;
         if (code != 0) {
             const log = response.result.response.log;
@@ -15256,12 +15263,11 @@ class WalletAccessKey {
 module.exports = WalletAccessKey;
 
 },{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72}],74:[function(require,module,exports){
-(function (Buffer){
 /**
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
  */
 
-const { FunctionCallTransaction } = require('./protos');
+const { BrowserLocalStorageKeystore, KeyPair, SimpleKeyStoreSigner } = require('.');
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
@@ -15279,7 +15285,7 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
  * window.walletAccount = new nearlib.WalletAccount(config.contractName, walletBaseUrl);
  */
 class WalletAccount {
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new nearlib.BrowserLocalStorageKeystore()) {
+    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new BrowserLocalStorageKeystore()) {
         this._walletBaseUrl = walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = keyStore;
@@ -15330,7 +15336,7 @@ class WalletAccount {
         newUrl.searchParams.set('failure_url', failure_url || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
         if (!this.getAccountId() || !this._keyStore.getKey(this.getAccountId())) {
-            const accessKey = nearlib.KeyPair.fromRandomSeed();
+            const accessKey = KeyPair.fromRandomSeed();
             newUrl.searchParams.set('public_key', accessKey.getPublicKey());
             this._keyStore.setKey(PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey).then(window.location.replace(newUrl.toString()));
         }
@@ -15378,12 +15384,8 @@ class WalletAccount {
         if (!this.isSignedIn() || originator !== this.getAccountId()) {
             throw 'Unauthorized account_id ' + originator;
         }
-        const body = FunctionCallTransaction.decode(buffer);
-        let methodName = Buffer.from(body.methodName).toString();
-        let args = JSON.parse(Buffer.from(body.args).toString());
-        const signer = new nearlib.SimpleKeyStoreSigner(this._keyStore);
+        const signer = new SimpleKeyStoreSigner(this._keyStore);
         let signature = await signer.signBuffer(buffer, originator);
-        console.log(signature);
         return signature;
     }
 
@@ -15391,5 +15393,4 @@ class WalletAccount {
 
 module.exports = WalletAccount;
 
-}).call(this,require("buffer").Buffer)
-},{"./protos":67,"buffer":21}]},{},[2]);
+},{".":3}]},{},[2]);

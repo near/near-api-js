@@ -27,7 +27,7 @@ class NearClient {
         const buffer = SignedTransaction.encode(signedTransaction).finish();
         const transaction = _arrayBufferToBase64(buffer);
         const params = [transaction];
-        const response = await this.jsonRpcRequest('broadcast_tx_async', params);
+        const response = await this.jsonRpcRequest('broadcast_tx_sync', params);
         response.hash = Buffer.from(response.hash, 'hex');
         return response;
     }
@@ -74,6 +74,9 @@ class NearClient {
             id: Date.now().toString(),
         };
         const response = await this.nearConnection.request('', request);
+        if (!response.result) {
+            throw new Error('Unexpected response: ' + JSON.stringify(response));
+        }
         const code = (response.result.response ? response.result.response.code : response.result.code) || 0;
         if (code != 0) {
             const log = response.result.response.log;

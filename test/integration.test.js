@@ -7,6 +7,10 @@ let account;
 let keyStore;
 let networkId;
 
+const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+
 beforeAll(async () => {
     // To avoid nonce collisions with promise test on alice
     await sleep(3000);
@@ -14,12 +18,11 @@ beforeAll(async () => {
     networkId = 'somenetwork';
     keyStore = new InMemoryKeyStore(networkId);
     const storage = createFakeStorage();
-    nearjs = await dev.connect({
-        nodeUrl: 'http://localhost:3030',
-        useDevAccount: true,
+    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: networkId,
         deps: { keyStore, storage },
     });
+    nearjs = await dev.connect(config);
     account = new Account(nearjs.nearClient);
 });
 
@@ -28,7 +31,9 @@ test('test creating default config', async () => {
     Near.createDefaultConfig();
 });
 
-describe('dev connect', () => {
+// TODO: Make 'dev connect' tests run on nearlib CI (i.e. with shared testnet)
+const devConnectDescribe = process.env.SKIP_DEV_CONNECT_TESTS ? xdescribe : describe;
+devConnectDescribe('dev connect', () => {
     let deps;
     let options;
     beforeEach(async () => {
@@ -164,7 +169,7 @@ test('create account with a new key and then view account returns the created ac
     };
     expect(result).toEqual(expectedAccount);
     const aliceAccountAfterCreation = await account.viewAccount(aliceAccountName);
-    expect(aliceAccountAfterCreation.amount).toBeLessThan(aliceAccountBeforeCreation.amount - amount);
+    expect(aliceAccountAfterCreation.amount).toBe(aliceAccountBeforeCreation.amount - amount);
 });
 
 describe('with access key', function () {
@@ -173,6 +178,8 @@ describe('with access key', function () {
     let contractId = 'test_contract_' + Date.now();
     let newAccountId;
     let newAccountKeyPair;
+
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 200000;
 
     beforeAll(async () => {
         const keyWithRandomSeed = KeyPair.fromRandomSeed();
@@ -183,7 +190,7 @@ describe('with access key', function () {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(contractId, keyWithRandomSeed);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractId, data));
 
@@ -201,7 +208,7 @@ describe('with access key', function () {
         const createAccountResponse = await account.createAccount(
             newAccountId,
             newAccountKeyPair.getPublicKey(),
-            0,
+            5000000000,
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(newAccountId, newAccountKeyPair);
@@ -220,7 +227,7 @@ describe('with access key', function () {
             contractId,
             '',  // methodName
             '',  // fundingOwner
-            0,  // fundingAmount
+            4000000000,  // fundingAmount
         );
         await nearjs.waitForTransactionResult(addAccessKeyResponse);
         // Replacing public key for the account with the access key
@@ -253,11 +260,11 @@ describe('with deployed contract', () => {
         const createAccountResponse = await account.createAccount(
             contractName,
             keyWithRandomSeed.getPublicKey(),
-            10,
+            5000000000,
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed, networkId);
-        const data = [...fs.readFileSync('../tests/hello.wasm')];
+        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         contract = await nearjs.loadContract(contractName, {
@@ -288,7 +295,7 @@ describe('with deployed contract', () => {
 
         const setCallValue = await generateUniqueString('setCallPrefix');
         const scheduleResult = await nearjs.scheduleFunctionCall(
-            0,
+            1000000000,
             aliceAccountName,
             contractName,
             'setValue', // this is the function defined in hello.wasm file that we are calling
@@ -330,7 +337,8 @@ describe('with deployed contract', () => {
         expect(logs).toEqual([`[${contractName}]: LOG: loooog1`, `[${contractName}]: LOG: loooog2`]);
     });
 
-    test('can get assert message from method result', async () => {
+    const failedAssertTest = process.env.SKIP_FAILED_ASSERT_TEST ? xtest : test;
+    failedAssertTest('can get assert message from method result', async () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail/);
         expect(logs.length).toBe(3);
         expect(logs[0]).toEqual(`[${contractName}]: LOG: log before assert`);
