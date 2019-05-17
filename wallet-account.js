@@ -2,7 +2,7 @@
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
  */
 
-const { FunctionCallTransaction } = require('./protos');
+const { BrowserLocalStorageKeystore, KeyPair, SimpleKeyStoreSigner } = require('.');
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
@@ -21,7 +21,7 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
  */
 class WalletAccount {
 
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new nearlib.BrowserLocalStorageKeystore()) {
+    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new BrowserLocalStorageKeystore()) {
         this._walletBaseUrl =  walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = keyStore;
@@ -73,7 +73,7 @@ class WalletAccount {
         newUrl.searchParams.set('failure_url', failure_url || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
         if (!this.getAccountId() || !this._keyStore.getKey(this.getAccountId())) {
-            const accessKey = nearlib.KeyPair.fromRandomSeed();
+            const accessKey = KeyPair.fromRandomSeed();
             newUrl.searchParams.set('public_key', accessKey.getPublicKey());
             this._keyStore.setKey(PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey).then(window.location.replace(newUrl.toString()));
         }
@@ -121,12 +121,8 @@ class WalletAccount {
         if (!this.isSignedIn() || originator !== this.getAccountId()) {
             throw 'Unauthorized account_id ' + originator;
         }
-        const body = FunctionCallTransaction.decode(buffer);
-        let methodName = Buffer.from(body.methodName).toString();
-        let args = JSON.parse(Buffer.from(body.args).toString());
-        const signer = new nearlib.SimpleKeyStoreSigner(this._keyStore);
+        const signer = new SimpleKeyStoreSigner(this._keyStore);
         let signature = await signer.signBuffer(buffer, originator);
-        console.log(signature);
         return signature;
     }
 
