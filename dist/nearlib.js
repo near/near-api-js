@@ -15267,7 +15267,9 @@ module.exports = WalletAccessKey;
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
  */
 
-const { BrowserLocalStorageKeystore, KeyPair, SimpleKeyStoreSigner } = require('.');
+const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
+const KeyPair = require('./signing/key_pair');
+const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
@@ -15393,4 +15395,4 @@ class WalletAccount {
 
 module.exports = WalletAccount;
 
-},{".":3}]},{},[2]);
+},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72}]},{},[2]);
