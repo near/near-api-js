@@ -2,7 +2,9 @@
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
  */
 
-const { BrowserLocalStorageKeystore, KeyPair, SimpleKeyStoreSigner } = require('.');
+const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
+const KeyPair = require('./signing/key_pair');
+const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
