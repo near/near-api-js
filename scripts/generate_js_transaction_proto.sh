@@ -6,4 +6,4 @@ NEARCORE_DIR="${NEARCORE_DIR:-../nearcore}"
 	-t static-module \
 	-w commonjs \
 	-o ${NEARLIB_DIR}/protos.js \
-	${NEARCORE_DIR}/runtime/protos/protos/signed_transaction.proto
+	${NEARCORE_DIR}/core/protos/protos/signed_transaction.proto
