@@ -74,12 +74,16 @@ class NearClient {
             id: Date.now().toString(),
         };
         const response = await this.nearConnection.request('', request);
+        if (response.error) {
+            const { code, message, data } = response.error;
+            throw new Error(`[${code}] ${message}: ${data}`);
+        }
         if (!response.result) {
             throw new Error('Unexpected response: ' + JSON.stringify(response));
         }
-        const code = (response.result.response ? response.result.response.code : response.result.code) || 0;
-        if (code != 0) {
-            const log = response.result.response.log;
+        const result = response.result.response || response.result;
+        const { code, log } = result;
+        if (code) {
             const error = new Error(`Error calling ${method} with ${params}, error code: ${code}.\nMessage: ${log}`);
             error.log = log;
             throw error;
