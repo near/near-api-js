@@ -9,7 +9,7 @@ const {promisify} = require('util');
 class UnencryptedFileSystemKeyStore {
     constructor(keyDir, networkId) {
         this.keyDir = keyDir;
-        this.networkId = networkId;
+        this.networkId = networkId || 'default';
     }
 
     /**
