@@ -2,7 +2,7 @@ image: node:10
 
 variables:
   NODE_ENV: ci
-  NEARCORE_DIR: nearcore
+  NEAR_PROTOS_DIR: nearcore/runtime/protos/protos
   SKIP_DEV_CONNECT_TESTS: "true"
   SKIP_FAILED_ASSERT_TEST: "true"
   HELLO_WASM_PATH: nearcore/tests/hello.wasm
