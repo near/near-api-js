@@ -167,6 +167,7 @@ class Near {
      */
     async waitForTransactionResult(transactionResponseOrHash, options = {}) {
         const transactionHash = transactionResponseOrHash.hasOwnProperty('hash') ? transactionResponseOrHash.hash : transactionResponseOrHash;
+        const hashStr = Buffer.from(transactionHash).toString('base64');
         const contractAccountId = options.contractAccountId || 'unknown contract';
         let alreadyDisplayedLogs = [];
         let result;
@@ -176,7 +177,7 @@ class Near {
             let j;
             for (j = 0; j < alreadyDisplayedLogs.length && alreadyDisplayedLogs[j] == result.logs[j]; j++);
             if (j != alreadyDisplayedLogs.length) {
-                console.warn('new logs:', result.logs, 'iconsistent with already displayed logs:', alreadyDisplayedLogs);
+                console.warn('new logs:', result.logs, 'inconsistent with already displayed logs:', alreadyDisplayedLogs);
             }
             for (; j < result.logs.length; ++j) {
                 const line = result.logs[j];
@@ -191,12 +192,11 @@ class Near {
             }
             if (result.status == 'Failed') {
                 const errorMessage = result.logs.find(it => it.startsWith('ABORT:')) || '';
-                const hash = Buffer.from(transactionHash).toString('base64');
-                throw createError(400, `Transaction ${hash} on ${contractAccountId} failed. ${errorMessage}`);
+                throw createError(400, `Transaction ${hashStr} on ${contractAccountId} failed. ${errorMessage}`);
             }
         }
         throw createError(408, `Exceeded ${MAX_STATUS_POLL_ATTEMPTS} status check attempts ` +
-            `for transaction ${transactionHash} on ${contractAccountId} with status: ${result.status}`);
+            `for transaction ${hashStr} on ${contractAccountId} with status: ${result.status}`);
     }
 
     /**
