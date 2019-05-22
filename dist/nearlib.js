@@ -266,7 +266,7 @@ module.exports = {
         const keypair = KeyPair.fromRandomSeed();
         const createAccount = this.deps.createAccount ? this.deps.createAccount :
             async (accountId, newAccountPublicKey) =>
-                this.createAccountWithContractHelper(await this.getConfig(), accountId, newAccountPublicKey);
+                this.createAccountWithContractHelper(accountId, newAccountPublicKey);
         await createAccount.bind(this, tempUserAccountId, keypair.getPublicKey())();
         this.deps.keyStore.setKey(tempUserAccountId, keypair);
         this.deps.storage.setItem(storageAccountIdKey, tempUserAccountId);
@@ -680,9 +680,9 @@ class NearClient {
             throw new Error('Unexpected response: ' + JSON.stringify(response));
         }
         const result = response.result.response || response.result;
-        const { code, log } = result;
+        const { code, info, log } = result;
         if (code) {
-            const error = new Error(`Error calling ${method} with ${params}, error code: ${code}.\nMessage: ${log}`);
+            const error = new Error(`[${code}] Error calling ${method}(${params})\nMessage: ${info}\n${log}`);
             error.log = log;
             throw error;
         }
