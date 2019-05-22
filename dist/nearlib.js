@@ -507,6 +507,7 @@ class Near {
      */
     async waitForTransactionResult(transactionResponseOrHash, options = {}) {
         const transactionHash = transactionResponseOrHash.hasOwnProperty('hash') ? transactionResponseOrHash.hash : transactionResponseOrHash;
+        const hashStr = Buffer.from(transactionHash).toString('base64');
         const contractAccountId = options.contractAccountId || 'unknown contract';
         let alreadyDisplayedLogs = [];
         let result;
@@ -516,7 +517,7 @@ class Near {
             let j;
             for (j = 0; j < alreadyDisplayedLogs.length && alreadyDisplayedLogs[j] == result.logs[j]; j++);
             if (j != alreadyDisplayedLogs.length) {
-                console.warn('new logs:', result.logs, 'iconsistent with already displayed logs:', alreadyDisplayedLogs);
+                console.warn('new logs:', result.logs, 'inconsistent with already displayed logs:', alreadyDisplayedLogs);
             }
             for (; j < result.logs.length; ++j) {
                 const line = result.logs[j];
@@ -531,12 +532,11 @@ class Near {
             }
             if (result.status == 'Failed') {
                 const errorMessage = result.logs.find(it => it.startsWith('ABORT:')) || '';
-                const hash = Buffer.from(transactionHash).toString('base64');
-                throw createError(400, `Transaction ${hash} on ${contractAccountId} failed. ${errorMessage}`);
+                throw createError(400, `Transaction ${hashStr} on ${contractAccountId} failed. ${errorMessage}`);
             }
         }
         throw createError(408, `Exceeded ${MAX_STATUS_POLL_ATTEMPTS} status check attempts ` +
-            `for transaction ${transactionHash} on ${contractAccountId} with status: ${result.status}`);
+            `for transaction ${hashStr} on ${contractAccountId} with status: ${result.status}`);
     }
 
     /**
@@ -15291,12 +15291,14 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
  * window.walletAccount = new nearlib.WalletAccount(config.contractName, walletBaseUrl);
  */
 class WalletAccount {
+
     constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new BrowserLocalStorageKeystore()) {
-        this._walletBaseUrl = walletBaseUrl;
+        this._walletBaseUrl =  walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = keyStore;
 
         this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');
+
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
         }
@@ -15356,16 +15358,16 @@ class WalletAccount {
         let publicKey = currentUrl.searchParams.get('public_key') || '';
         let accountId = currentUrl.searchParams.get('account_id') || '';
         if (accountId && publicKey) {
-            this._authData = {
-                accountId
-            };
-            window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
             this._moveKeyFromTempToPermanent(accountId, publicKey);
         }
     }
 
     async _moveKeyFromTempToPermanent(accountId, publicKey) {
         let keyPair = await this._keyStore.getKey(PENDING_ACCESS_KEY_PREFIX + publicKey);
+        this._authData = {
+            accountId
+        };
+        window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
         await this._keyStore.setKey(accountId, keyPair);
         await this._keyStore.removeKey(PENDING_ACCESS_KEY_PREFIX + publicKey);
     }
