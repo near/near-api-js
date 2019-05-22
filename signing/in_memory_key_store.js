@@ -15,12 +15,6 @@ class InMemoryKeyStore {
         return this.keys[accountId  + '_' + this.networkId];
     }
 
-    async removeKey(accountId) {
-        if (this.getKey(accountId)) {
-            this.setKey(accountId, undefined);
-        }
-    }
-
     async clear() {
         this.keys = {};
     }

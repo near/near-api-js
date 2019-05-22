@@ -35,16 +35,6 @@ class BrowserLocalStorageKeystore {
             BrowserLocalStorageKeystore.storageKeyForSecretKey(accountId), key.getSecretKey());
     }
 
-    /**
-     * Removes the key from local storage for a given id. Please be sure to store the key somewhere before doing this
-     * to prevent permanent key loss.
-     * @param {string} accountId
-     */
-    async removeKey(accountId) {
-        this.localStorage.removeItem(BrowserLocalStorageKeystore.storageKeyForPublicKey(accountId));
-        this.localStorage.removeItem(BrowserLocalStorageKeystore.storageKeyForSecretKey(accountId));
-    }
-
     async setKeyFromJson(json) {
         const accountInfo =  AccountInfo.fromJson(json);
         if (this.networkId != accountInfo.networkId) {
