@@ -82,9 +82,9 @@ class NearClient {
             throw new Error('Unexpected response: ' + JSON.stringify(response));
         }
         const result = response.result.response || response.result;
-        const { code, log } = result;
+        const { code, info, log } = result;
         if (code) {
-            const error = new Error(`Error calling ${method} with ${params}, error code: ${code}.\nMessage: ${log}`);
+            const error = new Error(`[${code}] Error calling ${method}(${params})\nMessage: ${info}\n${log}`);
             error.log = log;
             throw error;
         }
