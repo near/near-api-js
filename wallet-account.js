@@ -2,14 +2,10 @@
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
  */
 
-<<<<<<< HEAD
 const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
 const KeyPair = require('./signing/key_pair');
-const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
-=======
 const { sha256 } = require('js-sha256');
 const { FunctionCallTransaction } = require('./protos');
->>>>>>> parent of 1fa679b... Merge pull request #13 from nearprotocol/j-wallet-access-key
 
 const EMBED_WALLET_URL_SUFFIX = '/embed/';
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
@@ -30,13 +26,8 @@ const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
  */
 class WalletAccount {
 
-<<<<<<< HEAD
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new BrowserLocalStorageKeystore()) {
-        this._walletBaseUrl =  walletBaseUrl;
-=======
     constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com') {
         this._walletBaseUrl = walletBaseUrl;
->>>>>>> parent of 1fa679b... Merge pull request #13 from nearprotocol/j-wallet-access-key
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
 
         this._initHtmlElements();
