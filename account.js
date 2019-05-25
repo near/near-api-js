@@ -4,7 +4,7 @@ const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, DeleteKe
 const KeyPair = require('./signing/key_pair');
 
 /**
- * Near account and account related operations. 
+ * Near account and account related operations.
  * @example
  * const account = new Account(nearjs.nearClient);
  */
@@ -17,7 +17,7 @@ class Account {
      * Creates a new account with a given name and key,
      * @param {string} newAccountId id of the new account.
      * @param {string} publicKey public key to associate with the new account
-     * @param {number} amount amount of tokens to transfer from originator account id to the new account as part of the creation. 
+     * @param {number} amount amount of tokens to transfer from originator account id to the new account as part of the creation.
      * @param {string} originatorAccountId existing account on the blockchain to use for transferring tokens into the new account
      * @example
      * const createAccountResponse = await account.createAccount(
@@ -113,10 +113,42 @@ class Account {
     }
 
     /**
+     * Adds a new unrestricted key to the owners account.
+     *
+     * @param {string} ownersAccountId id of the owner's account.
+     * @param {string} publicKey public key encoded in bs58
+     */
+    async addAccountKey(ownersAccountId, publicKey) {
+        const nonce = await this.nearClient.getNonce(ownersAccountId);
+        publicKey = bs58.decode(publicKey);
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, AddKeyTransaction.create({
+            nonce,
+            originator: ownersAccountId,
+            newKey: publicKey,
+        }));
+    }
+
+    /**
+     * Removes given unrestricted key from the owners account.
+     *
+     * @param {string} ownersAccountId id of the owner's account.
+     * @param {string} publicKey public key encoded in bs58
+     */
+    async removeAccountKey(ownersAccountId, publicKey) {
+        const nonce = await this.nearClient.getNonce(ownersAccountId);
+        publicKey = bs58.decode(publicKey);
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, DeleteKeyTransaction.create({
+            nonce,
+            originator: ownersAccountId,
+            newKey: publicKey,
+        }));
+    }
+
+    /**
     * Creates a new account with a new random key pair. Returns the key pair to the caller. It's the caller's responsibility to
     * manage this key pair.
     * @param {string} newAccountId id of the new account
-    * @param {number} amount amount of tokens to transfer from originator account id to the new account as part of the creation. 
+    * @param {number} amount amount of tokens to transfer from originator account id to the new account as part of the creation.
     * @param {string} originatorAccountId existing account on the blockchain to use for transferring tokens into the new account
     * @example
     * const createAccountResponse = await account.createAccountWithRandomKey(
@@ -132,12 +164,12 @@ class Account {
             amount,
             originatorAccountId,
         );
-        return { key: keyWithRandomSeed, ...createAccountResult }; 
+        return { key: keyWithRandomSeed, ...createAccountResult };
     }
 
     /**
      * Returns an existing account with a given `accountId`
-     * @param {string} accountId id of the account to look up 
+     * @param {string} accountId id of the account to look up
      * @example
      * const viewAccountResponse = await account.viewAccount(existingAccountId);
      */
