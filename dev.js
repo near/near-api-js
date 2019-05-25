@@ -78,10 +78,7 @@ module.exports = {
             tempUserAccountId = 'devuser' + Date.now();
         }
         const keypair = KeyPair.fromRandomSeed();
-        const createAccount = this.deps.createAccount ? this.deps.createAccount :
-            async (accountId, newAccountPublicKey) =>
-                this.createAccountWithContractHelper(accountId, newAccountPublicKey);
-        await createAccount.bind(this, tempUserAccountId, keypair.getPublicKey())();
+        await this.deps.createAccount.call(this, tempUserAccountId, keypair.getPublicKey());
         this.deps.keyStore.setKey(tempUserAccountId, keypair);
         this.deps.storage.setItem(storageAccountIdKey, tempUserAccountId);
         return tempUserAccountId;
