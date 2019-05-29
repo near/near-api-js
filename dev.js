@@ -89,10 +89,10 @@ module.exports = {
     /**
      * Function to create an account on local node. This will not work on non-dev environments.
      */
-    createAccountWithLocalNodeConnection: async function (newAccountName, newAccountPublicKey) {
+    createAccountWithLocalNodeConnection: async function (newAccountName, newAccountPublicKey, amount = 1000000000000) {
         const account = new Account(this.near.nearClient);
         this.deps.keyStore.setKey(devAccountName, devKey); // need to have dev account in key store to use this.
-        const createAccountResponse = await account.createAccount(newAccountName, newAccountPublicKey, 1, devAccountName);
+        const createAccountResponse = await account.createAccount(newAccountName, newAccountPublicKey, amount, devAccountName);
         await this.near.waitForTransactionResult(createAccountResponse);
     },
     /**
