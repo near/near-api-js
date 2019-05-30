@@ -245,6 +245,34 @@ describe('with access key', function () {
         expect(getValueResult2).toEqual(setCallValue2);
     });
 
+    test('removed access key no longer works', async () => {
+        // Adding access key
+        const keyForAccessKey = KeyPair.fromRandomSeed();
+        const addAccessKeyResponse = await account.addAccessKey(
+            newAccountId,
+            keyForAccessKey.getPublicKey(),
+            contractId,
+            '',  // methodName
+            '',  // fundingOwner
+            4000000000,  // fundingAmount
+        );
+        await nearjs.waitForTransactionResult(addAccessKeyResponse);
+        // Replacing public key for the account with the access key
+        await keyStore.setKey(newAccountId, keyForAccessKey);
+        // test that load contract works and we can make calls afterwards
+        const contract = await nearjs.loadContract(contractId, {
+            viewMethods: ['getValue'],
+            changeMethods: ['setValue'],
+            sender: newAccountId,
+        });
+        const setCallValue2 = await generateUniqueString('setCallPrefix');
+        const setValueResult = await contract.setValue({ value: setCallValue2 });
+        expect(setValueResult.status).toBe('Completed');
+        const getValueResult2 = await contract.getValue();
+        expect(getValueResult2).toEqual(setCallValue2);
+    });
+
+
     test('view account details after adding access keys', async () => {
         // Adding two access keys for different contracts.
         const keyForAccessKey = KeyPair.fromRandomSeed();
@@ -287,9 +315,9 @@ describe('with access key', function () {
             authorizedApps:[ {
                 contractId: contractId,
                 amount: 1000000000 },
-              { contractId: contractId2,
+            { contractId: contractId2,
                 amount: 2000000000} ],
-           transactions: [] };
+            transactions: [] };
         expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
     });
 });
