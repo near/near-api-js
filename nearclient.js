@@ -20,7 +20,7 @@ class NearClient {
 
     async viewAccount(accountId) {
         const response = await this.jsonRpcRequest('abci_query', [`account/${accountId}`, '', '0', false]);
-        return JSON.parse(_base64ToBuffer(response.response.value).toString());
+        return this.decodeResponseValue(response.response.value);
     }
 
     async submitTransaction(signedTransaction) {
@@ -94,7 +94,13 @@ class NearClient {
     async request(methodName, params) {
         return this.nearConnection.request(methodName, params);
     }
+
+
+    decodeResponseValue(value) {
+        return JSON.parse(_base64ToBuffer(value).toString());
+    }
 }
+
 
 function _printLogs(contractAccountId, log) {
     let logs = [];

@@ -153,6 +153,26 @@ class Account {
     async viewAccount (accountId) {
         return await this.nearClient.viewAccount(accountId);
     }
+
+    /**
+     * Returns full details for a given account.
+     * @param {string} accountId id of the account to look up
+     */
+    async getAccountDetails(accountId) {
+        const response = await this.nearClient.jsonRpcRequest('abci_query', [`access_key/${accountId}`, '', '0', false]);
+        const decodedResponse = this.nearClient.decodeResponseValue(response.response.value);
+        const result = {
+            authorizedApps : [],
+            transactions: []
+        };
+        Object.keys(decodedResponse).forEach(function(key) {
+            result.authorizedApps.push({
+                contractId: decodedResponse[key][1].contract_id,
+                amount: decodedResponse[key][1].amount
+            });
+        });
+        return result;
+    }
 }
 module.exports = Account;
 
@@ -264,10 +284,7 @@ module.exports = {
             tempUserAccountId = 'devuser' + Date.now();
         }
         const keypair = KeyPair.fromRandomSeed();
-        const createAccount = this.deps.createAccount ? this.deps.createAccount :
-            async (accountId, newAccountPublicKey) =>
-                this.createAccountWithContractHelper(accountId, newAccountPublicKey);
-        await createAccount.bind(this, tempUserAccountId, keypair.getPublicKey())();
+        await this.deps.createAccount.call(this, tempUserAccountId, keypair.getPublicKey());
         this.deps.keyStore.setKey(tempUserAccountId, keypair);
         this.deps.storage.setItem(storageAccountIdKey, tempUserAccountId);
         return tempUserAccountId;
@@ -507,6 +524,7 @@ class Near {
      */
     async waitForTransactionResult(transactionResponseOrHash, options = {}) {
         const transactionHash = transactionResponseOrHash.hasOwnProperty('hash') ? transactionResponseOrHash.hash : transactionResponseOrHash;
+        const hashStr = Buffer.from(transactionHash).toString('base64');
         const contractAccountId = options.contractAccountId || 'unknown contract';
         let alreadyDisplayedLogs = [];
         let result;
@@ -516,7 +534,7 @@ class Near {
             let j;
             for (j = 0; j < alreadyDisplayedLogs.length && alreadyDisplayedLogs[j] == result.logs[j]; j++);
             if (j != alreadyDisplayedLogs.length) {
-                console.warn('new logs:', result.logs, 'iconsistent with already displayed logs:', alreadyDisplayedLogs);
+                console.warn('new logs:', result.logs, 'inconsistent with already displayed logs:', alreadyDisplayedLogs);
             }
             for (; j < result.logs.length; ++j) {
                 const line = result.logs[j];
@@ -531,12 +549,11 @@ class Near {
             }
             if (result.status == 'Failed') {
                 const errorMessage = result.logs.find(it => it.startsWith('ABORT:')) || '';
-                const hash = Buffer.from(transactionHash).toString('base64');
-                throw createError(400, `Transaction ${hash} on ${contractAccountId} failed. ${errorMessage}`);
+                throw createError(400, `Transaction ${hashStr} on ${contractAccountId} failed. ${errorMessage}`);
             }
         }
         throw createError(408, `Exceeded ${MAX_STATUS_POLL_ATTEMPTS} status check attempts ` +
-            `for transaction ${transactionHash} on ${contractAccountId} with status: ${result.status}`);
+            `for transaction ${hashStr} on ${contractAccountId} with status: ${result.status}`);
     }
 
     /**
@@ -618,7 +635,7 @@ class NearClient {
 
     async viewAccount(accountId) {
         const response = await this.jsonRpcRequest('abci_query', [`account/${accountId}`, '', '0', false]);
-        return JSON.parse(_base64ToBuffer(response.response.value).toString());
+        return this.decodeResponseValue(response.response.value);
     }
 
     async submitTransaction(signedTransaction) {
@@ -692,7 +709,13 @@ class NearClient {
     async request(methodName, params) {
         return this.nearConnection.request(methodName, params);
     }
+
+
+    decodeResponseValue(value) {
+        return JSON.parse(_base64ToBuffer(value).toString());
+    }
 }
+
 
 function _printLogs(contractAccountId, log) {
     let logs = [];
