@@ -97,32 +97,19 @@ class Near {
             functionCall.amount = amount;
         }
 
-        return this.submitTransaction(originator, functionCall);
+        return this.nearClient.signAndSubmitTransaction(originator, functionCall);
     }
 
-    async submitTransaction(originator, transaction) {
-        const protoClass = transaction.constructor;
-        const className = protoClass.name;
-        const propertyName = className[0].toLowerCase() + className.replace(/Transaction$/, '').substring(1);
-        console.log('submitTransaction', className, propertyName, originator);
-
-        const buffer = protoClass.encode(transaction).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            originator,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            [propertyName]: transaction,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction)
-    }
-
+    /**
+     * Transfer tokens from `originator` to `receiver`.
+     * 
+     * @param {number} amount number of tokens to transfer
+     * @param {string} originator account id of sender
+     * @param {string} receiver account id of receiver
+     */
     async sendTokens(amount, originator, receiver) {
         const nonce = await this.nearClient.getNonce(originator);
-        return this.submitTransaction(originator, SendMoneyTransaction.create({
+        return this.nearClient.signAndSubmitTransaction(originator, SendMoneyTransaction.create({
             nonce,
             originator,
             receiver,
@@ -139,7 +126,7 @@ class Near {
      */
     async deployContract(contractId, wasmByteArray) {
         const nonce = await this.nearClient.getNonce(contractId);
-        return this.submitTransaction(contractId, DeployContractTransaction.create({
+        return this.nearClient.signAndSubmitTransaction(contractId, DeployContractTransaction.create({
             nonce,
             contractId,
             wasmByteArray,

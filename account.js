@@ -41,18 +41,7 @@ class Account {
             createAccount.amount = amount;
         }
 
-        const buffer = CreateAccountTransaction.encode(createAccount).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            originator,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            createAccount,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+        return this.nearClient.signAndSubmitTransaction(originator, createAccount);
     }
 
     /**
@@ -105,18 +94,7 @@ class Account {
             newKey: newPublicKey,
             accessKey,
         });
-        const buffer = AddKeyTransaction.encode(addKey).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            ownersAccountId,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            addKey,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, addKey);
     }
 
     /**

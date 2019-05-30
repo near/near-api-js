@@ -32,6 +32,25 @@ class NearClient {
         return response;
     }
 
+    async signAndSubmitTransaction(originator, transaction) {
+        const protoClass = transaction.constructor;
+        const className = protoClass.name;
+        const propertyName = className[0].toLowerCase() + className.replace(/Transaction$/, '').substring(1);
+
+        const buffer = protoClass.encode(transaction).finish();
+        const signatureAndPublicKey = await this.signer.signBuffer(
+            buffer,
+            originator,
+        );
+
+        const signedTransaction = SignedTransaction.create({
+            [propertyName]: transaction,
+            signature: signatureAndPublicKey.signature,
+            publicKey: signatureAndPublicKey.publicKey,
+        });
+        return this.submitTransaction(signedTransaction)
+    }
+
     async callViewFunction(contractAccountId, methodName, args) {
         if (!args) {
             args = {};
