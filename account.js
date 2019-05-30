@@ -1,6 +1,6 @@
 const bs58 = require('bs58');
 
-const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, SignedTransaction, DeleteKeyTransaction } = require('./protos');
+const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, DeleteKeyTransaction } = require('./protos');
 const KeyPair = require('./signing/key_pair');
 
 /**

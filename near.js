@@ -5,7 +5,7 @@ const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key
 const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
 const LocalNodeConnection = require('./local_node_connection');
 const {
-    DeployContractTransaction, FunctionCallTransaction, SendMoneyTransaction, SignedTransaction
+    DeployContractTransaction, FunctionCallTransaction, SendMoneyTransaction
 } = require('./protos');
 
 const MAX_STATUS_POLL_ATTEMPTS = 10;

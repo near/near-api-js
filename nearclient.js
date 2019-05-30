@@ -48,7 +48,7 @@ class NearClient {
             signature: signatureAndPublicKey.signature,
             publicKey: signatureAndPublicKey.publicKey,
         });
-        return this.submitTransaction(signedTransaction)
+        return this.submitTransaction(signedTransaction);
     }
 
     async callViewFunction(contractAccountId, methodName, args) {
