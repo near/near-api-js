@@ -287,9 +287,9 @@ describe('with access key', function () {
             authorizedApps:[ {
                 contractId: contractId,
                 amount: 1000000000 },
-              { contractId: contractId2,
+            { contractId: contractId2,
                 amount: 2000000000} ],
-           transactions: [] };
+            transactions: [] };
         expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
     });
 });
