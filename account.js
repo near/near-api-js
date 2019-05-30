@@ -152,10 +152,6 @@ class Account {
         return await this.nearClient.viewAccount(accountId);
     }
 
-    _base64ToBuffer(str) {
-        return new Buffer.from(str, 'base64');
-    }
-
     /**
      * Returns full details for a given account.
      * @param {string} accountId id of the account to look up

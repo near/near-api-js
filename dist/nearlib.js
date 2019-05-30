@@ -153,6 +153,26 @@ class Account {
     async viewAccount (accountId) {
         return await this.nearClient.viewAccount(accountId);
     }
+
+    /**
+     * Returns full details for a given account.
+     * @param {string} accountId id of the account to look up
+     */
+    async getAccountDetails(accountId) {
+        const response = await this.nearClient.jsonRpcRequest('abci_query', [`access_key/${accountId}`, '', '0', false]);
+        const decodedResponse = this.nearClient.decodeResponseValue(response.response.value);
+        const result = {
+            authorizedApps : [],
+            transactions: []
+        };
+        Object.keys(decodedResponse).forEach(function(key) {
+            result.authorizedApps.push({
+                contractId: decodedResponse[key][1].contract_id,
+                amount: decodedResponse[key][1].amount
+            });
+        });
+        return result;
+    }
 }
 module.exports = Account;
 
@@ -615,7 +635,7 @@ class NearClient {
 
     async viewAccount(accountId) {
         const response = await this.jsonRpcRequest('abci_query', [`account/${accountId}`, '', '0', false]);
-        return JSON.parse(_base64ToBuffer(response.response.value).toString());
+        return this.decodeResponseValue(response.response.value);
     }
 
     async submitTransaction(signedTransaction) {
@@ -689,7 +709,13 @@ class NearClient {
     async request(methodName, params) {
         return this.nearConnection.request(methodName, params);
     }
+
+
+    decodeResponseValue(value) {
+        return JSON.parse(_base64ToBuffer(value).toString());
+    }
 }
+
 
 function _printLogs(contractAccountId, log) {
     let logs = [];
