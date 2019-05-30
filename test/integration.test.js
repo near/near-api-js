@@ -246,6 +246,7 @@ describe('with access key', function () {
     });
 
     test('view account details after adding access keys', async () => {
+        if (process.env.SKIP_ACCOUNT_DETAIL_TEST) return;
         // Adding two access keys for different contracts.
         const keyForAccessKey = KeyPair.fromRandomSeed();
         const addAccessKeyResponse = await account.addAccessKey(
