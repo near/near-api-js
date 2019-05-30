@@ -190,10 +190,10 @@ describe('with access key', function () {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(contractId, keyWithRandomSeed);
+
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractId, data));
-
     });
 
     beforeEach(async () => {
@@ -245,6 +245,53 @@ describe('with access key', function () {
         expect(getValueResult2).toEqual(setCallValue2);
     });
 
+    test('view account details after adding access keys', async () => {
+        // Adding two access keys for different contracts.
+        const keyForAccessKey = KeyPair.fromRandomSeed();
+        const addAccessKeyResponse = await account.addAccessKey(
+            newAccountId,
+            keyForAccessKey.getPublicKey(),
+            contractId,
+            '',  // methodName
+            '',  // fundingOwner
+            1000000000,  // fundingAmount
+        );
+        await nearjs.waitForTransactionResult(addAccessKeyResponse);
+
+        const keyWithRandomSeed = KeyPair.fromRandomSeed();
+        const contractId2 = 'test_contract2_' + Date.now();
+        const createAccountResponse = await account.createAccount(
+            contractId2,
+            keyWithRandomSeed.getPublicKey(),
+            10,
+            aliceAccountName);
+        await nearjs.waitForTransactionResult(createAccountResponse);
+        await keyStore.setKey(contractId2, keyWithRandomSeed);
+        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
+        await nearjs.waitForTransactionResult(
+            await nearjs.deployContract(contractId2, data));
+
+        const keyForAccessKey2 = KeyPair.fromRandomSeed();
+        const addAccessKeyResponse2 = await account.addAccessKey(
+            newAccountId,
+            keyForAccessKey2.getPublicKey(),
+            contractId2,
+            '',  // methodName
+            '',  // fundingOwner
+            2000000000,  // fundingAmount
+        );
+        await nearjs.waitForTransactionResult(addAccessKeyResponse2);
+       
+        const details = await account.getAccountDetails(newAccountId);
+        const expectedResult = {
+            authorizedApps:[ {
+                contractId: contractId,
+                amount: 1000000000 },
+              { contractId: contractId2,
+                amount: 2000000000} ],
+           transactions: [] };
+        expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
+    });
 });
 
 describe('with deployed contract', () => {

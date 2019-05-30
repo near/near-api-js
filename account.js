@@ -151,5 +151,29 @@ class Account {
     async viewAccount (accountId) {
         return await this.nearClient.viewAccount(accountId);
     }
+
+    _base64ToBuffer(str) {
+        return new Buffer.from(str, 'base64');
+    }
+
+    /**
+     * Returns full details for a given account.
+     * @param {string} accountId id of the account to look up
+     */
+    async getAccountDetails(accountId) {
+        const response = await this.nearClient.jsonRpcRequest('abci_query', [`access_key/${accountId}`, '', '0', false]);
+        const decodedResponse = this.nearClient.decodeResponseValue(response.response.value);
+        const result = {
+            authorizedApps : [],
+            transactions: []
+        };
+        Object.keys(decodedResponse).forEach(function(key) {
+            result.authorizedApps.push({
+                contractId: decodedResponse[key][1].contract_id,
+                amount: decodedResponse[key][1].amount
+            });
+        });
+        return result;
+    }
 }
 module.exports = Account;
