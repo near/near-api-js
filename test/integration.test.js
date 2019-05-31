@@ -265,7 +265,7 @@ describe('with access key', function () {
             changeMethods: ['setValue'],
             sender: newAccountId,
         });
-        const removeAccessKeyResponse = await account.removeAccessKey(
+        await account.removeAccessKey(
             newAccountId,
             (await keyStore.getKey(newAccountId)).getPublicKey()
         );
@@ -273,9 +273,11 @@ describe('with access key', function () {
         await keyStore.setKey(newAccountId, keyForAccessKey);
         try {
             const setCallValue2 = await generateUniqueString('setCallPrefix');
-            const setValueResult = await contract.setValue({ value: setCallValue2 });
-            fail("Transaction signed by the access key should not have been accepted");
-        } catch (e) {}
+            await contract.setValue({ value: setCallValue2 });
+            fail('Transaction signed by the access key should not have been accepted');
+        } catch (_e) {
+            expect(_e).toBeTruthy();
+        }
     });
 
 
