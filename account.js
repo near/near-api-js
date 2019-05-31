@@ -1,6 +1,6 @@
 const bs58 = require('bs58');
 
-const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, SignedTransaction } = require('./protos');
+const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, SignedTransaction, DeleteKeyTransaction } = require('./protos');
 const KeyPair = require('./signing/key_pair');
 
 /**
@@ -113,6 +113,33 @@ class Account {
 
         const signedTransaction = SignedTransaction.create({
             addKey,
+            signature: signatureAndPublicKey.signature,
+            publicKey: signatureAndPublicKey.publicKey,
+        });
+        return this.nearClient.submitTransaction(signedTransaction);
+    }
+
+    /**
+     * Removes a particular access key. Transactions signed by this key will no longer be accepted.
+     * @param {string} ownersAccountId account id of the owner of the key
+     * @param {string} publicKey public key encoded in bs58
+     */
+    async removeAccessKey(ownersAccountId, publicKey) {
+        const nonce = await this.nearClient.getNonce(ownersAccountId);
+        const decodedKey = bs58.decode(publicKey);
+        const deleteKey = DeleteKeyTransaction.create({
+            nonce,
+            originator: ownersAccountId,
+            cur_key: decodedKey
+        });
+        const buffer = DeleteKeyTransaction.encode(deleteKey).finish();
+        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
+            buffer,
+            ownersAccountId,
+        );
+
+        const signedTransaction = SignedTransaction.create({
+            deleteKey,
             signature: signatureAndPublicKey.signature,
             publicKey: signatureAndPublicKey.publicKey,
         });

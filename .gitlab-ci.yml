@@ -5,7 +5,7 @@ variables:
   NEAR_PROTOS_DIR: nearcore/runtime/protos/protos
   SKIP_DEV_CONNECT_TESTS: "true"
   SKIP_FAILED_ASSERT_TEST: "true"
-  SKIP_ACCOUNT_DETAIL_TEST: "true"
+  SKIP_NEW_RPC_TESTS: "true"
   HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:

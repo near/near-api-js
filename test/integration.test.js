@@ -245,8 +245,39 @@ describe('with access key', function () {
         expect(getValueResult2).toEqual(setCallValue2);
     });
 
+    test('removed access key no longer works', async () => {
+        if (process.env.SKIP_NEW_RPC_TESTS) return;
+        // Adding access key
+        const keyForAccessKey = KeyPair.fromRandomSeed();
+        const addAccessKeyResponse = await account.addAccessKey(
+            newAccountId,
+            keyForAccessKey.getPublicKey(),
+            contractId,
+            '',  // methodName
+            '',  // fundingOwner
+            4000000000,  // fundingAmount
+        );
+        await nearjs.waitForTransactionResult(addAccessKeyResponse);
+
+        // test that we can't make calls with deleted key
+        const contract = await nearjs.loadContract(contractId, {
+            viewMethods: ['getValue'],
+            changeMethods: ['setValue'],
+            sender: newAccountId,
+        });
+        await account.removeAccessKey(
+            newAccountId,
+            (await keyStore.getKey(newAccountId)).getPublicKey()
+        );
+        // Replacing public key for the account with the access key
+        await keyStore.setKey(newAccountId, keyForAccessKey);
+        const setCallValue2 = await generateUniqueString('setCallPrefix');
+        await expect(contract.setValue({ value: setCallValue2 })).rejects.toThrow(/Internal error: Tx.+ not found/);
+    });
+
+
     test('view account details after adding access keys', async () => {
-        if (process.env.SKIP_ACCOUNT_DETAIL_TEST) return;
+        if (process.env.SKIP_NEW_RPC_TESTS) return;
         // Adding two access keys for different contracts.
         const keyForAccessKey = KeyPair.fromRandomSeed();
         const addAccessKeyResponse = await account.addAccessKey(
