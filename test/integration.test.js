@@ -245,6 +245,39 @@ describe('with access key', function () {
         expect(getValueResult2).toEqual(setCallValue2);
     });
 
+    test('removed access key no longer works', async () => {
+        // Adding access key
+        const keyForAccessKey = KeyPair.fromRandomSeed();
+        const addAccessKeyResponse = await account.addAccessKey(
+            newAccountId,
+            keyForAccessKey.getPublicKey(),
+            contractId,
+            '',  // methodName
+            '',  // fundingOwner
+            4000000000,  // fundingAmount
+        );
+        await nearjs.waitForTransactionResult(addAccessKeyResponse);
+
+        // test that load contract works and we can make calls afterwards
+        const contract = await nearjs.loadContract(contractId, {
+            viewMethods: ['getValue'],
+            changeMethods: ['setValue'],
+            sender: newAccountId,
+        });
+        const removeAccessKeyResponse = await account.removeAccessKey(
+            newAccountId,
+            (await keyStore.getKey(newAccountId)).getPublicKey()
+        );
+        // Replacing public key for the account with the access key
+        await keyStore.setKey(newAccountId, keyForAccessKey);
+        try {
+            const setCallValue2 = await generateUniqueString('setCallPrefix');
+            const setValueResult = await contract.setValue({ value: setCallValue2 });
+            fail("Transaction signed by the access key should not have been accepted");
+        } catch (e) {}
+    });
+
+
     test('view account details after adding access keys', async () => {
         // Adding two access keys for different contracts.
         const keyForAccessKey = KeyPair.fromRandomSeed();
