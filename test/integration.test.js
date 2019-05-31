@@ -279,6 +279,7 @@ describe('with access key', function () {
 
 
     test('view account details after adding access keys', async () => {
+        if (process.env.SKIP_ACCOUNT_DETAIL_TEST) return;
         // Adding two access keys for different contracts.
         const keyForAccessKey = KeyPair.fromRandomSeed();
         const addAccessKeyResponse = await account.addAccessKey(
@@ -320,9 +321,9 @@ describe('with access key', function () {
             authorizedApps:[ {
                 contractId: contractId,
                 amount: 1000000000 },
-              { contractId: contractId2,
+            { contractId: contractId2,
                 amount: 2000000000} ],
-           transactions: [] };
+            transactions: [] };
         expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
     });
 });
