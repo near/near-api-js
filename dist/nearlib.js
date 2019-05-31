@@ -298,7 +298,7 @@ module.exports = {
     createAccountWithLocalNodeConnection: async function (newAccountName, newAccountPublicKey) {
         const account = new Account(this.near.nearClient);
         this.deps.keyStore.setKey(devAccountName, devKey); // need to have dev account in key store to use this.
-        const createAccountResponse = await account.createAccount(newAccountName, newAccountPublicKey, 1, devAccountName);
+        const createAccountResponse = await account.createAccount(newAccountName, newAccountPublicKey, 1000000000000, devAccountName);
         await this.near.waitForTransactionResult(createAccountResponse);
     },
     /**

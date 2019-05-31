@@ -4,7 +4,6 @@
 
 ### Table of Contents
 
--   [require](#require)
 -   [KeyPair](#keypair)
     -   [getPublicKey](#getpublickey)
     -   [getSecretKey](#getsecretkey)
@@ -24,6 +23,7 @@
     -   [encodeBufferInBs58](#encodebufferinbs58-1)
         -   [Parameters](#parameters-2)
         -   [Examples](#examples-5)
+-   [BrowserLocalStorageKeystore](#browserlocalstoragekeystore)
 -   [Account](#account)
     -   [Parameters](#parameters-3)
     -   [Examples](#examples-6)
@@ -39,60 +39,59 @@
     -   [viewAccount](#viewaccount)
         -   [Parameters](#parameters-7)
         -   [Examples](#examples-10)
+    -   [getAccountDetails](#getaccountdetails)
+        -   [Parameters](#parameters-8)
 -   [Near](#near)
-    -   [Parameters](#parameters-8)
+    -   [Parameters](#parameters-9)
     -   [callViewFunction](#callviewfunction)
-        -   [Parameters](#parameters-9)
+        -   [Parameters](#parameters-10)
         -   [Examples](#examples-11)
     -   [scheduleFunctionCall](#schedulefunctioncall)
-        -   [Parameters](#parameters-10)
+        -   [Parameters](#parameters-11)
         -   [Examples](#examples-12)
     -   [deployContract](#deploycontract)
-        -   [Parameters](#parameters-11)
+        -   [Parameters](#parameters-12)
         -   [Examples](#examples-13)
     -   [getTransactionStatus](#gettransactionstatus)
-        -   [Parameters](#parameters-12)
+        -   [Parameters](#parameters-13)
         -   [Examples](#examples-14)
     -   [waitForTransactionResult](#waitfortransactionresult)
-        -   [Parameters](#parameters-13)
+        -   [Parameters](#parameters-14)
         -   [Examples](#examples-15)
     -   [loadContract](#loadcontract)
-        -   [Parameters](#parameters-14)
+        -   [Parameters](#parameters-15)
         -   [Examples](#examples-16)
     -   [createDefaultConfig](#createdefaultconfig)
-        -   [Parameters](#parameters-15)
+        -   [Parameters](#parameters-16)
         -   [Examples](#examples-17)
 -   [WalletAccessKey](#walletaccesskey)
-    -   [Parameters](#parameters-16)
+    -   [Parameters](#parameters-17)
     -   [Examples](#examples-18)
     -   [isSignedIn](#issignedin)
         -   [Examples](#examples-19)
     -   [getAccountId](#getaccountid)
         -   [Examples](#examples-20)
     -   [requestSignIn](#requestsignin)
-        -   [Parameters](#parameters-17)
+        -   [Parameters](#parameters-18)
     -   [signOut](#signout)
         -   [Examples](#examples-21)
     -   [signBuffer](#signbuffer)
-        -   [Parameters](#parameters-18)
+        -   [Parameters](#parameters-19)
 -   [WalletAccount](#walletaccount)
-    -   [Parameters](#parameters-19)
+    -   [Parameters](#parameters-20)
     -   [Examples](#examples-22)
     -   [isSignedIn](#issignedin-1)
         -   [Examples](#examples-23)
     -   [getAccountId](#getaccountid-1)
         -   [Examples](#examples-24)
     -   [requestSignIn](#requestsignin-1)
-        -   [Parameters](#parameters-20)
+        -   [Parameters](#parameters-21)
         -   [Examples](#examples-25)
+    -   [\_completeSignInWithAccessKey](#_completesigninwithaccesskey)
     -   [signOut](#signout-1)
         -   [Examples](#examples-26)
     -   [signBuffer](#signbuffer-1)
-        -   [Parameters](#parameters-21)
-
-## require
-
-Wallet based account and signer that uses external wallet through the iframe to sign transactions.
+        -   [Parameters](#parameters-22)
 
 ## KeyPair
 
@@ -205,6 +204,10 @@ Encode a buffer as string using bs58
 KeyPair.encodeBufferInBs58(key.publicKey)
 ```
 
+## BrowserLocalStorageKeystore
+
+Wallet based account and signer that uses external wallet through the iframe to sign transactions.
+
 ## Account
 
 Near account and account related operations.
@@ -304,6 +307,14 @@ Returns an existing account with a given `accountId`
 ```javascript
 const viewAccountResponse = await account.viewAccount(existingAccountId);
 ```
+
+### getAccountDetails
+
+Returns full details for a given account.
+
+#### Parameters
+
+-   `accountId` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** id of the account to look up
 
 ## Near
 
@@ -539,6 +550,7 @@ Wallet based account and signer that uses external wallet through the iframe to 
 
 -   `appKeyPrefix`  
 -   `walletBaseUrl`   (optional, default `'https://wallet.nearprotocol.com'`)
+-   `keyStore`   (optional, default `new BrowserLocalStorageKeystore()`)
 
 ### Examples
 
@@ -591,6 +603,10 @@ walletAccount.requestSignIn(
     onSuccessHref,
     onFailureHref);
 ```
+
+### \_completeSignInWithAccessKey
+
+Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
 
 ### signOut
 
