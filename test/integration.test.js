@@ -246,6 +246,7 @@ describe('with access key', function () {
     });
 
     test('removed access key no longer works', async () => {
+        if (process.env.SKIP_NEW_RPC_TESTS) return;
         // Adding access key
         const keyForAccessKey = KeyPair.fromRandomSeed();
         const addAccessKeyResponse = await account.addAccessKey(
@@ -279,7 +280,7 @@ describe('with access key', function () {
 
 
     test('view account details after adding access keys', async () => {
-        if (process.env.SKIP_ACCOUNT_DETAIL_TEST) return;
+        if (process.env.SKIP_NEW_RPC_TESTS) return;
         // Adding two access keys for different contracts.
         const keyForAccessKey = KeyPair.fromRandomSeed();
         const addAccessKeyResponse = await account.addAccessKey(
