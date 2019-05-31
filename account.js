@@ -193,7 +193,8 @@ class Account {
         Object.keys(decodedResponse).forEach(function(key) {
             result.authorizedApps.push({
                 contractId: decodedResponse[key][1].contract_id,
-                amount: decodedResponse[key][1].amount
+                amount: decodedResponse[key][1].amount,
+                publicKey: KeyPair.encodeBufferInBs58(decodedResponse[key][0])
             });
         });
         return result;

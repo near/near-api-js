@@ -258,6 +258,22 @@ describe('with access key', function () {
             4000000000,  // fundingAmount
         );
         await nearjs.waitForTransactionResult(addAccessKeyResponse);
+       
+        // remove the access key like UI: call get account details, then remove using data from account details
+        const details = await account.getAccountDetails(newAccountId);
+        const expectedResult = {
+            authorizedApps:[ {
+                contractId: contractId,
+                amount: 4000000000,
+                publicKey: keyForAccessKey.getPublicKey() } ],
+            transactions: [] };
+        expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
+        await account.removeAccessKey(
+            newAccountId,
+            expectedResult.authorizedApps[0].publicKey
+        );
+        // Replacing public key for the account with the access key
+        await keyStore.setKey(newAccountId, keyForAccessKey);
 
         // test that we can't make calls with deleted key
         const contract = await nearjs.loadContract(contractId, {
@@ -265,12 +281,6 @@ describe('with access key', function () {
             changeMethods: ['setValue'],
             sender: newAccountId,
         });
-        await account.removeAccessKey(
-            newAccountId,
-            (await keyStore.getKey(newAccountId)).getPublicKey()
-        );
-        // Replacing public key for the account with the access key
-        await keyStore.setKey(newAccountId, keyForAccessKey);
         const setCallValue2 = await generateUniqueString('setCallPrefix');
         await expect(contract.setValue({ value: setCallValue2 })).rejects.toThrow(/Internal error: Tx.+ not found/);
     });
