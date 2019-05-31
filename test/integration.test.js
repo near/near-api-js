@@ -259,7 +259,7 @@ describe('with access key', function () {
         );
         await nearjs.waitForTransactionResult(addAccessKeyResponse);
 
-        // test that load contract works and we can make calls afterwards
+        // test that we can't make calls with deleted key
         const contract = await nearjs.loadContract(contractId, {
             viewMethods: ['getValue'],
             changeMethods: ['setValue'],
@@ -271,13 +271,8 @@ describe('with access key', function () {
         );
         // Replacing public key for the account with the access key
         await keyStore.setKey(newAccountId, keyForAccessKey);
-        try {
-            const setCallValue2 = await generateUniqueString('setCallPrefix');
-            await contract.setValue({ value: setCallValue2 });
-            fail('Transaction signed by the access key should not have been accepted');
-        } catch (_e) {
-            expect(_e).toBeTruthy();
-        }
+        const setCallValue2 = await generateUniqueString('setCallPrefix');
+        await expect(contract.setValue({ value: setCallValue2 })).rejects.toThrow(/Internal error: Tx.+ not found/);
     });
 
 
