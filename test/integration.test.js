@@ -172,6 +172,25 @@ test('create account with a new key and then view account returns the created ac
     expect(aliceAccountAfterCreation.amount).toBe(aliceAccountBeforeCreation.amount - amount);
 });
 
+async function createAccount({ amount }) {
+    const accountId = await generateUniqueString('create.account');
+    const keyPair = KeyPair.fromRandomSeed();
+    keyStore.setKey(accountId, keyPair);
+    await nearjs.waitForTransactionResult(
+        await account.createAccount(accountId, keyPair.publicKey, amount, aliceAccountName));
+    return accountId;
+}
+
+test('send tokens', async () => {
+    const sender = await createAccount({ amount: 1000 });
+    const receiver = await createAccount({ amount: 0 });
+
+    await nearjs.sendTokens(100, sender, receiver);
+
+    expect(await account.viewAccount(sender)).toMatchObject({ amount: 900 });
+    expect(await account.viewAccount(receiver)).toMatchObject({ amount: 100 });
+});
+
 describe('with access key', function () {
     let oldLog;
     let logs;
