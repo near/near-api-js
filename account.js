@@ -105,23 +105,11 @@ class Account {
     async removeAccessKey(ownersAccountId, publicKey) {
         const nonce = await this.nearClient.getNonce(ownersAccountId);
         const decodedKey = bs58.decode(publicKey);
-        const deleteKey = DeleteKeyTransaction.create({
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, DeleteKeyTransaction.create({
             nonce,
             originator: ownersAccountId,
             cur_key: decodedKey
-        });
-        const buffer = DeleteKeyTransaction.encode(deleteKey).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            ownersAccountId,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            deleteKey,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+        }));
     }
 
     /**
