@@ -335,6 +335,14 @@ describe('with access key', function () {
     });
 });
 
+function loadContract({ contractName, sender }) {
+    return nearjs.loadContract(contractName, {
+        sender,
+        viewMethods: ['getAllKeys', 'returnHiWithLogs', 'hello', 'getValue'],
+        changeMethods: ['generateLogs', 'triggerAssert', 'testSetRemove', 'setValue']
+    });
+}
+
 describe('with deployed contract', () => {
     let contract;
     let oldLog;
@@ -355,11 +363,7 @@ describe('with deployed contract', () => {
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
-        contract = await nearjs.loadContract(contractName, {
-            sender: aliceAccountName,
-            viewMethods: ['getAllKeys', 'returnHiWithLogs'],
-            changeMethods: ['generateLogs', 'triggerAssert', 'testSetRemove']
-        });
+        contract = await loadContract({ contractName, sender: aliceAccountName });
     });
 
     beforeEach(async () => {
@@ -374,13 +378,15 @@ describe('with deployed contract', () => {
         console.log = oldLog;
     });
 
-    test('make function calls raw', async () => {
+    test('make view function calls raw', async () => {
         const viewFunctionResult = await nearjs.callViewFunction(
             contractName,
             'hello', // this is the function defined in hello.wasm file that we are calling
             { name: 'trex' });
         expect(viewFunctionResult).toEqual('hello trex');
+    });
 
+    test('make state change function calls raw', async () => {
         const setCallValue = await generateUniqueString('setCallPrefix');
         const scheduleResult = await nearjs.scheduleFunctionCall(
             1000000000,
@@ -398,15 +404,12 @@ describe('with deployed contract', () => {
         expect(getValueResult).toEqual(setCallValue);
     });
 
-    test('make function calls wrapped', async () => {
-        // test that load contract works and we can make calls afterwards
-        const contract = await nearjs.loadContract(contractName, {
-            viewMethods: ['hello', 'getValue'],
-            changeMethods: ['setValue'],
-            sender: aliceAccountName,
-        });
+    test('make view calls wrapped', async () => {
         const helloResult = await contract.hello({ name: 'trex' });
         expect(helloResult).toEqual('hello trex');
+    });
+
+    test('make state change `calls wrapped', async () => {
         const setCallValue2 = await generateUniqueString('setCallPrefix');
         const setValueResult = await contract.setValue({ value: setCallValue2 });
         expect(setValueResult.status).toBe('Completed');
