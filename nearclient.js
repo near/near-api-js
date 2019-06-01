@@ -27,9 +27,28 @@ class NearClient {
         const buffer = SignedTransaction.encode(signedTransaction).finish();
         const transaction = _arrayBufferToBase64(buffer);
         const params = [transaction];
-        const response = await this.jsonRpcRequest('broadcast_tx_sync', params);
+        const response = await this.jsonRpcRequest('broadcast_tx_commit', params);
         response.hash = Buffer.from(response.hash, 'hex');
         return response;
+    }
+
+    async signAndSubmitTransaction(originator, transaction) {
+        const protoClass = transaction.constructor;
+        const className = protoClass.name;
+        const propertyName = className[0].toLowerCase() + className.replace(/Transaction$/, '').substring(1);
+
+        const buffer = protoClass.encode(transaction).finish();
+        const signatureAndPublicKey = await this.signer.signBuffer(
+            buffer,
+            originator,
+        );
+
+        const signedTransaction = SignedTransaction.create({
+            [propertyName]: transaction,
+            signature: signatureAndPublicKey.signature,
+            publicKey: signatureAndPublicKey.publicKey,
+        });
+        return this.submitTransaction(signedTransaction);
     }
 
     async callViewFunction(contractAccountId, methodName, args) {

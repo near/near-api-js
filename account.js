@@ -1,6 +1,6 @@
 const bs58 = require('bs58');
 
-const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, SignedTransaction, DeleteKeyTransaction } = require('./protos');
+const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, DeleteKeyTransaction } = require('./protos');
 const KeyPair = require('./signing/key_pair');
 
 /**
@@ -41,18 +41,7 @@ class Account {
             createAccount.amount = amount;
         }
 
-        const buffer = CreateAccountTransaction.encode(createAccount).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            originator,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            createAccount,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+        return this.nearClient.signAndSubmitTransaction(originator, createAccount);
     }
 
     /**
@@ -105,18 +94,7 @@ class Account {
             newKey: newPublicKey,
             accessKey,
         });
-        const buffer = AddKeyTransaction.encode(addKey).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            ownersAccountId,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            addKey,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, addKey);
     }
 
     /**
@@ -127,23 +105,11 @@ class Account {
     async removeAccessKey(ownersAccountId, publicKey) {
         const nonce = await this.nearClient.getNonce(ownersAccountId);
         const decodedKey = bs58.decode(publicKey);
-        const deleteKey = DeleteKeyTransaction.create({
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, DeleteKeyTransaction.create({
             nonce,
             originator: ownersAccountId,
             cur_key: decodedKey
-        });
-        const buffer = DeleteKeyTransaction.encode(deleteKey).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            ownersAccountId,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            deleteKey,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+        }));
     }
 
     /**

@@ -5,7 +5,7 @@ const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key
 const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
 const LocalNodeConnection = require('./local_node_connection');
 const {
-    DeployContractTransaction, FunctionCallTransaction, SignedTransaction
+    DeployContractTransaction, FunctionCallTransaction, SendMoneyTransaction
 } = require('./protos');
 
 const MAX_STATUS_POLL_ATTEMPTS = 10;
@@ -97,18 +97,24 @@ class Near {
             functionCall.amount = amount;
         }
 
-        const buffer = FunctionCallTransaction.encode(functionCall).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            originator,
-        );
+        return this.nearClient.signAndSubmitTransaction(originator, functionCall);
+    }
 
-        const signedTransaction = SignedTransaction.create({
-            functionCall,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return await this.nearClient.submitTransaction(signedTransaction);
+    /**
+     * Transfer tokens from `originator` to `receiver`.
+     * 
+     * @param {number} amount number of tokens to transfer
+     * @param {string} originator account id of sender
+     * @param {string} receiver account id of receiver
+     */
+    async sendTokens(amount, originator, receiver) {
+        const nonce = await this.nearClient.getNonce(originator);
+        return this.nearClient.signAndSubmitTransaction(originator, SendMoneyTransaction.create({
+            nonce,
+            originator,
+            receiver,
+            amount
+        }));
     }
 
     /**
@@ -120,25 +126,11 @@ class Near {
      */
     async deployContract(contractId, wasmByteArray) {
         const nonce = await this.nearClient.getNonce(contractId);
-
-        const deployContract = DeployContractTransaction.create({
+        return this.nearClient.signAndSubmitTransaction(contractId, DeployContractTransaction.create({
             nonce,
             contractId,
             wasmByteArray,
-        });
-
-        const buffer = DeployContractTransaction.encode(deployContract).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            contractId,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            deployContract,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return await this.nearClient.submitTransaction(signedTransaction);
+        }));
     }
 
     /**
