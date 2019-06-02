@@ -1,16 +1,9 @@
 const { SignedTransaction } = require('./protos');
+const bs58 = require('bs58');
 
 /**
  * Client for communicating with near blockchain. 
  */
-
-function _arrayBufferToBase64(buffer) {
-    return Buffer.from(buffer).toString('base64');
-}
-
-function _base64ToBuffer(str) {
-    return new Buffer.from(str, 'base64');
-}
 
 class NearClient {
     constructor(signer, nearConnection) {
@@ -19,16 +12,16 @@ class NearClient {
     }
 
     async viewAccount(accountId) {
-        const response = await this.jsonRpcRequest('abci_query', [`account/${accountId}`, '', '0', false]);
-        return this.decodeResponseValue(response.response.value);
+        const response = await this.jsonRpcRequest('query', [`account/${accountId}`, '']);
+        return this.decodeResponseValue(response.value);
     }
 
     async submitTransaction(signedTransaction) {
         const buffer = SignedTransaction.encode(signedTransaction).finish();
-        const transaction = _arrayBufferToBase64(buffer);
+        const transaction = bs58.encode(buffer);
         const params = [transaction];
         const response = await this.jsonRpcRequest('broadcast_tx_commit', params);
-        response.hash = Buffer.from(response.hash, 'hex');
+        response.hash = bs58.decode(response.logs[0].hash);
         return response;
     }
 
@@ -55,12 +48,11 @@ class NearClient {
         if (!args) {
             args = {};
         }
-        const serializedArgs = Buffer.from(JSON.stringify(args)).toString('hex');
+        const serializedArgs = bs58.encode(Buffer.from(JSON.stringify(args)));
         try {
-            const result = await this.jsonRpcRequest('abci_query', [`call/${contractAccountId}/${methodName}`, serializedArgs, '0', false]);
-            const response = result.response;
-            _printLogs(contractAccountId, response.log);
-            const json = JSON.parse(_base64ToBuffer(response.value).toString());
+            const result = await this.jsonRpcRequest('query', [`call/${contractAccountId}/${methodName}`, serializedArgs]);
+            _printLogs(contractAccountId, result.log);
+            const json = JSON.parse(bs58.decode(result.value).toString());
             return json;
         } catch(e) {
             _printLogs(contractAccountId, e.log);
@@ -69,16 +61,8 @@ class NearClient {
     }
 
     async getTransactionStatus(transactionHash) {
-        const encodedHash = _arrayBufferToBase64(transactionHash);
-        const response = await this.jsonRpcRequest('tx', [encodedHash, false]);
-        // tx_result has default values: code = 0, logs: '', data: ''.
-        const codes = { 0: 'Completed', 1: 'Failed', 2: 'Started' };
-        const status = codes[response.tx_result.code || 0] || 'Unknown';
-        let logs = [];
-        if (response.tx_result !== undefined && response.tx_result.log !== undefined && response.tx_result.log.length > 0) {
-            logs = response.tx_result.log.split('\n');
-        }
-        return { logs, status, value: response.tx_result.data };
+        const encodedHash = bs58.encode(transactionHash);
+        return this.jsonRpcRequest('tx', [encodedHash])
     }
 
     async getNonce(accountId) {
@@ -114,9 +98,8 @@ class NearClient {
         return this.nearConnection.request(methodName, params);
     }
 
-
     decodeResponseValue(value) {
-        return JSON.parse(_base64ToBuffer(value).toString());
+        return JSON.parse(bs58.decode(value).toString());
     }
 }
 

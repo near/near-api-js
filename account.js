@@ -108,7 +108,7 @@ class Account {
         return this.nearClient.signAndSubmitTransaction(ownersAccountId, DeleteKeyTransaction.create({
             nonce,
             originator: ownersAccountId,
-            cur_key: decodedKey
+            curKey: decodedKey
         }));
     }
 
@@ -150,8 +150,8 @@ class Account {
      * @param {string} accountId id of the account to look up
      */
     async getAccountDetails(accountId) {
-        const response = await this.nearClient.jsonRpcRequest('abci_query', [`access_key/${accountId}`, '', '0', false]);
-        const decodedResponse = this.nearClient.decodeResponseValue(response.response.value);
+        const response = await this.nearClient.jsonRpcRequest('query', [`access_key/${accountId}`, '']);
+        const decodedResponse = this.nearClient.decodeResponseValue(response.value);
         const result = {
             authorizedApps : [],
             transactions: []

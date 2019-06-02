@@ -1,4 +1,5 @@
 const createError = require('http-errors');
+const bs58 = require('bs58');
 
 const NearClient = require('./nearclient');
 const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
@@ -72,7 +73,7 @@ class Near {
      * @example
      * const scheduleResult = await near.scheduleFunctionCall(
      *     0,
-     *     aliceAccountName,
+     *     "account.name",
      *     contractName,
      *     'setValue', // this is the function defined in a wasm file that we are calling
      *     setArgs);
@@ -166,24 +167,29 @@ class Near {
         for (let i = 0; i < MAX_STATUS_POLL_ATTEMPTS; i++) {
             await sleep(STATUS_POLL_PERIOD_MS);
             result = (await this.getTransactionStatus(transactionHash));
+            const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
             let j;
-            for (j = 0; j < alreadyDisplayedLogs.length && alreadyDisplayedLogs[j] == result.logs[j]; j++);
+            for (j = 0; j < alreadyDisplayedLogs.length && alreadyDisplayedLogs[j] == flatLogs[j]; j++);
             if (j != alreadyDisplayedLogs.length) {
                 console.warn('new logs:', result.logs, 'inconsistent with already displayed logs:', alreadyDisplayedLogs);
             }
-            for (; j < result.logs.length; ++j) {
-                const line = result.logs[j];
+            for (; j < flatLogs.length; ++j) {
+                const line = flatLogs[j];
                 console.log(`[${contractAccountId}]: ${line}`);
                 alreadyDisplayedLogs.push(line);
             }
             if (result.status == 'Completed') {
-                if (result.value) {
-                    result.lastResult = JSON.parse(Buffer.from(result.value, 'base64').toString());
+                for (j = result.logs.length - 1; j >= 0; --j) {
+                    let r = result.logs[j];
+                    if (r.result && r.result.length > 0) {
+                        result.lastResult = JSON.parse(Buffer.from(r.result).toString());
+                        break;
+                    }
                 }
                 return result;
             }
             if (result.status == 'Failed') {
-                const errorMessage = result.logs.find(it => it.startsWith('ABORT:')) || '';
+                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || '';
                 throw createError(400, `Transaction ${hashStr} on ${contractAccountId} failed. ${errorMessage}`);
             }
         }

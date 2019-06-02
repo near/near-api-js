@@ -9,6 +9,7 @@ module.exports = async function sendJson(method, url, json) {
         headers: { 'Content-type': 'application/json; charset=utf-8' }
     });
     if (!response.ok) {
+        console.log(response);
         throw createError(response.status, await response.text());
     }
     if (response.status === 204) {

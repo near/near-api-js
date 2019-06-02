@@ -1,6 +1,5 @@
 const { Account, KeyPair, Near, InMemoryKeyStore } = require('../');
-const  { aliceAccountName, newAccountCodeHash, storageAccountIdKey, createFakeStorage, sleep } = require('./test-utils');
-const dev = require('../dev');
+const test_utils = require('./test-utils');
 const fs = require('fs');
 let nearjs;
 let account;
@@ -12,17 +11,17 @@ const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 
 beforeAll(async () => {
-    // To avoid nonce collisions with promise test on alice
-    await sleep(3000);
+    // To avoid nonce collisions with promise test on testAccountName
+    await test_utils.sleep(3000);
 
     networkId = 'somenetwork';
     keyStore = new InMemoryKeyStore(networkId);
-    const storage = createFakeStorage();
+    const storage = test_utils.createFakeStorage();
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: networkId,
         deps: { keyStore, storage },
     });
-    nearjs = await dev.connect(config);
+    nearjs = await test_utils.connect(config);
     account = new Account(nearjs.nearClient);
 });
 
@@ -38,11 +37,11 @@ devConnectDescribe('dev connect', () => {
     let options;
     beforeEach(async () => {
         const keyStore = new InMemoryKeyStore(networkId);
-        const storage = createFakeStorage();
+        const storage = test_utils.createFakeStorage();
         deps = {
             keyStore,
             storage,
-            createAccount: dev.createAccountWithLocalNodeConnection
+            createAccount: test_utils.createAccountWithLocalNodeConnection
         };
         options = {
             deps,
@@ -50,98 +49,98 @@ devConnectDescribe('dev connect', () => {
     });
 
     test('test dev connect like template', async () => {
-        window.localStorage = createFakeStorage();
+        window.localStorage = test_utils.createFakeStorage();
         // Mocking some
-        let tmpCreate = dev.createAccountWithContractHelper;
-        let devConfig = dev.getConfig;
-        dev.getConfig = async () => 'THE_CONFIG';
-        dev.createAccountWithContractHelper = async (nearConfig, newAccountId, publicKey) => {
+        let tmpCreate = test_utils.createAccountWithContractHelper;
+        let devConfig = test_utils.getConfig;
+        test_utils.getConfig = async () => 'THE_CONFIG';
+        test_utils.createAccountWithContractHelper = async (nearConfig, newAccountId, publicKey) => {
             expect(nearConfig).toEqual('THE_CONFIG');
-            return await dev.createAccountWithLocalNodeConnection(newAccountId, publicKey);
+            return await test_utils.createAccountWithLocalNodeConnection(newAccountId, publicKey);
         };
         // Calling
-        let near = await dev.connect();
+        let near = await test_utils.connect();
         // Restoring mocked functions
-        dev.getConfig = devConfig;
-        dev.createAccountWithContractHelper = tmpCreate;
-        let accId = dev.myAccountId;
+        test_utils.getConfig = devConfig;
+        test_utils.createAccountWithContractHelper = tmpCreate;
+        let accId = test_utils.myAccountId;
         let accjs = new Account(near.nearClient);
         const viewAccountResponse = await accjs.viewAccount(accId);
         expect(viewAccountResponse.account_id).toEqual(accId);
     });
 
     test('test dev connect with git no account creates a new account', async () => {
-        await dev.connect(options);
+        await test_utils.connect(options);
         expect(Object.keys(deps.keyStore.keys).length).toEqual(2); // one key for dev account and one key for the new account.
-        const newAccountId = deps.storage.getItem(storageAccountIdKey);
+        const newAccountId = deps.storage.getItem(test_utils.storageAccountIdKey);
         const viewAccountResponse = await account.viewAccount(newAccountId);
         const newAccountKeyPair = await deps.keyStore.getKey(newAccountId);
         expect(newAccountKeyPair).toBeTruthy();
         const expectedAccount = {
             nonce: 0,
             account_id: newAccountId,
-            amount: 1,
-            code_hash: newAccountCodeHash,
+            amount: 1000000000000,
+            code_hash: test_utils.newAccountCodeHash,
             public_keys: viewAccountResponse.public_keys,
             stake: 0,
         };
         expect(viewAccountResponse).toEqual(expectedAccount);
-        expect(deps.storage.getItem(storageAccountIdKey)).toEqual(newAccountId);
+        expect(deps.storage.getItem(test_utils.storageAccountIdKey)).toEqual(newAccountId);
     });
 
     test('test dev connect with invalid account in storage creates a new account', async () => {
         // set up invalid account id in local storage
-        deps.storage.setItem(storageAccountIdKey, await generateUniqueString('invalid'));
-        await dev.connect(options);
+        deps.storage.setItem(test_utils.storageAccountIdKey, await generateUniqueString('invalid'));
+        await test_utils.connect(options);
         expect(Object.keys(deps.keyStore.keys).length).toEqual(2);
-        const newAccountId = deps.storage.getItem(storageAccountIdKey);
+        const newAccountId = deps.storage.getItem(test_utils.storageAccountIdKey);
         const viewAccountResponse = await account.viewAccount(newAccountId);
         const newAccountKeyPair = await deps.keyStore.getKey(newAccountId);
         expect(newAccountKeyPair).toBeTruthy();
         const expectedAccount = {
             nonce: 0,
             account_id: newAccountId,
-            amount: 1,
-            code_hash: newAccountCodeHash,
+            amount: 1000000000000,
+            code_hash: test_utils.newAccountCodeHash,
             public_keys: viewAccountResponse.public_keys,
             stake: 0,
         };
         expect(viewAccountResponse).toEqual(expectedAccount);
-        expect(deps.storage.getItem(storageAccountIdKey)).toEqual(newAccountId);
+        expect(deps.storage.getItem(test_utils.storageAccountIdKey)).toEqual(newAccountId);
     });
 
     test('test dev connect with valid account but no keys', async () => {
         // setup: connect with dev, but rmemove keys afterwards!
-        deps.storage.setItem(storageAccountIdKey, await generateUniqueString('invalid'));
-        await dev.connect(options);
+        deps.storage.setItem(test_utils.storageAccountIdKey, await generateUniqueString('invalid'));
+        await test_utils.connect(options);
         expect(Object.keys(deps.keyStore.keys).length).toEqual(2);
-        const newAccountId = deps.storage.getItem(storageAccountIdKey);
-        expect(deps.storage.getItem(storageAccountIdKey)).toEqual(newAccountId);
+        const newAccountId = deps.storage.getItem(test_utils.storageAccountIdKey);
+        expect(deps.storage.getItem(test_utils.storageAccountIdKey)).toEqual(newAccountId);
         await deps.keyStore.clear();
-        await dev.connect(options);
+        await test_utils.connect(options);
         // we are expecting account to be recreated!
-        expect(deps.storage.getItem(storageAccountIdKey)).not.toEqual(newAccountId);
+        expect(deps.storage.getItem(test_utils.storageAccountIdKey)).not.toEqual(newAccountId);
     });
 });
 
 test('view pre-defined account works and returns correct name', async () => {
     // We do not want to check the other properties of this account since we create other accounts
     // using this account as the originator
-    const viewAccountResponse = await account.viewAccount(aliceAccountName);
-    expect(viewAccountResponse.account_id).toEqual(aliceAccountName);
+    const viewAccountResponse = await account.viewAccount(test_utils.testAccountName);
+    expect(viewAccountResponse.account_id).toEqual(test_utils.testAccountName);
 });
 
 test('create account and then view account returns the created account', async () => {
     const newAccountName = await generateUniqueString('create.account.test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
-    const createAccountResponse = await account.createAccount(newAccountName, newAccountPublicKey, 0, aliceAccountName);
+    const createAccountResponse = await account.createAccount(newAccountName, newAccountPublicKey, 0, test_utils.testAccountName);
     await nearjs.waitForTransactionResult(createAccountResponse);
     const result = await account.viewAccount(newAccountName);
     const expectedAccount = {
         nonce: 0,
         account_id: newAccountName,
         amount: 0,
-        code_hash: newAccountCodeHash,
+        code_hash: test_utils.newAccountCodeHash,
         public_keys: result.public_keys,
         stake: 0,
     };
@@ -151,11 +150,11 @@ test('create account and then view account returns the created account', async (
 test('create account with a new key and then view account returns the created account', async () => {
     const newAccountName = await generateUniqueString('create.randomkey.test');
     const amount = 1000000;
-    const aliceAccountBeforeCreation = await account.viewAccount(aliceAccountName);
+    const aliceAccountBeforeCreation = await account.viewAccount(test_utils.testAccountName);
     const createAccountResponse = await account.createAccountWithRandomKey(
         newAccountName,
         amount,
-        aliceAccountName);
+        test_utils.testAccountName);
     await nearjs.waitForTransactionResult(createAccountResponse);
     expect(createAccountResponse['key']).not.toBeFalsy();
     const result = await account.viewAccount(newAccountName);
@@ -163,12 +162,12 @@ test('create account with a new key and then view account returns the created ac
         nonce: 0,
         account_id: newAccountName,
         amount: amount,
-        code_hash: newAccountCodeHash,
+        code_hash: test_utils.newAccountCodeHash,
         public_keys: result.public_keys,
         stake: 0,
     };
     expect(result).toEqual(expectedAccount);
-    const aliceAccountAfterCreation = await account.viewAccount(aliceAccountName);
+    const aliceAccountAfterCreation = await account.viewAccount(test_utils.testAccountName);
     expect(aliceAccountAfterCreation.amount).toBe(aliceAccountBeforeCreation.amount - amount);
 });
 
@@ -177,7 +176,7 @@ async function createAccount({ amount }) {
     const keyPair = KeyPair.fromRandomSeed();
     keyStore.setKey(accountId, keyPair);
     await nearjs.waitForTransactionResult(
-        await account.createAccount(accountId, keyPair.publicKey, amount, aliceAccountName));
+        await account.createAccount(accountId, keyPair.publicKey, amount, test_utils.testAccountName));
     return accountId;
 }
 
@@ -206,7 +205,7 @@ describe('with access key', function () {
             contractId,
             keyWithRandomSeed.getPublicKey(),
             10,
-            aliceAccountName);
+            test_utils.testAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(contractId, keyWithRandomSeed);
 
@@ -228,7 +227,7 @@ describe('with access key', function () {
             newAccountId,
             newAccountKeyPair.getPublicKey(),
             5000000000,
-            aliceAccountName);
+            test_utils.testAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(newAccountId, newAccountKeyPair);
     });
@@ -284,14 +283,15 @@ describe('with access key', function () {
             changeMethods: ['setValue'],
             sender: newAccountId,
         });
-        await account.removeAccessKey(
+        const removeAccessKeyResponse = await account.removeAccessKey(
             newAccountId,
-            (await keyStore.getKey(newAccountId)).getPublicKey()
+            keyForAccessKey.getPublicKey()
         );
+        await nearjs.waitForTransactionResult(removeAccessKeyResponse);
         // Replacing public key for the account with the access key
         await keyStore.setKey(newAccountId, keyForAccessKey);
         const setCallValue2 = await generateUniqueString('setCallPrefix');
-        await expect(contract.setValue({ value: setCallValue2 })).rejects.toThrow(/Internal error: Tx.+ not found/);
+        await expect(contract.setValue({ value: setCallValue2 })).rejects.toThrow(/\[-32000\] Server error: Transaction is not signed with a public key of the originator .+/);
     });
 
 
@@ -315,7 +315,7 @@ describe('with access key', function () {
             contractId2,
             keyWithRandomSeed.getPublicKey(),
             10,
-            aliceAccountName);
+            test_utils.testAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(contractId2, keyWithRandomSeed);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
@@ -359,14 +359,14 @@ describe('with deployed contract', () => {
             contractName,
             keyWithRandomSeed.getPublicKey(),
             5000000000,
-            aliceAccountName);
+            test_utils.testAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         keyStore.setKey(contractName, keyWithRandomSeed, networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await nearjs.waitForTransactionResult(
             await nearjs.deployContract(contractName, data));
         contract = await nearjs.loadContract(contractName, {
-            sender: aliceAccountName,
+            sender: test_utils.testAccountName,
             viewMethods: ['getAllKeys', 'returnHiWithLogs'],
             changeMethods: ['generateLogs', 'triggerAssert', 'testSetRemove']
         });
@@ -394,7 +394,7 @@ describe('with deployed contract', () => {
         const setCallValue = await generateUniqueString('setCallPrefix');
         const scheduleResult = await nearjs.scheduleFunctionCall(
             1000000000,
-            aliceAccountName,
+            test_utils.testAccountName,
             contractName,
             'setValue', // this is the function defined in hello.wasm file that we are calling
             { value: setCallValue });
@@ -413,7 +413,7 @@ describe('with deployed contract', () => {
         const contract = await nearjs.loadContract(contractName, {
             viewMethods: ['hello', 'getValue'],
             changeMethods: ['setValue'],
-            sender: aliceAccountName,
+            sender: test_utils.testAccountName,
         });
         const helloResult = await contract.hello({ name: 'trex' });
         expect(helloResult).toEqual('hello trex');
@@ -452,6 +452,6 @@ describe('with deployed contract', () => {
 
 // Generate some unique string with a given prefix using the alice nonce.
 const generateUniqueString = async (prefix) => {
-    const viewAccountResponse = await account.viewAccount(aliceAccountName);
+    const viewAccountResponse = await account.viewAccount(test_utils.testAccountName);
     return prefix + viewAccountResponse.nonce;
 };

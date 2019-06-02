@@ -1,6 +1,5 @@
 const { Account, KeyPair, InMemoryKeyStore } = require('../');
-const  { aliceAccountName, createFakeStorage } = require('./test-utils');
-const dev = require('../dev');
+const test_utils = require('./test-utils');
 const fs = require('fs');
 let nearjs;
 let account;
@@ -12,12 +11,12 @@ const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.
 
 beforeAll(async () => {
     keyStore = new InMemoryKeyStore('somenetwork');
-    storage = createFakeStorage();
+    storage = test_utils.createFakeStorage();
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: 'somenetwork',
         deps: { keyStore, storage },
     });
-    nearjs = await dev.connect(config);
+    nearjs = await test_utils.connect(config);
 
     account = new Account(nearjs.nearClient);
 
@@ -27,7 +26,7 @@ beforeAll(async () => {
         mainTestAccountName,
         keyWithRandomSeed.getPublicKey(),
         1000000000000,
-        aliceAccountName);
+        test_utils.testAccountName);
     await nearjs.waitForTransactionResult(createAccountResponse);
     await keyStore.setKey(mainTestAccountName, keyWithRandomSeed);
 });

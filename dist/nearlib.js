@@ -2,7 +2,7 @@
 (function (Buffer){
 const bs58 = require('bs58');
 
-const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, SignedTransaction } = require('./protos');
+const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, DeleteKeyTransaction } = require('./protos');
 const KeyPair = require('./signing/key_pair');
 
 /**
@@ -43,18 +43,7 @@ class Account {
             createAccount.amount = amount;
         }
 
-        const buffer = CreateAccountTransaction.encode(createAccount).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            originator,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            createAccount,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+        return this.nearClient.signAndSubmitTransaction(originator, createAccount);
     }
 
     /**
@@ -107,18 +96,22 @@ class Account {
             newKey: newPublicKey,
             accessKey,
         });
-        const buffer = AddKeyTransaction.encode(addKey).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            ownersAccountId,
-        );
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, addKey);
+    }
 
-        const signedTransaction = SignedTransaction.create({
-            addKey,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+    /**
+     * Removes a particular access key. Transactions signed by this key will no longer be accepted.
+     * @param {string} ownersAccountId account id of the owner of the key
+     * @param {string} publicKey public key encoded in bs58
+     */
+    async removeAccessKey(ownersAccountId, publicKey) {
+        const nonce = await this.nearClient.getNonce(ownersAccountId);
+        const decodedKey = bs58.decode(publicKey);
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, DeleteKeyTransaction.create({
+            nonce,
+            originator: ownersAccountId,
+            curKey: decodedKey
+        }));
     }
 
     /**
@@ -159,8 +152,8 @@ class Account {
      * @param {string} accountId id of the account to look up
      */
     async getAccountDetails(accountId) {
-        const response = await this.nearClient.jsonRpcRequest('abci_query', [`access_key/${accountId}`, '', '0', false]);
-        const decodedResponse = this.nearClient.decodeResponseValue(response.response.value);
+        const response = await this.nearClient.jsonRpcRequest('query', [`access_key/${accountId}`, '']);
+        const decodedResponse = this.nearClient.decodeResponseValue(response.value);
         const result = {
             authorizedApps : [],
             transactions: []
@@ -177,15 +170,14 @@ class Account {
 module.exports = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./protos":67,"./signing/key_pair":71,"bs58":20,"buffer":21}],2:[function(require,module,exports){
+},{"./protos":66,"./signing/key_pair":70,"bs58":19,"buffer":20}],2:[function(require,module,exports){
 (function (Buffer){
 require('error-polyfill');
 window.nearlib = require('./index');
-window.nearlib.dev = require('./dev');
 window.Buffer = Buffer;
 
 }).call(this,require("buffer").Buffer)
-},{"./dev":4,"./index":3,"buffer":21,"error-polyfill":28}],3:[function(require,module,exports){
+},{"./index":3,"buffer":20,"error-polyfill":27}],3:[function(require,module,exports){
 const Near = require('./near');
 const NearClient = require('./nearclient');
 const Account = require('./account');
@@ -195,129 +187,14 @@ const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key
 const LocalNodeConnection = require('./local_node_connection');
 const KeyPair = require('./signing/key_pair');
 const WalletAccount = require('./wallet-account');
-const dev = require('./dev');
 const AccountInfo = require('./signing/account_info');
 const WalletAccessKey = require('./wallet-access-key');
 
-module.exports = { Near, NearClient, Account, SimpleKeyStoreSigner, InMemoryKeyStore, BrowserLocalStorageKeystore, LocalNodeConnection, KeyPair, WalletAccount, dev, AccountInfo, WalletAccessKey };
+module.exports = { Near, NearClient, Account, SimpleKeyStoreSigner, InMemoryKeyStore, BrowserLocalStorageKeystore, LocalNodeConnection, KeyPair, WalletAccount, AccountInfo, WalletAccessKey };
 
 
 
-},{"./account":1,"./dev":4,"./local_node_connection":6,"./near":7,"./nearclient":8,"./signing/account_info":68,"./signing/browser_local_storage_key_store":69,"./signing/in_memory_key_store":70,"./signing/key_pair":71,"./signing/simple_key_store_signer":72,"./wallet-access-key":73,"./wallet-account":74}],4:[function(require,module,exports){
-const Near = require('./near');
-const NearClient = require('./nearclient');
-const Account = require('./account');
-const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
-const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
-const LocalNodeConnection = require('./local_node_connection');
-const KeyPair = require('./signing/key_pair');
-const sendJson = require('./internal/send-json');
-
-const storageAccountIdKey = 'dev_near_user';
-
-// This key will only be available on dev/test environments. Do not rely on it for anything that runs on mainnet.
-const devKey = new KeyPair(
-    '22skMptHjFWNyuEWY22ftn2AbLPSYpmYwGJRGwpNHbTV',
-    '2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'
-);
-const devAccountName = 'alice.near';
-const localNodeUrl = 'http://localhost:3030';
-
-module.exports = {
-    getConfig: async function() {
-        return JSON.parse(decodeURIComponent(getCookie('fiddleConfig'))) || {};
-    },
-    /**
-     * Create a connection which can perform operations on behalf of a given account.
-     * @param {object} options object to pass named parameters.
-     * @param {Object} options.nodeUrl specifies node url. accountId specifies account id. key_pair is the key pair for account
-     * @param {boolean} options.useDevAccount specify to use development account to create accounts / deploy contracts. Should be used only on TestNet.
-     * @param {string} options.accountId account ID to use.
-     * @param {string} options.networkId id associated with this network, for key management purposes.
-     */
-    connect: async function(options = {}) {
-        // construct full options objects based on params, and fill in with defaults.
-        this.options = Object.assign({deps: {}}, options);
-        this.deps = this.options.deps;
-        if (this.options.useDevAccount) {
-            this.options.accountId = devAccountName;
-            this.options.key = devKey;
-        }
-        this.options.helperUrl = this.options.helperUrl || this.options.baseUrl;
-        if (!this.deps.createAccount) {
-            if (this.options.helperUrl) {
-                this.deps.createAccount = this.createAccountWithContractHelper.bind(this);
-            } else {
-                this.deps.createAccount = this.createAccountWithLocalNodeConnection.bind(this);
-            }
-        }
-        this.options.networkId = this.options.networkId || 'localhost';
-        this.options.nodeUrl = this.options.nodeUrl || (await this.getConfig()).nodeUrl || localNodeUrl;
-        this.deps.keyStore = this.deps.keyStore || new BrowserLocalStorageKeystore(this.options.networkId);
-        this.deps.storage = this.deps.storage || window.localStorage;
-
-        const nearClient = new NearClient(
-            new SimpleKeyStoreSigner(this.deps.keyStore), new LocalNodeConnection(this.options.nodeUrl));
-        this.near = new Near(nearClient);
-        if (this.options.accountId && this.options.key) {
-            this.deps.keyStore.setKey(this.options.accountId, this.options.key);
-        }
-        if (!this.options.accountId) {
-            await this.getOrCreateDevUser();
-        }
-        return this.near;
-    },
-    getOrCreateDevUser: async function () {
-        let tempUserAccountId = this.deps.storage.getItem(storageAccountIdKey);
-        const accountKey = await this.deps.keyStore.getKey(tempUserAccountId);
-        if (tempUserAccountId && accountKey) {
-            // Make sure the user actually exists with valid keys and recreate it if it doesn't
-            const accountLib = new Account(this.near.nearClient);
-            try {
-                await accountLib.viewAccount(tempUserAccountId);
-                return tempUserAccountId;
-            } catch (e) {
-                console.log('Error looking up temp account', e);
-                // Something went wrong! Recreate user by continuing the flow
-            }
-        } else {
-            tempUserAccountId = 'devuser' + Date.now();
-        }
-        const keypair = KeyPair.fromRandomSeed();
-        await this.deps.createAccount.call(this, tempUserAccountId, keypair.getPublicKey());
-        this.deps.keyStore.setKey(tempUserAccountId, keypair);
-        this.deps.storage.setItem(storageAccountIdKey, tempUserAccountId);
-        return tempUserAccountId;
-    },
-    get myAccountId() {
-        return this.deps.storage.getItem(storageAccountIdKey);
-    },
-    /**
-     * Function to create an account on local node. This will not work on non-dev environments.
-     */
-    createAccountWithLocalNodeConnection: async function (newAccountName, newAccountPublicKey) {
-        const account = new Account(this.near.nearClient);
-        this.deps.keyStore.setKey(devAccountName, devKey); // need to have dev account in key store to use this.
-        const createAccountResponse = await account.createAccount(newAccountName, newAccountPublicKey, 1000000000000, devAccountName);
-        await this.near.waitForTransactionResult(createAccountResponse);
-    },
-    /**
-     * Function to create an account on near-hosted devnet using contract helper. This will not work on non-dev environments.
-     */
-    createAccountWithContractHelper: async function (newAccountId, publicKey) {
-        return await sendJson('POST', `${this.options.helperUrl}/account`, {
-            newAccountId: newAccountId,
-            newAccountPublicKey: publicKey
-        });
-    }
-};
-
-function getCookie(name) {
-    var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-    return v ? v[2] : null;
-}
-
-},{"./account":1,"./internal/send-json":5,"./local_node_connection":6,"./near":7,"./nearclient":8,"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72}],5:[function(require,module,exports){
+},{"./account":1,"./local_node_connection":5,"./near":6,"./nearclient":7,"./signing/account_info":67,"./signing/browser_local_storage_key_store":68,"./signing/in_memory_key_store":69,"./signing/key_pair":70,"./signing/simple_key_store_signer":71,"./wallet-access-key":72,"./wallet-account":73}],4:[function(require,module,exports){
 let fetch = (typeof window === 'undefined' || window.name == 'nodejs') ? require('node-fetch') : window.fetch;
 
 const createError = require('http-errors');
@@ -329,6 +206,7 @@ module.exports = async function sendJson(method, url, json) {
         headers: { 'Content-type': 'application/json; charset=utf-8' }
     });
     if (!response.ok) {
+        console.log(response);
         throw createError(response.status, await response.text());
     }
     if (response.status === 204) {
@@ -338,7 +216,7 @@ module.exports = async function sendJson(method, url, json) {
     return await response.json();
 };
 
-},{"http-errors":37,"node-fetch":19}],6:[function(require,module,exports){
+},{"http-errors":36,"node-fetch":18}],5:[function(require,module,exports){
 const sendJson = require('./internal/send-json');
 
 class LocalNodeConnection {
@@ -353,16 +231,17 @@ class LocalNodeConnection {
 
 module.exports = LocalNodeConnection;
 
-},{"./internal/send-json":5}],7:[function(require,module,exports){
+},{"./internal/send-json":4}],6:[function(require,module,exports){
 (function (Buffer){
 const createError = require('http-errors');
+const bs58 = require('bs58');
 
 const NearClient = require('./nearclient');
 const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
 const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
 const LocalNodeConnection = require('./local_node_connection');
 const {
-    DeployContractTransaction, FunctionCallTransaction, SignedTransaction
+    DeployContractTransaction, FunctionCallTransaction, SendMoneyTransaction
 } = require('./protos');
 
 const MAX_STATUS_POLL_ATTEMPTS = 10;
@@ -429,7 +308,7 @@ class Near {
      * @example
      * const scheduleResult = await near.scheduleFunctionCall(
      *     0,
-     *     aliceAccountName,
+     *     "account.name",
      *     contractName,
      *     'setValue', // this is the function defined in a wasm file that we are calling
      *     setArgs);
@@ -454,18 +333,24 @@ class Near {
             functionCall.amount = amount;
         }
 
-        const buffer = FunctionCallTransaction.encode(functionCall).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            originator,
-        );
+        return this.nearClient.signAndSubmitTransaction(originator, functionCall);
+    }
 
-        const signedTransaction = SignedTransaction.create({
-            functionCall,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return await this.nearClient.submitTransaction(signedTransaction);
+    /**
+     * Transfer tokens from `originator` to `receiver`.
+     * 
+     * @param {number} amount number of tokens to transfer
+     * @param {string} originator account id of sender
+     * @param {string} receiver account id of receiver
+     */
+    async sendTokens(amount, originator, receiver) {
+        const nonce = await this.nearClient.getNonce(originator);
+        return this.nearClient.signAndSubmitTransaction(originator, SendMoneyTransaction.create({
+            nonce,
+            originator,
+            receiver,
+            amount
+        }));
     }
 
     /**
@@ -477,25 +362,11 @@ class Near {
      */
     async deployContract(contractId, wasmByteArray) {
         const nonce = await this.nearClient.getNonce(contractId);
-
-        const deployContract = DeployContractTransaction.create({
+        return this.nearClient.signAndSubmitTransaction(contractId, DeployContractTransaction.create({
             nonce,
             contractId,
             wasmByteArray,
-        });
-
-        const buffer = DeployContractTransaction.encode(deployContract).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            contractId,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            deployContract,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return await this.nearClient.submitTransaction(signedTransaction);
+        }));
     }
 
     /**
@@ -531,24 +402,29 @@ class Near {
         for (let i = 0; i < MAX_STATUS_POLL_ATTEMPTS; i++) {
             await sleep(STATUS_POLL_PERIOD_MS);
             result = (await this.getTransactionStatus(transactionHash));
+            const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
             let j;
-            for (j = 0; j < alreadyDisplayedLogs.length && alreadyDisplayedLogs[j] == result.logs[j]; j++);
+            for (j = 0; j < alreadyDisplayedLogs.length && alreadyDisplayedLogs[j] == flatLogs[j]; j++);
             if (j != alreadyDisplayedLogs.length) {
                 console.warn('new logs:', result.logs, 'inconsistent with already displayed logs:', alreadyDisplayedLogs);
             }
-            for (; j < result.logs.length; ++j) {
-                const line = result.logs[j];
+            for (; j < flatLogs.length; ++j) {
+                const line = flatLogs[j];
                 console.log(`[${contractAccountId}]: ${line}`);
                 alreadyDisplayedLogs.push(line);
             }
             if (result.status == 'Completed') {
-                if (result.value) {
-                    result.lastResult = JSON.parse(Buffer.from(result.value, 'base64').toString());
+                for (j = result.logs.length - 1; j >= 0; --j) {
+                    let r = result.logs[j];
+                    if (r.result && r.result.length > 0) {
+                        result.lastResult = JSON.parse(Buffer.from(r.result).toString());
+                        break;
+                    }
                 }
                 return result;
             }
             if (result.status == 'Failed') {
-                const errorMessage = result.logs.find(it => it.startsWith('ABORT:')) || '';
+                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || '';
                 throw createError(400, `Transaction ${hashStr} on ${contractAccountId} failed. ${errorMessage}`);
             }
         }
@@ -611,21 +487,14 @@ function sleep(time) {
 module.exports = Near;
 
 }).call(this,require("buffer").Buffer)
-},{"./local_node_connection":6,"./nearclient":8,"./protos":67,"./signing/browser_local_storage_key_store":69,"./signing/simple_key_store_signer":72,"buffer":21,"http-errors":37}],8:[function(require,module,exports){
+},{"./local_node_connection":5,"./nearclient":7,"./protos":66,"./signing/browser_local_storage_key_store":68,"./signing/simple_key_store_signer":71,"bs58":19,"buffer":20,"http-errors":36}],7:[function(require,module,exports){
 (function (Buffer){
 const { SignedTransaction } = require('./protos');
+const bs58 = require('bs58');
 
 /**
  * Client for communicating with near blockchain. 
  */
-
-function _arrayBufferToBase64(buffer) {
-    return Buffer.from(buffer).toString('base64');
-}
-
-function _base64ToBuffer(str) {
-    return new Buffer.from(str, 'base64');
-}
 
 class NearClient {
     constructor(signer, nearConnection) {
@@ -634,29 +503,47 @@ class NearClient {
     }
 
     async viewAccount(accountId) {
-        const response = await this.jsonRpcRequest('abci_query', [`account/${accountId}`, '', '0', false]);
-        return this.decodeResponseValue(response.response.value);
+        const response = await this.jsonRpcRequest('query', [`account/${accountId}`, '']);
+        return this.decodeResponseValue(response.value);
     }
 
     async submitTransaction(signedTransaction) {
         const buffer = SignedTransaction.encode(signedTransaction).finish();
-        const transaction = _arrayBufferToBase64(buffer);
+        const transaction = bs58.encode(buffer);
         const params = [transaction];
-        const response = await this.jsonRpcRequest('broadcast_tx_sync', params);
-        response.hash = Buffer.from(response.hash, 'hex');
+        const response = await this.jsonRpcRequest('broadcast_tx_commit', params);
+        response.hash = bs58.decode(response.logs[0].hash);
         return response;
+    }
+
+    async signAndSubmitTransaction(originator, transaction) {
+        const protoClass = transaction.constructor;
+        const className = protoClass.name;
+        const propertyName = className[0].toLowerCase() + className.replace(/Transaction$/, '').substring(1);
+
+        const buffer = protoClass.encode(transaction).finish();
+        const signatureAndPublicKey = await this.signer.signBuffer(
+            buffer,
+            originator,
+        );
+
+        const signedTransaction = SignedTransaction.create({
+            [propertyName]: transaction,
+            signature: signatureAndPublicKey.signature,
+            publicKey: signatureAndPublicKey.publicKey,
+        });
+        return this.submitTransaction(signedTransaction);
     }
 
     async callViewFunction(contractAccountId, methodName, args) {
         if (!args) {
             args = {};
         }
-        const serializedArgs = Buffer.from(JSON.stringify(args)).toString('hex');
+        const serializedArgs = bs58.encode(Buffer.from(JSON.stringify(args)));
         try {
-            const result = await this.jsonRpcRequest('abci_query', [`call/${contractAccountId}/${methodName}`, serializedArgs, '0', false]);
-            const response = result.response;
-            _printLogs(contractAccountId, response.log);
-            const json = JSON.parse(_base64ToBuffer(response.value).toString());
+            const result = await this.jsonRpcRequest('query', [`call/${contractAccountId}/${methodName}`, serializedArgs]);
+            _printLogs(contractAccountId, result.log);
+            const json = JSON.parse(bs58.decode(result.value).toString());
             return json;
         } catch(e) {
             _printLogs(contractAccountId, e.log);
@@ -665,16 +552,8 @@ class NearClient {
     }
 
     async getTransactionStatus(transactionHash) {
-        const encodedHash = _arrayBufferToBase64(transactionHash);
-        const response = await this.jsonRpcRequest('tx', [encodedHash, false]);
-        // tx_result has default values: code = 0, logs: '', data: ''.
-        const codes = { 0: 'Completed', 1: 'Failed', 2: 'Started' };
-        const status = codes[response.tx_result.code || 0] || 'Unknown';
-        let logs = [];
-        if (response.tx_result !== undefined && response.tx_result.log !== undefined && response.tx_result.log.length > 0) {
-            logs = response.tx_result.log.split('\n');
-        }
-        return { logs, status, value: response.tx_result.data };
+        const encodedHash = bs58.encode(transactionHash);
+        return this.jsonRpcRequest('tx', [encodedHash])
     }
 
     async getNonce(accountId) {
@@ -710,9 +589,8 @@ class NearClient {
         return this.nearConnection.request(methodName, params);
     }
 
-
     decodeResponseValue(value) {
-        return JSON.parse(_base64ToBuffer(value).toString());
+        return JSON.parse(bs58.decode(value).toString());
     }
 }
 
@@ -730,7 +608,7 @@ function _printLogs(contractAccountId, log) {
 module.exports = NearClient;
 
 }).call(this,require("buffer").Buffer)
-},{"./protos":67,"buffer":21}],9:[function(require,module,exports){
+},{"./protos":66,"bs58":19,"buffer":20}],8:[function(require,module,exports){
 "use strict";
 module.exports = asPromise;
 
@@ -784,7 +662,7 @@ function asPromise(fn, ctx/*, varargs */) {
     });
 }
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 /**
@@ -925,7 +803,7 @@ base64.test = function test(string) {
     return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(string);
 };
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 module.exports = EventEmitter;
 
@@ -1003,7 +881,7 @@ EventEmitter.prototype.emit = function emit(evt) {
     return this;
 };
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 module.exports = factory(factory);
@@ -1340,7 +1218,7 @@ function readUintBE(buf, pos) {
           | buf[pos + 3]) >>> 0;
 }
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 module.exports = inquire;
 
@@ -1359,7 +1237,7 @@ function inquire(moduleName) {
     return null;
 }
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 module.exports = pool;
 
@@ -1409,7 +1287,7 @@ function pool(alloc, slice, size) {
     };
 }
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1516,7 +1394,7 @@ utf8.write = function utf8_write(string, buffer, offset) {
     return offset - start;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 // base-x encoding / decoding
 // Copyright (c) 2018 base-x contributors
 // Copyright (c) 2014-2018 The Bitcoin Core developers (base58.cpp)
@@ -1668,7 +1546,7 @@ module.exports = function base (ALPHABET) {
   }
 }
 
-},{"safe-buffer":57}],17:[function(require,module,exports){
+},{"safe-buffer":56}],16:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -1821,17 +1699,17 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
-},{}],19:[function(require,module,exports){
-arguments[4][18][0].apply(exports,arguments)
-},{"dup":18}],20:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+arguments[4][17][0].apply(exports,arguments)
+},{"dup":17}],19:[function(require,module,exports){
 var basex = require('base-x')
 var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 module.exports = basex(ALPHABET)
 
-},{"base-x":16}],21:[function(require,module,exports){
+},{"base-x":15}],20:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -3610,13 +3488,13 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":17,"ieee754":38}],22:[function(require,module,exports){
+},{"base64-js":16,"ieee754":37}],21:[function(require,module,exports){
 require(".").check("es5");
-},{".":23}],23:[function(require,module,exports){
+},{".":22}],22:[function(require,module,exports){
 require("./lib/definitions");
 module.exports = require("./lib");
 
-},{"./lib":26,"./lib/definitions":25}],24:[function(require,module,exports){
+},{"./lib":25,"./lib/definitions":24}],23:[function(require,module,exports){
 var CapabilityDetector = function () {
     this.tests = {};
     this.cache = {};
@@ -3646,7 +3524,7 @@ CapabilityDetector.prototype = {
 };
 
 module.exports = CapabilityDetector;
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var capability = require("."),
     define = capability.define,
     test = capability.test;
@@ -3715,7 +3593,7 @@ define("Error.prototype.stack", function () {
         return e.stack || e.stacktrace;
     }
 });
-},{".":26}],26:[function(require,module,exports){
+},{".":25}],25:[function(require,module,exports){
 var CapabilityDetector = require("./CapabilityDetector");
 
 var detector = new CapabilityDetector();
@@ -3732,7 +3610,7 @@ capability.check = function (name) {
 capability.test = capability;
 
 module.exports = capability;
-},{"./CapabilityDetector":24}],27:[function(require,module,exports){
+},{"./CapabilityDetector":23}],26:[function(require,module,exports){
 /*!
  * depd
  * Copyright(c) 2015 Douglas Christopher Wilson
@@ -3811,9 +3689,9 @@ function wrapproperty (obj, prop, message) {
   }
 }
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 module.exports = require("./lib");
-},{"./lib":29}],29:[function(require,module,exports){
+},{"./lib":28}],28:[function(require,module,exports){
 require("capability/es5");
 
 var capability = require("capability");
@@ -3827,7 +3705,7 @@ else
     polyfill = require("./unsupported");
 
 module.exports = polyfill();
-},{"./non-v8/index":33,"./unsupported":35,"./v8":36,"capability":23,"capability/es5":22}],30:[function(require,module,exports){
+},{"./non-v8/index":32,"./unsupported":34,"./v8":35,"capability":22,"capability/es5":21}],29:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod;
 
@@ -3858,7 +3736,7 @@ var Frame = Class(Object, {
 });
 
 module.exports = Frame;
-},{"o3":41}],31:[function(require,module,exports){
+},{"o3":40}],30:[function(require,module,exports){
 var Class = require("o3").Class,
     Frame = require("./Frame"),
     cache = require("u3").cache;
@@ -3897,7 +3775,7 @@ module.exports = {
         return instance;
     })
 };
-},{"./Frame":30,"o3":41,"u3":63}],32:[function(require,module,exports){
+},{"./Frame":29,"o3":40,"u3":62}],31:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod,
     eachCombination = require("u3").eachCombination,
@@ -4031,7 +3909,7 @@ module.exports = {
         return instance;
     })
 };
-},{"capability":23,"o3":41,"u3":63}],33:[function(require,module,exports){
+},{"capability":22,"o3":40,"u3":62}],32:[function(require,module,exports){
 var FrameStringSource = require("./FrameStringSource"),
     FrameStringParser = require("./FrameStringParser"),
     cache = require("u3").cache,
@@ -4105,7 +3983,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"../prepareStackTrace":34,"./FrameStringParser":31,"./FrameStringSource":32,"u3":63}],34:[function(require,module,exports){
+},{"../prepareStackTrace":33,"./FrameStringParser":30,"./FrameStringSource":31,"u3":62}],33:[function(require,module,exports){
 var prepareStackTrace = function (throwable, frames, warnings) {
     var string = "";
     string += throwable.name || "Error";
@@ -4123,7 +4001,7 @@ var prepareStackTrace = function (throwable, frames, warnings) {
 };
 
 module.exports = prepareStackTrace;
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var cache = require("u3").cache,
     prepareStackTrace = require("./prepareStackTrace");
 
@@ -4174,7 +4052,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":34,"u3":63}],36:[function(require,module,exports){
+},{"./prepareStackTrace":33,"u3":62}],35:[function(require,module,exports){
 var prepareStackTrace = require("./prepareStackTrace");
 
 module.exports = function () {
@@ -4186,7 +4064,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":34}],37:[function(require,module,exports){
+},{"./prepareStackTrace":33}],36:[function(require,module,exports){
 /*!
  * http-errors
  * Copyright(c) 2014 Jonathan Ong
@@ -4454,7 +4332,7 @@ function populateConstructorExports (exports, codes, HttpError) {
     '"I\'mateapot"; use "ImATeapot" instead')
 }
 
-},{"depd":27,"inherits":39,"setprototypeof":58,"statuses":60,"toidentifier":61}],38:[function(require,module,exports){
+},{"depd":26,"inherits":38,"setprototypeof":57,"statuses":59,"toidentifier":60}],37:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -4540,7 +4418,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -4565,7 +4443,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (process,global){
 /**
  * [js-sha256]{@link https://github.com/emn178/js-sha256}
@@ -5087,11 +4965,11 @@ if (typeof Object.create === 'function') {
 })();
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":45}],41:[function(require,module,exports){
+},{"_process":44}],40:[function(require,module,exports){
 require("capability/es5");
 
 module.exports = require("./lib");
-},{"./lib":44,"capability/es5":22}],42:[function(require,module,exports){
+},{"./lib":43,"capability/es5":21}],41:[function(require,module,exports){
 var Class = function () {
     var options = Object.create({
         Source: Object,
@@ -5226,16 +5104,16 @@ Class.newInstance = function () {
 };
 
 module.exports = Class;
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = function () {
     throw new Error("Not implemented.");
 };
-},{}],44:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = {
     Class: require("./Class"),
     abstractMethod: require("./abstractMethod")
 };
-},{"./Class":42,"./abstractMethod":43}],45:[function(require,module,exports){
+},{"./Class":41,"./abstractMethod":42}],44:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -5421,13 +5299,13 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],46:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 // minimal library entry point.
 
 "use strict";
 module.exports = require("./src/index-minimal");
 
-},{"./src/index-minimal":47}],47:[function(require,module,exports){
+},{"./src/index-minimal":46}],46:[function(require,module,exports){
 "use strict";
 var protobuf = exports;
 
@@ -5465,7 +5343,7 @@ function configure() {
 protobuf.Writer._configure(protobuf.BufferWriter);
 configure();
 
-},{"./reader":48,"./reader_buffer":49,"./roots":50,"./rpc":51,"./util/minimal":54,"./writer":55,"./writer_buffer":56}],48:[function(require,module,exports){
+},{"./reader":47,"./reader_buffer":48,"./roots":49,"./rpc":50,"./util/minimal":53,"./writer":54,"./writer_buffer":55}],47:[function(require,module,exports){
 "use strict";
 module.exports = Reader;
 
@@ -5872,7 +5750,7 @@ Reader._configure = function(BufferReader_) {
     });
 };
 
-},{"./util/minimal":54}],49:[function(require,module,exports){
+},{"./util/minimal":53}],48:[function(require,module,exports){
 "use strict";
 module.exports = BufferReader;
 
@@ -5918,7 +5796,7 @@ BufferReader.prototype.string = function read_string_buffer() {
  * @returns {Buffer} Value read
  */
 
-},{"./reader":48,"./util/minimal":54}],50:[function(require,module,exports){
+},{"./reader":47,"./util/minimal":53}],49:[function(require,module,exports){
 "use strict";
 module.exports = {};
 
@@ -5938,7 +5816,7 @@ module.exports = {};
  * var root = protobuf.roots["myroot"];
  */
 
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 
 /**
@@ -5976,7 +5854,7 @@ var rpc = exports;
 
 rpc.Service = require("./rpc/service");
 
-},{"./rpc/service":52}],52:[function(require,module,exports){
+},{"./rpc/service":51}],51:[function(require,module,exports){
 "use strict";
 module.exports = Service;
 
@@ -6120,7 +5998,7 @@ Service.prototype.end = function end(endedByRPC) {
     return this;
 };
 
-},{"../util/minimal":54}],53:[function(require,module,exports){
+},{"../util/minimal":53}],52:[function(require,module,exports){
 "use strict";
 module.exports = LongBits;
 
@@ -6322,7 +6200,7 @@ LongBits.prototype.length = function length() {
          : part2 < 128 ? 9 : 10;
 };
 
-},{"../util/minimal":54}],54:[function(require,module,exports){
+},{"../util/minimal":53}],53:[function(require,module,exports){
 (function (global){
 "use strict";
 var util = exports;
@@ -6740,7 +6618,7 @@ util._configure = function() {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./longbits":53,"@protobufjs/aspromise":9,"@protobufjs/base64":10,"@protobufjs/eventemitter":11,"@protobufjs/float":12,"@protobufjs/inquire":13,"@protobufjs/pool":14,"@protobufjs/utf8":15}],55:[function(require,module,exports){
+},{"./longbits":52,"@protobufjs/aspromise":8,"@protobufjs/base64":9,"@protobufjs/eventemitter":10,"@protobufjs/float":11,"@protobufjs/inquire":12,"@protobufjs/pool":13,"@protobufjs/utf8":14}],54:[function(require,module,exports){
 "use strict";
 module.exports = Writer;
 
@@ -7201,7 +7079,7 @@ Writer._configure = function(BufferWriter_) {
     BufferWriter = BufferWriter_;
 };
 
-},{"./util/minimal":54}],56:[function(require,module,exports){
+},{"./util/minimal":53}],55:[function(require,module,exports){
 "use strict";
 module.exports = BufferWriter;
 
@@ -7284,7 +7162,7 @@ BufferWriter.prototype.string = function write_string_buffer(value) {
  * @returns {Buffer} Finished buffer
  */
 
-},{"./util/minimal":54,"./writer":55}],57:[function(require,module,exports){
+},{"./util/minimal":53,"./writer":54}],56:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -7348,7 +7226,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":21}],58:[function(require,module,exports){
+},{"buffer":20}],57:[function(require,module,exports){
 module.exports = Object.setPrototypeOf || ({__proto__:[]} instanceof Array ? setProtoOf : mixinProperties);
 
 function setProtoOf(obj, proto) {
@@ -7365,7 +7243,7 @@ function mixinProperties(obj, proto) {
 	return obj;
 }
 
-},{}],59:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports={
   "100": "Continue",
   "101": "Switching Protocols",
@@ -7433,7 +7311,7 @@ module.exports={
   "511": "Network Authentication Required"
 }
 
-},{}],60:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /*!
  * statuses
  * Copyright(c) 2014 Jonathan Ong
@@ -7548,7 +7426,7 @@ function status (code) {
   return n
 }
 
-},{"./codes.json":59}],61:[function(require,module,exports){
+},{"./codes.json":58}],60:[function(require,module,exports){
 /*!
  * toidentifier
  * Copyright(c) 2016 Douglas Christopher Wilson
@@ -7580,7 +7458,7 @@ function toIdentifier (str) {
     .replace(/[^ _0-9a-z]/gi, '')
 }
 
-},{}],62:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -9959,9 +9837,9 @@ nacl.setPRNG = function(fn) {
 
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-},{"crypto":18}],63:[function(require,module,exports){
-arguments[4][28][0].apply(exports,arguments)
-},{"./lib":66,"dup":28}],64:[function(require,module,exports){
+},{"crypto":17}],62:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./lib":65,"dup":27}],63:[function(require,module,exports){
 var cache = function (fn) {
     var called = false,
         store;
@@ -9983,7 +9861,7 @@ var cache = function (fn) {
 };
 
 module.exports = cache;
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function eachCombination(alternativesByDimension, callback, combination) {
     if (!combination)
         combination = [];
@@ -9998,12 +9876,12 @@ module.exports = function eachCombination(alternativesByDimension, callback, com
     else
         callback.apply(null, combination);
 };
-},{}],66:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = {
     cache: require("./cache"),
     eachCombination: require("./eachCombination")
 };
-},{"./cache":64,"./eachCombination":65}],67:[function(require,module,exports){
+},{"./cache":63,"./eachCombination":64}],66:[function(require,module,exports){
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
 "use strict";
 
@@ -14874,7 +14752,7 @@ $root.AccessKey = (function() {
 
 module.exports = $root;
 
-},{"protobufjs/minimal":46}],68:[function(require,module,exports){
+},{"protobufjs/minimal":45}],67:[function(require,module,exports){
 const KeyPair = require('./key_pair');
 
 /**
@@ -14936,7 +14814,7 @@ class AccountInfo {
 
 module.exports = AccountInfo;
 
-},{"./key_pair":71}],69:[function(require,module,exports){
+},{"./key_pair":70}],68:[function(require,module,exports){
 /**
  * Stores keys in the browser local storage. This allows to retain keys between
  * browser sessions. Local storage likes to work with strings so we store public and private key separately.
@@ -15017,7 +14895,7 @@ class BrowserLocalStorageKeystore {
 }
 
 module.exports = BrowserLocalStorageKeystore;
-},{"./account_info":68,"./key_pair":71}],70:[function(require,module,exports){
+},{"./account_info":67,"./key_pair":70}],69:[function(require,module,exports){
 /**
  * Simple in-memory keystore for testing purposes.
  */
@@ -15047,7 +14925,7 @@ class InMemoryKeyStore {
 }
 
 module.exports = InMemoryKeyStore;
-},{}],71:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 (function (Buffer){
 
 const bs58 = require('bs58');
@@ -15123,7 +15001,7 @@ class KeyPair {
 module.exports = KeyPair;
 
 }).call(this,require("buffer").Buffer)
-},{"bs58":20,"buffer":21,"tweetnacl":62}],72:[function(require,module,exports){
+},{"bs58":19,"buffer":20,"tweetnacl":61}],71:[function(require,module,exports){
 /**
  * Simple signer that acquires a key from its single keystore and signs transactions.
  */
@@ -15165,7 +15043,7 @@ class SimpleKeyStoreSigner {
 
 module.exports = SimpleKeyStoreSigner;
 
-},{"../protos":67,"bs58":20,"js-sha256":40,"tweetnacl":62}],73:[function(require,module,exports){
+},{"../protos":66,"bs58":19,"js-sha256":39,"tweetnacl":61}],72:[function(require,module,exports){
 /**
  * Access Key based signer that uses Wallet to authorize app on the account and receive the access key.
  */
@@ -15289,7 +15167,7 @@ class WalletAccessKey {
 
 module.exports = WalletAccessKey;
 
-},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72}],74:[function(require,module,exports){
+},{"./signing/browser_local_storage_key_store":68,"./signing/key_pair":70,"./signing/simple_key_store_signer":71}],73:[function(require,module,exports){
 /**
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
  */
@@ -15422,4 +15300,4 @@ class WalletAccount {
 
 module.exports = WalletAccount;
 
-},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72}]},{},[2]);
+},{"./signing/browser_local_storage_key_store":68,"./signing/key_pair":70,"./signing/simple_key_store_signer":71}]},{},[2]);
