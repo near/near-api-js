@@ -62,7 +62,7 @@ class NearClient {
 
     async getTransactionStatus(transactionHash) {
         const encodedHash = bs58.encode(transactionHash);
-        return this.jsonRpcRequest('tx', [encodedHash])
+        return this.jsonRpcRequest('tx', [encodedHash]);
     }
 
     async getNonce(accountId) {
