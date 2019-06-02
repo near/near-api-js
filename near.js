@@ -1,5 +1,4 @@
 const createError = require('http-errors');
-const bs58 = require('bs58');
 
 const NearClient = require('./nearclient');
 const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
