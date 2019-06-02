@@ -2,7 +2,7 @@ image: node:10
 
 variables:
   NODE_ENV: ci
-  NEAR_PROTOS_DIR: nearcore/runtime/protos/protos
+  NEAR_PROTOS_DIR: nearcore/core/protos/protos
   SKIP_DEV_CONNECT_TESTS: "true"
   SKIP_FAILED_ASSERT_TEST: "true"
   SKIP_NEW_RPC_TESTS: "true"
@@ -21,7 +21,7 @@ install_dependencies:
   stage: build
   script:
     - rm -rf nearcore/ # nearcore/ gets cached
-    - git clone --depth 1 --branch master https://github.com/nearprotocol/nearcore.git nearcore
+    - git clone --depth 1 --branch ghost https://github.com/nearprotocol/nearcore.git nearcore
     - rm -rf nearcore/nearlib
     - npm install
     - cd nearcore/tests/hello && npm install && npm run build
