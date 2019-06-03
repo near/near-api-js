@@ -343,6 +343,10 @@ function loadContract({ contractName, sender }) {
     });
 }
 
+function getPublicKeys({ public_keys: publicKeys }) {
+    return publicKeys.map(arr => KeyPair.encodeBufferInBs58(Buffer.from(arr)));
+}
+
 describe('with deployed contract', () => {
     let contract;
     let oldLog;
@@ -440,6 +444,38 @@ describe('with deployed contract', () => {
     test('test set/remove', async () => {
         const result = await contract.testSetRemove({value: '123'});
         expect(result.status).toBe('Completed');
+    });
+
+    describe('with new account', () => {
+        let accountId;
+
+        beforeEach(async () => {
+            accountId = await createAccount({ amount: 100000000 });
+        });
+
+        describe('add account key', () => {
+            let keyPair;
+
+            beforeEach(async () => {
+                keyPair = KeyPair.fromRandomSeed();
+                await nearjs.waitForTransactionResult(
+                    await account.addAccountKey(accountId, keyPair.publicKey));
+                await keyStore.setKey(accountId, keyPair);
+            });
+
+            test('account contains key', async () => {
+                const publicKeys = getPublicKeys(await account.viewAccount(accountId));
+                expect(publicKeys).toContainEqual(keyPair.publicKey);
+            });
+
+            test('remove account key', async () => {
+                await nearjs.waitForTransactionResult(
+                    await account.removeAccountKey(accountId, keyPair.publicKey));
+
+                const publicKeys = getPublicKeys(await account.viewAccount(accountId));
+                expect(publicKeys).not.toContainEqual(keyPair.publicKey);
+            });
+        });
     });
 });
 

@@ -140,7 +140,7 @@ class Account {
         return this.nearClient.signAndSubmitTransaction(ownersAccountId, DeleteKeyTransaction.create({
             nonce,
             originator: ownersAccountId,
-            newKey: publicKey,
+            curKey: publicKey,
         }));
     }
 
