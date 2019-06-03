@@ -197,6 +197,7 @@ describe('with access key', function () {
     let contractId = 'test_contract_' + Date.now();
     let newAccountId;
     let newAccountKeyPair;
+    let keyForAccessKey = KeyPair.fromRandomSeed();
 
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 200000;
 
@@ -231,6 +232,16 @@ describe('with access key', function () {
             aliceAccountName);
         await nearjs.waitForTransactionResult(createAccountResponse);
         await keyStore.setKey(newAccountId, newAccountKeyPair);
+
+        const addAccessKeyResponse = await account.addAccessKey(
+            newAccountId,
+            keyForAccessKey.getPublicKey(),
+            contractId,
+            '',  // methodName
+            '',  // fundingOwner
+            1000000000,  // fundingAmount
+        );
+        await nearjs.waitForTransactionResult(addAccessKeyResponse);
     });
 
     afterEach(async () => {
@@ -238,17 +249,6 @@ describe('with access key', function () {
     });
 
     test('make function calls using access key', async () => {
-        // Adding access key
-        const keyForAccessKey = KeyPair.fromRandomSeed();
-        const addAccessKeyResponse = await account.addAccessKey(
-            newAccountId,
-            keyForAccessKey.getPublicKey(),
-            contractId,
-            '',  // methodName
-            '',  // fundingOwner
-            4000000000,  // fundingAmount
-        );
-        await nearjs.waitForTransactionResult(addAccessKeyResponse);
         // Replacing public key for the account with the access key
         await keyStore.setKey(newAccountId, keyForAccessKey);
         // test that load contract works and we can make calls afterwards
@@ -266,17 +266,21 @@ describe('with access key', function () {
 
     test('removed access key no longer works', async () => {
         if (process.env.SKIP_NEW_RPC_TESTS) return;
-        // Adding access key
-        const keyForAccessKey = KeyPair.fromRandomSeed();
-        const addAccessKeyResponse = await account.addAccessKey(
+        // remove the access key like UI: call get account details, then remove using data from account details
+        const details = await account.getAccountDetails(newAccountId);
+        const expectedResult = {
+            authorizedApps:[ {
+                contractId: contractId,
+                amount: 1000000000,
+                publicKey: keyForAccessKey.getPublicKey() } ],
+            transactions: [] };
+        expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
+        await account.removeAccessKey(
             newAccountId,
-            keyForAccessKey.getPublicKey(),
-            contractId,
-            '',  // methodName
-            '',  // fundingOwner
-            4000000000,  // fundingAmount
+            expectedResult.authorizedApps[0].publicKey
         );
-        await nearjs.waitForTransactionResult(addAccessKeyResponse);
+        // Replacing public key for the account with the access key
+        await keyStore.setKey(newAccountId, keyForAccessKey);
 
         // test that we can't make calls with deleted key
         const contract = await nearjs.loadContract(contractId, {
@@ -284,12 +288,6 @@ describe('with access key', function () {
             changeMethods: ['setValue'],
             sender: newAccountId,
         });
-        await account.removeAccessKey(
-            newAccountId,
-            (await keyStore.getKey(newAccountId)).getPublicKey()
-        );
-        // Replacing public key for the account with the access key
-        await keyStore.setKey(newAccountId, keyForAccessKey);
         const setCallValue2 = await generateUniqueString('setCallPrefix');
         await expect(contract.setValue({ value: setCallValue2 })).rejects.toThrow(/Internal error: Tx.+ not found/);
     });
@@ -297,18 +295,6 @@ describe('with access key', function () {
 
     test('view account details after adding access keys', async () => {
         if (process.env.SKIP_NEW_RPC_TESTS) return;
-        // Adding two access keys for different contracts.
-        const keyForAccessKey = KeyPair.fromRandomSeed();
-        const addAccessKeyResponse = await account.addAccessKey(
-            newAccountId,
-            keyForAccessKey.getPublicKey(),
-            contractId,
-            '',  // methodName
-            '',  // fundingOwner
-            1000000000,  // fundingAmount
-        );
-        await nearjs.waitForTransactionResult(addAccessKeyResponse);
-
         const keyWithRandomSeed = KeyPair.fromRandomSeed();
         const contractId2 = 'test_contract2_' + Date.now();
         const createAccountResponse = await account.createAccount(
@@ -337,9 +323,11 @@ describe('with access key', function () {
         const expectedResult = {
             authorizedApps:[ {
                 contractId: contractId,
-                amount: 1000000000 },
+                amount: 1000000000,
+                publicKey: keyForAccessKey.getPublicKey() },
             { contractId: contractId2,
-                amount: 2000000000} ],
+                amount: 2000000000,
+                publicKey: keyForAccessKey2.getPublicKey() } ],
             transactions: [] };
         expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
     });
