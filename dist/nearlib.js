@@ -2,7 +2,7 @@
 (function (Buffer){
 const bs58 = require('bs58');
 
-const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, SignedTransaction } = require('./protos');
+const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, DeleteKeyTransaction } = require('./protos');
 const KeyPair = require('./signing/key_pair');
 
 /**
@@ -43,18 +43,7 @@ class Account {
             createAccount.amount = amount;
         }
 
-        const buffer = CreateAccountTransaction.encode(createAccount).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            originator,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            createAccount,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+        return this.nearClient.signAndSubmitTransaction(originator, createAccount);
     }
 
     /**
@@ -107,18 +96,22 @@ class Account {
             newKey: newPublicKey,
             accessKey,
         });
-        const buffer = AddKeyTransaction.encode(addKey).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            ownersAccountId,
-        );
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, addKey);
+    }
 
-        const signedTransaction = SignedTransaction.create({
-            addKey,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return this.nearClient.submitTransaction(signedTransaction);
+    /**
+     * Removes a particular access key. Transactions signed by this key will no longer be accepted.
+     * @param {string} ownersAccountId account id of the owner of the key
+     * @param {string} publicKey public key encoded in bs58
+     */
+    async removeAccessKey(ownersAccountId, publicKey) {
+        const nonce = await this.nearClient.getNonce(ownersAccountId);
+        const decodedKey = bs58.decode(publicKey);
+        return this.nearClient.signAndSubmitTransaction(ownersAccountId, DeleteKeyTransaction.create({
+            nonce,
+            originator: ownersAccountId,
+            curKey: decodedKey
+        }));
     }
 
     /**
@@ -168,7 +161,8 @@ class Account {
         Object.keys(decodedResponse).forEach(function(key) {
             result.authorizedApps.push({
                 contractId: decodedResponse[key][1].contract_id,
-                amount: decodedResponse[key][1].amount
+                amount: decodedResponse[key][1].amount,
+                publicKey: KeyPair.encodeBufferInBs58(decodedResponse[key][0])
             });
         });
         return result;
@@ -362,7 +356,7 @@ const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key
 const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
 const LocalNodeConnection = require('./local_node_connection');
 const {
-    DeployContractTransaction, FunctionCallTransaction, SignedTransaction
+    DeployContractTransaction, FunctionCallTransaction, SendMoneyTransaction
 } = require('./protos');
 
 const MAX_STATUS_POLL_ATTEMPTS = 10;
@@ -454,18 +448,24 @@ class Near {
             functionCall.amount = amount;
         }
 
-        const buffer = FunctionCallTransaction.encode(functionCall).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            originator,
-        );
+        return this.nearClient.signAndSubmitTransaction(originator, functionCall);
+    }
 
-        const signedTransaction = SignedTransaction.create({
-            functionCall,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return await this.nearClient.submitTransaction(signedTransaction);
+    /**
+     * Transfer tokens from `originator` to `receiver`.
+     * 
+     * @param {number} amount number of tokens to transfer
+     * @param {string} originator account id of sender
+     * @param {string} receiver account id of receiver
+     */
+    async sendTokens(amount, originator, receiver) {
+        const nonce = await this.nearClient.getNonce(originator);
+        return this.nearClient.signAndSubmitTransaction(originator, SendMoneyTransaction.create({
+            nonce,
+            originator,
+            receiver,
+            amount
+        }));
     }
 
     /**
@@ -477,25 +477,11 @@ class Near {
      */
     async deployContract(contractId, wasmByteArray) {
         const nonce = await this.nearClient.getNonce(contractId);
-
-        const deployContract = DeployContractTransaction.create({
+        return this.nearClient.signAndSubmitTransaction(contractId, DeployContractTransaction.create({
             nonce,
             contractId,
             wasmByteArray,
-        });
-
-        const buffer = DeployContractTransaction.encode(deployContract).finish();
-        const signatureAndPublicKey = await this.nearClient.signer.signBuffer(
-            buffer,
-            contractId,
-        );
-
-        const signedTransaction = SignedTransaction.create({
-            deployContract,
-            signature: signatureAndPublicKey.signature,
-            publicKey: signatureAndPublicKey.publicKey,
-        });
-        return await this.nearClient.submitTransaction(signedTransaction);
+        }));
     }
 
     /**
@@ -642,9 +628,28 @@ class NearClient {
         const buffer = SignedTransaction.encode(signedTransaction).finish();
         const transaction = _arrayBufferToBase64(buffer);
         const params = [transaction];
-        const response = await this.jsonRpcRequest('broadcast_tx_sync', params);
+        const response = await this.jsonRpcRequest('broadcast_tx_commit', params);
         response.hash = Buffer.from(response.hash, 'hex');
         return response;
+    }
+
+    async signAndSubmitTransaction(originator, transaction) {
+        const protoClass = transaction.constructor;
+        const className = protoClass.name;
+        const propertyName = className[0].toLowerCase() + className.replace(/Transaction$/, '').substring(1);
+
+        const buffer = protoClass.encode(transaction).finish();
+        const signatureAndPublicKey = await this.signer.signBuffer(
+            buffer,
+            originator,
+        );
+
+        const signedTransaction = SignedTransaction.create({
+            [propertyName]: transaction,
+            signature: signatureAndPublicKey.signature,
+            publicKey: signatureAndPublicKey.publicKey,
+        });
+        return this.submitTransaction(signedTransaction);
     }
 
     async callViewFunction(contractAccountId, methodName, args) {
