@@ -275,10 +275,12 @@ describe('with access key', function () {
                 publicKey: keyForAccessKey.getPublicKey() } ],
             transactions: [] };
         expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
-        await account.removeAccessKey(
+        const removeResponse = await account.removeAccessKey(
             newAccountId,
             expectedResult.authorizedApps[0].publicKey
         );
+        await nearjs.waitForTransactionResult(removeResponse);
+
         // Replacing public key for the account with the access key
         await keyStore.setKey(newAccountId, keyForAccessKey);
 
