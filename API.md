@@ -33,65 +33,69 @@
     -   [addAccessKey](#addaccesskey)
         -   [Parameters](#parameters-5)
         -   [Examples](#examples-8)
-    -   [createAccountWithRandomKey](#createaccountwithrandomkey)
+    -   [removeAccessKey](#removeaccesskey)
         -   [Parameters](#parameters-6)
+    -   [createAccountWithRandomKey](#createaccountwithrandomkey)
+        -   [Parameters](#parameters-7)
         -   [Examples](#examples-9)
     -   [viewAccount](#viewaccount)
-        -   [Parameters](#parameters-7)
+        -   [Parameters](#parameters-8)
         -   [Examples](#examples-10)
     -   [getAccountDetails](#getaccountdetails)
-        -   [Parameters](#parameters-8)
+        -   [Parameters](#parameters-9)
 -   [Near](#near)
-    -   [Parameters](#parameters-9)
+    -   [Parameters](#parameters-10)
     -   [callViewFunction](#callviewfunction)
-        -   [Parameters](#parameters-10)
+        -   [Parameters](#parameters-11)
         -   [Examples](#examples-11)
     -   [scheduleFunctionCall](#schedulefunctioncall)
-        -   [Parameters](#parameters-11)
-        -   [Examples](#examples-12)
-    -   [deployContract](#deploycontract)
         -   [Parameters](#parameters-12)
+        -   [Examples](#examples-12)
+    -   [sendTokens](#sendtokens)
+        -   [Parameters](#parameters-13)
+    -   [deployContract](#deploycontract)
+        -   [Parameters](#parameters-14)
         -   [Examples](#examples-13)
     -   [getTransactionStatus](#gettransactionstatus)
-        -   [Parameters](#parameters-13)
+        -   [Parameters](#parameters-15)
         -   [Examples](#examples-14)
     -   [waitForTransactionResult](#waitfortransactionresult)
-        -   [Parameters](#parameters-14)
+        -   [Parameters](#parameters-16)
         -   [Examples](#examples-15)
     -   [loadContract](#loadcontract)
-        -   [Parameters](#parameters-15)
+        -   [Parameters](#parameters-17)
         -   [Examples](#examples-16)
     -   [createDefaultConfig](#createdefaultconfig)
-        -   [Parameters](#parameters-16)
+        -   [Parameters](#parameters-18)
         -   [Examples](#examples-17)
 -   [WalletAccessKey](#walletaccesskey)
-    -   [Parameters](#parameters-17)
+    -   [Parameters](#parameters-19)
     -   [Examples](#examples-18)
     -   [isSignedIn](#issignedin)
         -   [Examples](#examples-19)
     -   [getAccountId](#getaccountid)
         -   [Examples](#examples-20)
     -   [requestSignIn](#requestsignin)
-        -   [Parameters](#parameters-18)
+        -   [Parameters](#parameters-20)
     -   [signOut](#signout)
         -   [Examples](#examples-21)
     -   [signBuffer](#signbuffer)
-        -   [Parameters](#parameters-19)
+        -   [Parameters](#parameters-21)
 -   [WalletAccount](#walletaccount)
-    -   [Parameters](#parameters-20)
+    -   [Parameters](#parameters-22)
     -   [Examples](#examples-22)
     -   [isSignedIn](#issignedin-1)
         -   [Examples](#examples-23)
     -   [getAccountId](#getaccountid-1)
         -   [Examples](#examples-24)
     -   [requestSignIn](#requestsignin-1)
-        -   [Parameters](#parameters-21)
+        -   [Parameters](#parameters-23)
         -   [Examples](#examples-25)
     -   [\_completeSignInWithAccessKey](#_completesigninwithaccesskey)
     -   [signOut](#signout-1)
         -   [Examples](#examples-26)
     -   [signBuffer](#signbuffer-1)
-        -   [Parameters](#parameters-22)
+        -   [Parameters](#parameters-24)
 
 ## KeyPair
 
@@ -274,6 +278,15 @@ const addAccessKeyResponse = await account.addAccessKey(
    10);
 ```
 
+### removeAccessKey
+
+Removes a particular access key. Transactions signed by this key will no longer be accepted.
+
+#### Parameters
+
+-   `ownersAccountId` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** account id of the owner of the key
+-   `publicKey` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** public key encoded in bs58
+
 ### createAccountWithRandomKey
 
 Creates a new account with a new random key pair. Returns the key pair to the caller. It's the caller's responsibility to
@@ -368,6 +381,16 @@ const scheduleResult = await near.scheduleFunctionCall(
     'setValue', // this is the function defined in a wasm file that we are calling
     setArgs);
 ```
+
+### sendTokens
+
+Transfer tokens from `originator` to `receiver`.
+
+#### Parameters
+
+-   `amount` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** number of tokens to transfer
+-   `originator` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** account id of sender
+-   `receiver` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** account id of receiver
 
 ### deployContract
 
