@@ -80,7 +80,7 @@ devConnectDescribe('dev connect', () => {
         const expectedAccount = {
             nonce: 0,
             account_id: newAccountId,
-            amount: 1,
+            amount: 1000000000000,
             code_hash: newAccountCodeHash,
             public_keys: viewAccountResponse.public_keys,
             stake: 0,
@@ -101,7 +101,7 @@ devConnectDescribe('dev connect', () => {
         const expectedAccount = {
             nonce: 0,
             account_id: newAccountId,
-            amount: 1,
+            amount: 1000000000000,
             code_hash: newAccountCodeHash,
             public_keys: viewAccountResponse.public_keys,
             stake: 0,
