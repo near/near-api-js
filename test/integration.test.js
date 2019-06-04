@@ -459,7 +459,7 @@ describe('with deployed contract', () => {
             beforeEach(async () => {
                 keyPair = KeyPair.fromRandomSeed();
                 await nearjs.waitForTransactionResult(
-                    await account.addAccountKey(accountId, keyPair.publicKey));
+                    await account.addAccessKey(accountId, keyPair.publicKey));
                 await keyStore.setKey(accountId, keyPair);
             });
 
@@ -470,7 +470,7 @@ describe('with deployed contract', () => {
 
             test('remove account key', async () => {
                 await nearjs.waitForTransactionResult(
-                    await account.removeAccountKey(accountId, keyPair.publicKey));
+                    await account.removeAccessKey(accountId, keyPair.publicKey));
 
                 const publicKeys = getPublicKeys(await account.viewAccount(accountId));
                 expect(publicKeys).not.toContainEqual(keyPair.publicKey);

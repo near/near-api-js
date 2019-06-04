@@ -49,7 +49,7 @@ class Account {
      * @param {string} ownersAccountId id of the owner's account.
      * @param {string} newPublicKey public key for the access key.
      * @param {string} contractId if the given contractId is not empty, then this access key will only be able to call
-     *      the given contractId.
+     *      the given contractId. Otherwise his method is going to add unrestricted key.
      * @param {string} methodName If the given method name is not empty, then this access key will only be able to call
      *      the given method name.
      * @param {string} fundingOwner account id to own the funding of this access key. If empty then account owner is used by default.
@@ -69,24 +69,25 @@ class Account {
     async addAccessKey(ownersAccountId, newPublicKey, contractId, methodName, fundingOwner, fundingAmount) {
         const nonce = await this.nearClient.getNonce(ownersAccountId);
         newPublicKey = bs58.decode(newPublicKey);
-        const accessKey = AccessKey.create({});
+        let accessKey;
         if (contractId) {
+            accessKey = AccessKey.create({});
             accessKey.contractId = google.protobuf.StringValue.create({
                 value: contractId,
             });
-        }
-        if (methodName) {
-            accessKey.methodName = google.protobuf.BytesValue.create({
-                value: new Uint8Array(Buffer.from(methodName)),
-            });
-        }
-        if (fundingOwner) {
-            accessKey.balanceOwner = google.protobuf.StringValue.create({
-                value: fundingOwner,
-            });
-        }
-        if (fundingAmount > 0) {
-            accessKey.amount = fundingAmount;
+            if (methodName) {
+                accessKey.methodName = google.protobuf.BytesValue.create({
+                    value: new Uint8Array(Buffer.from(methodName)),
+                });
+            }
+            if (fundingOwner) {
+                accessKey.balanceOwner = google.protobuf.StringValue.create({
+                    value: fundingOwner,
+                });
+            }
+            if (fundingAmount > 0) {
+                accessKey.amount = fundingAmount;
+            }
         }
         const addKey = AddKeyTransaction.create({
             nonce,
@@ -109,38 +110,6 @@ class Account {
             nonce,
             originator: ownersAccountId,
             curKey: decodedKey
-        }));
-    }
-
-    /**
-     * Adds a new unrestricted key to the owners account.
-     *
-     * @param {string} ownersAccountId id of the owner's account.
-     * @param {string} publicKey public key encoded in bs58
-     */
-    async addAccountKey(ownersAccountId, publicKey) {
-        const nonce = await this.nearClient.getNonce(ownersAccountId);
-        publicKey = bs58.decode(publicKey);
-        return this.nearClient.signAndSubmitTransaction(ownersAccountId, AddKeyTransaction.create({
-            nonce,
-            originator: ownersAccountId,
-            newKey: publicKey,
-        }));
-    }
-
-    /**
-     * Removes given unrestricted key from the owners account.
-     *
-     * @param {string} ownersAccountId id of the owner's account.
-     * @param {string} publicKey public key encoded in bs58
-     */
-    async removeAccountKey(ownersAccountId, publicKey) {
-        const nonce = await this.nearClient.getNonce(ownersAccountId);
-        publicKey = bs58.decode(publicKey);
-        return this.nearClient.signAndSubmitTransaction(ownersAccountId, DeleteKeyTransaction.create({
-            nonce,
-            originator: ownersAccountId,
-            curKey: publicKey,
         }));
     }
 
