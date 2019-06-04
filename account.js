@@ -49,7 +49,7 @@ class Account {
      * @param {string} ownersAccountId id of the owner's account.
      * @param {string} newPublicKey public key for the access key.
      * @param {string} contractId if the given contractId is not empty, then this access key will only be able to call
-     *      the given contractId. Otherwise his method is going to add unrestricted key.
+     *      the given contractId. Otherwise this method is going to add unrestricted key.
      * @param {string} methodName If the given method name is not empty, then this access key will only be able to call
      *      the given method name.
      * @param {string} fundingOwner account id to own the funding of this access key. If empty then account owner is used by default.
