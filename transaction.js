@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const uint128_pb_1 = require("./protos/uint128_pb");
 const signed_transaction_pb_1 = require("./protos/signed_transaction_pb");
-const signed_transaction_pb_2 = require("./signed_transaction_pb");
 function bigInt(num) {
     let x = new uint128_pb_1.Uint128();
     x.setNumber(Buffer.from(num.toString(16), 'hex'));
@@ -18,7 +17,7 @@ function sendMoney(nonce, originator, receiver, amount) {
 }
 exports.sendMoney = sendMoney;
 function createAccount(originator, newAccountId, publicKey, amount) {
-    let tx = new signed_transaction_pb_2.CreateAccountTransaction();
+    let tx = new signed_transaction_pb_1.CreateAccountTransaction();
     tx.setOriginator(originator);
     tx.setNewAccountId(newAccountId);
     tx.setPublicKey(publicKey);

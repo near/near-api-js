@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const transaction_1 = require("./transaction");
+const serialize_1 = require("./utils/serialize");
 class Account {
     constructor(connection, accountId) {
         this.connection = connection;
@@ -9,6 +10,10 @@ class Account {
     async signTransaction(transaction) {
         let signature = await this.connection.signer.signMessage(transaction.serializeBinary());
         return transaction_1.signedTransaction(transaction, signature);
+    }
+    async state() {
+        const response = await this.connection.provider.query(`account/${this.accountId}`, '');
+        return JSON.parse(serialize_1.base_decode(response.value).toString());
     }
     async sendMoney(nonce, receiver, amount) {
         let signedTx = await this.signTransaction(transaction_1.sendMoney(nonce, this.accountId, receiver, amount));
@@ -20,31 +25,3 @@ class Account {
     }
 }
 exports.Account = Account;
-/**
- * Account creator provides interface to specific implementation to acutally create account.
- */
-class AccountCreator {
-}
-exports.AccountCreator = AccountCreator;
-class LocalAccountCreator {
-    constructor(connection, masterAccount) {
-        this.connection = connection;
-        this.masterAccount = masterAccount;
-    }
-    async createAccount(newAccountId, publicKey) {
-        let _response = await this.masterAccount.createAccount(newAccountId, publicKey, BigInt(1000 * 1000 * 1000 * 1000));
-        // TODO: check the response here for status.
-        return new Account(this.connection, newAccountId);
-    }
-}
-exports.LocalAccountCreator = LocalAccountCreator;
-class UrlAccountCreator {
-    constructor(connection, helperUrl) {
-        this.connection = connection;
-        this.helperConnection = { url: helperUrl };
-    }
-    async createAccount(newAccountId, publicKey) {
-        return new Account(this.connection, newAccountId);
-    }
-}
-exports.UrlAccountCreator = UrlAccountCreator;

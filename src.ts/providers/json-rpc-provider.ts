@@ -3,7 +3,6 @@
 import { Provider, FinalTransactionResult, QueryResult } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
-import { resolveProperties } from '../utils/properties';
 import { base_encode } from '../utils/serialize';
 import { SignedTransaction } from '../protos/signed_transaction_pb';
 
@@ -34,7 +33,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     async query(path: string, data: string): Promise<QueryResult> {
-        return this.sendJsonRpc("query", [path, data]);
+        return (await this.sendJsonRpc("query", [path, data])).result;
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {

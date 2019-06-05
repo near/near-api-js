@@ -1,6 +1,5 @@
 import { Uint128 } from './protos/uint128_pb';
-import { SendMoneyTransaction, SignedTransaction } from './protos/signed_transaction_pb'
-import { CreateAccountTransaction } from './signed_transaction_pb';
+import { SendMoneyTransaction, CreateAccountTransaction, SignedTransaction } from './protos/signed_transaction_pb'
 
 function bigInt(num: bigint): Uint128 {
     let x = new Uint128();

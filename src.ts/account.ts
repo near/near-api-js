@@ -1,10 +1,19 @@
 'use strict';
 
-import { SignedTransaction } from './signed_transaction_pb'
+import { SignedTransaction } from './protos/signed_transaction_pb'
 import { sendMoney, createAccount, signedTransaction } from './transaction'
 import { FinalTransactionResult } from './providers/provider';
 import { Connection } from './connection';
-import { ConnectionInfo } from './utils/web';
+import { base_decode } from './utils/serialize';
+
+export type AccountState = {
+    account_id: string,
+    nonce: number,
+    amount: bigint,
+    stake: bigint,
+    public_keys: Uint8Array[],
+    code_hash: string,
+};
 
 export class Account {
     readonly connection: Connection;
@@ -20,6 +29,11 @@ export class Account {
         return signedTransaction(transaction, signature);
     }
 
+    async state(): Promise<AccountState> {
+        const response = await this.connection.provider.query(`account/${this.accountId}`, '');
+        return JSON.parse(base_decode(response.value).toString())
+    }
+
     async sendMoney(nonce: number, receiver: string, amount: bigint): Promise<FinalTransactionResult> {
         let signedTx = await this.signTransaction(sendMoney(nonce, this.accountId, receiver, amount));
         return this.connection.provider.sendTransaction(signedTx);
@@ -28,42 +42,5 @@ export class Account {
     async createAccount(newAccountId: string, publicKey: string, amount: bigint): Promise<FinalTransactionResult> {
         let signedTx = await this.signTransaction(createAccount(this.accountId, newAccountId, publicKey, amount));
         return this.connection.provider.sendTransaction(signedTx);
-    }
-}
-
-/**
- * Account creator provides interface to specific implementation to acutally create account.
- */
-export abstract class AccountCreator {
-    abstract async createAccount(newAccountId: string): Promise<Account>;
-}
-
-export class LocalAccountCreator {
-    readonly connection: Connection;
-    readonly masterAccount: Account;
-
-    constructor(connection: Connection, masterAccount: Account) {
-        this.connection = connection;
-        this.masterAccount = masterAccount;
-    }
-
-    async createAccount(newAccountId: string, publicKey: string): Promise<Account> {
-        let _response = await this.masterAccount.createAccount(newAccountId, publicKey, BigInt(1000 * 1000 * 1000 * 1000));
-        // TODO: check the response here for status.
-        return new Account(this.connection, newAccountId);
-    }
-}
-
-export class UrlAccountCreator {
-    readonly connection: Connection;
-    readonly helperConnection: ConnectionInfo;
-
-    constructor(connection: Connection, helperUrl: string) {
-        this.connection = connection;
-        this.helperConnection = { url: helperUrl };
-    }
-
-    async createAccount(newAccountId: string, publicKey: string): Promise<Account> {
-        return new Account(this.connection, newAccountId);
     }
 }

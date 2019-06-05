@@ -23,7 +23,7 @@ class JsonRpcProvider extends provider_1.Provider {
         return JSON.parse(response);
     }
     async query(path, data) {
-        return this.sendJsonRpc("query", [path, data]);
+        return (await this.sendJsonRpc("query", [path, data])).result;
     }
     async sendJsonRpc(method, params) {
         let request = {
