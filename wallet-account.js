@@ -10,6 +10,7 @@ const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
+const WALLET_URL = process.env.WALLET_URL || 'https://wallet.nearprotocol.com';
 
 /**
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
@@ -22,7 +23,7 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
  * window.walletAccount = new nearlib.WalletAccount(config.contractName, walletBaseUrl);
  */
 class WalletAccount {
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new BrowserLocalStorageKeystore()) {
+    constructor(appKeyPrefix, walletBaseUrl = WALLET_URL, keyStore = new BrowserLocalStorageKeystore()) {
         this._walletBaseUrl = walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = keyStore;

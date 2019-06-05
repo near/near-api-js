@@ -4,6 +4,7 @@
 
 ### Table of Contents
 
+-   [BrowserLocalStorageKeystore](#browserlocalstoragekeystore)
 -   [KeyPair](#keypair)
     -   [getPublicKey](#getpublickey)
     -   [getSecretKey](#getsecretkey)
@@ -23,7 +24,6 @@
     -   [encodeBufferInBs58](#encodebufferinbs58-1)
         -   [Parameters](#parameters-2)
         -   [Examples](#examples-5)
--   [BrowserLocalStorageKeystore](#browserlocalstoragekeystore)
 -   [Account](#account)
     -   [Parameters](#parameters-3)
     -   [Examples](#examples-6)
@@ -68,7 +68,7 @@
     -   [createDefaultConfig](#createdefaultconfig)
         -   [Parameters](#parameters-18)
         -   [Examples](#examples-17)
--   [WalletAccessKey](#walletaccesskey)
+-   [WalletAccount](#walletaccount)
     -   [Parameters](#parameters-19)
     -   [Examples](#examples-18)
     -   [isSignedIn](#issignedin)
@@ -77,25 +77,29 @@
         -   [Examples](#examples-20)
     -   [requestSignIn](#requestsignin)
         -   [Parameters](#parameters-20)
-    -   [signOut](#signout)
         -   [Examples](#examples-21)
+    -   [\_completeSignInWithAccessKey](#_completesigninwithaccesskey)
+    -   [signOut](#signout)
+        -   [Examples](#examples-22)
     -   [signBuffer](#signbuffer)
         -   [Parameters](#parameters-21)
--   [WalletAccount](#walletaccount)
+-   [WalletAccessKey](#walletaccesskey)
     -   [Parameters](#parameters-22)
-    -   [Examples](#examples-22)
+    -   [Examples](#examples-23)
     -   [isSignedIn](#issignedin-1)
-        -   [Examples](#examples-23)
-    -   [getAccountId](#getaccountid-1)
         -   [Examples](#examples-24)
+    -   [getAccountId](#getaccountid-1)
+        -   [Examples](#examples-25)
     -   [requestSignIn](#requestsignin-1)
         -   [Parameters](#parameters-23)
-        -   [Examples](#examples-25)
-    -   [\_completeSignInWithAccessKey](#_completesigninwithaccesskey)
     -   [signOut](#signout-1)
         -   [Examples](#examples-26)
     -   [signBuffer](#signbuffer-1)
         -   [Parameters](#parameters-24)
+
+## BrowserLocalStorageKeystore
+
+Wallet based account and signer that uses external wallet through the iframe to sign transactions.
 
 ## KeyPair
 
@@ -207,10 +211,6 @@ Encode a buffer as string using bs58
 ```javascript
 KeyPair.encodeBufferInBs58(key.publicKey)
 ```
-
-## BrowserLocalStorageKeystore
-
-Wallet based account and signer that uses external wallet through the iframe to sign transactions.
 
 ## Account
 
@@ -491,80 +491,6 @@ Generate a default configuration for nearlib
 Near.createDefaultConfig();
 ```
 
-## WalletAccessKey
-
-Access Key based signer that uses Wallet to authorize app on the account and receive the access key.
-
-### Parameters
-
--   `appKeyPrefix`  
--   `walletBaseUrl`   (optional, default `'https://wallet.nearprotocol.com'`)
--   `signer`   (optional, default `null`)
-
-### Examples
-
-```javascript
-// if importing WalletAccessKey directly
-const walletAccount = new WalletAccessKey(contractName, walletBaseUrl)
-// if importing in all of nearLib and calling from variable
-const walletAccount = new nearlib.WalletAccessKey(contractName, walletBaseUrl)
-// To access this signer globally
-window.walletAccount = new nearlib.WalletAccessKey(config.contractName, walletBaseUrl);
-// To provide custom signer where the keys would be stored
-window.walletAccount = new nearlib.WalletAccessKey(config.contractName, walletBaseUrl, customSigner);
-```
-
-### isSignedIn
-
-Returns true, if this WalletAccount is authorized with the wallet.
-
-#### Examples
-
-```javascript
-walletAccount.isSignedIn();
-```
-
-### getAccountId
-
-Returns authorized Account ID.
-
-#### Examples
-
-```javascript
-walletAccount.getAccountId();
-```
-
-### requestSignIn
-
-Redirects current page to the wallet authentication page.
-
-#### Parameters
-
--   `contractId` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** contract ID of the application
--   `title` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** name of the application
--   `successUrl` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** url to redirect on success
--   `failureUrl` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** url to redirect on failure
-
-### signOut
-
-Sign out from the current account
-
-#### Examples
-
-```javascript
-walletAccount.signOut();
-```
-
-### signBuffer
-
-Sign a buffer. If the key for originator is not present,
-this operation will fail.
-
-#### Parameters
-
--   `buffer` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 
--   `originator` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
-
 ## WalletAccount
 
 Wallet based account and signer that uses external wallet through the iframe to sign transactions.
@@ -572,7 +498,7 @@ Wallet based account and signer that uses external wallet through the iframe to 
 ### Parameters
 
 -   `appKeyPrefix`  
--   `walletBaseUrl`   (optional, default `'https://wallet.nearprotocol.com'`)
+-   `walletBaseUrl`   (optional, default `WALLET_URL`)
 -   `keyStore`   (optional, default `new BrowserLocalStorageKeystore()`)
 
 ### Examples
@@ -630,6 +556,80 @@ walletAccount.requestSignIn(
 ### \_completeSignInWithAccessKey
 
 Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
+
+### signOut
+
+Sign out from the current account
+
+#### Examples
+
+```javascript
+walletAccount.signOut();
+```
+
+### signBuffer
+
+Sign a buffer. If the key for originator is not present,
+this operation will fail.
+
+#### Parameters
+
+-   `buffer` **[Uint8Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)** 
+-   `originator` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+## WalletAccessKey
+
+Access Key based signer that uses Wallet to authorize app on the account and receive the access key.
+
+### Parameters
+
+-   `appKeyPrefix`  
+-   `walletBaseUrl`   (optional, default `WALLET_URL`)
+-   `signer`   (optional, default `null`)
+
+### Examples
+
+```javascript
+// if importing WalletAccessKey directly
+const walletAccount = new WalletAccessKey(contractName, walletBaseUrl)
+// if importing in all of nearLib and calling from variable
+const walletAccount = new nearlib.WalletAccessKey(contractName, walletBaseUrl)
+// To access this signer globally
+window.walletAccount = new nearlib.WalletAccessKey(config.contractName, walletBaseUrl);
+// To provide custom signer where the keys would be stored
+window.walletAccount = new nearlib.WalletAccessKey(config.contractName, walletBaseUrl, customSigner);
+```
+
+### isSignedIn
+
+Returns true, if this WalletAccount is authorized with the wallet.
+
+#### Examples
+
+```javascript
+walletAccount.isSignedIn();
+```
+
+### getAccountId
+
+Returns authorized Account ID.
+
+#### Examples
+
+```javascript
+walletAccount.getAccountId();
+```
+
+### requestSignIn
+
+Redirects current page to the wallet authentication page.
+
+#### Parameters
+
+-   `contractId` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** contract ID of the application
+-   `title` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** name of the application
+-   `successUrl` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** url to redirect on success
+-   `failureUrl` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** url to redirect on failure
 
 ### signOut
 

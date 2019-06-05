@@ -15171,6 +15171,7 @@ class SimpleKeyStoreSigner {
 module.exports = SimpleKeyStoreSigner;
 
 },{"../protos":67,"bs58":20,"js-sha256":40,"tweetnacl":62}],73:[function(require,module,exports){
+(function (process){
 /**
  * Access Key based signer that uses Wallet to authorize app on the account and receive the access key.
  */
@@ -15181,6 +15182,7 @@ const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
 
 const LOGIN_WALLET_URL_SUFFIX = '/login_v2/';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_access_key';
+const WALLET_URL = process.env.WALLET_URL || 'https://wallet.nearprotocol.com';
 
 /**
  * Access Key based signer that uses Wallet to authorize app on the account and receive the access key.
@@ -15195,7 +15197,7 @@ const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_access_key';
  * window.walletAccount = new nearlib.WalletAccessKey(config.contractName, walletBaseUrl, customSigner);
  */
 class WalletAccessKey {
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', signer = null) {
+    constructor(appKeyPrefix, walletBaseUrl = WALLET_URL, signer = null) {
         this._walletBaseUrl = walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._signer = signer || (new SimpleKeyStoreSigner(new BrowserLocalStorageKeystore()));
@@ -15294,7 +15296,9 @@ class WalletAccessKey {
 
 module.exports = WalletAccessKey;
 
-},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72}],74:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72,"_process":45}],74:[function(require,module,exports){
+(function (process){
 /**
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
  */
@@ -15307,6 +15311,7 @@ const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
+const WALLET_URL = process.env.WALLET_URL || 'https://wallet.nearprotocol.com';
 
 /**
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
@@ -15319,7 +15324,7 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
  * window.walletAccount = new nearlib.WalletAccount(config.contractName, walletBaseUrl);
  */
 class WalletAccount {
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new BrowserLocalStorageKeystore()) {
+    constructor(appKeyPrefix, walletBaseUrl = WALLET_URL, keyStore = new BrowserLocalStorageKeystore()) {
         this._walletBaseUrl = walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = keyStore;
@@ -15427,4 +15432,5 @@ class WalletAccount {
 
 module.exports = WalletAccount;
 
-},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72}]},{},[2]);
+}).call(this,require('_process'))
+},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72,"_process":45}]},{},[2]);

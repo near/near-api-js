@@ -8,6 +8,7 @@ const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
 
 const LOGIN_WALLET_URL_SUFFIX = '/login_v2/';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_access_key';
+const WALLET_URL = process.env.WALLET_URL || 'https://wallet.nearprotocol.com';
 
 /**
  * Access Key based signer that uses Wallet to authorize app on the account and receive the access key.
@@ -22,7 +23,7 @@ const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_access_key';
  * window.walletAccount = new nearlib.WalletAccessKey(config.contractName, walletBaseUrl, customSigner);
  */
 class WalletAccessKey {
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', signer = null) {
+    constructor(appKeyPrefix, walletBaseUrl = WALLET_URL, signer = null) {
         this._walletBaseUrl = walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._signer = signer || (new SimpleKeyStoreSigner(new BrowserLocalStorageKeystore()));
