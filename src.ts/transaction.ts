@@ -5,6 +5,7 @@ import { Uint128, SendMoneyTransaction, CreateAccountTransaction,
     google} from './protos';
 import { base_decode } from './utils/serialize';
 import { Signature } from './utils/key_pair';
+import { Signer } from './signer';
 
 const TRANSACTION_FIELD_MAP = {
     [CreateAccountTransaction.name]: 'createAccount',
@@ -17,8 +18,14 @@ const TRANSACTION_FIELD_MAP = {
     [DeleteKeyTransaction.name]: 'deleteKey',
 };
 
+type AllTransactions = SendMoneyTransaction | CreateAccountTransaction | DeployContractTransaction | FunctionCallTransaction | StakeTransaction | SwapKeyTransaction | AddKeyTransaction | DeleteKeyTransaction;
+
 function bigInt(num: bigint): Uint128 {
     return new Uint128({ number: Buffer.from(num.toString(16), 'hex')});
+}
+
+export function fromUint128(num: string): bigint {
+    return BigInt(`0x${num}`);
 }
 
 export function sendMoney(nonce: number, originator: string, receiver: string, amount: bigint): SendMoneyTransaction {
@@ -29,11 +36,17 @@ export function createAccount(nonce: number, originator: string, newAccountId: s
     return new CreateAccountTransaction({nonce, originator, newAccountId, publicKey: base_decode(publicKey), amount: bigInt(amount)});
 }
 
-export function signedTransaction(transaction: SendMoneyTransaction | CreateAccountTransaction, signature: Signature): SignedTransaction {
+export function signedTransaction(transaction: AllTransactions, signature: Signature): SignedTransaction {
     const fieldName = TRANSACTION_FIELD_MAP[transaction.constructor.name];
     return new SignedTransaction({
         signature: signature.signature,
         publicKey: google.protobuf.BytesValue.create({ value: base_decode(signature.publicKey) }),
         [fieldName]: transaction,
     });
+}
+
+export async function signTransaction(signer: Signer, transaction: any, accountId?: string, networkId?: string): Promise<SignedTransaction> {
+    const protoClass = transaction.constructor;
+    let signature = await signer.signMessage(protoClass.encode(transaction).finish(), accountId, networkId);
+    return signedTransaction(transaction, signature);
 }

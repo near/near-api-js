@@ -58,8 +58,8 @@ export class KeyPairEd25519 extends KeyPair {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        let secretKey = nacl.randomBytes(64);
-        return new KeyPairEd25519(base_encode(secretKey));
+        let newKeyPair = nacl.sign.keyPair();
+        return new KeyPairEd25519(base_encode(newKeyPair.secretKey));
     }
 
     toString(): string {

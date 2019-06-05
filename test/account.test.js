@@ -7,8 +7,6 @@ let connection;
 let masterAccount;
 let accountCreator;
 
-const INITIAL_AMOUNT = BigInt(1000 * 1000 * 1000 * 1000);
-
 beforeAll(async () => {
     connection = nearlib.Connection.fromConfig({ 
         networkId: 'unittest',
@@ -30,7 +28,7 @@ test('create account and then view account returns the created account', async (
     await accountCreator.createAccount(newAccountName, newAccountPublicKey);
     const newAccount = new nearlib.Account(connection, newAccountName);
     const state = await newAccount.state();
-    const expectedState = { nonce: 0, account_id: newAccountName, amount: INITIAL_AMOUNT, code_hash: '11111111111111111', public_keys: state.public_keys, stake: 0};
+    const expectedState = { nonce: 0, account_id: newAccountName, amount: BigInt(279303400), code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys, stake: BigInt(0)};
     expect(state).toEqual(expectedState);
 });
 

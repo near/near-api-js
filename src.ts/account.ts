@@ -1,7 +1,6 @@
 'use strict';
 
-import { SignedTransaction } from './protos'
-import { sendMoney, createAccount, signedTransaction } from './transaction'
+import { sendMoney, createAccount, signTransaction, fromUint128 } from './transaction'
 import { FinalTransactionResult } from './providers/provider';
 import { Connection } from './connection';
 import { base_decode } from './utils/serialize';
@@ -27,16 +26,12 @@ export class Account {
         this.ready = Promise.resolve(this.fetchState());
     }
 
-    private async signTransaction(transaction: any): Promise<SignedTransaction> {
-        let signature = await this.connection.signer.signMessage(SignedTransaction.encode(transaction).finish(), this.accountId, this.connection.networkId);
-        const tx = signedTransaction(transaction, signature);
-        console.warn(tx);
-        return tx;
-    }
-
     private async fetchState(): Promise<void> {
         const response = await this.connection.provider.query(`account/${this.accountId}`, '');
-        this._state = JSON.parse(base_decode(response.value).toString());
+        const state = JSON.parse(base_decode(response.value).toString());
+        this._state = state;
+        this._state.amount = fromUint128(state.amount);
+        this._state.stake = fromUint128(state.stake);
     }
 
     async state(): Promise<AccountState> {
@@ -46,13 +41,21 @@ export class Account {
 
     async sendMoney(receiver: string, amount: bigint): Promise<FinalTransactionResult> {
         this._state.nonce++;
-        let signedTx = await this.signTransaction(sendMoney(this._state.nonce, this.accountId, receiver, amount));
+        let signedTx = await signTransaction(
+            this.connection.signer, 
+            sendMoney(this._state.nonce, this.accountId, receiver, amount),
+            this.accountId,
+            this.connection.networkId);
         return this.connection.provider.sendTransaction(signedTx);
     }
 
     async createAccount(newAccountId: string, publicKey: string, amount: bigint): Promise<FinalTransactionResult> {
         this._state.nonce++;
-        let signedTx = await this.signTransaction(createAccount(this._state.nonce, this.accountId, newAccountId, publicKey, amount));
+        let signedTx = await signTransaction(
+            this.connection.signer,
+            createAccount(this._state.nonce, this.accountId, newAccountId, publicKey, amount),
+            this.accountId,
+            this.connection.networkId);
         return this.connection.provider.sendTransaction(signedTx);
     }
 }
