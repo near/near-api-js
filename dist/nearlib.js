@@ -10013,18 +10013,18 @@ module.exports = {
 },{"./cache":64,"./eachCombination":65}],67:[function(require,module,exports){
 const protos = require('./protos');
 
-const TRANSACTION_FIELD_MAP = {
-    [protos.CreateAccountTransaction.name]: 'createAccount',
-    [protos.DeployContractTransaction.name]: 'deployContract',
-    [protos.FunctionCallTransaction.name]: 'functionCall',
-    [protos.SendMoneyTransaction.name]: 'sendMoney',
-    [protos.StakeTransaction.name]: 'stake',
-    [protos.SwapKeyTransaction.name]: 'swapKey',
-    [protos.AddKeyTransaction.name]: 'addKey',
-    [protos.DeleteKeyTransaction.name]: 'deleteKey',
-};
+const TRANSACTION_FIELD_MAP = new Map([
+    [protos.CreateAccountTransaction, 'createAccount'],
+    [protos.DeployContractTransaction, 'deployContract'],
+    [protos.FunctionCallTransaction, 'functionCall'],
+    [protos.SendMoneyTransaction, 'sendMoney'],
+    [protos.StakeTransaction, 'stake'],
+    [protos.SwapKeyTransaction, 'swapKey'],
+    [protos.AddKeyTransaction, 'addKey'],
+    [protos.DeleteKeyTransaction, 'deleteKey'],
+]);
 
-module.exports.getTransactionFieldName = (transactionProto) => TRANSACTION_FIELD_MAP[transactionProto.constructor.name];
+module.exports.getTransactionFieldName = (transactionProto) => TRANSACTION_FIELD_MAP.get(transactionProto.constructor);
 
 },{"./protos":68}],68:[function(require,module,exports){
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
