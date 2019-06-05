@@ -1,5 +1,5 @@
 
-const nearlib = require('../index');
+const nearlib = require('../lib/index');
 
 test('test query account', async () => {
     const provider = new nearlib.providers.JsonRpcProvider('http://localhost:3030');

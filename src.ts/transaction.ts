@@ -1,8 +1,10 @@
 import { Uint128, SendMoneyTransaction, CreateAccountTransaction, 
     SignedTransaction, DeployContractTransaction, FunctionCallTransaction, 
     StakeTransaction, SwapKeyTransaction, AddKeyTransaction,
-    DeleteKeyTransaction } from './protos';
+    DeleteKeyTransaction, 
+    google} from './protos';
 import { base_decode } from './utils/serialize';
+import { Signature } from './utils/key_pair';
 
 const TRANSACTION_FIELD_MAP = {
     [CreateAccountTransaction.name]: 'createAccount',
@@ -23,14 +25,15 @@ export function sendMoney(nonce: number, originator: string, receiver: string, a
     return new SendMoneyTransaction({nonce, originator, receiver, amount: bigInt(amount)})
 }
 
-export function createAccount(originator: string, newAccountId: string, publicKey: string, amount: bigint): CreateAccountTransaction {
-    return new CreateAccountTransaction({originator, newAccountId, publicKey: base_decode(publicKey), amount: bigInt(amount)});
+export function createAccount(nonce: number, originator: string, newAccountId: string, publicKey: string, amount: bigint): CreateAccountTransaction {
+    return new CreateAccountTransaction({nonce, originator, newAccountId, publicKey: base_decode(publicKey), amount: bigInt(amount)});
 }
 
-export function signedTransaction(transaction: SendMoneyTransaction | CreateAccountTransaction, signature: Uint8Array): SignedTransaction {
+export function signedTransaction(transaction: SendMoneyTransaction | CreateAccountTransaction, signature: Signature): SignedTransaction {
     const fieldName = TRANSACTION_FIELD_MAP[transaction.constructor.name];
     return new SignedTransaction({
-        signature: signature,
+        signature: signature.signature,
+        publicKey: google.protobuf.BytesValue.create({ value: base_decode(signature.publicKey) }),
         [fieldName]: transaction,
     });
 }

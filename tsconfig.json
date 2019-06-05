@@ -22,5 +22,6 @@
     },
     "files": [
         "./src.ts/index.ts",
+        "./src.ts/protos.d.ts",
     ]
 }
