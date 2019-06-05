@@ -1,14 +1,14 @@
 const protos = require('./protos');
 
-const TRANSACTION_FIELD_MAP = {
-    [protos.CreateAccountTransaction.name]: 'createAccount',
-    [protos.DeployContractTransaction.name]: 'deployContract',
-    [protos.FunctionCallTransaction.name]: 'functionCall',
-    [protos.SendMoneyTransaction.name]: 'sendMoney',
-    [protos.StakeTransaction.name]: 'stake',
-    [protos.SwapKeyTransaction.name]: 'swapKey',
-    [protos.AddKeyTransaction.name]: 'addKey',
-    [protos.DeleteKeyTransaction.name]: 'deleteKey',
-};
+const TRANSACTION_FIELD_MAP = new Map([
+    [protos.CreateAccountTransaction, 'createAccount'],
+    [protos.DeployContractTransaction, 'deployContract'],
+    [protos.FunctionCallTransaction, 'functionCall'],
+    [protos.SendMoneyTransaction, 'sendMoney'],
+    [protos.StakeTransaction, 'stake'],
+    [protos.SwapKeyTransaction, 'swapKey'],
+    [protos.AddKeyTransaction, 'addKey'],
+    [protos.DeleteKeyTransaction, 'deleteKey'],
+]);
 
-module.exports.getTransactionFieldName = (transactionProto) => TRANSACTION_FIELD_MAP[transactionProto.constructor.name];
+module.exports.getTransactionFieldName = (transactionProto) => TRANSACTION_FIELD_MAP.get(transactionProto.constructor);
