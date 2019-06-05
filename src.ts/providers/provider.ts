@@ -1,6 +1,7 @@
 'use strict';
 
 import { Network } from '../utils/network';
+import { SignedTransaction } from '../signed_transaction_pb';
 
 export enum FinalTransactionStatus {
     Unknown = "Unknown",
@@ -30,6 +31,6 @@ export type QueryResult = {
 export abstract class Provider {
     abstract async getNetwork(): Promise<Network>;
 
-    abstract async sendTransaction(signedTransaction: string | Promise<string>): Promise<FinalTransactionResult>;
+    abstract async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult>;
     abstract async query(path: string, data: string): Promise<QueryResult>;
 }

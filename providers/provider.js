@@ -7,9 +7,6 @@ var FinalTransactionStatus;
     FinalTransactionStatus["Failed"] = "Failed";
     FinalTransactionStatus["Completed"] = "Completed";
 })(FinalTransactionStatus = exports.FinalTransactionStatus || (exports.FinalTransactionStatus = {}));
-var Provider = /** @class */ (function () {
-    function Provider() {
-    }
-    return Provider;
-}());
+class Provider {
+}
 exports.Provider = Provider;

@@ -5,8 +5,7 @@ import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { resolveProperties } from '../utils/properties';
 import { base_encode } from '../utils/serialize';
-
-const DEFAULT_RPC_URL = 'http://localhost:3030';
+import { SignedTransaction } from '../protos/signed_transaction_pb';
 
 /// Keep ids unique across all connections.
 let _nextId = 123;
@@ -17,8 +16,6 @@ export class JsonRpcProvider extends Provider {
     constructor(url?: string, network?: Network) {
         super();
         // TODO: resolve network to url...
-
-        if (!url) { url = DEFAULT_RPC_URL }
         
         this.connection = { url };
     }
@@ -30,9 +27,9 @@ export class JsonRpcProvider extends Provider {
         };
     }
 
-    async sendTransaction(signedTransaction: string | Promise<string>): Promise<FinalTransactionResult> {
-        let { transaction } = await resolveProperties({ signedTransaction });
-        let response = await this.sendJsonRpc("broadcast_tx_commit", [base_encode(transaction)]);
+    async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult> {
+        let bytes = Buffer.from(signedTransaction.serializeBinary());
+        let response = await this.sendJsonRpc("broadcast_tx_commit", [base_encode(bytes)]);
         return JSON.parse(response);
     }
 

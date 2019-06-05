@@ -7,7 +7,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var providers = __importStar(require("./providers"));
+const providers = __importStar(require("./providers"));
 exports.providers = providers;
-var utils = __importStar(require("./utils"));
+const utils = __importStar(require("./utils"));
 exports.utils = utils;
+const account = __importStar(require("./account"));
+exports.account = account;

@@ -11,19 +11,21 @@
   "types": "index.d.ts",
   "browser": "browser.js",
   "dependencies": {
-    "@types/bs58": "^4.0.0",
-    "@types/http-errors": "^1.6.1",
     "bs58": "^4.0.1",
     "error-polyfill": "^0.1.2",
     "http-errors": "^1.7.2",
     "js-sha256": "^0.9.0",
     "node-fetch": "^2.3.0",
-    "protobufjs": "^6.8.8",
-    "ts-protoc-gen": "^0.10.0",
-    "tweetnacl": "^1.0.0",
-    "typescript": "^3.5.1"
+    "typescript": "^3.5.1",
+    "elliptic": "^6.4.8"
   },
   "devDependencies": {
+    "@types/bs58": "^4.0.0",
+    "@types/elliptic": "^6.4.8",
+    "@types/google-protobuf": "^3.2.7",
+    "@types/http-errors": "^1.6.1",
+    "protobufjs": "^6.8.8",
+    "ts-protoc-gen": "^0.10.0",
     "browserify": "^16.2.3",
     "documentation": "^9.1.1",
     "eslint": "^5.14.0",
