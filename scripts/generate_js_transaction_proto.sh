@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 set -ex
-NEARLIB_DIR="$(npm prefix)"
+
 NEAR_PROTOS_DIR="${NEAR_PROTOS_DIR:-../nearcore/core/protos/protos}"
-"$(npm bin)"/pbjs \
-	-t static-module \
-	-w commonjs \
-	-o ${NEARLIB_DIR}/protos.js \
+NEARLIB_DIR="$(npm prefix)"
+PROTOC_GEN_TS_PATH="$(npm bin)/protoc-gen-ts"
+
+protoc \
+	--plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}" \
+	--ts_out="${NEARLIB_DIR}/src.ts/" \
+	--proto_path=${NEAR_PROTOS_DIR} \
 	${NEAR_PROTOS_DIR}/signed_transaction.proto
