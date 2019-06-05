@@ -171,7 +171,7 @@ class Account {
 module.exports = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./protos":67,"./signing/key_pair":71,"bs58":20,"buffer":21}],2:[function(require,module,exports){
+},{"./protos":68,"./signing/key_pair":72,"bs58":20,"buffer":21}],2:[function(require,module,exports){
 (function (Buffer){
 require('error-polyfill');
 window.nearlib = require('./index');
@@ -197,7 +197,7 @@ module.exports = { Near, NearClient, Account, SimpleKeyStoreSigner, InMemoryKeyS
 
 
 
-},{"./account":1,"./dev":4,"./local_node_connection":6,"./near":7,"./nearclient":8,"./signing/account_info":68,"./signing/browser_local_storage_key_store":69,"./signing/in_memory_key_store":70,"./signing/key_pair":71,"./signing/simple_key_store_signer":72,"./wallet-access-key":73,"./wallet-account":74}],4:[function(require,module,exports){
+},{"./account":1,"./dev":4,"./local_node_connection":6,"./near":7,"./nearclient":8,"./signing/account_info":69,"./signing/browser_local_storage_key_store":70,"./signing/in_memory_key_store":71,"./signing/key_pair":72,"./signing/simple_key_store_signer":73,"./wallet-access-key":74,"./wallet-account":75}],4:[function(require,module,exports){
 const Near = require('./near');
 const NearClient = require('./nearclient');
 const Account = require('./account');
@@ -311,7 +311,7 @@ function getCookie(name) {
     return v ? v[2] : null;
 }
 
-},{"./account":1,"./internal/send-json":5,"./local_node_connection":6,"./near":7,"./nearclient":8,"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72}],5:[function(require,module,exports){
+},{"./account":1,"./internal/send-json":5,"./local_node_connection":6,"./near":7,"./nearclient":8,"./signing/browser_local_storage_key_store":70,"./signing/key_pair":72,"./signing/simple_key_store_signer":73}],5:[function(require,module,exports){
 let fetch = (typeof window === 'undefined' || window.name == 'nodejs') ? require('node-fetch') : window.fetch;
 
 const createError = require('http-errors');
@@ -597,9 +597,10 @@ function sleep(time) {
 module.exports = Near;
 
 }).call(this,require("buffer").Buffer)
-},{"./local_node_connection":6,"./nearclient":8,"./protos":67,"./signing/browser_local_storage_key_store":69,"./signing/simple_key_store_signer":72,"buffer":21,"http-errors":37}],8:[function(require,module,exports){
+},{"./local_node_connection":6,"./nearclient":8,"./protos":68,"./signing/browser_local_storage_key_store":70,"./signing/simple_key_store_signer":73,"buffer":21,"http-errors":37}],8:[function(require,module,exports){
 (function (Buffer){
 const { SignedTransaction } = require('./protos');
+const { getTransactionFieldName } = require('./protos-utils');
 
 /**
  * Client for communicating with near blockchain. 
@@ -634,18 +635,19 @@ class NearClient {
     }
 
     async signAndSubmitTransaction(originator, transaction) {
-        const protoClass = transaction.constructor;
-        const className = protoClass.name;
-        const propertyName = className[0].toLowerCase() + className.replace(/Transaction$/, '').substring(1);
+        const fieldName = getTransactionFieldName(transaction);
+        if  (!fieldName) {
+            throw new Error(`Transaction type ${transaction.constructor.name} isn't recognized by protos-utils`);
+        }
 
-        const buffer = protoClass.encode(transaction).finish();
+        const buffer = transaction.constructor.encode(transaction).finish();
         const signatureAndPublicKey = await this.signer.signBuffer(
             buffer,
             originator,
         );
 
         const signedTransaction = SignedTransaction.create({
-            [propertyName]: transaction,
+            [fieldName]: transaction,
             signature: signatureAndPublicKey.signature,
             publicKey: signatureAndPublicKey.publicKey,
         });
@@ -735,7 +737,7 @@ function _printLogs(contractAccountId, log) {
 module.exports = NearClient;
 
 }).call(this,require("buffer").Buffer)
-},{"./protos":67,"buffer":21}],9:[function(require,module,exports){
+},{"./protos":68,"./protos-utils":67,"buffer":21}],9:[function(require,module,exports){
 "use strict";
 module.exports = asPromise;
 
@@ -10009,6 +10011,22 @@ module.exports = {
     eachCombination: require("./eachCombination")
 };
 },{"./cache":64,"./eachCombination":65}],67:[function(require,module,exports){
+const protos = require('./protos');
+
+const TRANSACTION_FIELD_MAP = {
+    [protos.CreateAccountTransaction.name]: 'createAccount',
+    [protos.DeployContractTransaction.name]: 'deployContract',
+    [protos.FunctionCallTransaction.name]: 'functionCall',
+    [protos.SendMoneyTransaction.name]: 'sendMoney',
+    [protos.StakeTransaction.name]: 'stake',
+    [protos.SwapKeyTransaction.name]: 'swapKey',
+    [protos.AddKeyTransaction.name]: 'addKey',
+    [protos.DeleteKeyTransaction.name]: 'deleteKey',
+};
+
+module.exports.getTransactionFieldName = (transactionProto) => TRANSACTION_FIELD_MAP[transactionProto.constructor.name];
+
+},{"./protos":68}],68:[function(require,module,exports){
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
 "use strict";
 
@@ -14879,7 +14897,7 @@ $root.AccessKey = (function() {
 
 module.exports = $root;
 
-},{"protobufjs/minimal":46}],68:[function(require,module,exports){
+},{"protobufjs/minimal":46}],69:[function(require,module,exports){
 const KeyPair = require('./key_pair');
 
 /**
@@ -14941,7 +14959,7 @@ class AccountInfo {
 
 module.exports = AccountInfo;
 
-},{"./key_pair":71}],69:[function(require,module,exports){
+},{"./key_pair":72}],70:[function(require,module,exports){
 /**
  * Stores keys in the browser local storage. This allows to retain keys between
  * browser sessions. Local storage likes to work with strings so we store public and private key separately.
@@ -15022,7 +15040,7 @@ class BrowserLocalStorageKeystore {
 }
 
 module.exports = BrowserLocalStorageKeystore;
-},{"./account_info":68,"./key_pair":71}],70:[function(require,module,exports){
+},{"./account_info":69,"./key_pair":72}],71:[function(require,module,exports){
 /**
  * Simple in-memory keystore for testing purposes.
  */
@@ -15052,7 +15070,7 @@ class InMemoryKeyStore {
 }
 
 module.exports = InMemoryKeyStore;
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 (function (Buffer){
 
 const bs58 = require('bs58');
@@ -15128,7 +15146,7 @@ class KeyPair {
 module.exports = KeyPair;
 
 }).call(this,require("buffer").Buffer)
-},{"bs58":20,"buffer":21,"tweetnacl":62}],72:[function(require,module,exports){
+},{"bs58":20,"buffer":21,"tweetnacl":62}],73:[function(require,module,exports){
 /**
  * Simple signer that acquires a key from its single keystore and signs transactions.
  */
@@ -15170,7 +15188,7 @@ class SimpleKeyStoreSigner {
 
 module.exports = SimpleKeyStoreSigner;
 
-},{"../protos":67,"bs58":20,"js-sha256":40,"tweetnacl":62}],73:[function(require,module,exports){
+},{"../protos":68,"bs58":20,"js-sha256":40,"tweetnacl":62}],74:[function(require,module,exports){
 (function (process){
 /**
  * Access Key based signer that uses Wallet to authorize app on the account and receive the access key.
@@ -15297,7 +15315,7 @@ class WalletAccessKey {
 module.exports = WalletAccessKey;
 
 }).call(this,require('_process'))
-},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72,"_process":45}],74:[function(require,module,exports){
+},{"./signing/browser_local_storage_key_store":70,"./signing/key_pair":72,"./signing/simple_key_store_signer":73,"_process":45}],75:[function(require,module,exports){
 (function (process){
 /**
  * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
@@ -15433,4 +15451,4 @@ class WalletAccount {
 module.exports = WalletAccount;
 
 }).call(this,require('_process'))
-},{"./signing/browser_local_storage_key_store":69,"./signing/key_pair":71,"./signing/simple_key_store_signer":72,"_process":45}]},{},[2]);
+},{"./signing/browser_local_storage_key_store":70,"./signing/key_pair":72,"./signing/simple_key_store_signer":73,"_process":45}]},{},[2]);
