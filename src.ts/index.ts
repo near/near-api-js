@@ -3,10 +3,15 @@
 import * as providers from './providers';
 import * as utils from './utils';
 
-import * as account from './account';
+import { Account } from './account';
+import * as accountCreator from './account_creator';
+import { Connection } from './connection';
 
 export {
-    account,
+    accountCreator,
     providers,
-    utils
+    utils,
+
+    Account,
+    Connection
 };
