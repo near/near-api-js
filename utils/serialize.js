@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var bs58_1 = __importDefault(require("bs58"));
+const bs58_1 = __importDefault(require("bs58"));
 function base_encode(value) {
     if (typeof (value) === 'string') {
         value = Buffer.from(value, 'utf8');

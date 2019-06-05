@@ -1,4 +1,5 @@
 import { Network } from '../utils/network';
+import { SignedTransaction } from '../signed_transaction_pb';
 export declare enum FinalTransactionStatus {
     Unknown = "Unknown",
     Started = "Started",
@@ -22,6 +23,6 @@ export declare type QueryResult = {
 };
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
-    abstract sendTransaction(signedTransaction: string | Promise<string>): Promise<FinalTransactionResult>;
+    abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult>;
     abstract query(path: string, data: string): Promise<QueryResult>;
 }
