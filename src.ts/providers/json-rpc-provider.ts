@@ -28,12 +28,12 @@ export class JsonRpcProvider extends Provider {
 
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult> {
         let bytes = SignedTransaction.encode(signedTransaction).finish();
-        let response = await this.sendJsonRpc("broadcast_tx_commit", [base_encode(bytes)]);
-        return JSON.parse(response);
+        return this.sendJsonRpc("broadcast_tx_commit", [base_encode(bytes)]);
     }
 
     async query(path: string, data: string): Promise<QueryResult> {
-        return (await this.sendJsonRpc("query", [path, data])).result;
+        console.warn(await this.sendJsonRpc("query", [path, data]));
+        return await this.sendJsonRpc("query", [path, data]);
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {
@@ -43,6 +43,10 @@ export class JsonRpcProvider extends Provider {
             id: (_nextId++),
             jsonrpc: "2.0"
         };
-        return fetchJson(this.connection, JSON.stringify(request));
+        const result = await fetchJson(this.connection, JSON.stringify(request));
+        if (result.error) {
+            throw new Error(`[${result.error.code}] ${result.error.message}: ${result.error.data}`);
+        }
+        return result.result;
     }
 }

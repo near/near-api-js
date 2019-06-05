@@ -16,12 +16,11 @@
     "http-errors": "^1.7.2",
     "js-sha256": "^0.9.0",
     "node-fetch": "^2.3.0",
-    "typescript": "^3.5.1",
-    "elliptic": "^6.4.8"
+    "tweetnacl": "^1.0.1",
+    "typescript": "^3.5.1"
   },
   "devDependencies": {
     "@types/bs58": "^4.0.0",
-    "@types/elliptic": "^6.4.8",
     "@types/google-protobuf": "^3.2.7",
     "@types/http-errors": "^1.6.1",
     "protobufjs": "^6.8.8",

@@ -1,25 +1,37 @@
 'use strict';
 
-import { randomBytes } from 'crypto';
-import { eddsa as EdDSA } from 'elliptic';
+import nacl from 'tweetnacl';
 import { base_encode, base_decode } from './serialize';
 
 export type Arrayish = string | ArrayLike<number>;
-export type Signature = string;
 
-let _ed25519curve: EdDSA = null
-function getEd25519Curve(): EdDSA {
-    if (!_ed25519curve) {
-        _ed25519curve = new EdDSA('ed25519');
+export type Signature = {
+    signature: Uint8Array,
+    publicKey: string,
+}
+
+export abstract class KeyPair {
+    abstract sign(message: Uint8Array): Signature;
+    abstract verify(message: Uint8Array, signature: Uint8Array): boolean;
+    abstract toString(): string;
+
+    static fromString(encodedKey: string): KeyPair {
+        let parts = encodedKey.split(':');
+        if (parts.length != 2) {
+            throw new Error("Invalid encoded key format, must be <curve>:<encoded key>");
+        }
+        switch (parts[0]) {
+            case "ed25519": return new KeyPairEd25519(parts[1]);
+            default: throw new Error(`Unknown curve: ${parts[0]}`);
+        }
     }
-    return _ed25519curve;
 }
 
 /**
  * This class provides key pair functionality for Ed25519 curve:
  * generating key pairs, encoding key pairs, signing and verifying.
  */
-export class KeyPairEd25519 {
+export class KeyPairEd25519 extends KeyPair {
     readonly publicKey: string;
     readonly secretKey: string;
 
@@ -29,8 +41,9 @@ export class KeyPairEd25519 {
      * @param {string} secretKey
      */
     constructor(secretKey: string) {
-        const keyPair = getEd25519Curve().keyFromSecret(<Buffer> base_decode(secretKey));
-        this.publicKey = base_encode(Buffer.from(keyPair.getPublic()));
+        super();
+        let keyPair = nacl.sign.keyPair.fromSecretKey(base_decode(secretKey));
+        this.publicKey = base_encode(keyPair.publicKey);
         this.secretKey = secretKey;
     }
 
@@ -45,17 +58,20 @@ export class KeyPairEd25519 {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        let secretKey = randomBytes(32);
+        let secretKey = nacl.randomBytes(64);
         return new KeyPairEd25519(base_encode(secretKey));
     }
 
-    sign(message: Buffer): Buffer {
-        const keyPair = getEd25519Curve().keyFromSecret(<Buffer> base_decode(this.secretKey));
-        return keyPair.sign(message).toBytes();
+    toString(): string {
+        return `ed25519:${this.secretKey}`;
     }
 
-    verify(message: Buffer, signature: Buffer): boolean {
-        const keyPair = getEd25519Curve().keyFromSecret(<Buffer> base_decode(this.secretKey));
-        return keyPair.verify(message, signature);
+    sign(message: Uint8Array): Signature {
+        const signature = nacl.sign.detached(message, base_decode(this.secretKey));
+        return { signature, publicKey: this.publicKey };
+    }
+
+    verify(message: Uint8Array, signature: Uint8Array): boolean {
+        return nacl.sign.detached.verify(message, signature, base_decode(this.publicKey));
     }
 }
