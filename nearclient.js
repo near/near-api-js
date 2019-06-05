@@ -1,4 +1,5 @@
 const { SignedTransaction } = require('./protos');
+const { getTransactionFieldName } = require('./protos-utils');
 
 /**
  * Client for communicating with near blockchain. 
@@ -33,18 +34,19 @@ class NearClient {
     }
 
     async signAndSubmitTransaction(originator, transaction) {
-        const protoClass = transaction.constructor;
-        const className = protoClass.name;
-        const propertyName = className[0].toLowerCase() + className.replace(/Transaction$/, '').substring(1);
+        const fieldName = getTransactionFieldName(transaction);
+        if  (!fieldName) {
+            throw new Error(`Transaction type ${transaction.constructor.name} isn't recognized by protos-utils`);
+        }
 
-        const buffer = protoClass.encode(transaction).finish();
+        const buffer = transaction.constructor.encode(transaction).finish();
         const signatureAndPublicKey = await this.signer.signBuffer(
             buffer,
             originator,
         );
 
         const signedTransaction = SignedTransaction.create({
-            [propertyName]: transaction,
+            [fieldName]: transaction,
             signature: signatureAndPublicKey.signature,
             publicKey: signatureAndPublicKey.publicKey,
         });
