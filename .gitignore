@@ -1,6 +1,9 @@
 #IDE
 .idea
 
+# TypeScript output files.
+lib/
+
 storage
 node_modules
 

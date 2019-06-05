@@ -16,7 +16,8 @@ function getEd25519Curve(): EdDSA {
 }
 
 /**
- * This class provides key pair functionality (generating key pairs, encoding key pairs).
+ * This class provides key pair functionality for Ed25519 curve:
+ * generating key pairs, encoding key pairs, signing and verifying.
  */
 export class KeyPairEd25519 {
     readonly publicKey: string;
@@ -28,7 +29,7 @@ export class KeyPairEd25519 {
      * @param {string} secretKey
      */
     constructor(secretKey: string) {
-        const keyPair = getEd25519Curve().keyFromSecret(base_decode(secretKey));
+        const keyPair = getEd25519Curve().keyFromSecret(<Buffer> base_decode(secretKey));
         this.publicKey = base_encode(Buffer.from(keyPair.getPublic()));
         this.secretKey = secretKey;
     }
@@ -49,12 +50,12 @@ export class KeyPairEd25519 {
     }
 
     sign(message: Buffer): Buffer {
-        const keyPair = getEd25519Curve().keyFromSecret(base_decode(this.secretKey));
+        const keyPair = getEd25519Curve().keyFromSecret(<Buffer> base_decode(this.secretKey));
         return keyPair.sign(message).toBytes();
     }
 
     verify(message: Buffer, signature: Buffer): boolean {
-        const keyPair = getEd25519Curve().keyFromSecret(base_decode(this.secretKey));
+        const keyPair = getEd25519Curve().keyFromSecret(<Buffer> base_decode(this.secretKey));
         return keyPair.verify(message, signature);
     }
 }

@@ -1,7 +1,7 @@
 'use strict';
 
 import { Network } from '../utils/network';
-import { SignedTransaction } from '../protos/signed_transaction_pb';
+import { SignedTransaction } from '../protos';
 
 export enum FinalTransactionStatus {
     Unknown = "Unknown",
