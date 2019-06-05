@@ -9,7 +9,7 @@
         "module": "commonjs",
         "target": "esnext",
         "moduleResolution": "node",
-        "outDir": "./",
+        "outDir": "./lib",
         "declaration": true,
         "preserveSymlinks": true,
         "preserveWatchOutput": true,
