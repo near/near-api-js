@@ -3,6 +3,7 @@
 import sha256 from 'js-sha256';
 import { Signature } from './utils/key_pair';
 import { KeyStore } from './key_stores';
+import { base_encode } from './utils/serialize';
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.

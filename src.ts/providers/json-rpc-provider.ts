@@ -32,7 +32,6 @@ export class JsonRpcProvider extends Provider {
     }
 
     async query(path: string, data: string): Promise<QueryResult> {
-        console.warn(await this.sendJsonRpc("query", [path, data]));
         return await this.sendJsonRpc("query", [path, data]);
     }
 
