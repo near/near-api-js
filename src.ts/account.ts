@@ -1,6 +1,6 @@
 'use strict';
 
-import { AllTransactions, sendMoney, createAccount, signTransaction, deployContract,
+import { sendMoney, createAccount, signTransaction, deployContract,
     fromUint128, addKey, functionCall, createAccessKey, deleteKey } from './transaction'
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
@@ -45,13 +45,30 @@ export class Account {
         return this._state;
     }
 
-    private async signAndSendTransaction(transaction: AllTransactions): Promise<FinalTransactionResult> {
+    private printLogs(contractId: string, logs: string[]) {
+        for (let i = 0; i < logs.length; ++i) {
+            console.log(`[${contractId}]: ${logs[i]}`);
+        }
+    }
+
+    private async signAndSendTransaction(transaction: any): Promise<FinalTransactionResult> {
         let signedTx = await signTransaction(
             this.connection.signer, transaction, this.accountId, this.connection.networkId);
         let result = await this.connection.provider.sendTransaction(signedTx);
-        if (result.status != FinalTransactionStatus.Completed) {
-            throw new Error(`Transaction failed with status ${result.status}: ${result}`);
+
+        const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
+        if (transaction.hasOwnProperty('contractId')) {
+            this.printLogs(transaction['contractId'], flatLogs);
         }
+
+        if (result.status === FinalTransactionStatus.Failed) {
+            if (result.logs) {
+                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:') || '');
+                throw new Error(`Transaction ${result.logs[0].hash} failed. ${errorMessage}`);
+            }
+        }
+        // TODO: if Tx is Unknown or Started.
+        // TODO: deal with timeout on node side.
         return result;
     }
 
@@ -82,19 +99,22 @@ export class Account {
     }
 
     async functionCall(contractId: string, methodName: string, args: any): Promise<FinalTransactionResult> {
+        if (!args) {
+            args = {};
+        }
         await this.ready;
         this._state.nonce++;
-        return this.signAndSendTransaction(functionCall(this._state.nonce, this.accountId, contractId, methodName, Buffer.from(JSON.stringify(args)), DEFAULT_FUNC_CALL_AMOUNT))
+        return this.signAndSendTransaction(functionCall(this._state.nonce, this.accountId, contractId, methodName, Buffer.from(JSON.stringify(args)), DEFAULT_FUNC_CALL_AMOUNT));
     }
 
-    async addAccessKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: bigint): Promise<FinalTransactionResult> {
+    async addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: bigint): Promise<FinalTransactionResult> {
         await this.ready;
         this._state.nonce++;
-        const accessKey = createAccessKey(contractId, methodName, balanceOwner, amount);
+        const accessKey = contractId ? createAccessKey(contractId, methodName, balanceOwner, amount) : null;
         return this.signAndSendTransaction(addKey(this._state.nonce, this.accountId, publicKey, accessKey));
     }
 
-    async deleteAccessKey(publicKey: string): Promise<FinalTransactionResult> {
+    async deleteKey(publicKey: string): Promise<FinalTransactionResult> {
         await this.ready;
         this._state.nonce++;
         return this.signAndSendTransaction(deleteKey(this._state.nonce, this.accountId, publicKey));
@@ -103,8 +123,10 @@ export class Account {
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
         let result = await this.connection.provider.query(`call/${contractId}/${methodName}`, base_encode(JSON.stringify(args)));
         if (!result.value) {
-            throw new Error(`Function failed: ${result.info}\nFull result: ${JSON.stringify(result)}`);
+            throw new Error(`Function failed: ${result.info}\nFull result: ${JSON.stringify(result, null, 2)}`);
         }
+        const logs = result.log.split('\n');
+        this.printLogs(contractId, logs);
         return JSON.parse(base_decode(result.value).toString());
     }
 }

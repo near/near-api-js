@@ -41,7 +41,7 @@ export function deployContract(nonce: number, contractId: string, wasmByteArray:
 }
 
 export function functionCall(nonce: number, originator: string, contractId: string, methodName: string, args: Uint8Array, amount: bigint): FunctionCallTransaction {
-    return new FunctionCallTransaction({nonce, originator, contractId, methodName: Buffer.from(methodName), amount: bigInt(amount) });
+    return new FunctionCallTransaction({nonce, originator, contractId, methodName: Buffer.from(methodName), args, amount: bigInt(amount) });
 }
 
 export function sendMoney(nonce: number, originator: string, receiver: string, amount: bigint): SendMoneyTransaction {

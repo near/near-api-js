@@ -44,13 +44,17 @@ describe('with deploy contract', () => {
     let oldLog;
     let logs;
     let contractId = 'test_contract_' + Date.now();
-    let contractAccount;
+    let contract;
 
     beforeAll(async () => {
         const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
         keyStore.setKey(testUtils.networkId, contractId, keyPair);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        contractAccount = await masterAccount.createAndDeployContract(contractId, keyPair.publicKey, data, BigInt(100000));
+        await masterAccount.createAndDeployContract(contractId, keyPair.publicKey, data, BigInt(100000));
+        contract = new nearlib.Contract(masterAccount, contractId, {
+            viewMethods: ['hello', 'getValue', 'getAllKeys', 'returnHiWithLogs'],
+            changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']
+        });
     });
 
     beforeEach(async () => {
@@ -71,15 +75,46 @@ describe('with deploy contract', () => {
             'hello', // this is the function defined in hello.wasm file that we are calling
             {name: 'trex'});
         expect(result).toEqual('hello trex');
+
+        const setCallValue = await generateUniqueString('setCallPrefix');
+        const result2 = await masterAccount.functionCall(contractId, 'setValue', { value: setCallValue });
+        expect(nearlib.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
+        expect(await masterAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
     
     test('make function calls via contract', async() => {
-        const contract = new nearlib.Contract(masterAccount, contractId, { 
-            viewMethods: ['hello', 'getValue'], 
-            changeMethods: ['setValue']
-        });
         const result = await contract.hello({ name: 'trex' });
         expect(result).toEqual('hello trex');
+
+        const setCallValue = await generateUniqueString('setCallPrefix');
+        const result2 = await contract.setValue({ value: setCallValue });
+        expect(nearlib.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
+        expect(await contract.getValue()).toEqual(setCallValue);
+    });
+
+    test('can get logs from method result', async () => {
+        await contract.generateLogs();
+        expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
+    });
+
+    test('can get logs from view call', async () => {
+        let result = await contract.returnHiWithLogs();
+        expect(result).toEqual('Hi');
+        expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
+    });
+
+    const failedAssertTest = process.env.SKIP_FAILED_ASSERT_TEST ? xtest : test;
+    failedAssertTest('can get assert message from method result', async () => {
+        await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
+        expect(logs.length).toBe(3);
+        expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
+        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "expected to fail" filename: "../out/main.ts" line: \\d+ col: \\d+$`));
+        expect(logs[2]).toEqual(`[${contractId}]: Runtime error: wasm async call execution failed with error: Runtime(AssertFailed)`);
+    });
+
+    test('test set/remove', async () => {
+        const result = await contract.testSetRemove({ value: '123' });
+        expect(result.status).toBe('Completed');
     });
 });
 
@@ -94,7 +129,7 @@ describe('with deploy contract', () => {
 
 //     test('make function call using access key', async() => {
 //         const keyForAccessKey = nearlib.utils.keyPair.fromRandom('ed25519');
-//         await workingAccount.addAccessKey(keyForAccessKey.publicKey, contractAccount.accountId, '', '', 400000);
+//         await workingAccount.addKey(keyForAccessKey.publicKey, contractId, '', '', 400000);
 //         keyStore.setKey(workingAccount.accountId, keyForAccessKey);
 
 //         let contract = 
