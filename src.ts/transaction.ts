@@ -1,3 +1,6 @@
+'use strict';
+
+import { BN } from "bn.js";
 import { Uint128, SendMoneyTransaction, CreateAccountTransaction, 
     SignedTransaction, DeployContractTransaction, FunctionCallTransaction, 
     StakeTransaction, SwapKeyTransaction, AddKeyTransaction,
@@ -21,7 +24,8 @@ const TRANSACTION_FIELD_MAP = {
 type AllTransactions = SendMoneyTransaction | CreateAccountTransaction | DeployContractTransaction | FunctionCallTransaction | StakeTransaction | SwapKeyTransaction | AddKeyTransaction | DeleteKeyTransaction;
 
 function bigInt(num: bigint): Uint128 {
-    return new Uint128({ number: Buffer.from(num.toString(16), 'hex')});
+    const number = (new BN(num)).toArray('le', 16);
+    return new Uint128({ number });
 }
 
 export function fromUint128(num: string): bigint {

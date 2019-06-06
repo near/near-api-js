@@ -26,7 +26,7 @@ export class Account {
         this.ready = Promise.resolve(this.fetchState());
     }
 
-    private async fetchState(): Promise<void> {
+    async fetchState(): Promise<void> {
         const response = await this.connection.provider.query(`account/${this.accountId}`, '');
         const state = JSON.parse(base_decode(response.value).toString());
         this._state = state;
