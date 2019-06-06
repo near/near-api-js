@@ -14,6 +14,14 @@ export abstract class KeyPair {
     abstract sign(message: Uint8Array): Signature;
     abstract verify(message: Uint8Array, signature: Uint8Array): boolean;
     abstract toString(): string;
+    abstract getPublicKey(): string;
+
+    static fromRandom(curve: string): KeyPair {
+        switch (curve) {
+            case "ed25519": return KeyPairEd25519.fromRandom();
+            default: throw new Error(`Unknown curve ${curve}`);
+        }
+    }
 
     static fromString(encodedKey: string): KeyPair {
         let parts = encodedKey.split(':');
@@ -62,10 +70,6 @@ export class KeyPairEd25519 extends KeyPair {
         return new KeyPairEd25519(base_encode(newKeyPair.secretKey));
     }
 
-    toString(): string {
-        return `ed25519:${this.secretKey}`;
-    }
-
     sign(message: Uint8Array): Signature {
         const signature = nacl.sign.detached(message, base_decode(this.secretKey));
         return { signature, publicKey: this.publicKey };
@@ -73,5 +77,13 @@ export class KeyPairEd25519 extends KeyPair {
 
     verify(message: Uint8Array, signature: Uint8Array): boolean {
         return nacl.sign.detached.verify(message, signature, base_decode(this.publicKey));
+    }
+
+    toString(): string {
+        return `ed25519:${this.secretKey}`;
+    }
+
+    getPublicKey(): string {
+        return this.publicKey;
     }
 }
