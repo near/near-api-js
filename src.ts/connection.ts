@@ -1,9 +1,7 @@
 'use strict';
 
 import { Provider, JsonRpcProvider } from './providers';
-import { InMemoryKeyStore } from './key_stores';
 import { Signer, InMemorySigner } from './signer';
-import { KeyPair } from './utils/key_pair';
 
 function getProvider(config: any): Provider {
     switch (config.type) {
@@ -15,12 +13,7 @@ function getProvider(config: any): Provider {
 function getSigner(networkId: string, config: any): Signer {
     switch (config.type) {
         case "InMemorySigner": {
-            let keyStore = new InMemoryKeyStore();
-            Object.keys(config.keyStore).forEach((accountId: string) => {
-                let keyPair = KeyPair.fromString(config.keyStore[accountId]);
-                keyStore.setKey(networkId, accountId, keyPair);
-            });
-            return new InMemorySigner(keyStore);
+            return new InMemorySigner(config.keyStore);
         }
         default: throw new Error(`Unknown signer type ${config.type}`);
     }

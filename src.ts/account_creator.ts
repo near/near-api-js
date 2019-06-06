@@ -9,24 +9,28 @@ export abstract class AccountCreator {
     abstract async createAccount(newAccountId: string, publicKey: string): Promise<void>;
 }
 
-export class LocalAccountCreator {
+export class LocalAccountCreator extends AccountCreator {
     readonly masterAccount: Account;
+    readonly initialBalance: bigint;
 
-    constructor(masterAccount: Account) {
+    constructor(masterAccount: Account, initialBalance: bigint) {
+        super();
         this.masterAccount = masterAccount;
+        this.initialBalance = initialBalance;
     }
 
     async createAccount(newAccountId: string, publicKey: string): Promise<void> {
-        await this.masterAccount.createAccount(newAccountId, publicKey, BigInt(1000 * 1000 * 1000 * 1000));
+        await this.masterAccount.createAccount(newAccountId, publicKey, this.initialBalance);
         // TODO: check the response here for status and raise if didn't complete.
     }
 }
 
-export class UrlAccountCreator {
+export class UrlAccountCreator extends AccountCreator {
     readonly connection: Connection;
     readonly helperConnection: ConnectionInfo;
 
     constructor(connection: Connection, helperUrl: string) {
+        super();
         this.connection = connection;
         this.helperConnection = { url: helperUrl };
     }
