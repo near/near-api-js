@@ -26,6 +26,7 @@ export type QueryResult = {
     key: string,
     value: string,
     log: string,
+    info: string,
 }
 
 export abstract class Provider {
