@@ -22,11 +22,12 @@ async function setUpTestConnection() {
 
 // Generate some unique string with a given prefix using the alice nonce.
 function generateUniqueString(prefix) {
-    return prefix + Date.now();
+    return prefix + Date.now() + Math.round(Math.random() * 1000);
 }
 
-async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE }) {
-    const newAccountName = generateUniqueString('create.account.test');
+async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE, trials: 5 }) {
+    await masterAccount.fetchState();
+    const newAccountName = generateUniqueString('test');
     const newPublicKey = await masterAccount.connection.signer.createKey(newAccountName, networkId);
     await masterAccount.createAccount(newAccountName, newPublicKey, options.amount);
     return new nearlib.Account(masterAccount.connection, newAccountName);
@@ -60,5 +61,11 @@ function createFakeStorage() {
     };
 }
 
+function sleep(time) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, time);
+    });
+}
+
 module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE,
-    generateUniqueString, createAccount, createFakeStorage, deployContract };
+    generateUniqueString, createAccount, createFakeStorage, deployContract, sleep };

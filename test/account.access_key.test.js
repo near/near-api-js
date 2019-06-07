@@ -3,7 +3,7 @@ const nearlib = require('../lib/index');
 const testUtils = require('./test-utils');
 
 let connection;
-let masterAccount;
+let testAccount;
 let workingAccount;
 let contractId;
 let contract;
@@ -11,12 +11,14 @@ let contract;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 beforeAll(async () => {
+    let masterAccount;
     ({ connection, masterAccount } = await testUtils.setUpTestConnection());
+    testAccount = await testUtils.createAccount(masterAccount, { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
 });
 
 beforeEach(async () => {
-    contractId = 'test_contract_' + Date.now();
-    workingAccount = await testUtils.createAccount(masterAccount);
+    contractId = testUtils.generateUniqueString('test');
+    workingAccount = await testUtils.createAccount(testAccount);
     contract = await testUtils.deployContract(workingAccount, contractId);
 });
 
