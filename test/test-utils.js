@@ -3,7 +3,7 @@ const nearlib = require('../lib/index');
 const networkId = 'unittest';
 const testAccountName = 'test.near';
 
-const INITIAL_BALANCE = BigInt(10000000);
+const INITIAL_BALANCE = BigInt(100000000000);
 
 async function setUpTestConnection() {
     const keyStore = new nearlib.keyStores.InMemoryKeyStore();
@@ -14,8 +14,19 @@ async function setUpTestConnection() {
         signer: { type: 'InMemorySigner', keyStore }
     });
     const masterAccount = new nearlib.Account(connection, testAccountName);
-    const accountCreator = new nearlib.accountCreator.LocalAccountCreator(masterAccount, INITIAL_BALANCE);
-    return [connection, keyStore, masterAccount, accountCreator];
+    return { connection, keyStore, masterAccount };
 }
 
-module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE };
+// Generate some unique string with a given prefix using the alice nonce.
+function generateUniqueString(prefix) {
+    return prefix + Date.now();
+}
+
+async function createAccount(connection, masterAccount) {
+    const newAccountName = generateUniqueString('create.account.test');
+    const newPublicKey = await connection.signer.createKey(newAccountName, networkId);
+    await masterAccount.createAccount(newAccountName, newPublicKey, INITIAL_BALANCE);
+    return new nearlib.Account(connection, newAccountName);
+}
+
+module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE, generateUniqueString, createAccount };

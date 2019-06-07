@@ -47,7 +47,9 @@ export class Account {
 
     private printLogs(contractId: string, logs: string[]) {
         for (let i = 0; i < logs.length; ++i) {
-            console.log(`[${contractId}]: ${logs[i]}`);
+            if (logs[i]) {
+                console.log(`[${contractId}]: ${logs[i]}`);
+            }
         }
     }
 
@@ -59,11 +61,13 @@ export class Account {
         const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
         if (transaction.hasOwnProperty('contractId')) {
             this.printLogs(transaction['contractId'], flatLogs);
+        } else if (transaction.hasOwnProperty('originator')) {
+            this.printLogs(transaction['originator'], flatLogs);
         }
 
         if (result.status === FinalTransactionStatus.Failed) {
             if (result.logs) {
-                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:') || '');
+                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || flatLogs.find(it => it.startsWith('Runtime error:')) || '';
                 throw new Error(`Transaction ${result.logs[0].hash} failed. ${errorMessage}`);
             }
         }
