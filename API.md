@@ -257,7 +257,7 @@ Adds a new access key to the owners account for an some app to use.
 -   `ownersAccountId` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** id of the owner's account.
 -   `newPublicKey` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** public key for the access key.
 -   `contractId` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** if the given contractId is not empty, then this access key will only be able to call
-         the given contractId.
+         the given contractId. Otherwise this method is going to add unrestricted key.
 -   `methodName` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** If the given method name is not empty, then this access key will only be able to call
          the given method name.
 -   `fundingOwner` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** account id to own the funding of this access key. If empty then account owner is used by default.
