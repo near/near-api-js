@@ -1,7 +1,6 @@
 
 const nearlib = require('../lib/index');
 const testUtils = require('./test-utils');
-const fs = require('fs');
 
 let connection;
 let masterAccount;
@@ -9,16 +8,7 @@ let workingAccount;
 let contractId;
 let contract;
 
-const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
-
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
-async function deployContract(contractId) {
-    const newPublicKey = await connection.signer.createKey(contractId, testUtils.networkId);
-    const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-    await workingAccount.createAndDeployContract(contractId, newPublicKey, data, BigInt(100000));
-    return new nearlib.Contract(workingAccount, contractId, { viewMethods: ['getValue'], changeMethods: ['setValue'] });
-}
 
 beforeAll(async () => {
     ({ connection, masterAccount } = await testUtils.setUpTestConnection());
@@ -26,8 +16,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     contractId = 'test_contract_' + Date.now();
-    workingAccount = await testUtils.createAccount(connection, masterAccount);
-    contract = await deployContract(contractId);
+    workingAccount = await testUtils.createAccount(masterAccount);
+    contract = await testUtils.deployContract(workingAccount, contractId);
 });
 
 test('make function call using access key', async() => {
@@ -54,7 +44,7 @@ test('view account details after adding access keys', async() => {
     const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '', 1000000000);
 
-    const contract2 = await deployContract('test_contract2_' + Date.now());
+    const contract2 = await testUtils.deployContract(workingAccount, 'test_contract2_' + Date.now());
     const keyPair2 = nearlib.utils.KeyPair.fromRandom('ed25519');
     await workingAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', '', 2000000000);
 

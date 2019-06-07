@@ -1,9 +1,12 @@
+const fs = require('fs');
+
 const nearlib = require('../lib/index');
 
 const networkId = 'unittest';
 const testAccountName = 'test.near';
 
 const INITIAL_BALANCE = BigInt(100000000000);
+const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
 
 async function setUpTestConnection() {
     const keyStore = new nearlib.keyStores.InMemoryKeyStore();
@@ -22,11 +25,21 @@ function generateUniqueString(prefix) {
     return prefix + Date.now();
 }
 
-async function createAccount(connection, masterAccount) {
+async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE }) {
     const newAccountName = generateUniqueString('create.account.test');
-    const newPublicKey = await connection.signer.createKey(newAccountName, networkId);
-    await masterAccount.createAccount(newAccountName, newPublicKey, INITIAL_BALANCE);
-    return new nearlib.Account(connection, newAccountName);
+    const newPublicKey = await masterAccount.connection.signer.createKey(newAccountName, networkId);
+    await masterAccount.createAccount(newAccountName, newPublicKey, options.amount);
+    return new nearlib.Account(masterAccount.connection, newAccountName);
+}
+
+async function deployContract(workingAccount, contractId, options = { amount: BigInt(100000) }) {
+    const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
+    const data = [...fs.readFileSync(HELLO_WASM_PATH)];
+    await workingAccount.createAndDeployContract(contractId, newPublicKey, data, options.amount);
+    return new nearlib.Contract(workingAccount, contractId, {
+        viewMethods: ['getValue', 'getLastResult'],
+        changeMethods: ['setValue', 'callPromise']
+    });
 }
 
 function createFakeStorage() {
@@ -47,4 +60,5 @@ function createFakeStorage() {
     };
 }
 
-module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE, generateUniqueString, createAccount, createFakeStorage };
+module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE,
+    generateUniqueString, createAccount, createFakeStorage, deployContract };

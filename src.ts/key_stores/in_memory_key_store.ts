@@ -19,7 +19,11 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
-        return KeyPair.fromString(this.keys[`${accountId}_${networkId}`]);
+        const value = this.keys[`${accountId}_${networkId}`];
+        if (value === undefined) {
+            throw new Error(`Key for ${accountId} not found in ${networkId}`);
+        }
+        return KeyPair.fromString(value);
     }
 
     async removeKey(networkId: string, accountId: string): Promise<void> {

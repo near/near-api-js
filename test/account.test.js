@@ -30,8 +30,8 @@ test('create account and then view account returns the created account', async (
 });
 
 test('send money', async() => {
-    const sender = await testUtils.createAccount(connection, masterAccount);
-    const receiver = await testUtils.createAccount(connection, masterAccount);
+    const sender = await testUtils.createAccount(masterAccount);
+    const receiver = await testUtils.createAccount(masterAccount);
     await sender.sendMoney(receiver.accountId, BigInt(10000));
     await receiver.fetchState();
     const state = await receiver.state();
