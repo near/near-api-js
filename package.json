@@ -47,7 +47,7 @@
     "test": "npm run generate-protos && jest test --runInBand",
     "lint": "eslint .",
     "fix": "eslint . --fix",
-    "prepare": "npm run build && npm run doc",
+    "prepare": "tsc -p ./tsconfig.json && npm run doc",
     "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"
   },
   "author": "NEAR Inc"
