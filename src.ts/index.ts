@@ -10,6 +10,27 @@ import { Connection } from './connection';
 import { Signer, InMemorySigner } from './signer';
 import { Contract } from './contract';
 
+class Near {
+    readonly connection: Connection;
+
+    constructor(config: any) {
+        this.connection = Connection.fromConfig({
+            networkId: config.networkId,
+            provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl } },
+            signer: { type: 'InMemorySigner', keyStore: config.deps.keyStore }
+        });
+    }
+
+    account(accountId: string): Account {
+        return new Account(this.connection, accountId);
+    }
+}
+
+function connect(config: any): Near {
+    console.warn(config);
+    return new Near(config)
+}
+
 export {
     accountCreator,
     keyStores,
@@ -21,4 +42,6 @@ export {
     Contract,
     InMemorySigner,
     Signer,
+
+    connect
 };
