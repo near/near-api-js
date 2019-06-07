@@ -1,6 +1,8 @@
 'use strict';
 
+// We use BN for only single purpose of encoding BigInt into Byte Array (and it's already used by tweetnacl so not an additional dependencies).
 import BN from "bn.js";
+
 import { Uint128, SendMoneyTransaction, CreateAccountTransaction, 
     SignedTransaction, DeployContractTransaction, FunctionCallTransaction, 
     StakeTransaction, SwapKeyTransaction, AddKeyTransaction,

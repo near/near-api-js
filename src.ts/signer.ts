@@ -1,13 +1,18 @@
 'use strict';
 
 import sha256 from 'js-sha256';
-import { Signature } from './utils/key_pair';
+import { Signature, KeyPair } from './utils/key_pair';
 import { KeyStore } from './key_stores';
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
  */
 export abstract class Signer {
+
+    /**
+     * Creates new key and returns public key.
+     */
+    abstract async createKey(accountId: string, networkId?: string): Promise<string>;
 
     /**
      * Returns public key for given account / network.
@@ -44,6 +49,12 @@ export class InMemorySigner extends Signer {
     constructor(keyStore: KeyStore) {
         super();
         this.keyStore = keyStore;
+    }
+
+    async createKey(accountId: string, networkId: string): Promise<string> {
+        const keyPair = KeyPair.fromRandom('ed25519');
+        await this.keyStore.setKey(networkId, accountId, keyPair);
+        return keyPair.getPublicKey();
     }
 
     async getPublicKey(accountId?: string, networkId?: string): Promise<string> {
