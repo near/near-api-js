@@ -20,7 +20,7 @@
 
 ▸ **connect**(config: *`any`*): [Near](../classes/_index_.near.md)
 
-*Defined in [index.ts:29](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/index.ts#L29)*
+*Defined in [index.ts:29](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/index.ts#L29)*
 
 **Parameters:**
 

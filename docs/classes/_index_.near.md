@@ -12,7 +12,7 @@
 
 ⊕ **new Near**(config: *`any`*): [Near](_index_.near.md)
 
-*Defined in [index.ts:14](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/index.ts#L14)*
+*Defined in [index.ts:14](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/index.ts#L14)*
 
 **Parameters:**
 
@@ -32,7 +32,7 @@ ___
 
 **● connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [index.ts:14](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/index.ts#L14)*
+*Defined in [index.ts:14](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/index.ts#L14)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 ▸ **account**(accountId: *`string`*): [Account](_account_.account.md)
 
-*Defined in [index.ts:24](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/index.ts#L24)*
+*Defined in [index.ts:24](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/index.ts#L24)*
 
 **Parameters:**
 

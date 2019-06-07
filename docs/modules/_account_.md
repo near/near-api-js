@@ -24,7 +24,7 @@
 
 **Ƭ AccountState**: *`object`*
 
-*Defined in [account.ts:14](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/account.ts#L14)*
+*Defined in [account.ts:14](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/account.ts#L14)*
 
 #### Type declaration
 
@@ -50,7 +50,7 @@ ___
 
 **● DEFAULT_FUNC_CALL_AMOUNT**: *`bigint`* =  BigInt(1000000000)
 
-*Defined in [account.ts:12](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/account.ts#L12)*
+*Defined in [account.ts:12](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/account.ts#L12)*
 
 ___
 

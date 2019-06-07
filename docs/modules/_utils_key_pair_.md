@@ -22,7 +22,7 @@
 
 **Ƭ Arrayish**: *`string` \| `ArrayLike`<`number`>*
 
-*Defined in [utils/key_pair.ts:6](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/utils/key_pair.ts#L6)*
+*Defined in [utils/key_pair.ts:6](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/utils/key_pair.ts#L6)*
 
 ___
 <a id="signature"></a>
@@ -31,7 +31,7 @@ ___
 
 **Ƭ Signature**: *`object`*
 
-*Defined in [utils/key_pair.ts:8](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/utils/key_pair.ts#L8)*
+*Defined in [utils/key_pair.ts:8](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/utils/key_pair.ts#L8)*
 
 #### Type declaration
 

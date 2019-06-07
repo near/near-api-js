@@ -8,7 +8,7 @@
 
 **Ƭ ConnectionInfo**: *`object`*
 
-*Defined in [utils/web.ts:5](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/utils/web.ts#L5)*
+*Defined in [utils/web.ts:5](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/utils/web.ts#L5)*
 
 #### Type declaration
 
@@ -36,7 +36,7 @@ ___
 
 **● fetch**: *`any`* =  (typeof window === 'undefined' || window.name == 'nodejs') ? require('node-fetch') : window.fetch
 
-*Defined in [utils/web.ts:14](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/utils/web.ts#L14)*
+*Defined in [utils/web.ts:14](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/utils/web.ts#L14)*
 
 ___
 
@@ -48,7 +48,7 @@ ___
 
 ▸ **fetchJson**(connection: *`string` \| [ConnectionInfo](_utils_web_.md#connectioninfo)*, json?: *`string`*): `Promise`<`any`>
 
-*Defined in [utils/web.ts:16](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/utils/web.ts#L16)*
+*Defined in [utils/web.ts:16](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/utils/web.ts#L16)*
 
 **Parameters:**
 
