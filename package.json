@@ -11,6 +11,7 @@
   "types": "index.d.ts",
   "browser": "browser.js",
   "dependencies": {
+    "bn.js": "^4.11.5",
     "@types/bn.js": "^4.11.5",
     "bs58": "^4.0.1",
     "error-polyfill": "^0.1.2",
@@ -18,7 +19,8 @@
     "js-sha256": "^0.9.0",
     "node-fetch": "^2.3.0",
     "tweetnacl": "^1.0.1",
-    "typescript": "^3.5.1"
+    "typescript": "^3.5.1",
+    "protobufjs": "^6.8.8"
   },
   "devDependencies": {
     "@types/bs58": "^4.0.0",
@@ -28,7 +30,6 @@
     "documentation": "^9.1.1",
     "eslint": "^5.14.0",
     "jest": "^24.1.0",
-    "protobufjs": "^6.8.8",
     "ts-protoc-gen": "^0.10.0",
     "typedoc": "^0.14.2",
     "typedoc-plugin-markdown": "^1.2.1",
