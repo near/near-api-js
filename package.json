@@ -7,10 +7,11 @@
     "url": "git@:nearprotocol/nearcore.git"
   },
   "homepage": "https://github.com/nearprotocol/nearcore",
-  "main": "index.js",
+  "main": "lib/index.js",
   "types": "index.d.ts",
   "browser": "browser.js",
   "dependencies": {
+    "@types/bn.js": "^4.11.5",
     "bs58": "^4.0.1",
     "error-polyfill": "^0.1.2",
     "http-errors": "^1.7.2",
@@ -23,12 +24,14 @@
     "@types/bs58": "^4.0.0",
     "@types/google-protobuf": "^3.2.7",
     "@types/http-errors": "^1.6.1",
-    "protobufjs": "^6.8.8",
-    "ts-protoc-gen": "^0.10.0",
     "browserify": "^16.2.3",
     "documentation": "^9.1.1",
     "eslint": "^5.14.0",
     "jest": "^24.1.0",
+    "protobufjs": "^6.8.8",
+    "ts-protoc-gen": "^0.10.0",
+    "typedoc": "^0.14.2",
+    "typedoc-plugin-markdown": "^1.2.1",
     "uglifyify": "^5.0.1"
   },
   "jest": {
@@ -39,12 +42,13 @@
   "license": "MIT",
   "scripts": {
     "generate-protos": "scripts/generate_js_transaction_proto.sh",
+    "dist": "npm run build && npm run doc && browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
     "build": "npm run generate-protos && tsc -p ./tsconfig.json",
     "test": "npm run generate-protos && jest test",
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "prepare": "npm run build && npm run doc",
-    "doc": "documentation readme near.js account.js wallet-account.js wallet-access-key.js signing/key_pair.js -f md --shallow --section=API --readme-file=API.md"
+    "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"
   },
-  "author": "Evguenia Degtiareva"
+  "author": "NEAR Inc"
 }
