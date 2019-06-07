@@ -133,4 +133,18 @@ export class Account {
         this.printLogs(contractId, logs);
         return JSON.parse(base_decode(result.value).toString());
     }
+
+    async getAccountDetails(): Promise<any> {
+        const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
+        const value = JSON.parse(base_decode(response.value).toString());
+        const result: any = { authorizedApps: [], transactions: [] };
+        Object.keys(value).forEach((key) => {
+            result.authorizedApps.push({
+                contractId: value[key][1].contract_id,
+                amount: value[key][1].amount,
+                publicKey: base_encode(value[key][0]),
+            });
+        });
+        return result;
+    }
 }
