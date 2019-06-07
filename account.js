@@ -4,7 +4,7 @@ const { google, AccessKey, AddKeyTransaction, CreateAccountTransaction, DeleteKe
 const KeyPair = require('./signing/key_pair');
 
 /**
- * Near account and account related operations. 
+ * Near account and account related operations.
  * @example
  * const account = new Account(nearjs.nearClient);
  */
@@ -17,7 +17,7 @@ class Account {
      * Creates a new account with a given name and key,
      * @param {string} newAccountId id of the new account.
      * @param {string} publicKey public key to associate with the new account
-     * @param {number} amount amount of tokens to transfer from originator account id to the new account as part of the creation. 
+     * @param {number} amount amount of tokens to transfer from originator account id to the new account as part of the creation.
      * @param {string} originatorAccountId existing account on the blockchain to use for transferring tokens into the new account
      * @example
      * const createAccountResponse = await account.createAccount(
@@ -49,7 +49,7 @@ class Account {
      * @param {string} ownersAccountId id of the owner's account.
      * @param {string} newPublicKey public key for the access key.
      * @param {string} contractId if the given contractId is not empty, then this access key will only be able to call
-     *      the given contractId.
+     *      the given contractId. Otherwise this method is going to add unrestricted key.
      * @param {string} methodName If the given method name is not empty, then this access key will only be able to call
      *      the given method name.
      * @param {string} fundingOwner account id to own the funding of this access key. If empty then account owner is used by default.
@@ -69,24 +69,25 @@ class Account {
     async addAccessKey(ownersAccountId, newPublicKey, contractId, methodName, fundingOwner, fundingAmount) {
         const nonce = await this.nearClient.getNonce(ownersAccountId);
         newPublicKey = bs58.decode(newPublicKey);
-        const accessKey = AccessKey.create({});
+        let accessKey;
         if (contractId) {
+            accessKey = AccessKey.create({});
             accessKey.contractId = google.protobuf.StringValue.create({
                 value: contractId,
             });
-        }
-        if (methodName) {
-            accessKey.methodName = google.protobuf.BytesValue.create({
-                value: new Uint8Array(Buffer.from(methodName)),
-            });
-        }
-        if (fundingOwner) {
-            accessKey.balanceOwner = google.protobuf.StringValue.create({
-                value: fundingOwner,
-            });
-        }
-        if (fundingAmount > 0) {
-            accessKey.amount = fundingAmount;
+            if (methodName) {
+                accessKey.methodName = google.protobuf.BytesValue.create({
+                    value: new Uint8Array(Buffer.from(methodName)),
+                });
+            }
+            if (fundingOwner) {
+                accessKey.balanceOwner = google.protobuf.StringValue.create({
+                    value: fundingOwner,
+                });
+            }
+            if (fundingAmount > 0) {
+                accessKey.amount = fundingAmount;
+            }
         }
         const addKey = AddKeyTransaction.create({
             nonce,
@@ -116,7 +117,7 @@ class Account {
     * Creates a new account with a new random key pair. Returns the key pair to the caller. It's the caller's responsibility to
     * manage this key pair.
     * @param {string} newAccountId id of the new account
-    * @param {number} amount amount of tokens to transfer from originator account id to the new account as part of the creation. 
+    * @param {number} amount amount of tokens to transfer from originator account id to the new account as part of the creation.
     * @param {string} originatorAccountId existing account on the blockchain to use for transferring tokens into the new account
     * @example
     * const createAccountResponse = await account.createAccountWithRandomKey(
@@ -132,12 +133,12 @@ class Account {
             amount,
             originatorAccountId,
         );
-        return { key: keyWithRandomSeed, ...createAccountResult }; 
+        return { key: keyWithRandomSeed, ...createAccountResult };
     }
 
     /**
      * Returns an existing account with a given `accountId`
-     * @param {string} accountId id of the account to look up 
+     * @param {string} accountId id of the account to look up
      * @example
      * const viewAccountResponse = await account.viewAccount(existingAccountId);
      */
