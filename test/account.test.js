@@ -4,25 +4,27 @@ const testUtils  = require('./test-utils');
 const fs = require('fs');
 
 let connection;
-let masterAccount;
+let workingAccount;
 
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 beforeAll(async () => {
+    let masterAccount;
     ({ connection, masterAccount } = await testUtils.setUpTestConnection());
+    workingAccount = await testUtils.createAccount(masterAccount, { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
 });
 
 test('view pre-defined account works and returns correct name', async () => {
-    let status = await masterAccount.state();
-    expect(status.account_id).toEqual(testUtils.testAccountName);
+    let status = await workingAccount.state();
+    expect(status.account_id).toEqual(workingAccount.accountId);
 });
 
 test('create account and then view account returns the created account', async () => {
-    const newAccountName = testUtils.generateUniqueString('create.account.test');
+    const newAccountName = testUtils.generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
-    await masterAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
+    await workingAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
     const newAccount = new nearlib.Account(connection, newAccountName);
     const state = await newAccount.state();
     const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE, code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys, stake: BigInt(0)};
@@ -30,8 +32,8 @@ test('create account and then view account returns the created account', async (
 });
 
 test('send money', async() => {
-    const sender = await testUtils.createAccount(masterAccount);
-    const receiver = await testUtils.createAccount(masterAccount);
+    const sender = await testUtils.createAccount(workingAccount);
+    const receiver = await testUtils.createAccount(workingAccount);
     await sender.sendMoney(receiver.accountId, BigInt(10000));
     await receiver.fetchState();
     const state = await receiver.state();
@@ -55,21 +57,21 @@ describe('errors', () => {
     });
 
     test('create existing account', async() => {
-        await expect(masterAccount.createAccount(masterAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100)).rejects.toThrow(/Transaction .+ failed.+already exists/);
+        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100)).rejects.toThrow(/Transaction .+ failed.+already exists/);
     });
 });
 
 describe('with deploy contract', () => {
     let oldLog;
     let logs;
-    let contractId = 'test_contract_' + Date.now();
+    let contractId = testUtils.generateUniqueString('test_contract');
     let contract;
 
     beforeAll(async () => {
         const newPublicKey = await connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        await masterAccount.createAndDeployContract(contractId, newPublicKey, data, BigInt(100000));
-        contract = new nearlib.Contract(masterAccount, contractId, {
+        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, BigInt(100000));
+        contract = new nearlib.Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'getAllKeys', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']
         });
@@ -88,16 +90,16 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via account', async() => {
-        const result = await masterAccount.viewFunction(
+        const result = await workingAccount.viewFunction(
             contractId,
             'hello', // this is the function defined in hello.wasm file that we are calling
             {name: 'trex'});
         expect(result).toEqual('hello trex');
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-        const result2 = await masterAccount.functionCall(contractId, 'setValue', { value: setCallValue });
+        const result2 = await workingAccount.functionCall(contractId, 'setValue', { value: setCallValue });
         expect(nearlib.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
-        expect(await masterAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
     
     test('make function calls via contract', async() => {

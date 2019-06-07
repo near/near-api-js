@@ -27,7 +27,6 @@ class Near {
 }
 
 function connect(config: any): Near {
-    console.warn(config);
     return new Near(config)
 }
 

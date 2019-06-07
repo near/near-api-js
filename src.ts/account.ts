@@ -54,7 +54,19 @@ export class Account {
     private async signAndSendTransaction(transaction: any): Promise<FinalTransactionResult> {
         let signedTx = await signTransaction(
             this.connection.signer, transaction, this.accountId, this.connection.networkId);
-        let result = await this.connection.provider.sendTransaction(signedTx);
+        
+        let result;
+        try {
+            result = await this.connection.provider.sendTransaction(signedTx);
+        }
+        catch (error) {
+            if (error.message === '[-32000] Server error: send_tx_commit has timed out.') {
+                // TODO: retry here few times via tx status RPC.
+                throw new Error('Exceeded 1 status check attempt for getting transaction result.');
+            } else {
+                throw error;
+            }
+        }
 
         const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
         if (transaction.hasOwnProperty('contractId')) {
