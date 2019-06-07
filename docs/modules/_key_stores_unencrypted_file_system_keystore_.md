@@ -20,7 +20,7 @@
 
 **Ƭ AccountInfo**: *`object`*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L12)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L12)*
 
 Format of the account stored on disk.
 

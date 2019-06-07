@@ -14,7 +14,7 @@
 
 ⊕ **new LocalAccountCreator**(masterAccount: *[Account](_account_.account.md)*, initialBalance: *`bigint`*): [LocalAccountCreator](_account_creator_.localaccountcreator.md)
 
-*Defined in [account_creator.ts:14](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/account_creator.ts#L14)*
+*Defined in [account_creator.ts:14](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/account_creator.ts#L14)*
 
 **Parameters:**
 
@@ -35,7 +35,7 @@ ___
 
 **● initialBalance**: *`bigint`*
 
-*Defined in [account_creator.ts:14](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/account_creator.ts#L14)*
+*Defined in [account_creator.ts:14](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/account_creator.ts#L14)*
 
 ___
 <a id="masteraccount"></a>
@@ -44,7 +44,7 @@ ___
 
 **● masterAccount**: *[Account](_account_.account.md)*
 
-*Defined in [account_creator.ts:13](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/account_creator.ts#L13)*
+*Defined in [account_creator.ts:13](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/account_creator.ts#L13)*
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 *Overrides [AccountCreator](_account_creator_.accountcreator.md).[createAccount](_account_creator_.accountcreator.md#createaccount)*
 
-*Defined in [account_creator.ts:22](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/account_creator.ts#L22)*
+*Defined in [account_creator.ts:22](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/account_creator.ts#L22)*
 
 **Parameters:**
 

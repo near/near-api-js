@@ -14,7 +14,7 @@
 
 ⊕ **new UnencryptedFileSystemKeyStore**(keyDir: *`string`*): [UnencryptedFileSystemKeyStore](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md)
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:18](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L18)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:18](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L18)*
 
 **Parameters:**
 
@@ -34,7 +34,7 @@ ___
 
 **● keyDir**: *`string`*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:18](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L18)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:18](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L18)*
 
 ___
 
@@ -48,7 +48,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[clear](_key_stores_keystore_.keystore.md#clear)*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:49](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L49)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:49](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L49)*
 
 **Returns:** `Promise`<`void`>
 
@@ -61,7 +61,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getAccounts](_key_stores_keystore_.keystore.md#getaccounts)*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:66](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L66)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:66](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L66)*
 
 **Parameters:**
 
@@ -80,7 +80,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getKey](_key_stores_keystore_.keystore.md#getkey)*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:33](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L33)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:33](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L33)*
 
 **Parameters:**
 
@@ -98,7 +98,7 @@ ___
 
 ▸ **getKeyFilePath**(networkId: *`string`*, accountId: *`string`*): `string`
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:53](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L53)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:53](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L53)*
 
 **Parameters:**
 
@@ -118,7 +118,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getNetworks](_key_stores_keystore_.keystore.md#getnetworks)*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:57](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L57)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:57](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L57)*
 
 **Returns:** `Promise`<`Array`<`string`>>
 
@@ -131,7 +131,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[removeKey](_key_stores_keystore_.keystore.md#removekey)*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:43](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L43)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:43](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L43)*
 
 **Parameters:**
 
@@ -151,7 +151,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[setKey](_key_stores_keystore_.keystore.md#setkey)*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:25](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/unencrypted_file_system_keystore.ts#L25)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:25](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/unencrypted_file_system_keystore.ts#L25)*
 
 **Parameters:**
 

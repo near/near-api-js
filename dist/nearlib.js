@@ -6,23 +6,20 @@ window.Buffer = Buffer;
 
 }).call(this,require("buffer").Buffer)
 },{"./lib/index":2,"buffer":4,"error-polyfill":10}],2:[function(require,module,exports){
-// const Near = require('./near');
-// const NearClient = require('./nearclient');
-// const Account = require('./account');
-// const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
-// const InMemoryKeyStore = require('./signing/in_memory_key_store');
-// const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
-// const LocalNodeConnection = require('./local_node_connection');
-// const KeyPair = require('./signing/key_pair');
-// const WalletAccount = require('./wallet-account');
-// const AccountInfo = require('./signing/account_info');
-// const WalletAccessKey = require('./wallet-access-key');
+const nearlib = require('./lib');
 
-// module.exports = { Near, NearClient, Account, SimpleKeyStoreSigner, InMemoryKeyStore, BrowserLocalStorageKeystore, LocalNodeConnection, KeyPair, WalletAccount, AccountInfo, WalletAccessKey };
+module.exports = {
+    InMemoryKeyStore: nearlib.keyStores.InMemoryKeyStore,
+    BrowserLocalStorageKeyStore: nearlib.keyStores.BrowserLocalStorageKeyStore,
 
+    Account: nearlib.Account,
+    Contract: nearlib.Contract,
+    Connection: nearlib.Connection,
 
+    connect: nearlib.connect,
+};
 
-},{}],3:[function(require,module,exports){
+},{"./lib":2}],3:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength

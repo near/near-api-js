@@ -9,6 +9,7 @@
 * [&quot;contract&quot;](modules/_contract_.md)
   * [Contract](classes/_contract_.contract.md)
 * [&quot;index&quot;](modules/_index_.md)
+  * [Near](classes/_index_.near.md)
 * [&quot;key_stores/browser_local_storage_key_store&quot;](modules/_key_stores_browser_local_storage_key_store_.md)
   * [BrowserLocalStorageKeyStore](classes/_key_stores_browser_local_storage_key_store_.browserlocalstoragekeystore.md)
 * [&quot;key_stores/in_memory_key_store&quot;](modules/_key_stores_in_memory_key_store_.md)

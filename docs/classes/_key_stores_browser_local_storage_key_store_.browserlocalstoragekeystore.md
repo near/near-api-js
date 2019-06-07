@@ -14,7 +14,7 @@
 
 ⊕ **new BrowserLocalStorageKeyStore**(localStorage?: *`any`*): [BrowserLocalStorageKeyStore](_key_stores_browser_local_storage_key_store_.browserlocalstoragekeystore.md)
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:13](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/browser_local_storage_key_store.ts#L13)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:13](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/browser_local_storage_key_store.ts#L13)*
 
 **Parameters:**
 
@@ -34,7 +34,7 @@ ___
 
 **● localStorage**: *`any`*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:13](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/browser_local_storage_key_store.ts#L13)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:13](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/browser_local_storage_key_store.ts#L13)*
 
 ___
 
@@ -48,7 +48,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[clear](_key_stores_keystore_.keystore.md#clear)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:36](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/browser_local_storage_key_store.ts#L36)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:36](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/browser_local_storage_key_store.ts#L36)*
 
 **Returns:** `Promise`<`void`>
 
@@ -61,7 +61,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getAccounts](_key_stores_keystore_.keystore.md#getaccounts)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:55](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/browser_local_storage_key_store.ts#L55)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:55](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/browser_local_storage_key_store.ts#L55)*
 
 **Parameters:**
 
@@ -80,7 +80,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getKey](_key_stores_keystore_.keystore.md#getkey)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:24](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/browser_local_storage_key_store.ts#L24)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:24](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/browser_local_storage_key_store.ts#L24)*
 
 **Parameters:**
 
@@ -100,7 +100,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getNetworks](_key_stores_keystore_.keystore.md#getnetworks)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:44](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/browser_local_storage_key_store.ts#L44)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:44](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/browser_local_storage_key_store.ts#L44)*
 
 **Returns:** `Promise`<`Array`<`string`>>
 
@@ -113,7 +113,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[removeKey](_key_stores_keystore_.keystore.md#removekey)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:32](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/browser_local_storage_key_store.ts#L32)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:32](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/browser_local_storage_key_store.ts#L32)*
 
 **Parameters:**
 
@@ -133,7 +133,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[setKey](_key_stores_keystore_.keystore.md#setkey)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:20](https://github.com/nearprotocol/nearlib/blob/da418fd/src.ts/key_stores/browser_local_storage_key_store.ts#L20)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:20](https://github.com/nearprotocol/nearlib/blob/7f7cdf3/src.ts/key_stores/browser_local_storage_key_store.ts#L20)*
 
 **Parameters:**
 
