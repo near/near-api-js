@@ -29,4 +29,22 @@ async function createAccount(connection, masterAccount) {
     return new nearlib.Account(connection, newAccountName);
 }
 
-module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE, generateUniqueString, createAccount };
+function createFakeStorage() {
+    let store = {};
+    return {
+        getItem: function (key) {
+            return store[key];
+        },
+        setItem: function (key, value) {
+            store[key] = value.toString();
+        },
+        clear: function () {
+            store = {};
+        },
+        removeItem: function (key) {
+            delete store[key];
+        }
+    };
+}
+
+module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE, generateUniqueString, createAccount, createFakeStorage };
