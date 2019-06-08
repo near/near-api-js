@@ -12,4 +12,5 @@ export abstract class KeyStore {
     abstract async clear(): Promise<void>;
     abstract async getNetworks(): Promise<Array<string>>;
     abstract async getAccounts(networkId: string): Promise<Array<string>>;
+    abstract async totalAccounts(): Promise<number>;
 }

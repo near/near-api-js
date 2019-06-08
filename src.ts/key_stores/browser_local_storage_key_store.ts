@@ -64,4 +64,14 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
         });
         return result;
     }
+
+    async totalAccounts(): Promise<number> {
+        let result = 0;
+        Object.keys(this.localStorage).forEach((key) => {
+            if (key.endsWith(LOCAL_STORAGE_SECRET_KEY_SUFFIX)) {
+                result++;
+            }
+        });
+        return result;
+    }
 }

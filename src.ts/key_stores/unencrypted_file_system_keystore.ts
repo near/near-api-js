@@ -14,6 +14,11 @@ type AccountInfo = {
     private_key: string,
 };
 
+export async function loadJsonFile(path: string): Promise<any> {
+    const content = await promisify(fs.readFile)(path);
+    return JSON.parse(content.toString());
+}
+
 export class UnencryptedFileSystemKeyStore extends KeyStore {
     readonly keyDir: string;
 
@@ -35,8 +40,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         if (!await promisify(fs.exists)(this.getKeyFilePath(networkId, accountId))) {
             throw new Error(`Key for ${accountId} in ${networkId} not found in ${this.keyDir}`);
         }
-        const content = await promisify(fs.readFile)(this.getKeyFilePath(networkId, accountId));
-        const accountInfo = JSON.parse(content.toString());
+        const accountInfo = await loadJsonFile(this.getKeyFilePath(networkId, accountId));
         return KeyPair.fromString(accountInfo.private_key);
     }
 
@@ -72,6 +76,18 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         files.forEach((item) => {
             result.push(item);
         });
+        return result;
+    }
+
+    async totalAccounts(): Promise<number> {
+        let result = 0;
+        let files = await promisify(fs.readdir)(this.keyDir);
+        files.forEach(async (item) => {
+            let accounts = await promisify(fs.readdir)(`${this.keyDir}/${item}`);
+            accounts.forEach((_) => {
+                result++;
+            });
+        })
         return result;
     }
 }

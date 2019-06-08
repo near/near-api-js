@@ -9,26 +9,8 @@ import * as accountCreator from './account_creator';
 import { Connection } from './connection';
 import { Signer, InMemorySigner } from './signer';
 import { Contract } from './contract';
-
-class Near {
-    readonly connection: Connection;
-
-    constructor(config: any) {
-        this.connection = Connection.fromConfig({
-            networkId: config.networkId,
-            provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl } },
-            signer: { type: 'InMemorySigner', keyStore: config.deps.keyStore }
-        });
-    }
-
-    account(accountId: string): Account {
-        return new Account(this.connection, accountId);
-    }
-}
-
-function connect(config: any): Near {
-    return new Near(config)
-}
+import { KeyPair } from './utils/key_pair';
+import { connect } from './near';
 
 export {
     accountCreator,
@@ -41,6 +23,7 @@ export {
     Contract,
     InMemorySigner,
     Signer,
+    KeyPair,
 
     connect
 };

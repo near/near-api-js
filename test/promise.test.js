@@ -15,17 +15,17 @@ beforeAll(async () => {
         deps: { keyStore },
     });
 
-    nearjs = nearlib.connect(config);
-    workingAccount = await testUtils.createAccount(nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
+    nearjs = await nearlib.connect(config);
+    workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
 });
 
 describe('with promises', () => { 
     let contract, contract1, contract2;
     let oldLog;
     let logs;
-    let contractName = testUtils.generateUniqueString('test');
-    let contractName1 = testUtils.generateUniqueString('test');
-    let contractName2 = testUtils.generateUniqueString('test');
+    let contractName = testUtils.generateUniqueString('cnt');
+    let contractName1 = testUtils.generateUniqueString('cnt');
+    let contractName2 = testUtils.generateUniqueString('cnt');
 
     beforeAll(async () => {
         contract = await testUtils.deployContract(workingAccount, contractName);

@@ -53,4 +53,10 @@ export class InMemoryKeyStore extends KeyStore {
         });
         return result;
     }
+
+    async totalAccounts(): Promise<number> {
+        let result = 0;
+        Object(this.keys).forEach((_: any) => result++);
+        return result;
+    }
 }
