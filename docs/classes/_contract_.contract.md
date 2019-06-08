@@ -10,13 +10,13 @@
 
 ##  constructor
 
-⊕ **new Contract**(account: *`Account`*, contractId: *`string`*, options: *`object`*): [Contract](_contract_.contract.md)
+⊕ **new Contract**(account: *[Account](_account_.account.md)*, contractId: *`string`*, options: *`object`*): [Contract](_contract_.contract.md)
 
-*Defined in [contract.ts:5](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/contract.ts#L5)*
+*Defined in [contract.ts:7](https://github.com/nearprotocol/nearlib/blob/70d6520/src.ts/contract.ts#L7)*
 
 **Parameters:**
 
-**account: `Account`**
+**account: [Account](_account_.account.md)**
 
 **contractId: `string`**
 
@@ -37,9 +37,9 @@ ___
 
 ##  account
 
-**● account**: *`Account`*
+**● account**: *[Account](_account_.account.md)*
 
-*Defined in [contract.ts:4](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/contract.ts#L4)*
+*Defined in [contract.ts:6](https://github.com/nearprotocol/nearlib/blob/70d6520/src.ts/contract.ts#L6)*
 
 ___
 <a id="contractid"></a>
@@ -48,7 +48,7 @@ ___
 
 **● contractId**: *`string`*
 
-*Defined in [contract.ts:5](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/contract.ts#L5)*
+*Defined in [contract.ts:7](https://github.com/nearprotocol/nearlib/blob/70d6520/src.ts/contract.ts#L7)*
 
 ___
 

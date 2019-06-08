@@ -1,5 +1,7 @@
 'use strict';
 
+import { Account } from './account';
+
 export class Contract {
     readonly account: Account;
     readonly contractId: string;

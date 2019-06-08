@@ -1,6 +1,7 @@
 
 import { Account } from './account';
 import { Connection } from './connection';
+import { Contract } from './contract';
 import { loadJsonFile } from './key_stores/unencrypted_file_system_keystore';
 import { KeyPairEd25519 } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
@@ -37,6 +38,42 @@ class Near {
         }
         await this.accountCreator.createAccount(accountId, publicKey);
         return new Account(this.connection, accountId)
+    }
+
+    /**
+     * Backwards compatibility method. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
+     * @param contractId 
+     * @param options 
+     */
+    async loadContract(contractId: string, options: { viewMethods: string[], changeMethods: string[], sender: string }): Promise<Contract> {
+        console.warn("near.loadContract is depreacated. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.");
+        const account = new Account(this.connection, options.sender);
+        return new Contract(account, contractId, options);
+    }
+
+    /**
+     * Backwards compatibility method. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.
+     * @param contractId 
+     * @param wasmByteArray 
+     */
+    async deployContract(contractId: string, wasmByteArray: Uint8Array): Promise<string> {
+        console.warn("near.deployContract is depreacated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.");
+        const account = new Account(this.connection, contractId);
+        const result = await account.deployContract(wasmByteArray);
+        return result.logs[0].hash;
+    }
+
+    /**
+     * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
+     * @param amount 
+     * @param originator 
+     * @param receiver 
+     */
+    async sendTokens(amount: bigint, originator: string, receiver: string): Promise<string> {
+        console.warn("near.sendTokens is depreacated. Use `yourAccount.sendMoney` instead.");
+        const account = new Account(this.connection, originator);
+        const result = await account.sendMoney(receiver, amount);
+        return result.logs[0].hash;
     }
 }
 

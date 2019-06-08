@@ -10,6 +10,10 @@
 
 * [AccountInfo](_key_stores_unencrypted_file_system_keystore_.md#accountinfo)
 
+### Functions
+
+* [loadJsonFile](_key_stores_unencrypted_file_system_keystore_.md#loadjsonfile)
+
 ---
 
 # Type aliases
@@ -20,7 +24,7 @@
 
 **Ƭ AccountInfo**: *`object`*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/b149382/src.ts/key_stores/unencrypted_file_system_keystore.ts#L12)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/70d6520/src.ts/key_stores/unencrypted_file_system_keystore.ts#L12)*
 
 Format of the account stored on disk.
 
@@ -29,6 +33,26 @@ Format of the account stored on disk.
  account_id: `string`
 
  private_key: `string`
+
+___
+
+# Functions
+
+<a id="loadjsonfile"></a>
+
+##  loadJsonFile
+
+▸ **loadJsonFile**(path: *`string`*): `Promise`<`any`>
+
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:17](https://github.com/nearprotocol/nearlib/blob/70d6520/src.ts/key_stores/unencrypted_file_system_keystore.ts#L17)*
+
+**Parameters:**
+
+| Name | Type |
+| ------ | ------ |
+| path | `string` |
+
+**Returns:** `Promise`<`any`>
 
 ___
 
