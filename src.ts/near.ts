@@ -80,12 +80,16 @@ class Near {
 export async function connect(config: any): Promise<Near> {
     // Try to find extra key in `KeyPath` if provided.
     if (config.keyPath != undefined && config.deps !== undefined && config.deps.keyStore !== undefined) {
-        const keyFile = await loadJsonFile(config.keyPath);
-        if (keyFile.account_id !== undefined) {
-            const keyPair = new KeyPairEd25519(keyFile.secret_key);
-            await config.deps.keyStore.setKey(config.networkId, keyFile.account_id, keyPair);
-            config.masterAccount = keyFile.account_id;
-            console.log(`Loaded master account ${keyFile.account_id} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+        try {
+            const keyFile = await loadJsonFile(config.keyPath);
+            if (keyFile.account_id !== undefined) {
+                const keyPair = new KeyPairEd25519(keyFile.secret_key);
+                await config.deps.keyStore.setKey(config.networkId, keyFile.account_id, keyPair);
+                config.masterAccount = keyFile.account_id;
+                console.log(`Loaded master account ${keyFile.account_id} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+            }
+        } catch (error) {
+            console.warn(`Failed to load maste raccount key from ${config.keyPath}.`);
         }
     }
     return new Near(config)
