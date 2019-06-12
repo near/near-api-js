@@ -44,7 +44,8 @@
   "scripts": {
     "generate-protos": "scripts/generate_js_transaction_proto.sh",
     "dist": "npm run build && npm run doc && browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
-    "build": "npm run generate-protos && tsc -p ./tsconfig.json",
+    "compile": "tsc -p ./tsconfig.json",
+    "build": "npm run generate-protos && npm run compile",
     "test": "npm run generate-protos && jest test --runInBand",
     "lint": "eslint .",
     "fix": "eslint . --fix",
