@@ -1,7 +1,7 @@
 'use strict';
 
 import { sendMoney, createAccount, signTransaction, deployContract,
-    fromUint128, addKey, functionCall, createAccessKey, deleteKey } from './transaction'
+    fromUint128, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction'
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
 import { base_decode, base_encode } from './utils/serialize';
@@ -133,6 +133,12 @@ export class Account {
         await this.ready;
         this._state.nonce++;
         return this.signAndSendTransaction(deleteKey(this._state.nonce, this.accountId, publicKey));
+    }
+
+    async stake(publicKey: string, amount: bigint): Promise<FinalTransactionResult> {
+        await this.ready;
+        this._state.nonce++;
+        return this.signAndSendTransaction(stake(this._state.nonce, this.accountId, amount, publicKey));
     }
 
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
