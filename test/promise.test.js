@@ -5,7 +5,7 @@ let nearjs;
 let keyStore;
 let workingAccount;
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
     keyStore = new nearlib.keyStores.InMemoryKeyStore();
