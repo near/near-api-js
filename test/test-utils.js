@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises
 
 const nearlib = require('../lib/index');
 
@@ -35,7 +35,7 @@ async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE,
 
 async function deployContract(workingAccount, contractId, options = { amount: BigInt(100000) }) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
-    const data = [...fs.readFileSync(HELLO_WASM_PATH)];
+    const data = [...(await fs.readFile(HELLO_WASM_PATH))];
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, options.amount);
     return new nearlib.Contract(workingAccount, contractId, {
         viewMethods: ['getValue', 'getLastResult'],
@@ -67,5 +67,13 @@ function sleep(time) {
     });
 }
 
+async function ensureDir(dirpath) {
+    try {
+        await fs.mkdir(dirpath, { recursive: true })
+    } catch (err) {
+        if (err.code !== 'EEXIST') throw err
+    }
+}
+
 module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE,
-    generateUniqueString, createAccount, createFakeStorage, deployContract, sleep };
+    generateUniqueString, createAccount, createFakeStorage, deployContract, sleep, ensureDir };

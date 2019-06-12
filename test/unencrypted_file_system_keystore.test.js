@@ -1,23 +1,27 @@
 
 const nearlib = require('../lib/index');
 
+const { ensureDir } = require('./test-utils');
+
 const UnencryptedFileSystemKeyStore = nearlib.keyStores.UnencryptedFileSystemKeyStore;
 const KeyPair = nearlib.utils.KeyPairEd25519;
 
 const NETWORK_ID_SINGLE_KEY = 'singlekeynetworkid';
 const ACCOUNT_ID_SINGLE_KEY = 'singlekeyaccountid';
 const KEYPAIR_SINGLE_KEY = new KeyPair('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
+const KEYSTORE_PATH = '../test-keys';
 
 describe('Unencrypted file system keystore', () => {
     let keyStore;
 
     beforeAll(async () => {
-        keyStore = new UnencryptedFileSystemKeyStore('../tests');
+        await ensureDir(KEYSTORE_PATH);
+        keyStore = new UnencryptedFileSystemKeyStore(KEYSTORE_PATH);
         await keyStore.setKey(NETWORK_ID_SINGLE_KEY, ACCOUNT_ID_SINGLE_KEY, KEYPAIR_SINGLE_KEY);
     });
 
     test('Get all keys with empty network returns empty list', async () => {
-        const emptyList = await new UnencryptedFileSystemKeyStore('../tests').getAccounts('emptynetwork');
+        const emptyList = await new UnencryptedFileSystemKeyStore(KEYSTORE_PATH).getAccounts('emptynetwork');
         expect(emptyList).toEqual([]);
     });  
     
@@ -37,7 +41,7 @@ describe('Unencrypted file system keystore', () => {
 
     test('Add two keys to network and retrieve them', async () => {
         const networkId = 'twoKeyNetwork';
-        const newNetworkKeystore = new UnencryptedFileSystemKeyStore('../tests');
+        const newNetworkKeystore = new UnencryptedFileSystemKeyStore(KEYSTORE_PATH);
         const accountId1 = 'acc1';
         const accountId2 = 'acc2';
         const key1Expected = KeyPair.fromRandom();
