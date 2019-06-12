@@ -24,7 +24,7 @@
 
 **● LOCAL_STORAGE_SECRET_KEY_SUFFIX**: *"_secretkey"* = "_secretkey"
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:6](https://github.com/nearprotocol/nearlib/blob/70d6520/src.ts/key_stores/browser_local_storage_key_store.ts#L6)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:6](https://github.com/nearprotocol/nearlib/blob/d9ea5ea/src.ts/key_stores/browser_local_storage_key_store.ts#L6)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 ▸ **storageKeyForSecretKey**(networkId: *`string`*, accountId: *`string`*): `string`
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:8](https://github.com/nearprotocol/nearlib/blob/70d6520/src.ts/key_stores/browser_local_storage_key_store.ts#L8)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:8](https://github.com/nearprotocol/nearlib/blob/d9ea5ea/src.ts/key_stores/browser_local_storage_key_store.ts#L8)*
 
 **Parameters:**
 
