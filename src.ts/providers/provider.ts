@@ -22,18 +22,11 @@ export type FinalTransactionResult = {
     logs: TransactionLog[]
 }
 
-export type QueryResult = {
-    key: string,
-    value: string,
-    log: string,
-    info: string,
-}
-
 export abstract class Provider {
     abstract async getNetwork(): Promise<Network>;
 
     abstract async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult>;
-    abstract async query(path: string, data: string): Promise<QueryResult>;
+    abstract async query(path: string, data: string): Promise<any>;
 }
 
 export function getTransactionLastResult(txResult: FinalTransactionResult): any {

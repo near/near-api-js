@@ -4,7 +4,7 @@ const nearlib = require('../lib/index');
 test('json rpc query account', async () => {
     const provider = new nearlib.providers.JsonRpcProvider('http://localhost:3030');
     let response = await provider.query('account/test.near', '');
-    expect(response.key).toEqual(nearlib.utils.serialize.base_encode('account/test.near'));
+    expect(response.account_id).toEqual('test.near');
 });
 
 test('final tx result', async() => {

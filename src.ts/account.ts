@@ -4,7 +4,7 @@ import { sendMoney, createAccount, signTransaction, deployContract,
     fromUint128, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction'
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
-import { base_decode, base_encode } from './utils/serialize';
+import { base_encode } from './utils/serialize';
 
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -33,8 +33,7 @@ export class Account {
     }
 
     async fetchState(): Promise<void> {
-        const response = await this.connection.provider.query(`account/${this.accountId}`, '');
-        const state = JSON.parse(base_decode(response.value).toString());
+        const state = await this.connection.provider.query(`account/${this.accountId}`, '');
         this._state = state;
         this._state.amount = fromUint128(state.amount);
         this._state.stake = fromUint128(state.stake);
@@ -143,24 +142,20 @@ export class Account {
 
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
         let result = await this.connection.provider.query(`call/${contractId}/${methodName}`, base_encode(JSON.stringify(args)));
-        if (!result.value) {
-            throw new Error(`Function failed: ${result.info}\nFull result: ${JSON.stringify(result, null, 2)}`);
+        if (result.logs) {
+            this.printLogs(contractId, result.logs);
         }
-        if (result.log) {
-            this.printLogs(contractId, result.log.split('\n'));
-        }
-        return JSON.parse(base_decode(result.value).toString());
+        return JSON.parse(Buffer.from(result.result).toString());
     }
 
     async getAccountDetails(): Promise<any> {
         const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
-        const value = JSON.parse(base_decode(response.value).toString());
         const result: any = { authorizedApps: [], transactions: [] };
-        Object.keys(value).forEach((key) => {
+        Object.keys(response).forEach((key) => {
             result.authorizedApps.push({
-                contractId: value[key][1].contract_id,
-                amount: value[key][1].amount,
-                publicKey: base_encode(value[key][0]),
+                contractId: response[key][1].contract_id,
+                amount: fromUint128(response[key][1].amount),
+                publicKey: base_encode(response[key][0]),
             });
         });
         return result;

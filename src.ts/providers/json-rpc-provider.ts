@@ -1,6 +1,6 @@
 'use strict';
 
-import { Provider, FinalTransactionResult, QueryResult } from './provider';
+import { Provider, FinalTransactionResult } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { base_encode } from '../utils/serialize';
@@ -31,8 +31,12 @@ export class JsonRpcProvider extends Provider {
         return this.sendJsonRpc("broadcast_tx_commit", [base_encode(bytes)]);
     }
 
-    async query(path: string, data: string): Promise<QueryResult> {
-        return await this.sendJsonRpc("query", [path, data]);
+    async query(path: string, data: string): Promise<any> {
+        const result = await this.sendJsonRpc("query", [path, data]);
+        if (result.error) {
+            throw new Error(`Quering ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
+        }
+        return result;
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {

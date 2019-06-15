@@ -13,7 +13,6 @@
 ### Type aliases
 
 * [FinalTransactionResult](_providers_provider_.md#finaltransactionresult)
-* [QueryResult](_providers_provider_.md#queryresult)
 * [TransactionLog](_providers_provider_.md#transactionlog)
 
 ### Functions
@@ -30,7 +29,7 @@
 
 **Ƭ FinalTransactionResult**: *`object`*
 
-*Defined in [providers/provider.ts:20](https://github.com/nearprotocol/nearlib/blob/d9ea5ea/src.ts/providers/provider.ts#L20)*
+*Defined in [providers/provider.ts:20](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L20)*
 
 #### Type declaration
 
@@ -39,32 +38,13 @@
  status: [FinalTransactionStatus](../enums/_providers_provider_.finaltransactionstatus.md)
 
 ___
-<a id="queryresult"></a>
-
-##  QueryResult
-
-**Ƭ QueryResult**: *`object`*
-
-*Defined in [providers/provider.ts:25](https://github.com/nearprotocol/nearlib/blob/d9ea5ea/src.ts/providers/provider.ts#L25)*
-
-#### Type declaration
-
- info: `string`
-
- key: `string`
-
- log: `string`
-
- value: `string`
-
-___
 <a id="transactionlog"></a>
 
 ##  TransactionLog
 
 **Ƭ TransactionLog**: *`object`*
 
-*Defined in [providers/provider.ts:13](https://github.com/nearprotocol/nearlib/blob/d9ea5ea/src.ts/providers/provider.ts#L13)*
+*Defined in [providers/provider.ts:13](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L13)*
 
 #### Type declaration
 
@@ -86,7 +66,7 @@ ___
 
 ▸ **getTransactionLastResult**(txResult: *[FinalTransactionResult](_providers_provider_.md#finaltransactionresult)*): `any`
 
-*Defined in [providers/provider.ts:39](https://github.com/nearprotocol/nearlib/blob/d9ea5ea/src.ts/providers/provider.ts#L39)*
+*Defined in [providers/provider.ts:32](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L32)*
 
 **Parameters:**
 
