@@ -11,6 +11,20 @@ import { base_encode } from './utils/serialize';
 // the originator.
 const DEFAULT_FUNC_CALL_AMOUNT = BigInt(1000000000);
 
+// Default number of retries before giving up on a transactioin.
+const TX_STATUS_RETRY_NUMBER = 10;
+
+// Default wait until next retry in millis.
+const TX_STATUS_RETRY_WAIT = 500;
+
+// Exponential back off for waiting to retry.
+const TX_STATUS_RETRY_WAIT_BACKOFF = 1.5;
+
+// Sleep given number of millis.
+function sleep(millis: number): Promise<any> {
+    return new Promise(resolve => setTimeout(resolve, millis));
+}
+
 export type AccountState = {
     account_id: string,
     nonce: number,
@@ -50,8 +64,30 @@ export class Account {
         }
     }
 
+    private async retryTxResult(txHash: Uint8Array): Promise<FinalTransactionResult> {
+        let i = 0;
+        let result;
+        let waitTime = TX_STATUS_RETRY_WAIT;
+        while (i < TX_STATUS_RETRY_NUMBER) {
+            try {
+                result = await this.connection.provider.txStatus(txHash);
+            } catch (error) {
+                // TODO: what type of errors can be here?
+            }
+            await sleep(waitTime);
+            waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
+            i += 1;
+        }
+        if (!result) {
+            throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempt for getting transaction result.`);
+        }
+        return result;
+        // ...
+        // TODO: retry here few times via tx status RPC.
+    }
+
     private async signAndSendTransaction(transaction: any): Promise<FinalTransactionResult> {
-        let signedTx = await signTransaction(
+        let [txHash, signedTx] = await signTransaction(
             this.connection.signer, transaction, this.accountId, this.connection.networkId);
         
         let result;
@@ -60,8 +96,7 @@ export class Account {
         }
         catch (error) {
             if (error.message === '[-32000] Server error: send_tx_commit has timed out.') {
-                // TODO: retry here few times via tx status RPC.
-                throw new Error('Exceeded 1 status check attempt for getting transaction result.');
+                result = await this.retryTxResult(txHash);
             } else {
                 throw error;
             }

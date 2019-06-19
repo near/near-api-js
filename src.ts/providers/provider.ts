@@ -26,6 +26,7 @@ export abstract class Provider {
     abstract async getNetwork(): Promise<Network>;
 
     abstract async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult>;
+    abstract async txStatus(txHash: Uint8Array): Promise<FinalTransactionResult>;
     abstract async query(path: string, data: string): Promise<any>;
 }
 

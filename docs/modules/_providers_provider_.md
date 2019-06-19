@@ -29,7 +29,7 @@
 
 **Ƭ FinalTransactionResult**: *`object`*
 
-*Defined in [providers/provider.ts:20](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L20)*
+*Defined in [providers/provider.ts:20](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/providers/provider.ts#L20)*
 
 #### Type declaration
 
@@ -44,7 +44,7 @@ ___
 
 **Ƭ TransactionLog**: *`object`*
 
-*Defined in [providers/provider.ts:13](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L13)*
+*Defined in [providers/provider.ts:13](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/providers/provider.ts#L13)*
 
 #### Type declaration
 
@@ -66,7 +66,7 @@ ___
 
 ▸ **getTransactionLastResult**(txResult: *[FinalTransactionResult](_providers_provider_.md#finaltransactionresult)*): `any`
 
-*Defined in [providers/provider.ts:32](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L32)*
+*Defined in [providers/provider.ts:33](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/providers/provider.ts#L33)*
 
 **Parameters:**
 

@@ -24,7 +24,7 @@
 
 **Ƭ AccountInfo**: *`object`*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/key_stores/unencrypted_file_system_keystore.ts#L12)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L12)*
 
 Format of the account stored on disk.
 
@@ -44,7 +44,7 @@ ___
 
 ▸ **loadJsonFile**(path: *`string`*): `Promise`<`any`>
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:17](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/key_stores/unencrypted_file_system_keystore.ts#L17)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:17](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L17)*
 
 **Parameters:**
 

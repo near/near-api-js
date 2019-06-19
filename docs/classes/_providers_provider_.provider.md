@@ -14,7 +14,7 @@
 
 ▸ **getNetwork**(): `Promise`<[Network](../modules/_utils_network_.md#network)>
 
-*Defined in [providers/provider.ts:26](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L26)*
+*Defined in [providers/provider.ts:26](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/providers/provider.ts#L26)*
 
 **Returns:** `Promise`<[Network](../modules/_utils_network_.md#network)>
 
@@ -25,7 +25,7 @@ ___
 
 ▸ **query**(path: *`string`*, data: *`string`*): `Promise`<`any`>
 
-*Defined in [providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L29)*
+*Defined in [providers/provider.ts:30](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/providers/provider.ts#L30)*
 
 **Parameters:**
 
@@ -43,13 +43,30 @@ ___
 
 ▸ **sendTransaction**(signedTransaction: *`SignedTransaction`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
 
-*Defined in [providers/provider.ts:28](https://github.com/nearprotocol/nearlib/blob/b1675ba/src.ts/providers/provider.ts#L28)*
+*Defined in [providers/provider.ts:28](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/providers/provider.ts#L28)*
 
 **Parameters:**
 
 | Name | Type |
 | ------ | ------ |
 | signedTransaction | `SignedTransaction` |
+
+**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+
+___
+<a id="txstatus"></a>
+
+## `<Abstract>` txStatus
+
+▸ **txStatus**(txHash: *`Uint8Array`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+
+*Defined in [providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/providers/provider.ts#L29)*
+
+**Parameters:**
+
+| Name | Type |
+| ------ | ------ |
+| txHash | `Uint8Array` |
 
 **Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
 

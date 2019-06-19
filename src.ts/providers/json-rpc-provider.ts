@@ -31,6 +31,10 @@ export class JsonRpcProvider extends Provider {
         return this.sendJsonRpc("broadcast_tx_commit", [base_encode(bytes)]);
     }
 
+    async txStatus(txHash: Uint8Array): Promise<FinalTransactionResult> {
+        return this.sendJsonRpc('tx', [base_encode(txHash)]);
+    }
+
     async query(path: string, data: string): Promise<any> {
         const result = await this.sendJsonRpc("query", [path, data]);
         if (result.error) {

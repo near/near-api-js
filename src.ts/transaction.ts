@@ -84,8 +84,9 @@ export function signedTransaction(transaction: AllTransactions, signature: Signa
     });
 }
 
-export async function signTransaction(signer: Signer, transaction: any, accountId?: string, networkId?: string): Promise<SignedTransaction> {
+export async function signTransaction(signer: Signer, transaction: any, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const protoClass = transaction.constructor;
-    let signature = await signer.signMessage(protoClass.encode(transaction).finish(), accountId, networkId);
-    return signedTransaction(transaction, signature);
+    const txHash = protoClass.encode(transaction).finish();
+    let signature = await signer.signMessage(txHash, accountId, networkId);
+    return [txHash, signedTransaction(transaction, signature)];
 }
