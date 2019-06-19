@@ -89,7 +89,7 @@ export async function connect(config: any): Promise<Near> {
                 console.log(`Loaded master account ${keyFile.account_id} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {
-            console.warn(`Failed to load master account key from ${config.keyPath}.`);
+            console.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
         }
     }
     return new Near(config)

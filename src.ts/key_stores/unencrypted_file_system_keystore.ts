@@ -19,6 +19,14 @@ export async function loadJsonFile(path: string): Promise<any> {
     return JSON.parse(content.toString());
 }
 
+async function ensureDir(path: string): Promise<void> {
+    try {
+        await promisify(fs.mkdir)(path, { recursive: true });
+    } catch (err) {
+        if (err.code !== 'EEXIST') throw err;
+    }
+}
+
 export class UnencryptedFileSystemKeyStore extends KeyStore {
     readonly keyDir: string;
 
@@ -28,9 +36,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        if (!await promisify(fs.exists)(`${this.keyDir}/${networkId}`)) {
-            await promisify(fs.mkdir)(`${this.keyDir}/${networkId}`);
-        }
+        await ensureDir(`${this.keyDir}/${networkId}`);
         const content: AccountInfo = { account_id: accountId, private_key: keyPair.toString() };
         await promisify(fs.writeFile)(this.getKeyFilePath(networkId, accountId), JSON.stringify(content));
     }
