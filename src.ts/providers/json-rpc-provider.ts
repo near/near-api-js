@@ -28,7 +28,7 @@ export class JsonRpcProvider extends Provider {
 
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult> {
         let bytes = SignedTransaction.encode(signedTransaction).finish();
-        return this.sendJsonRpc("broadcast_tx_commit", [base_encode(bytes)]);
+        return this.sendJsonRpc("broadcast_tx_commit", [Buffer.from(bytes).toString("base64")]);
     }
 
     async txStatus(txHash: Uint8Array): Promise<FinalTransactionResult> {
