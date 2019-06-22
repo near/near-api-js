@@ -16,10 +16,10 @@ class Near {
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl } },
             signer: { type: 'InMemorySigner', keyStore: config.deps.keyStore }
         });
-        if (config.masterAccount !== undefined) {
+        if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
             this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), config.initialBalance || BigInt(1000 * 1000 * 1000 * 1000));
-        } else if (config.helperUrl !== undefined) {
+        } else if (config.helperUrl) {
             this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);
         } else {
             this.accountCreator = null;
@@ -33,7 +33,7 @@ class Near {
     }
 
     async createAccount(accountId: string, publicKey: string): Promise<Account> {
-        if (this.accountCreator === null) {
+        if (!this.accountCreator) {
             throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
         }
         await this.accountCreator.createAccount(accountId, publicKey);
@@ -79,10 +79,10 @@ class Near {
 
 export async function connect(config: any): Promise<Near> {
     // Try to find extra key in `KeyPath` if provided.
-    if (config.keyPath != undefined && config.deps !== undefined && config.deps.keyStore !== undefined) {
+    if (config.keyPath && config.deps && config.deps.keyStore) {
         try {
             const keyFile = await loadJsonFile(config.keyPath);
-            if (keyFile.account_id !== undefined) {
+            if (keyFile.account_id) {
                 const keyPair = new KeyPairEd25519(keyFile.secret_key);
                 await config.deps.keyStore.setKey(config.networkId, keyFile.account_id, keyPair);
                 config.masterAccount = keyFile.account_id;
