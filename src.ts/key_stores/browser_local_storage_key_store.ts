@@ -24,7 +24,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
         const value = this.localStorage.getItem(storageKeyForSecretKey(networkId, accountId));
         if (!value) {
-            throw new Error(`Key for ${accountId} in ${networkId} not found`);
+            return null;
         }
         return KeyPair.fromString(value);
     }
