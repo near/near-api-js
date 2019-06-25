@@ -17,7 +17,7 @@ describe('Browser keystore', () => {
     });
 
     test('Get account id from empty keystore', async () => {
-        await expect(keyStore.getKey('somenetwork', 'someaccount')).rejects.toThrow(/Key for .+ in .+ not found/);
+        expect(await keyStore.getKey('somenetwork', 'someaccount')).toBeNull();
     });
     
     test('Get account id from a network with single key', async () => {
