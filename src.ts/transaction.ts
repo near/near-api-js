@@ -63,7 +63,7 @@ export function createAccessKey(contractId?: string, methodName?: string, balanc
         contractId: contractId ? new google.protobuf.StringValue({ value: contractId }) : null,
         methodName: methodName ? new google.protobuf.BytesValue({ value: Buffer.from(methodName) }) : null,
         balanceOwner: balanceOwner ? new google.protobuf.StringValue({ value: balanceOwner }) : null,
-        amount: amount ? bigInt(amount) : null,
+        amount: bigInt(amount || BigInt(0)),
     });
 }
 
