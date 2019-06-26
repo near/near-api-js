@@ -67,6 +67,9 @@ export class InMemorySigner extends Signer {
             throw new Error("InMemorySigner requires provided account id");
         }
         let keyPair = await this.keyStore.getKey(networkId, accountId);
+        if (keyPair === null) {
+            throw new Error(`Key for ${accountId} not found in ${networkId}`);
+        }
         return keyPair.sign(hash);
     }
 }
