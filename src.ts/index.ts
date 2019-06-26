@@ -12,6 +12,8 @@ import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { connect } from './near';
 
+import { WalletAccount } from './wallet-account';
+
 export {
     accountCreator,
     keyStores,
@@ -25,5 +27,7 @@ export {
     Signer,
     KeyPair,
 
-    connect
+    connect,
+
+    WalletAccount
 };

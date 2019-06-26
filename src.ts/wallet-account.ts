@@ -1,28 +1,22 @@
-/**
- * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
- */
+'use strict';
 
-const BrowserLocalStorageKeystore = require('./signing/browser_local_storage_key_store');
-const KeyPair = require('./signing/key_pair');
-const SimpleKeyStoreSigner = require('./signing/simple_key_store_signer');
+import { KeyStore, BrowserLocalStorageKeyStore } from './key_stores';
+import { KeyPair } from './utils';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
-/**
- * Wallet based account and signer that uses external wallet through the iframe to sign transactions.
- * @example 
- * // if importing WalletAccount directly
- * const walletAccount = new WalletAccount(contractName, walletBaseUrl)
- * // if importing in all of nearLib and calling from variable 
- * const walletAccount = new nearlib.WalletAccount(contractName, walletBaseUrl)
- * // To access wallet globally use:
- * window.walletAccount = new nearlib.WalletAccount(config.contractName, walletBaseUrl);
- */
-class WalletAccount {
-    constructor(appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new BrowserLocalStorageKeystore()) {
+export class WalletAccount {
+    _walletBaseUrl: string;
+    _authDataKey: string;
+    _keyStore: KeyStore;
+    _authData: any;
+    _networkId: string;
+
+    constructor(networkId: string, appKeyPrefix: string, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore: KeyStore = new BrowserLocalStorageKeyStore()) {
+        this._networkId = networkId;
         this._walletBaseUrl = walletBaseUrl;
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = keyStore;
@@ -64,7 +58,7 @@ class WalletAccount {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    requestSignIn(contract_id, title, success_url, failure_url) {
+    requestSignIn(contract_id: string, title: string, success_url: string, failure_url: string) {
         const currentUrl = new URL(window.location.href);
         let newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('title', title);
@@ -72,10 +66,11 @@ class WalletAccount {
         newUrl.searchParams.set('success_url', success_url || currentUrl.href);
         newUrl.searchParams.set('failure_url', failure_url || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
-        if (!this.getAccountId() || !this._keyStore.getKey(this.getAccountId())) {
-            const accessKey = KeyPair.fromRandomSeed();
+        if (!this.getAccountId() || !this._keyStore.getKey(this._networkId, this.getAccountId())) {
+            const accessKey = KeyPair.fromRandom('ed25519');
             newUrl.searchParams.set('public_key', accessKey.getPublicKey());
-            this._keyStore.setKey(PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey).then(window.location.replace(newUrl.toString()));
+            this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey)
+                .then(() => window.location.replace(newUrl.toString()));
         }
     }
 
@@ -95,10 +90,10 @@ class WalletAccount {
         }
     }
 
-    async _moveKeyFromTempToPermanent(accountId, publicKey) {
-        let keyPair = await this._keyStore.getKey(PENDING_ACCESS_KEY_PREFIX + publicKey);
-        await this._keyStore.setKey(accountId, keyPair);
-        await this._keyStore.removeKey(PENDING_ACCESS_KEY_PREFIX + publicKey);
+    async _moveKeyFromTempToPermanent(accountId: string, publicKey: string) {
+        let keyPair = await this._keyStore.getKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
+        await this._keyStore.setKey(this._networkId, accountId, keyPair);
+        await this._keyStore.removeKey(this._networkId,PENDING_ACCESS_KEY_PREFIX + publicKey);
     }
 
     /**
@@ -110,22 +105,4 @@ class WalletAccount {
         this._authData = {};
         window.localStorage.removeItem(this._authDataKey);
     }
-
-    /**
-     * Sign a buffer. If the key for originator is not present,
-     * this operation will fail.
-     * @param {Uint8Array} buffer
-     * @param {string} originator
-     */
-    async signBuffer(buffer, originator) {
-        if (!this.isSignedIn() || originator !== this.getAccountId()) {
-            throw 'Unauthorized account_id ' + originator;
-        }
-        const signer = new SimpleKeyStoreSigner(this._keyStore);
-        let signature = await signer.signBuffer(buffer, originator);
-        return signature;
-    }
-
 }
-
-module.exports = WalletAccount;
