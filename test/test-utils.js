@@ -11,13 +11,12 @@ const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.
 async function setUpTestConnection() {
     const keyStore = new nearlib.keyStores.InMemoryKeyStore();
     await keyStore.setKey(networkId, testAccountName, nearlib.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
-    const connection = nearlib.Connection.fromConfig({
-        networkId,
-        provider: { type: 'JsonRpcProvider', args: { url: 'http://localhost:3030' } },
-        signer: { type: 'InMemorySigner', keyStore }
+    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
+        networkId: networkId,
+        deps: { keyStore },
     });
-    const masterAccount = new nearlib.Account(connection, testAccountName);
-    return { connection, keyStore, masterAccount };
+
+    return nearlib.connect(config);
 }
 
 // Generate some unique string with a given prefix using the alice nonce.

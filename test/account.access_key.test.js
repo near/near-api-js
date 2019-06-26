@@ -2,7 +2,7 @@
 const nearlib = require('../lib/index');
 const testUtils = require('./test-utils');
 
-let connection;
+let nearjs;
 let testAccount;
 let workingAccount;
 let contractId;
@@ -11,9 +11,8 @@ let contract;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
-    let masterAccount;
-    ({ connection, masterAccount } = await testUtils.setUpTestConnection());
-    testAccount = await testUtils.createAccount(masterAccount, { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
+    nearjs = await testUtils.setUpTestConnection();
+    testAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
 });
 
 beforeEach(async () => {
@@ -27,7 +26,7 @@ test('make function call using access key', async() => {
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '', 400000);
 
     // Override in the key store the workingAccount key to the given access key.
-    await connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
+    await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
     const setCallValue = testUtils.generateUniqueString('setCallPrefix');
     await contract.setValue({value: setCallValue});
     expect(await contract.getValue()).toEqual(setCallValue);
@@ -38,7 +37,7 @@ test('remove access key no longer works', async() => {
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '', 400000);
     await workingAccount.deleteKey(keyPair.getPublicKey());
     // Override in the key store the workingAccount key to the given access key.
-    await connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
+    await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
     await expect(contract.setValue({ value: "test" })).rejects.toThrow(/\[-32000\] Server error: Transaction is not signed with a public key of the originator .+/);
 });
 

@@ -2,20 +2,12 @@ const nearlib = require('../lib');
 const testUtils = require('./test-utils');
 
 let nearjs;
-let keyStore;
 let workingAccount;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
 
 beforeAll(async () => {
-    keyStore = new nearlib.keyStores.InMemoryKeyStore();
-    await keyStore.setKey(testUtils.networkId, testUtils.testAccountName, nearlib.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
-    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
-        networkId: testUtils.networkId,
-        deps: { keyStore },
-    });
-
-    nearjs = await nearlib.connect(config);
+    nearjs = await testUtils.setUpTestConnection();
     workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
 });
 

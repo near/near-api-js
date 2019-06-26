@@ -3,7 +3,7 @@ const nearlib = require('../lib/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 
-let connection;
+let nearjs;
 let workingAccount;
 
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
@@ -11,9 +11,8 @@ const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
-    let masterAccount;
-    ({ connection, masterAccount } = await testUtils.setUpTestConnection());
-    workingAccount = await testUtils.createAccount(masterAccount, { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
+    nearjs = await testUtils.setUpTestConnection();
+    workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
 });
 
 test('view pre-defined account works and returns correct name', async () => {
@@ -25,7 +24,7 @@ test('create account and then view account returns the created account', async (
     const newAccountName = testUtils.generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
     await workingAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
-    const newAccount = new nearlib.Account(connection, newAccountName);
+    const newAccount = new nearlib.Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
     const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE, code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys, stake: BigInt(0)};
     expect(state).toEqual(expectedState);
@@ -68,7 +67,7 @@ describe('with deploy contract', () => {
     let contract;
 
     beforeAll(async () => {
-        const newPublicKey = await connection.signer.createKey(contractId, testUtils.networkId);
+        const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await workingAccount.createAndDeployContract(contractId, newPublicKey, data, BigInt(100000));
         contract = new nearlib.Contract(workingAccount, contractId, {

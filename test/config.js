@@ -3,15 +3,14 @@ module.exports = function getConfig(env) {
     case 'production':
     case 'development':
         return {
-            nodeUrl: 'https://studio.nearprotocol.com/devnet',
-            helperUrl: 'https://studio.nearprotocol.com/contract-api',
-            useDevAccount: true
+            nodeUrl: '34.94.13.241',
+            masterAccount: 'test.near',
         };
     case 'local':
     case 'test':
         return {
             nodeUrl: 'http://localhost:3030',
-            useDevAccount: true
+            masterAccount: 'test.near',
         };
     default:
         throw Error(`Unconfigured environment '${env}'. Can be configured in test/config.js.`);
