@@ -1,4 +1,3 @@
-const nearlib = require('../lib');
 const testUtils = require('./test-utils');
 
 let nearjs;

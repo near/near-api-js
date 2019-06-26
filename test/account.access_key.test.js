@@ -38,7 +38,7 @@ test('remove access key no longer works', async() => {
     await workingAccount.deleteKey(keyPair.getPublicKey());
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
-    await expect(contract.setValue({ value: "test" })).rejects.toThrow(/\[-32000\] Server error: Transaction is not signed with a public key of the originator .+/);
+    await expect(contract.setValue({ value: 'test' })).rejects.toThrow(/\[-32000\] Server error: Transaction is not signed with a public key of the originator .+/);
 });
 
 test('view account details after adding access keys', async() => {

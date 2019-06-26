@@ -1,4 +1,4 @@
-const fs = require('fs').promises
+const fs = require('fs').promises;
 
 const nearlib = require('../lib/index');
 
@@ -68,9 +68,9 @@ function sleep(time) {
 
 async function ensureDir(dirpath) {
     try {
-        await fs.mkdir(dirpath, { recursive: true })
+        await fs.mkdir(dirpath, { recursive: true });
     } catch (err) {
-        if (err.code !== 'EEXIST') throw err
+        if (err.code !== 'EEXIST') throw err;
     }
 }
 

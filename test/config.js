@@ -3,7 +3,7 @@ module.exports = function getConfig(env) {
     case 'production':
     case 'development':
         return {
-            nodeUrl: '34.94.13.241',
+            nodeUrl: 'http://34.94.13.241:3030',
             masterAccount: 'test.near',
         };
     case 'local':

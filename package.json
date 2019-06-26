@@ -47,8 +47,8 @@
     "dev": "npm run compile -- -w",
     "build": "npm run generate-protos && npm run compile",
     "test": "npm run generate-protos && jest test --runInBand",
-    "lint": "eslint .",
-    "fix": "eslint . --fix",
+    "lint": "eslint test",
+    "fix": "eslint test --fix",
     "prepare": "tsc -p ./tsconfig.json && npm run doc",
     "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"
   },

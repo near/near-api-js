@@ -24,3 +24,4 @@ globals:
   fetch: true
   Headers: true
   document: true
+  BigInt: true
