@@ -38,12 +38,15 @@ export class Account {
     readonly connection: Connection;
     readonly accountId: string;
     private _state: AccountState;
-    protected ready: Promise<void>;
+
+    private _ready: Promise<void>;
+    protected get ready(): Promise<void> {
+        return this._ready || (this._ready = Promise.resolve(this.fetchState()));
+    }
 
     constructor(connection: Connection, accountId: string) {
         this.connection = connection;
         this.accountId = accountId;
-        this.ready = Promise.resolve(this.fetchState());
     }
 
     async fetchState(): Promise<void> {
