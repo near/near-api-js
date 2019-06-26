@@ -24,7 +24,7 @@ install_dependencies:
     - git clone --depth 1 --branch ghost https://github.com/nearprotocol/nearcore.git nearcore
     - npm install
     - npm run build
-    # - cd nearcore/tests/hello && npm install && npm run build
+    - cd nearcore/tests/hello && npm install && npm run build
   artifacts:
     paths:
       - node_modules/
