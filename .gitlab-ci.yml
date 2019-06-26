@@ -22,9 +22,9 @@ install_dependencies:
   script:
     - rm -rf nearcore/ # nearcore/ gets cached
     - git clone --depth 1 --branch ghost https://github.com/nearprotocol/nearcore.git nearcore
-    - rm -rf nearcore/nearlib
     - npm install
-    # - cd nearcore/tests/hello && npm install && npm run build
+    - npm run build
+    - cd nearcore/tests/hello && npm install && npm run build
   artifacts:
     paths:
       - node_modules/
