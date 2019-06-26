@@ -37,3 +37,5 @@
 * [&quot;utils/network&quot;](modules/_utils_network_.md)
 * [&quot;utils/serialize&quot;](modules/_utils_serialize_.md)
 * [&quot;utils/web&quot;](modules/_utils_web_.md)
+* [&quot;wallet-account&quot;](modules/_wallet_account_.md)
+  * [WalletAccount](classes/_wallet_account_.walletaccount.md)

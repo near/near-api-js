@@ -8,7 +8,7 @@
 
 **Ƭ Network**: *`object`*
 
-*Defined in [utils/network.ts:3](https://github.com/nearprotocol/nearlib/blob/206b17f/src.ts/utils/network.ts#L3)*
+*Defined in [utils/network.ts:3](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/utils/network.ts#L3)*
 
 #### Type declaration
 
