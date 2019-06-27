@@ -27,10 +27,12 @@ function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 class Account {
+    get ready() {
+        return this._ready || (this._ready = Promise.resolve(this.fetchState()));
+    }
     constructor(connection, accountId) {
         this.connection = connection;
         this.accountId = accountId;
-        this.ready = Promise.resolve(this.fetchState());
     }
     async fetchState() {
         const state = await this.connection.provider.query(`account/${this.accountId}`, '');
@@ -5776,6 +5778,9 @@ class InMemorySigner extends Signer {
             throw new Error("InMemorySigner requires provided account id");
         }
         let keyPair = await this.keyStore.getKey(networkId, accountId);
+        if (keyPair === null) {
+            throw new Error(`Key for ${accountId} not found in ${networkId}`);
+        }
         return keyPair.sign(hash);
     }
 }
@@ -5839,7 +5844,7 @@ function createAccessKey(contractId, methodName, balanceOwner, amount) {
         contractId: contractId ? new protos_1.google.protobuf.StringValue({ value: contractId }) : null,
         methodName: methodName ? new protos_1.google.protobuf.BytesValue({ value: Buffer.from(methodName) }) : null,
         balanceOwner: balanceOwner ? new protos_1.google.protobuf.StringValue({ value: balanceOwner }) : null,
-        amount: amount ? bigInt(amount) : null,
+        amount: bigInt(amount || BigInt(0)),
     });
 }
 exports.createAccessKey = createAccessKey;
