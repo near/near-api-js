@@ -19,6 +19,7 @@ cache:
 
 install_dependencies:
   stage: build
+  tags: gcloud
   script:
     - rm -rf nearcore/ # nearcore/ gets cached
     - git clone --depth 1 --branch ghost https://github.com/nearprotocol/nearcore.git nearcore
@@ -31,8 +32,10 @@ install_dependencies:
 
 test:
   stage: test
+  tags: gcloud
   script: NODE_ENV=development npm test
 
 lint:
   stage: test
+  tags: gcloud
   script: npm run lint
