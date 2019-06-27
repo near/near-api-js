@@ -23,7 +23,7 @@ install_dependencies:
     - gcloud
   script:
     - rm -rf nearcore/ # nearcore/ gets cached
-    - git clone --depth 1 --branch ghost https://github.com/nearprotocol/nearcore.git nearcore
+    - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
     - npm install
     - npm run build
     - cd nearcore && ./scripts/build_wasm.sh
