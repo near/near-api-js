@@ -8,7 +8,7 @@
   },
   "homepage": "https://github.com/nearprotocol/nearcore",
   "main": "lib/index.js",
-  "types": "index.d.ts",
+  "types": "lub/index.d.ts",
   "dependencies": {
     "bn.js": "^4.11.5",
     "@types/bn.js": "^4.11.5",
@@ -50,7 +50,6 @@
     "test": "jest test --runInBand",
     "lint": "eslint test",
     "fix": "eslint test --fix",
-    "prepare": "tsc -p ./tsconfig.json && npm run doc",
     "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"
   },
   "author": "NEAR Inc"
