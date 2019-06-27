@@ -26,7 +26,7 @@ install_dependencies:
     - git clone --depth 1 --branch ghost https://github.com/nearprotocol/nearcore.git nearcore
     - npm install
     - npm run build
-    - cd nearcore/tests/hello && npm install && npm run build
+    - cd nearcore && ./scripts/build_wasm.sh
   artifacts:
     paths:
       - node_modules/
