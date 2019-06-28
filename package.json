@@ -49,8 +49,8 @@
     "build": "npm run generate-protos && npm run compile",
     "pretest": "npm run build",
     "test": "jest test --runInBand",
-    "lint": "eslint test && tslint -p ./tsconfig.json -t codeframe",
-    "fix": "eslint test --fix && tslint -p ./tsconfig.json -t codeframe --fix",
+    "lint": "eslint test && tslint -p ./tsconfig.json -t codeFrame",
+    "fix": "eslint test --fix && tslint -p ./tsconfig.json -t codeFrame --fix",
     "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"
   },
   "author": "NEAR Inc"
