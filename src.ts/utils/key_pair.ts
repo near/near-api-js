@@ -25,7 +25,7 @@ export abstract class KeyPair {
 
     static fromString(encodedKey: string): KeyPair {
         const parts = encodedKey.split(':');
-        if (parts.length != 2) {
+        if (parts.length !== 2) {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
         switch (parts[0]) {

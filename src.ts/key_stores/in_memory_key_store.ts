@@ -47,7 +47,7 @@ export class InMemoryKeyStore extends KeyStore {
         const result = new Array<string>();
         Object.keys(this.keys).forEach((key) => {
             const parts = key.split('_');
-            if (parts[1] == networkId) {
+            if (parts[1] === networkId) {
                 result.push(parts[0]);
             }
         });

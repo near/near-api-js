@@ -11,7 +11,7 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-const fetch = (typeof window === 'undefined' || window.name == 'nodejs') ? require('node-fetch') : window.fetch;
+const fetch = (typeof window === 'undefined' || window.name === 'nodejs') ? require('node-fetch') : window.fetch;
 
 export async function fetchJson(connection: string | ConnectionInfo, json?: string): Promise<any> {
     let url: string = null;

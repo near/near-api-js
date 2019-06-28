@@ -47,10 +47,10 @@ export class WalletAccount {
 
     /**
      * Redirects current page to the wallet authentication page.
-     * @param {string} contract_id contract ID of the application
+     * @param {string} contractId contract ID of the application
      * @param {string} title name of the application
-     * @param {string} success_url url to redirect on success
-     * @param {string} failure_url url to redirect on failure
+     * @param {string} successUrl url to redirect on success
+     * @param {string} failureUrl url to redirect on failure
      * @example
      *   walletAccount.requestSignIn(
      *     myContractId,
@@ -58,13 +58,13 @@ export class WalletAccount {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    requestSignIn(contract_id: string, title: string, success_url: string, failure_url: string) {
+    requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string) {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('title', title);
-        newUrl.searchParams.set('contract_id', contract_id);
-        newUrl.searchParams.set('success_url', success_url || currentUrl.href);
-        newUrl.searchParams.set('failure_url', failure_url || currentUrl.href);
+        newUrl.searchParams.set('contract_id', contractId);
+        newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
+        newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
         if (!this.getAccountId() || !this._keyStore.getKey(this._networkId, this.getAccountId())) {
             const accessKey = KeyPair.fromRandom('ed25519');

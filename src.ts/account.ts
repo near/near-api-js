@@ -62,8 +62,8 @@ export class Account {
     }
 
     private printLogs(contractId: string, logs: string[]) {
-        for (let i = 0; i < logs.length; ++i) {
-            console.log(`[${contractId}]: ${logs[i]}`);
+        for (const log of logs) {
+            console.log(`[${contractId}]: ${log}`);
         }
     }
 

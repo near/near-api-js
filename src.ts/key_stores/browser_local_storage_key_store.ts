@@ -57,7 +57,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
         Object.keys(this.localStorage).forEach((key) => {
             if (key.endsWith(LOCAL_STORAGE_SECRET_KEY_SUFFIX)) {
                 const parts = key.split('_');
-                if (parts[1] == networkId) {
+                if (parts[1] === networkId) {
                     result.push(parts[0]);
                 }
             }
