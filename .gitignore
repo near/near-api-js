@@ -3,6 +3,7 @@
 
 storage
 node_modules
+*.map
 
 # Nearlib files & coverage
 neardev/
