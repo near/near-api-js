@@ -9,33 +9,18 @@ variables:
   HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:
-  - build
   - test
-
-cache:
-  paths:
-    - nearcore/
-    - node_modules/
-
-install_dependencies:
-  stage: build
-  tags:
-    - gcloud
-  script:
-    - rm -rf nearcore/ # nearcore/ gets cached
-    - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
-    - npm install
-    - npm run build
-    - cd nearcore && ./scripts/build_wasm.sh
-  artifacts:
-    paths:
-      - node_modules/
 
 test:
   stage: test
   tags:
     - gcloud
-  script: NODE_ENV=development npm test
+  script:
+    - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
+    - npm install
+    - npm run build
+    - (cd nearcore && ./scripts/build_wasm.sh)
+    - NODE_ENV=development npm test
 
 lint:
   stage: test
