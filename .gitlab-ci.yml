@@ -26,4 +26,6 @@ lint:
   stage: test
   tags:
     - gcloud
-  script: npm run lint
+  script:
+    - npm install
+    - npm run lint
