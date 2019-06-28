@@ -10,5 +10,5 @@ export function base_encode(value: Uint8Array | string): string {
 }
 
 export function base_decode(value: string): Uint8Array {
-    return bs58.decode(value)
+    return bs58.decode(value);
 }

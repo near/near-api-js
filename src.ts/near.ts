@@ -37,27 +37,27 @@ class Near {
             throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
         }
         await this.accountCreator.createAccount(accountId, publicKey);
-        return new Account(this.connection, accountId)
+        return new Account(this.connection, accountId);
     }
 
     /**
      * Backwards compatibility method. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
-     * @param contractId 
-     * @param options 
+     * @param contractId
+     * @param options
      */
     async loadContract(contractId: string, options: { viewMethods: string[], changeMethods: string[], sender: string }): Promise<Contract> {
-        console.warn("near.loadContract is deprecated. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.");
+        console.warn('near.loadContract is deprecated. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.');
         const account = new Account(this.connection, options.sender);
         return new Contract(account, contractId, options);
     }
 
     /**
      * Backwards compatibility method. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.
-     * @param contractId 
-     * @param wasmByteArray 
+     * @param contractId
+     * @param wasmByteArray
      */
     async deployContract(contractId: string, wasmByteArray: Uint8Array): Promise<string> {
-        console.warn("near.deployContract is deprecated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.");
+        console.warn('near.deployContract is deprecated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.');
         const account = new Account(this.connection, contractId);
         const result = await account.deployContract(wasmByteArray);
         return result.logs[0].hash;
@@ -65,12 +65,12 @@ class Near {
 
     /**
      * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
-     * @param amount 
-     * @param originator 
-     * @param receiver 
+     * @param amount
+     * @param originator
+     * @param receiver
      */
     async sendTokens(amount: bigint, originator: string, receiver: string): Promise<string> {
-        console.warn("near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.");
+        console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
         const account = new Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);
         return result.logs[0].hash;
@@ -92,5 +92,5 @@ export async function connect(config: any): Promise<Near> {
             console.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
         }
     }
-    return new Near(config)
+    return new Near(config);
 }

@@ -19,7 +19,7 @@ export class Contract {
         options.changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
-                value: async function (args: any) {
+                value: async function(args: any) {
                 return this.account.functionCall(this.contractId, methodName, args || {});
             }});
         });

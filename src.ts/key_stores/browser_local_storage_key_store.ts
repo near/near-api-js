@@ -6,7 +6,7 @@ import { KeyPair } from '../utils/key_pair';
 const LOCAL_STORAGE_SECRET_KEY_SUFFIX = '_secretkey';
 
 function storageKeyForSecretKey(networkId: string, accountId: string): string {
-    return `${accountId}_${networkId}${LOCAL_STORAGE_SECRET_KEY_SUFFIX}`
+    return `${accountId}_${networkId}${LOCAL_STORAGE_SECRET_KEY_SUFFIX}`;
 }
 
 export class BrowserLocalStorageKeyStore extends KeyStore {
@@ -16,11 +16,11 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
         super();
         this.localStorage = localStorage;
     }
-    
+
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
         this.localStorage.setItem(storageKeyForSecretKey(networkId, accountId), keyPair.toString());
     }
-    
+
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
         const value = this.localStorage.getItem(storageKeyForSecretKey(networkId, accountId));
         if (!value) {
@@ -28,7 +28,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
         }
         return KeyPair.fromString(value);
     }
-    
+
     async removeKey(networkId: string, accountId: string): Promise<void> {
         this.localStorage.removeItem(storageKeyForSecretKey(networkId, accountId));
     }
@@ -41,8 +41,8 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
         });
     }
 
-    async getNetworks(): Promise<Array<string>> {
-        let result = new Set<string>();
+    async getNetworks(): Promise<string[]> {
+        const result = new Set<string>();
         Object.keys(this.localStorage).forEach((key) => {
             if (key.endsWith(LOCAL_STORAGE_SECRET_KEY_SUFFIX)) {
                 const parts = key.split('_');
@@ -52,8 +52,8 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
         return Array.from(result.values());
     }
 
-    async getAccounts(networkId: string): Promise<Array<string>> {
-        let result = new Array<string>();
+    async getAccounts(networkId: string): Promise<string[]> {
+        const result = new Array<string>();
         Object.keys(this.localStorage).forEach((key) => {
             if (key.endsWith(LOCAL_STORAGE_SECRET_KEY_SUFFIX)) {
                 const parts = key.split('_');

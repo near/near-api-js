@@ -1,7 +1,7 @@
 'use strict';
 
 import { sendMoney, createAccount, signTransaction, deployContract,
-    fromUint128, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction'
+    fromUint128, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
 import { base_encode } from './utils/serialize';
@@ -25,14 +25,14 @@ function sleep(millis: number): Promise<any> {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 
-export type AccountState = {
-    account_id: string,
-    nonce: number,
-    amount: bigint,
-    stake: bigint,
-    public_keys: Uint8Array[],
-    code_hash: string,
-};
+export interface AccountState {
+    account_id: string;
+    nonce: number;
+    amount: bigint;
+    stake: bigint;
+    public_keys: Uint8Array[];
+    code_hash: string;
+}
 
 export class Account {
     readonly connection: Connection;
@@ -90,14 +90,13 @@ export class Account {
     }
 
     private async signAndSendTransaction(transaction: any): Promise<FinalTransactionResult> {
-        let [txHash, signedTx] = await signTransaction(
+        const [txHash, signedTx] = await signTransaction(
             this.connection.signer, transaction, this.accountId, this.connection.networkId);
-        
+
         let result;
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
-        }
-        catch (error) {
+        } catch (error) {
             if (error.message === '[-32000] Server error: send_tx_commit has timed out.') {
                 result = await this.retryTxResult(txHash);
             } else {
@@ -126,7 +125,7 @@ export class Account {
 
     async createAndDeployContract(contractId: string, publicKey: string, data: Uint8Array, amount: bigint): Promise<Account> {
         await this.createAccount(contractId, publicKey, amount);
-        let contractAccount = new Account(this.connection, contractId);
+        const contractAccount = new Account(this.connection, contractId);
         await contractAccount.ready;
         await contractAccount.deployContract(data);
         return contractAccount;
@@ -179,7 +178,7 @@ export class Account {
     }
 
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
-        let result = await this.connection.provider.query(`call/${contractId}/${methodName}`, base_encode(JSON.stringify(args)));
+        const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, base_encode(JSON.stringify(args)));
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }

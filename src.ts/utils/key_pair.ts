@@ -5,9 +5,9 @@ import { base_encode, base_decode } from './serialize';
 
 export type Arrayish = string | ArrayLike<number>;
 
-export type Signature = {
-    signature: Uint8Array,
-    publicKey: string,
+export interface Signature {
+    signature: Uint8Array;
+    publicKey: string;
 }
 
 export abstract class KeyPair {
@@ -18,18 +18,18 @@ export abstract class KeyPair {
 
     static fromRandom(curve: string): KeyPair {
         switch (curve) {
-            case "ed25519": return KeyPairEd25519.fromRandom();
+            case 'ed25519': return KeyPairEd25519.fromRandom();
             default: throw new Error(`Unknown curve ${curve}`);
         }
     }
 
     static fromString(encodedKey: string): KeyPair {
-        let parts = encodedKey.split(':');
+        const parts = encodedKey.split(':');
         if (parts.length != 2) {
-            throw new Error("Invalid encoded key format, must be <curve>:<encoded key>");
+            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
         switch (parts[0]) {
-            case "ed25519": return new KeyPairEd25519(parts[1]);
+            case 'ed25519': return new KeyPairEd25519(parts[1]);
             default: throw new Error(`Unknown curve: ${parts[0]}`);
         }
     }
@@ -44,13 +44,13 @@ export class KeyPairEd25519 extends KeyPair {
     readonly secretKey: string;
 
     /**
-     * Construct an instance of key pair given a secret key. 
+     * Construct an instance of key pair given a secret key.
      * It's generally assumed that these are encoded in base58.
      * @param {string} secretKey
      */
     constructor(secretKey: string) {
         super();
-        let keyPair = nacl.sign.keyPair.fromSecretKey(base_decode(secretKey));
+        const keyPair = nacl.sign.keyPair.fromSecretKey(base_decode(secretKey));
         this.publicKey = base_encode(keyPair.publicKey);
         this.secretKey = secretKey;
     }
@@ -66,7 +66,7 @@ export class KeyPairEd25519 extends KeyPair {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        let newKeyPair = nacl.sign.keyPair();
+        const newKeyPair = nacl.sign.keyPair();
         return new KeyPairEd25519(base_encode(newKeyPair.secretKey));
     }
 

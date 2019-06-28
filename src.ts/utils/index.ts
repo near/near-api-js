@@ -14,4 +14,4 @@ export {
 
     KeyPair,
     KeyPairEd25519
-}
+};

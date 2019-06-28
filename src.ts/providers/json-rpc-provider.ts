@@ -15,20 +15,20 @@ export class JsonRpcProvider extends Provider {
     constructor(url?: string, network?: Network) {
         super();
         // TODO: resolve network to url...
-        
+
         this.connection = { url };
     }
 
     async getNetwork(): Promise<Network> {
         return {
-            name: "test",
-            chainId: "test"
+            name: 'test',
+            chainId: 'test'
         };
     }
 
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult> {
-        let bytes = SignedTransaction.encode(signedTransaction).finish();
-        return this.sendJsonRpc("broadcast_tx_commit", [Buffer.from(bytes).toString("base64")]);
+        const bytes = SignedTransaction.encode(signedTransaction).finish();
+        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
     }
 
     async txStatus(txHash: Uint8Array): Promise<FinalTransactionResult> {
@@ -36,7 +36,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     async query(path: string, data: string): Promise<any> {
-        const result = await this.sendJsonRpc("query", [path, data]);
+        const result = await this.sendJsonRpc('query', [path, data]);
         if (result.error) {
             throw new Error(`Quering ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
         }
@@ -44,11 +44,11 @@ export class JsonRpcProvider extends Provider {
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {
-        let request = {
+        const request = {
             method,
             params,
             id: (_nextId++),
-            jsonrpc: "2.0"
+            jsonrpc: '2.0'
         };
         const result = await fetchJson(this.connection, JSON.stringify(request));
         if (result.error) {

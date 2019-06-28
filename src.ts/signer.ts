@@ -64,9 +64,9 @@ export class InMemorySigner extends Signer {
 
     async signHash(hash: Uint8Array, accountId?: string, networkId?: string): Promise<Signature> {
         if (!accountId) {
-            throw new Error("InMemorySigner requires provided account id");
+            throw new Error('InMemorySigner requires provided account id');
         }
-        let keyPair = await this.keyStore.getKey(networkId, accountId);
+        const keyPair = await this.keyStore.getKey(networkId, accountId);
         if (keyPair === null) {
             throw new Error(`Key for ${accountId} not found in ${networkId}`);
         }

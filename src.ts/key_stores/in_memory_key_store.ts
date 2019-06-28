@@ -34,8 +34,8 @@ export class InMemoryKeyStore extends KeyStore {
         this.keys = {};
     }
 
-    async getNetworks(): Promise<Array<string>> {
-        let result = new Set<string>();
+    async getNetworks(): Promise<string[]> {
+        const result = new Set<string>();
         Object.keys(this.keys).forEach((key) => {
             const parts = key.split('_');
             result.add(parts[1]);
@@ -43,8 +43,8 @@ export class InMemoryKeyStore extends KeyStore {
         return Array.from(result.values());
     }
 
-    async getAccounts(networkId: string): Promise<Array<string>> {
-        let result = new Array<string>();
+    async getAccounts(networkId: string): Promise<string[]> {
+        const result = new Array<string>();
         Object.keys(this.keys).forEach((key) => {
             const parts = key.split('_');
             if (parts[1] == networkId) {

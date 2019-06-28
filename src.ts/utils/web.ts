@@ -2,13 +2,13 @@
 
 import createError from 'http-errors';
 
-export type ConnectionInfo = {
-    url: string,
-    user?: string,
-    password?: string,
-    allowInsecure?: boolean,
-    timeout?: number,
-    headers?: { [key: string]: string | number }
+export interface ConnectionInfo {
+    url: string;
+    user?: string;
+    password?: string;
+    allowInsecure?: boolean;
+    timeout?: number;
+    headers?: { [key: string]: string | number };
 }
 
 const fetch = (typeof window === 'undefined' || window.name == 'nodejs') ? require('node-fetch') : window.fetch;
@@ -28,5 +28,5 @@ export async function fetchJson(connection: string | ConnectionInfo, json?: stri
     if (!response.ok) {
         throw createError(response.status, await response.text());
     }
-    return await response.json()
+    return await response.json();
 }

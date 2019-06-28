@@ -4,22 +4,22 @@ import { Network } from '../utils/network';
 import { SignedTransaction } from '../protos';
 
 export enum FinalTransactionStatus {
-    Unknown = "Unknown",
-    Started = "Started",
-    Failed = "Failed",
-    Completed = "Completed",
+    Unknown = 'Unknown',
+    Started = 'Started',
+    Failed = 'Failed',
+    Completed = 'Completed',
 }
 
-export type TransactionLog = {
-    hash: string,
-    lines: Array<string>,
-    receipts: Array<number[]>,
-    result?: Uint8Array
+export interface TransactionLog {
+    hash: string;
+    lines: string[];
+    receipts: number[][];
+    result?: Uint8Array;
 }
 
-export type FinalTransactionResult = {
-    status: FinalTransactionStatus,
-    logs: TransactionLog[]
+export interface FinalTransactionResult {
+    status: FinalTransactionStatus;
+    logs: TransactionLog[];
 }
 
 export abstract class Provider {

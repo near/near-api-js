@@ -10,16 +10,17 @@
   "main": "lib/index.js",
   "types": "lub/index.d.ts",
   "dependencies": {
-    "bn.js": "^4.11.5",
     "@types/bn.js": "^4.11.5",
+    "bn.js": "^4.11.5",
     "bs58": "^4.0.1",
     "error-polyfill": "^0.1.2",
     "http-errors": "^1.7.2",
     "js-sha256": "^0.9.0",
     "node-fetch": "^2.3.0",
+    "protobufjs": "^6.8.8",
+    "tslint": "^5.18.0",
     "tweetnacl": "^1.0.1",
-    "typescript": "^3.5.1",
-    "protobufjs": "^6.8.8"
+    "typescript": "^3.5.1"
   },
   "devDependencies": {
     "@types/bs58": "^4.0.0",
@@ -48,8 +49,8 @@
     "build": "npm run generate-protos && npm run compile",
     "pretest": "npm run build",
     "test": "jest test --runInBand",
-    "lint": "eslint test",
-    "fix": "eslint test --fix",
+    "lint": "eslint test && tslint -p ./tsconfig.json",
+    "fix": "eslint test --fix && tslint -p ./tsconfig.json --fix",
     "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"
   },
   "author": "NEAR Inc"

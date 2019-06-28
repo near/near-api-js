@@ -1,10 +1,10 @@
 'use strict';
 
 // We use BN for only single purpose of encoding BigInt into Byte Array (and it's already used by tweetnacl so not an additional dependencies).
-import BN from "bn.js";
+import BN from 'bn.js';
 
-import { Uint128, SendMoneyTransaction, CreateAccountTransaction, 
-    SignedTransaction, DeployContractTransaction, FunctionCallTransaction, 
+import { Uint128, SendMoneyTransaction, CreateAccountTransaction,
+    SignedTransaction, DeployContractTransaction, FunctionCallTransaction,
     StakeTransaction, SwapKeyTransaction, AddKeyTransaction,
     DeleteKeyTransaction, AccessKey,
     google} from './protos';
@@ -47,7 +47,7 @@ export function functionCall(nonce: number, originator: string, contractId: stri
 }
 
 export function sendMoney(nonce: number, originator: string, receiver: string, amount: bigint): SendMoneyTransaction {
-    return new SendMoneyTransaction({ nonce, originator, receiver, amount: bigInt(amount) })
+    return new SendMoneyTransaction({ nonce, originator, receiver, amount: bigInt(amount) });
 }
 
 export function stake(nonce: number, originator: string, amount: bigint, publicKey: string): StakeTransaction {
@@ -59,7 +59,7 @@ export function swapKey(nonce: number, originator: string, curKey: string, newKe
 }
 
 export function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: bigint): AccessKey {
-    return new AccessKey({ 
+    return new AccessKey({
         contractId: contractId ? new google.protobuf.StringValue({ value: contractId }) : null,
         methodName: methodName ? new google.protobuf.BytesValue({ value: Buffer.from(methodName) }) : null,
         balanceOwner: balanceOwner ? new google.protobuf.StringValue({ value: balanceOwner }) : null,
@@ -87,6 +87,6 @@ export function signedTransaction(transaction: AllTransactions, signature: Signa
 export async function signTransaction(signer: Signer, transaction: any, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const protoClass = transaction.constructor;
     const txHash = protoClass.encode(transaction).finish();
-    let signature = await signer.signMessage(txHash, accountId, networkId);
+    const signature = await signer.signMessage(txHash, accountId, networkId);
     return [txHash, signedTransaction(transaction, signature)];
 }

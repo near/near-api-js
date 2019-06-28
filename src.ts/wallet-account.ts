@@ -38,7 +38,7 @@ export class WalletAccount {
 
     /**
      * Returns authorized Account ID.
-     * @example 
+     * @example
      * walletAccount.getAccountId();
      */
     getAccountId() {
@@ -60,7 +60,7 @@ export class WalletAccount {
      */
     requestSignIn(contract_id: string, title: string, success_url: string, failure_url: string) {
         const currentUrl = new URL(window.location.href);
-        let newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
+        const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('title', title);
         newUrl.searchParams.set('contract_id', contract_id);
         newUrl.searchParams.set('success_url', success_url || currentUrl.href);
@@ -78,9 +78,9 @@ export class WalletAccount {
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     _completeSignInWithAccessKey() {
-        let currentUrl = new URL(window.location.href);
-        let publicKey = currentUrl.searchParams.get('public_key') || '';
-        let accountId = currentUrl.searchParams.get('account_id') || '';
+        const currentUrl = new URL(window.location.href);
+        const publicKey = currentUrl.searchParams.get('public_key') || '';
+        const accountId = currentUrl.searchParams.get('account_id') || '';
         if (accountId && publicKey) {
             this._authData = {
                 accountId
@@ -91,9 +91,9 @@ export class WalletAccount {
     }
 
     async _moveKeyFromTempToPermanent(accountId: string, publicKey: string) {
-        let keyPair = await this._keyStore.getKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
+        const keyPair = await this._keyStore.getKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
         await this._keyStore.setKey(this._networkId, accountId, keyPair);
-        await this._keyStore.removeKey(this._networkId,PENDING_ACCESS_KEY_PREFIX + publicKey);
+        await this._keyStore.removeKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
     }
 
     /**

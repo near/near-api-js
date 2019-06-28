@@ -9,10 +9,10 @@ import { KeyStore } from './keystore';
 /**
  * Format of the account stored on disk.
  */
-type AccountInfo = {
-    account_id: string,
-    private_key: string,
-};
+interface AccountInfo {
+    account_id: string;
+    private_key: string;
+}
 
 export async function loadJsonFile(path: string): Promise<any> {
     const content = await promisify(fs.readFile)(path);
@@ -23,7 +23,7 @@ async function ensureDir(path: string): Promise<void> {
     try {
         await promisify(fs.mkdir)(path, { recursive: true });
     } catch (err) {
-        if (err.code !== 'EEXIST') throw err;
+        if (err.code !== 'EEXIST') { throw err; }
     }
 }
 
@@ -61,24 +61,24 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     private getKeyFilePath(networkId: string, accountId: string): string {
-        return `${this.keyDir}/${networkId}/${accountId}`
+        return `${this.keyDir}/${networkId}/${accountId}`;
     }
 
-    async getNetworks(): Promise<Array<string>> {
-        let files = await promisify(fs.readdir)(this.keyDir);
-        let result = new Array<string>();
+    async getNetworks(): Promise<string[]> {
+        const files = await promisify(fs.readdir)(this.keyDir);
+        const result = new Array<string>();
         files.forEach((item) => {
             result.push(item);
         });
         return result;
     }
 
-    async getAccounts(networkId: string): Promise<Array<string>> {
+    async getAccounts(networkId: string): Promise<string[]> {
         if (!await promisify(fs.exists)(`${this.keyDir}/${networkId}`)) {
             return [];
         }
-        let files = await promisify(fs.readdir)(`${this.keyDir}/${networkId}`);
-        let result = new Array<string>();
+        const files = await promisify(fs.readdir)(`${this.keyDir}/${networkId}`);
+        const result = new Array<string>();
         files.forEach((item) => {
             result.push(item);
         });
@@ -87,13 +87,13 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
 
     async totalAccounts(): Promise<number> {
         let result = 0;
-        let files = await promisify(fs.readdir)(this.keyDir);
+        const files = await promisify(fs.readdir)(this.keyDir);
         files.forEach(async (item) => {
-            let accounts = await promisify(fs.readdir)(`${this.keyDir}/${item}`);
+            const accounts = await promisify(fs.readdir)(`${this.keyDir}/${item}`);
             accounts.forEach((_) => {
                 result++;
             });
-        })
+        });
         return result;
     }
 }

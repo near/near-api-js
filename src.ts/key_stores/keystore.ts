@@ -10,7 +10,7 @@ export abstract class KeyStore {
     abstract async getKey(networkId: string, accountId: string): Promise<KeyPair>;
     abstract async removeKey(networkId: string, accountId: string): Promise<void>;
     abstract async clear(): Promise<void>;
-    abstract async getNetworks(): Promise<Array<string>>;
-    abstract async getAccounts(networkId: string): Promise<Array<string>>;
+    abstract async getNetworks(): Promise<string[]>;
+    abstract async getAccounts(networkId: string): Promise<string[]>;
     abstract async totalAccounts(): Promise<number>;
 }
