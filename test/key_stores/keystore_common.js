@@ -4,7 +4,7 @@ const nearlib = require('../../lib/index');
 const KeyPair = nearlib.utils.KeyPairEd25519;
 
 const NETWORK_ID_SINGLE_KEY = 'singlekeynetworkid';
-const ACCOUNT_ID_SINGLE_KEY = 'singlekeyaccountid';
+const ACCOUNT_ID_SINGLE_KEY = 'singlekey_accountid';
 const KEYPAIR_SINGLE_KEY = new KeyPair('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
 
 module.exports.shouldStoreAndRetriveKeys = ctx => {
