@@ -15,11 +15,11 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        this.keys[`${accountId}_${networkId}`] = keyPair.toString();
+        this.keys[`${accountId}:${networkId}`] = keyPair.toString();
     }
 
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
-        const value = this.keys[`${accountId}_${networkId}`];
+        const value = this.keys[`${accountId}:${networkId}`];
         if (!value) {
             return null;
         }
@@ -27,7 +27,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     async removeKey(networkId: string, accountId: string): Promise<void> {
-        delete this.keys[`${accountId}_${networkId}`];
+        delete this.keys[`${accountId}:${networkId}`];
     }
 
     async clear(): Promise<void> {
@@ -37,7 +37,7 @@ export class InMemoryKeyStore extends KeyStore {
     async getNetworks(): Promise<string[]> {
         const result = new Set<string>();
         Object.keys(this.keys).forEach((key) => {
-            const parts = key.split('_');
+            const parts = key.split(':');
             result.add(parts[1]);
         });
         return Array.from(result.values());
@@ -46,7 +46,7 @@ export class InMemoryKeyStore extends KeyStore {
     async getAccounts(networkId: string): Promise<string[]> {
         const result = new Array<string>();
         Object.keys(this.keys).forEach((key) => {
-            const parts = key.split('_');
+            const parts = key.split(':');
             if (parts[1] === networkId) {
                 result.push(parts[0]);
             }
@@ -55,8 +55,6 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     async totalAccounts(): Promise<number> {
-        let result = 0;
-        Object(this.keys).forEach((_: any) => result++);
-        return result;
+        return Object.keys(this.keys).length;
     }
 }
