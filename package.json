@@ -30,6 +30,7 @@
     "documentation": "^9.1.1",
     "eslint": "^5.14.0",
     "jest": "^24.1.0",
+    "localstorage-memory": "^1.0.3",
     "ts-protoc-gen": "^0.10.0",
     "typedoc": "^0.14.2",
     "typedoc-plugin-markdown": "^1.2.1",
