@@ -44,7 +44,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
         // Find key / account id.
         if (!await promisify(fs.exists)(this.getKeyFilePath(networkId, accountId))) {
-            throw new Error(`Key for ${accountId} in ${networkId} not found in ${this.keyDir}`);
+            return null;
         }
         const accountInfo = await loadJsonFile(this.getKeyFilePath(networkId, accountId));
         return KeyPair.fromString(accountInfo.private_key);
