@@ -6,6 +6,14 @@ import { promisify } from 'util';
 import { KeyPair } from '../utils/key_pair';
 import { KeyStore } from './keystore';
 
+const exists = promisify(fs.exists);
+const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
+const unlink = promisify(fs.unlink);
+const readdir = promisify(fs.readdir);
+const mkdir = promisify(fs.mkdir);
+const rmdir = promisify(fs.rmdir);
+
 /**
  * Format of the account stored on disk.
  */
@@ -15,13 +23,13 @@ interface AccountInfo {
 }
 
 export async function loadJsonFile(path: string): Promise<any> {
-    const content = await promisify(fs.readFile)(path);
+    const content = await readFile(path);
     return JSON.parse(content.toString());
 }
 
 async function ensureDir(path: string): Promise<void> {
     try {
-        await promisify(fs.mkdir)(path, { recursive: true });
+        await mkdir(path, { recursive: true });
     } catch (err) {
         if (err.code !== 'EEXIST') { throw err; }
     }
@@ -38,12 +46,12 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
         await ensureDir(`${this.keyDir}/${networkId}`);
         const content: AccountInfo = { account_id: accountId, private_key: keyPair.toString() };
-        await promisify(fs.writeFile)(this.getKeyFilePath(networkId, accountId), JSON.stringify(content));
+        await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content));
     }
 
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
         // Find key / account id.
-        if (!await promisify(fs.exists)(this.getKeyFilePath(networkId, accountId))) {
+        if (!await exists(this.getKeyFilePath(networkId, accountId))) {
             return null;
         }
         const accountInfo = await loadJsonFile(this.getKeyFilePath(networkId, accountId));
@@ -51,21 +59,21 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     async removeKey(networkId: string, accountId: string): Promise<void> {
-        if (await promisify(fs.exists)(this.getKeyFilePath(networkId, accountId))) {
-            await promisify(fs.unlink)(this.getKeyFilePath(networkId, accountId));
+        if (await exists(this.getKeyFilePath(networkId, accountId))) {
+            await unlink(this.getKeyFilePath(networkId, accountId));
         }
     }
 
     async clear(): Promise<void> {
-        await promisify(fs.rmdir)(this.keyDir);
+        await rmdir(this.keyDir);
     }
 
     private getKeyFilePath(networkId: string, accountId: string): string {
-        return `${this.keyDir}/${networkId}/${accountId}`;
+        return `${this.keyDir}/${networkId}/${accountId}.json`;
     }
 
     async getNetworks(): Promise<string[]> {
-        const files = await promisify(fs.readdir)(this.keyDir);
+        const files = await readdir(this.keyDir);
         const result = new Array<string>();
         files.forEach((item) => {
             result.push(item);
@@ -74,26 +82,21 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     async getAccounts(networkId: string): Promise<string[]> {
-        if (!await promisify(fs.exists)(`${this.keyDir}/${networkId}`)) {
+        if (!await exists(`${this.keyDir}/${networkId}`)) {
             return [];
         }
-        const files = await promisify(fs.readdir)(`${this.keyDir}/${networkId}`);
-        const result = new Array<string>();
-        files.forEach((item) => {
-            result.push(item);
-        });
-        return result;
+        const files = await readdir(`${this.keyDir}/${networkId}`);
+        return files
+            .filter(file => file.endsWith('.json'))
+            .map(file => file.replace(/.json$/, ''));
     }
 
     async totalAccounts(): Promise<number> {
         let result = 0;
-        const files = await promisify(fs.readdir)(this.keyDir);
-        files.forEach(async (item) => {
-            const accounts = await promisify(fs.readdir)(`${this.keyDir}/${item}`);
-            accounts.forEach((_) => {
-                result++;
-            });
-        });
+        const networkDirs = await readdir(this.keyDir);
+        for (const networkId of networkDirs) {
+            result += (await this.getAccounts(networkId)).length;
+        };
         return result;
     }
 }

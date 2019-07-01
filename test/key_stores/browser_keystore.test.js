@@ -1,5 +1,4 @@
 const nearlib = require('../../lib/index');
-const { createFakeStorage } = require('../test-utils');
 
 const BrowserLocalStorageKeyStore = nearlib.keyStores.BrowserLocalStorageKeyStore;
 
