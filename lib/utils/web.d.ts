@@ -1,4 +1,4 @@
-export declare type ConnectionInfo = {
+export interface ConnectionInfo {
     url: string;
     user?: string;
     password?: string;
@@ -7,5 +7,5 @@ export declare type ConnectionInfo = {
     headers?: {
         [key: string]: string | number;
     };
-};
+}
 export declare function fetchJson(connection: string | ConnectionInfo, json?: string): Promise<any>;

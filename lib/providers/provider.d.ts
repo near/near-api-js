@@ -6,16 +6,16 @@ export declare enum FinalTransactionStatus {
     Failed = "Failed",
     Completed = "Completed"
 }
-export declare type TransactionLog = {
+export interface TransactionLog {
     hash: string;
-    lines: Array<string>;
-    receipts: Array<number[]>;
+    lines: string[];
+    receipts: number[][];
     result?: Uint8Array;
-};
-export declare type FinalTransactionResult = {
+}
+export interface FinalTransactionResult {
     status: FinalTransactionStatus;
     logs: TransactionLog[];
-};
+}
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult>;

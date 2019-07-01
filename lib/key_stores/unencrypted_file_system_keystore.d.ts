@@ -9,7 +9,7 @@ export declare class UnencryptedFileSystemKeyStore extends KeyStore {
     removeKey(networkId: string, accountId: string): Promise<void>;
     clear(): Promise<void>;
     private getKeyFilePath;
-    getNetworks(): Promise<Array<string>>;
-    getAccounts(networkId: string): Promise<Array<string>>;
+    getNetworks(): Promise<string[]>;
+    getAccounts(networkId: string): Promise<string[]>;
     totalAccounts(): Promise<number>;
 }

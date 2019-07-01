@@ -45,8 +45,8 @@ class Account {
         return this._state;
     }
     printLogs(contractId, logs) {
-        for (let i = 0; i < logs.length; ++i) {
-            console.log(`[${contractId}]: ${logs[i]}`);
+        for (const log of logs) {
+            console.log(`[${contractId}]: ${log}`);
         }
     }
     async retryTxResult(txHash) {
@@ -72,7 +72,7 @@ class Account {
         // TODO: retry here few times via tx status RPC.
     }
     async signAndSendTransaction(transaction) {
-        let [txHash, signedTx] = await transaction_1.signTransaction(this.connection.signer, transaction, this.accountId, this.connection.networkId);
+        const [txHash, signedTx] = await transaction_1.signTransaction(this.connection.signer, transaction, this.accountId, this.connection.networkId);
         let result;
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
@@ -105,7 +105,7 @@ class Account {
     }
     async createAndDeployContract(contractId, publicKey, data, amount) {
         await this.createAccount(contractId, publicKey, amount);
-        let contractAccount = new Account(this.connection, contractId);
+        const contractAccount = new Account(this.connection, contractId);
         await contractAccount.ready;
         await contractAccount.deployContract(data);
         return contractAccount;
@@ -150,7 +150,7 @@ class Account {
         return this.signAndSendTransaction(transaction_1.stake(this._state.nonce, this.accountId, amount, publicKey));
     }
     async viewFunction(contractId, methodName, args) {
-        let result = await this.connection.provider.query(`call/${contractId}/${methodName}`, serialize_1.base_encode(JSON.stringify(args)));
+        const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, serialize_1.base_encode(JSON.stringify(args)));
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
@@ -212,13 +212,13 @@ const providers_1 = require("./providers");
 const signer_1 = require("./signer");
 function getProvider(config) {
     switch (config.type) {
-        case "JsonRpcProvider": return new providers_1.JsonRpcProvider(config.args.url);
+        case 'JsonRpcProvider': return new providers_1.JsonRpcProvider(config.args.url);
         default: throw new Error(`Unknown provider type ${config.type}`);
     }
 }
 function getSigner(networkId, config) {
     switch (config.type) {
-        case "InMemorySigner": {
+        case 'InMemorySigner': {
             return new signer_1.InMemorySigner(config.keyStore);
         }
         default: throw new Error(`Unknown signer type ${config.type}`);
@@ -231,8 +231,8 @@ class Connection {
         this.signer = signer;
     }
     static fromConfig(config) {
-        let provider = getProvider(config.provider);
-        let signer = getSigner(config.networkId, config.signer);
+        const provider = getProvider(config.provider);
+        const signer = getSigner(config.networkId, config.signer);
         return new Connection(config.networkId, provider, signer);
     }
 }
@@ -304,65 +304,71 @@ exports.WalletAccount = wallet_account_1.WalletAccount;
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
 const key_pair_1 = require("../utils/key_pair");
-const LOCAL_STORAGE_SECRET_KEY_SUFFIX = '_secretkey';
-function storageKeyForSecretKey(networkId, accountId) {
-    return `${accountId}_${networkId}${LOCAL_STORAGE_SECRET_KEY_SUFFIX}`;
-}
+const LOCAL_STORAGE_KEY_PREFIX = 'nearlib:keystore:';
 class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
-    constructor(localStorage = window.localStorage) {
+    constructor(localStorage = window.localStorage, prefix = LOCAL_STORAGE_KEY_PREFIX) {
         super();
         this.localStorage = localStorage;
+        this.prefix = prefix;
     }
     async setKey(networkId, accountId, keyPair) {
-        this.localStorage.setItem(storageKeyForSecretKey(networkId, accountId), keyPair.toString());
+        this.localStorage.setItem(this.storageKeyForSecretKey(networkId, accountId), keyPair.toString());
     }
     async getKey(networkId, accountId) {
-        const value = this.localStorage.getItem(storageKeyForSecretKey(networkId, accountId));
+        const value = this.localStorage.getItem(this.storageKeyForSecretKey(networkId, accountId));
         if (!value) {
             return null;
         }
         return key_pair_1.KeyPair.fromString(value);
     }
     async removeKey(networkId, accountId) {
-        this.localStorage.removeItem(storageKeyForSecretKey(networkId, accountId));
+        this.localStorage.removeItem(this.storageKeyForSecretKey(networkId, accountId));
     }
     async clear() {
-        Object.keys(this.localStorage).forEach((key) => {
-            if (key.endsWith(LOCAL_STORAGE_SECRET_KEY_SUFFIX)) {
+        for (const key of this.storageKeys()) {
+            if (key.startsWith(this.prefix)) {
                 this.localStorage.removeItem(key);
             }
-        });
+        }
     }
     async getNetworks() {
-        let result = new Set();
-        Object.keys(this.localStorage).forEach((key) => {
-            if (key.endsWith(LOCAL_STORAGE_SECRET_KEY_SUFFIX)) {
-                const parts = key.split('_');
+        const result = new Set();
+        for (const key of this.storageKeys()) {
+            if (key.startsWith(this.prefix)) {
+                const parts = key.substring(this.prefix.length).split(':');
                 result.add(parts[1]);
             }
-        });
+        }
         return Array.from(result.values());
     }
     async getAccounts(networkId) {
-        let result = new Array();
-        Object.keys(this.localStorage).forEach((key) => {
-            if (key.endsWith(LOCAL_STORAGE_SECRET_KEY_SUFFIX)) {
-                const parts = key.split('_');
-                if (parts[1] == networkId) {
+        const result = new Array();
+        for (const key of this.storageKeys()) {
+            if (key.startsWith(this.prefix)) {
+                const parts = key.substring(this.prefix.length).split(':');
+                if (parts[1] === networkId) {
                     result.push(parts[0]);
                 }
             }
-        });
+        }
         return result;
     }
     async totalAccounts() {
         let result = 0;
-        Object.keys(this.localStorage).forEach((key) => {
-            if (key.endsWith(LOCAL_STORAGE_SECRET_KEY_SUFFIX)) {
+        for (const key of this.storageKeys()) {
+            if (key.startsWith(this.prefix)) {
                 result++;
             }
-        });
+        }
         return result;
+    }
+    storageKeyForSecretKey(networkId, accountId) {
+        return `${this.prefix}${accountId}:${networkId}`;
+    }
+    *storageKeys() {
+        for (let i = 0; i < this.localStorage.length; i++) {
+            yield this.localStorage.key(i);
+        }
     }
 }
 exports.BrowserLocalStorageKeyStore = BrowserLocalStorageKeyStore;
@@ -381,43 +387,41 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
         this.keys = {};
     }
     async setKey(networkId, accountId, keyPair) {
-        this.keys[`${accountId}_${networkId}`] = keyPair.toString();
+        this.keys[`${accountId}:${networkId}`] = keyPair.toString();
     }
     async getKey(networkId, accountId) {
-        const value = this.keys[`${accountId}_${networkId}`];
+        const value = this.keys[`${accountId}:${networkId}`];
         if (!value) {
             return null;
         }
         return key_pair_1.KeyPair.fromString(value);
     }
     async removeKey(networkId, accountId) {
-        delete this.keys[`${accountId}_${networkId}`];
+        delete this.keys[`${accountId}:${networkId}`];
     }
     async clear() {
         this.keys = {};
     }
     async getNetworks() {
-        let result = new Set();
+        const result = new Set();
         Object.keys(this.keys).forEach((key) => {
-            const parts = key.split('_');
+            const parts = key.split(':');
             result.add(parts[1]);
         });
         return Array.from(result.values());
     }
     async getAccounts(networkId) {
-        let result = new Array();
+        const result = new Array();
         Object.keys(this.keys).forEach((key) => {
-            const parts = key.split('_');
-            if (parts[1] == networkId) {
+            const parts = key.split(':');
+            if (parts[1] === networkId) {
                 result.push(parts[0]);
             }
         });
         return result;
     }
     async totalAccounts() {
-        let result = 0;
-        Object(this.keys).forEach((_) => result++);
-        return result;
+        return Object.keys(this.keys).length;
     }
 }
 exports.InMemoryKeyStore = InMemoryKeyStore;
@@ -454,18 +458,26 @@ const fs_1 = __importDefault(require("fs"));
 const util_1 = require("util");
 const key_pair_1 = require("../utils/key_pair");
 const keystore_1 = require("./keystore");
+const exists = util_1.promisify(fs_1.default.exists);
+const readFile = util_1.promisify(fs_1.default.readFile);
+const writeFile = util_1.promisify(fs_1.default.writeFile);
+const unlink = util_1.promisify(fs_1.default.unlink);
+const readdir = util_1.promisify(fs_1.default.readdir);
+const mkdir = util_1.promisify(fs_1.default.mkdir);
+const rmdir = util_1.promisify(fs_1.default.rmdir);
 async function loadJsonFile(path) {
-    const content = await util_1.promisify(fs_1.default.readFile)(path);
+    const content = await readFile(path);
     return JSON.parse(content.toString());
 }
 exports.loadJsonFile = loadJsonFile;
 async function ensureDir(path) {
     try {
-        await util_1.promisify(fs_1.default.mkdir)(path, { recursive: true });
+        await mkdir(path, { recursive: true });
     }
     catch (err) {
-        if (err.code !== 'EEXIST')
+        if (err.code !== 'EEXIST') {
             throw err;
+        }
     }
 }
 class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
@@ -476,55 +488,50 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     async setKey(networkId, accountId, keyPair) {
         await ensureDir(`${this.keyDir}/${networkId}`);
         const content = { account_id: accountId, private_key: keyPair.toString() };
-        await util_1.promisify(fs_1.default.writeFile)(this.getKeyFilePath(networkId, accountId), JSON.stringify(content));
+        await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content));
     }
     async getKey(networkId, accountId) {
         // Find key / account id.
-        if (!await util_1.promisify(fs_1.default.exists)(this.getKeyFilePath(networkId, accountId))) {
-            throw new Error(`Key for ${accountId} in ${networkId} not found in ${this.keyDir}`);
+        if (!await exists(this.getKeyFilePath(networkId, accountId))) {
+            return null;
         }
         const accountInfo = await loadJsonFile(this.getKeyFilePath(networkId, accountId));
         return key_pair_1.KeyPair.fromString(accountInfo.private_key);
     }
     async removeKey(networkId, accountId) {
-        if (await util_1.promisify(fs_1.default.exists)(this.getKeyFilePath(networkId, accountId))) {
-            await util_1.promisify(fs_1.default.unlink)(this.getKeyFilePath(networkId, accountId));
+        if (await exists(this.getKeyFilePath(networkId, accountId))) {
+            await unlink(this.getKeyFilePath(networkId, accountId));
         }
     }
     async clear() {
-        await util_1.promisify(fs_1.default.rmdir)(this.keyDir);
+        await rmdir(this.keyDir);
     }
     getKeyFilePath(networkId, accountId) {
-        return `${this.keyDir}/${networkId}/${accountId}`;
+        return `${this.keyDir}/${networkId}/${accountId}.json`;
     }
     async getNetworks() {
-        let files = await util_1.promisify(fs_1.default.readdir)(this.keyDir);
-        let result = new Array();
+        const files = await readdir(this.keyDir);
+        const result = new Array();
         files.forEach((item) => {
             result.push(item);
         });
         return result;
     }
     async getAccounts(networkId) {
-        if (!await util_1.promisify(fs_1.default.exists)(`${this.keyDir}/${networkId}`)) {
+        if (!await exists(`${this.keyDir}/${networkId}`)) {
             return [];
         }
-        let files = await util_1.promisify(fs_1.default.readdir)(`${this.keyDir}/${networkId}`);
-        let result = new Array();
-        files.forEach((item) => {
-            result.push(item);
-        });
-        return result;
+        const files = await readdir(`${this.keyDir}/${networkId}`);
+        return files
+            .filter(file => file.endsWith('.json'))
+            .map(file => file.replace(/.json$/, ''));
     }
     async totalAccounts() {
         let result = 0;
-        let files = await util_1.promisify(fs_1.default.readdir)(this.keyDir);
-        files.forEach(async (item) => {
-            let accounts = await util_1.promisify(fs_1.default.readdir)(`${this.keyDir}/${item}`);
-            accounts.forEach((_) => {
-                result++;
-            });
-        });
+        const networkDirs = await readdir(this.keyDir);
+        for (const networkId of networkDirs) {
+            result += (await this.getAccounts(networkId)).length;
+        }
         return result;
     }
 }
@@ -575,7 +582,7 @@ class Near {
      * @param options
      */
     async loadContract(contractId, options) {
-        console.warn("near.loadContract is deprecated. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.");
+        console.warn('near.loadContract is deprecated. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.');
         const account = new account_1.Account(this.connection, options.sender);
         return new contract_1.Contract(account, contractId, options);
     }
@@ -585,7 +592,7 @@ class Near {
      * @param wasmByteArray
      */
     async deployContract(contractId, wasmByteArray) {
-        console.warn("near.deployContract is deprecated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.");
+        console.warn('near.deployContract is deprecated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.');
         const account = new account_1.Account(this.connection, contractId);
         const result = await account.deployContract(wasmByteArray);
         return result.logs[0].hash;
@@ -597,7 +604,7 @@ class Near {
      * @param receiver
      */
     async sendTokens(amount, originator, receiver) {
-        console.warn("near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.");
+        console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
         const account = new account_1.Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);
         return result.logs[0].hash;
@@ -5672,30 +5679,30 @@ class JsonRpcProvider extends provider_1.Provider {
     }
     async getNetwork() {
         return {
-            name: "test",
-            chainId: "test"
+            name: 'test',
+            chainId: 'test'
         };
     }
     async sendTransaction(signedTransaction) {
-        let bytes = protos_1.SignedTransaction.encode(signedTransaction).finish();
-        return this.sendJsonRpc("broadcast_tx_commit", [Buffer.from(bytes).toString("base64")]);
+        const bytes = protos_1.SignedTransaction.encode(signedTransaction).finish();
+        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
     }
     async txStatus(txHash) {
         return this.sendJsonRpc('tx', [serialize_1.base_encode(txHash)]);
     }
     async query(path, data) {
-        const result = await this.sendJsonRpc("query", [path, data]);
+        const result = await this.sendJsonRpc('query', [path, data]);
         if (result.error) {
             throw new Error(`Quering ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
         }
         return result;
     }
     async sendJsonRpc(method, params) {
-        let request = {
+        const request = {
             method,
             params,
             id: (_nextId++),
-            jsonrpc: "2.0"
+            jsonrpc: '2.0'
         };
         const result = await web_1.fetchJson(this.connection, JSON.stringify(request));
         if (result.error) {
@@ -5775,9 +5782,9 @@ class InMemorySigner extends Signer {
     }
     async signHash(hash, accountId, networkId) {
         if (!accountId) {
-            throw new Error("InMemorySigner requires provided account id");
+            throw new Error('InMemorySigner requires provided account id');
         }
-        let keyPair = await this.keyStore.getKey(networkId, accountId);
+        const keyPair = await this.keyStore.getKey(networkId, accountId);
         if (keyPair === null) {
             throw new Error(`Key for ${accountId} not found in ${networkId}`);
         }
@@ -5868,7 +5875,7 @@ exports.signedTransaction = signedTransaction;
 async function signTransaction(signer, transaction, accountId, networkId) {
     const protoClass = transaction.constructor;
     const txHash = protoClass.encode(transaction).finish();
-    let signature = await signer.signMessage(txHash, accountId, networkId);
+    const signature = await signer.signMessage(txHash, accountId, networkId);
     return [txHash, signedTransaction(transaction, signature)];
 }
 exports.signTransaction = signTransaction;
@@ -5907,17 +5914,17 @@ const serialize_1 = require("./serialize");
 class KeyPair {
     static fromRandom(curve) {
         switch (curve) {
-            case "ed25519": return KeyPairEd25519.fromRandom();
+            case 'ed25519': return KeyPairEd25519.fromRandom();
             default: throw new Error(`Unknown curve ${curve}`);
         }
     }
     static fromString(encodedKey) {
-        let parts = encodedKey.split(':');
-        if (parts.length != 2) {
-            throw new Error("Invalid encoded key format, must be <curve>:<encoded key>");
+        const parts = encodedKey.split(':');
+        if (parts.length !== 2) {
+            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
         switch (parts[0]) {
-            case "ed25519": return new KeyPairEd25519(parts[1]);
+            case 'ed25519': return new KeyPairEd25519(parts[1]);
             default: throw new Error(`Unknown curve: ${parts[0]}`);
         }
     }
@@ -5935,7 +5942,7 @@ class KeyPairEd25519 extends KeyPair {
      */
     constructor(secretKey) {
         super();
-        let keyPair = tweetnacl_1.default.sign.keyPair.fromSecretKey(serialize_1.base_decode(secretKey));
+        const keyPair = tweetnacl_1.default.sign.keyPair.fromSecretKey(serialize_1.base_decode(secretKey));
         this.publicKey = serialize_1.base_encode(keyPair.publicKey);
         this.secretKey = secretKey;
     }
@@ -5950,7 +5957,7 @@ class KeyPairEd25519 extends KeyPair {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        let newKeyPair = tweetnacl_1.default.sign.keyPair();
+        const newKeyPair = tweetnacl_1.default.sign.keyPair();
         return new KeyPairEd25519(serialize_1.base_encode(newKeyPair.secretKey));
     }
     sign(message) {
@@ -6001,7 +6008,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_errors_1 = __importDefault(require("http-errors"));
-const fetch = (typeof window === 'undefined' || window.name == 'nodejs') ? require('node-fetch') : window.fetch;
+const fetch = (typeof window === 'undefined' || window.name === 'nodejs') ? require('node-fetch') : window.fetch;
 async function fetchJson(connection, json) {
     let url = null;
     if (typeof (connection) === 'string') {
@@ -6059,10 +6066,10 @@ class WalletAccount {
     }
     /**
      * Redirects current page to the wallet authentication page.
-     * @param {string} contract_id contract ID of the application
+     * @param {string} contractId contract ID of the application
      * @param {string} title name of the application
-     * @param {string} success_url url to redirect on success
-     * @param {string} failure_url url to redirect on failure
+     * @param {string} successUrl url to redirect on success
+     * @param {string} failureUrl url to redirect on failure
      * @example
      *   walletAccount.requestSignIn(
      *     myContractId,
@@ -6070,13 +6077,13 @@ class WalletAccount {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    requestSignIn(contract_id, title, success_url, failure_url) {
+    requestSignIn(contractId, title, successUrl, failureUrl) {
         const currentUrl = new URL(window.location.href);
-        let newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
+        const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('title', title);
-        newUrl.searchParams.set('contract_id', contract_id);
-        newUrl.searchParams.set('success_url', success_url || currentUrl.href);
-        newUrl.searchParams.set('failure_url', failure_url || currentUrl.href);
+        newUrl.searchParams.set('contract_id', contractId);
+        newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
+        newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
         if (!this.getAccountId() || !this._keyStore.getKey(this._networkId, this.getAccountId())) {
             const accessKey = utils_1.KeyPair.fromRandom('ed25519');
@@ -6089,9 +6096,9 @@ class WalletAccount {
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     _completeSignInWithAccessKey() {
-        let currentUrl = new URL(window.location.href);
-        let publicKey = currentUrl.searchParams.get('public_key') || '';
-        let accountId = currentUrl.searchParams.get('account_id') || '';
+        const currentUrl = new URL(window.location.href);
+        const publicKey = currentUrl.searchParams.get('public_key') || '';
+        const accountId = currentUrl.searchParams.get('account_id') || '';
         if (accountId && publicKey) {
             this._authData = {
                 accountId
@@ -6101,7 +6108,7 @@ class WalletAccount {
         }
     }
     async _moveKeyFromTempToPermanent(accountId, publicKey) {
-        let keyPair = await this._keyStore.getKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
+        const keyPair = await this._keyStore.getKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
         await this._keyStore.setKey(this._networkId, accountId, keyPair);
         await this._keyStore.removeKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
     }

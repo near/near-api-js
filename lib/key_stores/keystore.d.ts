@@ -7,7 +7,7 @@ export declare abstract class KeyStore {
     abstract getKey(networkId: string, accountId: string): Promise<KeyPair>;
     abstract removeKey(networkId: string, accountId: string): Promise<void>;
     abstract clear(): Promise<void>;
-    abstract getNetworks(): Promise<Array<string>>;
-    abstract getAccounts(networkId: string): Promise<Array<string>>;
+    abstract getNetworks(): Promise<string[]>;
+    abstract getAccounts(networkId: string): Promise<string[]>;
     abstract totalAccounts(): Promise<number>;
 }

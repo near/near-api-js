@@ -1,32 +1,20 @@
 
 
-# Type aliases
+# Index
 
-<a id="connectioninfo"></a>
+### Interfaces
 
-##  ConnectionInfo
+* [ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md)
 
-**Ƭ ConnectionInfo**: *`object`*
+### Variables
 
-*Defined in [utils/web.ts:5](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/utils/web.ts#L5)*
+* [fetch](_utils_web_.md#fetch)
 
-#### Type declaration
+### Functions
 
-`Optional`  allowInsecure: `boolean`
+* [fetchJson](_utils_web_.md#fetchjson)
 
-`Optional`  headers: `object`
-
-[key: `string`]: `string` \| `number`
-
-`Optional`  password: `string`
-
-`Optional`  timeout: `number`
-
- url: `string`
-
-`Optional`  user: `string`
-
-___
+---
 
 # Variables
 
@@ -34,9 +22,9 @@ ___
 
 ## `<Const>` fetch
 
-**● fetch**: *`any`* =  (typeof window === 'undefined' || window.name == 'nodejs') ? require('node-fetch') : window.fetch
+**● fetch**: *`any`* =  (typeof window === 'undefined' || window.name === 'nodejs') ? require('node-fetch') : window.fetch
 
-*Defined in [utils/web.ts:14](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/utils/web.ts#L14)*
+*Defined in [utils/web.ts:14](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/utils/web.ts#L14)*
 
 ___
 
@@ -46,15 +34,15 @@ ___
 
 ##  fetchJson
 
-▸ **fetchJson**(connection: *`string` \| [ConnectionInfo](_utils_web_.md#connectioninfo)*, json?: *`string`*): `Promise`<`any`>
+▸ **fetchJson**(connection: *`string` \| [ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md)*, json?: *`string`*): `Promise`<`any`>
 
-*Defined in [utils/web.ts:16](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/utils/web.ts#L16)*
+*Defined in [utils/web.ts:16](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/utils/web.ts#L16)*
 
 **Parameters:**
 
 | Name | Type |
 | ------ | ------ |
-| connection | `string` \| [ConnectionInfo](_utils_web_.md#connectioninfo) |
+| connection | `string` \| [ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md) |
 | `Optional` json | `string` |
 
 **Returns:** `Promise`<`any`>

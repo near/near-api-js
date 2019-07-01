@@ -10,10 +10,10 @@
 
 * [Provider](../classes/_providers_provider_.provider.md)
 
-### Type aliases
+### Interfaces
 
-* [FinalTransactionResult](_providers_provider_.md#finaltransactionresult)
-* [TransactionLog](_providers_provider_.md#transactionlog)
+* [FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)
+* [TransactionLog](../interfaces/_providers_provider_.transactionlog.md)
 
 ### Functions
 
@@ -21,58 +21,21 @@
 
 ---
 
-# Type aliases
-
-<a id="finaltransactionresult"></a>
-
-##  FinalTransactionResult
-
-**Ƭ FinalTransactionResult**: *`object`*
-
-*Defined in [providers/provider.ts:20](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/providers/provider.ts#L20)*
-
-#### Type declaration
-
- logs: [TransactionLog](_providers_provider_.md#transactionlog)[]
-
- status: [FinalTransactionStatus](../enums/_providers_provider_.finaltransactionstatus.md)
-
-___
-<a id="transactionlog"></a>
-
-##  TransactionLog
-
-**Ƭ TransactionLog**: *`object`*
-
-*Defined in [providers/provider.ts:13](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/providers/provider.ts#L13)*
-
-#### Type declaration
-
- hash: `string`
-
- lines: `Array`<`string`>
-
- receipts: `Array`<`number`[]>
-
-`Optional`  result: `Uint8Array`
-
-___
-
 # Functions
 
 <a id="gettransactionlastresult"></a>
 
 ##  getTransactionLastResult
 
-▸ **getTransactionLastResult**(txResult: *[FinalTransactionResult](_providers_provider_.md#finaltransactionresult)*): `any`
+▸ **getTransactionLastResult**(txResult: *[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)*): `any`
 
-*Defined in [providers/provider.ts:33](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/providers/provider.ts#L33)*
+*Defined in [providers/provider.ts:33](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/providers/provider.ts#L33)*
 
 **Parameters:**
 
 | Name | Type |
 | ------ | ------ |
-| txResult | [FinalTransactionResult](_providers_provider_.md#finaltransactionresult) |
+| txResult | [FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md) |
 
 **Returns:** `any`
 

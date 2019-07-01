@@ -16,7 +16,7 @@ Signs using in memory key store.
 
 ⊕ **new InMemorySigner**(keyStore: *[KeyStore](_key_stores_keystore_.keystore.md)*): [InMemorySigner](_signer_.inmemorysigner.md)
 
-*Defined in [signer.ts:47](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/signer.ts#L47)*
+*Defined in [signer.ts:47](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/signer.ts#L47)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● keyStore**: *[KeyStore](_key_stores_keystore_.keystore.md)*
 
-*Defined in [signer.ts:47](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/signer.ts#L47)*
+*Defined in [signer.ts:47](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/signer.ts#L47)*
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[createKey](_signer_.signer.md#createkey)*
 
-*Defined in [signer.ts:54](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/signer.ts#L54)*
+*Defined in [signer.ts:54](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/signer.ts#L54)*
 
 **Parameters:**
 
@@ -70,7 +70,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[getPublicKey](_signer_.signer.md#getpublickey)*
 
-*Defined in [signer.ts:60](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/signer.ts#L60)*
+*Defined in [signer.ts:60](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/signer.ts#L60)*
 
 **Parameters:**
 
@@ -86,11 +86,11 @@ ___
 
 ##  signHash
 
-▸ **signHash**(hash: *`Uint8Array`*, accountId?: *`string`*, networkId?: *`string`*): `Promise`<[Signature](../modules/_utils_key_pair_.md#signature)>
+▸ **signHash**(hash: *`Uint8Array`*, accountId?: *`string`*, networkId?: *`string`*): `Promise`<[Signature](../interfaces/_utils_key_pair_.signature.md)>
 
 *Overrides [Signer](_signer_.signer.md).[signHash](_signer_.signer.md#signhash)*
 
-*Defined in [signer.ts:65](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/signer.ts#L65)*
+*Defined in [signer.ts:65](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/signer.ts#L65)*
 
 **Parameters:**
 
@@ -100,18 +100,18 @@ ___
 | `Optional` accountId | `string` |
 | `Optional` networkId | `string` |
 
-**Returns:** `Promise`<[Signature](../modules/_utils_key_pair_.md#signature)>
+**Returns:** `Promise`<[Signature](../interfaces/_utils_key_pair_.signature.md)>
 
 ___
 <a id="signmessage"></a>
 
 ##  signMessage
 
-▸ **signMessage**(message: *`Uint8Array`*, accountId?: *`string`*, networkId?: *`string`*): `Promise`<[Signature](../modules/_utils_key_pair_.md#signature)>
+▸ **signMessage**(message: *`Uint8Array`*, accountId?: *`string`*, networkId?: *`string`*): `Promise`<[Signature](../interfaces/_utils_key_pair_.signature.md)>
 
 *Inherited from [Signer](_signer_.signer.md).[signMessage](_signer_.signer.md#signmessage)*
 
-*Defined in [signer.ts:38](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/signer.ts#L38)*
+*Defined in [signer.ts:38](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/signer.ts#L38)*
 
 Signs given message, by first hashing with sha256.
 
@@ -123,7 +123,7 @@ Signs given message, by first hashing with sha256.
 | `Optional` accountId | `string` |  accountId to use for signing. |
 | `Optional` networkId | `string` |  network for this accontId. |
 
-**Returns:** `Promise`<[Signature](../modules/_utils_key_pair_.md#signature)>
+**Returns:** `Promise`<[Signature](../interfaces/_utils_key_pair_.signature.md)>
 
 ___
 

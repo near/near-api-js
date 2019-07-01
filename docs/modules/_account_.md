@@ -6,9 +6,9 @@
 
 * [Account](../classes/_account_.account.md)
 
-### Type aliases
+### Interfaces
 
-* [AccountState](_account_.md#accountstate)
+* [AccountState](../interfaces/_account_.accountstate.md)
 
 ### Variables
 
@@ -23,32 +23,6 @@
 
 ---
 
-# Type aliases
-
-<a id="accountstate"></a>
-
-##  AccountState
-
-**Ƭ AccountState**: *`object`*
-
-*Defined in [account.ts:28](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L28)*
-
-#### Type declaration
-
- account_id: `string`
-
- amount: `bigint`
-
- code_hash: `string`
-
- nonce: `number`
-
- public_keys: `Uint8Array`[]
-
- stake: `bigint`
-
-___
-
 # Variables
 
 <a id="default_func_call_amount"></a>
@@ -57,7 +31,7 @@ ___
 
 **● DEFAULT_FUNC_CALL_AMOUNT**: *`bigint`* =  BigInt(1000000000)
 
-*Defined in [account.ts:12](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L12)*
+*Defined in [account.ts:12](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L12)*
 
 ___
 <a id="tx_status_retry_number"></a>
@@ -66,7 +40,7 @@ ___
 
 **● TX_STATUS_RETRY_NUMBER**: *`10`* = 10
 
-*Defined in [account.ts:15](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L15)*
+*Defined in [account.ts:15](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L15)*
 
 ___
 <a id="tx_status_retry_wait"></a>
@@ -75,7 +49,7 @@ ___
 
 **● TX_STATUS_RETRY_WAIT**: *`500`* = 500
 
-*Defined in [account.ts:18](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L18)*
+*Defined in [account.ts:18](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L18)*
 
 ___
 <a id="tx_status_retry_wait_backoff"></a>
@@ -84,7 +58,7 @@ ___
 
 **● TX_STATUS_RETRY_WAIT_BACKOFF**: *`1.5`* = 1.5
 
-*Defined in [account.ts:21](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L21)*
+*Defined in [account.ts:21](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L21)*
 
 ___
 
@@ -96,7 +70,7 @@ ___
 
 ▸ **sleep**(millis: *`number`*): `Promise`<`any`>
 
-*Defined in [account.ts:24](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L24)*
+*Defined in [account.ts:24](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L24)*
 
 **Parameters:**
 

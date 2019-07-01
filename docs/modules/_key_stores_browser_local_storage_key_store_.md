@@ -8,44 +8,19 @@
 
 ### Variables
 
-* [LOCAL_STORAGE_SECRET_KEY_SUFFIX](_key_stores_browser_local_storage_key_store_.md#local_storage_secret_key_suffix)
-
-### Functions
-
-* [storageKeyForSecretKey](_key_stores_browser_local_storage_key_store_.md#storagekeyforsecretkey)
+* [LOCAL_STORAGE_KEY_PREFIX](_key_stores_browser_local_storage_key_store_.md#local_storage_key_prefix)
 
 ---
 
 # Variables
 
-<a id="local_storage_secret_key_suffix"></a>
+<a id="local_storage_key_prefix"></a>
 
-## `<Const>` LOCAL_STORAGE_SECRET_KEY_SUFFIX
+## `<Const>` LOCAL_STORAGE_KEY_PREFIX
 
-**● LOCAL_STORAGE_SECRET_KEY_SUFFIX**: *"_secretkey"* = "_secretkey"
+**● LOCAL_STORAGE_KEY_PREFIX**: *"nearlib:keystore:"* = "nearlib:keystore:"
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:6](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/browser_local_storage_key_store.ts#L6)*
-
-___
-
-# Functions
-
-<a id="storagekeyforsecretkey"></a>
-
-##  storageKeyForSecretKey
-
-▸ **storageKeyForSecretKey**(networkId: *`string`*, accountId: *`string`*): `string`
-
-*Defined in [key_stores/browser_local_storage_key_store.ts:8](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/browser_local_storage_key_store.ts#L8)*
-
-**Parameters:**
-
-| Name | Type |
-| ------ | ------ |
-| networkId | `string` |
-| accountId | `string` |
-
-**Returns:** `string`
+*Defined in [key_stores/browser_local_storage_key_store.ts:6](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/browser_local_storage_key_store.ts#L6)*
 
 ___
 

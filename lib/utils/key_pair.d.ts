@@ -1,8 +1,8 @@
 export declare type Arrayish = string | ArrayLike<number>;
-export declare type Signature = {
+export interface Signature {
     signature: Uint8Array;
     publicKey: string;
-};
+}
 export declare abstract class KeyPair {
     abstract sign(message: Uint8Array): Signature;
     abstract verify(message: Uint8Array, signature: Uint8Array): boolean;

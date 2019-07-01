@@ -20,7 +20,7 @@ Key store interface for `InMemorySigner`.
 
 ▸ **clear**(): `Promise`<`void`>
 
-*Defined in [key_stores/keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/keystore.ts#L12)*
+*Defined in [key_stores/keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/keystore.ts#L12)*
 
 **Returns:** `Promise`<`void`>
 
@@ -29,9 +29,9 @@ ___
 
 ## `<Abstract>` getAccounts
 
-▸ **getAccounts**(networkId: *`string`*): `Promise`<`Array`<`string`>>
+▸ **getAccounts**(networkId: *`string`*): `Promise`<`string`[]>
 
-*Defined in [key_stores/keystore.ts:14](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/keystore.ts#L14)*
+*Defined in [key_stores/keystore.ts:14](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/keystore.ts#L14)*
 
 **Parameters:**
 
@@ -39,7 +39,7 @@ ___
 | ------ | ------ |
 | networkId | `string` |
 
-**Returns:** `Promise`<`Array`<`string`>>
+**Returns:** `Promise`<`string`[]>
 
 ___
 <a id="getkey"></a>
@@ -48,7 +48,7 @@ ___
 
 ▸ **getKey**(networkId: *`string`*, accountId: *`string`*): `Promise`<[KeyPair](_utils_key_pair_.keypair.md)>
 
-*Defined in [key_stores/keystore.ts:10](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/keystore.ts#L10)*
+*Defined in [key_stores/keystore.ts:10](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/keystore.ts#L10)*
 
 **Parameters:**
 
@@ -64,11 +64,11 @@ ___
 
 ## `<Abstract>` getNetworks
 
-▸ **getNetworks**(): `Promise`<`Array`<`string`>>
+▸ **getNetworks**(): `Promise`<`string`[]>
 
-*Defined in [key_stores/keystore.ts:13](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/keystore.ts#L13)*
+*Defined in [key_stores/keystore.ts:13](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/keystore.ts#L13)*
 
-**Returns:** `Promise`<`Array`<`string`>>
+**Returns:** `Promise`<`string`[]>
 
 ___
 <a id="removekey"></a>
@@ -77,7 +77,7 @@ ___
 
 ▸ **removeKey**(networkId: *`string`*, accountId: *`string`*): `Promise`<`void`>
 
-*Defined in [key_stores/keystore.ts:11](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/keystore.ts#L11)*
+*Defined in [key_stores/keystore.ts:11](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/keystore.ts#L11)*
 
 **Parameters:**
 
@@ -95,7 +95,7 @@ ___
 
 ▸ **setKey**(networkId: *`string`*, accountId: *`string`*, keyPair: *[KeyPair](_utils_key_pair_.keypair.md)*): `Promise`<`void`>
 
-*Defined in [key_stores/keystore.ts:9](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/keystore.ts#L9)*
+*Defined in [key_stores/keystore.ts:9](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/keystore.ts#L9)*
 
 **Parameters:**
 
@@ -114,7 +114,7 @@ ___
 
 ▸ **totalAccounts**(): `Promise`<`number`>
 
-*Defined in [key_stores/keystore.ts:15](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/key_stores/keystore.ts#L15)*
+*Defined in [key_stores/keystore.ts:15](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/keystore.ts#L15)*
 
 **Returns:** `Promise`<`number`>
 

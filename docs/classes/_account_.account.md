@@ -12,7 +12,7 @@
 
 ⊕ **new Account**(connection: *[Connection](_connection_.connection.md)*, accountId: *`string`*): [Account](_account_.account.md)
 
-*Defined in [account.ts:41](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L41)*
+*Defined in [account.ts:45](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L45)*
 
 **Parameters:**
 
@@ -27,13 +27,22 @@ ___
 
 # Properties
 
+<a id="_ready"></a>
+
+## `<Private>` _ready
+
+**● _ready**: *`Promise`<`void`>*
+
+*Defined in [account.ts:42](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L42)*
+
+___
 <a id="_state"></a>
 
 ## `<Private>` _state
 
-**● _state**: *[AccountState](../modules/_account_.md#accountstate)*
+**● _state**: *[AccountState](../interfaces/_account_.accountstate.md)*
 
-*Defined in [account.ts:40](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L40)*
+*Defined in [account.ts:40](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L40)*
 
 ___
 <a id="accountid"></a>
@@ -42,7 +51,7 @@ ___
 
 **● accountId**: *`string`*
 
-*Defined in [account.ts:39](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L39)*
+*Defined in [account.ts:39](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L39)*
 
 ___
 <a id="connection"></a>
@@ -51,16 +60,21 @@ ___
 
 **● connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [account.ts:38](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L38)*
+*Defined in [account.ts:38](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L38)*
 
 ___
+
+# Accessors
+
 <a id="ready"></a>
 
 ## `<Protected>` ready
 
-**● ready**: *`Promise`<`void`>*
+**get ready**(): `Promise`<`void`>
 
-*Defined in [account.ts:41](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L41)*
+*Defined in [account.ts:43](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L43)*
+
+**Returns:** `Promise`<`void`>
 
 ___
 
@@ -70,9 +84,9 @@ ___
 
 ##  addKey
 
-▸ **addKey**(publicKey: *`string`*, contractId?: *`string`*, methodName?: *`string`*, balanceOwner?: *`string`*, amount?: *`bigint`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **addKey**(publicKey: *`string`*, contractId?: *`string`*, methodName?: *`string`*, balanceOwner?: *`string`*, amount?: *`bigint`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:159](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L159)*
+*Defined in [account.ts:161](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L161)*
 
 **Parameters:**
 
@@ -84,16 +98,16 @@ ___
 | `Optional` balanceOwner | `string` |
 | `Optional` amount | `bigint` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="createaccount"></a>
 
 ##  createAccount
 
-▸ **createAccount**(newAccountId: *`string`*, publicKey: *`string`*, amount: *`bigint`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **createAccount**(newAccountId: *`string`*, publicKey: *`string`*, amount: *`bigint`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:138](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L138)*
+*Defined in [account.ts:140](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L140)*
 
 **Parameters:**
 
@@ -103,7 +117,7 @@ ___
 | publicKey | `string` |
 | amount | `bigint` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="createanddeploycontract"></a>
@@ -112,7 +126,7 @@ ___
 
 ▸ **createAndDeployContract**(contractId: *`string`*, publicKey: *`string`*, data: *`Uint8Array`*, amount: *`bigint`*): `Promise`<[Account](_account_.account.md)>
 
-*Defined in [account.ts:124](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L124)*
+*Defined in [account.ts:126](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L126)*
 
 **Parameters:**
 
@@ -130,9 +144,9 @@ ___
 
 ##  deleteKey
 
-▸ **deleteKey**(publicKey: *`string`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **deleteKey**(publicKey: *`string`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:166](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L166)*
+*Defined in [account.ts:168](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L168)*
 
 **Parameters:**
 
@@ -140,16 +154,16 @@ ___
 | ------ | ------ |
 | publicKey | `string` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="deploycontract"></a>
 
 ##  deployContract
 
-▸ **deployContract**(data: *`Uint8Array`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **deployContract**(data: *`Uint8Array`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:144](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L144)*
+*Defined in [account.ts:146](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L146)*
 
 **Parameters:**
 
@@ -157,7 +171,7 @@ ___
 | ------ | ------ |
 | data | `Uint8Array` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="fetchstate"></a>
@@ -166,7 +180,7 @@ ___
 
 ▸ **fetchState**(): `Promise`<`void`>
 
-*Defined in [account.ts:49](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L49)*
+*Defined in [account.ts:52](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L52)*
 
 **Returns:** `Promise`<`void`>
 
@@ -175,9 +189,9 @@ ___
 
 ##  functionCall
 
-▸ **functionCall**(contractId: *`string`*, methodName: *`string`*, args: *`any`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **functionCall**(contractId: *`string`*, methodName: *`string`*, args: *`any`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:150](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L150)*
+*Defined in [account.ts:152](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L152)*
 
 **Parameters:**
 
@@ -187,7 +201,7 @@ ___
 | methodName | `string` |
 | args | `any` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="getaccountdetails"></a>
@@ -196,7 +210,7 @@ ___
 
 ▸ **getAccountDetails**(): `Promise`<`any`>
 
-*Defined in [account.ts:186](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L186)*
+*Defined in [account.ts:188](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L188)*
 
 **Returns:** `Promise`<`any`>
 
@@ -207,7 +221,7 @@ ___
 
 ▸ **printLogs**(contractId: *`string`*, logs: *`string`[]*): `void`
 
-*Defined in [account.ts:61](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L61)*
+*Defined in [account.ts:64](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L64)*
 
 **Parameters:**
 
@@ -223,9 +237,9 @@ ___
 
 ## `<Private>` retryTxResult
 
-▸ **retryTxResult**(txHash: *`Uint8Array`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **retryTxResult**(txHash: *`Uint8Array`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:67](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L67)*
+*Defined in [account.ts:70](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L70)*
 
 **Parameters:**
 
@@ -233,16 +247,16 @@ ___
 | ------ | ------ |
 | txHash | `Uint8Array` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="sendmoney"></a>
 
 ##  sendMoney
 
-▸ **sendMoney**(receiver: *`string`*, amount: *`bigint`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **sendMoney**(receiver: *`string`*, amount: *`bigint`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:132](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L132)*
+*Defined in [account.ts:134](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L134)*
 
 **Parameters:**
 
@@ -251,16 +265,16 @@ ___
 | receiver | `string` |
 | amount | `bigint` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="signandsendtransaction"></a>
 
 ## `<Private>` signAndSendTransaction
 
-▸ **signAndSendTransaction**(transaction: *`any`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **signAndSendTransaction**(transaction: *`any`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:89](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L89)*
+*Defined in [account.ts:92](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L92)*
 
 **Parameters:**
 
@@ -268,16 +282,16 @@ ___
 | ------ | ------ |
 | transaction | `any` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="stake"></a>
 
 ##  stake
 
-▸ **stake**(publicKey: *`string`*, amount: *`bigint`*): `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+▸ **stake**(publicKey: *`string`*, amount: *`bigint`*): `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
-*Defined in [account.ts:172](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L172)*
+*Defined in [account.ts:174](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L174)*
 
 **Parameters:**
 
@@ -286,18 +300,18 @@ ___
 | publicKey | `string` |
 | amount | `bigint` |
 
-**Returns:** `Promise`<[FinalTransactionResult](../modules/_providers_provider_.md#finaltransactionresult)>
+**Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
 <a id="state"></a>
 
 ##  state
 
-▸ **state**(): `Promise`<[AccountState](../modules/_account_.md#accountstate)>
+▸ **state**(): `Promise`<[AccountState](../interfaces/_account_.accountstate.md)>
 
-*Defined in [account.ts:56](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L56)*
+*Defined in [account.ts:59](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L59)*
 
-**Returns:** `Promise`<[AccountState](../modules/_account_.md#accountstate)>
+**Returns:** `Promise`<[AccountState](../interfaces/_account_.accountstate.md)>
 
 ___
 <a id="viewfunction"></a>
@@ -306,7 +320,7 @@ ___
 
 ▸ **viewFunction**(contractId: *`string`*, methodName: *`string`*, args: *`any`*): `Promise`<`any`>
 
-*Defined in [account.ts:178](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/account.ts#L178)*
+*Defined in [account.ts:180](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/account.ts#L180)*
 
 **Parameters:**
 

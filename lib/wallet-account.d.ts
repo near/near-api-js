@@ -20,10 +20,10 @@ export declare class WalletAccount {
     getAccountId(): any;
     /**
      * Redirects current page to the wallet authentication page.
-     * @param {string} contract_id contract ID of the application
+     * @param {string} contractId contract ID of the application
      * @param {string} title name of the application
-     * @param {string} success_url url to redirect on success
-     * @param {string} failure_url url to redirect on failure
+     * @param {string} successUrl url to redirect on success
+     * @param {string} failureUrl url to redirect on failure
      * @example
      *   walletAccount.requestSignIn(
      *     myContractId,
@@ -31,7 +31,7 @@ export declare class WalletAccount {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    requestSignIn(contract_id: string, title: string, success_url: string, failure_url: string): void;
+    requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string): void;
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */

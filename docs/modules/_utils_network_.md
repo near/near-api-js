@@ -1,32 +1,10 @@
 
 
-# Type aliases
+# Index
 
-<a id="network"></a>
+### Interfaces
 
-##  Network
+* [Network](../interfaces/_utils_network_.network.md)
 
-**Ƭ Network**: *`object`*
-
-*Defined in [utils/network.ts:3](https://github.com/nearprotocol/nearlib/blob/18d2703/src.ts/utils/network.ts#L3)*
-
-#### Type declaration
-
-`Optional`  _defaultProvider: `function`
-
-▸(providers: *`any`*): `any`
-
-**Parameters:**
-
-| Name | Type |
-| ------ | ------ |
-| providers | `any` |
-
-**Returns:** `any`
-
- chainId: `string`
-
- name: `string`
-
-___
+---
 
