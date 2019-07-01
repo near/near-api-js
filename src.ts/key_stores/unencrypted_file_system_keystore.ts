@@ -96,7 +96,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         const networkDirs = await readdir(this.keyDir);
         for (const networkId of networkDirs) {
             result += (await this.getAccounts(networkId)).length;
-        };
+        }
         return result;
     }
 }

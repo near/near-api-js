@@ -36,7 +36,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
             if (key.startsWith(this.prefix)) {
                 this.localStorage.removeItem(key);
             }
-        };
+        }
     }
 
     async getNetworks(): Promise<string[]> {
@@ -46,7 +46,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
                 const parts = key.substring(this.prefix.length).split(':');
                 result.add(parts[1]);
             }
-        };
+        }
         return Array.from(result.values());
     }
 
@@ -59,7 +59,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
                     result.push(parts[0]);
                 }
             }
-        };
+        }
         return result;
     }
 
@@ -69,7 +69,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
             if (key.startsWith(this.prefix)) {
                 result++;
             }
-        };
+        }
         return result;
     }
 
