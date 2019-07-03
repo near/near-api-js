@@ -1,10 +1,19 @@
 'use strict';
 
 import fs from 'fs';
-import { promisify } from 'util';
+import { promisify as _promisify } from 'util';
 
 import { KeyPair } from '../utils/key_pair';
 import { KeyStore } from './keystore';
+
+const promisify = (fn: any) => {
+    if (!fn) {
+        return () => {
+            throw new Error('Trying to use unimplemented function. `fs` module not available in web build?');
+        };
+    }
+    return _promisify(fn);
+};
 
 const exists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
