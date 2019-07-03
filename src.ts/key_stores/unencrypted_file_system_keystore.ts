@@ -82,7 +82,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     async getNetworks(): Promise<string[]> {
-        const files = await readdir(this.keyDir);
+        const files: string[] = await readdir(this.keyDir);
         const result = new Array<string>();
         files.forEach((item) => {
             result.push(item);
@@ -94,7 +94,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         if (!await exists(`${this.keyDir}/${networkId}`)) {
             return [];
         }
-        const files = await readdir(`${this.keyDir}/${networkId}`);
+        const files: string[] = await readdir(`${this.keyDir}/${networkId}`);
         return files
             .filter(file => file.endsWith('.json'))
             .map(file => file.replace(/.json$/, ''));
