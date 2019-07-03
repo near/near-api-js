@@ -22,7 +22,7 @@
 
 **● LOCAL_STORAGE_KEY_SUFFIX**: *"_wallet_auth_key"* = "_wallet_auth_key"
 
-*Defined in [wallet-account.ts:8](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/wallet-account.ts#L8)*
+*Defined in [wallet-account.ts:8](https://github.com/nearprotocol/nearlib/blob/4442cfe/src.ts/wallet-account.ts#L8)*
 
 ___
 <a id="login_wallet_url_suffix"></a>
@@ -31,7 +31,7 @@ ___
 
 **● LOGIN_WALLET_URL_SUFFIX**: *"/login/"* = "/login/"
 
-*Defined in [wallet-account.ts:6](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/wallet-account.ts#L6)*
+*Defined in [wallet-account.ts:6](https://github.com/nearprotocol/nearlib/blob/4442cfe/src.ts/wallet-account.ts#L6)*
 
 ___
 <a id="pending_access_key_prefix"></a>
@@ -40,7 +40,7 @@ ___
 
 **● PENDING_ACCESS_KEY_PREFIX**: *"pending_key"* = "pending_key"
 
-*Defined in [wallet-account.ts:9](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/wallet-account.ts#L9)*
+*Defined in [wallet-account.ts:9](https://github.com/nearprotocol/nearlib/blob/4442cfe/src.ts/wallet-account.ts#L9)*
 
 ___
 

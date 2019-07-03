@@ -14,7 +14,7 @@ Format of the account stored on disk.
 
 **● account_id**: *`string`*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:21](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/unencrypted_file_system_keystore.ts#L21)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:30](https://github.com/nearprotocol/nearlib/blob/4442cfe/src.ts/key_stores/unencrypted_file_system_keystore.ts#L30)*
 
 ___
 <a id="private_key"></a>
@@ -23,7 +23,7 @@ ___
 
 **● private_key**: *`string`*
 
-*Defined in [key_stores/unencrypted_file_system_keystore.ts:22](https://github.com/nearprotocol/nearlib/blob/c8da0d8/src.ts/key_stores/unencrypted_file_system_keystore.ts#L22)*
+*Defined in [key_stores/unencrypted_file_system_keystore.ts:31](https://github.com/nearprotocol/nearlib/blob/4442cfe/src.ts/key_stores/unencrypted_file_system_keystore.ts#L31)*
 
 ___
 

@@ -458,13 +458,21 @@ const fs_1 = __importDefault(require("fs"));
 const util_1 = require("util");
 const key_pair_1 = require("../utils/key_pair");
 const keystore_1 = require("./keystore");
-const exists = util_1.promisify(fs_1.default.exists);
-const readFile = util_1.promisify(fs_1.default.readFile);
-const writeFile = util_1.promisify(fs_1.default.writeFile);
-const unlink = util_1.promisify(fs_1.default.unlink);
-const readdir = util_1.promisify(fs_1.default.readdir);
-const mkdir = util_1.promisify(fs_1.default.mkdir);
-const rmdir = util_1.promisify(fs_1.default.rmdir);
+const promisify = (fn) => {
+    if (!fn) {
+        return () => {
+            throw new Error('Trying to use unimplemented function. `fs` module not available in web build?');
+        };
+    }
+    return util_1.promisify(fn);
+};
+const exists = promisify(fs_1.default.exists);
+const readFile = promisify(fs_1.default.readFile);
+const writeFile = promisify(fs_1.default.writeFile);
+const unlink = promisify(fs_1.default.unlink);
+const readdir = promisify(fs_1.default.readdir);
+const mkdir = promisify(fs_1.default.mkdir);
+const rmdir = promisify(fs_1.default.rmdir);
 async function loadJsonFile(path) {
     const content = await readFile(path);
     return JSON.parse(content.toString());
