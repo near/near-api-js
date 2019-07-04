@@ -20,7 +20,7 @@ test:
     - npm install
     - npm run build
     - (cd nearcore && ./scripts/build_wasm.sh)
-    - NODE_ENV=development npm test
+    - npm test
 
 lint:
   stage: test
