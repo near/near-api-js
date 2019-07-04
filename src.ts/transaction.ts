@@ -12,16 +12,16 @@ import { base_decode } from './utils/serialize';
 import { Signature } from './utils/key_pair';
 import { Signer } from './signer';
 
-const TRANSACTION_FIELD_MAP = {
-    [CreateAccountTransaction.name]: 'createAccount',
-    [DeployContractTransaction.name]: 'deployContract',
-    [FunctionCallTransaction.name]: 'functionCall',
-    [SendMoneyTransaction.name]: 'sendMoney',
-    [StakeTransaction.name]: 'stake',
-    [SwapKeyTransaction.name]: 'swapKey',
-    [AddKeyTransaction.name]: 'addKey',
-    [DeleteKeyTransaction.name]: 'deleteKey',
-};
+const TRANSACTION_FIELD_MAP = new Map<Function, string>([
+    [CreateAccountTransaction, 'createAccount'],
+    [DeployContractTransaction, 'deployContract'],
+    [FunctionCallTransaction, 'functionCall'],
+    [SendMoneyTransaction, 'sendMoney'],
+    [StakeTransaction, 'stake'],
+    [SwapKeyTransaction, 'swapKey'],
+    [AddKeyTransaction, 'addKey'],
+    [DeleteKeyTransaction, 'deleteKey'],
+]);
 
 export type AllTransactions = SendMoneyTransaction | CreateAccountTransaction | DeployContractTransaction | FunctionCallTransaction | StakeTransaction | SwapKeyTransaction | AddKeyTransaction | DeleteKeyTransaction;
 
@@ -76,7 +76,7 @@ export function deleteKey(nonce: number, originator: string, curKey: string): De
 }
 
 export function signedTransaction(transaction: AllTransactions, signature: Signature): SignedTransaction {
-    const fieldName = TRANSACTION_FIELD_MAP[transaction.constructor.name];
+    const fieldName = TRANSACTION_FIELD_MAP.get(transaction.constructor);
     return new SignedTransaction({
         signature: signature.signature,
         publicKey: google.protobuf.BytesValue.create({ value: base_decode(signature.publicKey) }),
