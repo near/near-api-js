@@ -1,4 +1,5 @@
 
+import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
 import { Contract } from './contract';
@@ -18,7 +19,7 @@ class Near {
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
-            this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), config.initialBalance || BigInt(1000 * 1000 * 1000 * 1000));
+            this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), config.initialBalance || new BN(1000 * 1000 * 1000 * 1000));
         } else if (config.helperUrl) {
             this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);
         } else {
@@ -69,7 +70,7 @@ class Near {
      * @param originator
      * @param receiver
      */
-    async sendTokens(amount: bigint, originator: string, receiver: string): Promise<string> {
+    async sendTokens(amount: BN, originator: string, receiver: string): Promise<string> {
         console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
         const account = new Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);

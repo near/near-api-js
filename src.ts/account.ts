@@ -1,5 +1,6 @@
 'use strict';
 
+import BN from 'bn.js'
 import { sendMoney, createAccount, signTransaction, deployContract,
     fromUint128, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
@@ -9,7 +10,7 @@ import { base_encode } from './utils/serialize';
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-const DEFAULT_FUNC_CALL_AMOUNT = BigInt(1000000000);
+const DEFAULT_FUNC_CALL_AMOUNT = new BN(1000000000);
 
 // Default number of retries before giving up on a transactioin.
 const TX_STATUS_RETRY_NUMBER = 10;
@@ -28,8 +29,8 @@ function sleep(millis: number): Promise<any> {
 export interface AccountState {
     account_id: string;
     nonce: number;
-    amount: bigint;
-    stake: bigint;
+    amount: BN;
+    stake: BN;
     public_keys: Uint8Array[];
     code_hash: string;
 }
@@ -123,7 +124,7 @@ export class Account {
         return result;
     }
 
-    async createAndDeployContract(contractId: string, publicKey: string, data: Uint8Array, amount: bigint): Promise<Account> {
+    async createAndDeployContract(contractId: string, publicKey: string, data: Uint8Array, amount: BN): Promise<Account> {
         await this.createAccount(contractId, publicKey, amount);
         const contractAccount = new Account(this.connection, contractId);
         await contractAccount.ready;
@@ -131,13 +132,13 @@ export class Account {
         return contractAccount;
     }
 
-    async sendMoney(receiver: string, amount: bigint): Promise<FinalTransactionResult> {
+    async sendMoney(receiver: string, amount: BN): Promise<FinalTransactionResult> {
         await this.ready;
         this._state.nonce++;
         return this.signAndSendTransaction(sendMoney(this._state.nonce, this.accountId, receiver, amount));
     }
 
-    async createAccount(newAccountId: string, publicKey: string, amount: bigint): Promise<FinalTransactionResult> {
+    async createAccount(newAccountId: string, publicKey: string, amount: BN): Promise<FinalTransactionResult> {
         await this.ready;
         this._state.nonce++;
         return this.signAndSendTransaction(createAccount(this._state.nonce, this.accountId, newAccountId, publicKey, amount));
@@ -158,7 +159,7 @@ export class Account {
         return this.signAndSendTransaction(functionCall(this._state.nonce, this.accountId, contractId, methodName, Buffer.from(JSON.stringify(args)), DEFAULT_FUNC_CALL_AMOUNT));
     }
 
-    async addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: bigint): Promise<FinalTransactionResult> {
+    async addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): Promise<FinalTransactionResult> {
         await this.ready;
         this._state.nonce++;
         const accessKey = contractId ? createAccessKey(contractId, methodName, balanceOwner, amount) : null;
@@ -171,7 +172,7 @@ export class Account {
         return this.signAndSendTransaction(deleteKey(this._state.nonce, this.accountId, publicKey));
     }
 
-    async stake(publicKey: string, amount: bigint): Promise<FinalTransactionResult> {
+    async stake(publicKey: string, amount: BN): Promise<FinalTransactionResult> {
         await this.ready;
         this._state.nonce++;
         return this.signAndSendTransaction(stake(this._state.nonce, this.accountId, amount, publicKey));

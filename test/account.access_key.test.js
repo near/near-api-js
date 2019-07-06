@@ -1,4 +1,5 @@
 
+const BN = require('bn.js');
 const nearlib = require('../lib/index');
 const testUtils = require('./test-utils');
 
@@ -12,7 +13,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    testAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
+    testAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
 });
 
 beforeEach(async () => {
@@ -53,12 +54,12 @@ test('view account details after adding access keys', async() => {
     const expectedResult = {
         authorizedApps: [{
             contractId: contractId,
-            amount: BigInt(1000000000),
+            amount: new BN(1000000000),
             publicKey: keyPair.getPublicKey(),
         },
         {
             contractId: contract2.contractId,
-            amount: BigInt(2000000000),
+            amount: new BN(2000000000),
             publicKey: keyPair2.getPublicKey(),
         }],
         transactions: []

@@ -2,6 +2,7 @@
 const nearlib = require('../lib/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
+const BN = require('bn.js');
 
 let nearjs;
 let workingAccount;
@@ -12,7 +13,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE * BigInt(100) });
+    workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
 });
 
 test('view pre-defined account works and returns correct name', async () => {
@@ -26,17 +27,18 @@ test('create account and then view account returns the created account', async (
     await workingAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
     const newAccount = new nearlib.Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
-    const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE, code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys, stake: BigInt(0)};
-    expect(state).toEqual(expectedState);
+    const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE, code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys };
+    expect(state).toMatchObject(expectedState);
+    expect(state.stake.eq(new BN(0))).toBeTruthy();
 });
 
 test('send money', async() => {
     const sender = await testUtils.createAccount(workingAccount);
     const receiver = await testUtils.createAccount(workingAccount);
-    await sender.sendMoney(receiver.accountId, BigInt(10000));
+    await sender.sendMoney(receiver.accountId, new BN(10000));
     await receiver.fetchState();
     const state = await receiver.state();
-    expect(state.amount).toEqual(testUtils.INITIAL_BALANCE + BigInt(10000));
+    expect(state.amount).toEqual(testUtils.INITIAL_BALANCE.add(new BN(10000)));
 });
 
 describe('errors', () => {
@@ -69,7 +71,7 @@ describe('with deploy contract', () => {
     beforeAll(async () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, BigInt(100000));
+        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, new BN(100000));
         contract = new nearlib.Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'getAllKeys', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']

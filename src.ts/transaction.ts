@@ -1,6 +1,5 @@
 'use strict';
 
-// We use BN for only single purpose of encoding BigInt into Byte Array (and it's already used by tweetnacl so not an additional dependencies).
 import BN from 'bn.js';
 
 import { Uint128, SendMoneyTransaction, CreateAccountTransaction,
@@ -25,16 +24,16 @@ const TRANSACTION_FIELD_MAP = new Map<Function, string>([
 
 export type AllTransactions = SendMoneyTransaction | CreateAccountTransaction | DeployContractTransaction | FunctionCallTransaction | StakeTransaction | SwapKeyTransaction | AddKeyTransaction | DeleteKeyTransaction;
 
-function bigInt(num: bigint): Uint128 {
-    const number = new Uint8Array((new BN(num.toString())).toArray('le', 16));
+function bigInt(num: BN): Uint128 {
+    const number = new Uint8Array(new BN(num).toArray('le', 16));
     return new Uint128({ number });
 }
 
-export function fromUint128(num: string): bigint {
-    return BigInt(`0x${num}`);
+export function fromUint128(num: string): BN {
+    return new BN(num, 16);
 }
 
-export function createAccount(nonce: number, originator: string, newAccountId: string, publicKey: string, amount: bigint): CreateAccountTransaction {
+export function createAccount(nonce: number, originator: string, newAccountId: string, publicKey: string, amount: BN): CreateAccountTransaction {
     return new CreateAccountTransaction({nonce, originator, newAccountId, publicKey: base_decode(publicKey), amount: bigInt(amount)});
 }
 
@@ -42,15 +41,15 @@ export function deployContract(nonce: number, contractId: string, wasmByteArray:
     return new DeployContractTransaction({nonce, contractId, wasmByteArray});
 }
 
-export function functionCall(nonce: number, originator: string, contractId: string, methodName: string, args: Uint8Array, amount: bigint): FunctionCallTransaction {
+export function functionCall(nonce: number, originator: string, contractId: string, methodName: string, args: Uint8Array, amount: BN): FunctionCallTransaction {
     return new FunctionCallTransaction({nonce, originator, contractId, methodName: Buffer.from(methodName), args, amount: bigInt(amount) });
 }
 
-export function sendMoney(nonce: number, originator: string, receiver: string, amount: bigint): SendMoneyTransaction {
+export function sendMoney(nonce: number, originator: string, receiver: string, amount: BN): SendMoneyTransaction {
     return new SendMoneyTransaction({ nonce, originator, receiver, amount: bigInt(amount) });
 }
 
-export function stake(nonce: number, originator: string, amount: bigint, publicKey: string): StakeTransaction {
+export function stake(nonce: number, originator: string, amount: BN, publicKey: string): StakeTransaction {
     return new StakeTransaction({ nonce, originator, amount: bigInt(amount), publicKey, blsPublicKey: null });
 }
 
@@ -58,12 +57,12 @@ export function swapKey(nonce: number, originator: string, curKey: string, newKe
     return new SwapKeyTransaction({ nonce, originator, curKey: base_decode(curKey), newKey: base_decode(newKey) });
 }
 
-export function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: bigint): AccessKey {
+export function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): AccessKey {
     return new AccessKey({
         contractId: contractId ? new google.protobuf.StringValue({ value: contractId }) : null,
         methodName: methodName ? new google.protobuf.BytesValue({ value: Buffer.from(methodName) }) : null,
         balanceOwner: balanceOwner ? new google.protobuf.StringValue({ value: balanceOwner }) : null,
-        amount: bigInt(amount || BigInt(0)),
+        amount: bigInt(amount || new BN(0)),
     });
 }
 
