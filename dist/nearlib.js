@@ -8,14 +8,18 @@ window.Buffer = Buffer;
 },{"./lib/index":6,"buffer":38,"error-polyfill":45}],2:[function(require,module,exports){
 (function (Buffer){
 'use strict';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const bn_js_1 = __importDefault(require("bn.js"));
 const transaction_1 = require("./transaction");
 const provider_1 = require("./providers/provider");
 const serialize_1 = require("./utils/serialize");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-const DEFAULT_FUNC_CALL_AMOUNT = BigInt(1000000000);
+const DEFAULT_FUNC_CALL_AMOUNT = new bn_js_1.default(1000000000);
 // Default number of retries before giving up on a transactioin.
 const TX_STATUS_RETRY_NUMBER = 10;
 // Default wait until next retry in millis.
@@ -172,7 +176,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers/provider":16,"./transaction":18,"./utils/serialize":22,"buffer":38}],3:[function(require,module,exports){
+},{"./providers/provider":16,"./transaction":18,"./utils/serialize":22,"bn.js":34,"buffer":38}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -547,7 +551,11 @@ exports.UnencryptedFileSystemKeyStore = UnencryptedFileSystemKeyStore;
 
 },{"../utils/key_pair":20,"./keystore":10,"fs":36,"util":85}],12:[function(require,module,exports){
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const bn_js_1 = __importDefault(require("bn.js"));
 const account_1 = require("./account");
 const connection_1 = require("./connection");
 const contract_1 = require("./contract");
@@ -563,7 +571,7 @@ class Near {
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
-            this.accountCreator = new account_creator_1.LocalAccountCreator(new account_1.Account(this.connection, config.masterAccount), config.initialBalance || BigInt(1000 * 1000 * 1000 * 1000));
+            this.accountCreator = new account_creator_1.LocalAccountCreator(new account_1.Account(this.connection, config.masterAccount), config.initialBalance || new bn_js_1.default(1000 * 1000 * 1000 * 1000));
         }
         else if (config.helperUrl) {
             this.accountCreator = new account_creator_1.UrlAccountCreator(this.connection, config.helperUrl);
@@ -638,7 +646,7 @@ async function connect(config) {
 }
 exports.connect = connect;
 
-},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores/unencrypted_file_system_keystore":11,"./utils/key_pair":20}],13:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores/unencrypted_file_system_keystore":11,"./utils/key_pair":20,"bn.js":34}],13:[function(require,module,exports){
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
 "use strict";
 
@@ -5808,7 +5816,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// We use BN for only single purpose of encoding BigInt into Byte Array (and it's already used by tweetnacl so not an additional dependencies).
 const bn_js_1 = __importDefault(require("bn.js"));
 const protos_1 = require("./protos");
 const serialize_1 = require("./utils/serialize");
@@ -5823,11 +5830,11 @@ const TRANSACTION_FIELD_MAP = new Map([
     [protos_1.DeleteKeyTransaction, 'deleteKey'],
 ]);
 function bigInt(num) {
-    const number = new Uint8Array((new bn_js_1.default(num.toString())).toArray('le', 16));
+    const number = new Uint8Array(new bn_js_1.default(num).toArray('le', 16));
     return new protos_1.Uint128({ number });
 }
 function fromUint128(num) {
-    return BigInt(`0x${num}`);
+    return new bn_js_1.default(num, 16);
 }
 exports.fromUint128 = fromUint128;
 function createAccount(nonce, originator, newAccountId, publicKey, amount) {
@@ -5859,7 +5866,7 @@ function createAccessKey(contractId, methodName, balanceOwner, amount) {
         contractId: contractId ? new protos_1.google.protobuf.StringValue({ value: contractId }) : null,
         methodName: methodName ? new protos_1.google.protobuf.BytesValue({ value: Buffer.from(methodName) }) : null,
         balanceOwner: balanceOwner ? new protos_1.google.protobuf.StringValue({ value: balanceOwner }) : null,
-        amount: bigInt(amount || BigInt(0)),
+        amount: bigInt(amount || new bn_js_1.default(0)),
     });
 }
 exports.createAccessKey = createAccessKey;

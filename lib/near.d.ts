@@ -1,3 +1,4 @@
+import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
 import { Contract } from './contract';
@@ -30,7 +31,7 @@ declare class Near {
      * @param originator
      * @param receiver
      */
-    sendTokens(amount: bigint, originator: string, receiver: string): Promise<string>;
+    sendTokens(amount: BN, originator: string, receiver: string): Promise<string>;
 }
 export declare function connect(config: any): Promise<Near>;
 export {};
