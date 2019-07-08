@@ -54,12 +54,12 @@ test('view account details after adding access keys', async() => {
     const expectedResult = {
         authorizedApps: [{
             contractId: contractId,
-            amount: new BN(1000000000),
+            amount: "1000000000",
             publicKey: keyPair.getPublicKey(),
         },
         {
             contractId: contract2.contractId,
-            amount: new BN(2000000000),
+            amount: "2000000000",
             publicKey: keyPair2.getPublicKey(),
         }],
         transactions: []

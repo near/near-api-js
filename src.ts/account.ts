@@ -2,7 +2,7 @@
 
 import BN from 'bn.js'
 import { sendMoney, createAccount, signTransaction, deployContract,
-    fromUint128, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
+    bignumHex2Dec, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
 import { base_encode } from './utils/serialize';
@@ -29,8 +29,8 @@ function sleep(millis: number): Promise<any> {
 export interface AccountState {
     account_id: string;
     nonce: number;
-    amount: BN;
-    stake: BN;
+    amount: string;
+    stake: string;
     public_keys: Uint8Array[];
     code_hash: string;
 }
@@ -53,8 +53,8 @@ export class Account {
     async fetchState(): Promise<void> {
         const state = await this.connection.provider.query(`account/${this.accountId}`, '');
         this._state = state;
-        this._state.amount = fromUint128(state.amount);
-        this._state.stake = fromUint128(state.stake);
+        this._state.amount = bignumHex2Dec(state.amount);
+        this._state.stake = bignumHex2Dec(state.stake);
     }
 
     async state(): Promise<AccountState> {
@@ -192,7 +192,7 @@ export class Account {
         Object.keys(response).forEach((key) => {
             result.authorizedApps.push({
                 contractId: response[key][1].contract_id,
-                amount: fromUint128(response[key][1].amount),
+                amount: bignumHex2Dec(response[key][1].amount),
                 publicKey: base_encode(response[key][0]),
             });
         });

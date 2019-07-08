@@ -27,9 +27,8 @@ test('create account and then view account returns the created account', async (
     await workingAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
     const newAccount = new nearlib.Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
-    const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE, code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys };
+    const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE.toString(), stake: "0", code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys };
     expect(state).toMatchObject(expectedState);
-    expect(state.stake.eq(new BN(0))).toBeTruthy();
 });
 
 test('send money', async() => {
@@ -38,7 +37,7 @@ test('send money', async() => {
     await sender.sendMoney(receiver.accountId, new BN(10000));
     await receiver.fetchState();
     const state = await receiver.state();
-    expect(state.amount).toEqual(testUtils.INITIAL_BALANCE.add(new BN(10000)));
+    expect(state.amount).toEqual(testUtils.INITIAL_BALANCE.add(new BN(10000)).toString());
 });
 
 describe('errors', () => {

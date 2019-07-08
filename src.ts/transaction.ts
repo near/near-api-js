@@ -29,8 +29,8 @@ function bigInt(num: BN): Uint128 {
     return new Uint128({ number });
 }
 
-export function fromUint128(num: string): BN {
-    return new BN(num, 16);
+export function bignumHex2Dec(num: string): string {
+    return new BN(num, 16).toString(10);
 }
 
 export function createAccount(nonce: number, originator: string, newAccountId: string, publicKey: string, amount: BN): CreateAccountTransaction {
