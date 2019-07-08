@@ -27,7 +27,7 @@ test('create account and then view account returns the created account', async (
     await workingAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
     const newAccount = new nearlib.Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
-    const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE.toString(), stake: "0", code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys };
+    const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE.toString(), stake: '0', code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys };
     expect(state).toMatchObject(expectedState);
 });
 

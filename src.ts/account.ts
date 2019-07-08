@@ -1,6 +1,6 @@
 'use strict';
 
-import BN from 'bn.js'
+import BN from 'bn.js';
 import { sendMoney, createAccount, signTransaction, deployContract,
     bignumHex2Dec, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
