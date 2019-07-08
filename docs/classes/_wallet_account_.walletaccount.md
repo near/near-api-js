@@ -12,7 +12,7 @@
 
 ⊕ **new WalletAccount**(networkId: *`string`*, appKeyPrefix: *`string`*, walletBaseUrl?: *`string`*, keyStore?: *[KeyStore](_key_stores_keystore_.keystore.md)*): [WalletAccount](_wallet_account_.walletaccount.md)
 
-*Defined in [wallet-account.ts:16](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L16)*
+*Defined in [wallet-account.ts:16](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L16)*
 
 **Parameters:**
 
@@ -35,7 +35,7 @@ ___
 
 **● _authData**: *`any`*
 
-*Defined in [wallet-account.ts:15](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L15)*
+*Defined in [wallet-account.ts:15](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L15)*
 
 ___
 <a id="_authdatakey"></a>
@@ -44,7 +44,7 @@ ___
 
 **● _authDataKey**: *`string`*
 
-*Defined in [wallet-account.ts:13](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L13)*
+*Defined in [wallet-account.ts:13](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L13)*
 
 ___
 <a id="_keystore"></a>
@@ -53,7 +53,7 @@ ___
 
 **● _keyStore**: *[KeyStore](_key_stores_keystore_.keystore.md)*
 
-*Defined in [wallet-account.ts:14](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L14)*
+*Defined in [wallet-account.ts:14](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L14)*
 
 ___
 <a id="_networkid"></a>
@@ -62,7 +62,7 @@ ___
 
 **● _networkId**: *`string`*
 
-*Defined in [wallet-account.ts:16](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L16)*
+*Defined in [wallet-account.ts:16](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L16)*
 
 ___
 <a id="_walletbaseurl"></a>
@@ -71,7 +71,7 @@ ___
 
 **● _walletBaseUrl**: *`string`*
 
-*Defined in [wallet-account.ts:12](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L12)*
+*Defined in [wallet-account.ts:12](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L12)*
 
 ___
 
@@ -83,7 +83,7 @@ ___
 
 ▸ **_completeSignInWithAccessKey**(): `void`
 
-*Defined in [wallet-account.ts:80](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L80)*
+*Defined in [wallet-account.ts:80](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L80)*
 
 Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
 
@@ -96,7 +96,7 @@ ___
 
 ▸ **_moveKeyFromTempToPermanent**(accountId: *`string`*, publicKey: *`string`*): `Promise`<`void`>
 
-*Defined in [wallet-account.ts:93](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L93)*
+*Defined in [wallet-account.ts:93](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L93)*
 
 **Parameters:**
 
@@ -114,7 +114,7 @@ ___
 
 ▸ **getAccountId**(): `any`
 
-*Defined in [wallet-account.ts:44](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L44)*
+*Defined in [wallet-account.ts:44](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L44)*
 
 Returns authorized Account ID.
 
@@ -129,7 +129,7 @@ ___
 
 ▸ **isSignedIn**(): `boolean`
 
-*Defined in [wallet-account.ts:35](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L35)*
+*Defined in [wallet-account.ts:35](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L35)*
 
 Returns true, if this WalletAccount is authorized with the wallet.
 
@@ -144,7 +144,7 @@ ___
 
 ▸ **requestSignIn**(contractId: *`string`*, title: *`string`*, successUrl: *`string`*, failureUrl: *`string`*): `void`
 
-*Defined in [wallet-account.ts:61](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L61)*
+*Defined in [wallet-account.ts:61](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L61)*
 
 Redirects current page to the wallet authentication page.
 
@@ -168,7 +168,7 @@ ___
 
 ▸ **signOut**(): `void`
 
-*Defined in [wallet-account.ts:104](https://github.com/nearprotocol/nearlib/blob/56541eb/src.ts/wallet-account.ts#L104)*
+*Defined in [wallet-account.ts:104](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/wallet-account.ts#L104)*
 
 Sign out from the current account
 

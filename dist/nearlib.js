@@ -41,8 +41,8 @@ class Account {
     async fetchState() {
         const state = await this.connection.provider.query(`account/${this.accountId}`, '');
         this._state = state;
-        this._state.amount = transaction_1.fromUint128(state.amount);
-        this._state.stake = transaction_1.fromUint128(state.stake);
+        this._state.amount = transaction_1.bignumHex2Dec(state.amount);
+        this._state.stake = transaction_1.bignumHex2Dec(state.stake);
     }
     async state() {
         await this.ready;
@@ -166,7 +166,7 @@ class Account {
         Object.keys(response).forEach((key) => {
             result.authorizedApps.push({
                 contractId: response[key][1].contract_id,
-                amount: transaction_1.fromUint128(response[key][1].amount),
+                amount: transaction_1.bignumHex2Dec(response[key][1].amount),
                 publicKey: serialize_1.base_encode(response[key][0]),
             });
         });
@@ -5833,10 +5833,10 @@ function bigInt(num) {
     const number = new Uint8Array(new bn_js_1.default(num).toArray('le', 16));
     return new protos_1.Uint128({ number });
 }
-function fromUint128(num) {
-    return new bn_js_1.default(num, 16);
+function bignumHex2Dec(num) {
+    return new bn_js_1.default(num, 16).toString(10);
 }
-exports.fromUint128 = fromUint128;
+exports.bignumHex2Dec = bignumHex2Dec;
 function createAccount(nonce, originator, newAccountId, publicKey, amount) {
     return new protos_1.CreateAccountTransaction({ nonce, originator, newAccountId, publicKey: serialize_1.base_decode(publicKey), amount: bigInt(amount) });
 }

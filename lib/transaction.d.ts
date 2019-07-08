@@ -3,7 +3,7 @@ import { SendMoneyTransaction, CreateAccountTransaction, SignedTransaction, Depl
 import { Signature } from './utils/key_pair';
 import { Signer } from './signer';
 export declare type AllTransactions = SendMoneyTransaction | CreateAccountTransaction | DeployContractTransaction | FunctionCallTransaction | StakeTransaction | SwapKeyTransaction | AddKeyTransaction | DeleteKeyTransaction;
-export declare function fromUint128(num: string): BN;
+export declare function bignumHex2Dec(num: string): string;
 export declare function createAccount(nonce: number, originator: string, newAccountId: string, publicKey: string, amount: BN): CreateAccountTransaction;
 export declare function deployContract(nonce: number, contractId: string, wasmByteArray: Uint8Array): DeployContractTransaction;
 export declare function functionCall(nonce: number, originator: string, contractId: string, methodName: string, args: Uint8Array, amount: BN): FunctionCallTransaction;
