@@ -1,5 +1,6 @@
 'use strict';
 
+import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
 import { Uint128, SendMoneyTransaction, CreateAccountTransaction,
@@ -85,7 +86,8 @@ export function signedTransaction(transaction: AllTransactions, signature: Signa
 
 export async function signTransaction(signer: Signer, transaction: any, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const protoClass = transaction.constructor;
-    const txHash = protoClass.encode(transaction).finish();
-    const signature = await signer.signMessage(txHash, accountId, networkId);
-    return [txHash, signedTransaction(transaction, signature)];
+    const message = protoClass.encode(transaction).finish();
+    const hash = new Uint8Array(sha256.sha256.array(message));
+    const signature = await signer.signHash(hash, accountId, networkId);
+    return [hash, signedTransaction(transaction, signature)];
 }
