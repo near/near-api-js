@@ -73,14 +73,14 @@ export class Account {
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
+            if (result.status === 'Failed' || result.status === 'Completed') {
+                return result;
+            }
             await sleep(waitTime);
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        if (!result) {
-            throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempt for getting transaction result.`);
-        }
-        return result;
+        throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempt for getting transaction result.`);
     }
 
     private async signAndSendTransaction(transaction: any): Promise<FinalTransactionResult> {
