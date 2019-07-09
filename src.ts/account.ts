@@ -69,25 +69,18 @@ export class Account {
     }
 
     private async retryTxResult(txHash: Uint8Array): Promise<FinalTransactionResult> {
-        let i = 0;
         let result;
         let waitTime = TX_STATUS_RETRY_WAIT;
-        while (i < TX_STATUS_RETRY_NUMBER) {
-            try {
-                result = await this.connection.provider.txStatus(txHash);
-            } catch (error) {
-                // TODO: what type of errors can be here?
-            }
+        for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
+            result = await this.connection.provider.txStatus(txHash);
             await sleep(waitTime);
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
-            i += 1;
+            i++;
         }
         if (!result) {
             throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempt for getting transaction result.`);
         }
         return result;
-        // ...
-        // TODO: retry here few times via tx status RPC.
     }
 
     private async signAndSendTransaction(transaction: any): Promise<FinalTransactionResult> {
