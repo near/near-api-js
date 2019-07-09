@@ -97,6 +97,7 @@ export class Account {
                 throw error;
             }
         }
+        result = await this.retryTxResult(txHash);
 
         const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
         if (transaction.hasOwnProperty('contractId')) {
