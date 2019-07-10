@@ -1,6 +1,6 @@
 'use strict';
 
-import { Provider, FinalTransactionResult } from './provider';
+import { Provider, FinalTransactionResult, NodeStatusResult, BlockResult } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { base_encode } from '../utils/serialize';
@@ -26,6 +26,10 @@ export class JsonRpcProvider extends Provider {
         };
     }
 
+    async status(): Promise<NodeStatusResult> {
+        return this.sendJsonRpc('status', []);
+    }
+
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult> {
         const bytes = SignedTransaction.encode(signedTransaction).finish();
         return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
@@ -41,6 +45,10 @@ export class JsonRpcProvider extends Provider {
             throw new Error(`Quering ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
         }
         return result;
+    }
+
+    async block(height: number): Promise<BlockResult> {
+        return this.sendJsonRpc('block', [height]);
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {
