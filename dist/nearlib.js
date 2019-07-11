@@ -54,26 +54,18 @@ class Account {
         }
     }
     async retryTxResult(txHash) {
-        let i = 0;
         let result;
         let waitTime = TX_STATUS_RETRY_WAIT;
-        while (i < TX_STATUS_RETRY_NUMBER) {
-            try {
-                result = await this.connection.provider.txStatus(txHash);
-            }
-            catch (error) {
-                // TODO: what type of errors can be here?
+        for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
+            result = await this.connection.provider.txStatus(txHash);
+            if (result.status === 'Failed' || result.status === 'Completed') {
+                return result;
             }
             await sleep(waitTime);
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
-            i += 1;
+            i++;
         }
-        if (!result) {
-            throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempt for getting transaction result.`);
-        }
-        return result;
-        // ...
-        // TODO: retry here few times via tx status RPC.
+        throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempt for getting transaction result.`);
     }
     async signAndSendTransaction(transaction) {
         const [txHash, signedTx] = await transaction_1.signTransaction(this.connection.signer, transaction, this.accountId, this.connection.networkId);
@@ -5816,6 +5808,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const js_sha256_1 = __importDefault(require("js-sha256"));
 const bn_js_1 = __importDefault(require("bn.js"));
 const protos_1 = require("./protos");
 const serialize_1 = require("./utils/serialize");
@@ -5889,14 +5882,15 @@ function signedTransaction(transaction, signature) {
 exports.signedTransaction = signedTransaction;
 async function signTransaction(signer, transaction, accountId, networkId) {
     const protoClass = transaction.constructor;
-    const txHash = protoClass.encode(transaction).finish();
-    const signature = await signer.signMessage(txHash, accountId, networkId);
-    return [txHash, signedTransaction(transaction, signature)];
+    const message = protoClass.encode(transaction).finish();
+    const hash = new Uint8Array(js_sha256_1.default.sha256.array(message));
+    const signature = await signer.signHash(hash, accountId, networkId);
+    return [hash, signedTransaction(transaction, signature)];
 }
 exports.signTransaction = signTransaction;
 
 }).call(this,require("buffer").Buffer)
-},{"./protos":13,"./utils/serialize":22,"bn.js":34,"buffer":38}],19:[function(require,module,exports){
+},{"./protos":13,"./utils/serialize":22,"bn.js":34,"buffer":38,"js-sha256":57}],19:[function(require,module,exports){
 "use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;

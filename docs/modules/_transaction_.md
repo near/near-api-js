@@ -8,7 +8,7 @@
 
 **Ƭ AllTransactions**: *`SendMoneyTransaction` \| `CreateAccountTransaction` \| `DeployContractTransaction` \| `FunctionCallTransaction` \| `StakeTransaction` \| `SwapKeyTransaction` \| `AddKeyTransaction` \| `DeleteKeyTransaction`*
 
-*Defined in [transaction.ts:25](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L25)*
+*Defined in [transaction.ts:26](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L26)*
 
 ___
 
@@ -29,7 +29,7 @@ ___
     [DeleteKeyTransaction, 'deleteKey'],
 ])
 
-*Defined in [transaction.ts:14](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L14)*
+*Defined in [transaction.ts:15](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L15)*
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 ▸ **addKey**(nonce: *`number`*, originator: *`string`*, newKey: *`string`*, accessKey: *`AccessKey`*): `AddKeyTransaction`
 
-*Defined in [transaction.ts:69](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L69)*
+*Defined in [transaction.ts:70](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L70)*
 
 **Parameters:**
 
@@ -61,7 +61,7 @@ ___
 
 ▸ **bigInt**(num: *`BN`*): `Uint128`
 
-*Defined in [transaction.ts:27](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L27)*
+*Defined in [transaction.ts:28](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L28)*
 
 **Parameters:**
 
@@ -78,7 +78,7 @@ ___
 
 ▸ **bignumHex2Dec**(num: *`string`*): `string`
 
-*Defined in [transaction.ts:32](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L32)*
+*Defined in [transaction.ts:33](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L33)*
 
 **Parameters:**
 
@@ -95,7 +95,7 @@ ___
 
 ▸ **createAccessKey**(contractId?: *`string`*, methodName?: *`string`*, balanceOwner?: *`string`*, amount?: *`BN`*): `AccessKey`
 
-*Defined in [transaction.ts:60](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L60)*
+*Defined in [transaction.ts:61](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L61)*
 
 **Parameters:**
 
@@ -115,7 +115,7 @@ ___
 
 ▸ **createAccount**(nonce: *`number`*, originator: *`string`*, newAccountId: *`string`*, publicKey: *`string`*, amount: *`BN`*): `CreateAccountTransaction`
 
-*Defined in [transaction.ts:36](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L36)*
+*Defined in [transaction.ts:37](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L37)*
 
 **Parameters:**
 
@@ -136,7 +136,7 @@ ___
 
 ▸ **deleteKey**(nonce: *`number`*, originator: *`string`*, curKey: *`string`*): `DeleteKeyTransaction`
 
-*Defined in [transaction.ts:73](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L73)*
+*Defined in [transaction.ts:74](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L74)*
 
 **Parameters:**
 
@@ -155,7 +155,7 @@ ___
 
 ▸ **deployContract**(nonce: *`number`*, contractId: *`string`*, wasmByteArray: *`Uint8Array`*): `DeployContractTransaction`
 
-*Defined in [transaction.ts:40](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L40)*
+*Defined in [transaction.ts:41](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L41)*
 
 **Parameters:**
 
@@ -174,7 +174,7 @@ ___
 
 ▸ **functionCall**(nonce: *`number`*, originator: *`string`*, contractId: *`string`*, methodName: *`string`*, args: *`Uint8Array`*, amount: *`BN`*): `FunctionCallTransaction`
 
-*Defined in [transaction.ts:44](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L44)*
+*Defined in [transaction.ts:45](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L45)*
 
 **Parameters:**
 
@@ -196,7 +196,7 @@ ___
 
 ▸ **sendMoney**(nonce: *`number`*, originator: *`string`*, receiver: *`string`*, amount: *`BN`*): `SendMoneyTransaction`
 
-*Defined in [transaction.ts:48](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L48)*
+*Defined in [transaction.ts:49](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L49)*
 
 **Parameters:**
 
@@ -216,7 +216,7 @@ ___
 
 ▸ **signTransaction**(signer: *[Signer](../classes/_signer_.signer.md)*, transaction: *`any`*, accountId?: *`string`*, networkId?: *`string`*): `Promise`<[`Uint8Array`, `SignedTransaction`]>
 
-*Defined in [transaction.ts:86](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L86)*
+*Defined in [transaction.ts:87](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L87)*
 
 **Parameters:**
 
@@ -236,7 +236,7 @@ ___
 
 ▸ **signedTransaction**(transaction: *[AllTransactions](_transaction_.md#alltransactions)*, signature: *[Signature](../interfaces/_utils_key_pair_.signature.md)*): `SignedTransaction`
 
-*Defined in [transaction.ts:77](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L77)*
+*Defined in [transaction.ts:78](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L78)*
 
 **Parameters:**
 
@@ -254,7 +254,7 @@ ___
 
 ▸ **stake**(nonce: *`number`*, originator: *`string`*, amount: *`BN`*, publicKey: *`string`*): `StakeTransaction`
 
-*Defined in [transaction.ts:52](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L52)*
+*Defined in [transaction.ts:53](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L53)*
 
 **Parameters:**
 
@@ -274,7 +274,7 @@ ___
 
 ▸ **swapKey**(nonce: *`number`*, originator: *`string`*, curKey: *`string`*, newKey: *`string`*): `SwapKeyTransaction`
 
-*Defined in [transaction.ts:56](https://github.com/nearprotocol/nearlib/blob/9d0b286/src.ts/transaction.ts#L56)*
+*Defined in [transaction.ts:57](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/transaction.ts#L57)*
 
 **Parameters:**
 
