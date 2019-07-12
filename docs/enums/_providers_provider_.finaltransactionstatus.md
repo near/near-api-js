@@ -19,7 +19,7 @@
 
 **Completed**:  = "Completed"
 
-*Defined in [providers/provider.ts:10](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/providers/provider.ts#L10)*
+*Defined in [providers/provider.ts:10](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/providers/provider.ts#L10)*
 
 ___
 <a id="failed"></a>
@@ -28,7 +28,7 @@ ___
 
 **Failed**:  = "Failed"
 
-*Defined in [providers/provider.ts:9](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/providers/provider.ts#L9)*
+*Defined in [providers/provider.ts:9](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/providers/provider.ts#L9)*
 
 ___
 <a id="started"></a>
@@ -37,7 +37,7 @@ ___
 
 **Started**:  = "Started"
 
-*Defined in [providers/provider.ts:8](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/providers/provider.ts#L8)*
+*Defined in [providers/provider.ts:8](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/providers/provider.ts#L8)*
 
 ___
 <a id="unknown"></a>
@@ -46,7 +46,7 @@ ___
 
 **Unknown**:  = "Unknown"
 
-*Defined in [providers/provider.ts:7](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/providers/provider.ts#L7)*
+*Defined in [providers/provider.ts:7](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/providers/provider.ts#L7)*
 
 ___
 

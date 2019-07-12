@@ -9,5 +9,4 @@ export declare abstract class KeyStore {
     abstract clear(): Promise<void>;
     abstract getNetworks(): Promise<string[]>;
     abstract getAccounts(networkId: string): Promise<string[]>;
-    abstract totalAccounts(): Promise<number>;
 }

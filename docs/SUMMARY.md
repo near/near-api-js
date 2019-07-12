@@ -17,6 +17,8 @@
 * [&quot;key_stores/index&quot;](modules/_key_stores_index_.md)
 * [&quot;key_stores/keystore&quot;](modules/_key_stores_keystore_.md)
   * [KeyStore](classes/_key_stores_keystore_.keystore.md)
+* [&quot;key_stores/merge_key_store&quot;](modules/_key_stores_merge_key_store_.md)
+  * [MergeKeyStore](classes/_key_stores_merge_key_store_.mergekeystore.md)
 * [&quot;key_stores/unencrypted_file_system_keystore&quot;](modules/_key_stores_unencrypted_file_system_keystore_.md)
   * [UnencryptedFileSystemKeyStore](classes/_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md)
   * [AccountInfo](interfaces/_key_stores_unencrypted_file_system_keystore_.accountinfo.md)

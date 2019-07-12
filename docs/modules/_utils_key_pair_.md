@@ -25,7 +25,7 @@
 
 **Ƭ Arrayish**: *`string` \| `ArrayLike`<`number`>*
 
-*Defined in [utils/key_pair.ts:6](https://github.com/nearprotocol/nearlib/blob/fd78025/src.ts/utils/key_pair.ts#L6)*
+*Defined in [utils/key_pair.ts:6](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/utils/key_pair.ts#L6)*
 
 ___
 

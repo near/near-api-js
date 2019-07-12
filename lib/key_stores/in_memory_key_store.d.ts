@@ -12,5 +12,4 @@ export declare class InMemoryKeyStore extends KeyStore {
     clear(): Promise<void>;
     getNetworks(): Promise<string[]>;
     getAccounts(networkId: string): Promise<string[]>;
-    totalAccounts(): Promise<number>;
 }
