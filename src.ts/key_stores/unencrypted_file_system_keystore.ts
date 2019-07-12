@@ -21,7 +21,6 @@ const writeFile = promisify(fs.writeFile);
 const unlink = promisify(fs.unlink);
 const readdir = promisify(fs.readdir);
 const mkdir = promisify(fs.mkdir);
-const rmdir = promisify(fs.rmdir);
 
 /**
  * Format of the account stored on disk.
@@ -74,7 +73,11 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     async clear(): Promise<void> {
-        await rmdir(this.keyDir);
+        for (const network of await this.getNetworks()) {
+            for (const account of await this.getAccounts(network)) {
+                await this.removeKey(network, account);
+            }
+        }
     }
 
     private getKeyFilePath(networkId: string, accountId: string): string {
