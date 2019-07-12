@@ -6,6 +6,7 @@ import { Contract } from './contract';
 import { loadJsonFile } from './key_stores/unencrypted_file_system_keystore';
 import { KeyPairEd25519 } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
+import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 
 class Near {
     readonly connection: Connection;
@@ -85,8 +86,10 @@ export async function connect(config: any): Promise<Near> {
             const keyFile = await loadJsonFile(config.keyPath);
             if (keyFile.account_id) {
                 const keyPair = new KeyPairEd25519(keyFile.secret_key);
-                await config.deps.keyStore.setKey(config.networkId, keyFile.account_id, keyPair);
+                const keyPathStore = new InMemoryKeyStore();
+                await keyPathStore.setKey(config.networkId, keyFile.account_id, keyPair);
                 config.masterAccount = keyFile.account_id;
+                config.deps.keyStore = new MergeKeyStore([config.deps.keyStore, keyPathStore]);
                 console.log(`Loaded master account ${keyFile.account_id} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {
