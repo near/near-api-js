@@ -99,13 +99,4 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
             .filter(file => file.endsWith('.json'))
             .map(file => file.replace(/.json$/, ''));
     }
-
-    async totalAccounts(): Promise<number> {
-        let result = 0;
-        const networkDirs = await readdir(this.keyDir);
-        for (const networkId of networkDirs) {
-            result += (await this.getAccounts(networkId)).length;
-        }
-        return result;
-    }
 }

@@ -21,11 +21,6 @@ module.exports.shouldStoreAndRetriveKeys = ctx => {
         const accountIds = await ctx.keyStore.getAccounts(NETWORK_ID_SINGLE_KEY);
         expect(accountIds).toEqual([ACCOUNT_ID_SINGLE_KEY]);
     });
-    
-    test('Get accounts count', async () => {
-        const totalAccounts = await ctx.keyStore.totalAccounts();
-        expect(totalAccounts).toEqual(1);
-    });
 
     test('Get not-existing account', async () => {
         expect(await ctx.keyStore.getKey('somenetwork', 'someaccount')).toBeNull();

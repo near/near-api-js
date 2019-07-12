@@ -63,16 +63,6 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
         return result;
     }
 
-    async totalAccounts(): Promise<number> {
-        let result = 0;
-        for (const key of this.storageKeys()) {
-            if (key.startsWith(this.prefix)) {
-                result++;
-            }
-        }
-        return result;
-    }
-
     private storageKeyForSecretKey(networkId: string, accountId: string): string {
         return `${this.prefix}${accountId}:${networkId}`;
     }
