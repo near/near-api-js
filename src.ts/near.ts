@@ -8,11 +8,13 @@ import { KeyPairEd25519 } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 
-class Near {
+export class Near {
+    readonly config: any;
     readonly connection: Connection;
     readonly accountCreator: AccountCreator;
 
     constructor(config: any) {
+        this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl } },

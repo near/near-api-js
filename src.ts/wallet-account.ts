@@ -1,7 +1,9 @@
 'use strict';
 
-import { KeyStore, BrowserLocalStorageKeyStore } from './key_stores';
+import { Near } from './near';
+import { KeyStore } from './key_stores';
 import { KeyPair } from './utils';
+import { InMemorySigner } from './signer';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
@@ -15,12 +17,12 @@ export class WalletAccount {
     _authData: any;
     _networkId: string;
 
-    constructor(networkId: string, appKeyPrefix: string, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore: KeyStore = new BrowserLocalStorageKeyStore()) {
-        this._networkId = networkId;
-        this._walletBaseUrl = walletBaseUrl;
+    constructor(near: Near, appKeyPrefix: string | null) {
+        this._networkId = near.config.networkId;
+        this._walletBaseUrl = near.config.walletUrl;
+        appKeyPrefix = appKeyPrefix || near.config.contractId || 'default';
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
-        this._keyStore = keyStore;
-
+        this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
         this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
@@ -58,7 +60,11 @@ export class WalletAccount {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string) {
+    async requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string) {
+        if (this.getAccountId() || await this._keyStore.getKey(this._networkId, this.getAccountId())) {
+            return Promise.resolve();
+        }
+
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('title', title);
@@ -66,18 +72,16 @@ export class WalletAccount {
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
         newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
-        if (!this.getAccountId() || !this._keyStore.getKey(this._networkId, this.getAccountId())) {
-            const accessKey = KeyPair.fromRandom('ed25519');
-            newUrl.searchParams.set('public_key', accessKey.getPublicKey());
-            this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey)
-                .then(() => window.location.replace(newUrl.toString()));
-        }
+        const accessKey = KeyPair.fromRandom('ed25519');
+        newUrl.searchParams.set('public_key', accessKey.getPublicKey());
+        await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+        window.location.replace(newUrl.toString());
     }
 
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
-    _completeSignInWithAccessKey() {
+    async _completeSignInWithAccessKey() {
         const currentUrl = new URL(window.location.href);
         const publicKey = currentUrl.searchParams.get('public_key') || '';
         const accountId = currentUrl.searchParams.get('account_id') || '';
@@ -86,7 +90,7 @@ export class WalletAccount {
                 accountId
             };
             window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
-            this._moveKeyFromTempToPermanent(accountId, publicKey);
+            await this._moveKeyFromTempToPermanent(accountId, publicKey);
         }
     }
 
