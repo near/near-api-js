@@ -8,7 +8,8 @@ const ACCOUNT_ID_SINGLE_KEY = 'singlekey_accountid';
 const KEYPAIR_SINGLE_KEY = new KeyPair('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
 
 module.exports.shouldStoreAndRetriveKeys = ctx => {
-    beforeAll(async () => {
+    beforeEach(async () => {
+        await ctx.keyStore.clear();
         await ctx.keyStore.setKey(NETWORK_ID_SINGLE_KEY, ACCOUNT_ID_SINGLE_KEY, KEYPAIR_SINGLE_KEY);
     });
 
