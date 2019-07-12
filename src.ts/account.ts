@@ -80,7 +80,7 @@ export class Account {
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempt for getting transaction result.`);
+        throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`);
     }
 
     private async signAndSendTransaction(transaction: any): Promise<FinalTransactionResult> {
