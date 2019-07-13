@@ -3,7 +3,8 @@ import { Account } from './account';
 import { Connection } from './connection';
 import { Contract } from './contract';
 import { AccountCreator } from './account_creator';
-declare class Near {
+export declare class Near {
+    readonly config: any;
     readonly connection: Connection;
     readonly accountCreator: AccountCreator;
     constructor(config: any);
@@ -34,4 +35,3 @@ declare class Near {
     sendTokens(amount: BN, originator: string, receiver: string): Promise<string>;
 }
 export declare function connect(config: any): Promise<Near>;
-export {};

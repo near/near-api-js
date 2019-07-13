@@ -600,6 +600,7 @@ const account_creator_1 = require("./account_creator");
 const key_stores_1 = require("./key_stores");
 class Near {
     constructor(config) {
+        this.config = config;
         this.connection = connection_1.Connection.fromConfig({
             networkId: config.networkId,
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl } },
@@ -662,6 +663,7 @@ class Near {
         return result.logs[0].hash;
     }
 }
+exports.Near = Near;
 async function connect(config) {
     // Try to find extra key in `KeyPath` if provided.
     if (config.keyPath && config.deps && config.deps.keyStore) {
@@ -6087,17 +6089,17 @@ exports.fetchJson = fetchJson;
 },{"http-errors":55,"node-fetch":37}],25:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const key_stores_1 = require("./key_stores");
 const utils_1 = require("./utils");
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 class WalletAccount {
-    constructor(networkId, appKeyPrefix, walletBaseUrl = 'https://wallet.nearprotocol.com', keyStore = new key_stores_1.BrowserLocalStorageKeyStore()) {
-        this._networkId = networkId;
-        this._walletBaseUrl = walletBaseUrl;
+    constructor(near, appKeyPrefix) {
+        this._networkId = near.config.networkId;
+        this._walletBaseUrl = near.config.walletUrl;
+        appKeyPrefix = appKeyPrefix || near.config.contractId || 'default';
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
-        this._keyStore = keyStore;
+        this._keyStore = near.connection.signer.keyStore;
         this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
@@ -6132,7 +6134,10 @@ class WalletAccount {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    requestSignIn(contractId, title, successUrl, failureUrl) {
+    async requestSignIn(contractId, title, successUrl, failureUrl) {
+        if (this.getAccountId() || await this._keyStore.getKey(this._networkId, this.getAccountId())) {
+            return Promise.resolve();
+        }
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('title', title);
@@ -6140,17 +6145,15 @@ class WalletAccount {
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
         newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
-        if (!this.getAccountId() || !this._keyStore.getKey(this._networkId, this.getAccountId())) {
-            const accessKey = utils_1.KeyPair.fromRandom('ed25519');
-            newUrl.searchParams.set('public_key', accessKey.getPublicKey());
-            this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey)
-                .then(() => window.location.replace(newUrl.toString()));
-        }
+        const accessKey = utils_1.KeyPair.fromRandom('ed25519');
+        newUrl.searchParams.set('public_key', accessKey.getPublicKey());
+        await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+        window.location.replace(newUrl.toString());
     }
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
-    _completeSignInWithAccessKey() {
+    async _completeSignInWithAccessKey() {
         const currentUrl = new URL(window.location.href);
         const publicKey = currentUrl.searchParams.get('public_key') || '';
         const accountId = currentUrl.searchParams.get('account_id') || '';
@@ -6159,7 +6162,7 @@ class WalletAccount {
                 accountId
             };
             window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
-            this._moveKeyFromTempToPermanent(accountId, publicKey);
+            await this._moveKeyFromTempToPermanent(accountId, publicKey);
         }
     }
     async _moveKeyFromTempToPermanent(accountId, publicKey) {
@@ -6179,7 +6182,7 @@ class WalletAccount {
 }
 exports.WalletAccount = WalletAccount;
 
-},{"./key_stores":9,"./utils":20}],26:[function(require,module,exports){
+},{"./utils":20}],26:[function(require,module,exports){
 "use strict";
 module.exports = asPromise;
 

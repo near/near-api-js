@@ -1,3 +1,4 @@
+import { Near } from './near';
 import { KeyStore } from './key_stores';
 export declare class WalletAccount {
     _walletBaseUrl: string;
@@ -5,7 +6,7 @@ export declare class WalletAccount {
     _keyStore: KeyStore;
     _authData: any;
     _networkId: string;
-    constructor(networkId: string, appKeyPrefix: string, walletBaseUrl?: string, keyStore?: KeyStore);
+    constructor(near: Near, appKeyPrefix: string | null);
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
      * @example
@@ -31,11 +32,11 @@ export declare class WalletAccount {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string): void;
+    requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string): Promise<void>;
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
-    _completeSignInWithAccessKey(): void;
+    _completeSignInWithAccessKey(): Promise<void>;
     _moveKeyFromTempToPermanent(accountId: string, publicKey: string): Promise<void>;
     /**
      * Sign out from the current account

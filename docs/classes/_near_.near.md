@@ -12,7 +12,7 @@
 
 ⊕ **new Near**(config: *`any`*): [Near](_near_.near.md)
 
-*Defined in [near.ts:13](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/near.ts#L13)*
+*Defined in [near.ts:14](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L14)*
 
 **Parameters:**
 
@@ -32,7 +32,16 @@ ___
 
 **● accountCreator**: *[AccountCreator](_account_creator_.accountcreator.md)*
 
-*Defined in [near.ts:13](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/near.ts#L13)*
+*Defined in [near.ts:14](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L14)*
+
+___
+<a id="config"></a>
+
+##  config
+
+**● config**: *`any`*
+
+*Defined in [near.ts:12](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L12)*
 
 ___
 <a id="connection"></a>
@@ -41,7 +50,7 @@ ___
 
 **● connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [near.ts:12](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/near.ts#L12)*
+*Defined in [near.ts:13](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L13)*
 
 ___
 
@@ -53,7 +62,7 @@ ___
 
 ▸ **account**(accountId: *`string`*): `Promise`<[Account](_account_.account.md)>
 
-*Defined in [near.ts:31](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/near.ts#L31)*
+*Defined in [near.ts:33](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L33)*
 
 **Parameters:**
 
@@ -70,7 +79,7 @@ ___
 
 ▸ **createAccount**(accountId: *`string`*, publicKey: *`string`*): `Promise`<[Account](_account_.account.md)>
 
-*Defined in [near.ts:37](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/near.ts#L37)*
+*Defined in [near.ts:39](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L39)*
 
 **Parameters:**
 
@@ -88,7 +97,7 @@ ___
 
 ▸ **deployContract**(contractId: *`string`*, wasmByteArray: *`Uint8Array`*): `Promise`<`string`>
 
-*Defined in [near.ts:61](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/near.ts#L61)*
+*Defined in [near.ts:63](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L63)*
 
 Backwards compatibility method. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.
 
@@ -108,7 +117,7 @@ ___
 
 ▸ **loadContract**(contractId: *`string`*, options: *`object`*): `Promise`<[Contract](_contract_.contract.md)>
 
-*Defined in [near.ts:50](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/near.ts#L50)*
+*Defined in [near.ts:52](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L52)*
 
 Backwards compatibility method. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
 
@@ -133,7 +142,7 @@ ___
 
 ▸ **sendTokens**(amount: *`BN`*, originator: *`string`*, receiver: *`string`*): `Promise`<`string`>
 
-*Defined in [near.ts:74](https://github.com/nearprotocol/nearlib/blob/8b364b8/src.ts/near.ts#L74)*
+*Defined in [near.ts:76](https://github.com/nearprotocol/nearlib/blob/be246a3/src.ts/near.ts#L76)*
 
 Backwards compatibility method. Use `yourAccount.sendMoney` instead.
 
