@@ -23,7 +23,7 @@ export class MergeKeyStore extends KeyStore {
 
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
         for (const keyStore of this.keyStores) {
-            let keyPair = await keyStore.getKey(networkId, accountId);
+            const keyPair = await keyStore.getKey(networkId, accountId);
             if (keyPair) {
                 return keyPair;
             }
