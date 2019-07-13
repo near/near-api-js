@@ -20,7 +20,7 @@ export class WalletAccount {
     constructor(near: Near, appKeyPrefix: string | null) {
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
-        appKeyPrefix = appKeyPrefix || near.config.contractId || 'default';
+        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
         this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');

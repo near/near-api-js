@@ -11,7 +11,7 @@ beforeEach(() => {
     nearFake = {
         config: {
             networkId: 'networkId',
-            contractId: 'contractId',
+            contractName: 'contractId',
             walletUrl: 'http://example.com/wallet',
         },
         connection: {
