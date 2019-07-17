@@ -1,28 +1,40 @@
 {
   "name": "nearlib",
-  "description": "Javascript library to interact with near blockchain",
+  "description": "Javascript library to interact with NEAR blockchain",
   "version": "0.9.0",
   "repository": {
     "type": "git",
     "url": "git@:nearprotocol/nearcore.git"
   },
   "homepage": "https://github.com/nearprotocol/nearcore",
-  "main": "index.js",
-  "browser": "browser.js",
+  "main": "lib/index.js",
+  "types": "lub/index.d.ts",
   "dependencies": {
+    "@types/bn.js": "^4.11.5",
+    "bn.js": "^4.11.5",
     "bs58": "^4.0.1",
     "error-polyfill": "^0.1.2",
-    "http-errors": "^1.7.1",
+    "http-errors": "^1.7.2",
     "js-sha256": "^0.9.0",
     "node-fetch": "^2.3.0",
     "protobufjs": "^6.8.8",
-    "tweetnacl": "^1.0.0"
+    "tslint": "^5.18.0",
+    "tweetnacl": "^1.0.1",
+    "typescript": "^3.5.1"
   },
   "devDependencies": {
+    "@types/bs58": "^4.0.0",
+    "@types/google-protobuf": "^3.2.7",
+    "@types/http-errors": "^1.6.1",
     "browserify": "^16.2.3",
     "documentation": "^9.1.1",
     "eslint": "^5.14.0",
     "jest": "^24.1.0",
+    "localstorage-memory": "^1.0.3",
+    "rimraf": "^2.6.3",
+    "ts-protoc-gen": "^0.10.0",
+    "typedoc": "^0.14.2",
+    "typedoc-plugin-markdown": "^1.2.1",
     "uglifyify": "^5.0.1"
   },
   "jest": {
@@ -33,12 +45,15 @@
   "license": "MIT",
   "scripts": {
     "generate-protos": "scripts/generate_js_transaction_proto.sh",
-    "build": "npm run generate-protos && browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
-    "test": "npm run generate-protos && jest test",
-    "lint": "eslint .",
-    "fix": "eslint . --fix",
-    "prepare": "npm run build && npm run doc",
-    "doc": "documentation readme near.js account.js wallet-account.js wallet-access-key.js signing/key_pair.js -f md --shallow --section=API --readme-file=API.md"
+    "dist": "npm run build && npm run doc && browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
+    "compile": "tsc -p ./tsconfig.json",
+    "dev": "npm run compile -- -w",
+    "build": "npm run generate-protos && npm run compile",
+    "pretest": "npm run build",
+    "test": "jest test --runInBand",
+    "lint": "eslint test && tslint -p ./tsconfig.json -t codeFrame",
+    "fix": "eslint test --fix && tslint -p ./tsconfig.json -t codeFrame --fix",
+    "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"
   },
-  "author": "Evguenia Degtiareva"
+  "author": "NEAR Inc"
 }

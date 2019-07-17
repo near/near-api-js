@@ -2,37 +2,30 @@ image: node:10
 
 variables:
   NODE_ENV: ci
-  NEAR_PROTOS_DIR: nearcore/runtime/protos/protos
+  NEAR_PROTOS_DIR: nearcore/core/protos/protos
   SKIP_DEV_CONNECT_TESTS: "true"
   SKIP_FAILED_ASSERT_TEST: "true"
   SKIP_NEW_RPC_TESTS: "true"
   HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:
-  - build
   - test
-
-cache:
-  paths:
-    - nearcore/
-    - node_modules/
-
-install_dependencies:
-  stage: build
-  script:
-    - rm -rf nearcore/ # nearcore/ gets cached
-    - git clone --depth 1 --branch master https://github.com/nearprotocol/nearcore.git nearcore
-    - rm -rf nearcore/nearlib
-    - npm install
-    - cd nearcore/tests/hello && npm install && npm run build
-  artifacts:
-    paths:
-      - node_modules/
 
 test:
   stage: test
-  script: NODE_ENV=development npm test
+  tags:
+    - gcloud
+  script:
+    - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
+    - npm install
+    - npm run build
+    - (cd nearcore && ./scripts/build_wasm.sh)
+    - npm test
 
 lint:
   stage: test
-  script: npm run lint
+  tags:
+    - gcloud
+  script:
+    - npm install
+    - npm run lint

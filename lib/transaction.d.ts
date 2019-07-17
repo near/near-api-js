@@ -1,0 +1,17 @@
+import BN from 'bn.js';
+import { SendMoneyTransaction, CreateAccountTransaction, SignedTransaction, DeployContractTransaction, FunctionCallTransaction, StakeTransaction, SwapKeyTransaction, AddKeyTransaction, DeleteKeyTransaction, AccessKey } from './protos';
+import { Signature } from './utils/key_pair';
+import { Signer } from './signer';
+export declare type AllTransactions = SendMoneyTransaction | CreateAccountTransaction | DeployContractTransaction | FunctionCallTransaction | StakeTransaction | SwapKeyTransaction | AddKeyTransaction | DeleteKeyTransaction;
+export declare function bignumHex2Dec(num: string): string;
+export declare function createAccount(nonce: number, originator: string, newAccountId: string, publicKey: string, amount: BN): CreateAccountTransaction;
+export declare function deployContract(nonce: number, contractId: string, wasmByteArray: Uint8Array): DeployContractTransaction;
+export declare function functionCall(nonce: number, originator: string, contractId: string, methodName: string, args: Uint8Array, amount: BN): FunctionCallTransaction;
+export declare function sendMoney(nonce: number, originator: string, receiver: string, amount: BN): SendMoneyTransaction;
+export declare function stake(nonce: number, originator: string, amount: BN, publicKey: string): StakeTransaction;
+export declare function swapKey(nonce: number, originator: string, curKey: string, newKey: string): SwapKeyTransaction;
+export declare function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): AccessKey;
+export declare function addKey(nonce: number, originator: string, newKey: string, accessKey: AccessKey): AddKeyTransaction;
+export declare function deleteKey(nonce: number, originator: string, curKey: string): DeleteKeyTransaction;
+export declare function signedTransaction(transaction: AllTransactions, signature: Signature): SignedTransaction;
+export declare function signTransaction(signer: Signer, transaction: any, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;

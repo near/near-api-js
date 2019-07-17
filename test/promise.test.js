@@ -1,71 +1,28 @@
-const { Account, KeyPair, InMemoryKeyStore } = require('../');
-const  { aliceAccountName, createFakeStorage } = require('./test-utils');
-const dev = require('../dev');
-const fs = require('fs');
-let nearjs;
-let account;
-let mainTestAccountName;
-let keyStore;
-let storage;
+const BN = require('bn.js');
+const testUtils = require('./test-utils');
 
-const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
+let nearjs;
+let workingAccount;
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
 
 beforeAll(async () => {
-    keyStore = new InMemoryKeyStore('somenetwork');
-    storage = createFakeStorage();
-    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
-        networkId: 'somenetwork',
-        deps: { keyStore, storage },
-    });
-    nearjs = await dev.connect(config);
-
-    account = new Account(nearjs.nearClient);
-
-    mainTestAccountName = 'dev_acc_' + Math.random();
-    const keyWithRandomSeed = KeyPair.fromRandomSeed();
-    const createAccountResponse = await account.createAccount(
-        mainTestAccountName,
-        keyWithRandomSeed.getPublicKey(),
-        1000000000000,
-        aliceAccountName);
-    await nearjs.waitForTransactionResult(createAccountResponse);
-    await keyStore.setKey(mainTestAccountName, keyWithRandomSeed);
+    nearjs = await testUtils.setUpTestConnection();
+    workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
 });
 
 describe('with promises', () => { 
     let contract, contract1, contract2;
     let oldLog;
     let logs;
-    let contractName = 'test_' + Date.now();
-    let contractName1 = 'test_' + Math.random();
-    let contractName2 = 'test_' + Math.random();
-
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 200000;
-
-    const deploy = async (contractName) => {
-        const keyWithRandomSeed = KeyPair.fromRandomSeed();
-        const createAccountResponse = await account.createAccount(
-            contractName,
-            keyWithRandomSeed.getPublicKey(),
-            1,
-            mainTestAccountName);
-        await nearjs.waitForTransactionResult(createAccountResponse);
-        keyStore.setKey(contractName, keyWithRandomSeed);
-        const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        await nearjs.waitForTransactionResult(
-            await nearjs.deployContract(contractName, data));
-        return await nearjs.loadContract(contractName, {
-            sender: mainTestAccountName,
-            viewMethods: ['getLastResult'],
-            changeMethods: ['callPromise']
-        });
-    };
+    let contractName = testUtils.generateUniqueString('cnt');
+    let contractName1 = testUtils.generateUniqueString('cnt');
+    let contractName2 = testUtils.generateUniqueString('cnt');
 
     beforeAll(async () => {
-        // See README.md for details about this contract source code location.
-        contract = await deploy(contractName);
-        contract1 = await deploy(contractName1);
-        contract2 = await deploy(contractName2);
+        contract = await testUtils.deployContract(workingAccount, contractName);
+        contract1 = await testUtils.deployContract(workingAccount, contractName1);
+        contract2 = await testUtils.deployContract(workingAccount, contractName2);
     });
 
     beforeEach(async () => {

@@ -3,8 +3,9 @@
 
 storage
 node_modules
+*.map
 
 # Nearlib files & coverage
 neardev/
 coverage/
-protos\.js
+src\.ts/protos\.d\.ts

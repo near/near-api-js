@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "lib": [
+            "es2015",
+            "esnext",
+            "dom"
+        ],
+        "module": "commonjs",
+        "target": "esnext",
+        "moduleResolution": "node",
+        "outDir": "./lib",
+        "declaration": true,
+        "preserveSymlinks": true,
+        "preserveWatchOutput": true,
+        "pretty": false,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true
+    },
+    "files": [
+        "./src.ts/index.ts",
+        "./src.ts/protos.d.ts"
+    ]
+}
