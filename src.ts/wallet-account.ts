@@ -75,7 +75,7 @@ export class WalletAccount {
         const accessKey = KeyPair.fromRandom('ed25519');
         newUrl.searchParams.set('public_key', accessKey.getPublicKey());
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
-        window.location.replace(newUrl.toString());
+        window.location.assign(newUrl.toString());
     }
 
     /**
