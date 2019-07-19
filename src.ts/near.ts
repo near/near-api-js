@@ -87,10 +87,13 @@ export async function connect(config: any): Promise<Near> {
         try {
             const keyFile = await loadJsonFile(config.keyPath);
             if (keyFile.account_id) {
+                // TODO: Only load key if network ID matches
                 const keyPair = new KeyPairEd25519(keyFile.secret_key);
                 const keyPathStore = new InMemoryKeyStore();
                 await keyPathStore.setKey(config.networkId, keyFile.account_id, keyPair);
-                config.masterAccount = keyFile.account_id;
+                if (!config.masterAccount) {
+                    config.masterAccount = keyFile.account_id;
+                }
                 config.deps.keyStore = new MergeKeyStore([config.deps.keyStore, keyPathStore]);
                 console.log(`Loaded master account ${keyFile.account_id} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
