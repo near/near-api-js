@@ -41,8 +41,8 @@ class Account {
     async fetchState() {
         const state = await this.connection.provider.query(`account/${this.accountId}`, '');
         this._state = state;
-        this._state.amount = transaction_1.bignumHex2Dec(state.amount);
-        this._state.stake = transaction_1.bignumHex2Dec(state.stake);
+        this._state.amount = state.amount;
+        this._state.stake = state.stake;
     }
     async state() {
         await this.ready;
@@ -158,7 +158,7 @@ class Account {
         Object.keys(response).forEach((key) => {
             result.authorizedApps.push({
                 contractId: response[key][1].contract_id,
-                amount: transaction_1.bignumHex2Dec(response[key][1].amount),
+                amount: response[key][1].amount,
                 publicKey: serialize_1.base_encode(response[key][0]),
             });
         });
@@ -10713,7 +10713,6 @@ var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 module.exports = basex(ALPHABET)
 
 },{"base-x":33}],39:[function(require,module,exports){
-(function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -12492,8 +12491,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-}).call(this,require("buffer").Buffer)
-},{"base64-js":34,"buffer":39,"ieee754":56}],40:[function(require,module,exports){
+},{"base64-js":34,"ieee754":56}],40:[function(require,module,exports){
 require(".").check("es5");
 },{".":41}],41:[function(require,module,exports){
 require("./lib/definitions");
