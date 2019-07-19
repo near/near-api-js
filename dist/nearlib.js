@@ -608,7 +608,7 @@ class Near {
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
-            this.accountCreator = new account_creator_1.LocalAccountCreator(new account_1.Account(this.connection, config.masterAccount), config.initialBalance || new bn_js_1.default(1000 * 1000 * 1000 * 1000));
+            this.accountCreator = new account_creator_1.LocalAccountCreator(new account_1.Account(this.connection, config.masterAccount), new bn_js_1.default(config.initialBalance) || new bn_js_1.default(1000 * 1000 * 1000 * 1000));
         }
         else if (config.helperUrl) {
             this.accountCreator = new account_creator_1.UrlAccountCreator(this.connection, config.helperUrl);
@@ -670,10 +670,13 @@ async function connect(config) {
         try {
             const keyFile = await unencrypted_file_system_keystore_1.loadJsonFile(config.keyPath);
             if (keyFile.account_id) {
+                // TODO: Only load key if network ID matches
                 const keyPair = new key_pair_1.KeyPairEd25519(keyFile.secret_key);
                 const keyPathStore = new key_stores_1.InMemoryKeyStore();
                 await keyPathStore.setKey(config.networkId, keyFile.account_id, keyPair);
-                config.masterAccount = keyFile.account_id;
+                if (!config.masterAccount) {
+                    config.masterAccount = keyFile.account_id;
+                }
                 config.deps.keyStore = new key_stores_1.MergeKeyStore([config.deps.keyStore, keyPathStore]);
                 console.log(`Loaded master account ${keyFile.account_id} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
@@ -10713,6 +10716,7 @@ var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 module.exports = basex(ALPHABET)
 
 },{"base-x":33}],39:[function(require,module,exports){
+(function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -12491,7 +12495,8 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":34,"ieee754":56}],40:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"base64-js":34,"buffer":39,"ieee754":56}],40:[function(require,module,exports){
 require(".").check("es5");
 },{".":41}],41:[function(require,module,exports){
 require("./lib/definitions");

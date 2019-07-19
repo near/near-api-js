@@ -18,7 +18,7 @@ Account creator provides interface to specific implementation to acutally create
 
 ▸ **createAccount**(newAccountId: *`string`*, publicKey: *`string`*): `Promise`<`void`>
 
-*Defined in [account_creator.ts:10](https://github.com/nearprotocol/nearlib/blob/7062a82/src.ts/account_creator.ts#L10)*
+*Defined in [account_creator.ts:10](https://github.com/nearprotocol/nearlib/blob/7050e25/src.ts/account_creator.ts#L10)*
 
 **Parameters:**
 
