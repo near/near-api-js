@@ -22,7 +22,7 @@ export class Near {
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
-            this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), config.initialBalance || new BN(1000 * 1000 * 1000 * 1000));
+            this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), new BN(config.initialBalance) || new BN(1000 * 1000 * 1000 * 1000));
         } else if (config.helperUrl) {
             this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);
         } else {
