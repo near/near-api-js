@@ -2,7 +2,7 @@
 
 import BN from 'bn.js';
 import { sendMoney, createAccount, signTransaction, deployContract,
-    bignumHex2Dec, addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
+    addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
 import { base_encode } from './utils/serialize';
@@ -53,8 +53,8 @@ export class Account {
     async fetchState(): Promise<void> {
         const state = await this.connection.provider.query(`account/${this.accountId}`, '');
         this._state = state;
-        this._state.amount = bignumHex2Dec(state.amount);
-        this._state.stake = bignumHex2Dec(state.stake);
+        this._state.amount = state.amount;
+        this._state.stake = state.stake;
     }
 
     async state(): Promise<AccountState> {
@@ -185,7 +185,7 @@ export class Account {
         Object.keys(response).forEach((key) => {
             result.authorizedApps.push({
                 contractId: response[key][1].contract_id,
-                amount: bignumHex2Dec(response[key][1].amount),
+                amount: response[key][1].amount,
                 publicKey: base_encode(response[key][0]),
             });
         });

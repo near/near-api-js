@@ -20,7 +20,7 @@
 
 **● LOCAL_STORAGE_KEY_PREFIX**: *"nearlib:keystore:"* = "nearlib:keystore:"
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:6](https://github.com/nearprotocol/nearlib/blob/7880ebf/src.ts/key_stores/browser_local_storage_key_store.ts#L6)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:6](https://github.com/nearprotocol/nearlib/blob/7062a82/src.ts/key_stores/browser_local_storage_key_store.ts#L6)*
 
 ___
 
