@@ -5,14 +5,14 @@ Near lib is a javascript library for development of dapps on near.
 ## Install dependencies
 
 ```
-npm install
+yarn
 ```
 
 ## Development
 
 You can run continues build with next command:
 ```
-npm run build -- -w
+yarn build -- -w
 ```
 
 ## Publish
@@ -20,14 +20,14 @@ npm run build -- -w
 Prepare `dist` version by running:
 
 ```
-npm run dist
+yarn dist
 ```
 
 ## Integration Test
 
 Start the node by following instructions from nearcore/README.md, then
 ```
-npm test
+yarn test
 ```
 Contract "hello.wasm" source code location: <https://github.com/nearprotocol/nearcore/tree/master/tests/hello>
 

@@ -14,15 +14,15 @@ test:
     - gcloud
   script:
     - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
-    - npm install
-    - npm run build
+    - yarn
+    - yarn build
     - (cd nearcore && ./scripts/build_wasm.sh)
-    - npm test
+    - yarn test
 
 lint:
   stage: test
   tags:
     - gcloud
   script:
-    - npm install
-    - npm run lint
+    - yarn
+    - yarn lint

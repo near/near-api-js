@@ -8,7 +8,7 @@ Install dependencies
 --------------------
 
 ```
-npm install
+yarn
 ```
 
 Development
@@ -17,7 +17,7 @@ Development
 You can run continues build with next command:
 
 ```
-npm run build -- -w
+yarn build -- -w
 ```
 
 Publish
@@ -26,7 +26,7 @@ Publish
 Prepare `dist` version by running:
 
 ```
-npm run dist
+yarn dist
 ```
 
 Integration Test
@@ -35,7 +35,7 @@ Integration Test
 Start the node by following instructions from nearcore/README.md, then
 
 ```
-npm test
+yarn test
 ```
 
 Contract "hello.wasm" source code location: [https://github.com/nearprotocol/nearcore/tree/master/tests/hello](https://github.com/nearprotocol/nearcore/tree/master/tests/hello)

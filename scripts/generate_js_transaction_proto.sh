@@ -3,7 +3,7 @@ set -ex
 
 NEAR_PROTOS_DIR="${NEAR_PROTOS_DIR:-../nearcore/core/protos/protos}"
 NEARLIB_DIR="$(npm prefix)"
-PROTOC_GEN_TS_PATH="$(npm bin)/protoc-gen-ts"
+PROTOC_GEN_TS_PATH="$(yarn bin)/protoc-gen-ts"
 
 pbjs -t static-module \
 	-w commonjs \
