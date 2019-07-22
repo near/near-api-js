@@ -66,3 +66,13 @@ test('view account details after adding access keys', async() => {
     };
     expect(details.authorizedApps).toEqual(jasmine.arrayContaining(expectedResult.authorizedApps));
 });
+
+test('loading account after adding a full key', async() => {
+    const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
+    await workingAccount.addKey(keyPair.getPublicKey(), '', '', '', 1000000000);
+
+    await workingAccount.fetchState();
+
+    expect(workingAccount._state.public_keys.length).toBe(2);
+    expect(workingAccount._state.public_keys[1]).toBe(keyPair.getPublicKey());
+});
