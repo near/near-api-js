@@ -25,7 +25,7 @@ export declare class Account {
     sendMoney(receiver: string, amount: BN): Promise<FinalTransactionResult>;
     createAccount(newAccountId: string, publicKey: string, amount: BN): Promise<FinalTransactionResult>;
     deployContract(data: Uint8Array): Promise<FinalTransactionResult>;
-    functionCall(contractId: string, methodName: string, args: any): Promise<FinalTransactionResult>;
+    functionCall(contractId: string, methodName: string, args: any, amount?: BN): Promise<FinalTransactionResult>;
     addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): Promise<FinalTransactionResult>;
     deleteKey(publicKey: string): Promise<FinalTransactionResult>;
     stake(publicKey: string, amount: BN): Promise<FinalTransactionResult>;
