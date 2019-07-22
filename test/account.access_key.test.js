@@ -74,5 +74,5 @@ test('loading account after adding a full key', async() => {
     await workingAccount.fetchState();
 
     expect(workingAccount._state.public_keys.length).toBe(2);
-    expect(workingAccount._state.public_keys[1]).toBe(keyPair.getPublicKey());
+    expect(workingAccount._state.public_keys.includes(keyPair.getPublicKey())).toBe(true);
 });
