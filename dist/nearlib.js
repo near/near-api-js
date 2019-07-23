@@ -5742,6 +5742,9 @@ class JsonRpcProvider extends provider_1.Provider {
             chainId: 'test'
         };
     }
+    async status() {
+        return this.sendJsonRpc('status', []);
+    }
     async sendTransaction(signedTransaction) {
         const bytes = protos_1.SignedTransaction.encode(signedTransaction).finish();
         return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
@@ -5755,6 +5758,9 @@ class JsonRpcProvider extends provider_1.Provider {
             throw new Error(`Quering ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
         }
         return result;
+    }
+    async block(height) {
+        return this.sendJsonRpc('block', [height]);
     }
     async sendJsonRpc(method, params) {
         const request = {
@@ -6151,7 +6157,7 @@ class WalletAccount {
         const accessKey = utils_1.KeyPair.fromRandom('ed25519');
         newUrl.searchParams.set('public_key', accessKey.getPublicKey());
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
-        window.location.replace(newUrl.toString());
+        window.location.assign(newUrl.toString());
     }
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.

@@ -14,7 +14,7 @@
 
 ⊕ **new JsonRpcProvider**(url?: *`string`*, network?: *[Network](../interfaces/_utils_network_.network.md)*): [JsonRpcProvider](_providers_json_rpc_provider_.jsonrpcprovider.md)
 
-*Defined in [providers/json-rpc-provider.ts:13](https://github.com/nearprotocol/nearlib/blob/8de97a4/src.ts/providers/json-rpc-provider.ts#L13)*
+*Defined in [providers/json-rpc-provider.ts:13](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L13)*
 
 **Parameters:**
 
@@ -35,12 +35,31 @@ ___
 
 **● connection**: *[ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md)*
 
-*Defined in [providers/json-rpc-provider.ts:13](https://github.com/nearprotocol/nearlib/blob/8de97a4/src.ts/providers/json-rpc-provider.ts#L13)*
+*Defined in [providers/json-rpc-provider.ts:13](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L13)*
 
 ___
 
 # Methods
 
+<a id="block"></a>
+
+##  block
+
+▸ **block**(height: *`number`*): `Promise`<[BlockResult](../interfaces/_providers_provider_.blockresult.md)>
+
+*Overrides [Provider](_providers_provider_.provider.md).[block](_providers_provider_.provider.md#block)*
+
+*Defined in [providers/json-rpc-provider.ts:50](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L50)*
+
+**Parameters:**
+
+| Name | Type |
+| ------ | ------ |
+| height | `number` |
+
+**Returns:** `Promise`<[BlockResult](../interfaces/_providers_provider_.blockresult.md)>
+
+___
 <a id="getnetwork"></a>
 
 ##  getNetwork
@@ -49,7 +68,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[getNetwork](_providers_provider_.provider.md#getnetwork)*
 
-*Defined in [providers/json-rpc-provider.ts:22](https://github.com/nearprotocol/nearlib/blob/8de97a4/src.ts/providers/json-rpc-provider.ts#L22)*
+*Defined in [providers/json-rpc-provider.ts:22](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L22)*
 
 **Returns:** `Promise`<[Network](../interfaces/_utils_network_.network.md)>
 
@@ -62,7 +81,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[query](_providers_provider_.provider.md#query)*
 
-*Defined in [providers/json-rpc-provider.ts:38](https://github.com/nearprotocol/nearlib/blob/8de97a4/src.ts/providers/json-rpc-provider.ts#L38)*
+*Defined in [providers/json-rpc-provider.ts:42](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L42)*
 
 **Parameters:**
 
@@ -80,7 +99,7 @@ ___
 
 ▸ **sendJsonRpc**(method: *`string`*, params: *`any`[]*): `Promise`<`any`>
 
-*Defined in [providers/json-rpc-provider.ts:46](https://github.com/nearprotocol/nearlib/blob/8de97a4/src.ts/providers/json-rpc-provider.ts#L46)*
+*Defined in [providers/json-rpc-provider.ts:54](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L54)*
 
 **Parameters:**
 
@@ -100,7 +119,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[sendTransaction](_providers_provider_.provider.md#sendtransaction)*
 
-*Defined in [providers/json-rpc-provider.ts:29](https://github.com/nearprotocol/nearlib/blob/8de97a4/src.ts/providers/json-rpc-provider.ts#L29)*
+*Defined in [providers/json-rpc-provider.ts:33](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L33)*
 
 **Parameters:**
 
@@ -111,6 +130,19 @@ ___
 **Returns:** `Promise`<[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)>
 
 ___
+<a id="status"></a>
+
+##  status
+
+▸ **status**(): `Promise`<[NodeStatusResult](../interfaces/_providers_provider_.nodestatusresult.md)>
+
+*Overrides [Provider](_providers_provider_.provider.md).[status](_providers_provider_.provider.md#status)*
+
+*Defined in [providers/json-rpc-provider.ts:29](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L29)*
+
+**Returns:** `Promise`<[NodeStatusResult](../interfaces/_providers_provider_.nodestatusresult.md)>
+
+___
 <a id="txstatus"></a>
 
 ##  txStatus
@@ -119,7 +151,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[txStatus](_providers_provider_.provider.md#txstatus)*
 
-*Defined in [providers/json-rpc-provider.ts:34](https://github.com/nearprotocol/nearlib/blob/8de97a4/src.ts/providers/json-rpc-provider.ts#L34)*
+*Defined in [providers/json-rpc-provider.ts:38](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L38)*
 
 **Parameters:**
 
