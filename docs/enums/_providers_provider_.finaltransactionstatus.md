@@ -19,7 +19,7 @@
 
 **Completed**:  = "Completed"
 
-*Defined in [providers/provider.ts:25](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L25)*
+*Defined in [providers/provider.ts:25](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L25)*
 
 ___
 <a id="failed"></a>
@@ -28,7 +28,7 @@ ___
 
 **Failed**:  = "Failed"
 
-*Defined in [providers/provider.ts:24](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L24)*
+*Defined in [providers/provider.ts:24](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L24)*
 
 ___
 <a id="started"></a>
@@ -37,7 +37,7 @@ ___
 
 **Started**:  = "Started"
 
-*Defined in [providers/provider.ts:23](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L23)*
+*Defined in [providers/provider.ts:23](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L23)*
 
 ___
 <a id="unknown"></a>
@@ -46,7 +46,7 @@ ___
 
 **Unknown**:  = "Unknown"
 
-*Defined in [providers/provider.ts:22](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L22)*
+*Defined in [providers/provider.ts:22](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L22)*
 
 ___
 

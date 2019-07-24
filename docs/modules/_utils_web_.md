@@ -24,7 +24,7 @@
 
 **● fetch**: *`any`* =  (typeof window === 'undefined' || window.name === 'nodejs') ? require('node-fetch') : window.fetch
 
-*Defined in [utils/web.ts:14](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/web.ts#L14)*
+*Defined in [utils/web.ts:14](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/web.ts#L14)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 ▸ **fetchJson**(connection: *`string` \| [ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md)*, json?: *`string`*): `Promise`<`any`>
 
-*Defined in [utils/web.ts:16](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/web.ts#L16)*
+*Defined in [utils/web.ts:16](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/web.ts#L16)*
 
 **Parameters:**
 

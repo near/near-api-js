@@ -12,7 +12,7 @@
 
 **● _defaultProvider**: *`function`*
 
-*Defined in [utils/network.ts:6](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/network.ts#L6)*
+*Defined in [utils/network.ts:6](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/network.ts#L6)*
 
 #### Type declaration
 ▸(providers: *`any`*): `any`
@@ -32,7 +32,7 @@ ___
 
 **● chainId**: *`string`*
 
-*Defined in [utils/network.ts:5](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/network.ts#L5)*
+*Defined in [utils/network.ts:5](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/network.ts#L5)*
 
 ___
 <a id="name"></a>
@@ -41,7 +41,7 @@ ___
 
 **● name**: *`string`*
 
-*Defined in [utils/network.ts:4](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/network.ts#L4)*
+*Defined in [utils/network.ts:4](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/network.ts#L4)*
 
 ___
 

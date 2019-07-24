@@ -35,7 +35,7 @@
 
 ▸ **getTransactionLastResult**(txResult: *[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)*): `any`
 
-*Defined in [providers/provider.ts:78](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L78)*
+*Defined in [providers/provider.ts:78](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L78)*
 
 **Parameters:**
 

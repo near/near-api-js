@@ -10722,7 +10722,6 @@ var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 module.exports = basex(ALPHABET)
 
 },{"base-x":33}],39:[function(require,module,exports){
-(function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -12501,8 +12500,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-}).call(this,require("buffer").Buffer)
-},{"base64-js":34,"buffer":39,"ieee754":56}],40:[function(require,module,exports){
+},{"base64-js":34,"ieee754":56}],40:[function(require,module,exports){
 require(".").check("es5");
 },{".":41}],41:[function(require,module,exports){
 require("./lib/definitions");

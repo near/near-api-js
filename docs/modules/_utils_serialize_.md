@@ -8,7 +8,7 @@
 
 ▸ **base_decode**(value: *`string`*): `Uint8Array`
 
-*Defined in [utils/serialize.ts:12](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/serialize.ts#L12)*
+*Defined in [utils/serialize.ts:12](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/serialize.ts#L12)*
 
 **Parameters:**
 
@@ -25,7 +25,7 @@ ___
 
 ▸ **base_encode**(value: *`Uint8Array` \| `string`*): `string`
 
-*Defined in [utils/serialize.ts:5](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/serialize.ts#L5)*
+*Defined in [utils/serialize.ts:5](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/serialize.ts#L5)*
 
 **Parameters:**
 

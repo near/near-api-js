@@ -12,7 +12,7 @@
 
 **● hash**: *`string`*
 
-*Defined in [providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L29)*
+*Defined in [providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L29)*
 
 ___
 <a id="lines"></a>
@@ -21,7 +21,7 @@ ___
 
 **● lines**: *`string`[]*
 
-*Defined in [providers/provider.ts:30](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L30)*
+*Defined in [providers/provider.ts:30](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L30)*
 
 ___
 <a id="receipts"></a>
@@ -30,7 +30,7 @@ ___
 
 **● receipts**: *`number`[][]*
 
-*Defined in [providers/provider.ts:31](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L31)*
+*Defined in [providers/provider.ts:31](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L31)*
 
 ___
 <a id="result"></a>
@@ -39,7 +39,7 @@ ___
 
 **● result**: *`Uint8Array`*
 
-*Defined in [providers/provider.ts:32](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L32)*
+*Defined in [providers/provider.ts:32](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L32)*
 
 ___
 

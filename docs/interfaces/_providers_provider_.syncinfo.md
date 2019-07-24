@@ -12,7 +12,7 @@
 
 **● latest_block_hash**: *`string`*
 
-*Defined in [providers/provider.ts:7](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L7)*
+*Defined in [providers/provider.ts:7](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L7)*
 
 ___
 <a id="latest_block_height"></a>
@@ -21,7 +21,7 @@ ___
 
 **● latest_block_height**: *`number`*
 
-*Defined in [providers/provider.ts:8](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L8)*
+*Defined in [providers/provider.ts:8](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L8)*
 
 ___
 <a id="latest_block_time"></a>
@@ -30,7 +30,7 @@ ___
 
 **● latest_block_time**: *`string`*
 
-*Defined in [providers/provider.ts:9](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L9)*
+*Defined in [providers/provider.ts:9](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L9)*
 
 ___
 <a id="latest_state_root"></a>
@@ -39,7 +39,7 @@ ___
 
 **● latest_state_root**: *`string`*
 
-*Defined in [providers/provider.ts:10](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L10)*
+*Defined in [providers/provider.ts:10](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L10)*
 
 ___
 <a id="syncing"></a>
@@ -48,7 +48,7 @@ ___
 
 **● syncing**: *`boolean`*
 
-*Defined in [providers/provider.ts:11](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L11)*
+*Defined in [providers/provider.ts:11](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L11)*
 
 ___
 

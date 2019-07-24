@@ -16,7 +16,7 @@ Signs using in memory key store.
 
 ⊕ **new InMemorySigner**(keyStore: *[KeyStore](_key_stores_keystore_.keystore.md)*): [InMemorySigner](_signer_.inmemorysigner.md)
 
-*Defined in [signer.ts:47](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/signer.ts#L47)*
+*Defined in [signer.ts:47](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/signer.ts#L47)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● keyStore**: *[KeyStore](_key_stores_keystore_.keystore.md)*
 
-*Defined in [signer.ts:47](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/signer.ts#L47)*
+*Defined in [signer.ts:47](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/signer.ts#L47)*
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[createKey](_signer_.signer.md#createkey)*
 
-*Defined in [signer.ts:54](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/signer.ts#L54)*
+*Defined in [signer.ts:54](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/signer.ts#L54)*
 
 **Parameters:**
 
@@ -70,7 +70,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[getPublicKey](_signer_.signer.md#getpublickey)*
 
-*Defined in [signer.ts:60](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/signer.ts#L60)*
+*Defined in [signer.ts:60](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/signer.ts#L60)*
 
 **Parameters:**
 
@@ -90,7 +90,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[signHash](_signer_.signer.md#signhash)*
 
-*Defined in [signer.ts:65](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/signer.ts#L65)*
+*Defined in [signer.ts:65](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/signer.ts#L65)*
 
 **Parameters:**
 
@@ -111,7 +111,7 @@ ___
 
 *Inherited from [Signer](_signer_.signer.md).[signMessage](_signer_.signer.md#signmessage)*
 
-*Defined in [signer.ts:38](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/signer.ts#L38)*
+*Defined in [signer.ts:38](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/signer.ts#L38)*
 
 Signs given message, by first hashing with sha256.
 
