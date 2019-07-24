@@ -31,7 +31,7 @@
 
 **● DEFAULT_FUNC_CALL_AMOUNT**: *`BN`* =  new BN(1000000000)
 
-*Defined in [account.ts:13](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L13)*
+*Defined in [account.ts:13](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L13)*
 
 ___
 <a id="tx_status_retry_number"></a>
@@ -40,7 +40,7 @@ ___
 
 **● TX_STATUS_RETRY_NUMBER**: *`10`* = 10
 
-*Defined in [account.ts:16](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L16)*
+*Defined in [account.ts:16](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L16)*
 
 ___
 <a id="tx_status_retry_wait"></a>
@@ -49,7 +49,7 @@ ___
 
 **● TX_STATUS_RETRY_WAIT**: *`500`* = 500
 
-*Defined in [account.ts:19](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L19)*
+*Defined in [account.ts:19](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L19)*
 
 ___
 <a id="tx_status_retry_wait_backoff"></a>
@@ -58,7 +58,7 @@ ___
 
 **● TX_STATUS_RETRY_WAIT_BACKOFF**: *`1.5`* = 1.5
 
-*Defined in [account.ts:22](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L22)*
+*Defined in [account.ts:22](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L22)*
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 ▸ **sleep**(millis: *`number`*): `Promise`<`any`>
 
-*Defined in [account.ts:25](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L25)*
+*Defined in [account.ts:25](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L25)*
 
 **Parameters:**
 

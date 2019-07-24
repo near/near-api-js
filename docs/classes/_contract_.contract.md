@@ -12,7 +12,7 @@
 
 ⊕ **new Contract**(account: *[Account](_account_.account.md)*, contractId: *`string`*, options: *`object`*): [Contract](_contract_.contract.md)
 
-*Defined in [contract.ts:7](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/contract.ts#L7)*
+*Defined in [contract.ts:7](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/contract.ts#L7)*
 
 **Parameters:**
 
@@ -39,7 +39,7 @@ ___
 
 **● account**: *[Account](_account_.account.md)*
 
-*Defined in [contract.ts:6](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/contract.ts#L6)*
+*Defined in [contract.ts:6](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/contract.ts#L6)*
 
 ___
 <a id="contractid"></a>
@@ -48,7 +48,7 @@ ___
 
 **● contractId**: *`string`*
 
-*Defined in [contract.ts:7](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/contract.ts#L7)*
+*Defined in [contract.ts:7](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/contract.ts#L7)*
 
 ___
 

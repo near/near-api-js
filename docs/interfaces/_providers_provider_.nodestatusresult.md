@@ -12,7 +12,7 @@
 
 **● chain_id**: *`string`*
 
-*Defined in [providers/provider.ts:15](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L15)*
+*Defined in [providers/provider.ts:15](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L15)*
 
 ___
 <a id="rpc_addr"></a>
@@ -21,7 +21,7 @@ ___
 
 **● rpc_addr**: *`string`*
 
-*Defined in [providers/provider.ts:16](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L16)*
+*Defined in [providers/provider.ts:16](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L16)*
 
 ___
 <a id="sync_info"></a>
@@ -30,7 +30,7 @@ ___
 
 **● sync_info**: *[SyncInfo](_providers_provider_.syncinfo.md)*
 
-*Defined in [providers/provider.ts:17](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L17)*
+*Defined in [providers/provider.ts:17](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L17)*
 
 ___
 <a id="validators"></a>
@@ -39,7 +39,7 @@ ___
 
 **● validators**: *`string`[]*
 
-*Defined in [providers/provider.ts:18](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L18)*
+*Defined in [providers/provider.ts:18](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/providers/provider.ts#L18)*
 
 ___
 

@@ -14,7 +14,7 @@
 
 ⊕ **new UrlAccountCreator**(connection: *[Connection](_connection_.connection.md)*, helperUrl: *`string`*): [UrlAccountCreator](_account_creator_.urlaccountcreator.md)
 
-*Defined in [account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account_creator.ts#L31)*
+*Defined in [account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account_creator.ts#L31)*
 
 **Parameters:**
 
@@ -35,7 +35,7 @@ ___
 
 **● connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [account_creator.ts:30](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account_creator.ts#L30)*
+*Defined in [account_creator.ts:30](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account_creator.ts#L30)*
 
 ___
 <a id="helperconnection"></a>
@@ -44,7 +44,7 @@ ___
 
 **● helperConnection**: *[ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md)*
 
-*Defined in [account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account_creator.ts#L31)*
+*Defined in [account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account_creator.ts#L31)*
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 *Overrides [AccountCreator](_account_creator_.accountcreator.md).[createAccount](_account_creator_.accountcreator.md#createaccount)*
 
-*Defined in [account_creator.ts:39](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account_creator.ts#L39)*
+*Defined in [account_creator.ts:39](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account_creator.ts#L39)*
 
 **Parameters:**
 

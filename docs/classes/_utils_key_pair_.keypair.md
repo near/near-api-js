@@ -14,7 +14,7 @@
 
 ▸ **getPublicKey**(): `string`
 
-*Defined in [utils/key_pair.ts:17](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/key_pair.ts#L17)*
+*Defined in [utils/key_pair.ts:17](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/key_pair.ts#L17)*
 
 **Returns:** `string`
 
@@ -25,7 +25,7 @@ ___
 
 ▸ **sign**(message: *`Uint8Array`*): [Signature](../interfaces/_utils_key_pair_.signature.md)
 
-*Defined in [utils/key_pair.ts:14](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/key_pair.ts#L14)*
+*Defined in [utils/key_pair.ts:14](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/key_pair.ts#L14)*
 
 **Parameters:**
 
@@ -42,7 +42,7 @@ ___
 
 ▸ **toString**(): `string`
 
-*Defined in [utils/key_pair.ts:16](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/key_pair.ts#L16)*
+*Defined in [utils/key_pair.ts:16](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/key_pair.ts#L16)*
 
 **Returns:** `string`
 
@@ -53,7 +53,7 @@ ___
 
 ▸ **verify**(message: *`Uint8Array`*, signature: *`Uint8Array`*): `boolean`
 
-*Defined in [utils/key_pair.ts:15](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/key_pair.ts#L15)*
+*Defined in [utils/key_pair.ts:15](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/key_pair.ts#L15)*
 
 **Parameters:**
 
@@ -71,7 +71,7 @@ ___
 
 ▸ **fromRandom**(curve: *`string`*): [KeyPair](_utils_key_pair_.keypair.md)
 
-*Defined in [utils/key_pair.ts:19](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/key_pair.ts#L19)*
+*Defined in [utils/key_pair.ts:19](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/key_pair.ts#L19)*
 
 **Parameters:**
 
@@ -88,7 +88,7 @@ ___
 
 ▸ **fromString**(encodedKey: *`string`*): [KeyPair](_utils_key_pair_.keypair.md)
 
-*Defined in [utils/key_pair.ts:26](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/utils/key_pair.ts#L26)*
+*Defined in [utils/key_pair.ts:26](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/utils/key_pair.ts#L26)*
 
 **Parameters:**
 

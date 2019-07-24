@@ -33,20 +33,20 @@ export interface TotalWeight {
     num: number;
 }
 export interface BlockHeader {
-    approval_mask: number[];
-    approval_sigs: number[];
-    hash: number[];
+    approval_mask: string;
+    approval_sigs: string;
+    hash: string;
     height: number;
-    prev_hash: number[];
-    prev_state_root: number[];
+    prev_hash: string;
+    prev_state_root: string;
     timestamp: number;
     total_weight: TotalWeight;
-    tx_root: number[];
+    tx_root: string;
 }
 export interface Transaction {
-    hash: number[];
-    public_key: number[];
-    signature: number[];
+    hash: string;
+    public_key: string;
+    signature: string;
     body: any;
 }
 export interface BlockResult {

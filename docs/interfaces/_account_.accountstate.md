@@ -12,7 +12,7 @@
 
 **● account_id**: *`string`*
 
-*Defined in [account.ts:30](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L30)*
+*Defined in [account.ts:30](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L30)*
 
 ___
 <a id="amount"></a>
@@ -21,7 +21,7 @@ ___
 
 **● amount**: *`string`*
 
-*Defined in [account.ts:32](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L32)*
+*Defined in [account.ts:32](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L32)*
 
 ___
 <a id="code_hash"></a>
@@ -30,7 +30,7 @@ ___
 
 **● code_hash**: *`string`*
 
-*Defined in [account.ts:35](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L35)*
+*Defined in [account.ts:35](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L35)*
 
 ___
 <a id="nonce"></a>
@@ -39,7 +39,7 @@ ___
 
 **● nonce**: *`number`*
 
-*Defined in [account.ts:31](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L31)*
+*Defined in [account.ts:31](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L31)*
 
 ___
 <a id="public_keys"></a>
@@ -48,7 +48,7 @@ ___
 
 **● public_keys**: *`Uint8Array`[]*
 
-*Defined in [account.ts:34](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L34)*
+*Defined in [account.ts:34](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L34)*
 
 ___
 <a id="stake"></a>
@@ -57,7 +57,7 @@ ___
 
 **● stake**: *`string`*
 
-*Defined in [account.ts:33](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/account.ts#L33)*
+*Defined in [account.ts:33](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/account.ts#L33)*
 
 ___
 
