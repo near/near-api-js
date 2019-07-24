@@ -143,13 +143,13 @@ export class Account {
         return this.signAndSendTransaction(deployContract(this._state.nonce, this.accountId, data));
     }
 
-    async functionCall(contractId: string, methodName: string, args: any): Promise<FinalTransactionResult> {
+    async functionCall(contractId: string, methodName: string, args: any, amount?: BN): Promise<FinalTransactionResult> {
         if (!args) {
             args = {};
         }
         await this.ready;
         this._state.nonce++;
-        return this.signAndSendTransaction(functionCall(this._state.nonce, this.accountId, contractId, methodName, Buffer.from(JSON.stringify(args)), DEFAULT_FUNC_CALL_AMOUNT));
+        return this.signAndSendTransaction(functionCall(this._state.nonce, this.accountId, contractId, methodName, Buffer.from(JSON.stringify(args)), amount || DEFAULT_FUNC_CALL_AMOUNT));
     }
 
     async addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): Promise<FinalTransactionResult> {

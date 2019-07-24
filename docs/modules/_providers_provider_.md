@@ -12,7 +12,13 @@
 
 ### Interfaces
 
+* [BlockHeader](../interfaces/_providers_provider_.blockheader.md)
+* [BlockResult](../interfaces/_providers_provider_.blockresult.md)
 * [FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)
+* [NodeStatusResult](../interfaces/_providers_provider_.nodestatusresult.md)
+* [SyncInfo](../interfaces/_providers_provider_.syncinfo.md)
+* [TotalWeight](../interfaces/_providers_provider_.totalweight.md)
+* [Transaction](../interfaces/_providers_provider_.transaction.md)
 * [TransactionLog](../interfaces/_providers_provider_.transactionlog.md)
 
 ### Functions
@@ -29,7 +35,7 @@
 
 ▸ **getTransactionLastResult**(txResult: *[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)*): `any`
 
-*Defined in [providers/provider.ts:33](https://github.com/nearprotocol/nearlib/blob/7050e25/src.ts/providers/provider.ts#L33)*
+*Defined in [providers/provider.ts:78](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/provider.ts#L78)*
 
 **Parameters:**
 

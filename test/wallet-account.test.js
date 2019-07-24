@@ -36,7 +36,7 @@ it('can request sign in', async () => {
     windowSpy.mockImplementation(() => ({
         location: {
             href: 'http://example.com/location',
-            replace(url) {
+            assign(url) {
                 newUrl = url;
             }
         }
