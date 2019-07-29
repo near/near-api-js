@@ -23,7 +23,7 @@ module.exports = function getConfig(env) {
     case 'ci':
         return {
             networkId: 'shared-test',
-            nodeUrl: 'http://34.94.13.241:3030',
+            nodeUrl: 'http://shared-test.nearprotocol.com:3030',
             masterAccount: 'test.near',
         };
     default:
