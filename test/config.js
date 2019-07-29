@@ -11,7 +11,7 @@ module.exports = function getConfig(env) {
         return {
             networkId: 'local',
             nodeUrl: 'http://localhost:3030',
-            keyPath: '~/.near/validator_key.json',
+            keyPath: `${process.env.HOME}/.near/validator_key.json`,
         };
     case 'test':
         return {
