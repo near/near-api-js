@@ -6106,6 +6106,7 @@ class WalletAccount {
     constructor(near, appKeyPrefix) {
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
+        this._walletUrlSuffix = near.config.walletUrlSuffix || LOGIN_WALLET_URL_SUFFIX;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = near.connection.signer.keyStore;
@@ -6148,7 +6149,7 @@ class WalletAccount {
             return Promise.resolve();
         }
         const currentUrl = new URL(window.location.href);
-        const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
+        const newUrl = new URL(this._walletBaseUrl + this._walletUrlSuffix);
         newUrl.searchParams.set('title', title);
         newUrl.searchParams.set('contract_id', contractId);
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
@@ -10722,7 +10723,6 @@ var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 module.exports = basex(ALPHABET)
 
 },{"base-x":33}],39:[function(require,module,exports){
-(function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -12501,8 +12501,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-}).call(this,require("buffer").Buffer)
-},{"base64-js":34,"buffer":39,"ieee754":56}],40:[function(require,module,exports){
+},{"base64-js":34,"ieee754":56}],40:[function(require,module,exports){
 require(".").check("es5");
 },{".":41}],41:[function(require,module,exports){
 require("./lib/definitions");

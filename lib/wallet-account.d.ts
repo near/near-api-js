@@ -2,6 +2,7 @@ import { Near } from './near';
 import { KeyStore } from './key_stores';
 export declare class WalletAccount {
     _walletBaseUrl: string;
+    _walletUrlSuffix: string;
     _authDataKey: string;
     _keyStore: KeyStore;
     _authData: any;

@@ -20,7 +20,7 @@
 
 **● _nextId**: *`number`* = 123
 
-*Defined in [providers/json-rpc-provider.ts:10](https://github.com/nearprotocol/nearlib/blob/19cfbbe/src.ts/providers/json-rpc-provider.ts#L10)*
+*Defined in [providers/json-rpc-provider.ts:10](https://github.com/nearprotocol/nearlib/blob/e80e115/src.ts/providers/json-rpc-provider.ts#L10)*
 
 ___
 

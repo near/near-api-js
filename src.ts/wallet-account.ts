@@ -12,6 +12,7 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
 
 export class WalletAccount {
     _walletBaseUrl: string;
+    _walletUrlSuffix: string;
     _authDataKey: string;
     _keyStore: KeyStore;
     _authData: any;
@@ -20,6 +21,7 @@ export class WalletAccount {
     constructor(near: Near, appKeyPrefix: string | null) {
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
+        this._walletUrlSuffix = near.config.walletUrlSuffix || LOGIN_WALLET_URL_SUFFIX;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
@@ -66,7 +68,7 @@ export class WalletAccount {
         }
 
         const currentUrl = new URL(window.location.href);
-        const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
+        const newUrl = new URL(this._walletBaseUrl + this._walletUrlSuffix);
         newUrl.searchParams.set('title', title);
         newUrl.searchParams.set('contract_id', contractId);
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
