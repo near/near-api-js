@@ -16,6 +16,7 @@ const bn_js_1 = __importDefault(require("bn.js"));
 const transaction_1 = require("./transaction");
 const provider_1 = require("./providers/provider");
 const serialize_1 = require("./utils/serialize");
+// import { restElement } from '@babel/types';
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
@@ -95,6 +96,7 @@ class Account {
                 throw new Error(`Transaction ${result.logs[0].hash} failed. ${errorMessage}`);
             }
         }
+        result.body = provider_1.getTransactionLastResult(result);
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.
         return result;
@@ -10722,6 +10724,7 @@ var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 module.exports = basex(ALPHABET)
 
 },{"base-x":33}],39:[function(require,module,exports){
+(function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -12500,7 +12503,8 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":34,"ieee754":56}],40:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"base64-js":34,"buffer":39,"ieee754":56}],40:[function(require,module,exports){
 require(".").check("es5");
 },{".":41}],41:[function(require,module,exports){
 require("./lib/definitions");

@@ -35,6 +35,7 @@ export interface TransactionLog {
 export interface FinalTransactionResult {
     status: FinalTransactionStatus;
     logs: TransactionLog[];
+    body: any;
 }
 
 export interface TotalWeight {

@@ -20,7 +20,7 @@
 
 ▸ **connect**(config: *`any`*): `Promise`<[Near](../classes/_near_.near.md)>
 
-*Defined in [near.ts:84](https://github.com/nearprotocol/nearlib/blob/92b693c/src.ts/near.ts#L84)*
+*Defined in [near.ts:84](https://github.com/nearprotocol/nearlib/blob/7c6612b/src.ts/near.ts#L84)*
 
 **Parameters:**
 
