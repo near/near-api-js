@@ -1,875 +1,995 @@
 import * as $protobuf from "protobufjs";
-/** Properties of a CreateAccountTransaction. */
-export interface ICreateAccountTransaction {
+/** Properties of an Action. */
+export interface IAction {
 
-    /** CreateAccountTransaction nonce */
-    nonce?: (number|Long|null);
+    /** Action createAccount */
+    createAccount?: (Action.ICreateAccount|null);
 
-    /** CreateAccountTransaction originator */
-    originator?: (string|null);
+    /** Action deployContract */
+    deployContract?: (Action.IDeployContract|null);
 
-    /** CreateAccountTransaction newAccountId */
-    newAccountId?: (string|null);
+    /** Action functionCall */
+    functionCall?: (Action.IFunctionCall|null);
 
-    /** CreateAccountTransaction amount */
-    amount?: (IUint128|null);
+    /** Action transfer */
+    transfer?: (Action.ITransfer|null);
 
-    /** CreateAccountTransaction publicKey */
-    publicKey?: (Uint8Array|null);
+    /** Action stake */
+    stake?: (Action.IStake|null);
+
+    /** Action addKey */
+    addKey?: (Action.IAddKey|null);
+
+    /** Action deleteKey */
+    deleteKey?: (Action.IDeleteKey|null);
+
+    /** Action deleteAccount */
+    deleteAccount?: (Action.IDeleteAccount|null);
 }
 
-/** Represents a CreateAccountTransaction. */
-export class CreateAccountTransaction implements ICreateAccountTransaction {
+/** Represents an Action. */
+export class Action implements IAction {
 
     /**
-     * Constructs a new CreateAccountTransaction.
+     * Constructs a new Action.
      * @param [properties] Properties to set
      */
-    constructor(properties?: ICreateAccountTransaction);
+    constructor(properties?: IAction);
 
-    /** CreateAccountTransaction nonce. */
-    public nonce: (number|Long);
+    /** Action createAccount. */
+    public createAccount?: (Action.ICreateAccount|null);
 
-    /** CreateAccountTransaction originator. */
-    public originator: string;
+    /** Action deployContract. */
+    public deployContract?: (Action.IDeployContract|null);
 
-    /** CreateAccountTransaction newAccountId. */
-    public newAccountId: string;
+    /** Action functionCall. */
+    public functionCall?: (Action.IFunctionCall|null);
 
-    /** CreateAccountTransaction amount. */
-    public amount?: (IUint128|null);
+    /** Action transfer. */
+    public transfer?: (Action.ITransfer|null);
 
-    /** CreateAccountTransaction publicKey. */
-    public publicKey: Uint8Array;
+    /** Action stake. */
+    public stake?: (Action.IStake|null);
+
+    /** Action addKey. */
+    public addKey?: (Action.IAddKey|null);
+
+    /** Action deleteKey. */
+    public deleteKey?: (Action.IDeleteKey|null);
+
+    /** Action deleteAccount. */
+    public deleteAccount?: (Action.IDeleteAccount|null);
+
+    /** Action action. */
+    public action?: ("createAccount"|"deployContract"|"functionCall"|"transfer"|"stake"|"addKey"|"deleteKey"|"deleteAccount");
 
     /**
-     * Creates a new CreateAccountTransaction instance using the specified properties.
+     * Creates a new Action instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns CreateAccountTransaction instance
+     * @returns Action instance
      */
-    public static create(properties?: ICreateAccountTransaction): CreateAccountTransaction;
+    public static create(properties?: IAction): Action;
 
     /**
-     * Encodes the specified CreateAccountTransaction message. Does not implicitly {@link CreateAccountTransaction.verify|verify} messages.
-     * @param message CreateAccountTransaction message or plain object to encode
+     * Encodes the specified Action message. Does not implicitly {@link Action.verify|verify} messages.
+     * @param message Action message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: ICreateAccountTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: IAction, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified CreateAccountTransaction message, length delimited. Does not implicitly {@link CreateAccountTransaction.verify|verify} messages.
-     * @param message CreateAccountTransaction message or plain object to encode
+     * Encodes the specified Action message, length delimited. Does not implicitly {@link Action.verify|verify} messages.
+     * @param message Action message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(message: ICreateAccountTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encodeDelimited(message: IAction, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a CreateAccountTransaction message from the specified reader or buffer.
+     * Decodes an Action message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns CreateAccountTransaction
+     * @returns Action
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): CreateAccountTransaction;
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action;
 
     /**
-     * Decodes a CreateAccountTransaction message from the specified reader or buffer, length delimited.
+     * Decodes an Action message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns CreateAccountTransaction
+     * @returns Action
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): CreateAccountTransaction;
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action;
 
     /**
-     * Verifies a CreateAccountTransaction message.
+     * Verifies an Action message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): (string|null);
 
     /**
-     * Creates a CreateAccountTransaction message from a plain object. Also converts values to their respective internal types.
+     * Creates an Action message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns CreateAccountTransaction
+     * @returns Action
      */
-    public static fromObject(object: { [k: string]: any }): CreateAccountTransaction;
+    public static fromObject(object: { [k: string]: any }): Action;
 
     /**
-     * Creates a plain object from a CreateAccountTransaction message. Also converts values to other types if specified.
-     * @param message CreateAccountTransaction
+     * Creates a plain object from an Action message. Also converts values to other types if specified.
+     * @param message Action
      * @param [options] Conversion options
      * @returns Plain object
      */
-    public static toObject(message: CreateAccountTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
+    public static toObject(message: Action, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
     /**
-     * Converts this CreateAccountTransaction to JSON.
+     * Converts this Action to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
 }
 
-/** Properties of a DeployContractTransaction. */
-export interface IDeployContractTransaction {
+export namespace Action {
 
-    /** DeployContractTransaction nonce */
-    nonce?: (number|Long|null);
+    /** Properties of a CreateAccount. */
+    interface ICreateAccount {
+    }
 
-    /** DeployContractTransaction contractId */
-    contractId?: (string|null);
+    /** Represents a CreateAccount. */
+    class CreateAccount implements ICreateAccount {
 
-    /** DeployContractTransaction wasmByteArray */
-    wasmByteArray?: (Uint8Array|null);
+        /**
+         * Constructs a new CreateAccount.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Action.ICreateAccount);
+
+        /**
+         * Creates a new CreateAccount instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns CreateAccount instance
+         */
+        public static create(properties?: Action.ICreateAccount): Action.CreateAccount;
+
+        /**
+         * Encodes the specified CreateAccount message. Does not implicitly {@link Action.CreateAccount.verify|verify} messages.
+         * @param message CreateAccount message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Action.ICreateAccount, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified CreateAccount message, length delimited. Does not implicitly {@link Action.CreateAccount.verify|verify} messages.
+         * @param message CreateAccount message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Action.ICreateAccount, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a CreateAccount message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns CreateAccount
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action.CreateAccount;
+
+        /**
+         * Decodes a CreateAccount message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns CreateAccount
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action.CreateAccount;
+
+        /**
+         * Verifies a CreateAccount message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a CreateAccount message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns CreateAccount
+         */
+        public static fromObject(object: { [k: string]: any }): Action.CreateAccount;
+
+        /**
+         * Creates a plain object from a CreateAccount message. Also converts values to other types if specified.
+         * @param message CreateAccount
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Action.CreateAccount, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this CreateAccount to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a DeployContract. */
+    interface IDeployContract {
+
+        /** DeployContract code */
+        code?: (Uint8Array|null);
+    }
+
+    /** Represents a DeployContract. */
+    class DeployContract implements IDeployContract {
+
+        /**
+         * Constructs a new DeployContract.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Action.IDeployContract);
+
+        /** DeployContract code. */
+        public code: Uint8Array;
+
+        /**
+         * Creates a new DeployContract instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DeployContract instance
+         */
+        public static create(properties?: Action.IDeployContract): Action.DeployContract;
+
+        /**
+         * Encodes the specified DeployContract message. Does not implicitly {@link Action.DeployContract.verify|verify} messages.
+         * @param message DeployContract message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Action.IDeployContract, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified DeployContract message, length delimited. Does not implicitly {@link Action.DeployContract.verify|verify} messages.
+         * @param message DeployContract message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Action.IDeployContract, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a DeployContract message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DeployContract
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action.DeployContract;
+
+        /**
+         * Decodes a DeployContract message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DeployContract
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action.DeployContract;
+
+        /**
+         * Verifies a DeployContract message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a DeployContract message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DeployContract
+         */
+        public static fromObject(object: { [k: string]: any }): Action.DeployContract;
+
+        /**
+         * Creates a plain object from a DeployContract message. Also converts values to other types if specified.
+         * @param message DeployContract
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Action.DeployContract, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this DeployContract to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a FunctionCall. */
+    interface IFunctionCall {
+
+        /** FunctionCall methodName */
+        methodName?: (string|null);
+
+        /** FunctionCall args */
+        args?: (Uint8Array|null);
+
+        /** FunctionCall gas */
+        gas?: (number|Long|null);
+
+        /** FunctionCall deposit */
+        deposit?: (IUint128|null);
+    }
+
+    /** Represents a FunctionCall. */
+    class FunctionCall implements IFunctionCall {
+
+        /**
+         * Constructs a new FunctionCall.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Action.IFunctionCall);
+
+        /** FunctionCall methodName. */
+        public methodName: string;
+
+        /** FunctionCall args. */
+        public args: Uint8Array;
+
+        /** FunctionCall gas. */
+        public gas: (number|Long);
+
+        /** FunctionCall deposit. */
+        public deposit?: (IUint128|null);
+
+        /**
+         * Creates a new FunctionCall instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns FunctionCall instance
+         */
+        public static create(properties?: Action.IFunctionCall): Action.FunctionCall;
+
+        /**
+         * Encodes the specified FunctionCall message. Does not implicitly {@link Action.FunctionCall.verify|verify} messages.
+         * @param message FunctionCall message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Action.IFunctionCall, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified FunctionCall message, length delimited. Does not implicitly {@link Action.FunctionCall.verify|verify} messages.
+         * @param message FunctionCall message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Action.IFunctionCall, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a FunctionCall message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns FunctionCall
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action.FunctionCall;
+
+        /**
+         * Decodes a FunctionCall message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns FunctionCall
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action.FunctionCall;
+
+        /**
+         * Verifies a FunctionCall message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a FunctionCall message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns FunctionCall
+         */
+        public static fromObject(object: { [k: string]: any }): Action.FunctionCall;
+
+        /**
+         * Creates a plain object from a FunctionCall message. Also converts values to other types if specified.
+         * @param message FunctionCall
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Action.FunctionCall, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this FunctionCall to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a Transfer. */
+    interface ITransfer {
+
+        /** Transfer deposit */
+        deposit?: (IUint128|null);
+    }
+
+    /** Represents a Transfer. */
+    class Transfer implements ITransfer {
+
+        /**
+         * Constructs a new Transfer.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Action.ITransfer);
+
+        /** Transfer deposit. */
+        public deposit?: (IUint128|null);
+
+        /**
+         * Creates a new Transfer instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Transfer instance
+         */
+        public static create(properties?: Action.ITransfer): Action.Transfer;
+
+        /**
+         * Encodes the specified Transfer message. Does not implicitly {@link Action.Transfer.verify|verify} messages.
+         * @param message Transfer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Action.ITransfer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified Transfer message, length delimited. Does not implicitly {@link Action.Transfer.verify|verify} messages.
+         * @param message Transfer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Action.ITransfer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a Transfer message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns Transfer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action.Transfer;
+
+        /**
+         * Decodes a Transfer message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns Transfer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action.Transfer;
+
+        /**
+         * Verifies a Transfer message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a Transfer message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns Transfer
+         */
+        public static fromObject(object: { [k: string]: any }): Action.Transfer;
+
+        /**
+         * Creates a plain object from a Transfer message. Also converts values to other types if specified.
+         * @param message Transfer
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Action.Transfer, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this Transfer to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a Stake. */
+    interface IStake {
+
+        /** Stake stake */
+        stake?: (IUint128|null);
+
+        /** Stake publicKey */
+        publicKey?: (IPublicKey|null);
+    }
+
+    /** Represents a Stake. */
+    class Stake implements IStake {
+
+        /**
+         * Constructs a new Stake.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Action.IStake);
+
+        /** Stake stake. */
+        public stake?: (IUint128|null);
+
+        /** Stake publicKey. */
+        public publicKey?: (IPublicKey|null);
+
+        /**
+         * Creates a new Stake instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Stake instance
+         */
+        public static create(properties?: Action.IStake): Action.Stake;
+
+        /**
+         * Encodes the specified Stake message. Does not implicitly {@link Action.Stake.verify|verify} messages.
+         * @param message Stake message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Action.IStake, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified Stake message, length delimited. Does not implicitly {@link Action.Stake.verify|verify} messages.
+         * @param message Stake message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Action.IStake, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a Stake message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns Stake
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action.Stake;
+
+        /**
+         * Decodes a Stake message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns Stake
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action.Stake;
+
+        /**
+         * Verifies a Stake message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a Stake message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns Stake
+         */
+        public static fromObject(object: { [k: string]: any }): Action.Stake;
+
+        /**
+         * Creates a plain object from a Stake message. Also converts values to other types if specified.
+         * @param message Stake
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Action.Stake, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this Stake to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of an AddKey. */
+    interface IAddKey {
+
+        /** AddKey publicKey */
+        publicKey?: (IPublicKey|null);
+
+        /** AddKey accessKey */
+        accessKey?: (IAccessKey|null);
+    }
+
+    /** Represents an AddKey. */
+    class AddKey implements IAddKey {
+
+        /**
+         * Constructs a new AddKey.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Action.IAddKey);
+
+        /** AddKey publicKey. */
+        public publicKey?: (IPublicKey|null);
+
+        /** AddKey accessKey. */
+        public accessKey?: (IAccessKey|null);
+
+        /**
+         * Creates a new AddKey instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns AddKey instance
+         */
+        public static create(properties?: Action.IAddKey): Action.AddKey;
+
+        /**
+         * Encodes the specified AddKey message. Does not implicitly {@link Action.AddKey.verify|verify} messages.
+         * @param message AddKey message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Action.IAddKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified AddKey message, length delimited. Does not implicitly {@link Action.AddKey.verify|verify} messages.
+         * @param message AddKey message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Action.IAddKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an AddKey message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns AddKey
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action.AddKey;
+
+        /**
+         * Decodes an AddKey message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns AddKey
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action.AddKey;
+
+        /**
+         * Verifies an AddKey message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an AddKey message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns AddKey
+         */
+        public static fromObject(object: { [k: string]: any }): Action.AddKey;
+
+        /**
+         * Creates a plain object from an AddKey message. Also converts values to other types if specified.
+         * @param message AddKey
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Action.AddKey, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this AddKey to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a DeleteKey. */
+    interface IDeleteKey {
+
+        /** DeleteKey publicKey */
+        publicKey?: (IPublicKey|null);
+    }
+
+    /** Represents a DeleteKey. */
+    class DeleteKey implements IDeleteKey {
+
+        /**
+         * Constructs a new DeleteKey.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Action.IDeleteKey);
+
+        /** DeleteKey publicKey. */
+        public publicKey?: (IPublicKey|null);
+
+        /**
+         * Creates a new DeleteKey instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DeleteKey instance
+         */
+        public static create(properties?: Action.IDeleteKey): Action.DeleteKey;
+
+        /**
+         * Encodes the specified DeleteKey message. Does not implicitly {@link Action.DeleteKey.verify|verify} messages.
+         * @param message DeleteKey message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Action.IDeleteKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified DeleteKey message, length delimited. Does not implicitly {@link Action.DeleteKey.verify|verify} messages.
+         * @param message DeleteKey message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Action.IDeleteKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a DeleteKey message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DeleteKey
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action.DeleteKey;
+
+        /**
+         * Decodes a DeleteKey message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DeleteKey
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action.DeleteKey;
+
+        /**
+         * Verifies a DeleteKey message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a DeleteKey message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DeleteKey
+         */
+        public static fromObject(object: { [k: string]: any }): Action.DeleteKey;
+
+        /**
+         * Creates a plain object from a DeleteKey message. Also converts values to other types if specified.
+         * @param message DeleteKey
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Action.DeleteKey, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this DeleteKey to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a DeleteAccount. */
+    interface IDeleteAccount {
+
+        /** DeleteAccount beneficiaryId */
+        beneficiaryId?: (string|null);
+    }
+
+    /** Represents a DeleteAccount. */
+    class DeleteAccount implements IDeleteAccount {
+
+        /**
+         * Constructs a new DeleteAccount.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Action.IDeleteAccount);
+
+        /** DeleteAccount beneficiaryId. */
+        public beneficiaryId: string;
+
+        /**
+         * Creates a new DeleteAccount instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DeleteAccount instance
+         */
+        public static create(properties?: Action.IDeleteAccount): Action.DeleteAccount;
+
+        /**
+         * Encodes the specified DeleteAccount message. Does not implicitly {@link Action.DeleteAccount.verify|verify} messages.
+         * @param message DeleteAccount message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Action.IDeleteAccount, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified DeleteAccount message, length delimited. Does not implicitly {@link Action.DeleteAccount.verify|verify} messages.
+         * @param message DeleteAccount message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Action.IDeleteAccount, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a DeleteAccount message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DeleteAccount
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Action.DeleteAccount;
+
+        /**
+         * Decodes a DeleteAccount message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DeleteAccount
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Action.DeleteAccount;
+
+        /**
+         * Verifies a DeleteAccount message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a DeleteAccount message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DeleteAccount
+         */
+        public static fromObject(object: { [k: string]: any }): Action.DeleteAccount;
+
+        /**
+         * Creates a plain object from a DeleteAccount message. Also converts values to other types if specified.
+         * @param message DeleteAccount
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Action.DeleteAccount, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this DeleteAccount to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
 }
 
-/** Represents a DeployContractTransaction. */
-export class DeployContractTransaction implements IDeployContractTransaction {
+/** Properties of a Transaction. */
+export interface ITransaction {
+
+    /** Transaction signerId */
+    signerId?: (string|null);
+
+    /** Transaction publicKey */
+    publicKey?: (IPublicKey|null);
+
+    /** Transaction nonce */
+    nonce?: (number|Long|null);
+
+    /** Transaction receiverId */
+    receiverId?: (string|null);
+
+    /** Transaction actions */
+    actions?: (IAction[]|null);
+}
+
+/** Represents a Transaction. */
+export class Transaction implements ITransaction {
 
     /**
-     * Constructs a new DeployContractTransaction.
+     * Constructs a new Transaction.
      * @param [properties] Properties to set
      */
-    constructor(properties?: IDeployContractTransaction);
+    constructor(properties?: ITransaction);
 
-    /** DeployContractTransaction nonce. */
+    /** Transaction signerId. */
+    public signerId: string;
+
+    /** Transaction publicKey. */
+    public publicKey?: (IPublicKey|null);
+
+    /** Transaction nonce. */
     public nonce: (number|Long);
 
-    /** DeployContractTransaction contractId. */
-    public contractId: string;
+    /** Transaction receiverId. */
+    public receiverId: string;
 
-    /** DeployContractTransaction wasmByteArray. */
-    public wasmByteArray: Uint8Array;
+    /** Transaction actions. */
+    public actions: IAction[];
 
     /**
-     * Creates a new DeployContractTransaction instance using the specified properties.
+     * Creates a new Transaction instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns DeployContractTransaction instance
+     * @returns Transaction instance
      */
-    public static create(properties?: IDeployContractTransaction): DeployContractTransaction;
+    public static create(properties?: ITransaction): Transaction;
 
     /**
-     * Encodes the specified DeployContractTransaction message. Does not implicitly {@link DeployContractTransaction.verify|verify} messages.
-     * @param message DeployContractTransaction message or plain object to encode
+     * Encodes the specified Transaction message. Does not implicitly {@link Transaction.verify|verify} messages.
+     * @param message Transaction message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: IDeployContractTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: ITransaction, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified DeployContractTransaction message, length delimited. Does not implicitly {@link DeployContractTransaction.verify|verify} messages.
-     * @param message DeployContractTransaction message or plain object to encode
+     * Encodes the specified Transaction message, length delimited. Does not implicitly {@link Transaction.verify|verify} messages.
+     * @param message Transaction message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(message: IDeployContractTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encodeDelimited(message: ITransaction, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a DeployContractTransaction message from the specified reader or buffer.
+     * Decodes a Transaction message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns DeployContractTransaction
+     * @returns Transaction
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): DeployContractTransaction;
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Transaction;
 
     /**
-     * Decodes a DeployContractTransaction message from the specified reader or buffer, length delimited.
+     * Decodes a Transaction message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns DeployContractTransaction
+     * @returns Transaction
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): DeployContractTransaction;
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Transaction;
 
     /**
-     * Verifies a DeployContractTransaction message.
+     * Verifies a Transaction message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): (string|null);
 
     /**
-     * Creates a DeployContractTransaction message from a plain object. Also converts values to their respective internal types.
+     * Creates a Transaction message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns DeployContractTransaction
+     * @returns Transaction
      */
-    public static fromObject(object: { [k: string]: any }): DeployContractTransaction;
+    public static fromObject(object: { [k: string]: any }): Transaction;
 
     /**
-     * Creates a plain object from a DeployContractTransaction message. Also converts values to other types if specified.
-     * @param message DeployContractTransaction
+     * Creates a plain object from a Transaction message. Also converts values to other types if specified.
+     * @param message Transaction
      * @param [options] Conversion options
      * @returns Plain object
      */
-    public static toObject(message: DeployContractTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
+    public static toObject(message: Transaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
     /**
-     * Converts this DeployContractTransaction to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
-/** Properties of a FunctionCallTransaction. */
-export interface IFunctionCallTransaction {
-
-    /** FunctionCallTransaction nonce */
-    nonce?: (number|Long|null);
-
-    /** FunctionCallTransaction originator */
-    originator?: (string|null);
-
-    /** FunctionCallTransaction contractId */
-    contractId?: (string|null);
-
-    /** FunctionCallTransaction methodName */
-    methodName?: (Uint8Array|null);
-
-    /** FunctionCallTransaction args */
-    args?: (Uint8Array|null);
-
-    /** FunctionCallTransaction amount */
-    amount?: (IUint128|null);
-}
-
-/** Represents a FunctionCallTransaction. */
-export class FunctionCallTransaction implements IFunctionCallTransaction {
-
-    /**
-     * Constructs a new FunctionCallTransaction.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IFunctionCallTransaction);
-
-    /** FunctionCallTransaction nonce. */
-    public nonce: (number|Long);
-
-    /** FunctionCallTransaction originator. */
-    public originator: string;
-
-    /** FunctionCallTransaction contractId. */
-    public contractId: string;
-
-    /** FunctionCallTransaction methodName. */
-    public methodName: Uint8Array;
-
-    /** FunctionCallTransaction args. */
-    public args: Uint8Array;
-
-    /** FunctionCallTransaction amount. */
-    public amount?: (IUint128|null);
-
-    /**
-     * Creates a new FunctionCallTransaction instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns FunctionCallTransaction instance
-     */
-    public static create(properties?: IFunctionCallTransaction): FunctionCallTransaction;
-
-    /**
-     * Encodes the specified FunctionCallTransaction message. Does not implicitly {@link FunctionCallTransaction.verify|verify} messages.
-     * @param message FunctionCallTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IFunctionCallTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified FunctionCallTransaction message, length delimited. Does not implicitly {@link FunctionCallTransaction.verify|verify} messages.
-     * @param message FunctionCallTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IFunctionCallTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a FunctionCallTransaction message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns FunctionCallTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): FunctionCallTransaction;
-
-    /**
-     * Decodes a FunctionCallTransaction message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns FunctionCallTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): FunctionCallTransaction;
-
-    /**
-     * Verifies a FunctionCallTransaction message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates a FunctionCallTransaction message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns FunctionCallTransaction
-     */
-    public static fromObject(object: { [k: string]: any }): FunctionCallTransaction;
-
-    /**
-     * Creates a plain object from a FunctionCallTransaction message. Also converts values to other types if specified.
-     * @param message FunctionCallTransaction
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: FunctionCallTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this FunctionCallTransaction to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
-/** Properties of a SendMoneyTransaction. */
-export interface ISendMoneyTransaction {
-
-    /** SendMoneyTransaction nonce */
-    nonce?: (number|Long|null);
-
-    /** SendMoneyTransaction originator */
-    originator?: (string|null);
-
-    /** SendMoneyTransaction receiver */
-    receiver?: (string|null);
-
-    /** SendMoneyTransaction amount */
-    amount?: (IUint128|null);
-}
-
-/** Represents a SendMoneyTransaction. */
-export class SendMoneyTransaction implements ISendMoneyTransaction {
-
-    /**
-     * Constructs a new SendMoneyTransaction.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: ISendMoneyTransaction);
-
-    /** SendMoneyTransaction nonce. */
-    public nonce: (number|Long);
-
-    /** SendMoneyTransaction originator. */
-    public originator: string;
-
-    /** SendMoneyTransaction receiver. */
-    public receiver: string;
-
-    /** SendMoneyTransaction amount. */
-    public amount?: (IUint128|null);
-
-    /**
-     * Creates a new SendMoneyTransaction instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns SendMoneyTransaction instance
-     */
-    public static create(properties?: ISendMoneyTransaction): SendMoneyTransaction;
-
-    /**
-     * Encodes the specified SendMoneyTransaction message. Does not implicitly {@link SendMoneyTransaction.verify|verify} messages.
-     * @param message SendMoneyTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: ISendMoneyTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified SendMoneyTransaction message, length delimited. Does not implicitly {@link SendMoneyTransaction.verify|verify} messages.
-     * @param message SendMoneyTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: ISendMoneyTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a SendMoneyTransaction message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns SendMoneyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SendMoneyTransaction;
-
-    /**
-     * Decodes a SendMoneyTransaction message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns SendMoneyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SendMoneyTransaction;
-
-    /**
-     * Verifies a SendMoneyTransaction message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates a SendMoneyTransaction message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns SendMoneyTransaction
-     */
-    public static fromObject(object: { [k: string]: any }): SendMoneyTransaction;
-
-    /**
-     * Creates a plain object from a SendMoneyTransaction message. Also converts values to other types if specified.
-     * @param message SendMoneyTransaction
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: SendMoneyTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this SendMoneyTransaction to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
-/** Properties of a StakeTransaction. */
-export interface IStakeTransaction {
-
-    /** StakeTransaction nonce */
-    nonce?: (number|Long|null);
-
-    /** StakeTransaction originator */
-    originator?: (string|null);
-
-    /** StakeTransaction amount */
-    amount?: (IUint128|null);
-
-    /** StakeTransaction publicKey */
-    publicKey?: (string|null);
-
-    /** StakeTransaction blsPublicKey */
-    blsPublicKey?: (string|null);
-}
-
-/** Represents a StakeTransaction. */
-export class StakeTransaction implements IStakeTransaction {
-
-    /**
-     * Constructs a new StakeTransaction.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IStakeTransaction);
-
-    /** StakeTransaction nonce. */
-    public nonce: (number|Long);
-
-    /** StakeTransaction originator. */
-    public originator: string;
-
-    /** StakeTransaction amount. */
-    public amount?: (IUint128|null);
-
-    /** StakeTransaction publicKey. */
-    public publicKey: string;
-
-    /** StakeTransaction blsPublicKey. */
-    public blsPublicKey: string;
-
-    /**
-     * Creates a new StakeTransaction instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns StakeTransaction instance
-     */
-    public static create(properties?: IStakeTransaction): StakeTransaction;
-
-    /**
-     * Encodes the specified StakeTransaction message. Does not implicitly {@link StakeTransaction.verify|verify} messages.
-     * @param message StakeTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IStakeTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified StakeTransaction message, length delimited. Does not implicitly {@link StakeTransaction.verify|verify} messages.
-     * @param message StakeTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IStakeTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a StakeTransaction message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns StakeTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): StakeTransaction;
-
-    /**
-     * Decodes a StakeTransaction message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns StakeTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): StakeTransaction;
-
-    /**
-     * Verifies a StakeTransaction message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates a StakeTransaction message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns StakeTransaction
-     */
-    public static fromObject(object: { [k: string]: any }): StakeTransaction;
-
-    /**
-     * Creates a plain object from a StakeTransaction message. Also converts values to other types if specified.
-     * @param message StakeTransaction
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: StakeTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this StakeTransaction to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
-/** Properties of a SwapKeyTransaction. */
-export interface ISwapKeyTransaction {
-
-    /** SwapKeyTransaction nonce */
-    nonce?: (number|Long|null);
-
-    /** SwapKeyTransaction originator */
-    originator?: (string|null);
-
-    /** SwapKeyTransaction curKey */
-    curKey?: (Uint8Array|null);
-
-    /** SwapKeyTransaction newKey */
-    newKey?: (Uint8Array|null);
-}
-
-/** Represents a SwapKeyTransaction. */
-export class SwapKeyTransaction implements ISwapKeyTransaction {
-
-    /**
-     * Constructs a new SwapKeyTransaction.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: ISwapKeyTransaction);
-
-    /** SwapKeyTransaction nonce. */
-    public nonce: (number|Long);
-
-    /** SwapKeyTransaction originator. */
-    public originator: string;
-
-    /** SwapKeyTransaction curKey. */
-    public curKey: Uint8Array;
-
-    /** SwapKeyTransaction newKey. */
-    public newKey: Uint8Array;
-
-    /**
-     * Creates a new SwapKeyTransaction instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns SwapKeyTransaction instance
-     */
-    public static create(properties?: ISwapKeyTransaction): SwapKeyTransaction;
-
-    /**
-     * Encodes the specified SwapKeyTransaction message. Does not implicitly {@link SwapKeyTransaction.verify|verify} messages.
-     * @param message SwapKeyTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: ISwapKeyTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified SwapKeyTransaction message, length delimited. Does not implicitly {@link SwapKeyTransaction.verify|verify} messages.
-     * @param message SwapKeyTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: ISwapKeyTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a SwapKeyTransaction message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns SwapKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): SwapKeyTransaction;
-
-    /**
-     * Decodes a SwapKeyTransaction message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns SwapKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SwapKeyTransaction;
-
-    /**
-     * Verifies a SwapKeyTransaction message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates a SwapKeyTransaction message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns SwapKeyTransaction
-     */
-    public static fromObject(object: { [k: string]: any }): SwapKeyTransaction;
-
-    /**
-     * Creates a plain object from a SwapKeyTransaction message. Also converts values to other types if specified.
-     * @param message SwapKeyTransaction
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: SwapKeyTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this SwapKeyTransaction to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
-/** Properties of an AddKeyTransaction. */
-export interface IAddKeyTransaction {
-
-    /** AddKeyTransaction nonce */
-    nonce?: (number|Long|null);
-
-    /** AddKeyTransaction originator */
-    originator?: (string|null);
-
-    /** AddKeyTransaction newKey */
-    newKey?: (Uint8Array|null);
-
-    /** AddKeyTransaction accessKey */
-    accessKey?: (IAccessKey|null);
-}
-
-/** Represents an AddKeyTransaction. */
-export class AddKeyTransaction implements IAddKeyTransaction {
-
-    /**
-     * Constructs a new AddKeyTransaction.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IAddKeyTransaction);
-
-    /** AddKeyTransaction nonce. */
-    public nonce: (number|Long);
-
-    /** AddKeyTransaction originator. */
-    public originator: string;
-
-    /** AddKeyTransaction newKey. */
-    public newKey: Uint8Array;
-
-    /** AddKeyTransaction accessKey. */
-    public accessKey?: (IAccessKey|null);
-
-    /**
-     * Creates a new AddKeyTransaction instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns AddKeyTransaction instance
-     */
-    public static create(properties?: IAddKeyTransaction): AddKeyTransaction;
-
-    /**
-     * Encodes the specified AddKeyTransaction message. Does not implicitly {@link AddKeyTransaction.verify|verify} messages.
-     * @param message AddKeyTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IAddKeyTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified AddKeyTransaction message, length delimited. Does not implicitly {@link AddKeyTransaction.verify|verify} messages.
-     * @param message AddKeyTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IAddKeyTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an AddKeyTransaction message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns AddKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): AddKeyTransaction;
-
-    /**
-     * Decodes an AddKeyTransaction message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns AddKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): AddKeyTransaction;
-
-    /**
-     * Verifies an AddKeyTransaction message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates an AddKeyTransaction message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns AddKeyTransaction
-     */
-    public static fromObject(object: { [k: string]: any }): AddKeyTransaction;
-
-    /**
-     * Creates a plain object from an AddKeyTransaction message. Also converts values to other types if specified.
-     * @param message AddKeyTransaction
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: AddKeyTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this AddKeyTransaction to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
-/** Properties of a DeleteKeyTransaction. */
-export interface IDeleteKeyTransaction {
-
-    /** DeleteKeyTransaction nonce */
-    nonce?: (number|Long|null);
-
-    /** DeleteKeyTransaction originator */
-    originator?: (string|null);
-
-    /** DeleteKeyTransaction curKey */
-    curKey?: (Uint8Array|null);
-}
-
-/** Represents a DeleteKeyTransaction. */
-export class DeleteKeyTransaction implements IDeleteKeyTransaction {
-
-    /**
-     * Constructs a new DeleteKeyTransaction.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IDeleteKeyTransaction);
-
-    /** DeleteKeyTransaction nonce. */
-    public nonce: (number|Long);
-
-    /** DeleteKeyTransaction originator. */
-    public originator: string;
-
-    /** DeleteKeyTransaction curKey. */
-    public curKey: Uint8Array;
-
-    /**
-     * Creates a new DeleteKeyTransaction instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns DeleteKeyTransaction instance
-     */
-    public static create(properties?: IDeleteKeyTransaction): DeleteKeyTransaction;
-
-    /**
-     * Encodes the specified DeleteKeyTransaction message. Does not implicitly {@link DeleteKeyTransaction.verify|verify} messages.
-     * @param message DeleteKeyTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IDeleteKeyTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified DeleteKeyTransaction message, length delimited. Does not implicitly {@link DeleteKeyTransaction.verify|verify} messages.
-     * @param message DeleteKeyTransaction message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IDeleteKeyTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a DeleteKeyTransaction message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns DeleteKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): DeleteKeyTransaction;
-
-    /**
-     * Decodes a DeleteKeyTransaction message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns DeleteKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): DeleteKeyTransaction;
-
-    /**
-     * Verifies a DeleteKeyTransaction message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates a DeleteKeyTransaction message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns DeleteKeyTransaction
-     */
-    public static fromObject(object: { [k: string]: any }): DeleteKeyTransaction;
-
-    /**
-     * Creates a plain object from a DeleteKeyTransaction message. Also converts values to other types if specified.
-     * @param message DeleteKeyTransaction
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: DeleteKeyTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this DeleteKeyTransaction to JSON.
+     * Converts this Transaction to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -881,32 +1001,8 @@ export interface ISignedTransaction {
     /** SignedTransaction signature */
     signature?: (Uint8Array|null);
 
-    /** SignedTransaction publicKey */
-    publicKey?: (google.protobuf.IBytesValue|null);
-
-    /** SignedTransaction createAccount */
-    createAccount?: (ICreateAccountTransaction|null);
-
-    /** SignedTransaction deployContract */
-    deployContract?: (IDeployContractTransaction|null);
-
-    /** SignedTransaction functionCall */
-    functionCall?: (IFunctionCallTransaction|null);
-
-    /** SignedTransaction sendMoney */
-    sendMoney?: (ISendMoneyTransaction|null);
-
-    /** SignedTransaction stake */
-    stake?: (IStakeTransaction|null);
-
-    /** SignedTransaction swapKey */
-    swapKey?: (ISwapKeyTransaction|null);
-
-    /** SignedTransaction addKey */
-    addKey?: (IAddKeyTransaction|null);
-
-    /** SignedTransaction deleteKey */
-    deleteKey?: (IDeleteKeyTransaction|null);
+    /** SignedTransaction transaction */
+    transaction?: (ITransaction|null);
 }
 
 /** Represents a SignedTransaction. */
@@ -921,35 +1017,8 @@ export class SignedTransaction implements ISignedTransaction {
     /** SignedTransaction signature. */
     public signature: Uint8Array;
 
-    /** SignedTransaction publicKey. */
-    public publicKey?: (google.protobuf.IBytesValue|null);
-
-    /** SignedTransaction createAccount. */
-    public createAccount?: (ICreateAccountTransaction|null);
-
-    /** SignedTransaction deployContract. */
-    public deployContract?: (IDeployContractTransaction|null);
-
-    /** SignedTransaction functionCall. */
-    public functionCall?: (IFunctionCallTransaction|null);
-
-    /** SignedTransaction sendMoney. */
-    public sendMoney?: (ISendMoneyTransaction|null);
-
-    /** SignedTransaction stake. */
-    public stake?: (IStakeTransaction|null);
-
-    /** SignedTransaction swapKey. */
-    public swapKey?: (ISwapKeyTransaction|null);
-
-    /** SignedTransaction addKey. */
-    public addKey?: (IAddKeyTransaction|null);
-
-    /** SignedTransaction deleteKey. */
-    public deleteKey?: (IDeleteKeyTransaction|null);
-
-    /** SignedTransaction body. */
-    public body?: ("createAccount"|"deployContract"|"functionCall"|"sendMoney"|"stake"|"swapKey"|"addKey"|"deleteKey");
+    /** SignedTransaction transaction. */
+    public transaction?: (ITransaction|null);
 
     /**
      * Creates a new SignedTransaction instance using the specified properties.
@@ -1017,6 +1086,114 @@ export class SignedTransaction implements ISignedTransaction {
 
     /**
      * Converts this SignedTransaction to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of an AccessKey. */
+export interface IAccessKey {
+
+    /** AccessKey amount */
+    amount?: (IUint128|null);
+
+    /** AccessKey balanceOwner */
+    balanceOwner?: (google.protobuf.IStringValue|null);
+
+    /** AccessKey contractId */
+    contractId?: (google.protobuf.IStringValue|null);
+
+    /** AccessKey methodName */
+    methodName?: (google.protobuf.IBytesValue|null);
+}
+
+/** Represents an AccessKey. */
+export class AccessKey implements IAccessKey {
+
+    /**
+     * Constructs a new AccessKey.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IAccessKey);
+
+    /** AccessKey amount. */
+    public amount?: (IUint128|null);
+
+    /** AccessKey balanceOwner. */
+    public balanceOwner?: (google.protobuf.IStringValue|null);
+
+    /** AccessKey contractId. */
+    public contractId?: (google.protobuf.IStringValue|null);
+
+    /** AccessKey methodName. */
+    public methodName?: (google.protobuf.IBytesValue|null);
+
+    /**
+     * Creates a new AccessKey instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns AccessKey instance
+     */
+    public static create(properties?: IAccessKey): AccessKey;
+
+    /**
+     * Encodes the specified AccessKey message. Does not implicitly {@link AccessKey.verify|verify} messages.
+     * @param message AccessKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IAccessKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified AccessKey message, length delimited. Does not implicitly {@link AccessKey.verify|verify} messages.
+     * @param message AccessKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IAccessKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an AccessKey message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns AccessKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): AccessKey;
+
+    /**
+     * Decodes an AccessKey message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns AccessKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): AccessKey;
+
+    /**
+     * Verifies an AccessKey message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates an AccessKey message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns AccessKey
+     */
+    public static fromObject(object: { [k: string]: any }): AccessKey;
+
+    /**
+     * Creates a plain object from an AccessKey message. Also converts values to other types if specified.
+     * @param message AccessKey
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: AccessKey, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this AccessKey to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -1840,114 +2017,6 @@ export namespace google {
     }
 }
 
-/** Properties of an AccessKey. */
-export interface IAccessKey {
-
-    /** AccessKey amount */
-    amount?: (IUint128|null);
-
-    /** AccessKey balanceOwner */
-    balanceOwner?: (google.protobuf.IStringValue|null);
-
-    /** AccessKey contractId */
-    contractId?: (google.protobuf.IStringValue|null);
-
-    /** AccessKey methodName */
-    methodName?: (google.protobuf.IBytesValue|null);
-}
-
-/** Represents an AccessKey. */
-export class AccessKey implements IAccessKey {
-
-    /**
-     * Constructs a new AccessKey.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IAccessKey);
-
-    /** AccessKey amount. */
-    public amount?: (IUint128|null);
-
-    /** AccessKey balanceOwner. */
-    public balanceOwner?: (google.protobuf.IStringValue|null);
-
-    /** AccessKey contractId. */
-    public contractId?: (google.protobuf.IStringValue|null);
-
-    /** AccessKey methodName. */
-    public methodName?: (google.protobuf.IBytesValue|null);
-
-    /**
-     * Creates a new AccessKey instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns AccessKey instance
-     */
-    public static create(properties?: IAccessKey): AccessKey;
-
-    /**
-     * Encodes the specified AccessKey message. Does not implicitly {@link AccessKey.verify|verify} messages.
-     * @param message AccessKey message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IAccessKey, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified AccessKey message, length delimited. Does not implicitly {@link AccessKey.verify|verify} messages.
-     * @param message AccessKey message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IAccessKey, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an AccessKey message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns AccessKey
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): AccessKey;
-
-    /**
-     * Decodes an AccessKey message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns AccessKey
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): AccessKey;
-
-    /**
-     * Verifies an AccessKey message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates an AccessKey message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns AccessKey
-     */
-    public static fromObject(object: { [k: string]: any }): AccessKey;
-
-    /**
-     * Creates a plain object from an AccessKey message. Also converts values to other types if specified.
-     * @param message AccessKey
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: AccessKey, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this AccessKey to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
 /** Properties of an Uint128. */
 export interface IUint128 {
 
@@ -2036,4 +2105,108 @@ export class Uint128 implements IUint128 {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a PublicKey. */
+export interface IPublicKey {
+
+    /** PublicKey keyType */
+    keyType?: (PublicKey.KeyType|null);
+
+    /** PublicKey data */
+    data?: (Uint8Array|null);
+}
+
+/** Represents a PublicKey. */
+export class PublicKey implements IPublicKey {
+
+    /**
+     * Constructs a new PublicKey.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IPublicKey);
+
+    /** PublicKey keyType. */
+    public keyType: PublicKey.KeyType;
+
+    /** PublicKey data. */
+    public data: Uint8Array;
+
+    /**
+     * Creates a new PublicKey instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns PublicKey instance
+     */
+    public static create(properties?: IPublicKey): PublicKey;
+
+    /**
+     * Encodes the specified PublicKey message. Does not implicitly {@link PublicKey.verify|verify} messages.
+     * @param message PublicKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IPublicKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified PublicKey message, length delimited. Does not implicitly {@link PublicKey.verify|verify} messages.
+     * @param message PublicKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IPublicKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a PublicKey message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns PublicKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): PublicKey;
+
+    /**
+     * Decodes a PublicKey message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns PublicKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): PublicKey;
+
+    /**
+     * Verifies a PublicKey message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a PublicKey message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns PublicKey
+     */
+    public static fromObject(object: { [k: string]: any }): PublicKey;
+
+    /**
+     * Creates a plain object from a PublicKey message. Also converts values to other types if specified.
+     * @param message PublicKey
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: PublicKey, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this PublicKey to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+export namespace PublicKey {
+
+    /** KeyType enum. */
+    enum KeyType {
+        ED25519 = 0
+    }
 }

@@ -59,6 +59,7 @@ export class InMemorySigner extends Signer {
 
     async getPublicKey(accountId?: string, networkId?: string): Promise<string> {
         const keyPair = await this.keyStore.getKey(networkId, accountId);
+        console.warn(`network: ${networkId}, account: ${accountId}`);
         return keyPair.getPublicKey();
     }
 

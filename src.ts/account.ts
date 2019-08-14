@@ -1,7 +1,7 @@
 'use strict';
 
 import BN from 'bn.js';
-import { sendMoney, createAccount, signTransaction, deployContract,
+import { Action, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
@@ -83,9 +83,11 @@ export class Account {
         throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`);
     }
 
-    private async signAndSendTransaction(transaction: any): Promise<FinalTransactionResult> {
+    private async signAndSendTransaction(receiverId: string, actions: Array<Action>): Promise<FinalTransactionResult> {
+        await this.ready;
+        console.warn(`receiverId: ${receiverId}, actions: ${actions}, signer: ${this.connection.signer}`);
         const [txHash, signedTx] = await signTransaction(
-            this.connection.signer, transaction, this.accountId, this.connection.networkId);
+            receiverId, ++this._state.nonce, actions, this.connection.signer, this.accountId, this.connection.networkId);
 
         let result;
         try {
@@ -99,11 +101,7 @@ export class Account {
         }
 
         const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
-        if (transaction.hasOwnProperty('contractId')) {
-            this.printLogs(transaction['contractId'], flatLogs);
-        } else if (transaction.hasOwnProperty('originator')) {
-            this.printLogs(transaction['originator'], flatLogs);
-        }
+        this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
         if (result.status === FinalTransactionStatus.Failed) {
             if (result.logs) {
@@ -125,50 +123,37 @@ export class Account {
         return contractAccount;
     }
 
-    async sendMoney(receiver: string, amount: BN): Promise<FinalTransactionResult> {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(sendMoney(this._state.nonce, this.accountId, receiver, amount));
+    async sendMoney(receiverId: string, amount: BN): Promise<FinalTransactionResult> {
+        return this.signAndSendTransaction(receiverId, [transfer(amount)]);
     }
 
     async createAccount(newAccountId: string, publicKey: string, amount: BN): Promise<FinalTransactionResult> {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(createAccount(this._state.nonce, this.accountId, newAccountId, publicKey, amount));
+        const accessKey = createAccessKey(null, "", newAccountId, new BN(0));
+        return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(publicKey, accessKey)]);
     }
 
     async deployContract(data: Uint8Array): Promise<FinalTransactionResult> {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(deployContract(this._state.nonce, this.accountId, data));
+        return this.signAndSendTransaction(this.accountId, [deployContract(data)]);
     }
 
-    async functionCall(contractId: string, methodName: string, args: any, amount?: BN): Promise<FinalTransactionResult> {
+    async functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalTransactionResult> {
         if (!args) {
             args = {};
         }
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(functionCall(this._state.nonce, this.accountId, contractId, methodName, Buffer.from(JSON.stringify(args)), amount || DEFAULT_FUNC_CALL_AMOUNT));
+        return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas, amount || DEFAULT_FUNC_CALL_AMOUNT)]);
     }
 
     async addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): Promise<FinalTransactionResult> {
-        await this.ready;
-        this._state.nonce++;
-        const accessKey = contractId ? createAccessKey(contractId, methodName, balanceOwner, amount) : null;
-        return this.signAndSendTransaction(addKey(this._state.nonce, this.accountId, publicKey, accessKey));
+        const accessKey = createAccessKey(contractId ? contractId : null, methodName, balanceOwner, amount);
+        return this.signAndSendTransaction(this.accountId, [addKey(publicKey, accessKey)]);
     }
 
     async deleteKey(publicKey: string): Promise<FinalTransactionResult> {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(deleteKey(this._state.nonce, this.accountId, publicKey));
+        return this.signAndSendTransaction(this.accountId, [deleteKey(publicKey)]);
     }
 
     async stake(publicKey: string, amount: BN): Promise<FinalTransactionResult> {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(stake(this._state.nonce, this.accountId, amount, publicKey));
+        return this.signAndSendTransaction(this.accountId, [stake(amount, publicKey)]);
     }
 
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
