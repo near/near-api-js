@@ -1,18 +1,27 @@
-import BN from 'bn.js';
-import { Action, AccessKey, SignedTransaction, Transaction } from './protos';
-import { Signature } from './utils/key_pair';
 import { Signer } from './signer';
-export declare type Action = Action;
-export declare function bignumHex2Dec(num: string): string;
-export declare function createAccount(): Action;
-export declare function deployContract(code: Uint8Array): Action;
-export declare function functionCall(methodName: string, args: Uint8Array, gas: number, deposit: BN): Action;
-export declare function transfer(deposit: BN): Action;
-export declare function stake(stake: BN, publicKey: string): Action;
-export declare function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): AccessKey;
-export declare function addKey(publicKey: string, accessKey: AccessKey): Action;
-export declare function deleteKey(publicKey: string): Action;
-export declare function deleteAccount(beneficiaryId: string): Action;
-export declare function transaction(signerId: string, publicKey: string, nonce: number, receiverId: string, actions: Action[]): Transaction;
-export declare function signedTransaction(transaction: Transaction, signature: Signature): SignedTransaction;
+import { Transaction, PublicKey } from './protos';
+declare enum KeyType {
+    ED25519 = 0
+}
+declare class PublicKey {
+    keyType: KeyType;
+    data: Uint8Array;
+    constructor(publicKey: string);
+}
+interface Action {
+}
+declare class Transaction {
+    signerId: string;
+    publicKey: PublicKey;
+    nonce: number;
+    receiverId: string;
+    actions: Array<Action>;
+    constructor(signedId: string, publicKey: string, nonce: number, receiverId: string, actions: Array<Action>);
+}
+declare class SignedTransaction {
+    transaction: Transaction;
+    signature: Uint8Array;
+    constructor(transaction: Transaction, signature: Uint8Array);
+}
 export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
+export {};
