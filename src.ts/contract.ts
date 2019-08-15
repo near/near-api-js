@@ -1,6 +1,7 @@
 'use strict';
 
 import { Account } from './account';
+import { getTransactionLastResult } from './providers';
 
 export class Contract {
     readonly account: Account;
@@ -13,15 +14,18 @@ export class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 value: async function(args: any) {
-                return this.account.viewFunction(this.contractId, methodName, args || {});
-            }});
+                    return this.account.viewFunction(this.contractId, methodName, args || {});
+                }
+            });
         });
         options.changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 value: async function(args: any) {
-                return this.account.functionCall(this.contractId, methodName, args || {});
-            }});
+                    const rawResult = await this.account.functionCall(this.contractId, methodName, args || {});
+                    return getTransactionLastResult(rawResult);
+                }
+            });
         });
     }
 }
