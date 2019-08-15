@@ -1,6 +1,6 @@
-# Near lib
+# nearlib
 
-Near lib is a javascript library for development of dapps on near.
+nearlib is a JavaScript/TypeScript library for development of DApps on NEAR platform.
 
 ## Install dependencies
 
@@ -10,7 +10,7 @@ yarn
 
 ## Development
 
-You can run continues build with next command:
+You can run continuos build with next command:
 ```
 yarn build -- -w
 ```
@@ -22,6 +22,8 @@ Prepare `dist` version by running:
 ```
 yarn dist
 ```
+
+When publishing to npm use [np](https://github.com/sindresorhus/np). 
 
 ## Integration Test
 
