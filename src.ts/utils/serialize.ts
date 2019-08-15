@@ -26,25 +26,31 @@ export class BinaryWriter {
         this.length = 0;
     }
 
-    resize() {
-        this.buf = Buffer.concat([this.buf, Buffer.alloc(INITIAL_LENGTH)]);
+    maybe_resize() {
+        if (this.buf.length < 16 + this.length) {
+            this.buf = Buffer.concat([this.buf, Buffer.alloc(INITIAL_LENGTH)]);
+        }
     }
 
     public write_u8(value: number) {
-        this.buf.writeInt8(value, this.length);
+        this.maybe_resize();
+        this.buf.writeUInt8(value, this.length);
         this.length += 1;
     }
 
     public write_u32(value: number) {
+        this.maybe_resize();
         this.buf.writeUInt32LE(value, this.length);
         this.length += 4;
     }
 
     public write_u64(value: BN) {
+        this.maybe_resize();
         this.write_buffer(Buffer.from(new BN(value).toArray('le', 8)));
     }
 
     public write_u128(value: BN) {
+        this.maybe_resize();
         this.write_buffer(Buffer.from(new BN(value).toArray('le', 16)));
     }
 
@@ -54,6 +60,7 @@ export class BinaryWriter {
     }
 
     public write_string(str: string) {
+        this.maybe_resize();
         let b = Buffer.from(str, 'utf8');
         this.write_u32(b.length);
         this.write_buffer(b);
@@ -64,8 +71,10 @@ export class BinaryWriter {
     }
 
     public write_array(array: Array<any>, fn: any) {
+        this.maybe_resize();
         this.write_u32(array.length);
         for (let i = 0; i < array.length; ++i) {
+            this.maybe_resize();
             fn(array[i]);
         }
     }
@@ -85,7 +94,7 @@ export class BinaryReader {
     }
 
     read_u8(): number {
-        const value = this.buf.readInt8(this.offset);
+        const value = this.buf.readUInt8(this.offset);
         this.offset += 1;
         return value;
     }

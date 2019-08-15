@@ -6,7 +6,7 @@ export declare class BinaryWriter {
     buf: Buffer;
     length: number;
     constructor();
-    resize(): void;
+    maybe_resize(): void;
     write_u8(value: number): void;
     write_u32(value: number): void;
     write_u64(value: BN): void;

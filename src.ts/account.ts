@@ -10,7 +10,7 @@ import { base_encode } from './utils/serialize';
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-const DEFAULT_FUNC_CALL_AMOUNT = new BN(1000000000);
+const DEFAULT_FUNC_CALL_AMOUNT = 1000000;
 
 // Default number of retries before giving up on a transactioin.
 const TX_STATUS_RETRY_NUMBER = 10;
@@ -30,7 +30,7 @@ export interface AccountState {
     account_id: string;
     nonce: number;
     amount: string;
-    stake: string;
+    staked: string;
     public_keys: Uint8Array[];
     code_hash: string;
 }
@@ -53,8 +53,6 @@ export class Account {
     async fetchState(): Promise<void> {
         const state = await this.connection.provider.query(`account/${this.accountId}`, '');
         this._state = state;
-        this._state.amount = state.amount;
-        this._state.stake = state.stake;
     }
 
     async state(): Promise<AccountState> {
@@ -85,7 +83,6 @@ export class Account {
 
     private async signAndSendTransaction(receiverId: string, actions: Array<Action>): Promise<FinalTransactionResult> {
         await this.ready;
-        console.warn(`receiverId: ${receiverId}, actions: ${actions}, signer: ${this.connection.signer}`);
         const [txHash, signedTx] = await signTransaction(
             receiverId, ++this._state.nonce, actions, this.connection.signer, this.accountId, this.connection.networkId);
 
@@ -99,16 +96,14 @@ export class Account {
                 throw error;
             }
         }
-        console.log(result);
 
-        const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
+        const flatLogs = result.transactions.reduce((acc, it) => acc.concat(it.result.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
         if (result.status === FinalTransactionStatus.Failed) {
-            if (result.logs) {
-                console.warn(flatLogs);
+            if (flatLogs) {
                 const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || flatLogs.find(it => it.startsWith('Runtime error:')) || '';
-                throw new Error(`Transaction ${result.logs[0].hash} failed. ${errorMessage}`);
+                throw new Error(`Transaction ${result.transactions[0].hash} failed. ${errorMessage}`);
             }
         }
         // TODO: if Tx is Unknown or Started.
@@ -141,7 +136,7 @@ export class Account {
         if (!args) {
             args = {};
         }
-        return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas, amount || DEFAULT_FUNC_CALL_AMOUNT)]);
+        return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
     }
 
     async addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): Promise<FinalTransactionResult> {

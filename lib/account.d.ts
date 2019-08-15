@@ -5,7 +5,7 @@ export interface AccountState {
     account_id: string;
     nonce: number;
     amount: string;
-    stake: string;
+    staked: string;
     public_keys: Uint8Array[];
     code_hash: string;
 }
