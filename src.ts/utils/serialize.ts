@@ -141,6 +141,19 @@ function serializeField(schema: any, value: any, fieldType: any, writer: any) {
         } else {
             writer.write_array(value, (item: any) => { serializeField(schema, item, fieldType[0], writer) });
         }
+    } else if (fieldType.kind !== undefined) {
+        switch (fieldType.kind) {
+            case "option": {
+                if (value === null) {
+                    writer.write_u8(0);
+                } else {
+                    writer.write_u8(1);
+                    serializeField(schema, value, fieldType.type, writer);
+                }
+                break;
+            }
+            default: throw new Error(`FieldType ${fieldType} unrecognized`)
+        }
     } else {
         serializeStruct(schema, value, writer);
     }
@@ -148,9 +161,26 @@ function serializeField(schema: any, value: any, fieldType: any, writer: any) {
 
 function serializeStruct(schema: any, obj: any, writer: any) {
     const className = obj.constructor.name;
-    schema[className].map(([fieldName, fieldType]: [any, any]) => {
-        serializeField(schema, obj[fieldName], fieldType, writer);
-    });
+    if (schema[className] === undefined) {
+        throw new Error(`Class ${className} is missing in schema`)
+    }
+    if (schema[className].kind === 'struct') {
+        schema[className].fields.map(([fieldName, fieldType]: [any, any]) => {
+            serializeField(schema, obj[fieldName], fieldType, writer);
+        });
+    } else if (schema[className].kind === 'enum') {
+        const name = obj[schema[className].field];
+        for (let idx = 0; idx < schema[className].values.length; ++idx) {
+            let [fieldName, fieldType]: [any, any] = schema[className].values[idx];
+            if (fieldName === name) {
+                writer.write_u8(idx);
+                serializeField(schema, obj[fieldName], fieldType, writer);
+                break;
+            }
+        }
+    } else {
+        throw new Error(`Unexpected schema kind: ${schema[className].kind} for ${className}`);
+    }
 }
 
 /// Serialize given object using schema of the form:
@@ -176,8 +206,7 @@ function deserializeField(schema: any, fieldType: any, reader: any): any {
 }
 
 function deserializeStruct(schema: any, classType: any, reader: any) {
-    console.log(classType.name);
-    let fields = schema[classType.name].map(([fieldName, fieldType]: [any, any]) => {
+    let fields = schema[classType.name].fields.map(([fieldName, fieldType]: [any, any]) => {
         return deserializeField(schema, fieldType, reader);
     });
     return new classType(...fields);

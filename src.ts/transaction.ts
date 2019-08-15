@@ -3,79 +3,72 @@
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
-// import { Uint128, Action, AccessKey, PublicKey, SignedTransaction, Transaction, google } from './protos';
-import { base_encode, base_decode } from './utils/serialize';
-import { Signature } from './utils/key_pair';
+import { base_decode, serialize } from './utils/serialize';
 import { Signer } from './signer';
-import { Transaction, PublicKey } from './protos';
 
-// export type Action = Action;
+export class Assignable {
+    constructor(properties: any) {
+        Object.keys(properties).map((key: any) => {
+            (this as any)[key] = properties[key];
+        });
+    }
+}
 
-// function bigInt(num: BN): Uint128 {
-//     const number = new Uint8Array(new BN(num).toArray('le', 16));
-//     return new Uint128({ number });
-// }
+export class AccessKey extends Assignable { 
+    contractId: string; methodName: Uint8Array; balanceOwner: string; amount: BN 
+}
 
-// function toPublicKey(publicKey: string): PublicKey {
-//     return new PublicKey({ keyType: PublicKey.KeyType.ED25519, data: base_decode(publicKey) })
-// }
+export function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): AccessKey {
+    return new AccessKey({
+        contractId,
+        methodName,
+        balanceOwner,
+        amount: amount || new BN(0),
+    });
+}
 
-// export function bignumHex2Dec(num: string): string {
-//     return new BN(num, 16).toString(10);
-// }
+export class IAction extends Assignable {}
 
-// export function createAccount(): Action {
-//     return new Action({ createAccount: new Action.CreateAccount() });
-// }
+class CreateAccount extends IAction {}
+class DeployContract extends IAction { code: Uint8Array }
+class FunctionCall extends IAction { methodName: string; args: Uint8Array; gas: BN; deposit: BN }
+class Transfer extends IAction { deposit: BN }
+class Stake extends IAction { stake: BN; publicKey: PublicKey }
+class AddKey extends IAction { publicKey: PublicKey; accessKey: AccessKey }
+class DeleteKey extends IAction { publicKey: PublicKey }
+class DeleteAccount extends IAction { beneficiaryId: string }
 
-// export function deployContract(code: Uint8Array): Action {
-//     return new Action({ deployContract: new Action.DeployContract({code}) });
-// }
+export function createAccount(): Action {
+    return new Action({createAccount: new CreateAccount({}) });
+}
 
-// export function functionCall(methodName: string, args: Uint8Array, gas: number, deposit: BN): Action {
-//     return new Action({ functionCall: new Action.FunctionCall({methodName, args, gas, deposit: bigInt(deposit) }) });
-// }
+export function deployContract(code: Uint8Array): Action {
+    return new Action({ deployContract: new DeployContract({code}) });
+}
 
-// export function transfer(deposit: BN): Action {
-//     return new Action({ transfer: new Action.Transfer({ deposit: bigInt(deposit) }) });
-// }
+export function functionCall(methodName: string, args: Uint8Array, gas: number, deposit: BN): Action {
+    return new Action({functionCall: new FunctionCall({methodName, args, gas, deposit }) });
+}
 
-// export function stake(stake: BN, publicKey: string): Action {
-//     return new Action({ stake: new Action.Stake({ stake: bigInt(stake), publicKey: toPublicKey(publicKey) })});
-// }
+export function transfer(deposit: BN): Action {
+    return new Action({transfer: new Transfer({ deposit }) });
+}
 
-// export function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): AccessKey {
-//     return new AccessKey({
-//         contractId: contractId ? new google.protobuf.StringValue({ value: contractId }) : null,
-//         methodName: methodName ? new google.protobuf.BytesValue({ value: Buffer.from(methodName) }) : null,
-//         balanceOwner: balanceOwner ? new google.protobuf.StringValue({ value: balanceOwner }) : null,
-//         amount: bigInt(amount || new BN(0)),
-//     });
-// }
+export function stake(stake: BN, publicKey: string): Action {
+    return new Action({stake: new Stake({ stake, publicKey: new PublicKey(publicKey) }) });
+}
 
-// export function addKey(publicKey: string, accessKey: AccessKey): Action {
-//     console.warn(accessKey);
-//     return new Action({ addKey: new Action.AddKey({ publicKey: toPublicKey(publicKey), accessKey}) });
-// }
+export function addKey(publicKey: string, accessKey: AccessKey): Action {
+    return new Action({addKey: new AddKey({ publicKey: new PublicKey(publicKey), accessKey}) });
+}
 
-// export function deleteKey(publicKey: string): Action {
-//     return new Action({ deleteKey: new Action.DeleteKey({ publicKey: toPublicKey(publicKey) }) });
-// }
+export function deleteKey(publicKey: string): Action {
+    return new Action({deleteKey: new DeleteKey({ publicKey: new PublicKey(publicKey) }) });
+}
 
-// export function deleteAccount(beneficiaryId: string): Action {
-//     return new Action({ deleteAccount: new Action.DeleteAccount({ beneficiaryId }) });
-// }
-
-// export function transaction(signerId: string, publicKey: string, nonce: number, receiverId: string, actions: Action[]): Transaction {
-//     return new Transaction({ signerId, publicKey: toPublicKey(publicKey), nonce, receiverId, actions })
-// }
-
-// export function signedTransaction(transaction: Transaction, signature: Signature): SignedTransaction {
-//     return new SignedTransaction({
-//         signature: signature.signature,
-//         transaction
-//     });
-// }
+export function deleteAccount(beneficiaryId: string): Action {
+    return new Action({deleteAccount: new DeleteAccount({ beneficiaryId }) });
+}
 
 enum KeyType {
     ED25519 = 0,
@@ -91,57 +84,83 @@ class PublicKey {
     }
 }
 
-interface Action {
-}
-
-class Transaction {
+class Transaction extends Assignable {
     signerId: string;
     publicKey: PublicKey;
     nonce: number;
     receiverId: string;
     actions: Array<Action>;
-
-    constructor(signedId: string, publicKey: string, nonce: number, receiverId: string, actions: Array<Action>) {
-        this.signerId = signedId;
-        this.publicKey = new PublicKey(publicKey);
-        this.nonce = nonce;
-        this.receiverId = receiverId;
-        this.actions = actions;
-    }
 }
 
-class SignedTransaction {
+export class SignedTransaction extends Assignable {
     transaction: Transaction;
     signature: Uint8Array;
 
-    constructor(transaction: Transaction, signature: Uint8Array) {
-        this.transaction = transaction;
-        this.signature = signature;
+    encode(): Uint8Array {
+        return serialize(SCHEMA, this);
     }
 }
 
-// const SCHEMA = {
-//     'SignedTransaction': [['transaction', Transaction], ['signature', [32]]],
-//     'Transaction': [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['actions', [Action]]],
-// }
+export class Action {
+    action: string;
+    createAccount: CreateAccount;
+    deployContract: DeployContract;
+    functionCall: FunctionCall;
+    transfer: Transfer;
+    stake: Stake;
+    addKey: AddKey;
+    deleteKey: DeleteKey;
+    deleteAccount: DeleteAccount;
+
+    constructor(properties: any) {
+        if (Object.keys(properties).length != 1) {
+            throw new Error("Action can only take single value");
+        }
+        Object.keys(properties).map((key: string) => {
+            (this as any)[key] = properties[key];
+            this.action = key;
+        });
+    }
+}
+
+const SCHEMA = {
+    'SignedTransaction': {kind: 'struct', fields: [['transaction', Transaction], ['signature', [32]]]},
+    'Transaction': {
+        kind: 'struct', fields: [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['actions', [Action]]] },
+    'PublicKey': {
+            kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]] },
+    'AccessKey': { kind: 'struct', fields: [
+        ['amount', 'u128'],
+        ['balanceOwner', { kind: 'option', type: 'string' }], 
+        ['contractId', {kind: 'option', type: 'string'}], 
+        ['methodName', {kind: 'option', type: ['u8']}], 
+    ]},
+    'Action': {kind: 'enum', field: 'action', values: [
+        ['createAccount', CreateAccount], 
+        ['deployContract', DeployContract],
+        ['functionCall', functionCall],
+        ['transfer', transfer],
+        ['stake', stake],
+        ['addKey', addKey],
+        ['deleteKey', deleteKey],
+        ['deleteAccount', deleteAccount],
+    ]},
+    'CreateAccount': { kind: 'struct', fields: [] },
+    'DeployContract': { kind: 'struct', fields: [['code', ['u8']]] },
+    'FunctionCall': { kind: 'struct', fields: [['methodName', 'string'], ['args', ['u8']], ['gas', 'u64'], ['deposit', 'u128']] },
+    'Transfer': { kind: 'struct', fields: [['deposit', 'u128']] },
+    'Stake': { kind: 'struct', fields: [['stake', 'u128'], ['publicKey', PublicKey]] },
+    'AddKey': { kind: 'struct', fields: [['publicKey', PublicKey], ['accessKey', AccessKey]] },
+    'DeleteKey': { kind: 'struct', fields: [['publicKey', PublicKey]] },
+    'DeleteAccount': { kind: 'struct', fields: [['beneficiaryId', 'string']] },
+}
 
 export async function signTransaction(receiverId: string, nonce: number, actions: Action[], signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
-    console.warn("WTF?" + await signer.getPublicKey(accountId, networkId));
-    // const tx = transaction(accountId, await signer.getPublicKey(accountId, networkId), nonce, receiverId, actions);
-    const tx = new Transaction(accountId, await signer.getPublicKey(accountId, networkId), nonce, receiverId, actions);
-    // console.warn(tx.publicKey);
-    // console.warn("XX: " + JSON.stringify(tx));
-    // const message = Transaction.encode(tx).finish();
-    const message = tx.encode();
-    console.warn("11: " + new Uint8Array(message));
-    // const tx2 = Transaction.decode(message);
-    // console.warn(JSON.stringify(tx2));
-    // const message2 = Transaction.encode(tx2).finish();
-    // console.warn("33: " + base_encode(message2));
+    const publicKey = new PublicKey(await signer.getPublicKey(accountId, networkId));
+    const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions });
+    const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
-    console.warn("22: " + base_encode(hash));
     const signature = await signer.signHash(hash, accountId, networkId);
-    const signedTx = new SignedTransaction(tx, signature);
-    // console.warn(JSON.stringify(signedTx));
+    const signedTx = new SignedTransaction({transaction, signature: signature.signature });
     return [hash, signedTx];
 }

@@ -4,7 +4,7 @@ import { Provider, FinalTransactionResult, NodeStatusResult, BlockResult } from 
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { base_encode } from '../utils/serialize';
-import { SignedTransaction } from '../protos';
+import { SignedTransaction } from '../transaction';
 
 /// Keep ids unique across all connections.
 let _nextId = 123;
@@ -31,7 +31,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult> {
-        const bytes = SignedTransaction.encode(signedTransaction).finish();
+        const bytes = signedTransaction.encode();
         console.warn("Bytes: " + new Uint8Array(bytes));
         return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
     }

@@ -99,6 +99,7 @@ export class Account {
                 throw error;
             }
         }
+        console.log(result);
 
         const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
