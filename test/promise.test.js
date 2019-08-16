@@ -41,7 +41,7 @@ describe('with promises', () => {
     // => means callback
 
     test('single promise, no callback (A->B)', async () => {
-        const result = await contract.callPromise({args: {
+        await contract.callPromise({args: {
             receiver: contractName1,
             methodName: 'callbackWithName',
             args: null,
@@ -50,7 +50,6 @@ describe('with promises', () => {
             callbackArgs: null,
             callbackBalance: 0,
         }});
-        expect(result.status).toBe('Completed');
         const lastResult = await contract1.getLastResult();
         expect(lastResult).toEqual({
             rs: [],
@@ -59,7 +58,7 @@ describe('with promises', () => {
     });
 
     test('single promise with callback (A->B=>A)', async () => {
-        const result = await contract.callPromise({args: {
+        await contract.callPromise({args: {
             receiver: contractName1,
             methodName: 'callbackWithName',
             args: null,
@@ -68,7 +67,6 @@ describe('with promises', () => {
             callbackArgs: null,
             callbackBalance: 100000000,
         }});
-        expect(result.status).toBe('Completed');
         const lastResult1 = await contract1.getLastResult();
         expect(lastResult1).toEqual({
             rs: [],
@@ -85,7 +83,7 @@ describe('with promises', () => {
     });
 
     test('two promises, no callbacks (A->B->C)', async () => {
-        const result = await contract.callPromise({args: {
+        await contract.callPromise({args: {
             receiver: contractName1,
             methodName: 'callPromise',
             args: {
@@ -102,7 +100,6 @@ describe('with promises', () => {
             callbackArgs: null,
             callbackBalance: 0,
         }});
-        expect(result.status).toBe('Completed');
         const lastResult2 = await contract2.getLastResult();
         expect(lastResult2).toEqual({
             rs: [],
@@ -111,7 +108,7 @@ describe('with promises', () => {
     });
 
     test('two promises, with two callbacks (A->B->C=>B=>A)', async () => {
-        const result = await contract.callPromise({args: {
+        await contract.callPromise({args: {
             receiver: contractName1,
             methodName: 'callPromise',
             args: {
@@ -128,7 +125,6 @@ describe('with promises', () => {
             callbackArgs: null,
             callbackBalance: 100000000,
         }});
-        expect(result.status).toBe('Completed');
         const lastResult2 = await contract2.getLastResult();
         expect(lastResult2).toEqual({
             rs: [],
@@ -153,7 +149,7 @@ describe('with promises', () => {
     });
 
     test('cross contract call with callbacks (A->B->A=>B=>A)', async () => {
-        const result = await contract.callPromise({args: {
+        await contract.callPromise({args: {
             receiver: contractName1,
             methodName: 'callPromise',
             args: {
@@ -170,7 +166,6 @@ describe('with promises', () => {
             callbackArgs: null,
             callbackBalance: 100000000,
         }});
-        expect(result.status).toBe('Completed');
         const lastResult1 = await contract1.getLastResult();
         expect(lastResult1).toEqual({
             rs: [{
@@ -193,7 +188,7 @@ describe('with promises', () => {
     });
 
     test('2 promises with 1 skipped callbacks (A->B->C=>A)', async () => {
-        const result = await contract.callPromise({args: {
+        await contract.callPromise({args: {
             receiver: contractName1,
             methodName: 'callPromise',
             args: {
@@ -210,7 +205,6 @@ describe('with promises', () => {
             callbackArgs: null,
             callbackBalance: 100000000,
         }});
-        expect(result.status).toBe('Completed');
         const lastResult2 = await contract2.getLastResult();
         expect(lastResult2).toEqual({
             rs: [],
@@ -227,7 +221,7 @@ describe('with promises', () => {
     });
 
     test('single promise with callback using deposit (empty method name) (A->B=>A)', async () => {
-        const result = await contract.callPromise({args: {
+        await contract.callPromise({args: {
             receiver: contractName1,
             methodName: '',  // Deposit (no execution)
             args: null,
@@ -236,7 +230,6 @@ describe('with promises', () => {
             callbackArgs: null,
             callbackBalance: 100000000,
         }});
-        expect(result.status).toBe('Completed');
         const lastResult = await contract.getLastResult();
         expect(lastResult).toEqual({
             rs: [{
@@ -248,7 +241,7 @@ describe('with promises', () => {
     });
 
     test('2 promises with 1 skipped callbacks using deposit (empty method name) (A->B->C=>A)', async () => {
-        const result = await contract.callPromise({args: {
+        await contract.callPromise({args: {
             receiver: contractName1,
             methodName: 'callPromise',
             args: {
@@ -265,7 +258,6 @@ describe('with promises', () => {
             callbackArgs: null,
             callbackBalance: 100000000,
         }});
-        expect(result.status).toBe('Completed');
         const lastResult = await contract.getLastResult();
         expect(lastResult).toEqual({
             rs: [{

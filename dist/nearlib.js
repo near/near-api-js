@@ -237,6 +237,7 @@ exports.Connection = Connection;
 },{"./providers":15,"./signer":18}],5:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+const providers_1 = require("./providers");
 class Contract {
     constructor(account, contractId, options) {
         this.account = account;
@@ -253,7 +254,8 @@ class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 value: async function (args) {
-                    return this.account.functionCall(this.contractId, methodName, args || {});
+                    const rawResult = await this.account.functionCall(this.contractId, methodName, args || {});
+                    return providers_1.getTransactionLastResult(rawResult);
                 }
             });
         });
@@ -261,7 +263,7 @@ class Contract {
 }
 exports.Contract = Contract;
 
-},{}],6:[function(require,module,exports){
+},{"./providers":15}],6:[function(require,module,exports){
 'use strict';
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -2986,6 +2988,252 @@ $root.DeleteKeyTransaction = (function() {
     return DeleteKeyTransaction;
 })();
 
+$root.DeleteAccountTransaction = (function() {
+
+    /**
+     * Properties of a DeleteAccountTransaction.
+     * @exports IDeleteAccountTransaction
+     * @interface IDeleteAccountTransaction
+     * @property {number|Long|null} [nonce] DeleteAccountTransaction nonce
+     * @property {string|null} [originatorId] DeleteAccountTransaction originatorId
+     * @property {string|null} [receiverId] DeleteAccountTransaction receiverId
+     */
+
+    /**
+     * Constructs a new DeleteAccountTransaction.
+     * @exports DeleteAccountTransaction
+     * @classdesc Represents a DeleteAccountTransaction.
+     * @implements IDeleteAccountTransaction
+     * @constructor
+     * @param {IDeleteAccountTransaction=} [properties] Properties to set
+     */
+    function DeleteAccountTransaction(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * DeleteAccountTransaction nonce.
+     * @member {number|Long} nonce
+     * @memberof DeleteAccountTransaction
+     * @instance
+     */
+    DeleteAccountTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+    /**
+     * DeleteAccountTransaction originatorId.
+     * @member {string} originatorId
+     * @memberof DeleteAccountTransaction
+     * @instance
+     */
+    DeleteAccountTransaction.prototype.originatorId = "";
+
+    /**
+     * DeleteAccountTransaction receiverId.
+     * @member {string} receiverId
+     * @memberof DeleteAccountTransaction
+     * @instance
+     */
+    DeleteAccountTransaction.prototype.receiverId = "";
+
+    /**
+     * Creates a new DeleteAccountTransaction instance using the specified properties.
+     * @function create
+     * @memberof DeleteAccountTransaction
+     * @static
+     * @param {IDeleteAccountTransaction=} [properties] Properties to set
+     * @returns {DeleteAccountTransaction} DeleteAccountTransaction instance
+     */
+    DeleteAccountTransaction.create = function create(properties) {
+        return new DeleteAccountTransaction(properties);
+    };
+
+    /**
+     * Encodes the specified DeleteAccountTransaction message. Does not implicitly {@link DeleteAccountTransaction.verify|verify} messages.
+     * @function encode
+     * @memberof DeleteAccountTransaction
+     * @static
+     * @param {IDeleteAccountTransaction} message DeleteAccountTransaction message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    DeleteAccountTransaction.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.nonce != null && message.hasOwnProperty("nonce"))
+            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
+        if (message.originatorId != null && message.hasOwnProperty("originatorId"))
+            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originatorId);
+        if (message.receiverId != null && message.hasOwnProperty("receiverId"))
+            writer.uint32(/* id 3, wireType 2 =*/26).string(message.receiverId);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified DeleteAccountTransaction message, length delimited. Does not implicitly {@link DeleteAccountTransaction.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof DeleteAccountTransaction
+     * @static
+     * @param {IDeleteAccountTransaction} message DeleteAccountTransaction message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    DeleteAccountTransaction.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a DeleteAccountTransaction message from the specified reader or buffer.
+     * @function decode
+     * @memberof DeleteAccountTransaction
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {DeleteAccountTransaction} DeleteAccountTransaction
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    DeleteAccountTransaction.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.DeleteAccountTransaction();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.nonce = reader.uint64();
+                break;
+            case 2:
+                message.originatorId = reader.string();
+                break;
+            case 3:
+                message.receiverId = reader.string();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a DeleteAccountTransaction message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof DeleteAccountTransaction
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {DeleteAccountTransaction} DeleteAccountTransaction
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    DeleteAccountTransaction.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a DeleteAccountTransaction message.
+     * @function verify
+     * @memberof DeleteAccountTransaction
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    DeleteAccountTransaction.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.nonce != null && message.hasOwnProperty("nonce"))
+            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
+                return "nonce: integer|Long expected";
+        if (message.originatorId != null && message.hasOwnProperty("originatorId"))
+            if (!$util.isString(message.originatorId))
+                return "originatorId: string expected";
+        if (message.receiverId != null && message.hasOwnProperty("receiverId"))
+            if (!$util.isString(message.receiverId))
+                return "receiverId: string expected";
+        return null;
+    };
+
+    /**
+     * Creates a DeleteAccountTransaction message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof DeleteAccountTransaction
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {DeleteAccountTransaction} DeleteAccountTransaction
+     */
+    DeleteAccountTransaction.fromObject = function fromObject(object) {
+        if (object instanceof $root.DeleteAccountTransaction)
+            return object;
+        var message = new $root.DeleteAccountTransaction();
+        if (object.nonce != null)
+            if ($util.Long)
+                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
+            else if (typeof object.nonce === "string")
+                message.nonce = parseInt(object.nonce, 10);
+            else if (typeof object.nonce === "number")
+                message.nonce = object.nonce;
+            else if (typeof object.nonce === "object")
+                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
+        if (object.originatorId != null)
+            message.originatorId = String(object.originatorId);
+        if (object.receiverId != null)
+            message.receiverId = String(object.receiverId);
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a DeleteAccountTransaction message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof DeleteAccountTransaction
+     * @static
+     * @param {DeleteAccountTransaction} message DeleteAccountTransaction
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    DeleteAccountTransaction.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            if ($util.Long) {
+                var long = new $util.Long(0, 0, true);
+                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+            } else
+                object.nonce = options.longs === String ? "0" : 0;
+            object.originatorId = "";
+            object.receiverId = "";
+        }
+        if (message.nonce != null && message.hasOwnProperty("nonce"))
+            if (typeof message.nonce === "number")
+                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
+            else
+                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
+        if (message.originatorId != null && message.hasOwnProperty("originatorId"))
+            object.originatorId = message.originatorId;
+        if (message.receiverId != null && message.hasOwnProperty("receiverId"))
+            object.receiverId = message.receiverId;
+        return object;
+    };
+
+    /**
+     * Converts this DeleteAccountTransaction to JSON.
+     * @function toJSON
+     * @memberof DeleteAccountTransaction
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    DeleteAccountTransaction.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return DeleteAccountTransaction;
+})();
+
 $root.SignedTransaction = (function() {
 
     /**
@@ -3002,6 +3250,7 @@ $root.SignedTransaction = (function() {
      * @property {ISwapKeyTransaction|null} [swapKey] SignedTransaction swapKey
      * @property {IAddKeyTransaction|null} [addKey] SignedTransaction addKey
      * @property {IDeleteKeyTransaction|null} [deleteKey] SignedTransaction deleteKey
+     * @property {IDeleteAccountTransaction|null} [deleteAccount] SignedTransaction deleteAccount
      */
 
     /**
@@ -3099,17 +3348,25 @@ $root.SignedTransaction = (function() {
      */
     SignedTransaction.prototype.deleteKey = null;
 
+    /**
+     * SignedTransaction deleteAccount.
+     * @member {IDeleteAccountTransaction|null|undefined} deleteAccount
+     * @memberof SignedTransaction
+     * @instance
+     */
+    SignedTransaction.prototype.deleteAccount = null;
+
     // OneOf field names bound to virtual getters and setters
     var $oneOfFields;
 
     /**
      * SignedTransaction body.
-     * @member {"createAccount"|"deployContract"|"functionCall"|"sendMoney"|"stake"|"swapKey"|"addKey"|"deleteKey"|undefined} body
+     * @member {"createAccount"|"deployContract"|"functionCall"|"sendMoney"|"stake"|"swapKey"|"addKey"|"deleteKey"|"deleteAccount"|undefined} body
      * @memberof SignedTransaction
      * @instance
      */
     Object.defineProperty(SignedTransaction.prototype, "body", {
-        get: $util.oneOfGetter($oneOfFields = ["createAccount", "deployContract", "functionCall", "sendMoney", "stake", "swapKey", "addKey", "deleteKey"]),
+        get: $util.oneOfGetter($oneOfFields = ["createAccount", "deployContract", "functionCall", "sendMoney", "stake", "swapKey", "addKey", "deleteKey", "deleteAccount"]),
         set: $util.oneOfSetter($oneOfFields)
     });
 
@@ -3157,6 +3414,8 @@ $root.SignedTransaction = (function() {
             $root.DeleteKeyTransaction.encode(message.deleteKey, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
         if (message.publicKey != null && message.hasOwnProperty("publicKey"))
             $root.google.protobuf.BytesValue.encode(message.publicKey, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+        if (message.deleteAccount != null && message.hasOwnProperty("deleteAccount"))
+            $root.DeleteAccountTransaction.encode(message.deleteAccount, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
         return writer;
     };
 
@@ -3220,6 +3479,9 @@ $root.SignedTransaction = (function() {
                 break;
             case 9:
                 message.deleteKey = $root.DeleteKeyTransaction.decode(reader, reader.uint32());
+                break;
+            case 11:
+                message.deleteAccount = $root.DeleteAccountTransaction.decode(reader, reader.uint32());
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -3343,6 +3605,16 @@ $root.SignedTransaction = (function() {
                     return "deleteKey." + error;
             }
         }
+        if (message.deleteAccount != null && message.hasOwnProperty("deleteAccount")) {
+            if (properties.body === 1)
+                return "body: multiple values";
+            properties.body = 1;
+            {
+                var error = $root.DeleteAccountTransaction.verify(message.deleteAccount);
+                if (error)
+                    return "deleteAccount." + error;
+            }
+        }
         return null;
     };
 
@@ -3407,6 +3679,11 @@ $root.SignedTransaction = (function() {
             if (typeof object.deleteKey !== "object")
                 throw TypeError(".SignedTransaction.deleteKey: object expected");
             message.deleteKey = $root.DeleteKeyTransaction.fromObject(object.deleteKey);
+        }
+        if (object.deleteAccount != null) {
+            if (typeof object.deleteAccount !== "object")
+                throw TypeError(".SignedTransaction.deleteAccount: object expected");
+            message.deleteAccount = $root.DeleteAccountTransaction.fromObject(object.deleteAccount);
         }
         return message;
     };
@@ -3478,6 +3755,11 @@ $root.SignedTransaction = (function() {
         }
         if (message.publicKey != null && message.hasOwnProperty("publicKey"))
             object.publicKey = $root.google.protobuf.BytesValue.toObject(message.publicKey, options);
+        if (message.deleteAccount != null && message.hasOwnProperty("deleteAccount")) {
+            object.deleteAccount = $root.DeleteAccountTransaction.toObject(message.deleteAccount, options);
+            if (options.oneofs)
+                object.body = "deleteAccount";
+        }
         return object;
     };
 
@@ -10722,6 +11004,7 @@ var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 module.exports = basex(ALPHABET)
 
 },{"base-x":33}],39:[function(require,module,exports){
+(function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -12500,7 +12783,8 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":34,"ieee754":56}],40:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"base64-js":34,"buffer":39,"ieee754":56}],40:[function(require,module,exports){
 require(".").check("es5");
 },{".":41}],41:[function(require,module,exports){
 require("./lib/definitions");
@@ -13434,24 +13718,28 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
+    if (superCtor) {
+      ctor.super_ = superCtor
+      ctor.prototype = Object.create(superCtor.prototype, {
+        constructor: {
+          value: ctor,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
+      })
+    }
   };
 } else {
   // old school shim for old browsers
   module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
+    if (superCtor) {
+      ctor.super_ = superCtor
+      var TempCtor = function () {}
+      TempCtor.prototype = superCtor.prototype
+      ctor.prototype = new TempCtor()
+      ctor.prototype.constructor = ctor
+    }
   }
 }
 

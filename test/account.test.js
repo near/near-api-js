@@ -107,7 +107,7 @@ describe('with deploy contract', () => {
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({ value: setCallValue });
-        expect(nearlib.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
+        expect(result2).toEqual(setCallValue);
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
@@ -131,7 +131,6 @@ describe('with deploy contract', () => {
     });
 
     test('test set/remove', async () => {
-        const result = await contract.testSetRemove({ value: '123' });
-        expect(result.status).toBe('Completed');
+        await contract.testSetRemove({ value: '123' });
     });
 });
