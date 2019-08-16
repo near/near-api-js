@@ -6,7 +6,21 @@ import BN from 'bn.js';
 import { base_decode, serialize } from './utils/serialize';
 import { Signer } from './signer';
 
-export class Assignable {
+class Enum {
+    enum: string;
+
+    constructor(properties: any) {
+        if (Object.keys(properties).length != 1) {
+            throw new Error("Enum can only take single value");
+        }
+        Object.keys(properties).map((key: string) => {
+            (this as any)[key] = properties[key];
+            this.enum = key;
+        });
+    }
+}
+
+class Assignable {
     constructor(properties: any) {
         Object.keys(properties).map((key: any) => {
             (this as any)[key] = properties[key];
@@ -14,17 +28,30 @@ export class Assignable {
     }
 }
 
-export class AccessKey extends Assignable { 
-    contractId: string; methodName: Uint8Array; balanceOwner: string; amount: BN 
+export class FunctionCallPermission extends Assignable {
+    allowance?: BN;
+    receiverId: string;
+    methodNames: String[];
 }
 
-export function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): AccessKey {
-    return new AccessKey({
-        contractId,
-        methodName,
-        balanceOwner,
-        amount: amount || new BN(0),
-    });
+export class FullAccessPermission extends Assignable {}
+
+export class AccessKeyPermission extends Enum {
+    functionCall: FunctionCallPermission;
+    fullAccess: FullAccessPermission;
+}
+
+export class AccessKey extends Assignable {
+    nonce: number;
+    permission: AccessKeyPermission;
+}
+
+export function fullAccessKey(): AccessKey {
+    return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({fullAccess: new FullAccessPermission({})}) });
+}
+
+export function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey {
+    return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({functionCall: new FunctionCallPermission({receiverId, allowance, methodNames})})});
 }
 
 export class IAction extends Assignable {}
@@ -101,8 +128,7 @@ export class SignedTransaction extends Assignable {
     }
 }
 
-export class Action {
-    action: string;
+export class Action extends Enum {
     createAccount: CreateAccount;
     deployContract: DeployContract;
     functionCall: FunctionCall;
@@ -111,16 +137,6 @@ export class Action {
     addKey: AddKey;
     deleteKey: DeleteKey;
     deleteAccount: DeleteAccount;
-
-    constructor(properties: any) {
-        if (Object.keys(properties).length != 1) {
-            throw new Error("Action can only take single value");
-        }
-        Object.keys(properties).map((key: string) => {
-            (this as any)[key] = properties[key];
-            this.action = key;
-        });
-    }
 }
 
 const SCHEMA = {
@@ -130,12 +146,20 @@ const SCHEMA = {
     'PublicKey': {
             kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]] },
     'AccessKey': { kind: 'struct', fields: [
-        ['amount', 'u128'],
-        ['balanceOwner', { kind: 'option', type: 'string' }], 
-        ['contractId', {kind: 'option', type: 'string'}], 
-        ['methodName', {kind: 'option', type: ['u8']}], 
+        ['nonce', 'u64'],
+        ['permission', AccessKeyPermission],
     ]},
-    'Action': {kind: 'enum', field: 'action', values: [
+    'AccessKeyPermission': {kind: 'enum', field: 'enum', values: [
+        ['functionCall', FunctionCallPermission],
+        ['fullAccess', FullAccessPermission],
+    ]},
+    'FunctionCallPermission': {kind: 'struct', fields: [
+        ['allowance', {kind: 'option', type: 'u128'}], 
+        ['receiverId', 'string'], 
+        ['methodNames', ['string']],
+    ]},
+    'FullAccessPermission': {kind: 'struct', fields: []},
+    'Action': {kind: 'enum', field: 'enum', values: [
         ['createAccount', CreateAccount], 
         ['deployContract', DeployContract],
         ['functionCall', functionCall],

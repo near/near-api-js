@@ -1,15 +1,29 @@
 import BN from 'bn.js';
 import { Signer } from './signer';
-export declare class Assignable {
+declare class Enum {
+    enum: string;
     constructor(properties: any);
 }
-export declare class AccessKey extends Assignable {
-    contractId: string;
-    methodName: Uint8Array;
-    balanceOwner: string;
-    amount: BN;
+declare class Assignable {
+    constructor(properties: any);
 }
-export declare function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): AccessKey;
+export declare class FunctionCallPermission extends Assignable {
+    allowance?: BN;
+    receiverId: string;
+    methodNames: String[];
+}
+export declare class FullAccessPermission extends Assignable {
+}
+export declare class AccessKeyPermission extends Enum {
+    functionCall: FunctionCallPermission;
+    fullAccess: FullAccessPermission;
+}
+export declare class AccessKey extends Assignable {
+    nonce: number;
+    permission: AccessKeyPermission;
+}
+export declare function fullAccessKey(): AccessKey;
+export declare function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey;
 export declare class IAction extends Assignable {
 }
 declare class CreateAccount extends IAction {
@@ -68,8 +82,7 @@ export declare class SignedTransaction extends Assignable {
     signature: Uint8Array;
     encode(): Uint8Array;
 }
-export declare class Action {
-    action: string;
+export declare class Action extends Enum {
     createAccount: CreateAccount;
     deployContract: DeployContract;
     functionCall: FunctionCall;
@@ -78,7 +91,6 @@ export declare class Action {
     addKey: AddKey;
     deleteKey: DeleteKey;
     deleteAccount: DeleteAccount;
-    constructor(properties: any);
 }
 export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export {};

@@ -2,7 +2,7 @@
 
 import BN from 'bn.js';
 import { Action, transfer, createAccount, signTransaction, deployContract,
-    addKey, functionCall, createAccessKey, deleteKey, stake } from './transaction';
+    addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
 import { base_encode } from './utils/serialize';
@@ -28,10 +28,8 @@ function sleep(millis: number): Promise<any> {
 
 export interface AccountState {
     account_id: string;
-    nonce: number;
     amount: string;
     staked: string;
-    public_keys: Uint8Array[];
     code_hash: string;
 }
 
@@ -39,6 +37,7 @@ export class Account {
     readonly connection: Connection;
     readonly accountId: string;
     private _state: AccountState;
+    private _access_key: AccessKey;
 
     private _ready: Promise<void>;
     protected get ready(): Promise<void> {
@@ -51,8 +50,13 @@ export class Account {
     }
 
     async fetchState(): Promise<void> {
-        const state = await this.connection.provider.query(`account/${this.accountId}`, '');
-        this._state = state;
+        this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
+        try {
+            const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+            this._access_key = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey}`, '');
+        } catch {
+            this._access_key = null;
+        }
     }
 
     async state(): Promise<AccountState> {
@@ -83,8 +87,11 @@ export class Account {
 
     private async signAndSendTransaction(receiverId: string, actions: Array<Action>): Promise<FinalTransactionResult> {
         await this.ready;
+        if (this._access_key === null) {
+            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
+        }
         const [txHash, signedTx] = await signTransaction(
-            receiverId, ++this._state.nonce, actions, this.connection.signer, this.accountId, this.connection.networkId);
+            receiverId, ++this._access_key.nonce, actions, this.connection.signer, this.accountId, this.connection.networkId);
 
         let result;
         try {
@@ -124,7 +131,7 @@ export class Account {
     }
 
     async createAccount(newAccountId: string, publicKey: string, amount: BN): Promise<FinalTransactionResult> {
-        const accessKey = createAccessKey(null, "", newAccountId, new BN(0));
+        const accessKey = fullAccessKey();
         return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(publicKey, accessKey)]);
     }
 
@@ -139,8 +146,14 @@ export class Account {
         return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
     }
 
+    // TODO: expand this API to support more options.
     async addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): Promise<FinalTransactionResult> {
-        const accessKey = createAccessKey(contractId ? contractId : null, methodName, balanceOwner, amount);
+        let accessKey;
+        if (contractId === null) {
+            accessKey = fullAccessKey();
+        } else {
+            accessKey = functionCallAccessKey(contractId, methodName === null ? [] : [methodName], amount);
+        }
         return this.signAndSendTransaction(this.accountId, [addKey(publicKey, accessKey)]);
     }
 
