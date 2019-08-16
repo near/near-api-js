@@ -875,6 +875,108 @@ export class DeleteKeyTransaction implements IDeleteKeyTransaction {
     public toJSON(): { [k: string]: any };
 }
 
+/** Properties of a DeleteAccountTransaction. */
+export interface IDeleteAccountTransaction {
+
+    /** DeleteAccountTransaction nonce */
+    nonce?: (number|Long|null);
+
+    /** DeleteAccountTransaction originatorId */
+    originatorId?: (string|null);
+
+    /** DeleteAccountTransaction receiverId */
+    receiverId?: (string|null);
+}
+
+/** Represents a DeleteAccountTransaction. */
+export class DeleteAccountTransaction implements IDeleteAccountTransaction {
+
+    /**
+     * Constructs a new DeleteAccountTransaction.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IDeleteAccountTransaction);
+
+    /** DeleteAccountTransaction nonce. */
+    public nonce: (number|Long);
+
+    /** DeleteAccountTransaction originatorId. */
+    public originatorId: string;
+
+    /** DeleteAccountTransaction receiverId. */
+    public receiverId: string;
+
+    /**
+     * Creates a new DeleteAccountTransaction instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns DeleteAccountTransaction instance
+     */
+    public static create(properties?: IDeleteAccountTransaction): DeleteAccountTransaction;
+
+    /**
+     * Encodes the specified DeleteAccountTransaction message. Does not implicitly {@link DeleteAccountTransaction.verify|verify} messages.
+     * @param message DeleteAccountTransaction message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IDeleteAccountTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified DeleteAccountTransaction message, length delimited. Does not implicitly {@link DeleteAccountTransaction.verify|verify} messages.
+     * @param message DeleteAccountTransaction message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IDeleteAccountTransaction, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a DeleteAccountTransaction message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns DeleteAccountTransaction
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): DeleteAccountTransaction;
+
+    /**
+     * Decodes a DeleteAccountTransaction message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns DeleteAccountTransaction
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): DeleteAccountTransaction;
+
+    /**
+     * Verifies a DeleteAccountTransaction message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a DeleteAccountTransaction message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns DeleteAccountTransaction
+     */
+    public static fromObject(object: { [k: string]: any }): DeleteAccountTransaction;
+
+    /**
+     * Creates a plain object from a DeleteAccountTransaction message. Also converts values to other types if specified.
+     * @param message DeleteAccountTransaction
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: DeleteAccountTransaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this DeleteAccountTransaction to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
 /** Properties of a SignedTransaction. */
 export interface ISignedTransaction {
 
@@ -907,6 +1009,9 @@ export interface ISignedTransaction {
 
     /** SignedTransaction deleteKey */
     deleteKey?: (IDeleteKeyTransaction|null);
+
+    /** SignedTransaction deleteAccount */
+    deleteAccount?: (IDeleteAccountTransaction|null);
 }
 
 /** Represents a SignedTransaction. */
@@ -948,8 +1053,11 @@ export class SignedTransaction implements ISignedTransaction {
     /** SignedTransaction deleteKey. */
     public deleteKey?: (IDeleteKeyTransaction|null);
 
+    /** SignedTransaction deleteAccount. */
+    public deleteAccount?: (IDeleteAccountTransaction|null);
+
     /** SignedTransaction body. */
-    public body?: ("createAccount"|"deployContract"|"functionCall"|"sendMoney"|"stake"|"swapKey"|"addKey"|"deleteKey");
+    public body?: ("createAccount"|"deployContract"|"functionCall"|"sendMoney"|"stake"|"swapKey"|"addKey"|"deleteKey"|"deleteAccount");
 
     /**
      * Creates a new SignedTransaction instance using the specified properties.
