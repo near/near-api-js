@@ -45,8 +45,9 @@
   "license": "MIT",
   "scripts": {
     "generate-protos": "scripts/generate_js_transaction_proto.sh",
-    "dist": "yarn build && yarn doc && browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
-    "prepublish": "yarn dist",
+    "dist": "yarn browserify && yarn doc",
+    "browserify": "browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
+    "prepublish": "yarn build && yarn browserify",
     "compile": "tsc -p ./tsconfig.json",
     "dev": "yarn compile -- -w",
     "build": "yarn generate-protos && yarn compile",
