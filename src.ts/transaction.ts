@@ -111,6 +111,16 @@ class PublicKey {
     }
 }
 
+class Signature {
+    keyType: KeyType;
+    data: Uint8Array;
+
+    constructor(signature: Uint8Array) {
+        this.keyType = KeyType.ED25519;
+        this.data = signature;
+    }
+}
+
 class Transaction extends Assignable {
     signerId: string;
     publicKey: PublicKey;
@@ -121,7 +131,7 @@ class Transaction extends Assignable {
 
 export class SignedTransaction extends Assignable {
     transaction: Transaction;
-    signature: Uint8Array;
+    signature: Signature;
 
     encode(): Uint8Array {
         return serialize(SCHEMA, this);
@@ -140,7 +150,8 @@ export class Action extends Enum {
 }
 
 const SCHEMA = {
-    'SignedTransaction': {kind: 'struct', fields: [['transaction', Transaction], ['signature', [32]]]},
+    'Signature': {kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]]},
+    'SignedTransaction': {kind: 'struct', fields: [['transaction', Transaction], ['signature', Signature]]},
     'Transaction': {
         kind: 'struct', fields: [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['actions', [Action]]] },
     'PublicKey': {
@@ -185,6 +196,6 @@ export async function signTransaction(receiverId: string, nonce: number, actions
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
     const signature = await signer.signHash(hash, accountId, networkId);
-    const signedTx = new SignedTransaction({transaction, signature: signature.signature });
+    const signedTx = new SignedTransaction({transaction, signature: new Signature(signature.signature) });
     return [hash, signedTx];
 }

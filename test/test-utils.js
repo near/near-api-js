@@ -29,7 +29,6 @@ async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE,
     await masterAccount.fetchState();
     const newAccountName = generateUniqueString('test');
     const newPublicKey = await masterAccount.connection.signer.createKey(newAccountName, networkId);
-    console.warn(`account: ${newAccountName}, key: ${newPublicKey}`);
     await masterAccount.createAccount(newAccountName, newPublicKey, options.amount);
     return new nearlib.Account(masterAccount.connection, newAccountName);
 }

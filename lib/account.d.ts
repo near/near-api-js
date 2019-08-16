@@ -25,9 +25,10 @@ export declare class Account {
     createAccount(newAccountId: string, publicKey: string, amount: BN): Promise<FinalTransactionResult>;
     deployContract(data: Uint8Array): Promise<FinalTransactionResult>;
     functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalTransactionResult>;
-    addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): Promise<FinalTransactionResult>;
+    addKey(publicKey: string, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult>;
     deleteKey(publicKey: string): Promise<FinalTransactionResult>;
     stake(publicKey: string, amount: BN): Promise<FinalTransactionResult>;
     viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
+    getAccessKeys(): Promise<any>;
     getAccountDetails(): Promise<any>;
 }

@@ -70,6 +70,11 @@ declare class PublicKey {
     data: Uint8Array;
     constructor(publicKey: string);
 }
+declare class Signature {
+    keyType: KeyType;
+    data: Uint8Array;
+    constructor(signature: Uint8Array);
+}
 declare class Transaction extends Assignable {
     signerId: string;
     publicKey: PublicKey;
@@ -79,7 +84,7 @@ declare class Transaction extends Assignable {
 }
 export declare class SignedTransaction extends Assignable {
     transaction: Transaction;
-    signature: Uint8Array;
+    signature: Signature;
     encode(): Uint8Array;
 }
 export declare class Action extends Enum {

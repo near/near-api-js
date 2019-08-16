@@ -24,7 +24,7 @@ beforeEach(async () => {
 
 test('make function call using access key', async() => {
     const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '', 400000);
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 1000000);
 
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
@@ -35,20 +35,21 @@ test('make function call using access key', async() => {
 
 test('remove access key no longer works', async() => {
     const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '', 400000);
-    await workingAccount.deleteKey(keyPair.getPublicKey());
+    let publicKey = keyPair.getPublicKey();
+    await workingAccount.addKey(publicKey, contractId, '', 400000);
+    await workingAccount.deleteKey(publicKey);
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
-    await expect(contract.setValue({ value: 'test' })).rejects.toThrow(/\[-32000\] Server error: Transaction is not signed with a public key of the originator .+/);
+    await expect(contract.setValue({ value: 'test' })).rejects.toThrow(new RegExp(`\\[-32000\\] Server error: Signer "${workingAccount.accountId}" doesn't have access key with the given public_key \`${publicKey}\``));
 });
 
 test('view account details after adding access keys', async() => {
     const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '', 1000000000);
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 1000000000);
 
     const contract2 = await testUtils.deployContract(workingAccount, 'test_contract2_' + Date.now());
     const keyPair2 = nearlib.utils.KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', '', 2000000000);
+    await workingAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', 2000000000);
 
     const details = await workingAccount.getAccountDetails();
     const expectedResult = {
@@ -69,10 +70,10 @@ test('view account details after adding access keys', async() => {
 
 test('loading account after adding a full key', async() => {
     const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), '', '', '', 1000000000);
+    await workingAccount.addKey(keyPair.getPublicKey());
 
-    await workingAccount.fetchState();
+    let accessKeys = await workingAccount.getAccessKeys();
 
-    expect(workingAccount._state.public_keys.length).toBe(2);
-    expect(workingAccount._state.public_keys.includes(keyPair.getPublicKey())).toBe(true);
+    expect(accessKeys.length).toBe(2);
+    expect(accessKeys.map((item) => item.public_key.data).includes(keyPair.getPublicKey())).toBe(true);
 });

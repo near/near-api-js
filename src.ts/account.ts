@@ -147,12 +147,12 @@ export class Account {
     }
 
     // TODO: expand this API to support more options.
-    async addKey(publicKey: string, contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): Promise<FinalTransactionResult> {
+    async addKey(publicKey: string, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult> {
         let accessKey;
-        if (contractId === null) {
+        if (contractId === null || contractId === undefined) {
             accessKey = fullAccessKey();
         } else {
-            accessKey = functionCallAccessKey(contractId, methodName === null ? [] : [methodName], amount);
+            accessKey = functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
         }
         return this.signAndSendTransaction(this.accountId, [addKey(publicKey, accessKey)]);
     }
@@ -173,15 +173,26 @@ export class Account {
         return JSON.parse(Buffer.from(result.result).toString());
     }
 
-    async getAccountDetails(): Promise<any> {
+    /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
+    async getAccessKeys(): Promise<any> {
         const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
+        return response;
+    }
+
+    async getAccountDetails(): Promise<any> {
+        // TODO: update the response value to return all the different keys, not just app keys.
+        // Also if we need this function, or getAccessKeys is good enough.
+        const accessKeys = await this.getAccessKeys();
         const result: any = { authorizedApps: [], transactions: [] };
-        Object.keys(response).forEach((key) => {
-            result.authorizedApps.push({
-                contractId: response[key][1].contract_id,
-                amount: response[key][1].amount,
-                publicKey: base_encode(response[key][0]),
-            });
+        accessKeys.map((item) => {
+            if (item.access_key.permission.FunctionCall !== undefined) {
+                const perm = item.access_key.permission.FunctionCall;
+                result.authorizedApps.push({
+                    contractId: perm.receiver_id,
+                    amount: perm.allowance,
+                    publicKey: item.public_key.data,
+                });
+            }
         });
         return result;
     }
