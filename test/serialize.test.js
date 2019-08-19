@@ -1,6 +1,5 @@
 
 const nearlib = require('../lib/index');
-const BN = require('BN.js');
 
 class Test {
     constructor(x, y, z, q) {
@@ -36,6 +35,6 @@ test('serialize tx', async() => {
         nearlib.transactions.deleteKey(publicKey),
         nearlib.transactions.deleteAccount('123')
     ];
-    let [hash, signedTx] = await nearlib.transactions.signTransaction('123', 1, actions, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
+    let [hash] = await nearlib.transactions.signTransaction('123', 1, actions, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
     expect(nearlib.utils.serialize.base_encode(hash)).toEqual('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
 });

@@ -30,6 +30,6 @@ export {
     KeyPair,
 
     connect,
-   
+
     WalletAccount
 };

@@ -37,7 +37,7 @@ export class Account {
     readonly connection: Connection;
     readonly accountId: string;
     private _state: AccountState;
-    private _access_key: AccessKey;
+    private _accessKey: AccessKey;
 
     private _ready: Promise<void>;
     protected get ready(): Promise<void> {
@@ -53,9 +53,9 @@ export class Account {
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
         try {
             const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
-            this._access_key = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey}`, '');
+            this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey}`, '');
         } catch {
-            this._access_key = null;
+            this._accessKey = null;
         }
     }
 
@@ -85,13 +85,13 @@ export class Account {
         throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`);
     }
 
-    private async signAndSendTransaction(receiverId: string, actions: Array<Action>): Promise<FinalTransactionResult> {
+    private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalTransactionResult> {
         await this.ready;
-        if (this._access_key === null) {
+        if (this._accessKey === null) {
             throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
         }
         const [txHash, signedTx] = await signTransaction(
-            receiverId, ++this._access_key.nonce, actions, this.connection.signer, this.accountId, this.connection.networkId);
+            receiverId, ++this._accessKey.nonce, actions, this.connection.signer, this.accountId, this.connection.networkId);
 
         let result;
         try {

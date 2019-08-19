@@ -18,7 +18,7 @@ beforeAll(async () => {
 
 test('view pre-defined account works and returns correct name', async () => {
     let status = await workingAccount.state();
-    expect(status.code_hash).toEqual("11111111111111111111111111111111");
+    expect(status.code_hash).toEqual('11111111111111111111111111111111');
 });
 
 test('create account and then view account returns the created account', async () => {

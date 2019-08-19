@@ -55,13 +55,13 @@ export class BinaryWriter {
     }
 
     private write_buffer(buffer: Buffer) {
-        this.buf = Buffer.concat([this.buf.subarray(0, this.length), buffer, Buffer.alloc(INITIAL_LENGTH)])
+        this.buf = Buffer.concat([this.buf.subarray(0, this.length), buffer, Buffer.alloc(INITIAL_LENGTH)]);
         this.length += buffer.length;
     }
 
     public write_string(str: string) {
         this.maybe_resize();
-        let b = Buffer.from(str, 'utf8');
+        const b = Buffer.from(str, 'utf8');
         this.write_u32(b.length);
         this.write_buffer(b);
     }
@@ -70,12 +70,12 @@ export class BinaryWriter {
         this.write_buffer(Buffer.from(array));
     }
 
-    public write_array(array: Array<any>, fn: any) {
+    public write_array(array: any[], fn: any) {
         this.maybe_resize();
         this.write_u32(array.length);
-        for (let i = 0; i < array.length; ++i) {
+        for (const elem of array) {
             this.maybe_resize();
-            fn(array[i]);
+            fn(elem);
         }
     }
 
@@ -106,13 +106,13 @@ export class BinaryReader {
     }
 
     read_u64(): BN {
-        let buf = this.read_buffer(8);
+        const buf = this.read_buffer(8);
         buf.reverse();
         return new BN(`${buf.toString('hex')}`, 16);
     }
 
     read_u128(): BN {
-        let buf = this.read_buffer(16);
+        const buf = this.read_buffer(16);
         return new BN(buf);
     }
 
@@ -123,7 +123,7 @@ export class BinaryReader {
     }
 
     read_string(): string {
-        let len = this.read_u32();
+        const len = this.read_u32();
         return this.read_buffer(len).toString('utf8');
     }
 
@@ -131,9 +131,9 @@ export class BinaryReader {
         return new Uint8Array(this.read_buffer(len));
     }
 
-    read_array(fn: any): Array<any> {
+    read_array(fn: any): any[] {
         const len = this.read_u32();
-        let result = Array<any>();
+        const result = Array<any>();
         for (let i = 0; i < len; ++i) {
             result.push(fn());
         }
@@ -142,17 +142,17 @@ export class BinaryReader {
 }
 
 function serializeField(schema: any, value: any, fieldType: any, writer: any) {
-    if (typeof fieldType === "string") {
+    if (typeof fieldType === 'string') {
         writer[`write_${fieldType}`](value);
     } else if (fieldType instanceof Array) {
-        if (typeof fieldType[0] === "number") {
+        if (typeof fieldType[0] === 'number') {
             writer.write_fixed_array(value);
         } else {
-            writer.write_array(value, (item: any) => { serializeField(schema, item, fieldType[0], writer) });
+            writer.write_array(value, (item: any) => { serializeField(schema, item, fieldType[0], writer); });
         }
     } else if (fieldType.kind !== undefined) {
         switch (fieldType.kind) {
-            case "option": {
+            case 'option': {
                 if (value === null) {
                     writer.write_u8(0);
                 } else {
@@ -161,7 +161,7 @@ function serializeField(schema: any, value: any, fieldType: any, writer: any) {
                 }
                 break;
             }
-            default: throw new Error(`FieldType ${fieldType} unrecognized`)
+            default: throw new Error(`FieldType ${fieldType} unrecognized`);
         }
     } else {
         serializeStruct(schema, value, writer);
@@ -171,7 +171,7 @@ function serializeField(schema: any, value: any, fieldType: any, writer: any) {
 function serializeStruct(schema: any, obj: any, writer: any) {
     const className = obj.constructor.name;
     if (schema[className] === undefined) {
-        throw new Error(`Class ${className} is missing in schema`)
+        throw new Error(`Class ${className} is missing in schema`);
     }
     if (schema[className].kind === 'struct') {
         schema[className].fields.map(([fieldName, fieldType]: [any, any]) => {
@@ -180,7 +180,7 @@ function serializeStruct(schema: any, obj: any, writer: any) {
     } else if (schema[className].kind === 'enum') {
         const name = obj[schema[className].field];
         for (let idx = 0; idx < schema[className].values.length; ++idx) {
-            let [fieldName, fieldType]: [any, any] = schema[className].values[idx];
+            const [fieldName, fieldType]: [any, any] = schema[className].values[idx];
             if (fieldName === name) {
                 writer.write_u8(idx);
                 serializeField(schema, obj[fieldName], fieldType, writer);
@@ -195,19 +195,19 @@ function serializeStruct(schema: any, obj: any, writer: any) {
 /// Serialize given object using schema of the form:
 /// { class_name -> [ [field_name, field_type], .. ], .. }
 export function serialize(schema: any, obj: any): Uint8Array {
-    let writer = new BinaryWriter();
+    const writer = new BinaryWriter();
     serializeStruct(schema, obj, writer);
     return writer.toArray();
 }
 
 function deserializeField(schema: any, fieldType: any, reader: any): any {
-    if (typeof fieldType === "string") {
+    if (typeof fieldType === 'string') {
         return reader[`read_${fieldType}`]();
     } else if (fieldType instanceof Array) {
         if (typeof fieldType[0] === 'number') {
             return reader.read_fixed_array(fieldType[0]);
         } else {
-            return reader.read_array(() => { return deserializeField(schema, fieldType[0], reader) });
+            return reader.read_array(() => deserializeField(schema, fieldType[0], reader));
         }
     } else {
         return deserializeStruct(schema, fieldType, reader);
@@ -215,7 +215,7 @@ function deserializeField(schema: any, fieldType: any, reader: any): any {
 }
 
 function deserializeStruct(schema: any, classType: any, reader: any) {
-    let fields = schema[classType.name].fields.map(([fieldName, fieldType]: [any, any]) => {
+    const fields = schema[classType.name].fields.map(([fieldName, fieldType]: [any, any]) => {
         return deserializeField(schema, fieldType, reader);
     });
     return new classType(...fields);
@@ -223,6 +223,6 @@ function deserializeStruct(schema: any, classType: any, reader: any) {
 
 /// Deserializes object from bytes using schema.
 export function deserialize(schema: any, classType: any, buffer: Buffer): any {
-    let reader = new BinaryReader(buffer);
+    const reader = new BinaryReader(buffer);
     return deserializeStruct(schema, classType, reader);
 }

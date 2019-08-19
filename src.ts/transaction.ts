@@ -10,8 +10,8 @@ class Enum {
     enum: string;
 
     constructor(properties: any) {
-        if (Object.keys(properties).length != 1) {
-            throw new Error("Enum can only take single value");
+        if (Object.keys(properties).length !== 1) {
+            throw new Error('Enum can only take single value');
         }
         Object.keys(properties).map((key: string) => {
             (this as any)[key] = properties[key];
@@ -57,13 +57,13 @@ export function functionCallAccessKey(receiverId: string, methodNames: String[],
 export class IAction extends Assignable {}
 
 class CreateAccount extends IAction {}
-class DeployContract extends IAction { code: Uint8Array }
-class FunctionCall extends IAction { methodName: string; args: Uint8Array; gas: BN; deposit: BN }
-class Transfer extends IAction { deposit: BN }
-class Stake extends IAction { stake: BN; publicKey: PublicKey }
-class AddKey extends IAction { publicKey: PublicKey; accessKey: AccessKey }
-class DeleteKey extends IAction { publicKey: PublicKey }
-class DeleteAccount extends IAction { beneficiaryId: string }
+class DeployContract extends IAction { code: Uint8Array; }
+class FunctionCall extends IAction { methodName: string; args: Uint8Array; gas: BN; deposit: BN; }
+class Transfer extends IAction { deposit: BN; }
+class Stake extends IAction { stake: BN; publicKey: PublicKey; }
+class AddKey extends IAction { publicKey: PublicKey; accessKey: AccessKey; }
+class DeleteKey extends IAction { publicKey: PublicKey; }
+class DeleteAccount extends IAction { beneficiaryId: string; }
 
 export function createAccount(): Action {
     return new Action({createAccount: new CreateAccount({}) });
@@ -126,7 +126,7 @@ class Transaction extends Assignable {
     publicKey: PublicKey;
     nonce: number;
     receiverId: string;
-    actions: Array<Action>;
+    actions: Action[];
 }
 
 export class SignedTransaction extends Assignable {
@@ -150,28 +150,28 @@ export class Action extends Enum {
 }
 
 const SCHEMA = {
-    'Signature': {kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]]},
-    'SignedTransaction': {kind: 'struct', fields: [['transaction', Transaction], ['signature', Signature]]},
-    'Transaction': {
+    Signature: {kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]]},
+    SignedTransaction: {kind: 'struct', fields: [['transaction', Transaction], ['signature', Signature]]},
+    Transaction: {
         kind: 'struct', fields: [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['actions', [Action]]] },
-    'PublicKey': {
+    PublicKey: {
             kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]] },
-    'AccessKey': { kind: 'struct', fields: [
+    AccessKey: { kind: 'struct', fields: [
         ['nonce', 'u64'],
         ['permission', AccessKeyPermission],
     ]},
-    'AccessKeyPermission': {kind: 'enum', field: 'enum', values: [
+    AccessKeyPermission: {kind: 'enum', field: 'enum', values: [
         ['functionCall', FunctionCallPermission],
         ['fullAccess', FullAccessPermission],
     ]},
-    'FunctionCallPermission': {kind: 'struct', fields: [
-        ['allowance', {kind: 'option', type: 'u128'}], 
-        ['receiverId', 'string'], 
+    FunctionCallPermission: {kind: 'struct', fields: [
+        ['allowance', {kind: 'option', type: 'u128'}],
+        ['receiverId', 'string'],
         ['methodNames', ['string']],
     ]},
-    'FullAccessPermission': {kind: 'struct', fields: []},
-    'Action': {kind: 'enum', field: 'enum', values: [
-        ['createAccount', CreateAccount], 
+    FullAccessPermission: {kind: 'struct', fields: []},
+    Action: {kind: 'enum', field: 'enum', values: [
+        ['createAccount', CreateAccount],
         ['deployContract', DeployContract],
         ['functionCall', functionCall],
         ['transfer', transfer],
@@ -180,15 +180,15 @@ const SCHEMA = {
         ['deleteKey', deleteKey],
         ['deleteAccount', deleteAccount],
     ]},
-    'CreateAccount': { kind: 'struct', fields: [] },
-    'DeployContract': { kind: 'struct', fields: [['code', ['u8']]] },
-    'FunctionCall': { kind: 'struct', fields: [['methodName', 'string'], ['args', ['u8']], ['gas', 'u64'], ['deposit', 'u128']] },
-    'Transfer': { kind: 'struct', fields: [['deposit', 'u128']] },
-    'Stake': { kind: 'struct', fields: [['stake', 'u128'], ['publicKey', PublicKey]] },
-    'AddKey': { kind: 'struct', fields: [['publicKey', PublicKey], ['accessKey', AccessKey]] },
-    'DeleteKey': { kind: 'struct', fields: [['publicKey', PublicKey]] },
-    'DeleteAccount': { kind: 'struct', fields: [['beneficiaryId', 'string']] },
-}
+    CreateAccount: { kind: 'struct', fields: [] },
+    DeployContract: { kind: 'struct', fields: [['code', ['u8']]] },
+    FunctionCall: { kind: 'struct', fields: [['methodName', 'string'], ['args', ['u8']], ['gas', 'u64'], ['deposit', 'u128']] },
+    Transfer: { kind: 'struct', fields: [['deposit', 'u128']] },
+    Stake: { kind: 'struct', fields: [['stake', 'u128'], ['publicKey', PublicKey]] },
+    AddKey: { kind: 'struct', fields: [['publicKey', PublicKey], ['accessKey', AccessKey]] },
+    DeleteKey: { kind: 'struct', fields: [['publicKey', PublicKey]] },
+    DeleteAccount: { kind: 'struct', fields: [['beneficiaryId', 'string']] },
+};
 
 export async function signTransaction(receiverId: string, nonce: number, actions: Action[], signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const publicKey = new PublicKey(await signer.getPublicKey(accountId, networkId));
