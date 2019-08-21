@@ -11,7 +11,7 @@ export declare class Account {
     readonly connection: Connection;
     readonly accountId: string;
     private _state;
-    private _access_key;
+    private _accessKey;
     private _ready;
     protected readonly ready: Promise<void>;
     constructor(connection: Connection, accountId: string);

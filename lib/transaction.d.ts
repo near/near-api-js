@@ -80,7 +80,7 @@ declare class Transaction extends Assignable {
     publicKey: PublicKey;
     nonce: number;
     receiverId: string;
-    actions: Array<Action>;
+    actions: Action[];
 }
 export declare class SignedTransaction extends Assignable {
     transaction: Transaction;
