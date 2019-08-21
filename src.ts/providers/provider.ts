@@ -1,7 +1,7 @@
 'use strict';
 
 import { Network } from '../utils/network';
-import { SignedTransaction } from '../protos';
+import { SignedTransaction } from '../transaction';
 
 export interface SyncInfo {
     latest_block_hash: string;

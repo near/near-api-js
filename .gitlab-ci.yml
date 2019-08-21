@@ -2,7 +2,6 @@ image: node:10
 
 variables:
   NODE_ENV: ci
-  NEAR_PROTOS_DIR: nearcore/core/protos/protos
   HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:

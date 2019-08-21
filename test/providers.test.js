@@ -19,7 +19,7 @@ test('json rpc query account', async () => {
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
     const provider = new nearlib.providers.JsonRpcProvider(config.nodeUrl);
     let response = await provider.query('account/test.near', '');
-    expect(response.account_id).toEqual('test.near');
+    expect(response.code_hash).toEqual('11111111111111111111111111111111');
 });
 
 test('final tx result', async() => {
