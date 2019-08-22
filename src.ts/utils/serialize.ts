@@ -16,6 +16,8 @@ export function base_decode(value: string): Uint8Array {
 
 const INITIAL_LENGTH = 1024;
 
+export type Schema = Map<Function, any>;
+
 /// Binary encoder.
 export class BinaryWriter {
     buf: Buffer;
@@ -141,7 +143,7 @@ export class BinaryReader {
     }
 }
 
-function serializeField(schema: any, value: any, fieldType: any, writer: any) {
+function serializeField(schema: Schema, value: any, fieldType: any, writer: any) {
     if (typeof fieldType === 'string') {
         writer[`write_${fieldType}`](value);
     } else if (fieldType instanceof Array) {
@@ -168,19 +170,20 @@ function serializeField(schema: any, value: any, fieldType: any, writer: any) {
     }
 }
 
-function serializeStruct(schema: any, obj: any, writer: any) {
-    const className = obj.constructor.name;
-    if (schema[className] === undefined) {
-        throw new Error(`Class ${className} is missing in schema`);
+function serializeStruct(schema: Schema, obj: any, writer: any) {
+    console.log('serializeStruct', schema);
+    const structSchema = schema.get(obj.constructor);
+    if (!structSchema) {
+        throw new Error(`Class ${obj.constructor.name} is missing in schema`);
     }
-    if (schema[className].kind === 'struct') {
-        schema[className].fields.map(([fieldName, fieldType]: [any, any]) => {
+    if (structSchema.kind === 'struct') {
+        structSchema.fields.map(([fieldName, fieldType]: [any, any]) => {
             serializeField(schema, obj[fieldName], fieldType, writer);
         });
-    } else if (schema[className].kind === 'enum') {
-        const name = obj[schema[className].field];
-        for (let idx = 0; idx < schema[className].values.length; ++idx) {
-            const [fieldName, fieldType]: [any, any] = schema[className].values[idx];
+    } else if (structSchema.kind === 'enum') {
+        const name = obj[structSchema.field];
+        for (let idx = 0; idx < structSchema.values.length; ++idx) {
+            const [fieldName, fieldType]: [any, any] = structSchema.values[idx];
             if (fieldName === name) {
                 writer.write_u8(idx);
                 serializeField(schema, obj[fieldName], fieldType, writer);
@@ -188,19 +191,19 @@ function serializeStruct(schema: any, obj: any, writer: any) {
             }
         }
     } else {
-        throw new Error(`Unexpected schema kind: ${schema[className].kind} for ${className}`);
+        throw new Error(`Unexpected schema kind: ${structSchema.kind} for ${obj.constructor.name}`);
     }
 }
 
 /// Serialize given object using schema of the form:
 /// { class_name -> [ [field_name, field_type], .. ], .. }
-export function serialize(schema: any, obj: any): Uint8Array {
+export function serialize(schema: Schema, obj: any): Uint8Array {
     const writer = new BinaryWriter();
     serializeStruct(schema, obj, writer);
     return writer.toArray();
 }
 
-function deserializeField(schema: any, fieldType: any, reader: any): any {
+function deserializeField(schema: Schema, fieldType: any, reader: any): any {
     if (typeof fieldType === 'string') {
         return reader[`read_${fieldType}`]();
     } else if (fieldType instanceof Array) {
@@ -214,15 +217,15 @@ function deserializeField(schema: any, fieldType: any, reader: any): any {
     }
 }
 
-function deserializeStruct(schema: any, classType: any, reader: any) {
-    const fields = schema[classType.name].fields.map(([fieldName, fieldType]: [any, any]) => {
+function deserializeStruct(schema: Schema, classType: any, reader: any) {
+    const fields = schema.get(classType).fields.map(([fieldName, fieldType]: [any, any]) => {
         return deserializeField(schema, fieldType, reader);
     });
     return new classType(...fields);
 }
 
 /// Deserializes object from bytes using schema.
-export function deserialize(schema: any, classType: any, buffer: Buffer): any {
+export function deserialize(schema: Schema, classType: any, buffer: Buffer): any {
     const reader = new BinaryReader(buffer);
     return deserializeStruct(schema, classType, reader);
 }

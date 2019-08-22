@@ -2,6 +2,7 @@
 import BN from 'bn.js';
 export declare function base_encode(value: Uint8Array | string): string;
 export declare function base_decode(value: string): Uint8Array;
+export declare type Schema = Map<Function, any>;
 export declare class BinaryWriter {
     buf: Buffer;
     length: number;
@@ -30,5 +31,5 @@ export declare class BinaryReader {
     read_fixed_array(len: number): Uint8Array;
     read_array(fn: any): any[];
 }
-export declare function serialize(schema: any, obj: any): Uint8Array;
-export declare function deserialize(schema: any, classType: any, buffer: Buffer): any;
+export declare function serialize(schema: Schema, obj: any): Uint8Array;
+export declare function deserialize(schema: Schema, classType: any, buffer: Buffer): any;
