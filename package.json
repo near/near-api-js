@@ -18,7 +18,6 @@
     "js-sha256": "^0.9.0",
     "node-fetch": "^2.3.0",
     "protobufjs": "^6.8.8",
-    "tslint": "^5.18.0",
     "tweetnacl": "^1.0.1",
     "typescript": "^3.5.1"
   },
@@ -33,6 +32,7 @@
     "localstorage-memory": "^1.0.3",
     "rimraf": "^2.6.3",
     "ts-protoc-gen": "^0.10.0",
+    "tslint": "^5.18.0",
     "typedoc": "^0.14.2",
     "typedoc-plugin-markdown": "^1.2.1",
     "uglifyify": "^5.0.1"
