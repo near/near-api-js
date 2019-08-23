@@ -57,7 +57,7 @@ export class BinaryWriter {
     }
 
     private write_buffer(buffer: Buffer) {
-        this.buf = Buffer.concat([this.buf.subarray(0, this.length), buffer, Buffer.alloc(INITIAL_LENGTH)]);
+        this.buf = Buffer.concat([Buffer.from(this.buf.subarray(0, this.length)), buffer, Buffer.alloc(INITIAL_LENGTH)]);
         this.length += buffer.length;
     }
 
