@@ -57,6 +57,7 @@ export class BinaryWriter {
     }
 
     private write_buffer(buffer: Buffer) {
+        // Buffer.from is needed as this.buf.subarray can return plain Uint8Array in browser
         this.buf = Buffer.concat([Buffer.from(this.buf.subarray(0, this.length)), buffer, Buffer.alloc(INITIAL_LENGTH)]);
         this.length += buffer.length;
     }
@@ -171,7 +172,6 @@ function serializeField(schema: Schema, value: any, fieldType: any, writer: any)
 }
 
 function serializeStruct(schema: Schema, obj: any, writer: any) {
-    console.log('serializeStruct', schema);
     const structSchema = schema.get(obj.constructor);
     if (!structSchema) {
         throw new Error(`Class ${obj.constructor.name} is missing in schema`);
