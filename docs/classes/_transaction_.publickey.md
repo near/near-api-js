@@ -12,7 +12,7 @@
 
 ⊕ **new PublicKey**(publicKey: *`string`*): [PublicKey](_transaction_.publickey.md)
 
-*Defined in [transaction.ts:106](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/transaction.ts#L106)*
+*Defined in [transaction.ts:106](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L106)*
 
 **Parameters:**
 
@@ -32,7 +32,7 @@ ___
 
 **● data**: *`Uint8Array`*
 
-*Defined in [transaction.ts:106](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/transaction.ts#L106)*
+*Defined in [transaction.ts:106](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L106)*
 
 ___
 <a id="keytype"></a>
@@ -41,7 +41,7 @@ ___
 
 **● keyType**: *[KeyType](../enums/_transaction_.keytype.md)*
 
-*Defined in [transaction.ts:105](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/transaction.ts#L105)*
+*Defined in [transaction.ts:105](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L105)*
 
 ___
 

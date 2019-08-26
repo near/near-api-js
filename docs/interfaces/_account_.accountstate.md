@@ -12,7 +12,7 @@
 
 **● account_id**: *`string`*
 
-*Defined in [account.ts:30](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/account.ts#L30)*
+*Defined in [account.ts:30](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/account.ts#L30)*
 
 ___
 <a id="amount"></a>
@@ -21,7 +21,7 @@ ___
 
 **● amount**: *`string`*
 
-*Defined in [account.ts:31](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/account.ts#L31)*
+*Defined in [account.ts:31](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/account.ts#L31)*
 
 ___
 <a id="code_hash"></a>
@@ -30,7 +30,7 @@ ___
 
 **● code_hash**: *`string`*
 
-*Defined in [account.ts:33](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/account.ts#L33)*
+*Defined in [account.ts:33](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/account.ts#L33)*
 
 ___
 <a id="staked"></a>
@@ -39,7 +39,7 @@ ___
 
 **● staked**: *`string`*
 
-*Defined in [account.ts:32](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/account.ts#L32)*
+*Defined in [account.ts:32](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/account.ts#L32)*
 
 ___
 

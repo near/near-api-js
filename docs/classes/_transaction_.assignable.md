@@ -24,7 +24,7 @@
 
 ⊕ **new Assignable**(properties: *`any`*): [Assignable](_transaction_.assignable.md)
 
-*Defined in [transaction.ts:23](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/transaction.ts#L23)*
+*Defined in [transaction.ts:23](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L23)*
 
 **Parameters:**
 

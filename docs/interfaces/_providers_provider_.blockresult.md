@@ -12,7 +12,7 @@
 
 **● header**: *[BlockHeader](_providers_provider_.blockheader.md)*
 
-*Defined in [providers/provider.ts:64](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/providers/provider.ts#L64)*
+*Defined in [providers/provider.ts:64](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/providers/provider.ts#L64)*
 
 ___
 <a id="transactions"></a>
@@ -21,7 +21,7 @@ ___
 
 **● transactions**: *[Transaction](_providers_provider_.transaction.md)[]*
 
-*Defined in [providers/provider.ts:65](https://github.com/nearprotocol/nearlib/blob/01b260c/src.ts/providers/provider.ts#L65)*
+*Defined in [providers/provider.ts:65](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/providers/provider.ts#L65)*
 
 ___
 

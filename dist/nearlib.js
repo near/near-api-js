@@ -677,7 +677,7 @@ async function connect(config) {
             const keyFile = await unencrypted_file_system_keystore_1.loadJsonFile(config.keyPath);
             if (keyFile.account_id) {
                 // TODO: Only load key if network ID matches
-                const keyPair = new key_pair_1.KeyPairEd25519(keyFile.secret_key);
+                const keyPair = key_pair_1.KeyPair.fromString(keyFile.secret_key);
                 const keyPathStore = new key_stores_1.InMemoryKeyStore();
                 await keyPathStore.setKey(config.networkId, keyFile.account_id, keyPair);
                 if (!config.masterAccount) {
@@ -965,48 +965,46 @@ exports.SignedTransaction = SignedTransaction;
 class Action extends Enum {
 }
 exports.Action = Action;
-const SCHEMA = {
-    Signature: { kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]] },
-    SignedTransaction: { kind: 'struct', fields: [['transaction', Transaction], ['signature', Signature]] },
-    Transaction: {
-        kind: 'struct', fields: [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['actions', [Action]]]
-    },
-    PublicKey: {
-        kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]]
-    },
-    AccessKey: { kind: 'struct', fields: [
-            ['nonce', 'u64'],
-            ['permission', AccessKeyPermission],
-        ] },
-    AccessKeyPermission: { kind: 'enum', field: 'enum', values: [
-            ['functionCall', FunctionCallPermission],
-            ['fullAccess', FullAccessPermission],
-        ] },
-    FunctionCallPermission: { kind: 'struct', fields: [
-            ['allowance', { kind: 'option', type: 'u128' }],
-            ['receiverId', 'string'],
-            ['methodNames', ['string']],
-        ] },
-    FullAccessPermission: { kind: 'struct', fields: [] },
-    Action: { kind: 'enum', field: 'enum', values: [
-            ['createAccount', CreateAccount],
-            ['deployContract', DeployContract],
-            ['functionCall', functionCall],
-            ['transfer', transfer],
-            ['stake', stake],
-            ['addKey', addKey],
-            ['deleteKey', deleteKey],
-            ['deleteAccount', deleteAccount],
-        ] },
-    CreateAccount: { kind: 'struct', fields: [] },
-    DeployContract: { kind: 'struct', fields: [['code', ['u8']]] },
-    FunctionCall: { kind: 'struct', fields: [['methodName', 'string'], ['args', ['u8']], ['gas', 'u64'], ['deposit', 'u128']] },
-    Transfer: { kind: 'struct', fields: [['deposit', 'u128']] },
-    Stake: { kind: 'struct', fields: [['stake', 'u128'], ['publicKey', PublicKey]] },
-    AddKey: { kind: 'struct', fields: [['publicKey', PublicKey], ['accessKey', AccessKey]] },
-    DeleteKey: { kind: 'struct', fields: [['publicKey', PublicKey]] },
-    DeleteAccount: { kind: 'struct', fields: [['beneficiaryId', 'string']] },
-};
+const SCHEMA = new Map([
+    [Signature, { kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]] }],
+    [SignedTransaction, { kind: 'struct', fields: [['transaction', Transaction], ['signature', Signature]] }],
+    [Transaction, { kind: 'struct', fields: [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['actions', [Action]]] }],
+    [PublicKey, {
+            kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]]
+        }],
+    [AccessKey, { kind: 'struct', fields: [
+                ['nonce', 'u64'],
+                ['permission', AccessKeyPermission],
+            ] }],
+    [AccessKeyPermission, { kind: 'enum', field: 'enum', values: [
+                ['functionCall', FunctionCallPermission],
+                ['fullAccess', FullAccessPermission],
+            ] }],
+    [FunctionCallPermission, { kind: 'struct', fields: [
+                ['allowance', { kind: 'option', type: 'u128' }],
+                ['receiverId', 'string'],
+                ['methodNames', ['string']],
+            ] }],
+    [FullAccessPermission, { kind: 'struct', fields: [] }],
+    [Action, { kind: 'enum', field: 'enum', values: [
+                ['createAccount', CreateAccount],
+                ['deployContract', DeployContract],
+                ['functionCall', functionCall],
+                ['transfer', transfer],
+                ['stake', stake],
+                ['addKey', addKey],
+                ['deleteKey', deleteKey],
+                ['deleteAccount', deleteAccount],
+            ] }],
+    [CreateAccount, { kind: 'struct', fields: [] }],
+    [DeployContract, { kind: 'struct', fields: [['code', ['u8']]] }],
+    [FunctionCall, { kind: 'struct', fields: [['methodName', 'string'], ['args', ['u8']], ['gas', 'u64'], ['deposit', 'u128']] }],
+    [Transfer, { kind: 'struct', fields: [['deposit', 'u128']] }],
+    [Stake, { kind: 'struct', fields: [['stake', 'u128'], ['publicKey', PublicKey]] }],
+    [AddKey, { kind: 'struct', fields: [['publicKey', PublicKey], ['accessKey', AccessKey]] }],
+    [DeleteKey, { kind: 'struct', fields: [['publicKey', PublicKey]] }],
+    [DeleteAccount, { kind: 'struct', fields: [['beneficiaryId', 'string']] }],
+]);
 async function signTransaction(receiverId, nonce, actions, signer, accountId, networkId) {
     const publicKey = new PublicKey(await signer.getPublicKey(accountId, networkId));
     const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions });
@@ -1168,7 +1166,8 @@ class BinaryWriter {
         this.write_buffer(Buffer.from(new bn_js_1.default(value).toArray('le', 16)));
     }
     write_buffer(buffer) {
-        this.buf = Buffer.concat([this.buf.subarray(0, this.length), buffer, Buffer.alloc(INITIAL_LENGTH)]);
+        // Buffer.from is needed as this.buf.subarray can return plain Uint8Array in browser
+        this.buf = Buffer.concat([Buffer.from(this.buf.subarray(0, this.length)), buffer, Buffer.alloc(INITIAL_LENGTH)]);
         this.length += buffer.length;
     }
     write_string(str) {
@@ -1271,19 +1270,19 @@ function serializeField(schema, value, fieldType, writer) {
     }
 }
 function serializeStruct(schema, obj, writer) {
-    const className = obj.constructor.name;
-    if (schema[className] === undefined) {
-        throw new Error(`Class ${className} is missing in schema`);
+    const structSchema = schema.get(obj.constructor);
+    if (!structSchema) {
+        throw new Error(`Class ${obj.constructor.name} is missing in schema`);
     }
-    if (schema[className].kind === 'struct') {
-        schema[className].fields.map(([fieldName, fieldType]) => {
+    if (structSchema.kind === 'struct') {
+        structSchema.fields.map(([fieldName, fieldType]) => {
             serializeField(schema, obj[fieldName], fieldType, writer);
         });
     }
-    else if (schema[className].kind === 'enum') {
-        const name = obj[schema[className].field];
-        for (let idx = 0; idx < schema[className].values.length; ++idx) {
-            const [fieldName, fieldType] = schema[className].values[idx];
+    else if (structSchema.kind === 'enum') {
+        const name = obj[structSchema.field];
+        for (let idx = 0; idx < structSchema.values.length; ++idx) {
+            const [fieldName, fieldType] = structSchema.values[idx];
             if (fieldName === name) {
                 writer.write_u8(idx);
                 serializeField(schema, obj[fieldName], fieldType, writer);
@@ -1292,7 +1291,7 @@ function serializeStruct(schema, obj, writer) {
         }
     }
     else {
-        throw new Error(`Unexpected schema kind: ${schema[className].kind} for ${className}`);
+        throw new Error(`Unexpected schema kind: ${structSchema.kind} for ${obj.constructor.name}`);
     }
 }
 /// Serialize given object using schema of the form:
@@ -1320,7 +1319,7 @@ function deserializeField(schema, fieldType, reader) {
     }
 }
 function deserializeStruct(schema, classType, reader) {
-    const fields = schema[classType.name].fields.map(([fieldName, fieldType]) => {
+    const fields = schema.get(classType).fields.map(([fieldName, fieldType]) => {
         return deserializeField(schema, fieldType, reader);
     });
     return new classType(...fields);
