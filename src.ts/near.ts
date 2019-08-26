@@ -4,7 +4,7 @@ import { Account } from './account';
 import { Connection } from './connection';
 import { Contract } from './contract';
 import { loadJsonFile } from './key_stores/unencrypted_file_system_keystore';
-import { KeyPairEd25519 } from './utils/key_pair';
+import { KeyPair } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 
@@ -88,7 +88,7 @@ export async function connect(config: any): Promise<Near> {
             const keyFile = await loadJsonFile(config.keyPath);
             if (keyFile.account_id) {
                 // TODO: Only load key if network ID matches
-                const keyPair = new KeyPairEd25519(keyFile.secret_key);
+                const keyPair = KeyPair.fromString(keyFile.secret_key);
                 const keyPathStore = new InMemoryKeyStore();
                 await keyPathStore.setKey(config.networkId, keyFile.account_id, keyPair);
                 if (!config.masterAccount) {

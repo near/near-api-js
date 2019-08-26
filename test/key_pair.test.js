@@ -26,4 +26,8 @@ test('convert to string', async () => {
     const keyPair = nearlib.utils.key_pair.KeyPairEd25519.fromRandom();
     const newKeyPair = nearlib.utils.key_pair.KeyPair.fromString(keyPair.toString());
     expect(newKeyPair.secretKey).toEqual(keyPair.secretKey);
+
+    const keyString = 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
+    const keyPair2 = nearlib.utils.key_pair.KeyPair.fromString(keyString);
+    expect(keyPair2.toString()).toEqual(keyString);
 });
