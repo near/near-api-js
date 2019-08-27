@@ -27,9 +27,12 @@
     "browserify": "^16.2.3",
     "documentation": "^9.1.1",
     "eslint": "^5.14.0",
+    "in-publish": "^2.0.0",
     "jest": "^24.1.0",
     "localstorage-memory": "^1.0.3",
     "rimraf": "^2.6.3",
+    "ts-protoc-gen": "^0.10.0",
+    "tslint": "^5.18.0",
     "typedoc": "^0.14.2",
     "typedoc-plugin-markdown": "^1.2.1",
     "uglifyify": "^5.0.1"
@@ -41,7 +44,9 @@
   "keywords": [],
   "license": "MIT",
   "scripts": {
-    "dist": "yarn build && yarn doc && browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
+    "dist": "yarn browserify && yarn doc",
+    "browserify": "browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
+    "prepublish": "not-in-install && (yarn build && yarn browserify) || in-install",
     "compile": "tsc -p ./tsconfig.json",
     "dev": "yarn compile -w",
     "build": "yarn compile",
