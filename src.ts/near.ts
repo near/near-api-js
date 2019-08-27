@@ -56,18 +56,6 @@ export class Near {
     }
 
     /**
-     * Backwards compatibility method. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.
-     * @param contractId
-     * @param wasmByteArray
-     */
-    async deployContract(contractId: string, wasmByteArray: Uint8Array): Promise<string> {
-        console.warn('near.deployContract is deprecated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.');
-        const account = new Account(this.connection, contractId);
-        const result = await account.deployContract(wasmByteArray);
-        return result.logs[0].hash;
-    }
-
-    /**
      * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
      * @param amount
      * @param originator
