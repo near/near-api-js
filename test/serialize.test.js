@@ -35,6 +35,7 @@ test('serialize tx', async() => {
         nearlib.transactions.deleteKey(publicKey),
         nearlib.transactions.deleteAccount('123')
     ];
-    let [hash] = await nearlib.transactions.signTransaction('123', 1, actions, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
-    expect(nearlib.utils.serialize.base_encode(hash)).toEqual('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
+    const blockHash = nearlib.utils.serialize.base_decode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
+    let [hash] = await nearlib.transactions.signTransaction('123', 1, actions, blockHash, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
+    expect(nearlib.utils.serialize.base_encode(hash)).toEqual('Fo3MJ9XzKjnKuDuQKhDAC6fra5H2UWawRejFSEpPNk3Y');
 });

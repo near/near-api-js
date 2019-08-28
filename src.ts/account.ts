@@ -194,7 +194,7 @@ export class Account {
                 result.authorizedApps.push({
                     contractId: perm.receiver_id,
                     amount: perm.allowance,
-                    publicKey: item.public_key.data,
+                    publicKey: item.public_key,
                 });
             }
         });
