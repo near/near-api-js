@@ -3149,6 +3149,11 @@ globals@^11.1.0, globals@^11.7.0:
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.12.0.tgz#ab8795338868a0babd8525758018c2a7eb95c42e"
   integrity sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==
 
+google-protobuf@^3.6.1:
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.9.1.tgz#87e6a16b7fb16405b515a6c6622d5ace45578d86"
+  integrity sha512-tkz7SVwBktFbqFK3teXFUY/VM57+mbUgV9bSD+sZH1ocHJ7uk7BfEWMRdU24dd0ciUDokreA7ghH2fYFIczQdw==
+
 graceful-fs@^4.0.0, graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   version "4.1.15"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
@@ -6646,6 +6651,13 @@ trough@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/trough/-/trough-1.0.4.tgz#3b52b1f13924f460c3fbfd0df69b587dbcbc762e"
   integrity sha512-tdzBRDGWcI1OpPVmChbdSKhvSVurznZ8X36AYURAcl+0o2ldlCY2XPzyXNNxwJwwyIU+rIglTCG4kxtNKBQH7Q==
+
+ts-protoc-gen@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/ts-protoc-gen/-/ts-protoc-gen-0.10.0.tgz#f708d99be59ad0be6bdce6f4fe893ec41757d2c9"
+  integrity sha512-EEbgDWNHK3CvcNhmib94I4HMO23qLddjLRdXW8EUE11VJxbi3n5J0l2DiX/L1pijOaPTkbEoRK+zQinKgKGqsw==
+  dependencies:
+    google-protobuf "^3.6.1"
 
 tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.10.0"

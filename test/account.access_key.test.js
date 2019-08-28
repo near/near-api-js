@@ -17,20 +17,17 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     contractId = testUtils.generateUniqueString('test');
-    console.log('Contract id: ' + contractId);
     workingAccount = await testUtils.createAccount(testAccount);
     contract = await testUtils.deployContract(workingAccount, contractId);
 });
 
 test('make function call using access key', async() => {
     const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
-    console.log(workingAccount.accountId);
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 10000000);
 
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
     const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-    console.log('setCallValue: `{}`', setCallValue);
     await contract.setValue({value: setCallValue});
     expect(await contract.getValue()).toEqual(setCallValue);
 });

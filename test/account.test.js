@@ -69,7 +69,7 @@ describe('with deploy contract', () => {
     beforeAll(async () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, new BN(100000));
+        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, new BN(1000000));
         contract = new nearlib.Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'getAllKeys', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']
@@ -100,7 +100,7 @@ describe('with deploy contract', () => {
         expect(nearlib.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
         expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
-    
+
     test('make function calls via contract', async() => {
         const result = await contract.hello({ name: 'trex' });
         expect(result).toEqual('hello trex');
@@ -126,8 +126,8 @@ describe('with deploy contract', () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
         expect(logs.length).toBe(3);
         expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
-        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "expected to fail" filename: "../out/main.ts" line: \\d+ col: \\d+$`));
-        expect(logs[2]).toEqual(`[${contractId}]: Runtime error: wasm async call execution failed with error: Runtime(AssertFailed)`);
+        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "expected to fail" filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
+        expect(logs[2]).toEqual(`[${contractId}]: Runtime error: wasm async call execution failed with error: WasmerCallError("Smart contract has explicitly invoked \`panic\`.")`);
     });
 
     test('test set/remove', async () => {

@@ -27,14 +27,19 @@ export enum FinalTransactionStatus {
 
 export interface TransactionLog {
     hash: string;
-    lines: string[];
-    receipts: number[][];
-    result?: Uint8Array;
+    result: TransactionResult;
+}
+
+export interface TransactionResult {
+    status: string,
+    logs: string[],
+    receipts: string[],
+    result?: string,
 }
 
 export interface FinalTransactionResult {
     status: FinalTransactionStatus;
-    logs: TransactionLog[];
+    transactions: TransactionLog[];
 }
 
 export interface TotalWeight {
@@ -76,10 +81,10 @@ export abstract class Provider {
 }
 
 export function getTransactionLastResult(txResult: FinalTransactionResult): any {
-    for (let i = txResult.logs.length - 1; i >= 0; --i) {
-        const r = txResult.logs[i];
-        if (r.result && r.result.length > 0) {
-            return JSON.parse(Buffer.from(r.result).toString());
+    for (let i = txResult.transactions.length - 1; i >= 0; --i) {
+        const r = txResult.transactions[i];
+        if (r.result && r.result.result && r.result.result.length > 0) {
+            return JSON.parse(Buffer.from(r.result.result, 'base64').toString());
         }
     }
     return null;

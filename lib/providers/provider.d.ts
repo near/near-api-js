@@ -21,13 +21,17 @@ export declare enum FinalTransactionStatus {
 }
 export interface TransactionLog {
     hash: string;
-    lines: string[];
-    receipts: number[][];
-    result?: Uint8Array;
+    result: TransactionResult;
+}
+export interface TransactionResult {
+    status: string;
+    logs: string[];
+    receipts: string[];
+    result?: string;
 }
 export interface FinalTransactionResult {
     status: FinalTransactionStatus;
-    logs: TransactionLog[];
+    transactions: TransactionLog[];
 }
 export interface TotalWeight {
     num: number;

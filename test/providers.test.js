@@ -25,10 +25,10 @@ test('json rpc query account', async () => {
 test('final tx result', async() => {
     const result = {
         status: 'Complete',
-        logs: [
-            {hash: '11111', lines: [], receipts: [], result: null },
-            { hash: '11111', lines: [], receipts: [], result: [123, 125] },
-            { hash: '11111', lines: [], receipts: [], result: null },
+        transactions: [
+            { hash: '11111', result: { status: 'completed', logs: [], receipts: [], result: null } },
+            { hash: '11111', result: { status: 'completed', logs: [], receipts: [], result: 'e30=' } },
+            { hash: '11111', result: { status: 'completed', logs: [], receipts: [], result: null } },
         ]
     };
     expect(nearlib.providers.getTransactionLastResult(result)).toEqual({});
