@@ -5,7 +5,7 @@ import { Action, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
-import { base_encode } from './utils/serialize';
+import {base_decode, base_encode} from './utils/serialize';
 
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -90,8 +90,12 @@ export class Account {
         if (this._accessKey === null) {
             throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
         }
+
+        let status = await this.connection.provider.status();
+
         const [txHash, signedTx] = await signTransaction(
-            receiverId, ++this._accessKey.nonce, actions, this.connection.signer, this.accountId, this.connection.networkId);
+            receiverId, ++this._accessKey.nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
+        );
 
         let result;
         try {

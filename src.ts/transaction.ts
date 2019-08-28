@@ -127,6 +127,7 @@ class Transaction extends Assignable {
     nonce: number;
     receiverId: string;
     actions: Action[];
+    blockHash: Uint8Array;
 }
 
 export class SignedTransaction extends Assignable {
@@ -152,7 +153,7 @@ export class Action extends Enum {
 const SCHEMA = new Map<Function, any>([
     [Signature, {kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]]}],
     [SignedTransaction, {kind: 'struct', fields: [['transaction', Transaction], ['signature', Signature]]}],
-    [Transaction, { kind: 'struct', fields: [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['actions', [Action]]] }],
+    [Transaction, { kind: 'struct', fields: [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['blockHash', [32]], ['actions', [Action]]] }],
     [PublicKey, {
             kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]] }],
     [AccessKey, { kind: 'struct', fields: [
@@ -189,9 +190,9 @@ const SCHEMA = new Map<Function, any>([
     [DeleteAccount, { kind: 'struct', fields: [['beneficiaryId', 'string']] }],
 ]);
 
-export async function signTransaction(receiverId: string, nonce: number, actions: Action[], signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
+export async function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const publicKey = new PublicKey(await signer.getPublicKey(accountId, networkId));
-    const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions });
+    const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
     const signature = await signer.signHash(hash, accountId, networkId);
