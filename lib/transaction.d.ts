@@ -81,6 +81,7 @@ declare class Transaction extends Assignable {
     nonce: number;
     receiverId: string;
     actions: Action[];
+    blockHash: Uint8Array;
 }
 export declare class SignedTransaction extends Assignable {
     transaction: Transaction;
@@ -97,5 +98,5 @@ export declare class Action extends Enum {
     deleteKey: DeleteKey;
     deleteAccount: DeleteAccount;
 }
-export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
+export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export {};
