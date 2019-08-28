@@ -31,10 +31,10 @@ export interface TransactionLog {
 }
 
 export interface TransactionResult {
-    status: string,
-    logs: string[],
-    receipts: string[],
-    result?: string,
+    status: string;
+    logs: string[];
+    receipts: string[];
+    result?: string;
 }
 
 export interface FinalTransactionResult {
