@@ -55,7 +55,7 @@ it('can request sign in', async () => {
             contract_id: 'signInContract',
             success_url: 'http://example.com/success',
             failure_url: 'http://example.com/fail',
-            public_key: (await keyStore.getKey('networkId', accounts[0])).publicKey
+            public_key: (await keyStore.getKey('networkId', accounts[0])).publicKey.toString()
         }
     });
 });
