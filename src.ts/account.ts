@@ -95,7 +95,7 @@ export class Account {
             throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
         }
 
-        let status = await this.connection.provider.status();
+        const status = await this.connection.provider.status();
 
         const [txHash, signedTx] = await signTransaction(
             receiverId, ++this._accessKey.nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
