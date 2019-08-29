@@ -28,12 +28,12 @@ function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 class Account {
-    get ready() {
-        return this._ready || (this._ready = Promise.resolve(this.fetchState()));
-    }
     constructor(connection, accountId) {
         this.connection = connection;
         this.accountId = accountId;
+    }
+    get ready() {
+        return this._ready || (this._ready = Promise.resolve(this.fetchState()));
     }
     async fetchState() {
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
@@ -76,7 +76,7 @@ class Account {
         if (this._accessKey === null) {
             throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
         }
-        let status = await this.connection.provider.status();
+        const status = await this.connection.provider.status();
         const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
         let result;
         try {
@@ -411,8 +411,8 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
         const result = new Array();
         Object.keys(this.keys).forEach((key) => {
             const parts = key.split(':');
-            if (parts[1] === networkId) {
-                result.push(parts[0]);
+            if (parts[parts.length - 1] === networkId) {
+                result.push(parts.slice(0, parts.length - 1).join(':'));
             }
         });
         return result;
@@ -1035,16 +1035,16 @@ var KeyType;
 (function (KeyType) {
     KeyType[KeyType["ED25519"] = 0] = "ED25519";
 })(KeyType = exports.KeyType || (exports.KeyType = {}));
-function key_type_to_str(key_type) {
-    switch (key_type) {
-        case KeyType.ED25519: return 'ED25519';
-        default: throw new Error(`Unknown key type ${key_type}`);
+function key_type_to_str(keyType) {
+    switch (keyType) {
+        case KeyType.ED25519: return 'ed25519';
+        default: throw new Error(`Unknown key type ${keyType}`);
     }
 }
-function str_to_key_type(key_type) {
-    switch (key_type.toUpperCase()) {
-        case 'ED25519': return KeyType.ED25519;
-        default: throw new Error(`Unknown key type ${key_type}`);
+function str_to_key_type(keyType) {
+    switch (keyType.toLowerCase()) {
+        case 'ed25519': return KeyType.ED25519;
+        default: throw new Error(`Unknown key type ${keyType}`);
     }
 }
 /**
@@ -1063,10 +1063,10 @@ class PublicKey {
     }
     static fromString(encodedKey) {
         const parts = encodedKey.split(':');
-        if (parts.length == 1) {
+        if (parts.length === 1) {
             return new PublicKey(KeyType.ED25519, serialize_1.base_decode(parts[0]));
         }
-        else if (parts.length == 2) {
+        else if (parts.length === 2) {
             return new PublicKey(str_to_key_type(parts[0]), serialize_1.base_decode(parts[1]));
         }
         else {
@@ -1087,10 +1087,10 @@ class KeyPair {
     }
     static fromString(encodedKey) {
         const parts = encodedKey.split(':');
-        if (parts.length == 1) {
+        if (parts.length === 1) {
             return new KeyPairEd25519(parts[0]);
         }
-        else if (parts.length == 2) {
+        else if (parts.length === 2) {
             switch (parts[0].toUpperCase()) {
                 case 'ED25519': return new KeyPairEd25519(parts[1]);
                 default: throw new Error(`Unknown curve: ${parts[0]}`);

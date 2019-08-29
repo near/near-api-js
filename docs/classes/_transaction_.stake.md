@@ -16,7 +16,7 @@
 
 *Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L24)*
+*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/transaction.ts#L24)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [transaction.ts:64](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L64)*
+*Defined in [transaction.ts:64](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/transaction.ts#L64)*
 
 ___
 <a id="stake"></a>
@@ -45,7 +45,7 @@ ___
 
 **● stake**: *`BN`*
 
-*Defined in [transaction.ts:64](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L64)*
+*Defined in [transaction.ts:64](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/transaction.ts#L64)*
 
 ___
 
