@@ -17,14 +17,14 @@ export enum KeyType {
 
 function key_type_to_str(key_type: KeyType): String {
     switch (key_type) {
-        case KeyType.ED25519: return 'ED25519';
+        case KeyType.ED25519: return 'ed25519';
         default: throw new Error(`Unknown key type ${key_type}`);
     }
 }
 
 function str_to_key_type(key_type: string): KeyType {
-    switch (key_type.toUpperCase()) {
-        case 'ED25519': return KeyType.ED25519;
+    switch (key_type.toLowerCase()) {
+        case 'ed25519': return KeyType.ED25519;
         default: throw new Error(`Unknown key type ${key_type}`);
     }
 }

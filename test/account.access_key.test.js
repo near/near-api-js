@@ -39,7 +39,7 @@ test('remove access key no longer works', async() => {
     await workingAccount.deleteKey(publicKey);
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
-    await expect(contract.setValue({ value: 'test' })).rejects.toThrow(new RegExp(`\\[-32000\\] Server error: Signer "${workingAccount.accountId}" doesn't have access key with the given public_key \`${publicKey}\``));
+    await expect(contract.setValue({ value: 'test' })).rejects.toThrow(new RegExp(`\\[-32000\\] Server error: Signer "${workingAccount.accountId}" doesn't have access key with the given public_key ${publicKey}`));
 });
 
 test('view account details after adding access keys', async() => {
@@ -55,12 +55,12 @@ test('view account details after adding access keys', async() => {
         authorizedApps: [{
             contractId: contractId,
             amount: '1000000000',
-            publicKey: keyPair.getPublicKey(),
+            publicKey: keyPair.getPublicKey().toString(),
         },
         {
             contractId: contract2.contractId,
             amount: '2000000000',
-            publicKey: keyPair2.getPublicKey(),
+            publicKey: keyPair2.getPublicKey().toString(),
         }],
         transactions: []
     };
@@ -74,5 +74,5 @@ test('loading account after adding a full key', async() => {
     let accessKeys = await workingAccount.getAccessKeys();
 
     expect(accessKeys.length).toBe(2);
-    expect(accessKeys.map((item) => item.public_key.data).includes(keyPair.getPublicKey())).toBe(true);
+    expect(accessKeys.map((item) => item.public_key).includes(keyPair.getPublicKey().toString())).toBe(true);
 });
