@@ -15,17 +15,17 @@ export enum KeyType {
     ED25519 = 0,
 }
 
-function key_type_to_str(key_type: KeyType): String {
-    switch (key_type) {
+function key_type_to_str(keyType: KeyType): String {
+    switch (keyType) {
         case KeyType.ED25519: return 'ed25519';
-        default: throw new Error(`Unknown key type ${key_type}`);
+        default: throw new Error(`Unknown key type ${keyType}`);
     }
 }
 
-function str_to_key_type(key_type: string): KeyType {
-    switch (key_type.toLowerCase()) {
+function str_to_key_type(keyType: string): KeyType {
+    switch (keyType.toLowerCase()) {
         case 'ed25519': return KeyType.ED25519;
-        default: throw new Error(`Unknown key type ${key_type}`);
+        default: throw new Error(`Unknown key type ${keyType}`);
     }
 }
 
@@ -47,12 +47,12 @@ export class PublicKey {
         }
         return value;
     }
-    
+
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
-        if (parts.length == 1) {
+        if (parts.length === 1) {
             return new PublicKey(KeyType.ED25519, base_decode(parts[0]));
-        } else if (parts.length == 2) {
+        } else if (parts.length === 2) {
             return new PublicKey(str_to_key_type(parts[0]), base_decode(parts[1]));
         } else {
             throw new Error('Invlaid encoded key format, must be <curve>:<encoded key>');
@@ -79,9 +79,9 @@ export abstract class KeyPair {
 
     static fromString(encodedKey: string): KeyPair {
         const parts = encodedKey.split(':');
-        if (parts.length == 1) {
+        if (parts.length === 1) {
             return new KeyPairEd25519(parts[0]);
-        } else if (parts.length == 2) {
+        } else if (parts.length === 2) {
             switch (parts[0].toUpperCase()) {
                 case 'ED25519': return new KeyPairEd25519(parts[1]);
                 default: throw new Error(`Unknown curve: ${parts[0]}`);
