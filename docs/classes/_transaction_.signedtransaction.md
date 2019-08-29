@@ -16,7 +16,7 @@
 
 *Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:23](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L23)*
+*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L24)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● signature**: *[Signature](_transaction_.signature.md)*
 
-*Defined in [transaction.ts:134](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L134)*
+*Defined in [transaction.ts:122](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L122)*
 
 ___
 <a id="transaction"></a>
@@ -45,7 +45,7 @@ ___
 
 **● transaction**: *[Transaction](_transaction_.transaction.md)*
 
-*Defined in [transaction.ts:133](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L133)*
+*Defined in [transaction.ts:121](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L121)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 ▸ **encode**(): `Uint8Array`
 
-*Defined in [transaction.ts:136](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L136)*
+*Defined in [transaction.ts:124](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L124)*
 
 **Returns:** `Uint8Array`
 

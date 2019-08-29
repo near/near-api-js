@@ -1,6 +1,7 @@
 import BN from 'bn.js';
 import { FinalTransactionResult } from './providers/provider';
 import { Connection } from './connection';
+import { PublicKey } from './utils/key_pair';
 export interface AccountState {
     account_id: string;
     amount: string;
@@ -20,14 +21,14 @@ export declare class Account {
     private printLogs;
     private retryTxResult;
     private signAndSendTransaction;
-    createAndDeployContract(contractId: string, publicKey: string, data: Uint8Array, amount: BN): Promise<Account>;
+    createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
     sendMoney(receiverId: string, amount: BN): Promise<FinalTransactionResult>;
-    createAccount(newAccountId: string, publicKey: string, amount: BN): Promise<FinalTransactionResult>;
+    createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult>;
     deployContract(data: Uint8Array): Promise<FinalTransactionResult>;
     functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalTransactionResult>;
-    addKey(publicKey: string, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult>;
-    deleteKey(publicKey: string): Promise<FinalTransactionResult>;
-    stake(publicKey: string, amount: BN): Promise<FinalTransactionResult>;
+    addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult>;
+    deleteKey(publicKey: string | PublicKey): Promise<FinalTransactionResult>;
+    stake(publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult>;
     viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
     getAccessKeys(): Promise<any>;
     getAccountDetails(): Promise<any>;

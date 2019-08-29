@@ -1,4 +1,5 @@
 import BN from 'bn.js';
+import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
 declare class Enum {
     enum: string;
@@ -58,18 +59,10 @@ export declare function createAccount(): Action;
 export declare function deployContract(code: Uint8Array): Action;
 export declare function functionCall(methodName: string, args: Uint8Array, gas: number, deposit: BN): Action;
 export declare function transfer(deposit: BN): Action;
-export declare function stake(stake: BN, publicKey: string): Action;
-export declare function addKey(publicKey: string, accessKey: AccessKey): Action;
-export declare function deleteKey(publicKey: string): Action;
+export declare function stake(stake: BN, publicKey: PublicKey): Action;
+export declare function addKey(publicKey: PublicKey, accessKey: AccessKey): Action;
+export declare function deleteKey(publicKey: PublicKey): Action;
 export declare function deleteAccount(beneficiaryId: string): Action;
-declare enum KeyType {
-    ED25519 = 0
-}
-declare class PublicKey {
-    keyType: KeyType;
-    data: Uint8Array;
-    constructor(publicKey: string);
-}
 declare class Signature {
     keyType: KeyType;
     data: Uint8Array;

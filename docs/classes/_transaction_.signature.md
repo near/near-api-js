@@ -12,7 +12,7 @@
 
 ⊕ **new Signature**(signature: *`Uint8Array`*): [Signature](_transaction_.signature.md)
 
-*Defined in [transaction.ts:116](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L116)*
+*Defined in [transaction.ts:103](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L103)*
 
 **Parameters:**
 
@@ -32,16 +32,16 @@ ___
 
 **● data**: *`Uint8Array`*
 
-*Defined in [transaction.ts:116](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L116)*
+*Defined in [transaction.ts:103](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L103)*
 
 ___
 <a id="keytype"></a>
 
 ##  keyType
 
-**● keyType**: *[KeyType](../enums/_transaction_.keytype.md)*
+**● keyType**: *[KeyType](../enums/_utils_key_pair_.keytype.md)*
 
-*Defined in [transaction.ts:115](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L115)*
+*Defined in [transaction.ts:102](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L102)*
 
 ___
 

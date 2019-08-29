@@ -1,7 +1,7 @@
 'use strict';
 
 import sha256 from 'js-sha256';
-import { Signature, KeyPair } from './utils/key_pair';
+import { Signature, KeyPair, PublicKey } from './utils/key_pair';
 import { KeyStore } from './key_stores';
 
 /**
@@ -12,14 +12,14 @@ export abstract class Signer {
     /**
      * Creates new key and returns public key.
      */
-    abstract async createKey(accountId: string, networkId?: string): Promise<string>;
+    abstract async createKey(accountId: string, networkId?: string): Promise<PublicKey>;
 
     /**
      * Returns public key for given account / network.
      * @param accountId accountId to retrieve from.
      * @param networkId network for this accountId.
      */
-    abstract async getPublicKey(accountId?: string, networkId?: string): Promise<string>;
+    abstract async getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey>;
 
     /**
      * Signs given hash.
@@ -51,13 +51,13 @@ export class InMemorySigner extends Signer {
         this.keyStore = keyStore;
     }
 
-    async createKey(accountId: string, networkId: string): Promise<string> {
+    async createKey(accountId: string, networkId: string): Promise<PublicKey> {
         const keyPair = KeyPair.fromRandom('ed25519');
         await this.keyStore.setKey(networkId, accountId, keyPair);
         return keyPair.getPublicKey();
     }
 
-    async getPublicKey(accountId?: string, networkId?: string): Promise<string> {
+    async getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey> {
         const keyPair = await this.keyStore.getKey(networkId, accountId);
         return keyPair.getPublicKey();
     }

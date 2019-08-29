@@ -6,6 +6,7 @@ import { Action, transfer, createAccount, signTransaction, deployContract,
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
+import { PublicKey } from './utils/key_pair';
 
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -52,8 +53,11 @@ export class Account {
     async fetchState(): Promise<void> {
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
         try {
-            const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+            const publicKey = (await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId)).toString();
             this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey}`, '');
+            if (this._accessKey === null) {
+                throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey}`);
+            }
         } catch {
             this._accessKey = null;
         }
@@ -122,11 +126,10 @@ export class Account {
         return result;
     }
 
-    async createAndDeployContract(contractId: string, publicKey: string, data: Uint8Array, amount: BN): Promise<Account> {
-        await this.createAccount(contractId, publicKey, amount);
+    async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
+        const accessKey = fullAccessKey();
+        await this.signAndSendTransaction(contractId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]);
         const contractAccount = new Account(this.connection, contractId);
-        await contractAccount.ready;
-        await contractAccount.deployContract(data);
         return contractAccount;
     }
 
@@ -134,9 +137,9 @@ export class Account {
         return this.signAndSendTransaction(receiverId, [transfer(amount)]);
     }
 
-    async createAccount(newAccountId: string, publicKey: string, amount: BN): Promise<FinalTransactionResult> {
+    async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult> {
         const accessKey = fullAccessKey();
-        return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(publicKey, accessKey)]);
+        return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]);
     }
 
     async deployContract(data: Uint8Array): Promise<FinalTransactionResult> {
@@ -151,22 +154,22 @@ export class Account {
     }
 
     // TODO: expand this API to support more options.
-    async addKey(publicKey: string, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult> {
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult> {
         let accessKey;
         if (contractId === null || contractId === undefined) {
             accessKey = fullAccessKey();
         } else {
             accessKey = functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
         }
-        return this.signAndSendTransaction(this.accountId, [addKey(publicKey, accessKey)]);
+        return this.signAndSendTransaction(this.accountId, [addKey(PublicKey.from(publicKey), accessKey)]);
     }
 
-    async deleteKey(publicKey: string): Promise<FinalTransactionResult> {
-        return this.signAndSendTransaction(this.accountId, [deleteKey(publicKey)]);
+    async deleteKey(publicKey: string | PublicKey): Promise<FinalTransactionResult> {
+        return this.signAndSendTransaction(this.accountId, [deleteKey(PublicKey.from(publicKey))]);
     }
 
-    async stake(publicKey: string, amount: BN): Promise<FinalTransactionResult> {
-        return this.signAndSendTransaction(this.accountId, [stake(amount, publicKey)]);
+    async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult> {
+        return this.signAndSendTransaction(this.accountId, [stake(amount, PublicKey.from(publicKey))]);
     }
 
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {

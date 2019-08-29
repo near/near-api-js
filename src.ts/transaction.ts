@@ -3,7 +3,8 @@
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
-import { base_decode, serialize } from './utils/serialize';
+import { serialize } from './utils/serialize';
+import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
 
 class Enum {
@@ -81,34 +82,20 @@ export function transfer(deposit: BN): Action {
     return new Action({transfer: new Transfer({ deposit }) });
 }
 
-export function stake(stake: BN, publicKey: string): Action {
-    return new Action({stake: new Stake({ stake, publicKey: new PublicKey(publicKey) }) });
+export function stake(stake: BN, publicKey: PublicKey): Action {
+    return new Action({stake: new Stake({ stake, publicKey }) });
 }
 
-export function addKey(publicKey: string, accessKey: AccessKey): Action {
-    return new Action({addKey: new AddKey({ publicKey: new PublicKey(publicKey), accessKey}) });
+export function addKey(publicKey: PublicKey, accessKey: AccessKey): Action {
+    return new Action({addKey: new AddKey({ publicKey, accessKey}) });
 }
 
-export function deleteKey(publicKey: string): Action {
-    return new Action({deleteKey: new DeleteKey({ publicKey: new PublicKey(publicKey) }) });
+export function deleteKey(publicKey: PublicKey): Action {
+    return new Action({deleteKey: new DeleteKey({ publicKey }) });
 }
 
 export function deleteAccount(beneficiaryId: string): Action {
     return new Action({deleteAccount: new DeleteAccount({ beneficiaryId }) });
-}
-
-enum KeyType {
-    ED25519 = 0,
-}
-
-class PublicKey {
-    keyType: KeyType;
-    data: Uint8Array;
-
-    constructor(publicKey: string) {
-        this.keyType = KeyType.ED25519;
-        this.data = base_decode(publicKey);
-    }
 }
 
 class Signature {
@@ -191,7 +178,7 @@ const SCHEMA = new Map<Function, any>([
 ]);
 
 export async function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
-    const publicKey = new PublicKey(await signer.getPublicKey(accountId, networkId));
+    const publicKey = await signer.getPublicKey(accountId, networkId);
     const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));

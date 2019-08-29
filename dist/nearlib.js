@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const transaction_1 = require("./transaction");
 const provider_1 = require("./providers/provider");
 const serialize_1 = require("./utils/serialize");
+const key_pair_1 = require("./utils/key_pair");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
@@ -37,8 +38,11 @@ class Account {
     async fetchState() {
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
         try {
-            const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+            const publicKey = (await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId)).toString();
             this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey}`, '');
+            if (this._accessKey === null) {
+                throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey}`);
+            }
         }
         catch {
             this._accessKey = null;
@@ -72,7 +76,8 @@ class Account {
         if (this._accessKey === null) {
             throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
         }
-        const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, this.connection.signer, this.accountId, this.connection.networkId);
+        let status = await this.connection.provider.status();
+        const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
         let result;
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
@@ -98,10 +103,9 @@ class Account {
         return result;
     }
     async createAndDeployContract(contractId, publicKey, data, amount) {
-        await this.createAccount(contractId, publicKey, amount);
+        const accessKey = transaction_1.fullAccessKey();
+        await this.signAndSendTransaction(contractId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey), transaction_1.deployContract(data)]);
         const contractAccount = new Account(this.connection, contractId);
-        await contractAccount.ready;
-        await contractAccount.deployContract(data);
         return contractAccount;
     }
     async sendMoney(receiverId, amount) {
@@ -109,7 +113,7 @@ class Account {
     }
     async createAccount(newAccountId, publicKey, amount) {
         const accessKey = transaction_1.fullAccessKey();
-        return this.signAndSendTransaction(newAccountId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(publicKey, accessKey)]);
+        return this.signAndSendTransaction(newAccountId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
     }
     async deployContract(data) {
         return this.signAndSendTransaction(this.accountId, [transaction_1.deployContract(data)]);
@@ -129,13 +133,13 @@ class Account {
         else {
             accessKey = transaction_1.functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
         }
-        return this.signAndSendTransaction(this.accountId, [transaction_1.addKey(publicKey, accessKey)]);
+        return this.signAndSendTransaction(this.accountId, [transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
     }
     async deleteKey(publicKey) {
-        return this.signAndSendTransaction(this.accountId, [transaction_1.deleteKey(publicKey)]);
+        return this.signAndSendTransaction(this.accountId, [transaction_1.deleteKey(key_pair_1.PublicKey.from(publicKey))]);
     }
     async stake(publicKey, amount) {
-        return this.signAndSendTransaction(this.accountId, [transaction_1.stake(amount, publicKey)]);
+        return this.signAndSendTransaction(this.accountId, [transaction_1.stake(amount, key_pair_1.PublicKey.from(publicKey))]);
     }
     async viewFunction(contractId, methodName, args) {
         const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, serialize_1.base_encode(JSON.stringify(args)));
@@ -160,7 +164,7 @@ class Account {
                 result.authorizedApps.push({
                     contractId: perm.receiver_id,
                     amount: perm.allowance,
-                    publicKey: item.public_key.data,
+                    publicKey: item.public_key,
                 });
             }
         });
@@ -170,7 +174,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers/provider":16,"./transaction":18,"./utils/serialize":22,"buffer":31}],3:[function(require,module,exports){
+},{"./providers/provider":16,"./transaction":18,"./utils/key_pair":20,"./utils/serialize":22,"buffer":31}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -646,17 +650,6 @@ class Near {
         return new contract_1.Contract(account, contractId, options);
     }
     /**
-     * Backwards compatibility method. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.
-     * @param contractId
-     * @param wasmByteArray
-     */
-    async deployContract(contractId, wasmByteArray) {
-        console.warn('near.deployContract is deprecated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.');
-        const account = new account_1.Account(this.connection, contractId);
-        const result = await account.deployContract(wasmByteArray);
-        return result.logs[0].hash;
-    }
-    /**
      * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
      * @param amount
      * @param originator
@@ -666,7 +659,7 @@ class Near {
         console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
         const account = new account_1.Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);
-        return result.logs[0].hash;
+        return result.transactions[0].hash;
     }
 }
 exports.Near = Near;
@@ -777,10 +770,10 @@ class Provider {
 }
 exports.Provider = Provider;
 function getTransactionLastResult(txResult) {
-    for (let i = txResult.logs.length - 1; i >= 0; --i) {
-        const r = txResult.logs[i];
-        if (r.result && r.result.length > 0) {
-            return JSON.parse(Buffer.from(r.result).toString());
+    for (let i = txResult.transactions.length - 1; i >= 0; --i) {
+        const r = txResult.transactions[i];
+        if (r.result && r.result.result && r.result.result.length > 0) {
+            return JSON.parse(Buffer.from(r.result.result, 'base64').toString());
         }
     }
     return null;
@@ -849,6 +842,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const js_sha256_1 = __importDefault(require("js-sha256"));
 const serialize_1 = require("./utils/serialize");
+const key_pair_1 = require("./utils/key_pair");
 class Enum {
     constructor(properties) {
         if (Object.keys(properties).length !== 1) {
@@ -923,34 +917,24 @@ function transfer(deposit) {
 }
 exports.transfer = transfer;
 function stake(stake, publicKey) {
-    return new Action({ stake: new Stake({ stake, publicKey: new PublicKey(publicKey) }) });
+    return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 exports.stake = stake;
 function addKey(publicKey, accessKey) {
-    return new Action({ addKey: new AddKey({ publicKey: new PublicKey(publicKey), accessKey }) });
+    return new Action({ addKey: new AddKey({ publicKey, accessKey }) });
 }
 exports.addKey = addKey;
 function deleteKey(publicKey) {
-    return new Action({ deleteKey: new DeleteKey({ publicKey: new PublicKey(publicKey) }) });
+    return new Action({ deleteKey: new DeleteKey({ publicKey }) });
 }
 exports.deleteKey = deleteKey;
 function deleteAccount(beneficiaryId) {
     return new Action({ deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
 exports.deleteAccount = deleteAccount;
-var KeyType;
-(function (KeyType) {
-    KeyType[KeyType["ED25519"] = 0] = "ED25519";
-})(KeyType || (KeyType = {}));
-class PublicKey {
-    constructor(publicKey) {
-        this.keyType = KeyType.ED25519;
-        this.data = serialize_1.base_decode(publicKey);
-    }
-}
 class Signature {
     constructor(signature) {
-        this.keyType = KeyType.ED25519;
+        this.keyType = key_pair_1.KeyType.ED25519;
         this.data = signature;
     }
 }
@@ -968,8 +952,8 @@ exports.Action = Action;
 const SCHEMA = new Map([
     [Signature, { kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]] }],
     [SignedTransaction, { kind: 'struct', fields: [['transaction', Transaction], ['signature', Signature]] }],
-    [Transaction, { kind: 'struct', fields: [['signerId', 'string'], ['publicKey', PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['actions', [Action]]] }],
-    [PublicKey, {
+    [Transaction, { kind: 'struct', fields: [['signerId', 'string'], ['publicKey', key_pair_1.PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['blockHash', [32]], ['actions', [Action]]] }],
+    [key_pair_1.PublicKey, {
             kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]]
         }],
     [AccessKey, { kind: 'struct', fields: [
@@ -1000,14 +984,14 @@ const SCHEMA = new Map([
     [DeployContract, { kind: 'struct', fields: [['code', ['u8']]] }],
     [FunctionCall, { kind: 'struct', fields: [['methodName', 'string'], ['args', ['u8']], ['gas', 'u64'], ['deposit', 'u128']] }],
     [Transfer, { kind: 'struct', fields: [['deposit', 'u128']] }],
-    [Stake, { kind: 'struct', fields: [['stake', 'u128'], ['publicKey', PublicKey]] }],
-    [AddKey, { kind: 'struct', fields: [['publicKey', PublicKey], ['accessKey', AccessKey]] }],
-    [DeleteKey, { kind: 'struct', fields: [['publicKey', PublicKey]] }],
+    [Stake, { kind: 'struct', fields: [['stake', 'u128'], ['publicKey', key_pair_1.PublicKey]] }],
+    [AddKey, { kind: 'struct', fields: [['publicKey', key_pair_1.PublicKey], ['accessKey', AccessKey]] }],
+    [DeleteKey, { kind: 'struct', fields: [['publicKey', key_pair_1.PublicKey]] }],
     [DeleteAccount, { kind: 'struct', fields: [['beneficiaryId', 'string']] }],
 ]);
-async function signTransaction(receiverId, nonce, actions, signer, accountId, networkId) {
-    const publicKey = new PublicKey(await signer.getPublicKey(accountId, networkId));
-    const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions });
+async function signTransaction(receiverId, nonce, actions, blockHash, signer, accountId, networkId) {
+    const publicKey = await signer.getPublicKey(accountId, networkId);
+    const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
     const message = serialize_1.serialize(SCHEMA, transaction);
     const hash = new Uint8Array(js_sha256_1.default.sha256.array(message));
     const signature = await signer.signHash(hash, accountId, networkId);
@@ -1016,7 +1000,7 @@ async function signTransaction(receiverId, nonce, actions, signer, accountId, ne
 }
 exports.signTransaction = signTransaction;
 
-},{"./utils/serialize":22,"js-sha256":50}],19:[function(require,module,exports){
+},{"./utils/key_pair":20,"./utils/serialize":22,"js-sha256":50}],19:[function(require,module,exports){
 "use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -1046,21 +1030,74 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const serialize_1 = require("./serialize");
+/** All supported key types */
+var KeyType;
+(function (KeyType) {
+    KeyType[KeyType["ED25519"] = 0] = "ED25519";
+})(KeyType = exports.KeyType || (exports.KeyType = {}));
+function key_type_to_str(key_type) {
+    switch (key_type) {
+        case KeyType.ED25519: return 'ED25519';
+        default: throw new Error(`Unknown key type ${key_type}`);
+    }
+}
+function str_to_key_type(key_type) {
+    switch (key_type.toUpperCase()) {
+        case 'ED25519': return KeyType.ED25519;
+        default: throw new Error(`Unknown key type ${key_type}`);
+    }
+}
+/**
+ * PublicKey representation that has type and bytes of the key.
+ */
+class PublicKey {
+    constructor(keyType, data) {
+        this.keyType = keyType;
+        this.data = data;
+    }
+    static from(value) {
+        if (typeof value === 'string') {
+            return PublicKey.fromString(value);
+        }
+        return value;
+    }
+    static fromString(encodedKey) {
+        const parts = encodedKey.split(':');
+        if (parts.length == 1) {
+            return new PublicKey(KeyType.ED25519, serialize_1.base_decode(parts[0]));
+        }
+        else if (parts.length == 2) {
+            return new PublicKey(str_to_key_type(parts[0]), serialize_1.base_decode(parts[1]));
+        }
+        else {
+            throw new Error('Invlaid encoded key format, must be <curve>:<encoded key>');
+        }
+    }
+    toString() {
+        return `${key_type_to_str(this.keyType)}:${serialize_1.base_encode(this.data)}`;
+    }
+}
+exports.PublicKey = PublicKey;
 class KeyPair {
     static fromRandom(curve) {
-        switch (curve) {
-            case 'ed25519': return KeyPairEd25519.fromRandom();
+        switch (curve.toUpperCase()) {
+            case 'ED25519': return KeyPairEd25519.fromRandom();
             default: throw new Error(`Unknown curve ${curve}`);
         }
     }
     static fromString(encodedKey) {
         const parts = encodedKey.split(':');
-        if (parts.length !== 2) {
-            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
+        if (parts.length == 1) {
+            return new KeyPairEd25519(parts[0]);
         }
-        switch (parts[0]) {
-            case 'ed25519': return new KeyPairEd25519(parts[1]);
-            default: throw new Error(`Unknown curve: ${parts[0]}`);
+        else if (parts.length == 2) {
+            switch (parts[0].toUpperCase()) {
+                case 'ED25519': return new KeyPairEd25519(parts[1]);
+                default: throw new Error(`Unknown curve: ${parts[0]}`);
+            }
+        }
+        else {
+            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
     }
 }
@@ -1078,7 +1115,7 @@ class KeyPairEd25519 extends KeyPair {
     constructor(secretKey) {
         super();
         const keyPair = tweetnacl_1.default.sign.keyPair.fromSecretKey(serialize_1.base_decode(secretKey));
-        this.publicKey = serialize_1.base_encode(keyPair.publicKey);
+        this.publicKey = new PublicKey(KeyType.ED25519, keyPair.publicKey);
         this.secretKey = secretKey;
     }
     /**
@@ -1100,7 +1137,7 @@ class KeyPairEd25519 extends KeyPair {
         return { signature, publicKey: this.publicKey };
     }
     verify(message, signature) {
-        return tweetnacl_1.default.sign.detached.verify(message, signature, serialize_1.base_decode(this.publicKey));
+        return tweetnacl_1.default.sign.detached.verify(message, signature, this.publicKey.data);
     }
     toString() {
         return `ed25519:${this.secretKey}`;
@@ -1420,7 +1457,7 @@ class WalletAccount {
         newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
         const accessKey = utils_1.KeyPair.fromRandom('ed25519');
-        newUrl.searchParams.set('public_key', accessKey.getPublicKey());
+        newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         window.location.assign(newUrl.toString());
     }

@@ -20,6 +20,7 @@
 * [TotalWeight](../interfaces/_providers_provider_.totalweight.md)
 * [Transaction](../interfaces/_providers_provider_.transaction.md)
 * [TransactionLog](../interfaces/_providers_provider_.transactionlog.md)
+* [TransactionResult](../interfaces/_providers_provider_.transactionresult.md)
 
 ### Functions
 
@@ -35,7 +36,7 @@
 
 ▸ **getTransactionLastResult**(txResult: *[FinalTransactionResult](../interfaces/_providers_provider_.finaltransactionresult.md)*): `any`
 
-*Defined in [providers/provider.ts:78](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/providers/provider.ts#L78)*
+*Defined in [providers/provider.ts:83](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/providers/provider.ts#L83)*
 
 **Parameters:**
 

@@ -6,22 +6,22 @@
 
 # Properties
 
-<a id="logs"></a>
-
-##  logs
-
-**● logs**: *[TransactionLog](_providers_provider_.transactionlog.md)[]*
-
-*Defined in [providers/provider.ts:37](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/providers/provider.ts#L37)*
-
-___
 <a id="status"></a>
 
 ##  status
 
 **● status**: *[FinalTransactionStatus](../enums/_providers_provider_.finaltransactionstatus.md)*
 
-*Defined in [providers/provider.ts:36](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/providers/provider.ts#L36)*
+*Defined in [providers/provider.ts:41](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/providers/provider.ts#L41)*
+
+___
+<a id="transactions"></a>
+
+##  transactions
+
+**● transactions**: *[TransactionLog](_providers_provider_.transactionlog.md)[]*
+
+*Defined in [providers/provider.ts:42](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/providers/provider.ts#L42)*
 
 ___
 

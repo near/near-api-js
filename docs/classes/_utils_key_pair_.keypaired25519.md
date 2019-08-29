@@ -16,7 +16,7 @@ This class provides key pair functionality for Ed25519 curve: generating key pai
 
 ⊕ **new KeyPairEd25519**(secretKey: *`string`*): [KeyPairEd25519](_utils_key_pair_.keypaired25519.md)
 
-*Defined in [utils/key_pair.ts:44](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L44)*
+*Defined in [utils/key_pair.ts:101](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L101)*
 
 Construct an instance of key pair given a secret key. It's generally assumed that these are encoded in base58.
 
@@ -36,9 +36,9 @@ ___
 
 ##  publicKey
 
-**● publicKey**: *`string`*
+**● publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [utils/key_pair.ts:43](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L43)*
+*Defined in [utils/key_pair.ts:100](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L100)*
 
 ___
 <a id="secretkey"></a>
@@ -47,7 +47,7 @@ ___
 
 **● secretKey**: *`string`*
 
-*Defined in [utils/key_pair.ts:44](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L44)*
+*Defined in [utils/key_pair.ts:101](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L101)*
 
 ___
 
@@ -57,13 +57,13 @@ ___
 
 ##  getPublicKey
 
-▸ **getPublicKey**(): `string`
+▸ **getPublicKey**(): [PublicKey](_utils_key_pair_.publickey.md)
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[getPublicKey](_utils_key_pair_.keypair.md#getpublickey)*
 
-*Defined in [utils/key_pair.ts:86](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L86)*
+*Defined in [utils/key_pair.ts:143](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L143)*
 
-**Returns:** `string`
+**Returns:** [PublicKey](_utils_key_pair_.publickey.md)
 
 ___
 <a id="sign"></a>
@@ -74,7 +74,7 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[sign](_utils_key_pair_.keypair.md#sign)*
 
-*Defined in [utils/key_pair.ts:73](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L73)*
+*Defined in [utils/key_pair.ts:130](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L130)*
 
 **Parameters:**
 
@@ -93,7 +93,7 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[toString](_utils_key_pair_.keypair.md#tostring)*
 
-*Defined in [utils/key_pair.ts:82](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L82)*
+*Defined in [utils/key_pair.ts:139](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L139)*
 
 **Returns:** `string`
 
@@ -106,7 +106,7 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[verify](_utils_key_pair_.keypair.md#verify)*
 
-*Defined in [utils/key_pair.ts:78](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L78)*
+*Defined in [utils/key_pair.ts:135](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L135)*
 
 **Parameters:**
 
@@ -126,7 +126,7 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[fromRandom](_utils_key_pair_.keypair.md#fromrandom)*
 
-*Defined in [utils/key_pair.ts:68](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L68)*
+*Defined in [utils/key_pair.ts:125](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L125)*
 
 Generate a new random keypair.
 
@@ -145,7 +145,7 @@ ___
 
 *Inherited from [KeyPair](_utils_key_pair_.keypair.md).[fromString](_utils_key_pair_.keypair.md#fromstring)*
 
-*Defined in [utils/key_pair.ts:26](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/utils/key_pair.ts#L26)*
+*Defined in [utils/key_pair.ts:80](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/utils/key_pair.ts#L80)*
 
 **Parameters:**
 

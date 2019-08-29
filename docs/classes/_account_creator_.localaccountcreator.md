@@ -14,7 +14,7 @@
 
 ⊕ **new LocalAccountCreator**(masterAccount: *[Account](_account_.account.md)*, initialBalance: *`BN`*): [LocalAccountCreator](_account_creator_.localaccountcreator.md)
 
-*Defined in [account_creator.ts:15](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/account_creator.ts#L15)*
+*Defined in [account_creator.ts:16](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/account_creator.ts#L16)*
 
 **Parameters:**
 
@@ -35,7 +35,7 @@ ___
 
 **● initialBalance**: *`BN`*
 
-*Defined in [account_creator.ts:15](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/account_creator.ts#L15)*
+*Defined in [account_creator.ts:16](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/account_creator.ts#L16)*
 
 ___
 <a id="masteraccount"></a>
@@ -44,7 +44,7 @@ ___
 
 **● masterAccount**: *[Account](_account_.account.md)*
 
-*Defined in [account_creator.ts:14](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/account_creator.ts#L14)*
+*Defined in [account_creator.ts:15](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/account_creator.ts#L15)*
 
 ___
 
@@ -54,18 +54,18 @@ ___
 
 ##  createAccount
 
-▸ **createAccount**(newAccountId: *`string`*, publicKey: *`string`*): `Promise`<`void`>
+▸ **createAccount**(newAccountId: *`string`*, publicKey: *[PublicKey](_utils_key_pair_.publickey.md)*): `Promise`<`void`>
 
 *Overrides [AccountCreator](_account_creator_.accountcreator.md).[createAccount](_account_creator_.accountcreator.md#createaccount)*
 
-*Defined in [account_creator.ts:23](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/account_creator.ts#L23)*
+*Defined in [account_creator.ts:24](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/account_creator.ts#L24)*
 
 **Parameters:**
 
 | Name | Type |
 | ------ | ------ |
 | newAccountId | `string` |
-| publicKey | `string` |
+| publicKey | [PublicKey](_utils_key_pair_.publickey.md) |
 
 **Returns:** `Promise`<`void`>
 

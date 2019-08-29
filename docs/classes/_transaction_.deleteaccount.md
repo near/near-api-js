@@ -16,7 +16,7 @@
 
 *Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:23](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L23)*
+*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L24)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● beneficiaryId**: *`string`*
 
-*Defined in [transaction.ts:66](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/transaction.ts#L66)*
+*Defined in [transaction.ts:67](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/transaction.ts#L67)*
 
 ___
 

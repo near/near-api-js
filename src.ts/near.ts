@@ -4,7 +4,7 @@ import { Account } from './account';
 import { Connection } from './connection';
 import { Contract } from './contract';
 import { loadJsonFile } from './key_stores/unencrypted_file_system_keystore';
-import { KeyPair } from './utils/key_pair';
+import { KeyPair, PublicKey } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 
@@ -36,7 +36,7 @@ export class Near {
         return account;
     }
 
-    async createAccount(accountId: string, publicKey: string): Promise<Account> {
+    async createAccount(accountId: string, publicKey: PublicKey): Promise<Account> {
         if (!this.accountCreator) {
             throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
         }

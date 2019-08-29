@@ -73,7 +73,7 @@ export class WalletAccount {
         newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
         const accessKey = KeyPair.fromRandom('ed25519');
-        newUrl.searchParams.set('public_key', accessKey.getPublicKey());
+        newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         window.location.assign(newUrl.toString());
     }

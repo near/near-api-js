@@ -12,7 +12,7 @@
 
 **● num**: *`number`*
 
-*Defined in [providers/provider.ts:41](https://github.com/nearprotocol/nearlib/blob/b17214a/src.ts/providers/provider.ts#L41)*
+*Defined in [providers/provider.ts:46](https://github.com/nearprotocol/nearlib/blob/b6e94a8/src.ts/providers/provider.ts#L46)*
 
 ___
 
