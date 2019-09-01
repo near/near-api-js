@@ -68,7 +68,7 @@ declare class Signature {
     data: Uint8Array;
     constructor(signature: Uint8Array);
 }
-declare class Transaction extends Assignable {
+export declare class Transaction extends Assignable {
     signerId: string;
     publicKey: PublicKey;
     nonce: number;
@@ -91,5 +91,6 @@ export declare class Action extends Enum {
     deleteKey: DeleteKey;
     deleteAccount: DeleteAccount;
 }
+export declare const SCHEMA: Map<Function, any>;
 export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export {};

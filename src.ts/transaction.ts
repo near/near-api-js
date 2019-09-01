@@ -108,7 +108,7 @@ class Signature {
     }
 }
 
-class Transaction extends Assignable {
+export class Transaction extends Assignable {
     signerId: string;
     publicKey: PublicKey;
     nonce: number;
@@ -137,7 +137,7 @@ export class Action extends Enum {
     deleteAccount: DeleteAccount;
 }
 
-const SCHEMA = new Map<Function, any>([
+export const SCHEMA = new Map<Function, any>([
     [Signature, {kind: 'struct', fields: [
         ['keyType', 'u8'],
         ['data', [32]]
@@ -151,7 +151,7 @@ const SCHEMA = new Map<Function, any>([
         ['publicKey', PublicKey],
         ['nonce', 'u64'],
         ['receiverId', 'string'],
-    ['blockHash', [32]],
+        ['blockHash', [32]],
         ['actions', [Action]]
     ]}],
     [PublicKey, { kind: 'struct', fields: [
