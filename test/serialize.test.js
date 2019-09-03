@@ -67,7 +67,7 @@ test('serialize and sign transfer tx', async() => {
     ];
     const blockHash = nearlib.utils.serialize.base_decode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
 
-    let [hash, signedTx] = await nearlib.transactions.signTransaction('whatever.near', 1, actions, blockHash, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
+    let [, signedTx] = await nearlib.transactions.signTransaction('whatever.near', 1, actions, blockHash, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
 
     expect(Buffer.from(signedTx.signature.data).toString('base64')).toEqual('lpqDMyGG7pdV5IOTJVJYBuGJo9LSu0tHYOlEQ+l+HE8i3u7wBZqOlxMQDtpuGRRNp+ig735TmyBwi6HY0CG9AQ==');
     const serialized = nearlib.utils.serialize.serialize(nearlib.transactions.SCHEMA, signedTx);
