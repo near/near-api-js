@@ -5,21 +5,18 @@ window.nearlib = require('./lib/index');
 window.Buffer = Buffer;
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/index":6,"buffer":39,"error-polyfill":46}],2:[function(require,module,exports){
+},{"./lib/index":6,"buffer":31,"error-polyfill":38}],2:[function(require,module,exports){
 (function (Buffer){
 'use strict';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const bn_js_1 = __importDefault(require("bn.js"));
 const transaction_1 = require("./transaction");
 const provider_1 = require("./providers/provider");
 const serialize_1 = require("./utils/serialize");
+const key_pair_1 = require("./utils/key_pair");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-const DEFAULT_FUNC_CALL_AMOUNT = new bn_js_1.default(1000000000);
+const DEFAULT_FUNC_CALL_AMOUNT = 1000000;
 // Default number of retries before giving up on a transactioin.
 const TX_STATUS_RETRY_NUMBER = 10;
 // Default wait until next retry in millis.
@@ -31,18 +28,25 @@ function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 class Account {
-    get ready() {
-        return this._ready || (this._ready = Promise.resolve(this.fetchState()));
-    }
     constructor(connection, accountId) {
         this.connection = connection;
         this.accountId = accountId;
     }
+    get ready() {
+        return this._ready || (this._ready = Promise.resolve(this.fetchState()));
+    }
     async fetchState() {
-        const state = await this.connection.provider.query(`account/${this.accountId}`, '');
-        this._state = state;
-        this._state.amount = state.amount;
-        this._state.stake = state.stake;
+        this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
+        try {
+            const publicKey = (await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId)).toString();
+            this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey}`, '');
+            if (this._accessKey === null) {
+                throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey}`);
+            }
+        }
+        catch {
+            this._accessKey = null;
+        }
     }
     async state() {
         await this.ready;
@@ -67,8 +71,13 @@ class Account {
         }
         throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`);
     }
-    async signAndSendTransaction(transaction) {
-        const [txHash, signedTx] = await transaction_1.signTransaction(this.connection.signer, transaction, this.accountId, this.connection.networkId);
+    async signAndSendTransaction(receiverId, actions) {
+        await this.ready;
+        if (this._accessKey === null) {
+            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
+        }
+        const status = await this.connection.provider.status();
+        const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
         let result;
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
@@ -81,18 +90,12 @@ class Account {
                 throw error;
             }
         }
-        const flatLogs = result.logs.reduce((acc, it) => acc.concat(it.lines), []);
-        if (transaction.hasOwnProperty('contractId')) {
-            this.printLogs(transaction['contractId'], flatLogs);
-        }
-        else if (transaction.hasOwnProperty('originator')) {
-            this.printLogs(transaction['originator'], flatLogs);
-        }
+        const flatLogs = result.transactions.reduce((acc, it) => acc.concat(it.result.logs), []);
+        this.printLogs(signedTx.transaction.receiverId, flatLogs);
         if (result.status === provider_1.FinalTransactionStatus.Failed) {
-            if (result.logs) {
-                console.warn(flatLogs);
+            if (flatLogs) {
                 const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || flatLogs.find(it => it.startsWith('Runtime error:')) || '';
-                throw new Error(`Transaction ${result.logs[0].hash} failed. ${errorMessage}`);
+                throw new Error(`Transaction ${result.transactions[0].hash} failed. ${errorMessage}`);
             }
         }
         // TODO: if Tx is Unknown or Started.
@@ -100,50 +103,43 @@ class Account {
         return result;
     }
     async createAndDeployContract(contractId, publicKey, data, amount) {
-        await this.createAccount(contractId, publicKey, amount);
+        const accessKey = transaction_1.fullAccessKey();
+        await this.signAndSendTransaction(contractId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey), transaction_1.deployContract(data)]);
         const contractAccount = new Account(this.connection, contractId);
-        await contractAccount.ready;
-        await contractAccount.deployContract(data);
         return contractAccount;
     }
-    async sendMoney(receiver, amount) {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(transaction_1.sendMoney(this._state.nonce, this.accountId, receiver, amount));
+    async sendMoney(receiverId, amount) {
+        return this.signAndSendTransaction(receiverId, [transaction_1.transfer(amount)]);
     }
     async createAccount(newAccountId, publicKey, amount) {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(transaction_1.createAccount(this._state.nonce, this.accountId, newAccountId, publicKey, amount));
+        const accessKey = transaction_1.fullAccessKey();
+        return this.signAndSendTransaction(newAccountId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
     }
     async deployContract(data) {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(transaction_1.deployContract(this._state.nonce, this.accountId, data));
+        return this.signAndSendTransaction(this.accountId, [transaction_1.deployContract(data)]);
     }
-    async functionCall(contractId, methodName, args, amount) {
+    async functionCall(contractId, methodName, args, gas, amount) {
         if (!args) {
             args = {};
         }
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(transaction_1.functionCall(this._state.nonce, this.accountId, contractId, methodName, Buffer.from(JSON.stringify(args)), amount || DEFAULT_FUNC_CALL_AMOUNT));
+        return this.signAndSendTransaction(contractId, [transaction_1.functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
     }
-    async addKey(publicKey, contractId, methodName, balanceOwner, amount) {
-        await this.ready;
-        this._state.nonce++;
-        const accessKey = contractId ? transaction_1.createAccessKey(contractId, methodName, balanceOwner, amount) : null;
-        return this.signAndSendTransaction(transaction_1.addKey(this._state.nonce, this.accountId, publicKey, accessKey));
+    // TODO: expand this API to support more options.
+    async addKey(publicKey, contractId, methodName, amount) {
+        let accessKey;
+        if (contractId === null || contractId === undefined) {
+            accessKey = transaction_1.fullAccessKey();
+        }
+        else {
+            accessKey = transaction_1.functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
+        }
+        return this.signAndSendTransaction(this.accountId, [transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
     }
     async deleteKey(publicKey) {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(transaction_1.deleteKey(this._state.nonce, this.accountId, publicKey));
+        return this.signAndSendTransaction(this.accountId, [transaction_1.deleteKey(key_pair_1.PublicKey.from(publicKey))]);
     }
     async stake(publicKey, amount) {
-        await this.ready;
-        this._state.nonce++;
-        return this.signAndSendTransaction(transaction_1.stake(this._state.nonce, this.accountId, amount, publicKey));
+        return this.signAndSendTransaction(this.accountId, [transaction_1.stake(amount, key_pair_1.PublicKey.from(publicKey))]);
     }
     async viewFunction(contractId, methodName, args) {
         const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, serialize_1.base_encode(JSON.stringify(args)));
@@ -152,15 +148,25 @@ class Account {
         }
         return JSON.parse(Buffer.from(result.result).toString());
     }
-    async getAccountDetails() {
+    /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
+    async getAccessKeys() {
         const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
+        return response;
+    }
+    async getAccountDetails() {
+        // TODO: update the response value to return all the different keys, not just app keys.
+        // Also if we need this function, or getAccessKeys is good enough.
+        const accessKeys = await this.getAccessKeys();
         const result = { authorizedApps: [], transactions: [] };
-        Object.keys(response).forEach((key) => {
-            result.authorizedApps.push({
-                contractId: response[key][1].contract_id,
-                amount: response[key][1].amount,
-                publicKey: serialize_1.base_encode(response[key][0]),
-            });
+        accessKeys.map((item) => {
+            if (item.access_key.permission.FunctionCall !== undefined) {
+                const perm = item.access_key.permission.FunctionCall;
+                result.authorizedApps.push({
+                    contractId: perm.receiver_id,
+                    amount: perm.allowance,
+                    publicKey: item.public_key,
+                });
+            }
         });
         return result;
     }
@@ -168,7 +174,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers/provider":17,"./transaction":19,"./utils/serialize":23,"bn.js":35,"buffer":39}],3:[function(require,module,exports){
+},{"./providers/provider":16,"./transaction":18,"./utils/key_pair":20,"./utils/serialize":22,"buffer":31}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -234,7 +240,7 @@ class Connection {
 }
 exports.Connection = Connection;
 
-},{"./providers":15,"./signer":18}],5:[function(require,module,exports){
+},{"./providers":14,"./signer":17}],5:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const providers_1 = require("./providers");
@@ -263,7 +269,7 @@ class Contract {
 }
 exports.Contract = Contract;
 
-},{"./providers":15}],6:[function(require,module,exports){
+},{"./providers":14}],6:[function(require,module,exports){
 'use strict';
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -279,6 +285,8 @@ const utils = __importStar(require("./utils"));
 exports.utils = utils;
 const keyStores = __importStar(require("./key_stores"));
 exports.keyStores = keyStores;
+const transactions = __importStar(require("./transaction"));
+exports.transactions = transactions;
 const account_1 = require("./account");
 exports.Account = account_1.Account;
 const accountCreator = __importStar(require("./account_creator"));
@@ -297,7 +305,7 @@ exports.connect = near_1.connect;
 const wallet_account_1 = require("./wallet-account");
 exports.WalletAccount = wallet_account_1.WalletAccount;
 
-},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":9,"./near":13,"./providers":15,"./signer":18,"./utils":20,"./utils/key_pair":21,"./wallet-account":25}],7:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":9,"./near":13,"./providers":14,"./signer":17,"./transaction":18,"./utils":19,"./utils/key_pair":20,"./wallet-account":24}],7:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -362,7 +370,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
 }
 exports.BrowserLocalStorageKeyStore = BrowserLocalStorageKeyStore;
 
-},{"../utils/key_pair":21,"./keystore":10}],8:[function(require,module,exports){
+},{"../utils/key_pair":20,"./keystore":10}],8:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -403,8 +411,8 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
         const result = new Array();
         Object.keys(this.keys).forEach((key) => {
             const parts = key.split(':');
-            if (parts[1] === networkId) {
-                result.push(parts[0]);
+            if (parts[parts.length - 1] === networkId) {
+                result.push(parts.slice(0, parts.length - 1).join(':'));
             }
         });
         return result;
@@ -412,7 +420,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
 }
 exports.InMemoryKeyStore = InMemoryKeyStore;
 
-},{"../utils/key_pair":21,"./keystore":10}],9:[function(require,module,exports){
+},{"../utils/key_pair":20,"./keystore":10}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -586,7 +594,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
 }
 exports.UnencryptedFileSystemKeyStore = UnencryptedFileSystemKeyStore;
 
-},{"../utils/key_pair":21,"./keystore":10,"fs":37,"util":86}],13:[function(require,module,exports){
+},{"../utils/key_pair":20,"./keystore":10,"fs":29,"util":67}],13:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -642,17 +650,6 @@ class Near {
         return new contract_1.Contract(account, contractId, options);
     }
     /**
-     * Backwards compatibility method. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.
-     * @param contractId
-     * @param wasmByteArray
-     */
-    async deployContract(contractId, wasmByteArray) {
-        console.warn('near.deployContract is deprecated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.');
-        const account = new account_1.Account(this.connection, contractId);
-        const result = await account.deployContract(wasmByteArray);
-        return result.logs[0].hash;
-    }
-    /**
      * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
      * @param amount
      * @param originator
@@ -662,7 +659,7 @@ class Near {
         console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
         const account = new account_1.Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);
-        return result.logs[0].hash;
+        return result.transactions[0].hash;
     }
 }
 exports.Near = Near;
@@ -673,7 +670,7 @@ async function connect(config) {
             const keyFile = await unencrypted_file_system_keystore_1.loadJsonFile(config.keyPath);
             if (keyFile.account_id) {
                 // TODO: Only load key if network ID matches
-                const keyPair = new key_pair_1.KeyPairEd25519(keyFile.secret_key);
+                const keyPair = key_pair_1.KeyPair.fromString(keyFile.secret_key);
                 const keyPathStore = new key_stores_1.InMemoryKeyStore();
                 await keyPathStore.setKey(config.networkId, keyFile.account_id, keyPair);
                 if (!config.masterAccount) {
@@ -691,5309 +688,7 @@ async function connect(config) {
 }
 exports.connect = connect;
 
-},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":9,"./key_stores/unencrypted_file_system_keystore":12,"./utils/key_pair":21,"bn.js":35}],14:[function(require,module,exports){
-/*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
-"use strict";
-
-var $protobuf = require("protobufjs/minimal");
-
-// Common aliases
-var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
-
-// Exported root namespace
-var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
-
-$root.CreateAccountTransaction = (function() {
-
-    /**
-     * Properties of a CreateAccountTransaction.
-     * @exports ICreateAccountTransaction
-     * @interface ICreateAccountTransaction
-     * @property {number|Long|null} [nonce] CreateAccountTransaction nonce
-     * @property {string|null} [originator] CreateAccountTransaction originator
-     * @property {string|null} [newAccountId] CreateAccountTransaction newAccountId
-     * @property {IUint128|null} [amount] CreateAccountTransaction amount
-     * @property {Uint8Array|null} [publicKey] CreateAccountTransaction publicKey
-     */
-
-    /**
-     * Constructs a new CreateAccountTransaction.
-     * @exports CreateAccountTransaction
-     * @classdesc Represents a CreateAccountTransaction.
-     * @implements ICreateAccountTransaction
-     * @constructor
-     * @param {ICreateAccountTransaction=} [properties] Properties to set
-     */
-    function CreateAccountTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * CreateAccountTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof CreateAccountTransaction
-     * @instance
-     */
-    CreateAccountTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * CreateAccountTransaction originator.
-     * @member {string} originator
-     * @memberof CreateAccountTransaction
-     * @instance
-     */
-    CreateAccountTransaction.prototype.originator = "";
-
-    /**
-     * CreateAccountTransaction newAccountId.
-     * @member {string} newAccountId
-     * @memberof CreateAccountTransaction
-     * @instance
-     */
-    CreateAccountTransaction.prototype.newAccountId = "";
-
-    /**
-     * CreateAccountTransaction amount.
-     * @member {IUint128|null|undefined} amount
-     * @memberof CreateAccountTransaction
-     * @instance
-     */
-    CreateAccountTransaction.prototype.amount = null;
-
-    /**
-     * CreateAccountTransaction publicKey.
-     * @member {Uint8Array} publicKey
-     * @memberof CreateAccountTransaction
-     * @instance
-     */
-    CreateAccountTransaction.prototype.publicKey = $util.newBuffer([]);
-
-    /**
-     * Creates a new CreateAccountTransaction instance using the specified properties.
-     * @function create
-     * @memberof CreateAccountTransaction
-     * @static
-     * @param {ICreateAccountTransaction=} [properties] Properties to set
-     * @returns {CreateAccountTransaction} CreateAccountTransaction instance
-     */
-    CreateAccountTransaction.create = function create(properties) {
-        return new CreateAccountTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified CreateAccountTransaction message. Does not implicitly {@link CreateAccountTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof CreateAccountTransaction
-     * @static
-     * @param {ICreateAccountTransaction} message CreateAccountTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    CreateAccountTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originator);
-        if (message.newAccountId != null && message.hasOwnProperty("newAccountId"))
-            writer.uint32(/* id 3, wireType 2 =*/26).string(message.newAccountId);
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            $root.Uint128.encode(message.amount, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-            writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.publicKey);
-        return writer;
-    };
-
-    /**
-     * Encodes the specified CreateAccountTransaction message, length delimited. Does not implicitly {@link CreateAccountTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof CreateAccountTransaction
-     * @static
-     * @param {ICreateAccountTransaction} message CreateAccountTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    CreateAccountTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a CreateAccountTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof CreateAccountTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {CreateAccountTransaction} CreateAccountTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    CreateAccountTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.CreateAccountTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.originator = reader.string();
-                break;
-            case 3:
-                message.newAccountId = reader.string();
-                break;
-            case 4:
-                message.amount = $root.Uint128.decode(reader, reader.uint32());
-                break;
-            case 5:
-                message.publicKey = reader.bytes();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a CreateAccountTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof CreateAccountTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {CreateAccountTransaction} CreateAccountTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    CreateAccountTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a CreateAccountTransaction message.
-     * @function verify
-     * @memberof CreateAccountTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    CreateAccountTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            if (!$util.isString(message.originator))
-                return "originator: string expected";
-        if (message.newAccountId != null && message.hasOwnProperty("newAccountId"))
-            if (!$util.isString(message.newAccountId))
-                return "newAccountId: string expected";
-        if (message.amount != null && message.hasOwnProperty("amount")) {
-            var error = $root.Uint128.verify(message.amount);
-            if (error)
-                return "amount." + error;
-        }
-        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-            if (!(message.publicKey && typeof message.publicKey.length === "number" || $util.isString(message.publicKey)))
-                return "publicKey: buffer expected";
-        return null;
-    };
-
-    /**
-     * Creates a CreateAccountTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof CreateAccountTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {CreateAccountTransaction} CreateAccountTransaction
-     */
-    CreateAccountTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.CreateAccountTransaction)
-            return object;
-        var message = new $root.CreateAccountTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.originator != null)
-            message.originator = String(object.originator);
-        if (object.newAccountId != null)
-            message.newAccountId = String(object.newAccountId);
-        if (object.amount != null) {
-            if (typeof object.amount !== "object")
-                throw TypeError(".CreateAccountTransaction.amount: object expected");
-            message.amount = $root.Uint128.fromObject(object.amount);
-        }
-        if (object.publicKey != null)
-            if (typeof object.publicKey === "string")
-                $util.base64.decode(object.publicKey, message.publicKey = $util.newBuffer($util.base64.length(object.publicKey)), 0);
-            else if (object.publicKey.length)
-                message.publicKey = object.publicKey;
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a CreateAccountTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof CreateAccountTransaction
-     * @static
-     * @param {CreateAccountTransaction} message CreateAccountTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    CreateAccountTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.originator = "";
-            object.newAccountId = "";
-            object.amount = null;
-            if (options.bytes === String)
-                object.publicKey = "";
-            else {
-                object.publicKey = [];
-                if (options.bytes !== Array)
-                    object.publicKey = $util.newBuffer(object.publicKey);
-            }
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            object.originator = message.originator;
-        if (message.newAccountId != null && message.hasOwnProperty("newAccountId"))
-            object.newAccountId = message.newAccountId;
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            object.amount = $root.Uint128.toObject(message.amount, options);
-        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-            object.publicKey = options.bytes === String ? $util.base64.encode(message.publicKey, 0, message.publicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.publicKey) : message.publicKey;
-        return object;
-    };
-
-    /**
-     * Converts this CreateAccountTransaction to JSON.
-     * @function toJSON
-     * @memberof CreateAccountTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    CreateAccountTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return CreateAccountTransaction;
-})();
-
-$root.DeployContractTransaction = (function() {
-
-    /**
-     * Properties of a DeployContractTransaction.
-     * @exports IDeployContractTransaction
-     * @interface IDeployContractTransaction
-     * @property {number|Long|null} [nonce] DeployContractTransaction nonce
-     * @property {string|null} [contractId] DeployContractTransaction contractId
-     * @property {Uint8Array|null} [wasmByteArray] DeployContractTransaction wasmByteArray
-     */
-
-    /**
-     * Constructs a new DeployContractTransaction.
-     * @exports DeployContractTransaction
-     * @classdesc Represents a DeployContractTransaction.
-     * @implements IDeployContractTransaction
-     * @constructor
-     * @param {IDeployContractTransaction=} [properties] Properties to set
-     */
-    function DeployContractTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * DeployContractTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof DeployContractTransaction
-     * @instance
-     */
-    DeployContractTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * DeployContractTransaction contractId.
-     * @member {string} contractId
-     * @memberof DeployContractTransaction
-     * @instance
-     */
-    DeployContractTransaction.prototype.contractId = "";
-
-    /**
-     * DeployContractTransaction wasmByteArray.
-     * @member {Uint8Array} wasmByteArray
-     * @memberof DeployContractTransaction
-     * @instance
-     */
-    DeployContractTransaction.prototype.wasmByteArray = $util.newBuffer([]);
-
-    /**
-     * Creates a new DeployContractTransaction instance using the specified properties.
-     * @function create
-     * @memberof DeployContractTransaction
-     * @static
-     * @param {IDeployContractTransaction=} [properties] Properties to set
-     * @returns {DeployContractTransaction} DeployContractTransaction instance
-     */
-    DeployContractTransaction.create = function create(properties) {
-        return new DeployContractTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified DeployContractTransaction message. Does not implicitly {@link DeployContractTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof DeployContractTransaction
-     * @static
-     * @param {IDeployContractTransaction} message DeployContractTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    DeployContractTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.contractId != null && message.hasOwnProperty("contractId"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.contractId);
-        if (message.wasmByteArray != null && message.hasOwnProperty("wasmByteArray"))
-            writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.wasmByteArray);
-        return writer;
-    };
-
-    /**
-     * Encodes the specified DeployContractTransaction message, length delimited. Does not implicitly {@link DeployContractTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof DeployContractTransaction
-     * @static
-     * @param {IDeployContractTransaction} message DeployContractTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    DeployContractTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a DeployContractTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof DeployContractTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {DeployContractTransaction} DeployContractTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    DeployContractTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.DeployContractTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.contractId = reader.string();
-                break;
-            case 3:
-                message.wasmByteArray = reader.bytes();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a DeployContractTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof DeployContractTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {DeployContractTransaction} DeployContractTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    DeployContractTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a DeployContractTransaction message.
-     * @function verify
-     * @memberof DeployContractTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    DeployContractTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.contractId != null && message.hasOwnProperty("contractId"))
-            if (!$util.isString(message.contractId))
-                return "contractId: string expected";
-        if (message.wasmByteArray != null && message.hasOwnProperty("wasmByteArray"))
-            if (!(message.wasmByteArray && typeof message.wasmByteArray.length === "number" || $util.isString(message.wasmByteArray)))
-                return "wasmByteArray: buffer expected";
-        return null;
-    };
-
-    /**
-     * Creates a DeployContractTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof DeployContractTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {DeployContractTransaction} DeployContractTransaction
-     */
-    DeployContractTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.DeployContractTransaction)
-            return object;
-        var message = new $root.DeployContractTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.contractId != null)
-            message.contractId = String(object.contractId);
-        if (object.wasmByteArray != null)
-            if (typeof object.wasmByteArray === "string")
-                $util.base64.decode(object.wasmByteArray, message.wasmByteArray = $util.newBuffer($util.base64.length(object.wasmByteArray)), 0);
-            else if (object.wasmByteArray.length)
-                message.wasmByteArray = object.wasmByteArray;
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a DeployContractTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof DeployContractTransaction
-     * @static
-     * @param {DeployContractTransaction} message DeployContractTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    DeployContractTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.contractId = "";
-            if (options.bytes === String)
-                object.wasmByteArray = "";
-            else {
-                object.wasmByteArray = [];
-                if (options.bytes !== Array)
-                    object.wasmByteArray = $util.newBuffer(object.wasmByteArray);
-            }
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.contractId != null && message.hasOwnProperty("contractId"))
-            object.contractId = message.contractId;
-        if (message.wasmByteArray != null && message.hasOwnProperty("wasmByteArray"))
-            object.wasmByteArray = options.bytes === String ? $util.base64.encode(message.wasmByteArray, 0, message.wasmByteArray.length) : options.bytes === Array ? Array.prototype.slice.call(message.wasmByteArray) : message.wasmByteArray;
-        return object;
-    };
-
-    /**
-     * Converts this DeployContractTransaction to JSON.
-     * @function toJSON
-     * @memberof DeployContractTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    DeployContractTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return DeployContractTransaction;
-})();
-
-$root.FunctionCallTransaction = (function() {
-
-    /**
-     * Properties of a FunctionCallTransaction.
-     * @exports IFunctionCallTransaction
-     * @interface IFunctionCallTransaction
-     * @property {number|Long|null} [nonce] FunctionCallTransaction nonce
-     * @property {string|null} [originator] FunctionCallTransaction originator
-     * @property {string|null} [contractId] FunctionCallTransaction contractId
-     * @property {Uint8Array|null} [methodName] FunctionCallTransaction methodName
-     * @property {Uint8Array|null} [args] FunctionCallTransaction args
-     * @property {IUint128|null} [amount] FunctionCallTransaction amount
-     */
-
-    /**
-     * Constructs a new FunctionCallTransaction.
-     * @exports FunctionCallTransaction
-     * @classdesc Represents a FunctionCallTransaction.
-     * @implements IFunctionCallTransaction
-     * @constructor
-     * @param {IFunctionCallTransaction=} [properties] Properties to set
-     */
-    function FunctionCallTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * FunctionCallTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof FunctionCallTransaction
-     * @instance
-     */
-    FunctionCallTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * FunctionCallTransaction originator.
-     * @member {string} originator
-     * @memberof FunctionCallTransaction
-     * @instance
-     */
-    FunctionCallTransaction.prototype.originator = "";
-
-    /**
-     * FunctionCallTransaction contractId.
-     * @member {string} contractId
-     * @memberof FunctionCallTransaction
-     * @instance
-     */
-    FunctionCallTransaction.prototype.contractId = "";
-
-    /**
-     * FunctionCallTransaction methodName.
-     * @member {Uint8Array} methodName
-     * @memberof FunctionCallTransaction
-     * @instance
-     */
-    FunctionCallTransaction.prototype.methodName = $util.newBuffer([]);
-
-    /**
-     * FunctionCallTransaction args.
-     * @member {Uint8Array} args
-     * @memberof FunctionCallTransaction
-     * @instance
-     */
-    FunctionCallTransaction.prototype.args = $util.newBuffer([]);
-
-    /**
-     * FunctionCallTransaction amount.
-     * @member {IUint128|null|undefined} amount
-     * @memberof FunctionCallTransaction
-     * @instance
-     */
-    FunctionCallTransaction.prototype.amount = null;
-
-    /**
-     * Creates a new FunctionCallTransaction instance using the specified properties.
-     * @function create
-     * @memberof FunctionCallTransaction
-     * @static
-     * @param {IFunctionCallTransaction=} [properties] Properties to set
-     * @returns {FunctionCallTransaction} FunctionCallTransaction instance
-     */
-    FunctionCallTransaction.create = function create(properties) {
-        return new FunctionCallTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified FunctionCallTransaction message. Does not implicitly {@link FunctionCallTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof FunctionCallTransaction
-     * @static
-     * @param {IFunctionCallTransaction} message FunctionCallTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    FunctionCallTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originator);
-        if (message.contractId != null && message.hasOwnProperty("contractId"))
-            writer.uint32(/* id 3, wireType 2 =*/26).string(message.contractId);
-        if (message.methodName != null && message.hasOwnProperty("methodName"))
-            writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.methodName);
-        if (message.args != null && message.hasOwnProperty("args"))
-            writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.args);
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            $root.Uint128.encode(message.amount, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-        return writer;
-    };
-
-    /**
-     * Encodes the specified FunctionCallTransaction message, length delimited. Does not implicitly {@link FunctionCallTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof FunctionCallTransaction
-     * @static
-     * @param {IFunctionCallTransaction} message FunctionCallTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    FunctionCallTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a FunctionCallTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof FunctionCallTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {FunctionCallTransaction} FunctionCallTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    FunctionCallTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.FunctionCallTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.originator = reader.string();
-                break;
-            case 3:
-                message.contractId = reader.string();
-                break;
-            case 4:
-                message.methodName = reader.bytes();
-                break;
-            case 5:
-                message.args = reader.bytes();
-                break;
-            case 6:
-                message.amount = $root.Uint128.decode(reader, reader.uint32());
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a FunctionCallTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof FunctionCallTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {FunctionCallTransaction} FunctionCallTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    FunctionCallTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a FunctionCallTransaction message.
-     * @function verify
-     * @memberof FunctionCallTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    FunctionCallTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            if (!$util.isString(message.originator))
-                return "originator: string expected";
-        if (message.contractId != null && message.hasOwnProperty("contractId"))
-            if (!$util.isString(message.contractId))
-                return "contractId: string expected";
-        if (message.methodName != null && message.hasOwnProperty("methodName"))
-            if (!(message.methodName && typeof message.methodName.length === "number" || $util.isString(message.methodName)))
-                return "methodName: buffer expected";
-        if (message.args != null && message.hasOwnProperty("args"))
-            if (!(message.args && typeof message.args.length === "number" || $util.isString(message.args)))
-                return "args: buffer expected";
-        if (message.amount != null && message.hasOwnProperty("amount")) {
-            var error = $root.Uint128.verify(message.amount);
-            if (error)
-                return "amount." + error;
-        }
-        return null;
-    };
-
-    /**
-     * Creates a FunctionCallTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof FunctionCallTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {FunctionCallTransaction} FunctionCallTransaction
-     */
-    FunctionCallTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.FunctionCallTransaction)
-            return object;
-        var message = new $root.FunctionCallTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.originator != null)
-            message.originator = String(object.originator);
-        if (object.contractId != null)
-            message.contractId = String(object.contractId);
-        if (object.methodName != null)
-            if (typeof object.methodName === "string")
-                $util.base64.decode(object.methodName, message.methodName = $util.newBuffer($util.base64.length(object.methodName)), 0);
-            else if (object.methodName.length)
-                message.methodName = object.methodName;
-        if (object.args != null)
-            if (typeof object.args === "string")
-                $util.base64.decode(object.args, message.args = $util.newBuffer($util.base64.length(object.args)), 0);
-            else if (object.args.length)
-                message.args = object.args;
-        if (object.amount != null) {
-            if (typeof object.amount !== "object")
-                throw TypeError(".FunctionCallTransaction.amount: object expected");
-            message.amount = $root.Uint128.fromObject(object.amount);
-        }
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a FunctionCallTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof FunctionCallTransaction
-     * @static
-     * @param {FunctionCallTransaction} message FunctionCallTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    FunctionCallTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.originator = "";
-            object.contractId = "";
-            if (options.bytes === String)
-                object.methodName = "";
-            else {
-                object.methodName = [];
-                if (options.bytes !== Array)
-                    object.methodName = $util.newBuffer(object.methodName);
-            }
-            if (options.bytes === String)
-                object.args = "";
-            else {
-                object.args = [];
-                if (options.bytes !== Array)
-                    object.args = $util.newBuffer(object.args);
-            }
-            object.amount = null;
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            object.originator = message.originator;
-        if (message.contractId != null && message.hasOwnProperty("contractId"))
-            object.contractId = message.contractId;
-        if (message.methodName != null && message.hasOwnProperty("methodName"))
-            object.methodName = options.bytes === String ? $util.base64.encode(message.methodName, 0, message.methodName.length) : options.bytes === Array ? Array.prototype.slice.call(message.methodName) : message.methodName;
-        if (message.args != null && message.hasOwnProperty("args"))
-            object.args = options.bytes === String ? $util.base64.encode(message.args, 0, message.args.length) : options.bytes === Array ? Array.prototype.slice.call(message.args) : message.args;
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            object.amount = $root.Uint128.toObject(message.amount, options);
-        return object;
-    };
-
-    /**
-     * Converts this FunctionCallTransaction to JSON.
-     * @function toJSON
-     * @memberof FunctionCallTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    FunctionCallTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return FunctionCallTransaction;
-})();
-
-$root.SendMoneyTransaction = (function() {
-
-    /**
-     * Properties of a SendMoneyTransaction.
-     * @exports ISendMoneyTransaction
-     * @interface ISendMoneyTransaction
-     * @property {number|Long|null} [nonce] SendMoneyTransaction nonce
-     * @property {string|null} [originator] SendMoneyTransaction originator
-     * @property {string|null} [receiver] SendMoneyTransaction receiver
-     * @property {IUint128|null} [amount] SendMoneyTransaction amount
-     */
-
-    /**
-     * Constructs a new SendMoneyTransaction.
-     * @exports SendMoneyTransaction
-     * @classdesc Represents a SendMoneyTransaction.
-     * @implements ISendMoneyTransaction
-     * @constructor
-     * @param {ISendMoneyTransaction=} [properties] Properties to set
-     */
-    function SendMoneyTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * SendMoneyTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof SendMoneyTransaction
-     * @instance
-     */
-    SendMoneyTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * SendMoneyTransaction originator.
-     * @member {string} originator
-     * @memberof SendMoneyTransaction
-     * @instance
-     */
-    SendMoneyTransaction.prototype.originator = "";
-
-    /**
-     * SendMoneyTransaction receiver.
-     * @member {string} receiver
-     * @memberof SendMoneyTransaction
-     * @instance
-     */
-    SendMoneyTransaction.prototype.receiver = "";
-
-    /**
-     * SendMoneyTransaction amount.
-     * @member {IUint128|null|undefined} amount
-     * @memberof SendMoneyTransaction
-     * @instance
-     */
-    SendMoneyTransaction.prototype.amount = null;
-
-    /**
-     * Creates a new SendMoneyTransaction instance using the specified properties.
-     * @function create
-     * @memberof SendMoneyTransaction
-     * @static
-     * @param {ISendMoneyTransaction=} [properties] Properties to set
-     * @returns {SendMoneyTransaction} SendMoneyTransaction instance
-     */
-    SendMoneyTransaction.create = function create(properties) {
-        return new SendMoneyTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified SendMoneyTransaction message. Does not implicitly {@link SendMoneyTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof SendMoneyTransaction
-     * @static
-     * @param {ISendMoneyTransaction} message SendMoneyTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    SendMoneyTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originator);
-        if (message.receiver != null && message.hasOwnProperty("receiver"))
-            writer.uint32(/* id 3, wireType 2 =*/26).string(message.receiver);
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            $root.Uint128.encode(message.amount, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-        return writer;
-    };
-
-    /**
-     * Encodes the specified SendMoneyTransaction message, length delimited. Does not implicitly {@link SendMoneyTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof SendMoneyTransaction
-     * @static
-     * @param {ISendMoneyTransaction} message SendMoneyTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    SendMoneyTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a SendMoneyTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof SendMoneyTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {SendMoneyTransaction} SendMoneyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    SendMoneyTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SendMoneyTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.originator = reader.string();
-                break;
-            case 3:
-                message.receiver = reader.string();
-                break;
-            case 4:
-                message.amount = $root.Uint128.decode(reader, reader.uint32());
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a SendMoneyTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof SendMoneyTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {SendMoneyTransaction} SendMoneyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    SendMoneyTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a SendMoneyTransaction message.
-     * @function verify
-     * @memberof SendMoneyTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    SendMoneyTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            if (!$util.isString(message.originator))
-                return "originator: string expected";
-        if (message.receiver != null && message.hasOwnProperty("receiver"))
-            if (!$util.isString(message.receiver))
-                return "receiver: string expected";
-        if (message.amount != null && message.hasOwnProperty("amount")) {
-            var error = $root.Uint128.verify(message.amount);
-            if (error)
-                return "amount." + error;
-        }
-        return null;
-    };
-
-    /**
-     * Creates a SendMoneyTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof SendMoneyTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {SendMoneyTransaction} SendMoneyTransaction
-     */
-    SendMoneyTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.SendMoneyTransaction)
-            return object;
-        var message = new $root.SendMoneyTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.originator != null)
-            message.originator = String(object.originator);
-        if (object.receiver != null)
-            message.receiver = String(object.receiver);
-        if (object.amount != null) {
-            if (typeof object.amount !== "object")
-                throw TypeError(".SendMoneyTransaction.amount: object expected");
-            message.amount = $root.Uint128.fromObject(object.amount);
-        }
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a SendMoneyTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof SendMoneyTransaction
-     * @static
-     * @param {SendMoneyTransaction} message SendMoneyTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    SendMoneyTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.originator = "";
-            object.receiver = "";
-            object.amount = null;
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            object.originator = message.originator;
-        if (message.receiver != null && message.hasOwnProperty("receiver"))
-            object.receiver = message.receiver;
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            object.amount = $root.Uint128.toObject(message.amount, options);
-        return object;
-    };
-
-    /**
-     * Converts this SendMoneyTransaction to JSON.
-     * @function toJSON
-     * @memberof SendMoneyTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    SendMoneyTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return SendMoneyTransaction;
-})();
-
-$root.StakeTransaction = (function() {
-
-    /**
-     * Properties of a StakeTransaction.
-     * @exports IStakeTransaction
-     * @interface IStakeTransaction
-     * @property {number|Long|null} [nonce] StakeTransaction nonce
-     * @property {string|null} [originator] StakeTransaction originator
-     * @property {IUint128|null} [amount] StakeTransaction amount
-     * @property {string|null} [publicKey] StakeTransaction publicKey
-     * @property {string|null} [blsPublicKey] StakeTransaction blsPublicKey
-     */
-
-    /**
-     * Constructs a new StakeTransaction.
-     * @exports StakeTransaction
-     * @classdesc Represents a StakeTransaction.
-     * @implements IStakeTransaction
-     * @constructor
-     * @param {IStakeTransaction=} [properties] Properties to set
-     */
-    function StakeTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * StakeTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof StakeTransaction
-     * @instance
-     */
-    StakeTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * StakeTransaction originator.
-     * @member {string} originator
-     * @memberof StakeTransaction
-     * @instance
-     */
-    StakeTransaction.prototype.originator = "";
-
-    /**
-     * StakeTransaction amount.
-     * @member {IUint128|null|undefined} amount
-     * @memberof StakeTransaction
-     * @instance
-     */
-    StakeTransaction.prototype.amount = null;
-
-    /**
-     * StakeTransaction publicKey.
-     * @member {string} publicKey
-     * @memberof StakeTransaction
-     * @instance
-     */
-    StakeTransaction.prototype.publicKey = "";
-
-    /**
-     * StakeTransaction blsPublicKey.
-     * @member {string} blsPublicKey
-     * @memberof StakeTransaction
-     * @instance
-     */
-    StakeTransaction.prototype.blsPublicKey = "";
-
-    /**
-     * Creates a new StakeTransaction instance using the specified properties.
-     * @function create
-     * @memberof StakeTransaction
-     * @static
-     * @param {IStakeTransaction=} [properties] Properties to set
-     * @returns {StakeTransaction} StakeTransaction instance
-     */
-    StakeTransaction.create = function create(properties) {
-        return new StakeTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified StakeTransaction message. Does not implicitly {@link StakeTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof StakeTransaction
-     * @static
-     * @param {IStakeTransaction} message StakeTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    StakeTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originator);
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            $root.Uint128.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-            writer.uint32(/* id 4, wireType 2 =*/34).string(message.publicKey);
-        if (message.blsPublicKey != null && message.hasOwnProperty("blsPublicKey"))
-            writer.uint32(/* id 5, wireType 2 =*/42).string(message.blsPublicKey);
-        return writer;
-    };
-
-    /**
-     * Encodes the specified StakeTransaction message, length delimited. Does not implicitly {@link StakeTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof StakeTransaction
-     * @static
-     * @param {IStakeTransaction} message StakeTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    StakeTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a StakeTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof StakeTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {StakeTransaction} StakeTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    StakeTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.StakeTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.originator = reader.string();
-                break;
-            case 3:
-                message.amount = $root.Uint128.decode(reader, reader.uint32());
-                break;
-            case 4:
-                message.publicKey = reader.string();
-                break;
-            case 5:
-                message.blsPublicKey = reader.string();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a StakeTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof StakeTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {StakeTransaction} StakeTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    StakeTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a StakeTransaction message.
-     * @function verify
-     * @memberof StakeTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    StakeTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            if (!$util.isString(message.originator))
-                return "originator: string expected";
-        if (message.amount != null && message.hasOwnProperty("amount")) {
-            var error = $root.Uint128.verify(message.amount);
-            if (error)
-                return "amount." + error;
-        }
-        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-            if (!$util.isString(message.publicKey))
-                return "publicKey: string expected";
-        if (message.blsPublicKey != null && message.hasOwnProperty("blsPublicKey"))
-            if (!$util.isString(message.blsPublicKey))
-                return "blsPublicKey: string expected";
-        return null;
-    };
-
-    /**
-     * Creates a StakeTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof StakeTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {StakeTransaction} StakeTransaction
-     */
-    StakeTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.StakeTransaction)
-            return object;
-        var message = new $root.StakeTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.originator != null)
-            message.originator = String(object.originator);
-        if (object.amount != null) {
-            if (typeof object.amount !== "object")
-                throw TypeError(".StakeTransaction.amount: object expected");
-            message.amount = $root.Uint128.fromObject(object.amount);
-        }
-        if (object.publicKey != null)
-            message.publicKey = String(object.publicKey);
-        if (object.blsPublicKey != null)
-            message.blsPublicKey = String(object.blsPublicKey);
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a StakeTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof StakeTransaction
-     * @static
-     * @param {StakeTransaction} message StakeTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    StakeTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.originator = "";
-            object.amount = null;
-            object.publicKey = "";
-            object.blsPublicKey = "";
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            object.originator = message.originator;
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            object.amount = $root.Uint128.toObject(message.amount, options);
-        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-            object.publicKey = message.publicKey;
-        if (message.blsPublicKey != null && message.hasOwnProperty("blsPublicKey"))
-            object.blsPublicKey = message.blsPublicKey;
-        return object;
-    };
-
-    /**
-     * Converts this StakeTransaction to JSON.
-     * @function toJSON
-     * @memberof StakeTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    StakeTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return StakeTransaction;
-})();
-
-$root.SwapKeyTransaction = (function() {
-
-    /**
-     * Properties of a SwapKeyTransaction.
-     * @exports ISwapKeyTransaction
-     * @interface ISwapKeyTransaction
-     * @property {number|Long|null} [nonce] SwapKeyTransaction nonce
-     * @property {string|null} [originator] SwapKeyTransaction originator
-     * @property {Uint8Array|null} [curKey] SwapKeyTransaction curKey
-     * @property {Uint8Array|null} [newKey] SwapKeyTransaction newKey
-     */
-
-    /**
-     * Constructs a new SwapKeyTransaction.
-     * @exports SwapKeyTransaction
-     * @classdesc Represents a SwapKeyTransaction.
-     * @implements ISwapKeyTransaction
-     * @constructor
-     * @param {ISwapKeyTransaction=} [properties] Properties to set
-     */
-    function SwapKeyTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * SwapKeyTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof SwapKeyTransaction
-     * @instance
-     */
-    SwapKeyTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * SwapKeyTransaction originator.
-     * @member {string} originator
-     * @memberof SwapKeyTransaction
-     * @instance
-     */
-    SwapKeyTransaction.prototype.originator = "";
-
-    /**
-     * SwapKeyTransaction curKey.
-     * @member {Uint8Array} curKey
-     * @memberof SwapKeyTransaction
-     * @instance
-     */
-    SwapKeyTransaction.prototype.curKey = $util.newBuffer([]);
-
-    /**
-     * SwapKeyTransaction newKey.
-     * @member {Uint8Array} newKey
-     * @memberof SwapKeyTransaction
-     * @instance
-     */
-    SwapKeyTransaction.prototype.newKey = $util.newBuffer([]);
-
-    /**
-     * Creates a new SwapKeyTransaction instance using the specified properties.
-     * @function create
-     * @memberof SwapKeyTransaction
-     * @static
-     * @param {ISwapKeyTransaction=} [properties] Properties to set
-     * @returns {SwapKeyTransaction} SwapKeyTransaction instance
-     */
-    SwapKeyTransaction.create = function create(properties) {
-        return new SwapKeyTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified SwapKeyTransaction message. Does not implicitly {@link SwapKeyTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof SwapKeyTransaction
-     * @static
-     * @param {ISwapKeyTransaction} message SwapKeyTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    SwapKeyTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originator);
-        if (message.curKey != null && message.hasOwnProperty("curKey"))
-            writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.curKey);
-        if (message.newKey != null && message.hasOwnProperty("newKey"))
-            writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.newKey);
-        return writer;
-    };
-
-    /**
-     * Encodes the specified SwapKeyTransaction message, length delimited. Does not implicitly {@link SwapKeyTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof SwapKeyTransaction
-     * @static
-     * @param {ISwapKeyTransaction} message SwapKeyTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    SwapKeyTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a SwapKeyTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof SwapKeyTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {SwapKeyTransaction} SwapKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    SwapKeyTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SwapKeyTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.originator = reader.string();
-                break;
-            case 3:
-                message.curKey = reader.bytes();
-                break;
-            case 4:
-                message.newKey = reader.bytes();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a SwapKeyTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof SwapKeyTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {SwapKeyTransaction} SwapKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    SwapKeyTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a SwapKeyTransaction message.
-     * @function verify
-     * @memberof SwapKeyTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    SwapKeyTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            if (!$util.isString(message.originator))
-                return "originator: string expected";
-        if (message.curKey != null && message.hasOwnProperty("curKey"))
-            if (!(message.curKey && typeof message.curKey.length === "number" || $util.isString(message.curKey)))
-                return "curKey: buffer expected";
-        if (message.newKey != null && message.hasOwnProperty("newKey"))
-            if (!(message.newKey && typeof message.newKey.length === "number" || $util.isString(message.newKey)))
-                return "newKey: buffer expected";
-        return null;
-    };
-
-    /**
-     * Creates a SwapKeyTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof SwapKeyTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {SwapKeyTransaction} SwapKeyTransaction
-     */
-    SwapKeyTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.SwapKeyTransaction)
-            return object;
-        var message = new $root.SwapKeyTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.originator != null)
-            message.originator = String(object.originator);
-        if (object.curKey != null)
-            if (typeof object.curKey === "string")
-                $util.base64.decode(object.curKey, message.curKey = $util.newBuffer($util.base64.length(object.curKey)), 0);
-            else if (object.curKey.length)
-                message.curKey = object.curKey;
-        if (object.newKey != null)
-            if (typeof object.newKey === "string")
-                $util.base64.decode(object.newKey, message.newKey = $util.newBuffer($util.base64.length(object.newKey)), 0);
-            else if (object.newKey.length)
-                message.newKey = object.newKey;
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a SwapKeyTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof SwapKeyTransaction
-     * @static
-     * @param {SwapKeyTransaction} message SwapKeyTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    SwapKeyTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.originator = "";
-            if (options.bytes === String)
-                object.curKey = "";
-            else {
-                object.curKey = [];
-                if (options.bytes !== Array)
-                    object.curKey = $util.newBuffer(object.curKey);
-            }
-            if (options.bytes === String)
-                object.newKey = "";
-            else {
-                object.newKey = [];
-                if (options.bytes !== Array)
-                    object.newKey = $util.newBuffer(object.newKey);
-            }
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            object.originator = message.originator;
-        if (message.curKey != null && message.hasOwnProperty("curKey"))
-            object.curKey = options.bytes === String ? $util.base64.encode(message.curKey, 0, message.curKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.curKey) : message.curKey;
-        if (message.newKey != null && message.hasOwnProperty("newKey"))
-            object.newKey = options.bytes === String ? $util.base64.encode(message.newKey, 0, message.newKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.newKey) : message.newKey;
-        return object;
-    };
-
-    /**
-     * Converts this SwapKeyTransaction to JSON.
-     * @function toJSON
-     * @memberof SwapKeyTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    SwapKeyTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return SwapKeyTransaction;
-})();
-
-$root.AddKeyTransaction = (function() {
-
-    /**
-     * Properties of an AddKeyTransaction.
-     * @exports IAddKeyTransaction
-     * @interface IAddKeyTransaction
-     * @property {number|Long|null} [nonce] AddKeyTransaction nonce
-     * @property {string|null} [originator] AddKeyTransaction originator
-     * @property {Uint8Array|null} [newKey] AddKeyTransaction newKey
-     * @property {IAccessKey|null} [accessKey] AddKeyTransaction accessKey
-     */
-
-    /**
-     * Constructs a new AddKeyTransaction.
-     * @exports AddKeyTransaction
-     * @classdesc Represents an AddKeyTransaction.
-     * @implements IAddKeyTransaction
-     * @constructor
-     * @param {IAddKeyTransaction=} [properties] Properties to set
-     */
-    function AddKeyTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * AddKeyTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof AddKeyTransaction
-     * @instance
-     */
-    AddKeyTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * AddKeyTransaction originator.
-     * @member {string} originator
-     * @memberof AddKeyTransaction
-     * @instance
-     */
-    AddKeyTransaction.prototype.originator = "";
-
-    /**
-     * AddKeyTransaction newKey.
-     * @member {Uint8Array} newKey
-     * @memberof AddKeyTransaction
-     * @instance
-     */
-    AddKeyTransaction.prototype.newKey = $util.newBuffer([]);
-
-    /**
-     * AddKeyTransaction accessKey.
-     * @member {IAccessKey|null|undefined} accessKey
-     * @memberof AddKeyTransaction
-     * @instance
-     */
-    AddKeyTransaction.prototype.accessKey = null;
-
-    /**
-     * Creates a new AddKeyTransaction instance using the specified properties.
-     * @function create
-     * @memberof AddKeyTransaction
-     * @static
-     * @param {IAddKeyTransaction=} [properties] Properties to set
-     * @returns {AddKeyTransaction} AddKeyTransaction instance
-     */
-    AddKeyTransaction.create = function create(properties) {
-        return new AddKeyTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified AddKeyTransaction message. Does not implicitly {@link AddKeyTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof AddKeyTransaction
-     * @static
-     * @param {IAddKeyTransaction} message AddKeyTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    AddKeyTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originator);
-        if (message.newKey != null && message.hasOwnProperty("newKey"))
-            writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.newKey);
-        if (message.accessKey != null && message.hasOwnProperty("accessKey"))
-            $root.AccessKey.encode(message.accessKey, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-        return writer;
-    };
-
-    /**
-     * Encodes the specified AddKeyTransaction message, length delimited. Does not implicitly {@link AddKeyTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof AddKeyTransaction
-     * @static
-     * @param {IAddKeyTransaction} message AddKeyTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    AddKeyTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes an AddKeyTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof AddKeyTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {AddKeyTransaction} AddKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    AddKeyTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.AddKeyTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.originator = reader.string();
-                break;
-            case 3:
-                message.newKey = reader.bytes();
-                break;
-            case 4:
-                message.accessKey = $root.AccessKey.decode(reader, reader.uint32());
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes an AddKeyTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof AddKeyTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {AddKeyTransaction} AddKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    AddKeyTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies an AddKeyTransaction message.
-     * @function verify
-     * @memberof AddKeyTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    AddKeyTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            if (!$util.isString(message.originator))
-                return "originator: string expected";
-        if (message.newKey != null && message.hasOwnProperty("newKey"))
-            if (!(message.newKey && typeof message.newKey.length === "number" || $util.isString(message.newKey)))
-                return "newKey: buffer expected";
-        if (message.accessKey != null && message.hasOwnProperty("accessKey")) {
-            var error = $root.AccessKey.verify(message.accessKey);
-            if (error)
-                return "accessKey." + error;
-        }
-        return null;
-    };
-
-    /**
-     * Creates an AddKeyTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof AddKeyTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {AddKeyTransaction} AddKeyTransaction
-     */
-    AddKeyTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.AddKeyTransaction)
-            return object;
-        var message = new $root.AddKeyTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.originator != null)
-            message.originator = String(object.originator);
-        if (object.newKey != null)
-            if (typeof object.newKey === "string")
-                $util.base64.decode(object.newKey, message.newKey = $util.newBuffer($util.base64.length(object.newKey)), 0);
-            else if (object.newKey.length)
-                message.newKey = object.newKey;
-        if (object.accessKey != null) {
-            if (typeof object.accessKey !== "object")
-                throw TypeError(".AddKeyTransaction.accessKey: object expected");
-            message.accessKey = $root.AccessKey.fromObject(object.accessKey);
-        }
-        return message;
-    };
-
-    /**
-     * Creates a plain object from an AddKeyTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof AddKeyTransaction
-     * @static
-     * @param {AddKeyTransaction} message AddKeyTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    AddKeyTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.originator = "";
-            if (options.bytes === String)
-                object.newKey = "";
-            else {
-                object.newKey = [];
-                if (options.bytes !== Array)
-                    object.newKey = $util.newBuffer(object.newKey);
-            }
-            object.accessKey = null;
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            object.originator = message.originator;
-        if (message.newKey != null && message.hasOwnProperty("newKey"))
-            object.newKey = options.bytes === String ? $util.base64.encode(message.newKey, 0, message.newKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.newKey) : message.newKey;
-        if (message.accessKey != null && message.hasOwnProperty("accessKey"))
-            object.accessKey = $root.AccessKey.toObject(message.accessKey, options);
-        return object;
-    };
-
-    /**
-     * Converts this AddKeyTransaction to JSON.
-     * @function toJSON
-     * @memberof AddKeyTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    AddKeyTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return AddKeyTransaction;
-})();
-
-$root.DeleteKeyTransaction = (function() {
-
-    /**
-     * Properties of a DeleteKeyTransaction.
-     * @exports IDeleteKeyTransaction
-     * @interface IDeleteKeyTransaction
-     * @property {number|Long|null} [nonce] DeleteKeyTransaction nonce
-     * @property {string|null} [originator] DeleteKeyTransaction originator
-     * @property {Uint8Array|null} [curKey] DeleteKeyTransaction curKey
-     */
-
-    /**
-     * Constructs a new DeleteKeyTransaction.
-     * @exports DeleteKeyTransaction
-     * @classdesc Represents a DeleteKeyTransaction.
-     * @implements IDeleteKeyTransaction
-     * @constructor
-     * @param {IDeleteKeyTransaction=} [properties] Properties to set
-     */
-    function DeleteKeyTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * DeleteKeyTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof DeleteKeyTransaction
-     * @instance
-     */
-    DeleteKeyTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * DeleteKeyTransaction originator.
-     * @member {string} originator
-     * @memberof DeleteKeyTransaction
-     * @instance
-     */
-    DeleteKeyTransaction.prototype.originator = "";
-
-    /**
-     * DeleteKeyTransaction curKey.
-     * @member {Uint8Array} curKey
-     * @memberof DeleteKeyTransaction
-     * @instance
-     */
-    DeleteKeyTransaction.prototype.curKey = $util.newBuffer([]);
-
-    /**
-     * Creates a new DeleteKeyTransaction instance using the specified properties.
-     * @function create
-     * @memberof DeleteKeyTransaction
-     * @static
-     * @param {IDeleteKeyTransaction=} [properties] Properties to set
-     * @returns {DeleteKeyTransaction} DeleteKeyTransaction instance
-     */
-    DeleteKeyTransaction.create = function create(properties) {
-        return new DeleteKeyTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified DeleteKeyTransaction message. Does not implicitly {@link DeleteKeyTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof DeleteKeyTransaction
-     * @static
-     * @param {IDeleteKeyTransaction} message DeleteKeyTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    DeleteKeyTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originator);
-        if (message.curKey != null && message.hasOwnProperty("curKey"))
-            writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.curKey);
-        return writer;
-    };
-
-    /**
-     * Encodes the specified DeleteKeyTransaction message, length delimited. Does not implicitly {@link DeleteKeyTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof DeleteKeyTransaction
-     * @static
-     * @param {IDeleteKeyTransaction} message DeleteKeyTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    DeleteKeyTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a DeleteKeyTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof DeleteKeyTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {DeleteKeyTransaction} DeleteKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    DeleteKeyTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.DeleteKeyTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.originator = reader.string();
-                break;
-            case 3:
-                message.curKey = reader.bytes();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a DeleteKeyTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof DeleteKeyTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {DeleteKeyTransaction} DeleteKeyTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    DeleteKeyTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a DeleteKeyTransaction message.
-     * @function verify
-     * @memberof DeleteKeyTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    DeleteKeyTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            if (!$util.isString(message.originator))
-                return "originator: string expected";
-        if (message.curKey != null && message.hasOwnProperty("curKey"))
-            if (!(message.curKey && typeof message.curKey.length === "number" || $util.isString(message.curKey)))
-                return "curKey: buffer expected";
-        return null;
-    };
-
-    /**
-     * Creates a DeleteKeyTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof DeleteKeyTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {DeleteKeyTransaction} DeleteKeyTransaction
-     */
-    DeleteKeyTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.DeleteKeyTransaction)
-            return object;
-        var message = new $root.DeleteKeyTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.originator != null)
-            message.originator = String(object.originator);
-        if (object.curKey != null)
-            if (typeof object.curKey === "string")
-                $util.base64.decode(object.curKey, message.curKey = $util.newBuffer($util.base64.length(object.curKey)), 0);
-            else if (object.curKey.length)
-                message.curKey = object.curKey;
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a DeleteKeyTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof DeleteKeyTransaction
-     * @static
-     * @param {DeleteKeyTransaction} message DeleteKeyTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    DeleteKeyTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.originator = "";
-            if (options.bytes === String)
-                object.curKey = "";
-            else {
-                object.curKey = [];
-                if (options.bytes !== Array)
-                    object.curKey = $util.newBuffer(object.curKey);
-            }
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.originator != null && message.hasOwnProperty("originator"))
-            object.originator = message.originator;
-        if (message.curKey != null && message.hasOwnProperty("curKey"))
-            object.curKey = options.bytes === String ? $util.base64.encode(message.curKey, 0, message.curKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.curKey) : message.curKey;
-        return object;
-    };
-
-    /**
-     * Converts this DeleteKeyTransaction to JSON.
-     * @function toJSON
-     * @memberof DeleteKeyTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    DeleteKeyTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return DeleteKeyTransaction;
-})();
-
-$root.DeleteAccountTransaction = (function() {
-
-    /**
-     * Properties of a DeleteAccountTransaction.
-     * @exports IDeleteAccountTransaction
-     * @interface IDeleteAccountTransaction
-     * @property {number|Long|null} [nonce] DeleteAccountTransaction nonce
-     * @property {string|null} [originatorId] DeleteAccountTransaction originatorId
-     * @property {string|null} [receiverId] DeleteAccountTransaction receiverId
-     */
-
-    /**
-     * Constructs a new DeleteAccountTransaction.
-     * @exports DeleteAccountTransaction
-     * @classdesc Represents a DeleteAccountTransaction.
-     * @implements IDeleteAccountTransaction
-     * @constructor
-     * @param {IDeleteAccountTransaction=} [properties] Properties to set
-     */
-    function DeleteAccountTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * DeleteAccountTransaction nonce.
-     * @member {number|Long} nonce
-     * @memberof DeleteAccountTransaction
-     * @instance
-     */
-    DeleteAccountTransaction.prototype.nonce = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * DeleteAccountTransaction originatorId.
-     * @member {string} originatorId
-     * @memberof DeleteAccountTransaction
-     * @instance
-     */
-    DeleteAccountTransaction.prototype.originatorId = "";
-
-    /**
-     * DeleteAccountTransaction receiverId.
-     * @member {string} receiverId
-     * @memberof DeleteAccountTransaction
-     * @instance
-     */
-    DeleteAccountTransaction.prototype.receiverId = "";
-
-    /**
-     * Creates a new DeleteAccountTransaction instance using the specified properties.
-     * @function create
-     * @memberof DeleteAccountTransaction
-     * @static
-     * @param {IDeleteAccountTransaction=} [properties] Properties to set
-     * @returns {DeleteAccountTransaction} DeleteAccountTransaction instance
-     */
-    DeleteAccountTransaction.create = function create(properties) {
-        return new DeleteAccountTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified DeleteAccountTransaction message. Does not implicitly {@link DeleteAccountTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof DeleteAccountTransaction
-     * @static
-     * @param {IDeleteAccountTransaction} message DeleteAccountTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    DeleteAccountTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.nonce);
-        if (message.originatorId != null && message.hasOwnProperty("originatorId"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.originatorId);
-        if (message.receiverId != null && message.hasOwnProperty("receiverId"))
-            writer.uint32(/* id 3, wireType 2 =*/26).string(message.receiverId);
-        return writer;
-    };
-
-    /**
-     * Encodes the specified DeleteAccountTransaction message, length delimited. Does not implicitly {@link DeleteAccountTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof DeleteAccountTransaction
-     * @static
-     * @param {IDeleteAccountTransaction} message DeleteAccountTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    DeleteAccountTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a DeleteAccountTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof DeleteAccountTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {DeleteAccountTransaction} DeleteAccountTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    DeleteAccountTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.DeleteAccountTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.nonce = reader.uint64();
-                break;
-            case 2:
-                message.originatorId = reader.string();
-                break;
-            case 3:
-                message.receiverId = reader.string();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a DeleteAccountTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof DeleteAccountTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {DeleteAccountTransaction} DeleteAccountTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    DeleteAccountTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a DeleteAccountTransaction message.
-     * @function verify
-     * @memberof DeleteAccountTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    DeleteAccountTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (!$util.isInteger(message.nonce) && !(message.nonce && $util.isInteger(message.nonce.low) && $util.isInteger(message.nonce.high)))
-                return "nonce: integer|Long expected";
-        if (message.originatorId != null && message.hasOwnProperty("originatorId"))
-            if (!$util.isString(message.originatorId))
-                return "originatorId: string expected";
-        if (message.receiverId != null && message.hasOwnProperty("receiverId"))
-            if (!$util.isString(message.receiverId))
-                return "receiverId: string expected";
-        return null;
-    };
-
-    /**
-     * Creates a DeleteAccountTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof DeleteAccountTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {DeleteAccountTransaction} DeleteAccountTransaction
-     */
-    DeleteAccountTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.DeleteAccountTransaction)
-            return object;
-        var message = new $root.DeleteAccountTransaction();
-        if (object.nonce != null)
-            if ($util.Long)
-                (message.nonce = $util.Long.fromValue(object.nonce)).unsigned = true;
-            else if (typeof object.nonce === "string")
-                message.nonce = parseInt(object.nonce, 10);
-            else if (typeof object.nonce === "number")
-                message.nonce = object.nonce;
-            else if (typeof object.nonce === "object")
-                message.nonce = new $util.LongBits(object.nonce.low >>> 0, object.nonce.high >>> 0).toNumber(true);
-        if (object.originatorId != null)
-            message.originatorId = String(object.originatorId);
-        if (object.receiverId != null)
-            message.receiverId = String(object.receiverId);
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a DeleteAccountTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof DeleteAccountTransaction
-     * @static
-     * @param {DeleteAccountTransaction} message DeleteAccountTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    DeleteAccountTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.nonce = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.nonce = options.longs === String ? "0" : 0;
-            object.originatorId = "";
-            object.receiverId = "";
-        }
-        if (message.nonce != null && message.hasOwnProperty("nonce"))
-            if (typeof message.nonce === "number")
-                object.nonce = options.longs === String ? String(message.nonce) : message.nonce;
-            else
-                object.nonce = options.longs === String ? $util.Long.prototype.toString.call(message.nonce) : options.longs === Number ? new $util.LongBits(message.nonce.low >>> 0, message.nonce.high >>> 0).toNumber(true) : message.nonce;
-        if (message.originatorId != null && message.hasOwnProperty("originatorId"))
-            object.originatorId = message.originatorId;
-        if (message.receiverId != null && message.hasOwnProperty("receiverId"))
-            object.receiverId = message.receiverId;
-        return object;
-    };
-
-    /**
-     * Converts this DeleteAccountTransaction to JSON.
-     * @function toJSON
-     * @memberof DeleteAccountTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    DeleteAccountTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return DeleteAccountTransaction;
-})();
-
-$root.SignedTransaction = (function() {
-
-    /**
-     * Properties of a SignedTransaction.
-     * @exports ISignedTransaction
-     * @interface ISignedTransaction
-     * @property {Uint8Array|null} [signature] SignedTransaction signature
-     * @property {google.protobuf.IBytesValue|null} [publicKey] SignedTransaction publicKey
-     * @property {ICreateAccountTransaction|null} [createAccount] SignedTransaction createAccount
-     * @property {IDeployContractTransaction|null} [deployContract] SignedTransaction deployContract
-     * @property {IFunctionCallTransaction|null} [functionCall] SignedTransaction functionCall
-     * @property {ISendMoneyTransaction|null} [sendMoney] SignedTransaction sendMoney
-     * @property {IStakeTransaction|null} [stake] SignedTransaction stake
-     * @property {ISwapKeyTransaction|null} [swapKey] SignedTransaction swapKey
-     * @property {IAddKeyTransaction|null} [addKey] SignedTransaction addKey
-     * @property {IDeleteKeyTransaction|null} [deleteKey] SignedTransaction deleteKey
-     * @property {IDeleteAccountTransaction|null} [deleteAccount] SignedTransaction deleteAccount
-     */
-
-    /**
-     * Constructs a new SignedTransaction.
-     * @exports SignedTransaction
-     * @classdesc Represents a SignedTransaction.
-     * @implements ISignedTransaction
-     * @constructor
-     * @param {ISignedTransaction=} [properties] Properties to set
-     */
-    function SignedTransaction(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * SignedTransaction signature.
-     * @member {Uint8Array} signature
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.signature = $util.newBuffer([]);
-
-    /**
-     * SignedTransaction publicKey.
-     * @member {google.protobuf.IBytesValue|null|undefined} publicKey
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.publicKey = null;
-
-    /**
-     * SignedTransaction createAccount.
-     * @member {ICreateAccountTransaction|null|undefined} createAccount
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.createAccount = null;
-
-    /**
-     * SignedTransaction deployContract.
-     * @member {IDeployContractTransaction|null|undefined} deployContract
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.deployContract = null;
-
-    /**
-     * SignedTransaction functionCall.
-     * @member {IFunctionCallTransaction|null|undefined} functionCall
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.functionCall = null;
-
-    /**
-     * SignedTransaction sendMoney.
-     * @member {ISendMoneyTransaction|null|undefined} sendMoney
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.sendMoney = null;
-
-    /**
-     * SignedTransaction stake.
-     * @member {IStakeTransaction|null|undefined} stake
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.stake = null;
-
-    /**
-     * SignedTransaction swapKey.
-     * @member {ISwapKeyTransaction|null|undefined} swapKey
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.swapKey = null;
-
-    /**
-     * SignedTransaction addKey.
-     * @member {IAddKeyTransaction|null|undefined} addKey
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.addKey = null;
-
-    /**
-     * SignedTransaction deleteKey.
-     * @member {IDeleteKeyTransaction|null|undefined} deleteKey
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.deleteKey = null;
-
-    /**
-     * SignedTransaction deleteAccount.
-     * @member {IDeleteAccountTransaction|null|undefined} deleteAccount
-     * @memberof SignedTransaction
-     * @instance
-     */
-    SignedTransaction.prototype.deleteAccount = null;
-
-    // OneOf field names bound to virtual getters and setters
-    var $oneOfFields;
-
-    /**
-     * SignedTransaction body.
-     * @member {"createAccount"|"deployContract"|"functionCall"|"sendMoney"|"stake"|"swapKey"|"addKey"|"deleteKey"|"deleteAccount"|undefined} body
-     * @memberof SignedTransaction
-     * @instance
-     */
-    Object.defineProperty(SignedTransaction.prototype, "body", {
-        get: $util.oneOfGetter($oneOfFields = ["createAccount", "deployContract", "functionCall", "sendMoney", "stake", "swapKey", "addKey", "deleteKey", "deleteAccount"]),
-        set: $util.oneOfSetter($oneOfFields)
-    });
-
-    /**
-     * Creates a new SignedTransaction instance using the specified properties.
-     * @function create
-     * @memberof SignedTransaction
-     * @static
-     * @param {ISignedTransaction=} [properties] Properties to set
-     * @returns {SignedTransaction} SignedTransaction instance
-     */
-    SignedTransaction.create = function create(properties) {
-        return new SignedTransaction(properties);
-    };
-
-    /**
-     * Encodes the specified SignedTransaction message. Does not implicitly {@link SignedTransaction.verify|verify} messages.
-     * @function encode
-     * @memberof SignedTransaction
-     * @static
-     * @param {ISignedTransaction} message SignedTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    SignedTransaction.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.signature != null && message.hasOwnProperty("signature"))
-            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.signature);
-        if (message.createAccount != null && message.hasOwnProperty("createAccount"))
-            $root.CreateAccountTransaction.encode(message.createAccount, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-        if (message.deployContract != null && message.hasOwnProperty("deployContract"))
-            $root.DeployContractTransaction.encode(message.deployContract, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-        if (message.functionCall != null && message.hasOwnProperty("functionCall"))
-            $root.FunctionCallTransaction.encode(message.functionCall, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-        if (message.sendMoney != null && message.hasOwnProperty("sendMoney"))
-            $root.SendMoneyTransaction.encode(message.sendMoney, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-        if (message.stake != null && message.hasOwnProperty("stake"))
-            $root.StakeTransaction.encode(message.stake, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-        if (message.swapKey != null && message.hasOwnProperty("swapKey"))
-            $root.SwapKeyTransaction.encode(message.swapKey, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
-        if (message.addKey != null && message.hasOwnProperty("addKey"))
-            $root.AddKeyTransaction.encode(message.addKey, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
-        if (message.deleteKey != null && message.hasOwnProperty("deleteKey"))
-            $root.DeleteKeyTransaction.encode(message.deleteKey, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-            $root.google.protobuf.BytesValue.encode(message.publicKey, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-        if (message.deleteAccount != null && message.hasOwnProperty("deleteAccount"))
-            $root.DeleteAccountTransaction.encode(message.deleteAccount, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
-        return writer;
-    };
-
-    /**
-     * Encodes the specified SignedTransaction message, length delimited. Does not implicitly {@link SignedTransaction.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof SignedTransaction
-     * @static
-     * @param {ISignedTransaction} message SignedTransaction message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    SignedTransaction.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a SignedTransaction message from the specified reader or buffer.
-     * @function decode
-     * @memberof SignedTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {SignedTransaction} SignedTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    SignedTransaction.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.SignedTransaction();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.signature = reader.bytes();
-                break;
-            case 10:
-                message.publicKey = $root.google.protobuf.BytesValue.decode(reader, reader.uint32());
-                break;
-            case 2:
-                message.createAccount = $root.CreateAccountTransaction.decode(reader, reader.uint32());
-                break;
-            case 3:
-                message.deployContract = $root.DeployContractTransaction.decode(reader, reader.uint32());
-                break;
-            case 4:
-                message.functionCall = $root.FunctionCallTransaction.decode(reader, reader.uint32());
-                break;
-            case 5:
-                message.sendMoney = $root.SendMoneyTransaction.decode(reader, reader.uint32());
-                break;
-            case 6:
-                message.stake = $root.StakeTransaction.decode(reader, reader.uint32());
-                break;
-            case 7:
-                message.swapKey = $root.SwapKeyTransaction.decode(reader, reader.uint32());
-                break;
-            case 8:
-                message.addKey = $root.AddKeyTransaction.decode(reader, reader.uint32());
-                break;
-            case 9:
-                message.deleteKey = $root.DeleteKeyTransaction.decode(reader, reader.uint32());
-                break;
-            case 11:
-                message.deleteAccount = $root.DeleteAccountTransaction.decode(reader, reader.uint32());
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a SignedTransaction message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof SignedTransaction
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {SignedTransaction} SignedTransaction
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    SignedTransaction.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a SignedTransaction message.
-     * @function verify
-     * @memberof SignedTransaction
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    SignedTransaction.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        var properties = {};
-        if (message.signature != null && message.hasOwnProperty("signature"))
-            if (!(message.signature && typeof message.signature.length === "number" || $util.isString(message.signature)))
-                return "signature: buffer expected";
-        if (message.publicKey != null && message.hasOwnProperty("publicKey")) {
-            var error = $root.google.protobuf.BytesValue.verify(message.publicKey);
-            if (error)
-                return "publicKey." + error;
-        }
-        if (message.createAccount != null && message.hasOwnProperty("createAccount")) {
-            properties.body = 1;
-            {
-                var error = $root.CreateAccountTransaction.verify(message.createAccount);
-                if (error)
-                    return "createAccount." + error;
-            }
-        }
-        if (message.deployContract != null && message.hasOwnProperty("deployContract")) {
-            if (properties.body === 1)
-                return "body: multiple values";
-            properties.body = 1;
-            {
-                var error = $root.DeployContractTransaction.verify(message.deployContract);
-                if (error)
-                    return "deployContract." + error;
-            }
-        }
-        if (message.functionCall != null && message.hasOwnProperty("functionCall")) {
-            if (properties.body === 1)
-                return "body: multiple values";
-            properties.body = 1;
-            {
-                var error = $root.FunctionCallTransaction.verify(message.functionCall);
-                if (error)
-                    return "functionCall." + error;
-            }
-        }
-        if (message.sendMoney != null && message.hasOwnProperty("sendMoney")) {
-            if (properties.body === 1)
-                return "body: multiple values";
-            properties.body = 1;
-            {
-                var error = $root.SendMoneyTransaction.verify(message.sendMoney);
-                if (error)
-                    return "sendMoney." + error;
-            }
-        }
-        if (message.stake != null && message.hasOwnProperty("stake")) {
-            if (properties.body === 1)
-                return "body: multiple values";
-            properties.body = 1;
-            {
-                var error = $root.StakeTransaction.verify(message.stake);
-                if (error)
-                    return "stake." + error;
-            }
-        }
-        if (message.swapKey != null && message.hasOwnProperty("swapKey")) {
-            if (properties.body === 1)
-                return "body: multiple values";
-            properties.body = 1;
-            {
-                var error = $root.SwapKeyTransaction.verify(message.swapKey);
-                if (error)
-                    return "swapKey." + error;
-            }
-        }
-        if (message.addKey != null && message.hasOwnProperty("addKey")) {
-            if (properties.body === 1)
-                return "body: multiple values";
-            properties.body = 1;
-            {
-                var error = $root.AddKeyTransaction.verify(message.addKey);
-                if (error)
-                    return "addKey." + error;
-            }
-        }
-        if (message.deleteKey != null && message.hasOwnProperty("deleteKey")) {
-            if (properties.body === 1)
-                return "body: multiple values";
-            properties.body = 1;
-            {
-                var error = $root.DeleteKeyTransaction.verify(message.deleteKey);
-                if (error)
-                    return "deleteKey." + error;
-            }
-        }
-        if (message.deleteAccount != null && message.hasOwnProperty("deleteAccount")) {
-            if (properties.body === 1)
-                return "body: multiple values";
-            properties.body = 1;
-            {
-                var error = $root.DeleteAccountTransaction.verify(message.deleteAccount);
-                if (error)
-                    return "deleteAccount." + error;
-            }
-        }
-        return null;
-    };
-
-    /**
-     * Creates a SignedTransaction message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof SignedTransaction
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {SignedTransaction} SignedTransaction
-     */
-    SignedTransaction.fromObject = function fromObject(object) {
-        if (object instanceof $root.SignedTransaction)
-            return object;
-        var message = new $root.SignedTransaction();
-        if (object.signature != null)
-            if (typeof object.signature === "string")
-                $util.base64.decode(object.signature, message.signature = $util.newBuffer($util.base64.length(object.signature)), 0);
-            else if (object.signature.length)
-                message.signature = object.signature;
-        if (object.publicKey != null) {
-            if (typeof object.publicKey !== "object")
-                throw TypeError(".SignedTransaction.publicKey: object expected");
-            message.publicKey = $root.google.protobuf.BytesValue.fromObject(object.publicKey);
-        }
-        if (object.createAccount != null) {
-            if (typeof object.createAccount !== "object")
-                throw TypeError(".SignedTransaction.createAccount: object expected");
-            message.createAccount = $root.CreateAccountTransaction.fromObject(object.createAccount);
-        }
-        if (object.deployContract != null) {
-            if (typeof object.deployContract !== "object")
-                throw TypeError(".SignedTransaction.deployContract: object expected");
-            message.deployContract = $root.DeployContractTransaction.fromObject(object.deployContract);
-        }
-        if (object.functionCall != null) {
-            if (typeof object.functionCall !== "object")
-                throw TypeError(".SignedTransaction.functionCall: object expected");
-            message.functionCall = $root.FunctionCallTransaction.fromObject(object.functionCall);
-        }
-        if (object.sendMoney != null) {
-            if (typeof object.sendMoney !== "object")
-                throw TypeError(".SignedTransaction.sendMoney: object expected");
-            message.sendMoney = $root.SendMoneyTransaction.fromObject(object.sendMoney);
-        }
-        if (object.stake != null) {
-            if (typeof object.stake !== "object")
-                throw TypeError(".SignedTransaction.stake: object expected");
-            message.stake = $root.StakeTransaction.fromObject(object.stake);
-        }
-        if (object.swapKey != null) {
-            if (typeof object.swapKey !== "object")
-                throw TypeError(".SignedTransaction.swapKey: object expected");
-            message.swapKey = $root.SwapKeyTransaction.fromObject(object.swapKey);
-        }
-        if (object.addKey != null) {
-            if (typeof object.addKey !== "object")
-                throw TypeError(".SignedTransaction.addKey: object expected");
-            message.addKey = $root.AddKeyTransaction.fromObject(object.addKey);
-        }
-        if (object.deleteKey != null) {
-            if (typeof object.deleteKey !== "object")
-                throw TypeError(".SignedTransaction.deleteKey: object expected");
-            message.deleteKey = $root.DeleteKeyTransaction.fromObject(object.deleteKey);
-        }
-        if (object.deleteAccount != null) {
-            if (typeof object.deleteAccount !== "object")
-                throw TypeError(".SignedTransaction.deleteAccount: object expected");
-            message.deleteAccount = $root.DeleteAccountTransaction.fromObject(object.deleteAccount);
-        }
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a SignedTransaction message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof SignedTransaction
-     * @static
-     * @param {SignedTransaction} message SignedTransaction
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    SignedTransaction.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            if (options.bytes === String)
-                object.signature = "";
-            else {
-                object.signature = [];
-                if (options.bytes !== Array)
-                    object.signature = $util.newBuffer(object.signature);
-            }
-            object.publicKey = null;
-        }
-        if (message.signature != null && message.hasOwnProperty("signature"))
-            object.signature = options.bytes === String ? $util.base64.encode(message.signature, 0, message.signature.length) : options.bytes === Array ? Array.prototype.slice.call(message.signature) : message.signature;
-        if (message.createAccount != null && message.hasOwnProperty("createAccount")) {
-            object.createAccount = $root.CreateAccountTransaction.toObject(message.createAccount, options);
-            if (options.oneofs)
-                object.body = "createAccount";
-        }
-        if (message.deployContract != null && message.hasOwnProperty("deployContract")) {
-            object.deployContract = $root.DeployContractTransaction.toObject(message.deployContract, options);
-            if (options.oneofs)
-                object.body = "deployContract";
-        }
-        if (message.functionCall != null && message.hasOwnProperty("functionCall")) {
-            object.functionCall = $root.FunctionCallTransaction.toObject(message.functionCall, options);
-            if (options.oneofs)
-                object.body = "functionCall";
-        }
-        if (message.sendMoney != null && message.hasOwnProperty("sendMoney")) {
-            object.sendMoney = $root.SendMoneyTransaction.toObject(message.sendMoney, options);
-            if (options.oneofs)
-                object.body = "sendMoney";
-        }
-        if (message.stake != null && message.hasOwnProperty("stake")) {
-            object.stake = $root.StakeTransaction.toObject(message.stake, options);
-            if (options.oneofs)
-                object.body = "stake";
-        }
-        if (message.swapKey != null && message.hasOwnProperty("swapKey")) {
-            object.swapKey = $root.SwapKeyTransaction.toObject(message.swapKey, options);
-            if (options.oneofs)
-                object.body = "swapKey";
-        }
-        if (message.addKey != null && message.hasOwnProperty("addKey")) {
-            object.addKey = $root.AddKeyTransaction.toObject(message.addKey, options);
-            if (options.oneofs)
-                object.body = "addKey";
-        }
-        if (message.deleteKey != null && message.hasOwnProperty("deleteKey")) {
-            object.deleteKey = $root.DeleteKeyTransaction.toObject(message.deleteKey, options);
-            if (options.oneofs)
-                object.body = "deleteKey";
-        }
-        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-            object.publicKey = $root.google.protobuf.BytesValue.toObject(message.publicKey, options);
-        if (message.deleteAccount != null && message.hasOwnProperty("deleteAccount")) {
-            object.deleteAccount = $root.DeleteAccountTransaction.toObject(message.deleteAccount, options);
-            if (options.oneofs)
-                object.body = "deleteAccount";
-        }
-        return object;
-    };
-
-    /**
-     * Converts this SignedTransaction to JSON.
-     * @function toJSON
-     * @memberof SignedTransaction
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    SignedTransaction.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return SignedTransaction;
-})();
-
-$root.google = (function() {
-
-    /**
-     * Namespace google.
-     * @exports google
-     * @namespace
-     */
-    var google = {};
-
-    google.protobuf = (function() {
-
-        /**
-         * Namespace protobuf.
-         * @memberof google
-         * @namespace
-         */
-        var protobuf = {};
-
-        protobuf.DoubleValue = (function() {
-
-            /**
-             * Properties of a DoubleValue.
-             * @memberof google.protobuf
-             * @interface IDoubleValue
-             * @property {number|null} [value] DoubleValue value
-             */
-
-            /**
-             * Constructs a new DoubleValue.
-             * @memberof google.protobuf
-             * @classdesc Represents a DoubleValue.
-             * @implements IDoubleValue
-             * @constructor
-             * @param {google.protobuf.IDoubleValue=} [properties] Properties to set
-             */
-            function DoubleValue(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * DoubleValue value.
-             * @member {number} value
-             * @memberof google.protobuf.DoubleValue
-             * @instance
-             */
-            DoubleValue.prototype.value = 0;
-
-            /**
-             * Creates a new DoubleValue instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.DoubleValue
-             * @static
-             * @param {google.protobuf.IDoubleValue=} [properties] Properties to set
-             * @returns {google.protobuf.DoubleValue} DoubleValue instance
-             */
-            DoubleValue.create = function create(properties) {
-                return new DoubleValue(properties);
-            };
-
-            /**
-             * Encodes the specified DoubleValue message. Does not implicitly {@link google.protobuf.DoubleValue.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.DoubleValue
-             * @static
-             * @param {google.protobuf.IDoubleValue} message DoubleValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            DoubleValue.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 1 =*/9).double(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified DoubleValue message, length delimited. Does not implicitly {@link google.protobuf.DoubleValue.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.DoubleValue
-             * @static
-             * @param {google.protobuf.IDoubleValue} message DoubleValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            DoubleValue.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a DoubleValue message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.DoubleValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.DoubleValue} DoubleValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            DoubleValue.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.DoubleValue();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.double();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes a DoubleValue message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.DoubleValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.DoubleValue} DoubleValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            DoubleValue.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a DoubleValue message.
-             * @function verify
-             * @memberof google.protobuf.DoubleValue
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            DoubleValue.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (typeof message.value !== "number")
-                        return "value: number expected";
-                return null;
-            };
-
-            /**
-             * Creates a DoubleValue message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.DoubleValue
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.DoubleValue} DoubleValue
-             */
-            DoubleValue.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.DoubleValue)
-                    return object;
-                var message = new $root.google.protobuf.DoubleValue();
-                if (object.value != null)
-                    message.value = Number(object.value);
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a DoubleValue message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.DoubleValue
-             * @static
-             * @param {google.protobuf.DoubleValue} message DoubleValue
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            DoubleValue.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    object.value = 0;
-                if (message.value != null && message.hasOwnProperty("value"))
-                    object.value = options.json && !isFinite(message.value) ? String(message.value) : message.value;
-                return object;
-            };
-
-            /**
-             * Converts this DoubleValue to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.DoubleValue
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            DoubleValue.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return DoubleValue;
-        })();
-
-        protobuf.FloatValue = (function() {
-
-            /**
-             * Properties of a FloatValue.
-             * @memberof google.protobuf
-             * @interface IFloatValue
-             * @property {number|null} [value] FloatValue value
-             */
-
-            /**
-             * Constructs a new FloatValue.
-             * @memberof google.protobuf
-             * @classdesc Represents a FloatValue.
-             * @implements IFloatValue
-             * @constructor
-             * @param {google.protobuf.IFloatValue=} [properties] Properties to set
-             */
-            function FloatValue(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * FloatValue value.
-             * @member {number} value
-             * @memberof google.protobuf.FloatValue
-             * @instance
-             */
-            FloatValue.prototype.value = 0;
-
-            /**
-             * Creates a new FloatValue instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.FloatValue
-             * @static
-             * @param {google.protobuf.IFloatValue=} [properties] Properties to set
-             * @returns {google.protobuf.FloatValue} FloatValue instance
-             */
-            FloatValue.create = function create(properties) {
-                return new FloatValue(properties);
-            };
-
-            /**
-             * Encodes the specified FloatValue message. Does not implicitly {@link google.protobuf.FloatValue.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.FloatValue
-             * @static
-             * @param {google.protobuf.IFloatValue} message FloatValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            FloatValue.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 5 =*/13).float(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified FloatValue message, length delimited. Does not implicitly {@link google.protobuf.FloatValue.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.FloatValue
-             * @static
-             * @param {google.protobuf.IFloatValue} message FloatValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            FloatValue.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a FloatValue message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.FloatValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.FloatValue} FloatValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            FloatValue.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.FloatValue();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.float();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes a FloatValue message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.FloatValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.FloatValue} FloatValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            FloatValue.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a FloatValue message.
-             * @function verify
-             * @memberof google.protobuf.FloatValue
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            FloatValue.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (typeof message.value !== "number")
-                        return "value: number expected";
-                return null;
-            };
-
-            /**
-             * Creates a FloatValue message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.FloatValue
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.FloatValue} FloatValue
-             */
-            FloatValue.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.FloatValue)
-                    return object;
-                var message = new $root.google.protobuf.FloatValue();
-                if (object.value != null)
-                    message.value = Number(object.value);
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a FloatValue message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.FloatValue
-             * @static
-             * @param {google.protobuf.FloatValue} message FloatValue
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            FloatValue.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    object.value = 0;
-                if (message.value != null && message.hasOwnProperty("value"))
-                    object.value = options.json && !isFinite(message.value) ? String(message.value) : message.value;
-                return object;
-            };
-
-            /**
-             * Converts this FloatValue to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.FloatValue
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            FloatValue.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return FloatValue;
-        })();
-
-        protobuf.Int64Value = (function() {
-
-            /**
-             * Properties of an Int64Value.
-             * @memberof google.protobuf
-             * @interface IInt64Value
-             * @property {number|Long|null} [value] Int64Value value
-             */
-
-            /**
-             * Constructs a new Int64Value.
-             * @memberof google.protobuf
-             * @classdesc Represents an Int64Value.
-             * @implements IInt64Value
-             * @constructor
-             * @param {google.protobuf.IInt64Value=} [properties] Properties to set
-             */
-            function Int64Value(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * Int64Value value.
-             * @member {number|Long} value
-             * @memberof google.protobuf.Int64Value
-             * @instance
-             */
-            Int64Value.prototype.value = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-            /**
-             * Creates a new Int64Value instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.Int64Value
-             * @static
-             * @param {google.protobuf.IInt64Value=} [properties] Properties to set
-             * @returns {google.protobuf.Int64Value} Int64Value instance
-             */
-            Int64Value.create = function create(properties) {
-                return new Int64Value(properties);
-            };
-
-            /**
-             * Encodes the specified Int64Value message. Does not implicitly {@link google.protobuf.Int64Value.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.Int64Value
-             * @static
-             * @param {google.protobuf.IInt64Value} message Int64Value message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            Int64Value.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 0 =*/8).int64(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified Int64Value message, length delimited. Does not implicitly {@link google.protobuf.Int64Value.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.Int64Value
-             * @static
-             * @param {google.protobuf.IInt64Value} message Int64Value message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            Int64Value.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes an Int64Value message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.Int64Value
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.Int64Value} Int64Value
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            Int64Value.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Int64Value();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.int64();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes an Int64Value message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.Int64Value
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.Int64Value} Int64Value
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            Int64Value.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies an Int64Value message.
-             * @function verify
-             * @memberof google.protobuf.Int64Value
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            Int64Value.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (!$util.isInteger(message.value) && !(message.value && $util.isInteger(message.value.low) && $util.isInteger(message.value.high)))
-                        return "value: integer|Long expected";
-                return null;
-            };
-
-            /**
-             * Creates an Int64Value message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.Int64Value
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.Int64Value} Int64Value
-             */
-            Int64Value.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.Int64Value)
-                    return object;
-                var message = new $root.google.protobuf.Int64Value();
-                if (object.value != null)
-                    if ($util.Long)
-                        (message.value = $util.Long.fromValue(object.value)).unsigned = false;
-                    else if (typeof object.value === "string")
-                        message.value = parseInt(object.value, 10);
-                    else if (typeof object.value === "number")
-                        message.value = object.value;
-                    else if (typeof object.value === "object")
-                        message.value = new $util.LongBits(object.value.low >>> 0, object.value.high >>> 0).toNumber();
-                return message;
-            };
-
-            /**
-             * Creates a plain object from an Int64Value message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.Int64Value
-             * @static
-             * @param {google.protobuf.Int64Value} message Int64Value
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            Int64Value.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    if ($util.Long) {
-                        var long = new $util.Long(0, 0, false);
-                        object.value = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                    } else
-                        object.value = options.longs === String ? "0" : 0;
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (typeof message.value === "number")
-                        object.value = options.longs === String ? String(message.value) : message.value;
-                    else
-                        object.value = options.longs === String ? $util.Long.prototype.toString.call(message.value) : options.longs === Number ? new $util.LongBits(message.value.low >>> 0, message.value.high >>> 0).toNumber() : message.value;
-                return object;
-            };
-
-            /**
-             * Converts this Int64Value to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.Int64Value
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            Int64Value.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return Int64Value;
-        })();
-
-        protobuf.UInt64Value = (function() {
-
-            /**
-             * Properties of a UInt64Value.
-             * @memberof google.protobuf
-             * @interface IUInt64Value
-             * @property {number|Long|null} [value] UInt64Value value
-             */
-
-            /**
-             * Constructs a new UInt64Value.
-             * @memberof google.protobuf
-             * @classdesc Represents a UInt64Value.
-             * @implements IUInt64Value
-             * @constructor
-             * @param {google.protobuf.IUInt64Value=} [properties] Properties to set
-             */
-            function UInt64Value(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * UInt64Value value.
-             * @member {number|Long} value
-             * @memberof google.protobuf.UInt64Value
-             * @instance
-             */
-            UInt64Value.prototype.value = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-            /**
-             * Creates a new UInt64Value instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.UInt64Value
-             * @static
-             * @param {google.protobuf.IUInt64Value=} [properties] Properties to set
-             * @returns {google.protobuf.UInt64Value} UInt64Value instance
-             */
-            UInt64Value.create = function create(properties) {
-                return new UInt64Value(properties);
-            };
-
-            /**
-             * Encodes the specified UInt64Value message. Does not implicitly {@link google.protobuf.UInt64Value.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.UInt64Value
-             * @static
-             * @param {google.protobuf.IUInt64Value} message UInt64Value message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            UInt64Value.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified UInt64Value message, length delimited. Does not implicitly {@link google.protobuf.UInt64Value.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.UInt64Value
-             * @static
-             * @param {google.protobuf.IUInt64Value} message UInt64Value message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            UInt64Value.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a UInt64Value message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.UInt64Value
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.UInt64Value} UInt64Value
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            UInt64Value.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.UInt64Value();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.uint64();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes a UInt64Value message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.UInt64Value
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.UInt64Value} UInt64Value
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            UInt64Value.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a UInt64Value message.
-             * @function verify
-             * @memberof google.protobuf.UInt64Value
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            UInt64Value.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (!$util.isInteger(message.value) && !(message.value && $util.isInteger(message.value.low) && $util.isInteger(message.value.high)))
-                        return "value: integer|Long expected";
-                return null;
-            };
-
-            /**
-             * Creates a UInt64Value message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.UInt64Value
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.UInt64Value} UInt64Value
-             */
-            UInt64Value.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.UInt64Value)
-                    return object;
-                var message = new $root.google.protobuf.UInt64Value();
-                if (object.value != null)
-                    if ($util.Long)
-                        (message.value = $util.Long.fromValue(object.value)).unsigned = true;
-                    else if (typeof object.value === "string")
-                        message.value = parseInt(object.value, 10);
-                    else if (typeof object.value === "number")
-                        message.value = object.value;
-                    else if (typeof object.value === "object")
-                        message.value = new $util.LongBits(object.value.low >>> 0, object.value.high >>> 0).toNumber(true);
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a UInt64Value message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.UInt64Value
-             * @static
-             * @param {google.protobuf.UInt64Value} message UInt64Value
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            UInt64Value.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    if ($util.Long) {
-                        var long = new $util.Long(0, 0, true);
-                        object.value = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                    } else
-                        object.value = options.longs === String ? "0" : 0;
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (typeof message.value === "number")
-                        object.value = options.longs === String ? String(message.value) : message.value;
-                    else
-                        object.value = options.longs === String ? $util.Long.prototype.toString.call(message.value) : options.longs === Number ? new $util.LongBits(message.value.low >>> 0, message.value.high >>> 0).toNumber(true) : message.value;
-                return object;
-            };
-
-            /**
-             * Converts this UInt64Value to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.UInt64Value
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            UInt64Value.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return UInt64Value;
-        })();
-
-        protobuf.Int32Value = (function() {
-
-            /**
-             * Properties of an Int32Value.
-             * @memberof google.protobuf
-             * @interface IInt32Value
-             * @property {number|null} [value] Int32Value value
-             */
-
-            /**
-             * Constructs a new Int32Value.
-             * @memberof google.protobuf
-             * @classdesc Represents an Int32Value.
-             * @implements IInt32Value
-             * @constructor
-             * @param {google.protobuf.IInt32Value=} [properties] Properties to set
-             */
-            function Int32Value(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * Int32Value value.
-             * @member {number} value
-             * @memberof google.protobuf.Int32Value
-             * @instance
-             */
-            Int32Value.prototype.value = 0;
-
-            /**
-             * Creates a new Int32Value instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.Int32Value
-             * @static
-             * @param {google.protobuf.IInt32Value=} [properties] Properties to set
-             * @returns {google.protobuf.Int32Value} Int32Value instance
-             */
-            Int32Value.create = function create(properties) {
-                return new Int32Value(properties);
-            };
-
-            /**
-             * Encodes the specified Int32Value message. Does not implicitly {@link google.protobuf.Int32Value.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.Int32Value
-             * @static
-             * @param {google.protobuf.IInt32Value} message Int32Value message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            Int32Value.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified Int32Value message, length delimited. Does not implicitly {@link google.protobuf.Int32Value.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.Int32Value
-             * @static
-             * @param {google.protobuf.IInt32Value} message Int32Value message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            Int32Value.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes an Int32Value message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.Int32Value
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.Int32Value} Int32Value
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            Int32Value.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Int32Value();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.int32();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes an Int32Value message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.Int32Value
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.Int32Value} Int32Value
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            Int32Value.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies an Int32Value message.
-             * @function verify
-             * @memberof google.protobuf.Int32Value
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            Int32Value.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (!$util.isInteger(message.value))
-                        return "value: integer expected";
-                return null;
-            };
-
-            /**
-             * Creates an Int32Value message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.Int32Value
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.Int32Value} Int32Value
-             */
-            Int32Value.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.Int32Value)
-                    return object;
-                var message = new $root.google.protobuf.Int32Value();
-                if (object.value != null)
-                    message.value = object.value | 0;
-                return message;
-            };
-
-            /**
-             * Creates a plain object from an Int32Value message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.Int32Value
-             * @static
-             * @param {google.protobuf.Int32Value} message Int32Value
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            Int32Value.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    object.value = 0;
-                if (message.value != null && message.hasOwnProperty("value"))
-                    object.value = message.value;
-                return object;
-            };
-
-            /**
-             * Converts this Int32Value to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.Int32Value
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            Int32Value.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return Int32Value;
-        })();
-
-        protobuf.UInt32Value = (function() {
-
-            /**
-             * Properties of a UInt32Value.
-             * @memberof google.protobuf
-             * @interface IUInt32Value
-             * @property {number|null} [value] UInt32Value value
-             */
-
-            /**
-             * Constructs a new UInt32Value.
-             * @memberof google.protobuf
-             * @classdesc Represents a UInt32Value.
-             * @implements IUInt32Value
-             * @constructor
-             * @param {google.protobuf.IUInt32Value=} [properties] Properties to set
-             */
-            function UInt32Value(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * UInt32Value value.
-             * @member {number} value
-             * @memberof google.protobuf.UInt32Value
-             * @instance
-             */
-            UInt32Value.prototype.value = 0;
-
-            /**
-             * Creates a new UInt32Value instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.UInt32Value
-             * @static
-             * @param {google.protobuf.IUInt32Value=} [properties] Properties to set
-             * @returns {google.protobuf.UInt32Value} UInt32Value instance
-             */
-            UInt32Value.create = function create(properties) {
-                return new UInt32Value(properties);
-            };
-
-            /**
-             * Encodes the specified UInt32Value message. Does not implicitly {@link google.protobuf.UInt32Value.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.UInt32Value
-             * @static
-             * @param {google.protobuf.IUInt32Value} message UInt32Value message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            UInt32Value.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified UInt32Value message, length delimited. Does not implicitly {@link google.protobuf.UInt32Value.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.UInt32Value
-             * @static
-             * @param {google.protobuf.IUInt32Value} message UInt32Value message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            UInt32Value.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a UInt32Value message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.UInt32Value
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.UInt32Value} UInt32Value
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            UInt32Value.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.UInt32Value();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.uint32();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes a UInt32Value message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.UInt32Value
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.UInt32Value} UInt32Value
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            UInt32Value.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a UInt32Value message.
-             * @function verify
-             * @memberof google.protobuf.UInt32Value
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            UInt32Value.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (!$util.isInteger(message.value))
-                        return "value: integer expected";
-                return null;
-            };
-
-            /**
-             * Creates a UInt32Value message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.UInt32Value
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.UInt32Value} UInt32Value
-             */
-            UInt32Value.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.UInt32Value)
-                    return object;
-                var message = new $root.google.protobuf.UInt32Value();
-                if (object.value != null)
-                    message.value = object.value >>> 0;
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a UInt32Value message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.UInt32Value
-             * @static
-             * @param {google.protobuf.UInt32Value} message UInt32Value
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            UInt32Value.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    object.value = 0;
-                if (message.value != null && message.hasOwnProperty("value"))
-                    object.value = message.value;
-                return object;
-            };
-
-            /**
-             * Converts this UInt32Value to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.UInt32Value
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            UInt32Value.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return UInt32Value;
-        })();
-
-        protobuf.BoolValue = (function() {
-
-            /**
-             * Properties of a BoolValue.
-             * @memberof google.protobuf
-             * @interface IBoolValue
-             * @property {boolean|null} [value] BoolValue value
-             */
-
-            /**
-             * Constructs a new BoolValue.
-             * @memberof google.protobuf
-             * @classdesc Represents a BoolValue.
-             * @implements IBoolValue
-             * @constructor
-             * @param {google.protobuf.IBoolValue=} [properties] Properties to set
-             */
-            function BoolValue(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * BoolValue value.
-             * @member {boolean} value
-             * @memberof google.protobuf.BoolValue
-             * @instance
-             */
-            BoolValue.prototype.value = false;
-
-            /**
-             * Creates a new BoolValue instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.BoolValue
-             * @static
-             * @param {google.protobuf.IBoolValue=} [properties] Properties to set
-             * @returns {google.protobuf.BoolValue} BoolValue instance
-             */
-            BoolValue.create = function create(properties) {
-                return new BoolValue(properties);
-            };
-
-            /**
-             * Encodes the specified BoolValue message. Does not implicitly {@link google.protobuf.BoolValue.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.BoolValue
-             * @static
-             * @param {google.protobuf.IBoolValue} message BoolValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            BoolValue.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 0 =*/8).bool(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified BoolValue message, length delimited. Does not implicitly {@link google.protobuf.BoolValue.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.BoolValue
-             * @static
-             * @param {google.protobuf.IBoolValue} message BoolValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            BoolValue.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a BoolValue message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.BoolValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.BoolValue} BoolValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            BoolValue.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.BoolValue();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.bool();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes a BoolValue message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.BoolValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.BoolValue} BoolValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            BoolValue.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a BoolValue message.
-             * @function verify
-             * @memberof google.protobuf.BoolValue
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            BoolValue.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (typeof message.value !== "boolean")
-                        return "value: boolean expected";
-                return null;
-            };
-
-            /**
-             * Creates a BoolValue message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.BoolValue
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.BoolValue} BoolValue
-             */
-            BoolValue.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.BoolValue)
-                    return object;
-                var message = new $root.google.protobuf.BoolValue();
-                if (object.value != null)
-                    message.value = Boolean(object.value);
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a BoolValue message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.BoolValue
-             * @static
-             * @param {google.protobuf.BoolValue} message BoolValue
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            BoolValue.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    object.value = false;
-                if (message.value != null && message.hasOwnProperty("value"))
-                    object.value = message.value;
-                return object;
-            };
-
-            /**
-             * Converts this BoolValue to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.BoolValue
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            BoolValue.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return BoolValue;
-        })();
-
-        protobuf.StringValue = (function() {
-
-            /**
-             * Properties of a StringValue.
-             * @memberof google.protobuf
-             * @interface IStringValue
-             * @property {string|null} [value] StringValue value
-             */
-
-            /**
-             * Constructs a new StringValue.
-             * @memberof google.protobuf
-             * @classdesc Represents a StringValue.
-             * @implements IStringValue
-             * @constructor
-             * @param {google.protobuf.IStringValue=} [properties] Properties to set
-             */
-            function StringValue(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * StringValue value.
-             * @member {string} value
-             * @memberof google.protobuf.StringValue
-             * @instance
-             */
-            StringValue.prototype.value = "";
-
-            /**
-             * Creates a new StringValue instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.StringValue
-             * @static
-             * @param {google.protobuf.IStringValue=} [properties] Properties to set
-             * @returns {google.protobuf.StringValue} StringValue instance
-             */
-            StringValue.create = function create(properties) {
-                return new StringValue(properties);
-            };
-
-            /**
-             * Encodes the specified StringValue message. Does not implicitly {@link google.protobuf.StringValue.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.StringValue
-             * @static
-             * @param {google.protobuf.IStringValue} message StringValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            StringValue.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified StringValue message, length delimited. Does not implicitly {@link google.protobuf.StringValue.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.StringValue
-             * @static
-             * @param {google.protobuf.IStringValue} message StringValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            StringValue.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a StringValue message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.StringValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.StringValue} StringValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            StringValue.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.StringValue();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.string();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes a StringValue message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.StringValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.StringValue} StringValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            StringValue.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a StringValue message.
-             * @function verify
-             * @memberof google.protobuf.StringValue
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            StringValue.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (!$util.isString(message.value))
-                        return "value: string expected";
-                return null;
-            };
-
-            /**
-             * Creates a StringValue message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.StringValue
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.StringValue} StringValue
-             */
-            StringValue.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.StringValue)
-                    return object;
-                var message = new $root.google.protobuf.StringValue();
-                if (object.value != null)
-                    message.value = String(object.value);
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a StringValue message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.StringValue
-             * @static
-             * @param {google.protobuf.StringValue} message StringValue
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            StringValue.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    object.value = "";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    object.value = message.value;
-                return object;
-            };
-
-            /**
-             * Converts this StringValue to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.StringValue
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            StringValue.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return StringValue;
-        })();
-
-        protobuf.BytesValue = (function() {
-
-            /**
-             * Properties of a BytesValue.
-             * @memberof google.protobuf
-             * @interface IBytesValue
-             * @property {Uint8Array|null} [value] BytesValue value
-             */
-
-            /**
-             * Constructs a new BytesValue.
-             * @memberof google.protobuf
-             * @classdesc Represents a BytesValue.
-             * @implements IBytesValue
-             * @constructor
-             * @param {google.protobuf.IBytesValue=} [properties] Properties to set
-             */
-            function BytesValue(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * BytesValue value.
-             * @member {Uint8Array} value
-             * @memberof google.protobuf.BytesValue
-             * @instance
-             */
-            BytesValue.prototype.value = $util.newBuffer([]);
-
-            /**
-             * Creates a new BytesValue instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.BytesValue
-             * @static
-             * @param {google.protobuf.IBytesValue=} [properties] Properties to set
-             * @returns {google.protobuf.BytesValue} BytesValue instance
-             */
-            BytesValue.create = function create(properties) {
-                return new BytesValue(properties);
-            };
-
-            /**
-             * Encodes the specified BytesValue message. Does not implicitly {@link google.protobuf.BytesValue.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.BytesValue
-             * @static
-             * @param {google.protobuf.IBytesValue} message BytesValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            BytesValue.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.value != null && message.hasOwnProperty("value"))
-                    writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.value);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified BytesValue message, length delimited. Does not implicitly {@link google.protobuf.BytesValue.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.BytesValue
-             * @static
-             * @param {google.protobuf.IBytesValue} message BytesValue message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            BytesValue.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a BytesValue message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.BytesValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.BytesValue} BytesValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            BytesValue.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.BytesValue();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        message.value = reader.bytes();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes a BytesValue message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.BytesValue
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.BytesValue} BytesValue
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            BytesValue.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a BytesValue message.
-             * @function verify
-             * @memberof google.protobuf.BytesValue
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            BytesValue.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.value != null && message.hasOwnProperty("value"))
-                    if (!(message.value && typeof message.value.length === "number" || $util.isString(message.value)))
-                        return "value: buffer expected";
-                return null;
-            };
-
-            /**
-             * Creates a BytesValue message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.BytesValue
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.BytesValue} BytesValue
-             */
-            BytesValue.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.BytesValue)
-                    return object;
-                var message = new $root.google.protobuf.BytesValue();
-                if (object.value != null)
-                    if (typeof object.value === "string")
-                        $util.base64.decode(object.value, message.value = $util.newBuffer($util.base64.length(object.value)), 0);
-                    else if (object.value.length)
-                        message.value = object.value;
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a BytesValue message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.BytesValue
-             * @static
-             * @param {google.protobuf.BytesValue} message BytesValue
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            BytesValue.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    if (options.bytes === String)
-                        object.value = "";
-                    else {
-                        object.value = [];
-                        if (options.bytes !== Array)
-                            object.value = $util.newBuffer(object.value);
-                    }
-                if (message.value != null && message.hasOwnProperty("value"))
-                    object.value = options.bytes === String ? $util.base64.encode(message.value, 0, message.value.length) : options.bytes === Array ? Array.prototype.slice.call(message.value) : message.value;
-                return object;
-            };
-
-            /**
-             * Converts this BytesValue to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.BytesValue
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            BytesValue.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            return BytesValue;
-        })();
-
-        return protobuf;
-    })();
-
-    return google;
-})();
-
-$root.AccessKey = (function() {
-
-    /**
-     * Properties of an AccessKey.
-     * @exports IAccessKey
-     * @interface IAccessKey
-     * @property {IUint128|null} [amount] AccessKey amount
-     * @property {google.protobuf.IStringValue|null} [balanceOwner] AccessKey balanceOwner
-     * @property {google.protobuf.IStringValue|null} [contractId] AccessKey contractId
-     * @property {google.protobuf.IBytesValue|null} [methodName] AccessKey methodName
-     */
-
-    /**
-     * Constructs a new AccessKey.
-     * @exports AccessKey
-     * @classdesc Represents an AccessKey.
-     * @implements IAccessKey
-     * @constructor
-     * @param {IAccessKey=} [properties] Properties to set
-     */
-    function AccessKey(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * AccessKey amount.
-     * @member {IUint128|null|undefined} amount
-     * @memberof AccessKey
-     * @instance
-     */
-    AccessKey.prototype.amount = null;
-
-    /**
-     * AccessKey balanceOwner.
-     * @member {google.protobuf.IStringValue|null|undefined} balanceOwner
-     * @memberof AccessKey
-     * @instance
-     */
-    AccessKey.prototype.balanceOwner = null;
-
-    /**
-     * AccessKey contractId.
-     * @member {google.protobuf.IStringValue|null|undefined} contractId
-     * @memberof AccessKey
-     * @instance
-     */
-    AccessKey.prototype.contractId = null;
-
-    /**
-     * AccessKey methodName.
-     * @member {google.protobuf.IBytesValue|null|undefined} methodName
-     * @memberof AccessKey
-     * @instance
-     */
-    AccessKey.prototype.methodName = null;
-
-    /**
-     * Creates a new AccessKey instance using the specified properties.
-     * @function create
-     * @memberof AccessKey
-     * @static
-     * @param {IAccessKey=} [properties] Properties to set
-     * @returns {AccessKey} AccessKey instance
-     */
-    AccessKey.create = function create(properties) {
-        return new AccessKey(properties);
-    };
-
-    /**
-     * Encodes the specified AccessKey message. Does not implicitly {@link AccessKey.verify|verify} messages.
-     * @function encode
-     * @memberof AccessKey
-     * @static
-     * @param {IAccessKey} message AccessKey message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    AccessKey.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            $root.Uint128.encode(message.amount, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-        if (message.balanceOwner != null && message.hasOwnProperty("balanceOwner"))
-            $root.google.protobuf.StringValue.encode(message.balanceOwner, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-        if (message.contractId != null && message.hasOwnProperty("contractId"))
-            $root.google.protobuf.StringValue.encode(message.contractId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-        if (message.methodName != null && message.hasOwnProperty("methodName"))
-            $root.google.protobuf.BytesValue.encode(message.methodName, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-        return writer;
-    };
-
-    /**
-     * Encodes the specified AccessKey message, length delimited. Does not implicitly {@link AccessKey.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof AccessKey
-     * @static
-     * @param {IAccessKey} message AccessKey message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    AccessKey.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes an AccessKey message from the specified reader or buffer.
-     * @function decode
-     * @memberof AccessKey
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {AccessKey} AccessKey
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    AccessKey.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.AccessKey();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.amount = $root.Uint128.decode(reader, reader.uint32());
-                break;
-            case 2:
-                message.balanceOwner = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
-                break;
-            case 3:
-                message.contractId = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
-                break;
-            case 4:
-                message.methodName = $root.google.protobuf.BytesValue.decode(reader, reader.uint32());
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes an AccessKey message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof AccessKey
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {AccessKey} AccessKey
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    AccessKey.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies an AccessKey message.
-     * @function verify
-     * @memberof AccessKey
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    AccessKey.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.amount != null && message.hasOwnProperty("amount")) {
-            var error = $root.Uint128.verify(message.amount);
-            if (error)
-                return "amount." + error;
-        }
-        if (message.balanceOwner != null && message.hasOwnProperty("balanceOwner")) {
-            var error = $root.google.protobuf.StringValue.verify(message.balanceOwner);
-            if (error)
-                return "balanceOwner." + error;
-        }
-        if (message.contractId != null && message.hasOwnProperty("contractId")) {
-            var error = $root.google.protobuf.StringValue.verify(message.contractId);
-            if (error)
-                return "contractId." + error;
-        }
-        if (message.methodName != null && message.hasOwnProperty("methodName")) {
-            var error = $root.google.protobuf.BytesValue.verify(message.methodName);
-            if (error)
-                return "methodName." + error;
-        }
-        return null;
-    };
-
-    /**
-     * Creates an AccessKey message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof AccessKey
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {AccessKey} AccessKey
-     */
-    AccessKey.fromObject = function fromObject(object) {
-        if (object instanceof $root.AccessKey)
-            return object;
-        var message = new $root.AccessKey();
-        if (object.amount != null) {
-            if (typeof object.amount !== "object")
-                throw TypeError(".AccessKey.amount: object expected");
-            message.amount = $root.Uint128.fromObject(object.amount);
-        }
-        if (object.balanceOwner != null) {
-            if (typeof object.balanceOwner !== "object")
-                throw TypeError(".AccessKey.balanceOwner: object expected");
-            message.balanceOwner = $root.google.protobuf.StringValue.fromObject(object.balanceOwner);
-        }
-        if (object.contractId != null) {
-            if (typeof object.contractId !== "object")
-                throw TypeError(".AccessKey.contractId: object expected");
-            message.contractId = $root.google.protobuf.StringValue.fromObject(object.contractId);
-        }
-        if (object.methodName != null) {
-            if (typeof object.methodName !== "object")
-                throw TypeError(".AccessKey.methodName: object expected");
-            message.methodName = $root.google.protobuf.BytesValue.fromObject(object.methodName);
-        }
-        return message;
-    };
-
-    /**
-     * Creates a plain object from an AccessKey message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof AccessKey
-     * @static
-     * @param {AccessKey} message AccessKey
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    AccessKey.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults) {
-            object.amount = null;
-            object.balanceOwner = null;
-            object.contractId = null;
-            object.methodName = null;
-        }
-        if (message.amount != null && message.hasOwnProperty("amount"))
-            object.amount = $root.Uint128.toObject(message.amount, options);
-        if (message.balanceOwner != null && message.hasOwnProperty("balanceOwner"))
-            object.balanceOwner = $root.google.protobuf.StringValue.toObject(message.balanceOwner, options);
-        if (message.contractId != null && message.hasOwnProperty("contractId"))
-            object.contractId = $root.google.protobuf.StringValue.toObject(message.contractId, options);
-        if (message.methodName != null && message.hasOwnProperty("methodName"))
-            object.methodName = $root.google.protobuf.BytesValue.toObject(message.methodName, options);
-        return object;
-    };
-
-    /**
-     * Converts this AccessKey to JSON.
-     * @function toJSON
-     * @memberof AccessKey
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    AccessKey.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return AccessKey;
-})();
-
-$root.Uint128 = (function() {
-
-    /**
-     * Properties of an Uint128.
-     * @exports IUint128
-     * @interface IUint128
-     * @property {Uint8Array|null} [number] Uint128 number
-     */
-
-    /**
-     * Constructs a new Uint128.
-     * @exports Uint128
-     * @classdesc Provides container for unsigned 128 bit integers.
-     * @implements IUint128
-     * @constructor
-     * @param {IUint128=} [properties] Properties to set
-     */
-    function Uint128(properties) {
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * Uint128 number.
-     * @member {Uint8Array} number
-     * @memberof Uint128
-     * @instance
-     */
-    Uint128.prototype.number = $util.newBuffer([]);
-
-    /**
-     * Creates a new Uint128 instance using the specified properties.
-     * @function create
-     * @memberof Uint128
-     * @static
-     * @param {IUint128=} [properties] Properties to set
-     * @returns {Uint128} Uint128 instance
-     */
-    Uint128.create = function create(properties) {
-        return new Uint128(properties);
-    };
-
-    /**
-     * Encodes the specified Uint128 message. Does not implicitly {@link Uint128.verify|verify} messages.
-     * @function encode
-     * @memberof Uint128
-     * @static
-     * @param {IUint128} message Uint128 message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    Uint128.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.number != null && message.hasOwnProperty("number"))
-            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.number);
-        return writer;
-    };
-
-    /**
-     * Encodes the specified Uint128 message, length delimited. Does not implicitly {@link Uint128.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof Uint128
-     * @static
-     * @param {IUint128} message Uint128 message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    Uint128.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes an Uint128 message from the specified reader or buffer.
-     * @function decode
-     * @memberof Uint128
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {Uint128} Uint128
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    Uint128.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Uint128();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.number = reader.bytes();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes an Uint128 message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof Uint128
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {Uint128} Uint128
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    Uint128.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies an Uint128 message.
-     * @function verify
-     * @memberof Uint128
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    Uint128.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.number != null && message.hasOwnProperty("number"))
-            if (!(message.number && typeof message.number.length === "number" || $util.isString(message.number)))
-                return "number: buffer expected";
-        return null;
-    };
-
-    /**
-     * Creates an Uint128 message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof Uint128
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {Uint128} Uint128
-     */
-    Uint128.fromObject = function fromObject(object) {
-        if (object instanceof $root.Uint128)
-            return object;
-        var message = new $root.Uint128();
-        if (object.number != null)
-            if (typeof object.number === "string")
-                $util.base64.decode(object.number, message.number = $util.newBuffer($util.base64.length(object.number)), 0);
-            else if (object.number.length)
-                message.number = object.number;
-        return message;
-    };
-
-    /**
-     * Creates a plain object from an Uint128 message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof Uint128
-     * @static
-     * @param {Uint128} message Uint128
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    Uint128.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.defaults)
-            if (options.bytes === String)
-                object.number = "";
-            else {
-                object.number = [];
-                if (options.bytes !== Array)
-                    object.number = $util.newBuffer(object.number);
-            }
-        if (message.number != null && message.hasOwnProperty("number"))
-            object.number = options.bytes === String ? $util.base64.encode(message.number, 0, message.number.length) : options.bytes === Array ? Array.prototype.slice.call(message.number) : message.number;
-        return object;
-    };
-
-    /**
-     * Converts this Uint128 to JSON.
-     * @function toJSON
-     * @memberof Uint128
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    Uint128.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return Uint128;
-})();
-
-module.exports = $root;
-
-},{"protobufjs/minimal":64}],15:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":9,"./key_stores/unencrypted_file_system_keystore":12,"./utils/key_pair":20,"bn.js":27}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
@@ -6002,14 +697,13 @@ exports.getTransactionLastResult = provider_1.getTransactionLastResult;
 const json_rpc_provider_1 = require("./json-rpc-provider");
 exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
 
-},{"./json-rpc-provider":16,"./provider":17}],16:[function(require,module,exports){
+},{"./json-rpc-provider":15,"./provider":16}],15:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
 const web_1 = require("../utils/web");
 const serialize_1 = require("../utils/serialize");
-const protos_1 = require("../protos");
 /// Keep ids unique across all connections.
 let _nextId = 123;
 class JsonRpcProvider extends provider_1.Provider {
@@ -6028,7 +722,7 @@ class JsonRpcProvider extends provider_1.Provider {
         return this.sendJsonRpc('status', []);
     }
     async sendTransaction(signedTransaction) {
-        const bytes = protos_1.SignedTransaction.encode(signedTransaction).finish();
+        const bytes = signedTransaction.encode();
         return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
     }
     async txStatus(txHash) {
@@ -6061,7 +755,7 @@ class JsonRpcProvider extends provider_1.Provider {
 exports.JsonRpcProvider = JsonRpcProvider;
 
 }).call(this,require("buffer").Buffer)
-},{"../protos":14,"../utils/serialize":23,"../utils/web":24,"./provider":17,"buffer":39}],17:[function(require,module,exports){
+},{"../utils/serialize":22,"../utils/web":23,"./provider":16,"buffer":31}],16:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -6076,10 +770,10 @@ class Provider {
 }
 exports.Provider = Provider;
 function getTransactionLastResult(txResult) {
-    for (let i = txResult.logs.length - 1; i >= 0; --i) {
-        const r = txResult.logs[i];
-        if (r.result && r.result.length > 0) {
-            return JSON.parse(Buffer.from(r.result).toString());
+    for (let i = txResult.transactions.length - 1; i >= 0; --i) {
+        const r = txResult.transactions[i];
+        if (r.result && r.result.result && r.result.result.length > 0) {
+            return JSON.parse(Buffer.from(r.result.result, 'base64').toString());
         }
     }
     return null;
@@ -6087,7 +781,7 @@ function getTransactionLastResult(txResult) {
 exports.getTransactionLastResult = getTransactionLastResult;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":39}],18:[function(require,module,exports){
+},{"buffer":31}],17:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -6140,96 +834,173 @@ class InMemorySigner extends Signer {
 }
 exports.InMemorySigner = InMemorySigner;
 
-},{"./utils/key_pair":21,"js-sha256":58}],19:[function(require,module,exports){
-(function (Buffer){
+},{"./utils/key_pair":20,"js-sha256":50}],18:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const js_sha256_1 = __importDefault(require("js-sha256"));
-const bn_js_1 = __importDefault(require("bn.js"));
-const protos_1 = require("./protos");
 const serialize_1 = require("./utils/serialize");
-const TRANSACTION_FIELD_MAP = new Map([
-    [protos_1.CreateAccountTransaction, 'createAccount'],
-    [protos_1.DeployContractTransaction, 'deployContract'],
-    [protos_1.FunctionCallTransaction, 'functionCall'],
-    [protos_1.SendMoneyTransaction, 'sendMoney'],
-    [protos_1.StakeTransaction, 'stake'],
-    [protos_1.SwapKeyTransaction, 'swapKey'],
-    [protos_1.AddKeyTransaction, 'addKey'],
-    [protos_1.DeleteKeyTransaction, 'deleteKey'],
-]);
-function bigInt(num) {
-    const number = new Uint8Array(new bn_js_1.default(num).toArray('le', 16));
-    return new protos_1.Uint128({ number });
+const key_pair_1 = require("./utils/key_pair");
+class Enum {
+    constructor(properties) {
+        if (Object.keys(properties).length !== 1) {
+            throw new Error('Enum can only take single value');
+        }
+        Object.keys(properties).map((key) => {
+            this[key] = properties[key];
+            this.enum = key;
+        });
+    }
 }
-function bignumHex2Dec(num) {
-    return new bn_js_1.default(num, 16).toString(10);
+class Assignable {
+    constructor(properties) {
+        Object.keys(properties).map((key) => {
+            this[key] = properties[key];
+        });
+    }
 }
-exports.bignumHex2Dec = bignumHex2Dec;
-function createAccount(nonce, originator, newAccountId, publicKey, amount) {
-    return new protos_1.CreateAccountTransaction({ nonce, originator, newAccountId, publicKey: serialize_1.base_decode(publicKey), amount: bigInt(amount) });
+class FunctionCallPermission extends Assignable {
+}
+exports.FunctionCallPermission = FunctionCallPermission;
+class FullAccessPermission extends Assignable {
+}
+exports.FullAccessPermission = FullAccessPermission;
+class AccessKeyPermission extends Enum {
+}
+exports.AccessKeyPermission = AccessKeyPermission;
+class AccessKey extends Assignable {
+}
+exports.AccessKey = AccessKey;
+function fullAccessKey() {
+    return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({ fullAccess: new FullAccessPermission({}) }) });
+}
+exports.fullAccessKey = fullAccessKey;
+function functionCallAccessKey(receiverId, methodNames, allowance) {
+    return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({ functionCall: new FunctionCallPermission({ receiverId, allowance, methodNames }) }) });
+}
+exports.functionCallAccessKey = functionCallAccessKey;
+class IAction extends Assignable {
+}
+exports.IAction = IAction;
+class CreateAccount extends IAction {
+}
+class DeployContract extends IAction {
+}
+class FunctionCall extends IAction {
+}
+class Transfer extends IAction {
+}
+class Stake extends IAction {
+}
+class AddKey extends IAction {
+}
+class DeleteKey extends IAction {
+}
+class DeleteAccount extends IAction {
+}
+function createAccount() {
+    return new Action({ createAccount: new CreateAccount({}) });
 }
 exports.createAccount = createAccount;
-function deployContract(nonce, contractId, wasmByteArray) {
-    return new protos_1.DeployContractTransaction({ nonce, contractId, wasmByteArray });
+function deployContract(code) {
+    return new Action({ deployContract: new DeployContract({ code }) });
 }
 exports.deployContract = deployContract;
-function functionCall(nonce, originator, contractId, methodName, args, amount) {
-    return new protos_1.FunctionCallTransaction({ nonce, originator, contractId, methodName: Buffer.from(methodName), args, amount: bigInt(amount) });
+function functionCall(methodName, args, gas, deposit) {
+    return new Action({ functionCall: new FunctionCall({ methodName, args, gas, deposit }) });
 }
 exports.functionCall = functionCall;
-function sendMoney(nonce, originator, receiver, amount) {
-    return new protos_1.SendMoneyTransaction({ nonce, originator, receiver, amount: bigInt(amount) });
+function transfer(deposit) {
+    return new Action({ transfer: new Transfer({ deposit }) });
 }
-exports.sendMoney = sendMoney;
-function stake(nonce, originator, amount, publicKey) {
-    return new protos_1.StakeTransaction({ nonce, originator, amount: bigInt(amount), publicKey, blsPublicKey: null });
+exports.transfer = transfer;
+function stake(stake, publicKey) {
+    return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 exports.stake = stake;
-function swapKey(nonce, originator, curKey, newKey) {
-    return new protos_1.SwapKeyTransaction({ nonce, originator, curKey: serialize_1.base_decode(curKey), newKey: serialize_1.base_decode(newKey) });
-}
-exports.swapKey = swapKey;
-function createAccessKey(contractId, methodName, balanceOwner, amount) {
-    return new protos_1.AccessKey({
-        contractId: contractId ? new protos_1.google.protobuf.StringValue({ value: contractId }) : null,
-        methodName: methodName ? new protos_1.google.protobuf.BytesValue({ value: Buffer.from(methodName) }) : null,
-        balanceOwner: balanceOwner ? new protos_1.google.protobuf.StringValue({ value: balanceOwner }) : null,
-        amount: bigInt(amount || new bn_js_1.default(0)),
-    });
-}
-exports.createAccessKey = createAccessKey;
-function addKey(nonce, originator, newKey, accessKey) {
-    return new protos_1.AddKeyTransaction({ nonce, originator, newKey: serialize_1.base_decode(newKey), accessKey });
+function addKey(publicKey, accessKey) {
+    return new Action({ addKey: new AddKey({ publicKey, accessKey }) });
 }
 exports.addKey = addKey;
-function deleteKey(nonce, originator, curKey) {
-    return new protos_1.DeleteKeyTransaction({ nonce, originator, curKey: serialize_1.base_decode(curKey) });
+function deleteKey(publicKey) {
+    return new Action({ deleteKey: new DeleteKey({ publicKey }) });
 }
 exports.deleteKey = deleteKey;
-function signedTransaction(transaction, signature) {
-    const fieldName = TRANSACTION_FIELD_MAP.get(transaction.constructor);
-    return new protos_1.SignedTransaction({
-        signature: signature.signature,
-        publicKey: protos_1.google.protobuf.BytesValue.create({ value: serialize_1.base_decode(signature.publicKey) }),
-        [fieldName]: transaction,
-    });
+function deleteAccount(beneficiaryId) {
+    return new Action({ deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
-exports.signedTransaction = signedTransaction;
-async function signTransaction(signer, transaction, accountId, networkId) {
-    const protoClass = transaction.constructor;
-    const message = protoClass.encode(transaction).finish();
+exports.deleteAccount = deleteAccount;
+class Signature {
+    constructor(signature) {
+        this.keyType = key_pair_1.KeyType.ED25519;
+        this.data = signature;
+    }
+}
+class Transaction extends Assignable {
+}
+class SignedTransaction extends Assignable {
+    encode() {
+        return serialize_1.serialize(SCHEMA, this);
+    }
+}
+exports.SignedTransaction = SignedTransaction;
+class Action extends Enum {
+}
+exports.Action = Action;
+const SCHEMA = new Map([
+    [Signature, { kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]] }],
+    [SignedTransaction, { kind: 'struct', fields: [['transaction', Transaction], ['signature', Signature]] }],
+    [Transaction, { kind: 'struct', fields: [['signerId', 'string'], ['publicKey', key_pair_1.PublicKey], ['nonce', 'u64'], ['receiverId', 'string'], ['blockHash', [32]], ['actions', [Action]]] }],
+    [key_pair_1.PublicKey, {
+            kind: 'struct', fields: [['keyType', 'u8'], ['data', [32]]]
+        }],
+    [AccessKey, { kind: 'struct', fields: [
+                ['nonce', 'u64'],
+                ['permission', AccessKeyPermission],
+            ] }],
+    [AccessKeyPermission, { kind: 'enum', field: 'enum', values: [
+                ['functionCall', FunctionCallPermission],
+                ['fullAccess', FullAccessPermission],
+            ] }],
+    [FunctionCallPermission, { kind: 'struct', fields: [
+                ['allowance', { kind: 'option', type: 'u128' }],
+                ['receiverId', 'string'],
+                ['methodNames', ['string']],
+            ] }],
+    [FullAccessPermission, { kind: 'struct', fields: [] }],
+    [Action, { kind: 'enum', field: 'enum', values: [
+                ['createAccount', CreateAccount],
+                ['deployContract', DeployContract],
+                ['functionCall', functionCall],
+                ['transfer', transfer],
+                ['stake', stake],
+                ['addKey', addKey],
+                ['deleteKey', deleteKey],
+                ['deleteAccount', deleteAccount],
+            ] }],
+    [CreateAccount, { kind: 'struct', fields: [] }],
+    [DeployContract, { kind: 'struct', fields: [['code', ['u8']]] }],
+    [FunctionCall, { kind: 'struct', fields: [['methodName', 'string'], ['args', ['u8']], ['gas', 'u64'], ['deposit', 'u128']] }],
+    [Transfer, { kind: 'struct', fields: [['deposit', 'u128']] }],
+    [Stake, { kind: 'struct', fields: [['stake', 'u128'], ['publicKey', key_pair_1.PublicKey]] }],
+    [AddKey, { kind: 'struct', fields: [['publicKey', key_pair_1.PublicKey], ['accessKey', AccessKey]] }],
+    [DeleteKey, { kind: 'struct', fields: [['publicKey', key_pair_1.PublicKey]] }],
+    [DeleteAccount, { kind: 'struct', fields: [['beneficiaryId', 'string']] }],
+]);
+async function signTransaction(receiverId, nonce, actions, blockHash, signer, accountId, networkId) {
+    const publicKey = await signer.getPublicKey(accountId, networkId);
+    const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
+    const message = serialize_1.serialize(SCHEMA, transaction);
     const hash = new Uint8Array(js_sha256_1.default.sha256.array(message));
     const signature = await signer.signHash(hash, accountId, networkId);
-    return [hash, signedTransaction(transaction, signature)];
+    const signedTx = new SignedTransaction({ transaction, signature: new Signature(signature.signature) });
+    return [hash, signedTx];
 }
 exports.signTransaction = signTransaction;
 
-}).call(this,require("buffer").Buffer)
-},{"./protos":14,"./utils/serialize":23,"bn.js":35,"buffer":39,"js-sha256":58}],20:[function(require,module,exports){
+},{"./utils/key_pair":20,"./utils/serialize":22,"js-sha256":50}],19:[function(require,module,exports){
 "use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -6251,7 +1022,7 @@ const key_pair_1 = require("./key_pair");
 exports.KeyPair = key_pair_1.KeyPair;
 exports.KeyPairEd25519 = key_pair_1.KeyPairEd25519;
 
-},{"./key_pair":21,"./network":22,"./serialize":23,"./web":24}],21:[function(require,module,exports){
+},{"./key_pair":20,"./network":21,"./serialize":22,"./web":23}],20:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -6259,21 +1030,74 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const serialize_1 = require("./serialize");
+/** All supported key types */
+var KeyType;
+(function (KeyType) {
+    KeyType[KeyType["ED25519"] = 0] = "ED25519";
+})(KeyType = exports.KeyType || (exports.KeyType = {}));
+function key_type_to_str(keyType) {
+    switch (keyType) {
+        case KeyType.ED25519: return 'ed25519';
+        default: throw new Error(`Unknown key type ${keyType}`);
+    }
+}
+function str_to_key_type(keyType) {
+    switch (keyType.toLowerCase()) {
+        case 'ed25519': return KeyType.ED25519;
+        default: throw new Error(`Unknown key type ${keyType}`);
+    }
+}
+/**
+ * PublicKey representation that has type and bytes of the key.
+ */
+class PublicKey {
+    constructor(keyType, data) {
+        this.keyType = keyType;
+        this.data = data;
+    }
+    static from(value) {
+        if (typeof value === 'string') {
+            return PublicKey.fromString(value);
+        }
+        return value;
+    }
+    static fromString(encodedKey) {
+        const parts = encodedKey.split(':');
+        if (parts.length === 1) {
+            return new PublicKey(KeyType.ED25519, serialize_1.base_decode(parts[0]));
+        }
+        else if (parts.length === 2) {
+            return new PublicKey(str_to_key_type(parts[0]), serialize_1.base_decode(parts[1]));
+        }
+        else {
+            throw new Error('Invlaid encoded key format, must be <curve>:<encoded key>');
+        }
+    }
+    toString() {
+        return `${key_type_to_str(this.keyType)}:${serialize_1.base_encode(this.data)}`;
+    }
+}
+exports.PublicKey = PublicKey;
 class KeyPair {
     static fromRandom(curve) {
-        switch (curve) {
-            case 'ed25519': return KeyPairEd25519.fromRandom();
+        switch (curve.toUpperCase()) {
+            case 'ED25519': return KeyPairEd25519.fromRandom();
             default: throw new Error(`Unknown curve ${curve}`);
         }
     }
     static fromString(encodedKey) {
         const parts = encodedKey.split(':');
-        if (parts.length !== 2) {
-            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
+        if (parts.length === 1) {
+            return new KeyPairEd25519(parts[0]);
         }
-        switch (parts[0]) {
-            case 'ed25519': return new KeyPairEd25519(parts[1]);
-            default: throw new Error(`Unknown curve: ${parts[0]}`);
+        else if (parts.length === 2) {
+            switch (parts[0].toUpperCase()) {
+                case 'ED25519': return new KeyPairEd25519(parts[1]);
+                default: throw new Error(`Unknown curve: ${parts[0]}`);
+            }
+        }
+        else {
+            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
     }
 }
@@ -6291,7 +1115,7 @@ class KeyPairEd25519 extends KeyPair {
     constructor(secretKey) {
         super();
         const keyPair = tweetnacl_1.default.sign.keyPair.fromSecretKey(serialize_1.base_decode(secretKey));
-        this.publicKey = serialize_1.base_encode(keyPair.publicKey);
+        this.publicKey = new PublicKey(KeyType.ED25519, keyPair.publicKey);
         this.secretKey = secretKey;
     }
     /**
@@ -6313,7 +1137,7 @@ class KeyPairEd25519 extends KeyPair {
         return { signature, publicKey: this.publicKey };
     }
     verify(message, signature) {
-        return tweetnacl_1.default.sign.detached.verify(message, signature, serialize_1.base_decode(this.publicKey));
+        return tweetnacl_1.default.sign.detached.verify(message, signature, this.publicKey.data);
     }
     toString() {
         return `ed25519:${this.secretKey}`;
@@ -6324,11 +1148,11 @@ class KeyPairEd25519 extends KeyPair {
 }
 exports.KeyPairEd25519 = KeyPairEd25519;
 
-},{"./serialize":23,"tweetnacl":80}],22:[function(require,module,exports){
+},{"./serialize":22,"tweetnacl":61}],21:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -6336,6 +1160,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bs58_1 = __importDefault(require("bs58"));
+const bn_js_1 = __importDefault(require("bn.js"));
 function base_encode(value) {
     if (typeof (value) === 'string') {
         value = Buffer.from(value, 'utf8');
@@ -6347,9 +1172,204 @@ function base_decode(value) {
     return bs58_1.default.decode(value);
 }
 exports.base_decode = base_decode;
+const INITIAL_LENGTH = 1024;
+/// Binary encoder.
+class BinaryWriter {
+    constructor() {
+        this.buf = Buffer.alloc(INITIAL_LENGTH);
+        this.length = 0;
+    }
+    maybe_resize() {
+        if (this.buf.length < 16 + this.length) {
+            this.buf = Buffer.concat([this.buf, Buffer.alloc(INITIAL_LENGTH)]);
+        }
+    }
+    write_u8(value) {
+        this.maybe_resize();
+        this.buf.writeUInt8(value, this.length);
+        this.length += 1;
+    }
+    write_u32(value) {
+        this.maybe_resize();
+        this.buf.writeUInt32LE(value, this.length);
+        this.length += 4;
+    }
+    write_u64(value) {
+        this.maybe_resize();
+        this.write_buffer(Buffer.from(new bn_js_1.default(value).toArray('le', 8)));
+    }
+    write_u128(value) {
+        this.maybe_resize();
+        this.write_buffer(Buffer.from(new bn_js_1.default(value).toArray('le', 16)));
+    }
+    write_buffer(buffer) {
+        // Buffer.from is needed as this.buf.subarray can return plain Uint8Array in browser
+        this.buf = Buffer.concat([Buffer.from(this.buf.subarray(0, this.length)), buffer, Buffer.alloc(INITIAL_LENGTH)]);
+        this.length += buffer.length;
+    }
+    write_string(str) {
+        this.maybe_resize();
+        const b = Buffer.from(str, 'utf8');
+        this.write_u32(b.length);
+        this.write_buffer(b);
+    }
+    write_fixed_array(array) {
+        this.write_buffer(Buffer.from(array));
+    }
+    write_array(array, fn) {
+        this.maybe_resize();
+        this.write_u32(array.length);
+        for (const elem of array) {
+            this.maybe_resize();
+            fn(elem);
+        }
+    }
+    toArray() {
+        return this.buf.subarray(0, this.length);
+    }
+}
+exports.BinaryWriter = BinaryWriter;
+class BinaryReader {
+    constructor(buf) {
+        this.buf = buf;
+        this.offset = 0;
+    }
+    read_u8() {
+        const value = this.buf.readUInt8(this.offset);
+        this.offset += 1;
+        return value;
+    }
+    read_u32() {
+        const value = this.buf.readUInt32LE(this.offset);
+        this.offset += 4;
+        return value;
+    }
+    read_u64() {
+        const buf = this.read_buffer(8);
+        buf.reverse();
+        return new bn_js_1.default(`${buf.toString('hex')}`, 16);
+    }
+    read_u128() {
+        const buf = this.read_buffer(16);
+        return new bn_js_1.default(buf);
+    }
+    read_buffer(len) {
+        const result = this.buf.slice(this.offset, this.offset + len);
+        this.offset += len;
+        return result;
+    }
+    read_string() {
+        const len = this.read_u32();
+        return this.read_buffer(len).toString('utf8');
+    }
+    read_fixed_array(len) {
+        return new Uint8Array(this.read_buffer(len));
+    }
+    read_array(fn) {
+        const len = this.read_u32();
+        const result = Array();
+        for (let i = 0; i < len; ++i) {
+            result.push(fn());
+        }
+        return result;
+    }
+}
+exports.BinaryReader = BinaryReader;
+function serializeField(schema, value, fieldType, writer) {
+    if (typeof fieldType === 'string') {
+        writer[`write_${fieldType}`](value);
+    }
+    else if (fieldType instanceof Array) {
+        if (typeof fieldType[0] === 'number') {
+            writer.write_fixed_array(value);
+        }
+        else {
+            writer.write_array(value, (item) => { serializeField(schema, item, fieldType[0], writer); });
+        }
+    }
+    else if (fieldType.kind !== undefined) {
+        switch (fieldType.kind) {
+            case 'option': {
+                if (value === null) {
+                    writer.write_u8(0);
+                }
+                else {
+                    writer.write_u8(1);
+                    serializeField(schema, value, fieldType.type, writer);
+                }
+                break;
+            }
+            default: throw new Error(`FieldType ${fieldType} unrecognized`);
+        }
+    }
+    else {
+        serializeStruct(schema, value, writer);
+    }
+}
+function serializeStruct(schema, obj, writer) {
+    const structSchema = schema.get(obj.constructor);
+    if (!structSchema) {
+        throw new Error(`Class ${obj.constructor.name} is missing in schema`);
+    }
+    if (structSchema.kind === 'struct') {
+        structSchema.fields.map(([fieldName, fieldType]) => {
+            serializeField(schema, obj[fieldName], fieldType, writer);
+        });
+    }
+    else if (structSchema.kind === 'enum') {
+        const name = obj[structSchema.field];
+        for (let idx = 0; idx < structSchema.values.length; ++idx) {
+            const [fieldName, fieldType] = structSchema.values[idx];
+            if (fieldName === name) {
+                writer.write_u8(idx);
+                serializeField(schema, obj[fieldName], fieldType, writer);
+                break;
+            }
+        }
+    }
+    else {
+        throw new Error(`Unexpected schema kind: ${structSchema.kind} for ${obj.constructor.name}`);
+    }
+}
+/// Serialize given object using schema of the form:
+/// { class_name -> [ [field_name, field_type], .. ], .. }
+function serialize(schema, obj) {
+    const writer = new BinaryWriter();
+    serializeStruct(schema, obj, writer);
+    return writer.toArray();
+}
+exports.serialize = serialize;
+function deserializeField(schema, fieldType, reader) {
+    if (typeof fieldType === 'string') {
+        return reader[`read_${fieldType}`]();
+    }
+    else if (fieldType instanceof Array) {
+        if (typeof fieldType[0] === 'number') {
+            return reader.read_fixed_array(fieldType[0]);
+        }
+        else {
+            return reader.read_array(() => deserializeField(schema, fieldType[0], reader));
+        }
+    }
+    else {
+        return deserializeStruct(schema, fieldType, reader);
+    }
+}
+function deserializeStruct(schema, classType, reader) {
+    const fields = schema.get(classType).fields.map(([fieldName, fieldType]) => {
+        return deserializeField(schema, fieldType, reader);
+    });
+    return new classType(...fields);
+}
+/// Deserializes object from bytes using schema.
+function deserialize(schema, classType, buffer) {
+    const reader = new BinaryReader(buffer);
+    return deserializeStruct(schema, classType, reader);
+}
+exports.deserialize = deserialize;
 
 }).call(this,require("buffer").Buffer)
-},{"bs58":38,"buffer":39}],24:[function(require,module,exports){
+},{"bn.js":27,"bs58":30,"buffer":31}],23:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -6377,7 +1397,7 @@ async function fetchJson(connection, json) {
 }
 exports.fetchJson = fetchJson;
 
-},{"http-errors":55,"node-fetch":37}],25:[function(require,module,exports){
+},{"http-errors":47,"node-fetch":29}],24:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
@@ -6437,7 +1457,7 @@ class WalletAccount {
         newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
         const accessKey = utils_1.KeyPair.fromRandom('ed25519');
-        newUrl.searchParams.set('public_key', accessKey.getPublicKey());
+        newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         window.location.assign(newUrl.toString());
     }
@@ -6473,793 +1493,7 @@ class WalletAccount {
 }
 exports.WalletAccount = WalletAccount;
 
-},{"./utils":20}],26:[function(require,module,exports){
-"use strict";
-module.exports = asPromise;
-
-/**
- * Callback as used by {@link util.asPromise}.
- * @typedef asPromiseCallback
- * @type {function}
- * @param {Error|null} error Error, if any
- * @param {...*} params Additional arguments
- * @returns {undefined}
- */
-
-/**
- * Returns a promise from a node-style callback function.
- * @memberof util
- * @param {asPromiseCallback} fn Function to call
- * @param {*} ctx Function context
- * @param {...*} params Function arguments
- * @returns {Promise<*>} Promisified function
- */
-function asPromise(fn, ctx/*, varargs */) {
-    var params  = new Array(arguments.length - 1),
-        offset  = 0,
-        index   = 2,
-        pending = true;
-    while (index < arguments.length)
-        params[offset++] = arguments[index++];
-    return new Promise(function executor(resolve, reject) {
-        params[offset] = function callback(err/*, varargs */) {
-            if (pending) {
-                pending = false;
-                if (err)
-                    reject(err);
-                else {
-                    var params = new Array(arguments.length - 1),
-                        offset = 0;
-                    while (offset < params.length)
-                        params[offset++] = arguments[offset];
-                    resolve.apply(null, params);
-                }
-            }
-        };
-        try {
-            fn.apply(ctx || null, params);
-        } catch (err) {
-            if (pending) {
-                pending = false;
-                reject(err);
-            }
-        }
-    });
-}
-
-},{}],27:[function(require,module,exports){
-"use strict";
-
-/**
- * A minimal base64 implementation for number arrays.
- * @memberof util
- * @namespace
- */
-var base64 = exports;
-
-/**
- * Calculates the byte length of a base64 encoded string.
- * @param {string} string Base64 encoded string
- * @returns {number} Byte length
- */
-base64.length = function length(string) {
-    var p = string.length;
-    if (!p)
-        return 0;
-    var n = 0;
-    while (--p % 4 > 1 && string.charAt(p) === "=")
-        ++n;
-    return Math.ceil(string.length * 3) / 4 - n;
-};
-
-// Base64 encoding table
-var b64 = new Array(64);
-
-// Base64 decoding table
-var s64 = new Array(123);
-
-// 65..90, 97..122, 48..57, 43, 47
-for (var i = 0; i < 64;)
-    s64[b64[i] = i < 26 ? i + 65 : i < 52 ? i + 71 : i < 62 ? i - 4 : i - 59 | 43] = i++;
-
-/**
- * Encodes a buffer to a base64 encoded string.
- * @param {Uint8Array} buffer Source buffer
- * @param {number} start Source start
- * @param {number} end Source end
- * @returns {string} Base64 encoded string
- */
-base64.encode = function encode(buffer, start, end) {
-    var parts = null,
-        chunk = [];
-    var i = 0, // output index
-        j = 0, // goto index
-        t;     // temporary
-    while (start < end) {
-        var b = buffer[start++];
-        switch (j) {
-            case 0:
-                chunk[i++] = b64[b >> 2];
-                t = (b & 3) << 4;
-                j = 1;
-                break;
-            case 1:
-                chunk[i++] = b64[t | b >> 4];
-                t = (b & 15) << 2;
-                j = 2;
-                break;
-            case 2:
-                chunk[i++] = b64[t | b >> 6];
-                chunk[i++] = b64[b & 63];
-                j = 0;
-                break;
-        }
-        if (i > 8191) {
-            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
-            i = 0;
-        }
-    }
-    if (j) {
-        chunk[i++] = b64[t];
-        chunk[i++] = 61;
-        if (j === 1)
-            chunk[i++] = 61;
-    }
-    if (parts) {
-        if (i)
-            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
-        return parts.join("");
-    }
-    return String.fromCharCode.apply(String, chunk.slice(0, i));
-};
-
-var invalidEncoding = "invalid encoding";
-
-/**
- * Decodes a base64 encoded string to a buffer.
- * @param {string} string Source string
- * @param {Uint8Array} buffer Destination buffer
- * @param {number} offset Destination offset
- * @returns {number} Number of bytes written
- * @throws {Error} If encoding is invalid
- */
-base64.decode = function decode(string, buffer, offset) {
-    var start = offset;
-    var j = 0, // goto index
-        t;     // temporary
-    for (var i = 0; i < string.length;) {
-        var c = string.charCodeAt(i++);
-        if (c === 61 && j > 1)
-            break;
-        if ((c = s64[c]) === undefined)
-            throw Error(invalidEncoding);
-        switch (j) {
-            case 0:
-                t = c;
-                j = 1;
-                break;
-            case 1:
-                buffer[offset++] = t << 2 | (c & 48) >> 4;
-                t = c;
-                j = 2;
-                break;
-            case 2:
-                buffer[offset++] = (t & 15) << 4 | (c & 60) >> 2;
-                t = c;
-                j = 3;
-                break;
-            case 3:
-                buffer[offset++] = (t & 3) << 6 | c;
-                j = 0;
-                break;
-        }
-    }
-    if (j === 1)
-        throw Error(invalidEncoding);
-    return offset - start;
-};
-
-/**
- * Tests if the specified string appears to be base64 encoded.
- * @param {string} string String to test
- * @returns {boolean} `true` if probably base64 encoded, otherwise false
- */
-base64.test = function test(string) {
-    return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(string);
-};
-
-},{}],28:[function(require,module,exports){
-"use strict";
-module.exports = EventEmitter;
-
-/**
- * Constructs a new event emitter instance.
- * @classdesc A minimal event emitter.
- * @memberof util
- * @constructor
- */
-function EventEmitter() {
-
-    /**
-     * Registered listeners.
-     * @type {Object.<string,*>}
-     * @private
-     */
-    this._listeners = {};
-}
-
-/**
- * Registers an event listener.
- * @param {string} evt Event name
- * @param {function} fn Listener
- * @param {*} [ctx] Listener context
- * @returns {util.EventEmitter} `this`
- */
-EventEmitter.prototype.on = function on(evt, fn, ctx) {
-    (this._listeners[evt] || (this._listeners[evt] = [])).push({
-        fn  : fn,
-        ctx : ctx || this
-    });
-    return this;
-};
-
-/**
- * Removes an event listener or any matching listeners if arguments are omitted.
- * @param {string} [evt] Event name. Removes all listeners if omitted.
- * @param {function} [fn] Listener to remove. Removes all listeners of `evt` if omitted.
- * @returns {util.EventEmitter} `this`
- */
-EventEmitter.prototype.off = function off(evt, fn) {
-    if (evt === undefined)
-        this._listeners = {};
-    else {
-        if (fn === undefined)
-            this._listeners[evt] = [];
-        else {
-            var listeners = this._listeners[evt];
-            for (var i = 0; i < listeners.length;)
-                if (listeners[i].fn === fn)
-                    listeners.splice(i, 1);
-                else
-                    ++i;
-        }
-    }
-    return this;
-};
-
-/**
- * Emits an event by calling its listeners with the specified arguments.
- * @param {string} evt Event name
- * @param {...*} args Arguments
- * @returns {util.EventEmitter} `this`
- */
-EventEmitter.prototype.emit = function emit(evt) {
-    var listeners = this._listeners[evt];
-    if (listeners) {
-        var args = [],
-            i = 1;
-        for (; i < arguments.length;)
-            args.push(arguments[i++]);
-        for (i = 0; i < listeners.length;)
-            listeners[i].fn.apply(listeners[i++].ctx, args);
-    }
-    return this;
-};
-
-},{}],29:[function(require,module,exports){
-"use strict";
-
-module.exports = factory(factory);
-
-/**
- * Reads / writes floats / doubles from / to buffers.
- * @name util.float
- * @namespace
- */
-
-/**
- * Writes a 32 bit float to a buffer using little endian byte order.
- * @name util.float.writeFloatLE
- * @function
- * @param {number} val Value to write
- * @param {Uint8Array} buf Target buffer
- * @param {number} pos Target buffer offset
- * @returns {undefined}
- */
-
-/**
- * Writes a 32 bit float to a buffer using big endian byte order.
- * @name util.float.writeFloatBE
- * @function
- * @param {number} val Value to write
- * @param {Uint8Array} buf Target buffer
- * @param {number} pos Target buffer offset
- * @returns {undefined}
- */
-
-/**
- * Reads a 32 bit float from a buffer using little endian byte order.
- * @name util.float.readFloatLE
- * @function
- * @param {Uint8Array} buf Source buffer
- * @param {number} pos Source buffer offset
- * @returns {number} Value read
- */
-
-/**
- * Reads a 32 bit float from a buffer using big endian byte order.
- * @name util.float.readFloatBE
- * @function
- * @param {Uint8Array} buf Source buffer
- * @param {number} pos Source buffer offset
- * @returns {number} Value read
- */
-
-/**
- * Writes a 64 bit double to a buffer using little endian byte order.
- * @name util.float.writeDoubleLE
- * @function
- * @param {number} val Value to write
- * @param {Uint8Array} buf Target buffer
- * @param {number} pos Target buffer offset
- * @returns {undefined}
- */
-
-/**
- * Writes a 64 bit double to a buffer using big endian byte order.
- * @name util.float.writeDoubleBE
- * @function
- * @param {number} val Value to write
- * @param {Uint8Array} buf Target buffer
- * @param {number} pos Target buffer offset
- * @returns {undefined}
- */
-
-/**
- * Reads a 64 bit double from a buffer using little endian byte order.
- * @name util.float.readDoubleLE
- * @function
- * @param {Uint8Array} buf Source buffer
- * @param {number} pos Source buffer offset
- * @returns {number} Value read
- */
-
-/**
- * Reads a 64 bit double from a buffer using big endian byte order.
- * @name util.float.readDoubleBE
- * @function
- * @param {Uint8Array} buf Source buffer
- * @param {number} pos Source buffer offset
- * @returns {number} Value read
- */
-
-// Factory function for the purpose of node-based testing in modified global environments
-function factory(exports) {
-
-    // float: typed array
-    if (typeof Float32Array !== "undefined") (function() {
-
-        var f32 = new Float32Array([ -0 ]),
-            f8b = new Uint8Array(f32.buffer),
-            le  = f8b[3] === 128;
-
-        function writeFloat_f32_cpy(val, buf, pos) {
-            f32[0] = val;
-            buf[pos    ] = f8b[0];
-            buf[pos + 1] = f8b[1];
-            buf[pos + 2] = f8b[2];
-            buf[pos + 3] = f8b[3];
-        }
-
-        function writeFloat_f32_rev(val, buf, pos) {
-            f32[0] = val;
-            buf[pos    ] = f8b[3];
-            buf[pos + 1] = f8b[2];
-            buf[pos + 2] = f8b[1];
-            buf[pos + 3] = f8b[0];
-        }
-
-        /* istanbul ignore next */
-        exports.writeFloatLE = le ? writeFloat_f32_cpy : writeFloat_f32_rev;
-        /* istanbul ignore next */
-        exports.writeFloatBE = le ? writeFloat_f32_rev : writeFloat_f32_cpy;
-
-        function readFloat_f32_cpy(buf, pos) {
-            f8b[0] = buf[pos    ];
-            f8b[1] = buf[pos + 1];
-            f8b[2] = buf[pos + 2];
-            f8b[3] = buf[pos + 3];
-            return f32[0];
-        }
-
-        function readFloat_f32_rev(buf, pos) {
-            f8b[3] = buf[pos    ];
-            f8b[2] = buf[pos + 1];
-            f8b[1] = buf[pos + 2];
-            f8b[0] = buf[pos + 3];
-            return f32[0];
-        }
-
-        /* istanbul ignore next */
-        exports.readFloatLE = le ? readFloat_f32_cpy : readFloat_f32_rev;
-        /* istanbul ignore next */
-        exports.readFloatBE = le ? readFloat_f32_rev : readFloat_f32_cpy;
-
-    // float: ieee754
-    })(); else (function() {
-
-        function writeFloat_ieee754(writeUint, val, buf, pos) {
-            var sign = val < 0 ? 1 : 0;
-            if (sign)
-                val = -val;
-            if (val === 0)
-                writeUint(1 / val > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648, buf, pos);
-            else if (isNaN(val))
-                writeUint(2143289344, buf, pos);
-            else if (val > 3.4028234663852886e+38) // +-Infinity
-                writeUint((sign << 31 | 2139095040) >>> 0, buf, pos);
-            else if (val < 1.1754943508222875e-38) // denormal
-                writeUint((sign << 31 | Math.round(val / 1.401298464324817e-45)) >>> 0, buf, pos);
-            else {
-                var exponent = Math.floor(Math.log(val) / Math.LN2),
-                    mantissa = Math.round(val * Math.pow(2, -exponent) * 8388608) & 8388607;
-                writeUint((sign << 31 | exponent + 127 << 23 | mantissa) >>> 0, buf, pos);
-            }
-        }
-
-        exports.writeFloatLE = writeFloat_ieee754.bind(null, writeUintLE);
-        exports.writeFloatBE = writeFloat_ieee754.bind(null, writeUintBE);
-
-        function readFloat_ieee754(readUint, buf, pos) {
-            var uint = readUint(buf, pos),
-                sign = (uint >> 31) * 2 + 1,
-                exponent = uint >>> 23 & 255,
-                mantissa = uint & 8388607;
-            return exponent === 255
-                ? mantissa
-                ? NaN
-                : sign * Infinity
-                : exponent === 0 // denormal
-                ? sign * 1.401298464324817e-45 * mantissa
-                : sign * Math.pow(2, exponent - 150) * (mantissa + 8388608);
-        }
-
-        exports.readFloatLE = readFloat_ieee754.bind(null, readUintLE);
-        exports.readFloatBE = readFloat_ieee754.bind(null, readUintBE);
-
-    })();
-
-    // double: typed array
-    if (typeof Float64Array !== "undefined") (function() {
-
-        var f64 = new Float64Array([-0]),
-            f8b = new Uint8Array(f64.buffer),
-            le  = f8b[7] === 128;
-
-        function writeDouble_f64_cpy(val, buf, pos) {
-            f64[0] = val;
-            buf[pos    ] = f8b[0];
-            buf[pos + 1] = f8b[1];
-            buf[pos + 2] = f8b[2];
-            buf[pos + 3] = f8b[3];
-            buf[pos + 4] = f8b[4];
-            buf[pos + 5] = f8b[5];
-            buf[pos + 6] = f8b[6];
-            buf[pos + 7] = f8b[7];
-        }
-
-        function writeDouble_f64_rev(val, buf, pos) {
-            f64[0] = val;
-            buf[pos    ] = f8b[7];
-            buf[pos + 1] = f8b[6];
-            buf[pos + 2] = f8b[5];
-            buf[pos + 3] = f8b[4];
-            buf[pos + 4] = f8b[3];
-            buf[pos + 5] = f8b[2];
-            buf[pos + 6] = f8b[1];
-            buf[pos + 7] = f8b[0];
-        }
-
-        /* istanbul ignore next */
-        exports.writeDoubleLE = le ? writeDouble_f64_cpy : writeDouble_f64_rev;
-        /* istanbul ignore next */
-        exports.writeDoubleBE = le ? writeDouble_f64_rev : writeDouble_f64_cpy;
-
-        function readDouble_f64_cpy(buf, pos) {
-            f8b[0] = buf[pos    ];
-            f8b[1] = buf[pos + 1];
-            f8b[2] = buf[pos + 2];
-            f8b[3] = buf[pos + 3];
-            f8b[4] = buf[pos + 4];
-            f8b[5] = buf[pos + 5];
-            f8b[6] = buf[pos + 6];
-            f8b[7] = buf[pos + 7];
-            return f64[0];
-        }
-
-        function readDouble_f64_rev(buf, pos) {
-            f8b[7] = buf[pos    ];
-            f8b[6] = buf[pos + 1];
-            f8b[5] = buf[pos + 2];
-            f8b[4] = buf[pos + 3];
-            f8b[3] = buf[pos + 4];
-            f8b[2] = buf[pos + 5];
-            f8b[1] = buf[pos + 6];
-            f8b[0] = buf[pos + 7];
-            return f64[0];
-        }
-
-        /* istanbul ignore next */
-        exports.readDoubleLE = le ? readDouble_f64_cpy : readDouble_f64_rev;
-        /* istanbul ignore next */
-        exports.readDoubleBE = le ? readDouble_f64_rev : readDouble_f64_cpy;
-
-    // double: ieee754
-    })(); else (function() {
-
-        function writeDouble_ieee754(writeUint, off0, off1, val, buf, pos) {
-            var sign = val < 0 ? 1 : 0;
-            if (sign)
-                val = -val;
-            if (val === 0) {
-                writeUint(0, buf, pos + off0);
-                writeUint(1 / val > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648, buf, pos + off1);
-            } else if (isNaN(val)) {
-                writeUint(0, buf, pos + off0);
-                writeUint(2146959360, buf, pos + off1);
-            } else if (val > 1.7976931348623157e+308) { // +-Infinity
-                writeUint(0, buf, pos + off0);
-                writeUint((sign << 31 | 2146435072) >>> 0, buf, pos + off1);
-            } else {
-                var mantissa;
-                if (val < 2.2250738585072014e-308) { // denormal
-                    mantissa = val / 5e-324;
-                    writeUint(mantissa >>> 0, buf, pos + off0);
-                    writeUint((sign << 31 | mantissa / 4294967296) >>> 0, buf, pos + off1);
-                } else {
-                    var exponent = Math.floor(Math.log(val) / Math.LN2);
-                    if (exponent === 1024)
-                        exponent = 1023;
-                    mantissa = val * Math.pow(2, -exponent);
-                    writeUint(mantissa * 4503599627370496 >>> 0, buf, pos + off0);
-                    writeUint((sign << 31 | exponent + 1023 << 20 | mantissa * 1048576 & 1048575) >>> 0, buf, pos + off1);
-                }
-            }
-        }
-
-        exports.writeDoubleLE = writeDouble_ieee754.bind(null, writeUintLE, 0, 4);
-        exports.writeDoubleBE = writeDouble_ieee754.bind(null, writeUintBE, 4, 0);
-
-        function readDouble_ieee754(readUint, off0, off1, buf, pos) {
-            var lo = readUint(buf, pos + off0),
-                hi = readUint(buf, pos + off1);
-            var sign = (hi >> 31) * 2 + 1,
-                exponent = hi >>> 20 & 2047,
-                mantissa = 4294967296 * (hi & 1048575) + lo;
-            return exponent === 2047
-                ? mantissa
-                ? NaN
-                : sign * Infinity
-                : exponent === 0 // denormal
-                ? sign * 5e-324 * mantissa
-                : sign * Math.pow(2, exponent - 1075) * (mantissa + 4503599627370496);
-        }
-
-        exports.readDoubleLE = readDouble_ieee754.bind(null, readUintLE, 0, 4);
-        exports.readDoubleBE = readDouble_ieee754.bind(null, readUintBE, 4, 0);
-
-    })();
-
-    return exports;
-}
-
-// uint helpers
-
-function writeUintLE(val, buf, pos) {
-    buf[pos    ] =  val        & 255;
-    buf[pos + 1] =  val >>> 8  & 255;
-    buf[pos + 2] =  val >>> 16 & 255;
-    buf[pos + 3] =  val >>> 24;
-}
-
-function writeUintBE(val, buf, pos) {
-    buf[pos    ] =  val >>> 24;
-    buf[pos + 1] =  val >>> 16 & 255;
-    buf[pos + 2] =  val >>> 8  & 255;
-    buf[pos + 3] =  val        & 255;
-}
-
-function readUintLE(buf, pos) {
-    return (buf[pos    ]
-          | buf[pos + 1] << 8
-          | buf[pos + 2] << 16
-          | buf[pos + 3] << 24) >>> 0;
-}
-
-function readUintBE(buf, pos) {
-    return (buf[pos    ] << 24
-          | buf[pos + 1] << 16
-          | buf[pos + 2] << 8
-          | buf[pos + 3]) >>> 0;
-}
-
-},{}],30:[function(require,module,exports){
-"use strict";
-module.exports = inquire;
-
-/**
- * Requires a module only if available.
- * @memberof util
- * @param {string} moduleName Module to require
- * @returns {?Object} Required module if available and not empty, otherwise `null`
- */
-function inquire(moduleName) {
-    try {
-        var mod = eval("quire".replace(/^/,"re"))(moduleName); // eslint-disable-line no-eval
-        if (mod && (mod.length || Object.keys(mod).length))
-            return mod;
-    } catch (e) {} // eslint-disable-line no-empty
-    return null;
-}
-
-},{}],31:[function(require,module,exports){
-"use strict";
-module.exports = pool;
-
-/**
- * An allocator as used by {@link util.pool}.
- * @typedef PoolAllocator
- * @type {function}
- * @param {number} size Buffer size
- * @returns {Uint8Array} Buffer
- */
-
-/**
- * A slicer as used by {@link util.pool}.
- * @typedef PoolSlicer
- * @type {function}
- * @param {number} start Start offset
- * @param {number} end End offset
- * @returns {Uint8Array} Buffer slice
- * @this {Uint8Array}
- */
-
-/**
- * A general purpose buffer pool.
- * @memberof util
- * @function
- * @param {PoolAllocator} alloc Allocator
- * @param {PoolSlicer} slice Slicer
- * @param {number} [size=8192] Slab size
- * @returns {PoolAllocator} Pooled allocator
- */
-function pool(alloc, slice, size) {
-    var SIZE   = size || 8192;
-    var MAX    = SIZE >>> 1;
-    var slab   = null;
-    var offset = SIZE;
-    return function pool_alloc(size) {
-        if (size < 1 || size > MAX)
-            return alloc(size);
-        if (offset + size > SIZE) {
-            slab = alloc(SIZE);
-            offset = 0;
-        }
-        var buf = slice.call(slab, offset, offset += size);
-        if (offset & 7) // align to 32 bit
-            offset = (offset | 7) + 1;
-        return buf;
-    };
-}
-
-},{}],32:[function(require,module,exports){
-"use strict";
-
-/**
- * A minimal UTF8 implementation for number arrays.
- * @memberof util
- * @namespace
- */
-var utf8 = exports;
-
-/**
- * Calculates the UTF8 byte length of a string.
- * @param {string} string String
- * @returns {number} Byte length
- */
-utf8.length = function utf8_length(string) {
-    var len = 0,
-        c = 0;
-    for (var i = 0; i < string.length; ++i) {
-        c = string.charCodeAt(i);
-        if (c < 128)
-            len += 1;
-        else if (c < 2048)
-            len += 2;
-        else if ((c & 0xFC00) === 0xD800 && (string.charCodeAt(i + 1) & 0xFC00) === 0xDC00) {
-            ++i;
-            len += 4;
-        } else
-            len += 3;
-    }
-    return len;
-};
-
-/**
- * Reads UTF8 bytes as a string.
- * @param {Uint8Array} buffer Source buffer
- * @param {number} start Source start
- * @param {number} end Source end
- * @returns {string} String read
- */
-utf8.read = function utf8_read(buffer, start, end) {
-    var len = end - start;
-    if (len < 1)
-        return "";
-    var parts = null,
-        chunk = [],
-        i = 0, // char offset
-        t;     // temporary
-    while (start < end) {
-        t = buffer[start++];
-        if (t < 128)
-            chunk[i++] = t;
-        else if (t > 191 && t < 224)
-            chunk[i++] = (t & 31) << 6 | buffer[start++] & 63;
-        else if (t > 239 && t < 365) {
-            t = ((t & 7) << 18 | (buffer[start++] & 63) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63) - 0x10000;
-            chunk[i++] = 0xD800 + (t >> 10);
-            chunk[i++] = 0xDC00 + (t & 1023);
-        } else
-            chunk[i++] = (t & 15) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63;
-        if (i > 8191) {
-            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
-            i = 0;
-        }
-    }
-    if (parts) {
-        if (i)
-            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
-        return parts.join("");
-    }
-    return String.fromCharCode.apply(String, chunk.slice(0, i));
-};
-
-/**
- * Writes a string as UTF8 bytes.
- * @param {string} string Source string
- * @param {Uint8Array} buffer Destination buffer
- * @param {number} offset Destination offset
- * @returns {number} Bytes written
- */
-utf8.write = function utf8_write(string, buffer, offset) {
-    var start = offset,
-        c1, // character 1
-        c2; // character 2
-    for (var i = 0; i < string.length; ++i) {
-        c1 = string.charCodeAt(i);
-        if (c1 < 128) {
-            buffer[offset++] = c1;
-        } else if (c1 < 2048) {
-            buffer[offset++] = c1 >> 6       | 192;
-            buffer[offset++] = c1       & 63 | 128;
-        } else if ((c1 & 0xFC00) === 0xD800 && ((c2 = string.charCodeAt(i + 1)) & 0xFC00) === 0xDC00) {
-            c1 = 0x10000 + ((c1 & 0x03FF) << 10) + (c2 & 0x03FF);
-            ++i;
-            buffer[offset++] = c1 >> 18      | 240;
-            buffer[offset++] = c1 >> 12 & 63 | 128;
-            buffer[offset++] = c1 >> 6  & 63 | 128;
-            buffer[offset++] = c1       & 63 | 128;
-        } else {
-            buffer[offset++] = c1 >> 12      | 224;
-            buffer[offset++] = c1 >> 6  & 63 | 128;
-            buffer[offset++] = c1       & 63 | 128;
-        }
-    }
-    return offset - start;
-};
-
-},{}],33:[function(require,module,exports){
+},{"./utils":19}],25:[function(require,module,exports){
 // base-x encoding / decoding
 // Copyright (c) 2018 base-x contributors
 // Copyright (c) 2014-2018 The Bitcoin Core developers (base58.cpp)
@@ -7411,7 +1645,7 @@ module.exports = function base (ALPHABET) {
   }
 }
 
-},{"safe-buffer":75}],34:[function(require,module,exports){
+},{"safe-buffer":56}],26:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -7564,7 +1798,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],35:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -10993,17 +5227,17 @@ function fromByteArray (uint8) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":36}],36:[function(require,module,exports){
+},{"buffer":28}],28:[function(require,module,exports){
 
-},{}],37:[function(require,module,exports){
-arguments[4][36][0].apply(exports,arguments)
-},{"dup":36}],38:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"dup":28}],30:[function(require,module,exports){
 var basex = require('base-x')
 var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 module.exports = basex(ALPHABET)
 
-},{"base-x":33}],39:[function(require,module,exports){
+},{"base-x":25}],31:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -12784,13 +7018,13 @@ function numberIsNaN (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":34,"buffer":39,"ieee754":56}],40:[function(require,module,exports){
+},{"base64-js":26,"buffer":31,"ieee754":48}],32:[function(require,module,exports){
 require(".").check("es5");
-},{".":41}],41:[function(require,module,exports){
+},{".":33}],33:[function(require,module,exports){
 require("./lib/definitions");
 module.exports = require("./lib");
 
-},{"./lib":44,"./lib/definitions":43}],42:[function(require,module,exports){
+},{"./lib":36,"./lib/definitions":35}],34:[function(require,module,exports){
 var CapabilityDetector = function () {
     this.tests = {};
     this.cache = {};
@@ -12820,7 +7054,7 @@ CapabilityDetector.prototype = {
 };
 
 module.exports = CapabilityDetector;
-},{}],43:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var capability = require("."),
     define = capability.define,
     test = capability.test;
@@ -12889,7 +7123,7 @@ define("Error.prototype.stack", function () {
         return e.stack || e.stacktrace;
     }
 });
-},{".":44}],44:[function(require,module,exports){
+},{".":36}],36:[function(require,module,exports){
 var CapabilityDetector = require("./CapabilityDetector");
 
 var detector = new CapabilityDetector();
@@ -12906,7 +7140,7 @@ capability.check = function (name) {
 capability.test = capability;
 
 module.exports = capability;
-},{"./CapabilityDetector":42}],45:[function(require,module,exports){
+},{"./CapabilityDetector":34}],37:[function(require,module,exports){
 /*!
  * depd
  * Copyright(c) 2015 Douglas Christopher Wilson
@@ -12985,9 +7219,9 @@ function wrapproperty (obj, prop, message) {
   }
 }
 
-},{}],46:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports = require("./lib");
-},{"./lib":47}],47:[function(require,module,exports){
+},{"./lib":39}],39:[function(require,module,exports){
 require("capability/es5");
 
 var capability = require("capability");
@@ -13001,7 +7235,7 @@ else
     polyfill = require("./unsupported");
 
 module.exports = polyfill();
-},{"./non-v8/index":51,"./unsupported":53,"./v8":54,"capability":41,"capability/es5":40}],48:[function(require,module,exports){
+},{"./non-v8/index":43,"./unsupported":45,"./v8":46,"capability":33,"capability/es5":32}],40:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod;
 
@@ -13032,7 +7266,7 @@ var Frame = Class(Object, {
 });
 
 module.exports = Frame;
-},{"o3":59}],49:[function(require,module,exports){
+},{"o3":51}],41:[function(require,module,exports){
 var Class = require("o3").Class,
     Frame = require("./Frame"),
     cache = require("u3").cache;
@@ -13071,7 +7305,7 @@ module.exports = {
         return instance;
     })
 };
-},{"./Frame":48,"o3":59,"u3":81}],50:[function(require,module,exports){
+},{"./Frame":40,"o3":51,"u3":62}],42:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod,
     eachCombination = require("u3").eachCombination,
@@ -13205,7 +7439,7 @@ module.exports = {
         return instance;
     })
 };
-},{"capability":41,"o3":59,"u3":81}],51:[function(require,module,exports){
+},{"capability":33,"o3":51,"u3":62}],43:[function(require,module,exports){
 var FrameStringSource = require("./FrameStringSource"),
     FrameStringParser = require("./FrameStringParser"),
     cache = require("u3").cache,
@@ -13279,7 +7513,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"../prepareStackTrace":52,"./FrameStringParser":49,"./FrameStringSource":50,"u3":81}],52:[function(require,module,exports){
+},{"../prepareStackTrace":44,"./FrameStringParser":41,"./FrameStringSource":42,"u3":62}],44:[function(require,module,exports){
 var prepareStackTrace = function (throwable, frames, warnings) {
     var string = "";
     string += throwable.name || "Error";
@@ -13297,7 +7531,7 @@ var prepareStackTrace = function (throwable, frames, warnings) {
 };
 
 module.exports = prepareStackTrace;
-},{}],53:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var cache = require("u3").cache,
     prepareStackTrace = require("./prepareStackTrace");
 
@@ -13348,7 +7582,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":52,"u3":81}],54:[function(require,module,exports){
+},{"./prepareStackTrace":44,"u3":62}],46:[function(require,module,exports){
 var prepareStackTrace = require("./prepareStackTrace");
 
 module.exports = function () {
@@ -13360,7 +7594,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":52}],55:[function(require,module,exports){
+},{"./prepareStackTrace":44}],47:[function(require,module,exports){
 /*!
  * http-errors
  * Copyright(c) 2014 Jonathan Ong
@@ -13628,7 +7862,7 @@ function populateConstructorExports (exports, codes, HttpError) {
     '"I\'mateapot"; use "ImATeapot" instead')
 }
 
-},{"depd":45,"inherits":57,"setprototypeof":76,"statuses":78,"toidentifier":79}],56:[function(require,module,exports){
+},{"depd":37,"inherits":49,"setprototypeof":57,"statuses":59,"toidentifier":60}],48:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -13714,36 +7948,32 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],57:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
-    if (superCtor) {
-      ctor.super_ = superCtor
-      ctor.prototype = Object.create(superCtor.prototype, {
-        constructor: {
-          value: ctor,
-          enumerable: false,
-          writable: true,
-          configurable: true
-        }
-      })
-    }
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
   };
 } else {
   // old school shim for old browsers
   module.exports = function inherits(ctor, superCtor) {
-    if (superCtor) {
-      ctor.super_ = superCtor
-      var TempCtor = function () {}
-      TempCtor.prototype = superCtor.prototype
-      ctor.prototype = new TempCtor()
-      ctor.prototype.constructor = ctor
-    }
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
   }
 }
 
-},{}],58:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 (function (process,global){
 /**
  * [js-sha256]{@link https://github.com/emn178/js-sha256}
@@ -14265,11 +8495,11 @@ if (typeof Object.create === 'function') {
 })();
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":63}],59:[function(require,module,exports){
+},{"_process":55}],51:[function(require,module,exports){
 require("capability/es5");
 
 module.exports = require("./lib");
-},{"./lib":62,"capability/es5":40}],60:[function(require,module,exports){
+},{"./lib":54,"capability/es5":32}],52:[function(require,module,exports){
 var Class = function () {
     var options = Object.create({
         Source: Object,
@@ -14404,16 +8634,16 @@ Class.newInstance = function () {
 };
 
 module.exports = Class;
-},{}],61:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function () {
     throw new Error("Not implemented.");
 };
-},{}],62:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = {
     Class: require("./Class"),
     abstractMethod: require("./abstractMethod")
 };
-},{"./Class":60,"./abstractMethod":61}],63:[function(require,module,exports){
+},{"./Class":52,"./abstractMethod":53}],55:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -14599,1870 +8829,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],64:[function(require,module,exports){
-// minimal library entry point.
-
-"use strict";
-module.exports = require("./src/index-minimal");
-
-},{"./src/index-minimal":65}],65:[function(require,module,exports){
-"use strict";
-var protobuf = exports;
-
-/**
- * Build type, one of `"full"`, `"light"` or `"minimal"`.
- * @name build
- * @type {string}
- * @const
- */
-protobuf.build = "minimal";
-
-// Serialization
-protobuf.Writer       = require("./writer");
-protobuf.BufferWriter = require("./writer_buffer");
-protobuf.Reader       = require("./reader");
-protobuf.BufferReader = require("./reader_buffer");
-
-// Utility
-protobuf.util         = require("./util/minimal");
-protobuf.rpc          = require("./rpc");
-protobuf.roots        = require("./roots");
-protobuf.configure    = configure;
-
-/* istanbul ignore next */
-/**
- * Reconfigures the library according to the environment.
- * @returns {undefined}
- */
-function configure() {
-    protobuf.Reader._configure(protobuf.BufferReader);
-    protobuf.util._configure();
-}
-
-// Set up buffer utility according to the environment
-protobuf.Writer._configure(protobuf.BufferWriter);
-configure();
-
-},{"./reader":66,"./reader_buffer":67,"./roots":68,"./rpc":69,"./util/minimal":72,"./writer":73,"./writer_buffer":74}],66:[function(require,module,exports){
-"use strict";
-module.exports = Reader;
-
-var util      = require("./util/minimal");
-
-var BufferReader; // cyclic
-
-var LongBits  = util.LongBits,
-    utf8      = util.utf8;
-
-/* istanbul ignore next */
-function indexOutOfRange(reader, writeLength) {
-    return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
-}
-
-/**
- * Constructs a new reader instance using the specified buffer.
- * @classdesc Wire format reader using `Uint8Array` if available, otherwise `Array`.
- * @constructor
- * @param {Uint8Array} buffer Buffer to read from
- */
-function Reader(buffer) {
-
-    /**
-     * Read buffer.
-     * @type {Uint8Array}
-     */
-    this.buf = buffer;
-
-    /**
-     * Read buffer position.
-     * @type {number}
-     */
-    this.pos = 0;
-
-    /**
-     * Read buffer length.
-     * @type {number}
-     */
-    this.len = buffer.length;
-}
-
-var create_array = typeof Uint8Array !== "undefined"
-    ? function create_typed_array(buffer) {
-        if (buffer instanceof Uint8Array || Array.isArray(buffer))
-            return new Reader(buffer);
-        throw Error("illegal buffer");
-    }
-    /* istanbul ignore next */
-    : function create_array(buffer) {
-        if (Array.isArray(buffer))
-            return new Reader(buffer);
-        throw Error("illegal buffer");
-    };
-
-/**
- * Creates a new reader using the specified buffer.
- * @function
- * @param {Uint8Array|Buffer} buffer Buffer to read from
- * @returns {Reader|BufferReader} A {@link BufferReader} if `buffer` is a Buffer, otherwise a {@link Reader}
- * @throws {Error} If `buffer` is not a valid buffer
- */
-Reader.create = util.Buffer
-    ? function create_buffer_setup(buffer) {
-        return (Reader.create = function create_buffer(buffer) {
-            return util.Buffer.isBuffer(buffer)
-                ? new BufferReader(buffer)
-                /* istanbul ignore next */
-                : create_array(buffer);
-        })(buffer);
-    }
-    /* istanbul ignore next */
-    : create_array;
-
-Reader.prototype._slice = util.Array.prototype.subarray || /* istanbul ignore next */ util.Array.prototype.slice;
-
-/**
- * Reads a varint as an unsigned 32 bit value.
- * @function
- * @returns {number} Value read
- */
-Reader.prototype.uint32 = (function read_uint32_setup() {
-    var value = 4294967295; // optimizer type-hint, tends to deopt otherwise (?!)
-    return function read_uint32() {
-        value = (         this.buf[this.pos] & 127       ) >>> 0; if (this.buf[this.pos++] < 128) return value;
-        value = (value | (this.buf[this.pos] & 127) <<  7) >>> 0; if (this.buf[this.pos++] < 128) return value;
-        value = (value | (this.buf[this.pos] & 127) << 14) >>> 0; if (this.buf[this.pos++] < 128) return value;
-        value = (value | (this.buf[this.pos] & 127) << 21) >>> 0; if (this.buf[this.pos++] < 128) return value;
-        value = (value | (this.buf[this.pos] &  15) << 28) >>> 0; if (this.buf[this.pos++] < 128) return value;
-
-        /* istanbul ignore if */
-        if ((this.pos += 5) > this.len) {
-            this.pos = this.len;
-            throw indexOutOfRange(this, 10);
-        }
-        return value;
-    };
-})();
-
-/**
- * Reads a varint as a signed 32 bit value.
- * @returns {number} Value read
- */
-Reader.prototype.int32 = function read_int32() {
-    return this.uint32() | 0;
-};
-
-/**
- * Reads a zig-zag encoded varint as a signed 32 bit value.
- * @returns {number} Value read
- */
-Reader.prototype.sint32 = function read_sint32() {
-    var value = this.uint32();
-    return value >>> 1 ^ -(value & 1) | 0;
-};
-
-/* eslint-disable no-invalid-this */
-
-function readLongVarint() {
-    // tends to deopt with local vars for octet etc.
-    var bits = new LongBits(0, 0);
-    var i = 0;
-    if (this.len - this.pos > 4) { // fast route (lo)
-        for (; i < 4; ++i) {
-            // 1st..4th
-            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
-            if (this.buf[this.pos++] < 128)
-                return bits;
-        }
-        // 5th
-        bits.lo = (bits.lo | (this.buf[this.pos] & 127) << 28) >>> 0;
-        bits.hi = (bits.hi | (this.buf[this.pos] & 127) >>  4) >>> 0;
-        if (this.buf[this.pos++] < 128)
-            return bits;
-        i = 0;
-    } else {
-        for (; i < 3; ++i) {
-            /* istanbul ignore if */
-            if (this.pos >= this.len)
-                throw indexOutOfRange(this);
-            // 1st..3th
-            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
-            if (this.buf[this.pos++] < 128)
-                return bits;
-        }
-        // 4th
-        bits.lo = (bits.lo | (this.buf[this.pos++] & 127) << i * 7) >>> 0;
-        return bits;
-    }
-    if (this.len - this.pos > 4) { // fast route (hi)
-        for (; i < 5; ++i) {
-            // 6th..10th
-            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
-            if (this.buf[this.pos++] < 128)
-                return bits;
-        }
-    } else {
-        for (; i < 5; ++i) {
-            /* istanbul ignore if */
-            if (this.pos >= this.len)
-                throw indexOutOfRange(this);
-            // 6th..10th
-            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
-            if (this.buf[this.pos++] < 128)
-                return bits;
-        }
-    }
-    /* istanbul ignore next */
-    throw Error("invalid varint encoding");
-}
-
-/* eslint-enable no-invalid-this */
-
-/**
- * Reads a varint as a signed 64 bit value.
- * @name Reader#int64
- * @function
- * @returns {Long} Value read
- */
-
-/**
- * Reads a varint as an unsigned 64 bit value.
- * @name Reader#uint64
- * @function
- * @returns {Long} Value read
- */
-
-/**
- * Reads a zig-zag encoded varint as a signed 64 bit value.
- * @name Reader#sint64
- * @function
- * @returns {Long} Value read
- */
-
-/**
- * Reads a varint as a boolean.
- * @returns {boolean} Value read
- */
-Reader.prototype.bool = function read_bool() {
-    return this.uint32() !== 0;
-};
-
-function readFixed32_end(buf, end) { // note that this uses `end`, not `pos`
-    return (buf[end - 4]
-          | buf[end - 3] << 8
-          | buf[end - 2] << 16
-          | buf[end - 1] << 24) >>> 0;
-}
-
-/**
- * Reads fixed 32 bits as an unsigned 32 bit integer.
- * @returns {number} Value read
- */
-Reader.prototype.fixed32 = function read_fixed32() {
-
-    /* istanbul ignore if */
-    if (this.pos + 4 > this.len)
-        throw indexOutOfRange(this, 4);
-
-    return readFixed32_end(this.buf, this.pos += 4);
-};
-
-/**
- * Reads fixed 32 bits as a signed 32 bit integer.
- * @returns {number} Value read
- */
-Reader.prototype.sfixed32 = function read_sfixed32() {
-
-    /* istanbul ignore if */
-    if (this.pos + 4 > this.len)
-        throw indexOutOfRange(this, 4);
-
-    return readFixed32_end(this.buf, this.pos += 4) | 0;
-};
-
-/* eslint-disable no-invalid-this */
-
-function readFixed64(/* this: Reader */) {
-
-    /* istanbul ignore if */
-    if (this.pos + 8 > this.len)
-        throw indexOutOfRange(this, 8);
-
-    return new LongBits(readFixed32_end(this.buf, this.pos += 4), readFixed32_end(this.buf, this.pos += 4));
-}
-
-/* eslint-enable no-invalid-this */
-
-/**
- * Reads fixed 64 bits.
- * @name Reader#fixed64
- * @function
- * @returns {Long} Value read
- */
-
-/**
- * Reads zig-zag encoded fixed 64 bits.
- * @name Reader#sfixed64
- * @function
- * @returns {Long} Value read
- */
-
-/**
- * Reads a float (32 bit) as a number.
- * @function
- * @returns {number} Value read
- */
-Reader.prototype.float = function read_float() {
-
-    /* istanbul ignore if */
-    if (this.pos + 4 > this.len)
-        throw indexOutOfRange(this, 4);
-
-    var value = util.float.readFloatLE(this.buf, this.pos);
-    this.pos += 4;
-    return value;
-};
-
-/**
- * Reads a double (64 bit float) as a number.
- * @function
- * @returns {number} Value read
- */
-Reader.prototype.double = function read_double() {
-
-    /* istanbul ignore if */
-    if (this.pos + 8 > this.len)
-        throw indexOutOfRange(this, 4);
-
-    var value = util.float.readDoubleLE(this.buf, this.pos);
-    this.pos += 8;
-    return value;
-};
-
-/**
- * Reads a sequence of bytes preceeded by its length as a varint.
- * @returns {Uint8Array} Value read
- */
-Reader.prototype.bytes = function read_bytes() {
-    var length = this.uint32(),
-        start  = this.pos,
-        end    = this.pos + length;
-
-    /* istanbul ignore if */
-    if (end > this.len)
-        throw indexOutOfRange(this, length);
-
-    this.pos += length;
-    if (Array.isArray(this.buf)) // plain array
-        return this.buf.slice(start, end);
-    return start === end // fix for IE 10/Win8 and others' subarray returning array of size 1
-        ? new this.buf.constructor(0)
-        : this._slice.call(this.buf, start, end);
-};
-
-/**
- * Reads a string preceeded by its byte length as a varint.
- * @returns {string} Value read
- */
-Reader.prototype.string = function read_string() {
-    var bytes = this.bytes();
-    return utf8.read(bytes, 0, bytes.length);
-};
-
-/**
- * Skips the specified number of bytes if specified, otherwise skips a varint.
- * @param {number} [length] Length if known, otherwise a varint is assumed
- * @returns {Reader} `this`
- */
-Reader.prototype.skip = function skip(length) {
-    if (typeof length === "number") {
-        /* istanbul ignore if */
-        if (this.pos + length > this.len)
-            throw indexOutOfRange(this, length);
-        this.pos += length;
-    } else {
-        do {
-            /* istanbul ignore if */
-            if (this.pos >= this.len)
-                throw indexOutOfRange(this);
-        } while (this.buf[this.pos++] & 128);
-    }
-    return this;
-};
-
-/**
- * Skips the next element of the specified wire type.
- * @param {number} wireType Wire type received
- * @returns {Reader} `this`
- */
-Reader.prototype.skipType = function(wireType) {
-    switch (wireType) {
-        case 0:
-            this.skip();
-            break;
-        case 1:
-            this.skip(8);
-            break;
-        case 2:
-            this.skip(this.uint32());
-            break;
-        case 3:
-            while ((wireType = this.uint32() & 7) !== 4) {
-                this.skipType(wireType);
-            }
-            break;
-        case 5:
-            this.skip(4);
-            break;
-
-        /* istanbul ignore next */
-        default:
-            throw Error("invalid wire type " + wireType + " at offset " + this.pos);
-    }
-    return this;
-};
-
-Reader._configure = function(BufferReader_) {
-    BufferReader = BufferReader_;
-
-    var fn = util.Long ? "toLong" : /* istanbul ignore next */ "toNumber";
-    util.merge(Reader.prototype, {
-
-        int64: function read_int64() {
-            return readLongVarint.call(this)[fn](false);
-        },
-
-        uint64: function read_uint64() {
-            return readLongVarint.call(this)[fn](true);
-        },
-
-        sint64: function read_sint64() {
-            return readLongVarint.call(this).zzDecode()[fn](false);
-        },
-
-        fixed64: function read_fixed64() {
-            return readFixed64.call(this)[fn](true);
-        },
-
-        sfixed64: function read_sfixed64() {
-            return readFixed64.call(this)[fn](false);
-        }
-
-    });
-};
-
-},{"./util/minimal":72}],67:[function(require,module,exports){
-"use strict";
-module.exports = BufferReader;
-
-// extends Reader
-var Reader = require("./reader");
-(BufferReader.prototype = Object.create(Reader.prototype)).constructor = BufferReader;
-
-var util = require("./util/minimal");
-
-/**
- * Constructs a new buffer reader instance.
- * @classdesc Wire format reader using node buffers.
- * @extends Reader
- * @constructor
- * @param {Buffer} buffer Buffer to read from
- */
-function BufferReader(buffer) {
-    Reader.call(this, buffer);
-
-    /**
-     * Read buffer.
-     * @name BufferReader#buf
-     * @type {Buffer}
-     */
-}
-
-/* istanbul ignore else */
-if (util.Buffer)
-    BufferReader.prototype._slice = util.Buffer.prototype.slice;
-
-/**
- * @override
- */
-BufferReader.prototype.string = function read_string_buffer() {
-    var len = this.uint32(); // modifies pos
-    return this.buf.utf8Slice(this.pos, this.pos = Math.min(this.pos + len, this.len));
-};
-
-/**
- * Reads a sequence of bytes preceeded by its length as a varint.
- * @name BufferReader#bytes
- * @function
- * @returns {Buffer} Value read
- */
-
-},{"./reader":66,"./util/minimal":72}],68:[function(require,module,exports){
-"use strict";
-module.exports = {};
-
-/**
- * Named roots.
- * This is where pbjs stores generated structures (the option `-r, --root` specifies a name).
- * Can also be used manually to make roots available accross modules.
- * @name roots
- * @type {Object.<string,Root>}
- * @example
- * // pbjs -r myroot -o compiled.js ...
- *
- * // in another module:
- * require("./compiled.js");
- *
- * // in any subsequent module:
- * var root = protobuf.roots["myroot"];
- */
-
-},{}],69:[function(require,module,exports){
-"use strict";
-
-/**
- * Streaming RPC helpers.
- * @namespace
- */
-var rpc = exports;
-
-/**
- * RPC implementation passed to {@link Service#create} performing a service request on network level, i.e. by utilizing http requests or websockets.
- * @typedef RPCImpl
- * @type {function}
- * @param {Method|rpc.ServiceMethod<Message<{}>,Message<{}>>} method Reflected or static method being called
- * @param {Uint8Array} requestData Request data
- * @param {RPCImplCallback} callback Callback function
- * @returns {undefined}
- * @example
- * function rpcImpl(method, requestData, callback) {
- *     if (protobuf.util.lcFirst(method.name) !== "myMethod") // compatible with static code
- *         throw Error("no such method");
- *     asynchronouslyObtainAResponse(requestData, function(err, responseData) {
- *         callback(err, responseData);
- *     });
- * }
- */
-
-/**
- * Node-style callback as used by {@link RPCImpl}.
- * @typedef RPCImplCallback
- * @type {function}
- * @param {Error|null} error Error, if any, otherwise `null`
- * @param {Uint8Array|null} [response] Response data or `null` to signal end of stream, if there hasn't been an error
- * @returns {undefined}
- */
-
-rpc.Service = require("./rpc/service");
-
-},{"./rpc/service":70}],70:[function(require,module,exports){
-"use strict";
-module.exports = Service;
-
-var util = require("../util/minimal");
-
-// Extends EventEmitter
-(Service.prototype = Object.create(util.EventEmitter.prototype)).constructor = Service;
-
-/**
- * A service method callback as used by {@link rpc.ServiceMethod|ServiceMethod}.
- *
- * Differs from {@link RPCImplCallback} in that it is an actual callback of a service method which may not return `response = null`.
- * @typedef rpc.ServiceMethodCallback
- * @template TRes extends Message<TRes>
- * @type {function}
- * @param {Error|null} error Error, if any
- * @param {TRes} [response] Response message
- * @returns {undefined}
- */
-
-/**
- * A service method part of a {@link rpc.Service} as created by {@link Service.create}.
- * @typedef rpc.ServiceMethod
- * @template TReq extends Message<TReq>
- * @template TRes extends Message<TRes>
- * @type {function}
- * @param {TReq|Properties<TReq>} request Request message or plain object
- * @param {rpc.ServiceMethodCallback<TRes>} [callback] Node-style callback called with the error, if any, and the response message
- * @returns {Promise<Message<TRes>>} Promise if `callback` has been omitted, otherwise `undefined`
- */
-
-/**
- * Constructs a new RPC service instance.
- * @classdesc An RPC service as returned by {@link Service#create}.
- * @exports rpc.Service
- * @extends util.EventEmitter
- * @constructor
- * @param {RPCImpl} rpcImpl RPC implementation
- * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
- * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
- */
-function Service(rpcImpl, requestDelimited, responseDelimited) {
-
-    if (typeof rpcImpl !== "function")
-        throw TypeError("rpcImpl must be a function");
-
-    util.EventEmitter.call(this);
-
-    /**
-     * RPC implementation. Becomes `null` once the service is ended.
-     * @type {RPCImpl|null}
-     */
-    this.rpcImpl = rpcImpl;
-
-    /**
-     * Whether requests are length-delimited.
-     * @type {boolean}
-     */
-    this.requestDelimited = Boolean(requestDelimited);
-
-    /**
-     * Whether responses are length-delimited.
-     * @type {boolean}
-     */
-    this.responseDelimited = Boolean(responseDelimited);
-}
-
-/**
- * Calls a service method through {@link rpc.Service#rpcImpl|rpcImpl}.
- * @param {Method|rpc.ServiceMethod<TReq,TRes>} method Reflected or static method
- * @param {Constructor<TReq>} requestCtor Request constructor
- * @param {Constructor<TRes>} responseCtor Response constructor
- * @param {TReq|Properties<TReq>} request Request message or plain object
- * @param {rpc.ServiceMethodCallback<TRes>} callback Service callback
- * @returns {undefined}
- * @template TReq extends Message<TReq>
- * @template TRes extends Message<TRes>
- */
-Service.prototype.rpcCall = function rpcCall(method, requestCtor, responseCtor, request, callback) {
-
-    if (!request)
-        throw TypeError("request must be specified");
-
-    var self = this;
-    if (!callback)
-        return util.asPromise(rpcCall, self, method, requestCtor, responseCtor, request);
-
-    if (!self.rpcImpl) {
-        setTimeout(function() { callback(Error("already ended")); }, 0);
-        return undefined;
-    }
-
-    try {
-        return self.rpcImpl(
-            method,
-            requestCtor[self.requestDelimited ? "encodeDelimited" : "encode"](request).finish(),
-            function rpcCallback(err, response) {
-
-                if (err) {
-                    self.emit("error", err, method);
-                    return callback(err);
-                }
-
-                if (response === null) {
-                    self.end(/* endedByRPC */ true);
-                    return undefined;
-                }
-
-                if (!(response instanceof responseCtor)) {
-                    try {
-                        response = responseCtor[self.responseDelimited ? "decodeDelimited" : "decode"](response);
-                    } catch (err) {
-                        self.emit("error", err, method);
-                        return callback(err);
-                    }
-                }
-
-                self.emit("data", response, method);
-                return callback(null, response);
-            }
-        );
-    } catch (err) {
-        self.emit("error", err, method);
-        setTimeout(function() { callback(err); }, 0);
-        return undefined;
-    }
-};
-
-/**
- * Ends this service and emits the `end` event.
- * @param {boolean} [endedByRPC=false] Whether the service has been ended by the RPC implementation.
- * @returns {rpc.Service} `this`
- */
-Service.prototype.end = function end(endedByRPC) {
-    if (this.rpcImpl) {
-        if (!endedByRPC) // signal end to rpcImpl
-            this.rpcImpl(null, null, null);
-        this.rpcImpl = null;
-        this.emit("end").off();
-    }
-    return this;
-};
-
-},{"../util/minimal":72}],71:[function(require,module,exports){
-"use strict";
-module.exports = LongBits;
-
-var util = require("../util/minimal");
-
-/**
- * Constructs new long bits.
- * @classdesc Helper class for working with the low and high bits of a 64 bit value.
- * @memberof util
- * @constructor
- * @param {number} lo Low 32 bits, unsigned
- * @param {number} hi High 32 bits, unsigned
- */
-function LongBits(lo, hi) {
-
-    // note that the casts below are theoretically unnecessary as of today, but older statically
-    // generated converter code might still call the ctor with signed 32bits. kept for compat.
-
-    /**
-     * Low bits.
-     * @type {number}
-     */
-    this.lo = lo >>> 0;
-
-    /**
-     * High bits.
-     * @type {number}
-     */
-    this.hi = hi >>> 0;
-}
-
-/**
- * Zero bits.
- * @memberof util.LongBits
- * @type {util.LongBits}
- */
-var zero = LongBits.zero = new LongBits(0, 0);
-
-zero.toNumber = function() { return 0; };
-zero.zzEncode = zero.zzDecode = function() { return this; };
-zero.length = function() { return 1; };
-
-/**
- * Zero hash.
- * @memberof util.LongBits
- * @type {string}
- */
-var zeroHash = LongBits.zeroHash = "\0\0\0\0\0\0\0\0";
-
-/**
- * Constructs new long bits from the specified number.
- * @param {number} value Value
- * @returns {util.LongBits} Instance
- */
-LongBits.fromNumber = function fromNumber(value) {
-    if (value === 0)
-        return zero;
-    var sign = value < 0;
-    if (sign)
-        value = -value;
-    var lo = value >>> 0,
-        hi = (value - lo) / 4294967296 >>> 0;
-    if (sign) {
-        hi = ~hi >>> 0;
-        lo = ~lo >>> 0;
-        if (++lo > 4294967295) {
-            lo = 0;
-            if (++hi > 4294967295)
-                hi = 0;
-        }
-    }
-    return new LongBits(lo, hi);
-};
-
-/**
- * Constructs new long bits from a number, long or string.
- * @param {Long|number|string} value Value
- * @returns {util.LongBits} Instance
- */
-LongBits.from = function from(value) {
-    if (typeof value === "number")
-        return LongBits.fromNumber(value);
-    if (util.isString(value)) {
-        /* istanbul ignore else */
-        if (util.Long)
-            value = util.Long.fromString(value);
-        else
-            return LongBits.fromNumber(parseInt(value, 10));
-    }
-    return value.low || value.high ? new LongBits(value.low >>> 0, value.high >>> 0) : zero;
-};
-
-/**
- * Converts this long bits to a possibly unsafe JavaScript number.
- * @param {boolean} [unsigned=false] Whether unsigned or not
- * @returns {number} Possibly unsafe number
- */
-LongBits.prototype.toNumber = function toNumber(unsigned) {
-    if (!unsigned && this.hi >>> 31) {
-        var lo = ~this.lo + 1 >>> 0,
-            hi = ~this.hi     >>> 0;
-        if (!lo)
-            hi = hi + 1 >>> 0;
-        return -(lo + hi * 4294967296);
-    }
-    return this.lo + this.hi * 4294967296;
-};
-
-/**
- * Converts this long bits to a long.
- * @param {boolean} [unsigned=false] Whether unsigned or not
- * @returns {Long} Long
- */
-LongBits.prototype.toLong = function toLong(unsigned) {
-    return util.Long
-        ? new util.Long(this.lo | 0, this.hi | 0, Boolean(unsigned))
-        /* istanbul ignore next */
-        : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
-};
-
-var charCodeAt = String.prototype.charCodeAt;
-
-/**
- * Constructs new long bits from the specified 8 characters long hash.
- * @param {string} hash Hash
- * @returns {util.LongBits} Bits
- */
-LongBits.fromHash = function fromHash(hash) {
-    if (hash === zeroHash)
-        return zero;
-    return new LongBits(
-        ( charCodeAt.call(hash, 0)
-        | charCodeAt.call(hash, 1) << 8
-        | charCodeAt.call(hash, 2) << 16
-        | charCodeAt.call(hash, 3) << 24) >>> 0
-    ,
-        ( charCodeAt.call(hash, 4)
-        | charCodeAt.call(hash, 5) << 8
-        | charCodeAt.call(hash, 6) << 16
-        | charCodeAt.call(hash, 7) << 24) >>> 0
-    );
-};
-
-/**
- * Converts this long bits to a 8 characters long hash.
- * @returns {string} Hash
- */
-LongBits.prototype.toHash = function toHash() {
-    return String.fromCharCode(
-        this.lo        & 255,
-        this.lo >>> 8  & 255,
-        this.lo >>> 16 & 255,
-        this.lo >>> 24      ,
-        this.hi        & 255,
-        this.hi >>> 8  & 255,
-        this.hi >>> 16 & 255,
-        this.hi >>> 24
-    );
-};
-
-/**
- * Zig-zag encodes this long bits.
- * @returns {util.LongBits} `this`
- */
-LongBits.prototype.zzEncode = function zzEncode() {
-    var mask =   this.hi >> 31;
-    this.hi  = ((this.hi << 1 | this.lo >>> 31) ^ mask) >>> 0;
-    this.lo  = ( this.lo << 1                   ^ mask) >>> 0;
-    return this;
-};
-
-/**
- * Zig-zag decodes this long bits.
- * @returns {util.LongBits} `this`
- */
-LongBits.prototype.zzDecode = function zzDecode() {
-    var mask = -(this.lo & 1);
-    this.lo  = ((this.lo >>> 1 | this.hi << 31) ^ mask) >>> 0;
-    this.hi  = ( this.hi >>> 1                  ^ mask) >>> 0;
-    return this;
-};
-
-/**
- * Calculates the length of this longbits when encoded as a varint.
- * @returns {number} Length
- */
-LongBits.prototype.length = function length() {
-    var part0 =  this.lo,
-        part1 = (this.lo >>> 28 | this.hi << 4) >>> 0,
-        part2 =  this.hi >>> 24;
-    return part2 === 0
-         ? part1 === 0
-           ? part0 < 16384
-             ? part0 < 128 ? 1 : 2
-             : part0 < 2097152 ? 3 : 4
-           : part1 < 16384
-             ? part1 < 128 ? 5 : 6
-             : part1 < 2097152 ? 7 : 8
-         : part2 < 128 ? 9 : 10;
-};
-
-},{"../util/minimal":72}],72:[function(require,module,exports){
-(function (global){
-"use strict";
-var util = exports;
-
-// used to return a Promise where callback is omitted
-util.asPromise = require("@protobufjs/aspromise");
-
-// converts to / from base64 encoded strings
-util.base64 = require("@protobufjs/base64");
-
-// base class of rpc.Service
-util.EventEmitter = require("@protobufjs/eventemitter");
-
-// float handling accross browsers
-util.float = require("@protobufjs/float");
-
-// requires modules optionally and hides the call from bundlers
-util.inquire = require("@protobufjs/inquire");
-
-// converts to / from utf8 encoded strings
-util.utf8 = require("@protobufjs/utf8");
-
-// provides a node-like buffer pool in the browser
-util.pool = require("@protobufjs/pool");
-
-// utility to work with the low and high bits of a 64 bit value
-util.LongBits = require("./longbits");
-
-// global object reference
-util.global = typeof window !== "undefined" && window
-           || typeof global !== "undefined" && global
-           || typeof self   !== "undefined" && self
-           || this; // eslint-disable-line no-invalid-this
-
-/**
- * An immuable empty array.
- * @memberof util
- * @type {Array.<*>}
- * @const
- */
-util.emptyArray = Object.freeze ? Object.freeze([]) : /* istanbul ignore next */ []; // used on prototypes
-
-/**
- * An immutable empty object.
- * @type {Object}
- * @const
- */
-util.emptyObject = Object.freeze ? Object.freeze({}) : /* istanbul ignore next */ {}; // used on prototypes
-
-/**
- * Whether running within node or not.
- * @memberof util
- * @type {boolean}
- * @const
- */
-util.isNode = Boolean(util.global.process && util.global.process.versions && util.global.process.versions.node);
-
-/**
- * Tests if the specified value is an integer.
- * @function
- * @param {*} value Value to test
- * @returns {boolean} `true` if the value is an integer
- */
-util.isInteger = Number.isInteger || /* istanbul ignore next */ function isInteger(value) {
-    return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
-};
-
-/**
- * Tests if the specified value is a string.
- * @param {*} value Value to test
- * @returns {boolean} `true` if the value is a string
- */
-util.isString = function isString(value) {
-    return typeof value === "string" || value instanceof String;
-};
-
-/**
- * Tests if the specified value is a non-null object.
- * @param {*} value Value to test
- * @returns {boolean} `true` if the value is a non-null object
- */
-util.isObject = function isObject(value) {
-    return value && typeof value === "object";
-};
-
-/**
- * Checks if a property on a message is considered to be present.
- * This is an alias of {@link util.isSet}.
- * @function
- * @param {Object} obj Plain object or message instance
- * @param {string} prop Property name
- * @returns {boolean} `true` if considered to be present, otherwise `false`
- */
-util.isset =
-
-/**
- * Checks if a property on a message is considered to be present.
- * @param {Object} obj Plain object or message instance
- * @param {string} prop Property name
- * @returns {boolean} `true` if considered to be present, otherwise `false`
- */
-util.isSet = function isSet(obj, prop) {
-    var value = obj[prop];
-    if (value != null && obj.hasOwnProperty(prop)) // eslint-disable-line eqeqeq, no-prototype-builtins
-        return typeof value !== "object" || (Array.isArray(value) ? value.length : Object.keys(value).length) > 0;
-    return false;
-};
-
-/**
- * Any compatible Buffer instance.
- * This is a minimal stand-alone definition of a Buffer instance. The actual type is that exported by node's typings.
- * @interface Buffer
- * @extends Uint8Array
- */
-
-/**
- * Node's Buffer class if available.
- * @type {Constructor<Buffer>}
- */
-util.Buffer = (function() {
-    try {
-        var Buffer = util.inquire("buffer").Buffer;
-        // refuse to use non-node buffers if not explicitly assigned (perf reasons):
-        return Buffer.prototype.utf8Write ? Buffer : /* istanbul ignore next */ null;
-    } catch (e) {
-        /* istanbul ignore next */
-        return null;
-    }
-})();
-
-// Internal alias of or polyfull for Buffer.from.
-util._Buffer_from = null;
-
-// Internal alias of or polyfill for Buffer.allocUnsafe.
-util._Buffer_allocUnsafe = null;
-
-/**
- * Creates a new buffer of whatever type supported by the environment.
- * @param {number|number[]} [sizeOrArray=0] Buffer size or number array
- * @returns {Uint8Array|Buffer} Buffer
- */
-util.newBuffer = function newBuffer(sizeOrArray) {
-    /* istanbul ignore next */
-    return typeof sizeOrArray === "number"
-        ? util.Buffer
-            ? util._Buffer_allocUnsafe(sizeOrArray)
-            : new util.Array(sizeOrArray)
-        : util.Buffer
-            ? util._Buffer_from(sizeOrArray)
-            : typeof Uint8Array === "undefined"
-                ? sizeOrArray
-                : new Uint8Array(sizeOrArray);
-};
-
-/**
- * Array implementation used in the browser. `Uint8Array` if supported, otherwise `Array`.
- * @type {Constructor<Uint8Array>}
- */
-util.Array = typeof Uint8Array !== "undefined" ? Uint8Array /* istanbul ignore next */ : Array;
-
-/**
- * Any compatible Long instance.
- * This is a minimal stand-alone definition of a Long instance. The actual type is that exported by long.js.
- * @interface Long
- * @property {number} low Low bits
- * @property {number} high High bits
- * @property {boolean} unsigned Whether unsigned or not
- */
-
-/**
- * Long.js's Long class if available.
- * @type {Constructor<Long>}
- */
-util.Long = /* istanbul ignore next */ util.global.dcodeIO && /* istanbul ignore next */ util.global.dcodeIO.Long
-         || /* istanbul ignore next */ util.global.Long
-         || util.inquire("long");
-
-/**
- * Regular expression used to verify 2 bit (`bool`) map keys.
- * @type {RegExp}
- * @const
- */
-util.key2Re = /^true|false|0|1$/;
-
-/**
- * Regular expression used to verify 32 bit (`int32` etc.) map keys.
- * @type {RegExp}
- * @const
- */
-util.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
-
-/**
- * Regular expression used to verify 64 bit (`int64` etc.) map keys.
- * @type {RegExp}
- * @const
- */
-util.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
-
-/**
- * Converts a number or long to an 8 characters long hash string.
- * @param {Long|number} value Value to convert
- * @returns {string} Hash
- */
-util.longToHash = function longToHash(value) {
-    return value
-        ? util.LongBits.from(value).toHash()
-        : util.LongBits.zeroHash;
-};
-
-/**
- * Converts an 8 characters long hash string to a long or number.
- * @param {string} hash Hash
- * @param {boolean} [unsigned=false] Whether unsigned or not
- * @returns {Long|number} Original value
- */
-util.longFromHash = function longFromHash(hash, unsigned) {
-    var bits = util.LongBits.fromHash(hash);
-    if (util.Long)
-        return util.Long.fromBits(bits.lo, bits.hi, unsigned);
-    return bits.toNumber(Boolean(unsigned));
-};
-
-/**
- * Merges the properties of the source object into the destination object.
- * @memberof util
- * @param {Object.<string,*>} dst Destination object
- * @param {Object.<string,*>} src Source object
- * @param {boolean} [ifNotSet=false] Merges only if the key is not already set
- * @returns {Object.<string,*>} Destination object
- */
-function merge(dst, src, ifNotSet) { // used by converters
-    for (var keys = Object.keys(src), i = 0; i < keys.length; ++i)
-        if (dst[keys[i]] === undefined || !ifNotSet)
-            dst[keys[i]] = src[keys[i]];
-    return dst;
-}
-
-util.merge = merge;
-
-/**
- * Converts the first character of a string to lower case.
- * @param {string} str String to convert
- * @returns {string} Converted string
- */
-util.lcFirst = function lcFirst(str) {
-    return str.charAt(0).toLowerCase() + str.substring(1);
-};
-
-/**
- * Creates a custom error constructor.
- * @memberof util
- * @param {string} name Error name
- * @returns {Constructor<Error>} Custom error constructor
- */
-function newError(name) {
-
-    function CustomError(message, properties) {
-
-        if (!(this instanceof CustomError))
-            return new CustomError(message, properties);
-
-        // Error.call(this, message);
-        // ^ just returns a new error instance because the ctor can be called as a function
-
-        Object.defineProperty(this, "message", { get: function() { return message; } });
-
-        /* istanbul ignore next */
-        if (Error.captureStackTrace) // node
-            Error.captureStackTrace(this, CustomError);
-        else
-            Object.defineProperty(this, "stack", { value: (new Error()).stack || "" });
-
-        if (properties)
-            merge(this, properties);
-    }
-
-    (CustomError.prototype = Object.create(Error.prototype)).constructor = CustomError;
-
-    Object.defineProperty(CustomError.prototype, "name", { get: function() { return name; } });
-
-    CustomError.prototype.toString = function toString() {
-        return this.name + ": " + this.message;
-    };
-
-    return CustomError;
-}
-
-util.newError = newError;
-
-/**
- * Constructs a new protocol error.
- * @classdesc Error subclass indicating a protocol specifc error.
- * @memberof util
- * @extends Error
- * @template T extends Message<T>
- * @constructor
- * @param {string} message Error message
- * @param {Object.<string,*>} [properties] Additional properties
- * @example
- * try {
- *     MyMessage.decode(someBuffer); // throws if required fields are missing
- * } catch (e) {
- *     if (e instanceof ProtocolError && e.instance)
- *         console.log("decoded so far: " + JSON.stringify(e.instance));
- * }
- */
-util.ProtocolError = newError("ProtocolError");
-
-/**
- * So far decoded message instance.
- * @name util.ProtocolError#instance
- * @type {Message<T>}
- */
-
-/**
- * A OneOf getter as returned by {@link util.oneOfGetter}.
- * @typedef OneOfGetter
- * @type {function}
- * @returns {string|undefined} Set field name, if any
- */
-
-/**
- * Builds a getter for a oneof's present field name.
- * @param {string[]} fieldNames Field names
- * @returns {OneOfGetter} Unbound getter
- */
-util.oneOfGetter = function getOneOf(fieldNames) {
-    var fieldMap = {};
-    for (var i = 0; i < fieldNames.length; ++i)
-        fieldMap[fieldNames[i]] = 1;
-
-    /**
-     * @returns {string|undefined} Set field name, if any
-     * @this Object
-     * @ignore
-     */
-    return function() { // eslint-disable-line consistent-return
-        for (var keys = Object.keys(this), i = keys.length - 1; i > -1; --i)
-            if (fieldMap[keys[i]] === 1 && this[keys[i]] !== undefined && this[keys[i]] !== null)
-                return keys[i];
-    };
-};
-
-/**
- * A OneOf setter as returned by {@link util.oneOfSetter}.
- * @typedef OneOfSetter
- * @type {function}
- * @param {string|undefined} value Field name
- * @returns {undefined}
- */
-
-/**
- * Builds a setter for a oneof's present field name.
- * @param {string[]} fieldNames Field names
- * @returns {OneOfSetter} Unbound setter
- */
-util.oneOfSetter = function setOneOf(fieldNames) {
-
-    /**
-     * @param {string} name Field name
-     * @returns {undefined}
-     * @this Object
-     * @ignore
-     */
-    return function(name) {
-        for (var i = 0; i < fieldNames.length; ++i)
-            if (fieldNames[i] !== name)
-                delete this[fieldNames[i]];
-    };
-};
-
-/**
- * Default conversion options used for {@link Message#toJSON} implementations.
- *
- * These options are close to proto3's JSON mapping with the exception that internal types like Any are handled just like messages. More precisely:
- *
- * - Longs become strings
- * - Enums become string keys
- * - Bytes become base64 encoded strings
- * - (Sub-)Messages become plain objects
- * - Maps become plain objects with all string keys
- * - Repeated fields become arrays
- * - NaN and Infinity for float and double fields become strings
- *
- * @type {IConversionOptions}
- * @see https://developers.google.com/protocol-buffers/docs/proto3?hl=en#json
- */
-util.toJSONOptions = {
-    longs: String,
-    enums: String,
-    bytes: String,
-    json: true
-};
-
-// Sets up buffer utility according to the environment (called in index-minimal)
-util._configure = function() {
-    var Buffer = util.Buffer;
-    /* istanbul ignore if */
-    if (!Buffer) {
-        util._Buffer_from = util._Buffer_allocUnsafe = null;
-        return;
-    }
-    // because node 4.x buffers are incompatible & immutable
-    // see: https://github.com/dcodeIO/protobuf.js/pull/665
-    util._Buffer_from = Buffer.from !== Uint8Array.from && Buffer.from ||
-        /* istanbul ignore next */
-        function Buffer_from(value, encoding) {
-            return new Buffer(value, encoding);
-        };
-    util._Buffer_allocUnsafe = Buffer.allocUnsafe ||
-        /* istanbul ignore next */
-        function Buffer_allocUnsafe(size) {
-            return new Buffer(size);
-        };
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./longbits":71,"@protobufjs/aspromise":26,"@protobufjs/base64":27,"@protobufjs/eventemitter":28,"@protobufjs/float":29,"@protobufjs/inquire":30,"@protobufjs/pool":31,"@protobufjs/utf8":32}],73:[function(require,module,exports){
-"use strict";
-module.exports = Writer;
-
-var util      = require("./util/minimal");
-
-var BufferWriter; // cyclic
-
-var LongBits  = util.LongBits,
-    base64    = util.base64,
-    utf8      = util.utf8;
-
-/**
- * Constructs a new writer operation instance.
- * @classdesc Scheduled writer operation.
- * @constructor
- * @param {function(*, Uint8Array, number)} fn Function to call
- * @param {number} len Value byte length
- * @param {*} val Value to write
- * @ignore
- */
-function Op(fn, len, val) {
-
-    /**
-     * Function to call.
-     * @type {function(Uint8Array, number, *)}
-     */
-    this.fn = fn;
-
-    /**
-     * Value byte length.
-     * @type {number}
-     */
-    this.len = len;
-
-    /**
-     * Next operation.
-     * @type {Writer.Op|undefined}
-     */
-    this.next = undefined;
-
-    /**
-     * Value to write.
-     * @type {*}
-     */
-    this.val = val; // type varies
-}
-
-/* istanbul ignore next */
-function noop() {} // eslint-disable-line no-empty-function
-
-/**
- * Constructs a new writer state instance.
- * @classdesc Copied writer state.
- * @memberof Writer
- * @constructor
- * @param {Writer} writer Writer to copy state from
- * @ignore
- */
-function State(writer) {
-
-    /**
-     * Current head.
-     * @type {Writer.Op}
-     */
-    this.head = writer.head;
-
-    /**
-     * Current tail.
-     * @type {Writer.Op}
-     */
-    this.tail = writer.tail;
-
-    /**
-     * Current buffer length.
-     * @type {number}
-     */
-    this.len = writer.len;
-
-    /**
-     * Next state.
-     * @type {State|null}
-     */
-    this.next = writer.states;
-}
-
-/**
- * Constructs a new writer instance.
- * @classdesc Wire format writer using `Uint8Array` if available, otherwise `Array`.
- * @constructor
- */
-function Writer() {
-
-    /**
-     * Current length.
-     * @type {number}
-     */
-    this.len = 0;
-
-    /**
-     * Operations head.
-     * @type {Object}
-     */
-    this.head = new Op(noop, 0, 0);
-
-    /**
-     * Operations tail
-     * @type {Object}
-     */
-    this.tail = this.head;
-
-    /**
-     * Linked forked states.
-     * @type {Object|null}
-     */
-    this.states = null;
-
-    // When a value is written, the writer calculates its byte length and puts it into a linked
-    // list of operations to perform when finish() is called. This both allows us to allocate
-    // buffers of the exact required size and reduces the amount of work we have to do compared
-    // to first calculating over objects and then encoding over objects. In our case, the encoding
-    // part is just a linked list walk calling operations with already prepared values.
-}
-
-/**
- * Creates a new writer.
- * @function
- * @returns {BufferWriter|Writer} A {@link BufferWriter} when Buffers are supported, otherwise a {@link Writer}
- */
-Writer.create = util.Buffer
-    ? function create_buffer_setup() {
-        return (Writer.create = function create_buffer() {
-            return new BufferWriter();
-        })();
-    }
-    /* istanbul ignore next */
-    : function create_array() {
-        return new Writer();
-    };
-
-/**
- * Allocates a buffer of the specified size.
- * @param {number} size Buffer size
- * @returns {Uint8Array} Buffer
- */
-Writer.alloc = function alloc(size) {
-    return new util.Array(size);
-};
-
-// Use Uint8Array buffer pool in the browser, just like node does with buffers
-/* istanbul ignore else */
-if (util.Array !== Array)
-    Writer.alloc = util.pool(Writer.alloc, util.Array.prototype.subarray);
-
-/**
- * Pushes a new operation to the queue.
- * @param {function(Uint8Array, number, *)} fn Function to call
- * @param {number} len Value byte length
- * @param {number} val Value to write
- * @returns {Writer} `this`
- * @private
- */
-Writer.prototype._push = function push(fn, len, val) {
-    this.tail = this.tail.next = new Op(fn, len, val);
-    this.len += len;
-    return this;
-};
-
-function writeByte(val, buf, pos) {
-    buf[pos] = val & 255;
-}
-
-function writeVarint32(val, buf, pos) {
-    while (val > 127) {
-        buf[pos++] = val & 127 | 128;
-        val >>>= 7;
-    }
-    buf[pos] = val;
-}
-
-/**
- * Constructs a new varint writer operation instance.
- * @classdesc Scheduled varint writer operation.
- * @extends Op
- * @constructor
- * @param {number} len Value byte length
- * @param {number} val Value to write
- * @ignore
- */
-function VarintOp(len, val) {
-    this.len = len;
-    this.next = undefined;
-    this.val = val;
-}
-
-VarintOp.prototype = Object.create(Op.prototype);
-VarintOp.prototype.fn = writeVarint32;
-
-/**
- * Writes an unsigned 32 bit value as a varint.
- * @param {number} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.uint32 = function write_uint32(value) {
-    // here, the call to this.push has been inlined and a varint specific Op subclass is used.
-    // uint32 is by far the most frequently used operation and benefits significantly from this.
-    this.len += (this.tail = this.tail.next = new VarintOp(
-        (value = value >>> 0)
-                < 128       ? 1
-        : value < 16384     ? 2
-        : value < 2097152   ? 3
-        : value < 268435456 ? 4
-        :                     5,
-    value)).len;
-    return this;
-};
-
-/**
- * Writes a signed 32 bit value as a varint.
- * @function
- * @param {number} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.int32 = function write_int32(value) {
-    return value < 0
-        ? this._push(writeVarint64, 10, LongBits.fromNumber(value)) // 10 bytes per spec
-        : this.uint32(value);
-};
-
-/**
- * Writes a 32 bit value as a varint, zig-zag encoded.
- * @param {number} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.sint32 = function write_sint32(value) {
-    return this.uint32((value << 1 ^ value >> 31) >>> 0);
-};
-
-function writeVarint64(val, buf, pos) {
-    while (val.hi) {
-        buf[pos++] = val.lo & 127 | 128;
-        val.lo = (val.lo >>> 7 | val.hi << 25) >>> 0;
-        val.hi >>>= 7;
-    }
-    while (val.lo > 127) {
-        buf[pos++] = val.lo & 127 | 128;
-        val.lo = val.lo >>> 7;
-    }
-    buf[pos++] = val.lo;
-}
-
-/**
- * Writes an unsigned 64 bit value as a varint.
- * @param {Long|number|string} value Value to write
- * @returns {Writer} `this`
- * @throws {TypeError} If `value` is a string and no long library is present.
- */
-Writer.prototype.uint64 = function write_uint64(value) {
-    var bits = LongBits.from(value);
-    return this._push(writeVarint64, bits.length(), bits);
-};
-
-/**
- * Writes a signed 64 bit value as a varint.
- * @function
- * @param {Long|number|string} value Value to write
- * @returns {Writer} `this`
- * @throws {TypeError} If `value` is a string and no long library is present.
- */
-Writer.prototype.int64 = Writer.prototype.uint64;
-
-/**
- * Writes a signed 64 bit value as a varint, zig-zag encoded.
- * @param {Long|number|string} value Value to write
- * @returns {Writer} `this`
- * @throws {TypeError} If `value` is a string and no long library is present.
- */
-Writer.prototype.sint64 = function write_sint64(value) {
-    var bits = LongBits.from(value).zzEncode();
-    return this._push(writeVarint64, bits.length(), bits);
-};
-
-/**
- * Writes a boolish value as a varint.
- * @param {boolean} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.bool = function write_bool(value) {
-    return this._push(writeByte, 1, value ? 1 : 0);
-};
-
-function writeFixed32(val, buf, pos) {
-    buf[pos    ] =  val         & 255;
-    buf[pos + 1] =  val >>> 8   & 255;
-    buf[pos + 2] =  val >>> 16  & 255;
-    buf[pos + 3] =  val >>> 24;
-}
-
-/**
- * Writes an unsigned 32 bit value as fixed 32 bits.
- * @param {number} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.fixed32 = function write_fixed32(value) {
-    return this._push(writeFixed32, 4, value >>> 0);
-};
-
-/**
- * Writes a signed 32 bit value as fixed 32 bits.
- * @function
- * @param {number} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.sfixed32 = Writer.prototype.fixed32;
-
-/**
- * Writes an unsigned 64 bit value as fixed 64 bits.
- * @param {Long|number|string} value Value to write
- * @returns {Writer} `this`
- * @throws {TypeError} If `value` is a string and no long library is present.
- */
-Writer.prototype.fixed64 = function write_fixed64(value) {
-    var bits = LongBits.from(value);
-    return this._push(writeFixed32, 4, bits.lo)._push(writeFixed32, 4, bits.hi);
-};
-
-/**
- * Writes a signed 64 bit value as fixed 64 bits.
- * @function
- * @param {Long|number|string} value Value to write
- * @returns {Writer} `this`
- * @throws {TypeError} If `value` is a string and no long library is present.
- */
-Writer.prototype.sfixed64 = Writer.prototype.fixed64;
-
-/**
- * Writes a float (32 bit).
- * @function
- * @param {number} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.float = function write_float(value) {
-    return this._push(util.float.writeFloatLE, 4, value);
-};
-
-/**
- * Writes a double (64 bit float).
- * @function
- * @param {number} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.double = function write_double(value) {
-    return this._push(util.float.writeDoubleLE, 8, value);
-};
-
-var writeBytes = util.Array.prototype.set
-    ? function writeBytes_set(val, buf, pos) {
-        buf.set(val, pos); // also works for plain array values
-    }
-    /* istanbul ignore next */
-    : function writeBytes_for(val, buf, pos) {
-        for (var i = 0; i < val.length; ++i)
-            buf[pos + i] = val[i];
-    };
-
-/**
- * Writes a sequence of bytes.
- * @param {Uint8Array|string} value Buffer or base64 encoded string to write
- * @returns {Writer} `this`
- */
-Writer.prototype.bytes = function write_bytes(value) {
-    var len = value.length >>> 0;
-    if (!len)
-        return this._push(writeByte, 1, 0);
-    if (util.isString(value)) {
-        var buf = Writer.alloc(len = base64.length(value));
-        base64.decode(value, buf, 0);
-        value = buf;
-    }
-    return this.uint32(len)._push(writeBytes, len, value);
-};
-
-/**
- * Writes a string.
- * @param {string} value Value to write
- * @returns {Writer} `this`
- */
-Writer.prototype.string = function write_string(value) {
-    var len = utf8.length(value);
-    return len
-        ? this.uint32(len)._push(utf8.write, len, value)
-        : this._push(writeByte, 1, 0);
-};
-
-/**
- * Forks this writer's state by pushing it to a stack.
- * Calling {@link Writer#reset|reset} or {@link Writer#ldelim|ldelim} resets the writer to the previous state.
- * @returns {Writer} `this`
- */
-Writer.prototype.fork = function fork() {
-    this.states = new State(this);
-    this.head = this.tail = new Op(noop, 0, 0);
-    this.len = 0;
-    return this;
-};
-
-/**
- * Resets this instance to the last state.
- * @returns {Writer} `this`
- */
-Writer.prototype.reset = function reset() {
-    if (this.states) {
-        this.head   = this.states.head;
-        this.tail   = this.states.tail;
-        this.len    = this.states.len;
-        this.states = this.states.next;
-    } else {
-        this.head = this.tail = new Op(noop, 0, 0);
-        this.len  = 0;
-    }
-    return this;
-};
-
-/**
- * Resets to the last state and appends the fork state's current write length as a varint followed by its operations.
- * @returns {Writer} `this`
- */
-Writer.prototype.ldelim = function ldelim() {
-    var head = this.head,
-        tail = this.tail,
-        len  = this.len;
-    this.reset().uint32(len);
-    if (len) {
-        this.tail.next = head.next; // skip noop
-        this.tail = tail;
-        this.len += len;
-    }
-    return this;
-};
-
-/**
- * Finishes the write operation.
- * @returns {Uint8Array} Finished buffer
- */
-Writer.prototype.finish = function finish() {
-    var head = this.head.next, // skip noop
-        buf  = this.constructor.alloc(this.len),
-        pos  = 0;
-    while (head) {
-        head.fn(head.val, buf, pos);
-        pos += head.len;
-        head = head.next;
-    }
-    // this.head = this.tail = null;
-    return buf;
-};
-
-Writer._configure = function(BufferWriter_) {
-    BufferWriter = BufferWriter_;
-};
-
-},{"./util/minimal":72}],74:[function(require,module,exports){
-"use strict";
-module.exports = BufferWriter;
-
-// extends Writer
-var Writer = require("./writer");
-(BufferWriter.prototype = Object.create(Writer.prototype)).constructor = BufferWriter;
-
-var util = require("./util/minimal");
-
-var Buffer = util.Buffer;
-
-/**
- * Constructs a new buffer writer instance.
- * @classdesc Wire format writer using node buffers.
- * @extends Writer
- * @constructor
- */
-function BufferWriter() {
-    Writer.call(this);
-}
-
-/**
- * Allocates a buffer of the specified size.
- * @param {number} size Buffer size
- * @returns {Buffer} Buffer
- */
-BufferWriter.alloc = function alloc_buffer(size) {
-    return (BufferWriter.alloc = util._Buffer_allocUnsafe)(size);
-};
-
-var writeBytesBuffer = Buffer && Buffer.prototype instanceof Uint8Array && Buffer.prototype.set.name === "set"
-    ? function writeBytesBuffer_set(val, buf, pos) {
-        buf.set(val, pos); // faster than copy (requires node >= 4 where Buffers extend Uint8Array and set is properly inherited)
-                           // also works for plain array values
-    }
-    /* istanbul ignore next */
-    : function writeBytesBuffer_copy(val, buf, pos) {
-        if (val.copy) // Buffer values
-            val.copy(buf, pos, 0, val.length);
-        else for (var i = 0; i < val.length;) // plain array values
-            buf[pos++] = val[i++];
-    };
-
-/**
- * @override
- */
-BufferWriter.prototype.bytes = function write_bytes_buffer(value) {
-    if (util.isString(value))
-        value = util._Buffer_from(value, "base64");
-    var len = value.length >>> 0;
-    this.uint32(len);
-    if (len)
-        this._push(writeBytesBuffer, len, value);
-    return this;
-};
-
-function writeStringBuffer(val, buf, pos) {
-    if (val.length < 40) // plain js is faster for short strings (probably due to redundant assertions)
-        util.utf8.write(val, buf, pos);
-    else
-        buf.utf8Write(val, pos);
-}
-
-/**
- * @override
- */
-BufferWriter.prototype.string = function write_string_buffer(value) {
-    var len = Buffer.byteLength(value);
-    this.uint32(len);
-    if (len)
-        this._push(writeStringBuffer, len, value);
-    return this;
-};
-
-
-/**
- * Finishes the write operation.
- * @name BufferWriter#finish
- * @function
- * @returns {Buffer} Finished buffer
- */
-
-},{"./util/minimal":72,"./writer":73}],75:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -16526,7 +8893,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":39}],76:[function(require,module,exports){
+},{"buffer":31}],57:[function(require,module,exports){
 'use strict'
 /* eslint no-proto: 0 */
 module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
@@ -16545,7 +8912,7 @@ function mixinProperties (obj, proto) {
   return obj
 }
 
-},{}],77:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports={
   "100": "Continue",
   "101": "Switching Protocols",
@@ -16613,7 +8980,7 @@ module.exports={
   "511": "Network Authentication Required"
 }
 
-},{}],78:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /*!
  * statuses
  * Copyright(c) 2014 Jonathan Ong
@@ -16728,7 +9095,7 @@ function status (code) {
   return n
 }
 
-},{"./codes.json":77}],79:[function(require,module,exports){
+},{"./codes.json":58}],60:[function(require,module,exports){
 /*!
  * toidentifier
  * Copyright(c) 2016 Douglas Christopher Wilson
@@ -16760,7 +9127,7 @@ function toIdentifier (str) {
     .replace(/[^ _0-9a-z]/gi, '')
 }
 
-},{}],80:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -19139,9 +11506,9 @@ nacl.setPRNG = function(fn) {
 
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-},{"crypto":36}],81:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"./lib":84,"dup":46}],82:[function(require,module,exports){
+},{"crypto":28}],62:[function(require,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"./lib":65,"dup":38}],63:[function(require,module,exports){
 var cache = function (fn) {
     var called = false,
         store;
@@ -19163,7 +11530,7 @@ var cache = function (fn) {
 };
 
 module.exports = cache;
-},{}],83:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function eachCombination(alternativesByDimension, callback, combination) {
     if (!combination)
         combination = [];
@@ -19178,19 +11545,19 @@ module.exports = function eachCombination(alternativesByDimension, callback, com
     else
         callback.apply(null, combination);
 };
-},{}],84:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = {
     cache: require("./cache"),
     eachCombination: require("./eachCombination")
 };
-},{"./cache":82,"./eachCombination":83}],85:[function(require,module,exports){
+},{"./cache":63,"./eachCombination":64}],66:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],86:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -19780,4 +12147,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":85,"_process":63,"inherits":57}]},{},[1]);
+},{"./support/isBuffer":66,"_process":55,"inherits":49}]},{},[1]);

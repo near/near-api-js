@@ -2,12 +2,13 @@ import BN from 'bn.js';
 import { Connection } from './connection';
 import { Account } from './account';
 import { ConnectionInfo } from './utils/web';
+import { PublicKey } from './utils/key_pair';
 
 /**
  * Account creator provides interface to specific implementation to acutally create account.
  */
 export abstract class AccountCreator {
-    abstract async createAccount(newAccountId: string, publicKey: string): Promise<void>;
+    abstract async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void>;
 }
 
 export class LocalAccountCreator extends AccountCreator {
@@ -20,7 +21,7 @@ export class LocalAccountCreator extends AccountCreator {
         this.initialBalance = initialBalance;
     }
 
-    async createAccount(newAccountId: string, publicKey: string): Promise<void> {
+    async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
         await this.masterAccount.createAccount(newAccountId, publicKey, this.initialBalance);
         // TODO: check the response here for status and raise if didn't complete.
     }
@@ -36,7 +37,7 @@ export class UrlAccountCreator extends AccountCreator {
         this.helperConnection = { url: helperUrl };
     }
 
-    async createAccount(newAccountId: string, publicKey: string): Promise<void> {
+    async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
         // TODO: hit url to create account.
     }
 }

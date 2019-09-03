@@ -14,7 +14,7 @@
 
 ⊕ **new UrlAccountCreator**(connection: *[Connection](_connection_.connection.md)*, helperUrl: *`string`*): [UrlAccountCreator](_account_creator_.urlaccountcreator.md)
 
-*Defined in [account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/account_creator.ts#L31)*
+*Defined in [account_creator.ts:32](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/account_creator.ts#L32)*
 
 **Parameters:**
 
@@ -35,7 +35,7 @@ ___
 
 **● connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [account_creator.ts:30](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/account_creator.ts#L30)*
+*Defined in [account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/account_creator.ts#L31)*
 
 ___
 <a id="helperconnection"></a>
@@ -44,7 +44,7 @@ ___
 
 **● helperConnection**: *[ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md)*
 
-*Defined in [account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/account_creator.ts#L31)*
+*Defined in [account_creator.ts:32](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/account_creator.ts#L32)*
 
 ___
 
@@ -54,18 +54,18 @@ ___
 
 ##  createAccount
 
-▸ **createAccount**(newAccountId: *`string`*, publicKey: *`string`*): `Promise`<`void`>
+▸ **createAccount**(newAccountId: *`string`*, publicKey: *[PublicKey](_utils_key_pair_.publickey.md)*): `Promise`<`void`>
 
 *Overrides [AccountCreator](_account_creator_.accountcreator.md).[createAccount](_account_creator_.accountcreator.md#createaccount)*
 
-*Defined in [account_creator.ts:39](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/account_creator.ts#L39)*
+*Defined in [account_creator.ts:40](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/account_creator.ts#L40)*
 
 **Parameters:**
 
 | Name | Type |
 | ------ | ------ |
 | newAccountId | `string` |
-| publicKey | `string` |
+| publicKey | [PublicKey](_utils_key_pair_.publickey.md) |
 
 **Returns:** `Promise`<`void`>
 

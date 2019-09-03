@@ -1,13 +1,28 @@
 export declare type Arrayish = string | ArrayLike<number>;
 export interface Signature {
     signature: Uint8Array;
-    publicKey: string;
+    publicKey: PublicKey;
+}
+/** All supported key types */
+export declare enum KeyType {
+    ED25519 = 0
+}
+/**
+ * PublicKey representation that has type and bytes of the key.
+ */
+export declare class PublicKey {
+    keyType: KeyType;
+    data: Uint8Array;
+    constructor(keyType: KeyType, data: Uint8Array);
+    static from(value: string | PublicKey): PublicKey;
+    static fromString(encodedKey: string): PublicKey;
+    toString(): string;
 }
 export declare abstract class KeyPair {
     abstract sign(message: Uint8Array): Signature;
     abstract verify(message: Uint8Array, signature: Uint8Array): boolean;
     abstract toString(): string;
-    abstract getPublicKey(): string;
+    abstract getPublicKey(): PublicKey;
     static fromRandom(curve: string): KeyPair;
     static fromString(encodedKey: string): KeyPair;
 }
@@ -16,7 +31,7 @@ export declare abstract class KeyPair {
  * generating key pairs, encoding key pairs, signing and verifying.
  */
 export declare class KeyPairEd25519 extends KeyPair {
-    readonly publicKey: string;
+    readonly publicKey: PublicKey;
     readonly secretKey: string;
     /**
      * Construct an instance of key pair given a secret key.
@@ -38,5 +53,5 @@ export declare class KeyPairEd25519 extends KeyPair {
     sign(message: Uint8Array): Signature;
     verify(message: Uint8Array, signature: Uint8Array): boolean;
     toString(): string;
-    getPublicKey(): string;
+    getPublicKey(): PublicKey;
 }

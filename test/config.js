@@ -26,6 +26,12 @@ module.exports = function getConfig(env) {
             nodeUrl: 'http://shared-test.nearprotocol.com:3030',
             masterAccount: 'test.near',
         };
+    case 'ci-staging':
+        return {
+            networkId: 'shared-test-staging',
+            nodeUrl: 'http://staging-shared-test.nearprotocol.com:3030',
+            masterAccount: 'test.near',
+        };
     default:
         throw Error(`Unconfigured environment '${env}'. Can be configured in test/config.js.`);
     }
