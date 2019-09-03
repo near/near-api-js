@@ -16,16 +16,16 @@ Account creator provides interface to specific implementation to acutally create
 
 ## `<Abstract>` createAccount
 
-▸ **createAccount**(newAccountId: *`string`*, publicKey: *`string`*): `Promise`<`void`>
+▸ **createAccount**(newAccountId: *`string`*, publicKey: *[PublicKey](_utils_key_pair_.publickey.md)*): `Promise`<`void`>
 
-*Defined in [account_creator.ts:10](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/account_creator.ts#L10)*
+*Defined in [account_creator.ts:11](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/account_creator.ts#L11)*
 
 **Parameters:**
 
 | Name | Type |
 | ------ | ------ |
 | newAccountId | `string` |
-| publicKey | `string` |
+| publicKey | [PublicKey](_utils_key_pair_.publickey.md) |
 
 **Returns:** `Promise`<`void`>
 

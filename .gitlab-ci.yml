@@ -2,7 +2,6 @@ image: node:10
 
 variables:
   NODE_ENV: ci
-  NEAR_PROTOS_DIR: nearcore/core/protos/protos
   HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:
@@ -13,7 +12,7 @@ test:
   tags:
     - gcloud
   script:
-    - git clone --depth 1 -b known-stable https://github.com/nearprotocol/nearcore.git nearcore
+    - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
     - yarn
     - yarn build
     - (cd nearcore && ./scripts/build_wasm.sh)

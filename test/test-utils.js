@@ -33,7 +33,7 @@ async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE,
     return new nearlib.Account(masterAccount.connection, newAccountName);
 }
 
-async function deployContract(workingAccount, contractId, options = { amount: new BN(100000) }) {
+async function deployContract(workingAccount, contractId, options = { amount: new BN(10000000) }) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = [...(await fs.readFile(HELLO_WASM_PATH))];
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, options.amount);

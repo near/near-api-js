@@ -18,7 +18,7 @@ beforeAll(async () => {
 
 test('view pre-defined account works and returns correct name', async () => {
     let status = await workingAccount.state();
-    expect(status.account_id).toEqual(workingAccount.accountId);
+    expect(status.code_hash).toEqual('11111111111111111111111111111111');
 });
 
 test('create account and then view account returns the created account', async () => {
@@ -27,8 +27,7 @@ test('create account and then view account returns the created account', async (
     await workingAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
     const newAccount = new nearlib.Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
-    const expectedState = { nonce: 0, account_id: newAccountName, amount: testUtils.INITIAL_BALANCE.toString(), stake: '0', code_hash: 'GKot5hBsd81kMupNCXHaqbhv3huEbxAFMLnpcX2hniwn', public_keys: state.public_keys };
-    expect(state).toMatchObject(expectedState);
+    expect(state.amount).toEqual(testUtils.INITIAL_BALANCE.toString());
 });
 
 test('send money', async() => {
@@ -70,7 +69,7 @@ describe('with deploy contract', () => {
     beforeAll(async () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, new BN(100000));
+        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, new BN(1000000));
         contract = new nearlib.Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'getAllKeys', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']
@@ -101,7 +100,7 @@ describe('with deploy contract', () => {
         expect(nearlib.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
         expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
-    
+
     test('make function calls via contract', async() => {
         const result = await contract.hello({ name: 'trex' });
         expect(result).toEqual('hello trex');
@@ -127,8 +126,8 @@ describe('with deploy contract', () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
         expect(logs.length).toBe(3);
         expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
-        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "expected to fail" filename: "../out/main.ts" line: \\d+ col: \\d+$`));
-        expect(logs[2]).toEqual(`[${contractId}]: Runtime error: wasm async call execution failed with error: Runtime(AssertFailed)`);
+        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "expected to fail" filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
+        expect(logs[2]).toEqual(`[${contractId}]: Runtime error: wasm async call execution failed with error: WasmerCallError("Smart contract has explicitly invoked \`panic\`.")`);
     });
 
     test('test set/remove', async () => {

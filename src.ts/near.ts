@@ -4,7 +4,7 @@ import { Account } from './account';
 import { Connection } from './connection';
 import { Contract } from './contract';
 import { loadJsonFile } from './key_stores/unencrypted_file_system_keystore';
-import { KeyPairEd25519 } from './utils/key_pair';
+import { KeyPair, PublicKey } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 
@@ -36,7 +36,7 @@ export class Near {
         return account;
     }
 
-    async createAccount(accountId: string, publicKey: string): Promise<Account> {
+    async createAccount(accountId: string, publicKey: PublicKey): Promise<Account> {
         if (!this.accountCreator) {
             throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
         }
@@ -56,18 +56,6 @@ export class Near {
     }
 
     /**
-     * Backwards compatibility method. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.
-     * @param contractId
-     * @param wasmByteArray
-     */
-    async deployContract(contractId: string, wasmByteArray: Uint8Array): Promise<string> {
-        console.warn('near.deployContract is deprecated. Use `contractAccount.deployContract` or `yourAccount.createAndDeployContract` instead.');
-        const account = new Account(this.connection, contractId);
-        const result = await account.deployContract(wasmByteArray);
-        return result.logs[0].hash;
-    }
-
-    /**
      * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
      * @param amount
      * @param originator
@@ -77,7 +65,7 @@ export class Near {
         console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
         const account = new Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);
-        return result.logs[0].hash;
+        return result.transactions[0].hash;
     }
 }
 
@@ -88,7 +76,7 @@ export async function connect(config: any): Promise<Near> {
             const keyFile = await loadJsonFile(config.keyPath);
             if (keyFile.account_id) {
                 // TODO: Only load key if network ID matches
-                const keyPair = new KeyPairEd25519(keyFile.secret_key);
+                const keyPair = KeyPair.fromString(keyFile.secret_key);
                 const keyPathStore = new InMemoryKeyStore();
                 await keyPathStore.setKey(config.networkId, keyFile.account_id, keyPair);
                 if (!config.masterAccount) {

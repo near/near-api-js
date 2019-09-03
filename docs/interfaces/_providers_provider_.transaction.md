@@ -12,7 +12,7 @@
 
 **● body**: *`any`*
 
-*Defined in [providers/provider.ts:60](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/providers/provider.ts#L60)*
+*Defined in [providers/provider.ts:65](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/providers/provider.ts#L65)*
 
 ___
 <a id="hash"></a>
@@ -21,7 +21,7 @@ ___
 
 **● hash**: *`string`*
 
-*Defined in [providers/provider.ts:57](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/providers/provider.ts#L57)*
+*Defined in [providers/provider.ts:62](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/providers/provider.ts#L62)*
 
 ___
 <a id="public_key"></a>
@@ -30,7 +30,7 @@ ___
 
 **● public_key**: *`string`*
 
-*Defined in [providers/provider.ts:58](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/providers/provider.ts#L58)*
+*Defined in [providers/provider.ts:63](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/providers/provider.ts#L63)*
 
 ___
 <a id="signature"></a>
@@ -39,7 +39,7 @@ ___
 
 **● signature**: *`string`*
 
-*Defined in [providers/provider.ts:59](https://github.com/nearprotocol/nearlib/blob/7e040fa/src.ts/providers/provider.ts#L59)*
+*Defined in [providers/provider.ts:64](https://github.com/nearprotocol/nearlib/blob/ce23775/src.ts/providers/provider.ts#L64)*
 
 ___
 

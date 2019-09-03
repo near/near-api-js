@@ -1,17 +1,96 @@
 import BN from 'bn.js';
-import { SendMoneyTransaction, CreateAccountTransaction, SignedTransaction, DeployContractTransaction, FunctionCallTransaction, StakeTransaction, SwapKeyTransaction, AddKeyTransaction, DeleteKeyTransaction, AccessKey } from './protos';
-import { Signature } from './utils/key_pair';
+import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
-export declare type AllTransactions = SendMoneyTransaction | CreateAccountTransaction | DeployContractTransaction | FunctionCallTransaction | StakeTransaction | SwapKeyTransaction | AddKeyTransaction | DeleteKeyTransaction;
-export declare function bignumHex2Dec(num: string): string;
-export declare function createAccount(nonce: number, originator: string, newAccountId: string, publicKey: string, amount: BN): CreateAccountTransaction;
-export declare function deployContract(nonce: number, contractId: string, wasmByteArray: Uint8Array): DeployContractTransaction;
-export declare function functionCall(nonce: number, originator: string, contractId: string, methodName: string, args: Uint8Array, amount: BN): FunctionCallTransaction;
-export declare function sendMoney(nonce: number, originator: string, receiver: string, amount: BN): SendMoneyTransaction;
-export declare function stake(nonce: number, originator: string, amount: BN, publicKey: string): StakeTransaction;
-export declare function swapKey(nonce: number, originator: string, curKey: string, newKey: string): SwapKeyTransaction;
-export declare function createAccessKey(contractId?: string, methodName?: string, balanceOwner?: string, amount?: BN): AccessKey;
-export declare function addKey(nonce: number, originator: string, newKey: string, accessKey: AccessKey): AddKeyTransaction;
-export declare function deleteKey(nonce: number, originator: string, curKey: string): DeleteKeyTransaction;
-export declare function signedTransaction(transaction: AllTransactions, signature: Signature): SignedTransaction;
-export declare function signTransaction(signer: Signer, transaction: any, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
+declare class Enum {
+    enum: string;
+    constructor(properties: any);
+}
+declare class Assignable {
+    constructor(properties: any);
+}
+export declare class FunctionCallPermission extends Assignable {
+    allowance?: BN;
+    receiverId: string;
+    methodNames: String[];
+}
+export declare class FullAccessPermission extends Assignable {
+}
+export declare class AccessKeyPermission extends Enum {
+    functionCall: FunctionCallPermission;
+    fullAccess: FullAccessPermission;
+}
+export declare class AccessKey extends Assignable {
+    nonce: number;
+    permission: AccessKeyPermission;
+}
+export declare function fullAccessKey(): AccessKey;
+export declare function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey;
+export declare class IAction extends Assignable {
+}
+declare class CreateAccount extends IAction {
+}
+declare class DeployContract extends IAction {
+    code: Uint8Array;
+}
+declare class FunctionCall extends IAction {
+    methodName: string;
+    args: Uint8Array;
+    gas: BN;
+    deposit: BN;
+}
+declare class Transfer extends IAction {
+    deposit: BN;
+}
+declare class Stake extends IAction {
+    stake: BN;
+    publicKey: PublicKey;
+}
+declare class AddKey extends IAction {
+    publicKey: PublicKey;
+    accessKey: AccessKey;
+}
+declare class DeleteKey extends IAction {
+    publicKey: PublicKey;
+}
+declare class DeleteAccount extends IAction {
+    beneficiaryId: string;
+}
+export declare function createAccount(): Action;
+export declare function deployContract(code: Uint8Array): Action;
+export declare function functionCall(methodName: string, args: Uint8Array, gas: number, deposit: BN): Action;
+export declare function transfer(deposit: BN): Action;
+export declare function stake(stake: BN, publicKey: PublicKey): Action;
+export declare function addKey(publicKey: PublicKey, accessKey: AccessKey): Action;
+export declare function deleteKey(publicKey: PublicKey): Action;
+export declare function deleteAccount(beneficiaryId: string): Action;
+declare class Signature {
+    keyType: KeyType;
+    data: Uint8Array;
+    constructor(signature: Uint8Array);
+}
+export declare class Transaction extends Assignable {
+    signerId: string;
+    publicKey: PublicKey;
+    nonce: number;
+    receiverId: string;
+    actions: Action[];
+    blockHash: Uint8Array;
+}
+export declare class SignedTransaction extends Assignable {
+    transaction: Transaction;
+    signature: Signature;
+    encode(): Uint8Array;
+}
+export declare class Action extends Enum {
+    createAccount: CreateAccount;
+    deployContract: DeployContract;
+    functionCall: FunctionCall;
+    transfer: Transfer;
+    stake: Stake;
+    addKey: AddKey;
+    deleteKey: DeleteKey;
+    deleteAccount: DeleteAccount;
+}
+export declare const SCHEMA: Map<Function, any>;
+export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
+export {};

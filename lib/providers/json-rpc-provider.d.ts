@@ -1,7 +1,7 @@
 import { Provider, FinalTransactionResult, NodeStatusResult, BlockResult } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
-import { SignedTransaction } from '../protos';
+import { SignedTransaction } from '../transaction';
 export declare class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
     constructor(url?: string, network?: Network);
