@@ -4,7 +4,7 @@ module.exports = function getConfig(env) {
     case 'development':
         return {
             networkId: 'default',
-            nodeUrl: 'http://34.94.33.164:3030',
+            nodeUrl: 'https://rpc.nearprotocol.com',
             masterAccount: 'test.near',
         };
     case 'local':
