@@ -70,7 +70,7 @@ test('view account details after adding access keys', async() => {
 test('loading account after adding a full key', async() => {
     const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
     // wallet calls this with an empty string for contract id and method
-    await workingAccount.addKey(keyPair.getPublicKey(), "", "");
+    await workingAccount.addKey(keyPair.getPublicKey(), '', '');
 
     let accessKeys = await workingAccount.getAccessKeys();
 
