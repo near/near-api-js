@@ -156,7 +156,7 @@ export class Account {
     // TODO: expand this API to support more options.
     async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult> {
         let accessKey;
-        if (contractId === null || contractId === undefined) {
+        if (contractId === null || contractId === undefined || contractId === '') {
             accessKey = fullAccessKey();
         } else {
             accessKey = functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
