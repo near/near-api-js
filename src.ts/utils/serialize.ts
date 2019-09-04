@@ -11,7 +11,7 @@ export function base_encode(value: Uint8Array | string): string {
 }
 
 export function base_decode(value: string): Uint8Array {
-    return bs58.decode(value);
+    return Buffer.from(bs58.decode(value));
 }
 
 const INITIAL_LENGTH = 1024;
