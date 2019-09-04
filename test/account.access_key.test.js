@@ -75,4 +75,8 @@ test('loading account after adding a full key', async() => {
 
     expect(accessKeys.length).toBe(2);
     expect(accessKeys.map((item) => item.public_key).includes(keyPair.getPublicKey().toString())).toBe(true);
+
+    // check key permissions
+    expect(accessKeys[0].access_key.permission == "FullAccess");
+    expect(accessKeys[1].access_key.permission == "FullAccess");
 });
