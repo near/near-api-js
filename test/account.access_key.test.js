@@ -75,11 +75,7 @@ test('loading account after adding a full key', async() => {
     let accessKeys = await workingAccount.getAccessKeys();
 
     expect(accessKeys.length).toBe(2);
-    expect(accessKeys.map((item) => item.public_key).includes(keyPair.getPublicKey().toString())).toBe(true);
-
-    for (let i = 0; i < accessKeys.length; i++) {
-        if (accessKeys[i].public_key == keyPair.getPublicKey()) {
-            expect(accessKeys[i].access_key.permission).toEqual('FullAccess');
-        }
-    }
+    const addedKey = accessKeys.find(item => item.public_key == keyPair.getPublicKey().toString());
+    expect(addedKey).toBeTruthy();
+    expect(addedKey.access_key.permission).toEqual('FullAccess');
 });
