@@ -79,7 +79,7 @@ test('loading account after adding a full key', async() => {
 
     for (let i = 0; i < accessKeys.length; i++) {
         if (accessKeys[i].public_key == keyPair.getPublicKey()) {
-            expect(accessKeys[1].access_key.permission).toEqual('FullAccess');
+            expect(accessKeys[i].access_key.permission).toEqual('FullAccess');
         }
     }
 });
