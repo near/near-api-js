@@ -53,12 +53,16 @@ export class Account {
     async fetchState(): Promise<void> {
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
         try {
-            const publicKey = (await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId)).toString();
-            this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey}`, '');
-            if (this._accessKey === null) {
-                throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey}`);
+            const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+            if (publicKey === null) {
+                console.warn(`Missing public key for ${this.accountId} in ${this.connection.networkId}`);
             }
-        } catch {
+            this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+            if (this._accessKey === null) {
+                throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey.toString()}`);
+            }
+        } catch (error) {
+            console.error(`Error during fetching account state: ${error}`);
             this._accessKey = null;
         }
     }
