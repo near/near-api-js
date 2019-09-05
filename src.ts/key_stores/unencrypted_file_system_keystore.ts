@@ -47,7 +47,7 @@ export async function readKeyFile(path: string): Promise<[string, KeyPair]> {
     const accountInfo = await loadJsonFile(path);
     // The private key might be in private_key or secret_key field.
     let privateKey = accountInfo.private_key;
-    if (privateKey == undefined && accountInfo.secret_key !== undefined) {
+    if (privateKey === undefined && accountInfo.secret_key !== undefined) {
         privateKey = accountInfo.secret_key;
     }
     return [accountInfo.account_id, KeyPair.fromString(privateKey)];
