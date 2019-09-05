@@ -43,6 +43,16 @@ async function ensureDir(path: string): Promise<void> {
     }
 }
 
+export async function readKeyFile(path: string): Promise<[string, KeyPair]> {
+    const accountInfo = await loadJsonFile(path);
+    // The private key might be in private_key or secret_key field.
+    let privateKey = accountInfo.private_key;
+    if (privateKey == undefined && accountInfo.secret_key !== undefined) {
+        privateKey = accountInfo.secret_key;
+    }
+    return [accountInfo.account_id, KeyPair.fromString(privateKey)];
+}
+
 export class UnencryptedFileSystemKeyStore extends KeyStore {
     readonly keyDir: string;
 
@@ -62,8 +72,8 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         if (!await exists(this.getKeyFilePath(networkId, accountId))) {
             return null;
         }
-        const accountInfo = await loadJsonFile(this.getKeyFilePath(networkId, accountId));
-        return KeyPair.fromString(accountInfo.private_key);
+        const accountKeyPair = readKeyFile(this.getKeyFilePath(networkId, accountId));
+        return accountKeyPair[1];
     }
 
     async removeKey(networkId: string, accountId: string): Promise<void> {
