@@ -54,12 +54,12 @@ export class Account {
         this._accessKey = null;
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
-        if (publicKey === null) {
+        if (!publicKey) {
             console.log(`Missing public key for ${this.accountId} in ${this.connection.networkId}`);
             return;
         }
         this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
-        if (this._accessKey === null) {
+        if (!this._accessKey) {
             throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey.toString()}`);
         }
     }
@@ -92,7 +92,7 @@ export class Account {
 
     private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalTransactionResult> {
         await this.ready;
-        if (this._accessKey === null) {
+        if (!this._accessKey) {
             throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
         }
 

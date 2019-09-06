@@ -47,7 +47,7 @@ export async function readKeyFile(path: string): Promise<[string, KeyPair]> {
     const accountInfo = await loadJsonFile(path);
     // The private key might be in private_key or secret_key field.
     let privateKey = accountInfo.private_key;
-    if (privateKey === undefined && accountInfo.secret_key !== undefined) {
+    if (!privateKey && accountInfo.secret_key) {
         privateKey = accountInfo.secret_key;
     }
     return [accountInfo.account_id, KeyPair.fromString(privateKey)];
@@ -72,7 +72,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         if (!await exists(this.getKeyFilePath(networkId, accountId))) {
             return null;
         }
-        const accountKeyPair = readKeyFile(this.getKeyFilePath(networkId, accountId));
+        const accountKeyPair = await readKeyFile(this.getKeyFilePath(networkId, accountId));
         return accountKeyPair[1];
     }
 
