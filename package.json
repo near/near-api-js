@@ -8,7 +8,7 @@
   },
   "homepage": "https://github.com/nearprotocol/nearcore",
   "main": "lib/index.js",
-  "types": "lub/index.d.ts",
+  "types": "lib/index.d.ts",
   "dependencies": {
     "@types/bn.js": "^4.11.5",
     "bn.js": "^4.11.5",
