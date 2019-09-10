@@ -35,7 +35,7 @@
 
 **Ƭ Arrayish**: *`string` \| `ArrayLike`<`number`>*
 
-*Defined in [utils/key_pair.ts:6](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/utils/key_pair.ts#L6)*
+*Defined in [utils/key_pair.ts:6](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/utils/key_pair.ts#L6)*
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 ▸ **key_type_to_str**(keyType: *[KeyType](../enums/_utils_key_pair_.keytype.md)*): `String`
 
-*Defined in [utils/key_pair.ts:18](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/utils/key_pair.ts#L18)*
+*Defined in [utils/key_pair.ts:18](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/utils/key_pair.ts#L18)*
 
 **Parameters:**
 
@@ -64,7 +64,7 @@ ___
 
 ▸ **str_to_key_type**(keyType: *`string`*): [KeyType](../enums/_utils_key_pair_.keytype.md)
 
-*Defined in [utils/key_pair.ts:25](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/utils/key_pair.ts#L25)*
+*Defined in [utils/key_pair.ts:25](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/utils/key_pair.ts#L25)*
 
 **Parameters:**
 

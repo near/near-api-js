@@ -16,7 +16,7 @@
 
 ⊕ **new Enum**(properties: *`any`*): [Enum](_transaction_.enum.md)
 
-*Defined in [transaction.ts:11](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L11)*
+*Defined in [transaction.ts:11](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L11)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● enum**: *`string`*
 
-*Defined in [transaction.ts:11](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L11)*
+*Defined in [transaction.ts:11](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L11)*
 
 ___
 

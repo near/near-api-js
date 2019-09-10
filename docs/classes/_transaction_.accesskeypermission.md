@@ -16,7 +16,7 @@
 
 *Inherited from [Enum](_transaction_.enum.md).[constructor](_transaction_.enum.md#constructor)*
 
-*Defined in [transaction.ts:11](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L11)*
+*Defined in [transaction.ts:11](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L11)*
 
 **Parameters:**
 
@@ -38,7 +38,7 @@ ___
 
 *Inherited from [Enum](_transaction_.enum.md).[enum](_transaction_.enum.md#enum)*
 
-*Defined in [transaction.ts:11](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L11)*
+*Defined in [transaction.ts:11](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L11)*
 
 ___
 <a id="fullaccess"></a>
@@ -47,7 +47,7 @@ ___
 
 **● fullAccess**: *[FullAccessPermission](_transaction_.fullaccesspermission.md)*
 
-*Defined in [transaction.ts:42](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L42)*
+*Defined in [transaction.ts:42](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L42)*
 
 ___
 <a id="functioncall"></a>
@@ -56,7 +56,7 @@ ___
 
 **● functionCall**: *[FunctionCallPermission](_transaction_.functioncallpermission.md)*
 
-*Defined in [transaction.ts:41](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L41)*
+*Defined in [transaction.ts:41](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L41)*
 
 ___
 

@@ -124,7 +124,7 @@
     ]}],
 ])
 
-*Defined in [transaction.ts:140](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L140)*
+*Defined in [transaction.ts:140](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L140)*
 
 ___
 
@@ -136,7 +136,7 @@ ___
 
 ▸ **addKey**(publicKey: *[PublicKey](../classes/_utils_key_pair_.publickey.md)*, accessKey: *[AccessKey](../classes/_transaction_.accesskey.md)*): [Action](../classes/_transaction_.action.md)
 
-*Defined in [transaction.ts:89](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L89)*
+*Defined in [transaction.ts:89](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L89)*
 
 **Parameters:**
 
@@ -154,7 +154,7 @@ ___
 
 ▸ **createAccount**(): [Action](../classes/_transaction_.action.md)
 
-*Defined in [transaction.ts:69](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L69)*
+*Defined in [transaction.ts:69](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L69)*
 
 **Returns:** [Action](../classes/_transaction_.action.md)
 
@@ -165,7 +165,7 @@ ___
 
 ▸ **deleteAccount**(beneficiaryId: *`string`*): [Action](../classes/_transaction_.action.md)
 
-*Defined in [transaction.ts:97](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L97)*
+*Defined in [transaction.ts:97](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L97)*
 
 **Parameters:**
 
@@ -182,7 +182,7 @@ ___
 
 ▸ **deleteKey**(publicKey: *[PublicKey](../classes/_utils_key_pair_.publickey.md)*): [Action](../classes/_transaction_.action.md)
 
-*Defined in [transaction.ts:93](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L93)*
+*Defined in [transaction.ts:93](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L93)*
 
 **Parameters:**
 
@@ -199,7 +199,7 @@ ___
 
 ▸ **deployContract**(code: *`Uint8Array`*): [Action](../classes/_transaction_.action.md)
 
-*Defined in [transaction.ts:73](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L73)*
+*Defined in [transaction.ts:73](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L73)*
 
 **Parameters:**
 
@@ -216,7 +216,7 @@ ___
 
 ▸ **fullAccessKey**(): [AccessKey](../classes/_transaction_.accesskey.md)
 
-*Defined in [transaction.ts:50](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L50)*
+*Defined in [transaction.ts:50](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L50)*
 
 **Returns:** [AccessKey](../classes/_transaction_.accesskey.md)
 
@@ -227,7 +227,7 @@ ___
 
 ▸ **functionCall**(methodName: *`string`*, args: *`Uint8Array`*, gas: *`number`*, deposit: *`BN`*): [Action](../classes/_transaction_.action.md)
 
-*Defined in [transaction.ts:77](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L77)*
+*Defined in [transaction.ts:77](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L77)*
 
 **Parameters:**
 
@@ -247,7 +247,7 @@ ___
 
 ▸ **functionCallAccessKey**(receiverId: *`string`*, methodNames: *`String`[]*, allowance?: *`BN`*): [AccessKey](../classes/_transaction_.accesskey.md)
 
-*Defined in [transaction.ts:54](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L54)*
+*Defined in [transaction.ts:54](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L54)*
 
 **Parameters:**
 
@@ -266,7 +266,7 @@ ___
 
 ▸ **signTransaction**(receiverId: *`string`*, nonce: *`number`*, actions: *[Action](../classes/_transaction_.action.md)[]*, blockHash: *`Uint8Array`*, signer: *[Signer](../classes/_signer_.signer.md)*, accountId?: *`string`*, networkId?: *`string`*): `Promise`<[`Uint8Array`, [SignedTransaction](../classes/_transaction_.signedtransaction.md)]>
 
-*Defined in [transaction.ts:214](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L214)*
+*Defined in [transaction.ts:214](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L214)*
 
 **Parameters:**
 
@@ -289,7 +289,7 @@ ___
 
 ▸ **stake**(stake: *`BN`*, publicKey: *[PublicKey](../classes/_utils_key_pair_.publickey.md)*): [Action](../classes/_transaction_.action.md)
 
-*Defined in [transaction.ts:85](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L85)*
+*Defined in [transaction.ts:85](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L85)*
 
 **Parameters:**
 
@@ -307,7 +307,7 @@ ___
 
 ▸ **transfer**(deposit: *`BN`*): [Action](../classes/_transaction_.action.md)
 
-*Defined in [transaction.ts:81](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L81)*
+*Defined in [transaction.ts:81](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L81)*
 
 **Parameters:**
 

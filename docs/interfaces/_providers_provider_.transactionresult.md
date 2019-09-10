@@ -12,7 +12,7 @@
 
 **● logs**: *`string`[]*
 
-*Defined in [providers/provider.ts:35](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/providers/provider.ts#L35)*
+*Defined in [providers/provider.ts:35](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/providers/provider.ts#L35)*
 
 ___
 <a id="receipts"></a>
@@ -21,7 +21,7 @@ ___
 
 **● receipts**: *`string`[]*
 
-*Defined in [providers/provider.ts:36](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/providers/provider.ts#L36)*
+*Defined in [providers/provider.ts:36](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/providers/provider.ts#L36)*
 
 ___
 <a id="result"></a>
@@ -30,7 +30,7 @@ ___
 
 **● result**: *`string`*
 
-*Defined in [providers/provider.ts:37](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/providers/provider.ts#L37)*
+*Defined in [providers/provider.ts:37](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/providers/provider.ts#L37)*
 
 ___
 <a id="status"></a>
@@ -39,7 +39,7 @@ ___
 
 **● status**: *`string`*
 
-*Defined in [providers/provider.ts:34](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/providers/provider.ts#L34)*
+*Defined in [providers/provider.ts:34](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/providers/provider.ts#L34)*
 
 ___
 
