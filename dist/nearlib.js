@@ -36,16 +36,16 @@ class Account {
         return this._ready || (this._ready = Promise.resolve(this.fetchState()));
     }
     async fetchState() {
+        this._accessKey = null;
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
-        try {
-            const publicKey = (await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId)).toString();
-            this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey}`, '');
-            if (this._accessKey === null) {
-                throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey}`);
-            }
+        const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        if (!publicKey) {
+            console.log(`Missing public key for ${this.accountId} in ${this.connection.networkId}`);
+            return;
         }
-        catch {
-            this._accessKey = null;
+        this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+        if (!this._accessKey) {
+            throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey.toString()}`);
         }
     }
     async state() {
@@ -73,7 +73,7 @@ class Account {
     }
     async signAndSendTransaction(receiverId, actions) {
         await this.ready;
-        if (this._accessKey === null) {
+        if (!this._accessKey) {
             throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
         }
         const status = await this.connection.provider.status();
@@ -127,7 +127,7 @@ class Account {
     // TODO: expand this API to support more options.
     async addKey(publicKey, contractId, methodName, amount) {
         let accessKey;
-        if (contractId === null || contractId === undefined || contractId == "") {
+        if (contractId === null || contractId === undefined || contractId === '') {
             accessKey = transaction_1.fullAccessKey();
         }
         else {
@@ -146,7 +146,8 @@ class Account {
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
-        return JSON.parse(Buffer.from(result.result).toString());
+        return result.result && result.result.length > 0 ?
+            JSON.parse(Buffer.from(result.result).toString()) : null;
     }
     /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
     async getAccessKeys() {
@@ -541,6 +542,16 @@ async function ensureDir(path) {
         }
     }
 }
+async function readKeyFile(path) {
+    const accountInfo = await loadJsonFile(path);
+    // The private key might be in private_key or secret_key field.
+    let privateKey = accountInfo.private_key;
+    if (!privateKey && accountInfo.secret_key) {
+        privateKey = accountInfo.secret_key;
+    }
+    return [accountInfo.account_id, key_pair_1.KeyPair.fromString(privateKey)];
+}
+exports.readKeyFile = readKeyFile;
 class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     constructor(keyDir) {
         super();
@@ -556,8 +567,8 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
         if (!await exists(this.getKeyFilePath(networkId, accountId))) {
             return null;
         }
-        const accountInfo = await loadJsonFile(this.getKeyFilePath(networkId, accountId));
-        return key_pair_1.KeyPair.fromString(accountInfo.private_key);
+        const accountKeyPair = await readKeyFile(this.getKeyFilePath(networkId, accountId));
+        return accountKeyPair[1];
     }
     async removeKey(networkId, accountId) {
         if (await exists(this.getKeyFilePath(networkId, accountId))) {
@@ -594,7 +605,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
 }
 exports.UnencryptedFileSystemKeyStore = UnencryptedFileSystemKeyStore;
 
-},{"../utils/key_pair":20,"./keystore":10,"fs":29,"util":67}],13:[function(require,module,exports){
+},{"../utils/key_pair":20,"./keystore":10,"fs":29,"util":68}],13:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -605,7 +616,6 @@ const account_1 = require("./account");
 const connection_1 = require("./connection");
 const contract_1 = require("./contract");
 const unencrypted_file_system_keystore_1 = require("./key_stores/unencrypted_file_system_keystore");
-const key_pair_1 = require("./utils/key_pair");
 const account_creator_1 = require("./account_creator");
 const key_stores_1 = require("./key_stores");
 class Near {
@@ -667,17 +677,17 @@ async function connect(config) {
     // Try to find extra key in `KeyPath` if provided.
     if (config.keyPath && config.deps && config.deps.keyStore) {
         try {
-            const keyFile = await unencrypted_file_system_keystore_1.loadJsonFile(config.keyPath);
-            if (keyFile.account_id) {
+            const accountKeyFile = await unencrypted_file_system_keystore_1.readKeyFile(config.keyPath);
+            if (accountKeyFile[0]) {
                 // TODO: Only load key if network ID matches
-                const keyPair = key_pair_1.KeyPair.fromString(keyFile.secret_key);
+                const keyPair = accountKeyFile[1];
                 const keyPathStore = new key_stores_1.InMemoryKeyStore();
-                await keyPathStore.setKey(config.networkId, keyFile.account_id, keyPair);
+                await keyPathStore.setKey(config.networkId, accountKeyFile[0], keyPair);
                 if (!config.masterAccount) {
-                    config.masterAccount = keyFile.account_id;
+                    config.masterAccount = accountKeyFile[0];
                 }
                 config.deps.keyStore = new key_stores_1.MergeKeyStore([config.deps.keyStore, keyPathStore]);
-                console.log(`Loaded master account ${keyFile.account_id} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+                console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         }
         catch (error) {
@@ -688,7 +698,7 @@ async function connect(config) {
 }
 exports.connect = connect;
 
-},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":9,"./key_stores/unencrypted_file_system_keystore":12,"./utils/key_pair":20,"bn.js":27}],14:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":9,"./key_stores/unencrypted_file_system_keystore":12,"bn.js":27}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
@@ -819,6 +829,9 @@ class InMemorySigner extends Signer {
     }
     async getPublicKey(accountId, networkId) {
         const keyPair = await this.keyStore.getKey(networkId, accountId);
+        if (keyPair === null) {
+            return null;
+        }
         return keyPair.getPublicKey();
     }
     async signHash(hash, accountId, networkId) {
@@ -1183,7 +1196,7 @@ class KeyPairEd25519 extends KeyPair {
 }
 exports.KeyPairEd25519 = KeyPairEd25519;
 
-},{"./serialize":22,"tweetnacl":60}],21:[function(require,module,exports){
+},{"./serialize":22,"tweetnacl":61}],21:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 
@@ -1529,94 +1542,128 @@ class WalletAccount {
 exports.WalletAccount = WalletAccount;
 
 },{"./utils":19}],25:[function(require,module,exports){
-// base-x encoding
-// Forked from https://github.com/cryptocoinjs/bs58
-// Originally written by Mike Hearn for BitcoinJ
-// Copyright (c) 2011 Google Inc
-// Ported to JavaScript by Stefan Thomas
-// Merged Buffer refactorings from base58-native by Stephen Pair
-// Copyright (c) 2013 BitPay Inc
-
-module.exports = function base (ALPHABET) {
-  var ALPHABET_MAP = {}
+'use strict'
+// base-x encoding / decoding
+// Copyright (c) 2018 base-x contributors
+// Copyright (c) 2014-2018 The Bitcoin Core developers (base58.cpp)
+// Distributed under the MIT software license, see the accompanying
+// file LICENSE or http://www.opensource.org/licenses/mit-license.php.
+// @ts-ignore
+var _Buffer = require('safe-buffer').Buffer
+function base (ALPHABET) {
+  if (ALPHABET.length >= 255) { throw new TypeError('Alphabet too long') }
+  var BASE_MAP = new Uint8Array(256)
+  BASE_MAP.fill(255)
+  for (var i = 0; i < ALPHABET.length; i++) {
+    var x = ALPHABET.charAt(i)
+    var xc = x.charCodeAt(0)
+    if (BASE_MAP[xc] !== 255) { throw new TypeError(x + ' is ambiguous') }
+    BASE_MAP[xc] = i
+  }
   var BASE = ALPHABET.length
   var LEADER = ALPHABET.charAt(0)
-
-  // pre-compute lookup table
-  for (var i = 0; i < ALPHABET.length; i++) {
-    ALPHABET_MAP[ALPHABET.charAt(i)] = i
-  }
-
+  var FACTOR = Math.log(BASE) / Math.log(256) // log(BASE) / log(256), rounded up
+  var iFACTOR = Math.log(256) / Math.log(BASE) // log(256) / log(BASE), rounded up
   function encode (source) {
-    if (source.length === 0) return ''
-
-    var digits = [0]
-    for (var i = 0; i < source.length; ++i) {
-      for (var j = 0, carry = source[i]; j < digits.length; ++j) {
-        carry += digits[j] << 8
-        digits[j] = carry % BASE
-        carry = (carry / BASE) | 0
-      }
-
-      while (carry > 0) {
-        digits.push(carry % BASE)
-        carry = (carry / BASE) | 0
-      }
+    if (!_Buffer.isBuffer(source)) { throw new TypeError('Expected Buffer') }
+    if (source.length === 0) { return '' }
+        // Skip & count leading zeroes.
+    var zeroes = 0
+    var length = 0
+    var pbegin = 0
+    var pend = source.length
+    while (pbegin !== pend && source[pbegin] === 0) {
+      pbegin++
+      zeroes++
     }
-
-    var string = ''
-
-    // deal with leading zeros
-    for (var k = 0; source[k] === 0 && k < source.length - 1; ++k) string += ALPHABET[0]
-    // convert digits to a string
-    for (var q = digits.length - 1; q >= 0; --q) string += ALPHABET[digits[q]]
-
-    return string
+        // Allocate enough space in big-endian base58 representation.
+    var size = ((pend - pbegin) * iFACTOR + 1) >>> 0
+    var b58 = new Uint8Array(size)
+        // Process the bytes.
+    while (pbegin !== pend) {
+      var carry = source[pbegin]
+            // Apply "b58 = b58 * 256 + ch".
+      var i = 0
+      for (var it1 = size - 1; (carry !== 0 || i < length) && (it1 !== -1); it1--, i++) {
+        carry += (256 * b58[it1]) >>> 0
+        b58[it1] = (carry % BASE) >>> 0
+        carry = (carry / BASE) >>> 0
+      }
+      if (carry !== 0) { throw new Error('Non-zero carry') }
+      length = i
+      pbegin++
+    }
+        // Skip leading zeroes in base58 result.
+    var it2 = size - length
+    while (it2 !== size && b58[it2] === 0) {
+      it2++
+    }
+        // Translate the result into a string.
+    var str = LEADER.repeat(zeroes)
+    for (; it2 < size; ++it2) { str += ALPHABET.charAt(b58[it2]) }
+    return str
   }
-
-  function decodeUnsafe (string) {
-    if (string.length === 0) return []
-
-    var bytes = [0]
-    for (var i = 0; i < string.length; i++) {
-      var value = ALPHABET_MAP[string[i]]
-      if (value === undefined) return
-
-      for (var j = 0, carry = value; j < bytes.length; ++j) {
-        carry += bytes[j] * BASE
-        bytes[j] = carry & 0xff
-        carry >>= 8
-      }
-
-      while (carry > 0) {
-        bytes.push(carry & 0xff)
-        carry >>= 8
-      }
+  function decodeUnsafe (source) {
+    if (typeof source !== 'string') { throw new TypeError('Expected String') }
+    if (source.length === 0) { return _Buffer.alloc(0) }
+    var psz = 0
+        // Skip leading spaces.
+    if (source[psz] === ' ') { return }
+        // Skip and count leading '1's.
+    var zeroes = 0
+    var length = 0
+    while (source[psz] === LEADER) {
+      zeroes++
+      psz++
     }
-
-    // deal with leading zeros
-    for (var k = 0; string[k] === LEADER && k < string.length - 1; ++k) {
-      bytes.push(0)
+        // Allocate enough space in big-endian base256 representation.
+    var size = (((source.length - psz) * FACTOR) + 1) >>> 0 // log(58) / log(256), rounded up.
+    var b256 = new Uint8Array(size)
+        // Process the characters.
+    while (source[psz]) {
+            // Decode character
+      var carry = BASE_MAP[source.charCodeAt(psz)]
+            // Invalid character
+      if (carry === 255) { return }
+      var i = 0
+      for (var it3 = size - 1; (carry !== 0 || i < length) && (it3 !== -1); it3--, i++) {
+        carry += (BASE * b256[it3]) >>> 0
+        b256[it3] = (carry % 256) >>> 0
+        carry = (carry / 256) >>> 0
+      }
+      if (carry !== 0) { throw new Error('Non-zero carry') }
+      length = i
+      psz++
     }
-
-    return bytes.reverse()
+        // Skip trailing spaces.
+    if (source[psz] === ' ') { return }
+        // Skip leading zeroes in b256.
+    var it4 = size - length
+    while (it4 !== size && b256[it4] === 0) {
+      it4++
+    }
+    var vch = _Buffer.allocUnsafe(zeroes + (size - it4))
+    vch.fill(0x00, 0, zeroes)
+    var j = zeroes
+    while (it4 !== size) {
+      vch[j++] = b256[it4++]
+    }
+    return vch
   }
-
   function decode (string) {
-    var array = decodeUnsafe(string)
-    if (array) return array
-
+    var buffer = decodeUnsafe(string)
+    if (buffer) { return buffer }
     throw new Error('Non-base' + BASE + ' character')
   }
-
   return {
     encode: encode,
     decodeUnsafe: decodeUnsafe,
     decode: decode
   }
 }
+module.exports = base
 
-},{}],26:[function(require,module,exports){
+},{"safe-buffer":56}],26:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -5206,12 +5253,8 @@ arguments[4][28][0].apply(exports,arguments)
 },{"dup":28}],30:[function(require,module,exports){
 var basex = require('base-x')
 var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-var base58 = basex(ALPHABET)
 
-module.exports = {
-  encode: base58.encode,
-  decode: base58.decode
-}
+module.exports = basex(ALPHABET)
 
 },{"base-x":25}],31:[function(require,module,exports){
 (function (Buffer){
@@ -7294,7 +7337,7 @@ module.exports = {
         return instance;
     })
 };
-},{"./Frame":40,"o3":51,"u3":61}],42:[function(require,module,exports){
+},{"./Frame":40,"o3":51,"u3":62}],42:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod,
     eachCombination = require("u3").eachCombination,
@@ -7428,7 +7471,7 @@ module.exports = {
         return instance;
     })
 };
-},{"capability":33,"o3":51,"u3":61}],43:[function(require,module,exports){
+},{"capability":33,"o3":51,"u3":62}],43:[function(require,module,exports){
 var FrameStringSource = require("./FrameStringSource"),
     FrameStringParser = require("./FrameStringParser"),
     cache = require("u3").cache,
@@ -7502,7 +7545,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"../prepareStackTrace":44,"./FrameStringParser":41,"./FrameStringSource":42,"u3":61}],44:[function(require,module,exports){
+},{"../prepareStackTrace":44,"./FrameStringParser":41,"./FrameStringSource":42,"u3":62}],44:[function(require,module,exports){
 var prepareStackTrace = function (throwable, frames, warnings) {
     var string = "";
     string += throwable.name || "Error";
@@ -7571,7 +7614,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":44,"u3":61}],46:[function(require,module,exports){
+},{"./prepareStackTrace":44,"u3":62}],46:[function(require,module,exports){
 var prepareStackTrace = require("./prepareStackTrace");
 
 module.exports = function () {
@@ -7851,7 +7894,7 @@ function populateConstructorExports (exports, codes, HttpError) {
     '"I\'mateapot"; use "ImATeapot" instead')
 }
 
-},{"depd":37,"inherits":49,"setprototypeof":56,"statuses":58,"toidentifier":59}],48:[function(require,module,exports){
+},{"depd":37,"inherits":49,"setprototypeof":57,"statuses":59,"toidentifier":60}],48:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -8823,6 +8866,72 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],56:[function(require,module,exports){
+/* eslint-disable node/no-deprecated-api */
+var buffer = require('buffer')
+var Buffer = buffer.Buffer
+
+// alternative to using Object.keys for old browsers
+function copyProps (src, dst) {
+  for (var key in src) {
+    dst[key] = src[key]
+  }
+}
+if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
+  module.exports = buffer
+} else {
+  // Copy properties from require('buffer')
+  copyProps(buffer, exports)
+  exports.Buffer = SafeBuffer
+}
+
+function SafeBuffer (arg, encodingOrOffset, length) {
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.prototype = Object.create(Buffer.prototype)
+
+// Copy static methods from Buffer
+copyProps(Buffer, SafeBuffer)
+
+SafeBuffer.from = function (arg, encodingOrOffset, length) {
+  if (typeof arg === 'number') {
+    throw new TypeError('Argument must not be a number')
+  }
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.alloc = function (size, fill, encoding) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  var buf = Buffer(size)
+  if (fill !== undefined) {
+    if (typeof encoding === 'string') {
+      buf.fill(fill, encoding)
+    } else {
+      buf.fill(fill)
+    }
+  } else {
+    buf.fill(0)
+  }
+  return buf
+}
+
+SafeBuffer.allocUnsafe = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return Buffer(size)
+}
+
+SafeBuffer.allocUnsafeSlow = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return buffer.SlowBuffer(size)
+}
+
+},{"buffer":31}],57:[function(require,module,exports){
 'use strict'
 /* eslint no-proto: 0 */
 module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
@@ -8841,7 +8950,7 @@ function mixinProperties (obj, proto) {
   return obj
 }
 
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports={
   "100": "Continue",
   "101": "Switching Protocols",
@@ -8909,7 +9018,7 @@ module.exports={
   "511": "Network Authentication Required"
 }
 
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /*!
  * statuses
  * Copyright(c) 2014 Jonathan Ong
@@ -9024,7 +9133,7 @@ function status (code) {
   return n
 }
 
-},{"./codes.json":57}],59:[function(require,module,exports){
+},{"./codes.json":58}],60:[function(require,module,exports){
 /*!
  * toidentifier
  * Copyright(c) 2016 Douglas Christopher Wilson
@@ -9056,7 +9165,7 @@ function toIdentifier (str) {
     .replace(/[^ _0-9a-z]/gi, '')
 }
 
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -11435,9 +11544,9 @@ nacl.setPRNG = function(fn) {
 
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-},{"crypto":28}],61:[function(require,module,exports){
+},{"crypto":28}],62:[function(require,module,exports){
 arguments[4][38][0].apply(exports,arguments)
-},{"./lib":64,"dup":38}],62:[function(require,module,exports){
+},{"./lib":65,"dup":38}],63:[function(require,module,exports){
 var cache = function (fn) {
     var called = false,
         store;
@@ -11459,7 +11568,7 @@ var cache = function (fn) {
 };
 
 module.exports = cache;
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function eachCombination(alternativesByDimension, callback, combination) {
     if (!combination)
         combination = [];
@@ -11474,12 +11583,12 @@ module.exports = function eachCombination(alternativesByDimension, callback, com
     else
         callback.apply(null, combination);
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = {
     cache: require("./cache"),
     eachCombination: require("./eachCombination")
 };
-},{"./cache":62,"./eachCombination":63}],65:[function(require,module,exports){
+},{"./cache":63,"./eachCombination":64}],66:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -11504,14 +11613,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -12101,4 +12210,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":66,"_process":55,"inherits":65}]},{},[1]);
+},{"./support/isBuffer":67,"_process":55,"inherits":66}]},{},[1]);

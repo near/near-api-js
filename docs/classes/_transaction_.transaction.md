@@ -16,7 +16,7 @@
 
 *Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L24)*
+*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L24)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● actions**: *[Action](_transaction_.action.md)[]*
 
-*Defined in [transaction.ts:116](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L116)*
+*Defined in [transaction.ts:116](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L116)*
 
 ___
 <a id="blockhash"></a>
@@ -45,7 +45,7 @@ ___
 
 **● blockHash**: *`Uint8Array`*
 
-*Defined in [transaction.ts:117](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L117)*
+*Defined in [transaction.ts:117](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L117)*
 
 ___
 <a id="nonce"></a>
@@ -54,7 +54,7 @@ ___
 
 **● nonce**: *`number`*
 
-*Defined in [transaction.ts:114](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L114)*
+*Defined in [transaction.ts:114](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L114)*
 
 ___
 <a id="publickey"></a>
@@ -63,7 +63,7 @@ ___
 
 **● publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [transaction.ts:113](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L113)*
+*Defined in [transaction.ts:113](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L113)*
 
 ___
 <a id="receiverid"></a>
@@ -72,7 +72,7 @@ ___
 
 **● receiverId**: *`string`*
 
-*Defined in [transaction.ts:115](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L115)*
+*Defined in [transaction.ts:115](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L115)*
 
 ___
 <a id="signerid"></a>
@@ -81,7 +81,7 @@ ___
 
 **● signerId**: *`string`*
 
-*Defined in [transaction.ts:112](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L112)*
+*Defined in [transaction.ts:112](https://github.com/nearprotocol/nearlib/blob/fb0e31a/src.ts/transaction.ts#L112)*
 
 ___
 
