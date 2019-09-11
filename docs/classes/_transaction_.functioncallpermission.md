@@ -16,7 +16,7 @@
 
 *Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L24)*
+*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L24)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● allowance**: *`BN`*
 
-*Defined in [transaction.ts:33](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L33)*
+*Defined in [transaction.ts:33](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L33)*
 
 ___
 <a id="methodnames"></a>
@@ -45,7 +45,7 @@ ___
 
 **● methodNames**: *`String`[]*
 
-*Defined in [transaction.ts:35](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L35)*
+*Defined in [transaction.ts:35](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L35)*
 
 ___
 <a id="receiverid"></a>
@@ -54,7 +54,7 @@ ___
 
 **● receiverId**: *`string`*
 
-*Defined in [transaction.ts:34](https://github.com/nearprotocol/nearlib/blob/c7aee6f/src.ts/transaction.ts#L34)*
+*Defined in [transaction.ts:34](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/transaction.ts#L34)*
 
 ___
 

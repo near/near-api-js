@@ -178,7 +178,7 @@ export class Account {
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
-        return JSON.parse(Buffer.from(result.result).toString());
+        return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
     }
 
     /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
