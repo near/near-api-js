@@ -1,5 +1,6 @@
 'use strict';
 
+import BN from 'bn.js';
 import { Account } from './account';
 import { getTransactionLastResult } from './providers';
 
@@ -21,8 +22,8 @@ export class Contract {
         options.changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
-                value: async function(args: any) {
-                    const rawResult = await this.account.functionCall(this.contractId, methodName, args || {});
+                value: async function(args: any, gas: number, amount?: BN) {
+                    const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
                     return getTransactionLastResult(rawResult);
                 }
             });

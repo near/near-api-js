@@ -146,8 +146,7 @@ class Account {
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
-        return result.result && result.result.length > 0 ?
-            JSON.parse(Buffer.from(result.result).toString()) : null;
+        return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
     }
     /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
     async getAccessKeys() {
@@ -260,8 +259,8 @@ class Contract {
         options.changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
-                value: async function (args) {
-                    const rawResult = await this.account.functionCall(this.contractId, methodName, args || {});
+                value: async function (args, gas, amount) {
+                    const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
                     return providers_1.getTransactionLastResult(rawResult);
                 }
             });

@@ -12,7 +12,7 @@
 
 **● status**: *[FinalTransactionStatus](../enums/_providers_provider_.finaltransactionstatus.md)*
 
-*Defined in [providers/provider.ts:41](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/providers/provider.ts#L41)*
+*Defined in [providers/provider.ts:41](https://github.com/nearprotocol/nearlib/blob/5251dca/src.ts/providers/provider.ts#L41)*
 
 ___
 <a id="transactions"></a>
@@ -21,7 +21,7 @@ ___
 
 **● transactions**: *[TransactionLog](_providers_provider_.transactionlog.md)[]*
 
-*Defined in [providers/provider.ts:42](https://github.com/nearprotocol/nearlib/blob/b1a6029/src.ts/providers/provider.ts#L42)*
+*Defined in [providers/provider.ts:42](https://github.com/nearprotocol/nearlib/blob/5251dca/src.ts/providers/provider.ts#L42)*
 
 ___
 
