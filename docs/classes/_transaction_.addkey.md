@@ -16,7 +16,7 @@
 
 *Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/5251dca/src.ts/transaction.ts#L24)*
+*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/4fd2642/src.ts/transaction.ts#L24)*
 
 **Parameters:**
 
@@ -36,7 +36,7 @@ ___
 
 **● accessKey**: *[AccessKey](_transaction_.accesskey.md)*
 
-*Defined in [transaction.ts:65](https://github.com/nearprotocol/nearlib/blob/5251dca/src.ts/transaction.ts#L65)*
+*Defined in [transaction.ts:65](https://github.com/nearprotocol/nearlib/blob/4fd2642/src.ts/transaction.ts#L65)*
 
 ___
 <a id="publickey"></a>
@@ -45,7 +45,7 @@ ___
 
 **● publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [transaction.ts:65](https://github.com/nearprotocol/nearlib/blob/5251dca/src.ts/transaction.ts#L65)*
+*Defined in [transaction.ts:65](https://github.com/nearprotocol/nearlib/blob/4fd2642/src.ts/transaction.ts#L65)*
 
 ___
 
