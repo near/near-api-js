@@ -39,6 +39,18 @@ test('send money', async() => {
     expect(state.amount).toEqual(testUtils.INITIAL_BALANCE.add(new BN(10000)).toString());
 });
 
+test('delete account', async() => {
+    const sender = await testUtils.createAccount(workingAccount);
+    const receiver = await testUtils.createAccount(workingAccount);
+    await sender.deleteAccount(receiver.accountId);
+    try {
+        const reloaded = new nearlib.Account(sender.connection, sender);
+        await reloaded.state();
+        fail('Getting state of deleted account was sucessful')
+    } catch (_) {
+    }
+});
+
 describe('errors', () => {
     let oldLog;
     let logs;

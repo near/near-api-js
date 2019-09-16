@@ -2,7 +2,7 @@
 
 import BN from 'bn.js';
 import { Action, transfer, createAccount, signTransaction, deployContract,
-    addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey } from './transaction';
+    addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
@@ -141,6 +141,10 @@ export class Account {
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult> {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]);
+    }
+
+    async deleteAccount(beneficiaryId: string) {
+        return this.signAndSendTransaction(this.accountId, [deleteAccount(beneficiaryId)]);
     }
 
     async deployContract(data: Uint8Array): Promise<FinalTransactionResult> {

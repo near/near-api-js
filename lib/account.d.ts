@@ -24,6 +24,7 @@ export declare class Account {
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
     sendMoney(receiverId: string, amount: BN): Promise<FinalTransactionResult>;
     createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult>;
+    deleteAccount(beneficiaryId: string): Promise<FinalTransactionResult>;
     deployContract(data: Uint8Array): Promise<FinalTransactionResult>;
     functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalTransactionResult>;
     addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult>;
