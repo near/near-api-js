@@ -2,7 +2,7 @@
 
 import BN from 'bn.js';
 import { Action, transfer, createAccount, signTransaction, deployContract,
-    addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
+    addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount, SignedTransaction } from './transaction';
 import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
@@ -91,17 +91,10 @@ export class Account {
     }
 
     private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalTransactionResult> {
-        await this.ready;
-        if (!this._accessKey) {
-            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
-        }
+        return this.signTransaction(receiverId, actions).then(this.sendTransaction);
+    }
 
-        const status = await this.connection.provider.status();
-
-        const [txHash, signedTx] = await signTransaction(
-            receiverId, ++this._accessKey.nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
-        );
-
+    private async sendTransaction([txHash, signedTx]: [Uint8Array, SignedTransaction]): Promise<FinalTransactionResult> {
         let result;
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
@@ -127,46 +120,87 @@ export class Account {
         return result;
     }
 
+    private async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
+        await this.ready;
+        if (!this._accessKey) {
+            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
+        }
+
+        const status = await this.connection.provider.status();
+
+        const [txHash, signedTx] = await signTransaction(
+            receiverId, ++this._accessKey.nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
+        );
+        return [txHash, signedTx];
+    }
+
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
-        const accessKey = fullAccessKey();
-        await this.signAndSendTransaction(contractId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]);
+        await this.signCreateAndDeployContract(contractId, publicKey, data, amount).then(this.sendTransaction);
         const contractAccount = new Account(this.connection, contractId);
         return contractAccount;
     }
 
+    async signCreateAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<[Uint8Array, SignedTransaction]> {
+        const accessKey = fullAccessKey();
+        return this.signTransaction(contractId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]);
+    }
+
     async sendMoney(receiverId: string, amount: BN): Promise<FinalTransactionResult> {
-        return this.signAndSendTransaction(receiverId, [transfer(amount)]);
+        return this.signSendMoney(receiverId, amount).then(this.sendTransaction);
+    }
+
+    async signSendMoney(receiverId: string, amount: BN): Promise<[Uint8Array, SignedTransaction]> {
+        return this.signTransaction(receiverId, [transfer(amount)]);
     }
 
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult> {
-        const accessKey = fullAccessKey();
-        return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]);
+        return this.signCreateAccount(newAccountId, publicKey, amount).then(this.sendTransaction);
     }
 
-    async deleteAccount(beneficiaryId: string) {
-        return this.signAndSendTransaction(this.accountId, [deleteAccount(beneficiaryId)]);
+    async signCreateAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<[Uint8Array, SignedTransaction]> {
+        const accessKey = fullAccessKey();
+        return this.signTransaction(newAccountId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]);
+    }
+
+    async deleteAccount(beneficiaryId: string): Promise<FinalTransactionResult> {
+        return this.signDeleteAccount(beneficiaryId).then(this.sendTransaction);
+    }
+
+    async signDeleteAccount(beneficiaryId: string): Promise<[Uint8Array, SignedTransaction]> {
+        return this.signTransaction(this.accountId, [deleteAccount(beneficiaryId)]);
     }
 
     async deployContract(data: Uint8Array): Promise<FinalTransactionResult> {
-        return this.signAndSendTransaction(this.accountId, [deployContract(data)]);
+        return this.signDeployContract(data).then(this.sendTransaction);
+    }
+
+    async signDeployContract(data: Uint8Array): Promise<[Uint8Array, SignedTransaction]> {
+        return this.signTransaction(this.accountId, [deployContract(data)]);
     }
 
     async functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalTransactionResult> {
-        if (!args) {
-            args = {};
-        }
-        return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
+        if (!args) { args = {}; }
+        return this.signFunctionCall(contractId, methodName, args, gas, amount).then(this.sendTransaction);
+    }
+
+    async signFunctionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<[Uint8Array, SignedTransaction]> {
+        if (!args) { args = {}; }
+        return this.signTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
     }
 
     // TODO: expand this API to support more options.
     async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult> {
+        return this.signAddKey(publicKey, contractId, methodName, amount).then(this.sendTransaction);
+    }
+
+    async signAddKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<[Uint8Array, SignedTransaction]> {
         let accessKey;
         if (contractId === null || contractId === undefined || contractId === '') {
             accessKey = fullAccessKey();
         } else {
             accessKey = functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
         }
-        return this.signAndSendTransaction(this.accountId, [addKey(PublicKey.from(publicKey), accessKey)]);
+        return this.signTransaction(this.accountId, [addKey(PublicKey.from(publicKey), accessKey)]);
     }
 
     async deleteKey(publicKey: string | PublicKey): Promise<FinalTransactionResult> {
