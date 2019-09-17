@@ -91,7 +91,7 @@ export class Account {
     }
 
     private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalTransactionResult> {
-        return this.signTransaction(receiverId, actions).then(this.sendTransaction);
+        return this.signTransaction(receiverId, actions).then((x) => this.sendTransaction(x));
     }
 
     private async sendTransaction([txHash, signedTx]: [Uint8Array, SignedTransaction]): Promise<FinalTransactionResult> {
@@ -135,7 +135,7 @@ export class Account {
     }
 
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
-        await this.signCreateAndDeployContract(contractId, publicKey, data, amount).then(this.sendTransaction);
+        await this.signCreateAndDeployContract(contractId, publicKey, data, amount).then((x) => this.sendTransaction(x));
         const contractAccount = new Account(this.connection, contractId);
         return contractAccount;
     }
@@ -146,7 +146,7 @@ export class Account {
     }
 
     async sendMoney(receiverId: string, amount: BN): Promise<FinalTransactionResult> {
-        return this.signSendMoney(receiverId, amount).then(this.sendTransaction);
+        return this.signSendMoney(receiverId, amount).then((x) => this.sendTransaction(x));
     }
 
     async signSendMoney(receiverId: string, amount: BN): Promise<[Uint8Array, SignedTransaction]> {
@@ -154,7 +154,7 @@ export class Account {
     }
 
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult> {
-        return this.signCreateAccount(newAccountId, publicKey, amount).then(this.sendTransaction);
+        return this.signCreateAccount(newAccountId, publicKey, amount).then((x) => this.sendTransaction(x));
     }
 
     async signCreateAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<[Uint8Array, SignedTransaction]> {
@@ -163,7 +163,7 @@ export class Account {
     }
 
     async deleteAccount(beneficiaryId: string): Promise<FinalTransactionResult> {
-        return this.signDeleteAccount(beneficiaryId).then(this.sendTransaction);
+        return this.signDeleteAccount(beneficiaryId).then((x) => this.sendTransaction(x));
     }
 
     async signDeleteAccount(beneficiaryId: string): Promise<[Uint8Array, SignedTransaction]> {
@@ -171,7 +171,7 @@ export class Account {
     }
 
     async deployContract(data: Uint8Array): Promise<FinalTransactionResult> {
-        return this.signDeployContract(data).then(this.sendTransaction);
+        return this.signDeployContract(data).then((x) => this.sendTransaction(x));
     }
 
     async signDeployContract(data: Uint8Array): Promise<[Uint8Array, SignedTransaction]> {
@@ -179,18 +179,19 @@ export class Account {
     }
 
     async functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalTransactionResult> {
-        if (!args) { args = {}; }
-        return this.signFunctionCall(contractId, methodName, args, gas, amount).then(this.sendTransaction);
+        return this.signFunctionCall(contractId, methodName, args, gas, amount).then((x) => this.sendTransaction(x));
     }
 
     async signFunctionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<[Uint8Array, SignedTransaction]> {
-        if (!args) { args = {}; }
+        if (!args) {
+            args = {};
+        }
         return this.signTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
     }
 
     // TODO: expand this API to support more options.
     async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult> {
-        return this.signAddKey(publicKey, contractId, methodName, amount).then(this.sendTransaction);
+        return this.signAddKey(publicKey, contractId, methodName, amount).then((x) => this.sendTransaction(x));
     }
 
     async signAddKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<[Uint8Array, SignedTransaction]> {

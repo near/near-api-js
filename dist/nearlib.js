@@ -72,12 +72,9 @@ class Account {
         throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`);
     }
     async signAndSendTransaction(receiverId, actions) {
-        await this.ready;
-        if (!this._accessKey) {
-            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
-        }
-        const status = await this.connection.provider.status();
-        const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
+        return this.signTransaction(receiverId, actions).then(this.sendTransaction);
+    }
+    async sendTransaction([txHash, signedTx]) {
         let result;
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
@@ -102,33 +99,63 @@ class Account {
         // TODO: deal with timeout on node side.
         return result;
     }
+    async signTransaction(receiverId, actions) {
+        await this.ready;
+        if (!this._accessKey) {
+            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
+        }
+        const status = await this.connection.provider.status();
+        const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
+        return [txHash, signedTx];
+    }
     async createAndDeployContract(contractId, publicKey, data, amount) {
-        const accessKey = transaction_1.fullAccessKey();
-        await this.signAndSendTransaction(contractId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey), transaction_1.deployContract(data)]);
+        await this.signCreateAndDeployContract(contractId, publicKey, data, amount).then(this.sendTransaction);
         const contractAccount = new Account(this.connection, contractId);
         return contractAccount;
     }
+    async signCreateAndDeployContract(contractId, publicKey, data, amount) {
+        const accessKey = transaction_1.fullAccessKey();
+        return this.signTransaction(contractId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey), transaction_1.deployContract(data)]);
+    }
     async sendMoney(receiverId, amount) {
-        return this.signAndSendTransaction(receiverId, [transaction_1.transfer(amount)]);
+        return this.signSendMoney(receiverId, amount).then(this.sendTransaction);
+    }
+    async signSendMoney(receiverId, amount) {
+        return this.signTransaction(receiverId, [transaction_1.transfer(amount)]);
     }
     async createAccount(newAccountId, publicKey, amount) {
+        return this.signCreateAccount(newAccountId, publicKey, amount).then(this.sendTransaction);
+    }
+    async signCreateAccount(newAccountId, publicKey, amount) {
         const accessKey = transaction_1.fullAccessKey();
-        return this.signAndSendTransaction(newAccountId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
+        return this.signTransaction(newAccountId, [transaction_1.createAccount(), transaction_1.transfer(amount), transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
     }
     async deleteAccount(beneficiaryId) {
-        return this.signAndSendTransaction(this.accountId, [transaction_1.deleteAccount(beneficiaryId)]);
+        return this.signDeleteAccount(beneficiaryId).then(this.sendTransaction);
+    }
+    async signDeleteAccount(beneficiaryId) {
+        return this.signTransaction(this.accountId, [transaction_1.deleteAccount(beneficiaryId)]);
     }
     async deployContract(data) {
-        return this.signAndSendTransaction(this.accountId, [transaction_1.deployContract(data)]);
+        return this.signDeployContract(data).then(this.sendTransaction);
+    }
+    async signDeployContract(data) {
+        return this.signTransaction(this.accountId, [transaction_1.deployContract(data)]);
     }
     async functionCall(contractId, methodName, args, gas, amount) {
+        return this.signFunctionCall(contractId, methodName, args, gas, amount).then(this.sendTransaction);
+    }
+    async signFunctionCall(contractId, methodName, args, gas, amount) {
         if (!args) {
             args = {};
         }
-        return this.signAndSendTransaction(contractId, [transaction_1.functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
+        return this.signTransaction(contractId, [transaction_1.functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
     }
     // TODO: expand this API to support more options.
     async addKey(publicKey, contractId, methodName, amount) {
+        return this.signAddKey(publicKey, contractId, methodName, amount).then(this.sendTransaction);
+    }
+    async signAddKey(publicKey, contractId, methodName, amount) {
         let accessKey;
         if (contractId === null || contractId === undefined || contractId === '') {
             accessKey = transaction_1.fullAccessKey();
@@ -136,7 +163,7 @@ class Account {
         else {
             accessKey = transaction_1.functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
         }
-        return this.signAndSendTransaction(this.accountId, [transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
+        return this.signTransaction(this.accountId, [transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
     }
     async deleteKey(publicKey) {
         return this.signAndSendTransaction(this.accountId, [transaction_1.deleteKey(key_pair_1.PublicKey.from(publicKey))]);
@@ -253,7 +280,7 @@ class Contract {
         this.contractId = contractId;
         options.viewMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
-                writable: false,
+                writable: true,
                 value: async function (args) {
                     return this.account.viewFunction(this.contractId, methodName, args || {});
                 }
@@ -261,7 +288,17 @@ class Contract {
         });
         options.changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
-                writable: false,
+                writable: true,
+                value: async function (args, gas, amount) {
+                    const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
+                    return providers_1.getTransactionLastResult(rawResult);
+                }
+            });
+        });
+        this.sign = {};
+        options.changeMethods.forEach((methodName) => {
+            Object.defineProperty(this.sign, methodName, {
+                writable: true,
                 value: async function (args, gas, amount) {
                     const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
                     return providers_1.getTransactionLastResult(rawResult);
