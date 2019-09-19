@@ -54,7 +54,7 @@
     "test": "jest test --runInBand",
     "lint": "eslint test && tslint -p ./tsconfig.json -t codeFrame",
     "fix": "eslint test --fix && tslint -p ./tsconfig.json -t codeFrame --fix",
-    "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"
+    "doc": "typedoc --out docs/nearlib --theme docusaurus src.ts/ --hideBreadcrumbs"
   },
   "author": "NEAR Inc"
 }
