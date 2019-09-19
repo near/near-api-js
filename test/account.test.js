@@ -46,8 +46,9 @@ test('delete account', async() => {
     try {
         const reloaded = new nearlib.Account(sender.connection, sender);
         await reloaded.state();
-        fail('Getting state of deleted account was sucessful')
+        fail('Getting state of deleted account was sucessful');
     } catch (_) {
+        // Expected to throw
     }
 });
 
