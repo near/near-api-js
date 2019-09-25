@@ -3,10 +3,8 @@ import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
 import { Contract } from './contract';
-import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
-import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 
 export class Near {
     readonly config: any;
@@ -70,24 +68,5 @@ export class Near {
 }
 
 export async function connect(config: any): Promise<Near> {
-    // Try to find extra key in `KeyPath` if provided.
-    if (config.keyPath && config.deps && config.deps.keyStore) {
-        try {
-            const accountKeyFile = await readKeyFile(config.keyPath);
-            if (accountKeyFile[0]) {
-                // TODO: Only load key if network ID matches
-                const keyPair = accountKeyFile[1];
-                const keyPathStore = new InMemoryKeyStore();
-                await keyPathStore.setKey(config.networkId, accountKeyFile[0], keyPair);
-                if (!config.masterAccount) {
-                    config.masterAccount = accountKeyFile[0];
-                }
-                config.deps.keyStore = new MergeKeyStore([config.deps.keyStore, keyPathStore]);
-                console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
-            }
-        } catch (error) {
-            console.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
-        }
-    }
     return new Near(config);
 }
