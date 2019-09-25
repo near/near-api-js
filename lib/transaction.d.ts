@@ -1,13 +1,7 @@
 import BN from 'bn.js';
+import { Enum, Assignable } from './utils/enums';
 import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
-declare class Enum {
-    enum: string;
-    constructor(properties: any);
-}
-declare class Assignable {
-    constructor(properties: any);
-}
 export declare class FunctionCallPermission extends Assignable {
     allowance?: BN;
     receiverId: string;

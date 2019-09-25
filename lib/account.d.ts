@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { FinalTransactionResult } from './providers/provider';
+import { FinalExecutionOutcome } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
 export interface AccountState {
@@ -22,14 +22,14 @@ export declare class Account {
     private retryTxResult;
     private signAndSendTransaction;
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
-    sendMoney(receiverId: string, amount: BN): Promise<FinalTransactionResult>;
-    createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult>;
-    deleteAccount(beneficiaryId: string): Promise<FinalTransactionResult>;
-    deployContract(data: Uint8Array): Promise<FinalTransactionResult>;
-    functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalTransactionResult>;
-    addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult>;
-    deleteKey(publicKey: string | PublicKey): Promise<FinalTransactionResult>;
-    stake(publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult>;
+    sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
+    createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    deleteAccount(beneficiaryId: string): Promise<FinalExecutionOutcome>;
+    deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
+    functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalExecutionOutcome>;
+    addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
+    deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
+    stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
     viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
     getAccessKeys(): Promise<any>;
     getAccountDetails(): Promise<any>;

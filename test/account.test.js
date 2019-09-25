@@ -48,7 +48,7 @@ test('delete account', async() => {
         await reloaded.state();
         fail('Getting state of deleted account was sucessful');
     } catch (_) {
-        // Expected to throw
+        // Expected to throwroviders.test.js
     }
 });
 
