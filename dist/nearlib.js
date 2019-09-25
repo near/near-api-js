@@ -63,7 +63,7 @@ class Account {
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
             if (result.status === provider_1.FinalExecutionStatusBasic.Failure ||
-                typeof result.status === "object" && result.status.SuccessValue !== null) {
+                typeof result.status === 'object' && result.status.SuccessValue !== null) {
                 return result;
             }
             await sleep(waitTime);
@@ -797,8 +797,8 @@ class Provider {
 }
 exports.Provider = Provider;
 function getTransactionLastResult(txResult) {
-    if (typeof txResult.status === "object" && txResult.status.SuccessValue !== null) {
-        let value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();
+    if (typeof txResult.status === 'object' && txResult.status.SuccessValue !== null) {
+        const value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();
         try {
             return JSON.parse(value);
         }
