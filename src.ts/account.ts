@@ -81,7 +81,7 @@ export class Account {
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
             if (result.status === FinalExecutionStatusBasic.Failure ||
-                    typeof result.status === "object" && result.status.SuccessValue !== null) {
+                    typeof result.status === 'object' && result.status.SuccessValue !== null) {
                 return result;
             }
             await sleep(waitTime);

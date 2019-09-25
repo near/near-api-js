@@ -96,8 +96,8 @@ export abstract class Provider {
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
-    if (typeof txResult.status === "object" && txResult.status.SuccessValue !== null) {
-        let value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();
+    if (typeof txResult.status === 'object' && txResult.status.SuccessValue !== null) {
+        const value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();
         try {
             return JSON.parse(value);
         } catch (e) {
