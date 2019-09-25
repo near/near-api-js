@@ -14,6 +14,7 @@ export class Contract {
         options.viewMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
+                enumerable: true,
                 value: async function(args: any) {
                     return this.account.viewFunction(this.contractId, methodName, args || {});
                 }
@@ -22,6 +23,7 @@ export class Contract {
         options.changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
+                enumerable: true,
                 value: async function(args: any, gas: number, amount?: BN) {
                     const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
                     return getTransactionLastResult(rawResult);
