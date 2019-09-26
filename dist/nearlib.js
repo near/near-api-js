@@ -254,6 +254,7 @@ class Contract {
         options.viewMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
+                enumerable: true,
                 value: async function (args) {
                     return this.account.viewFunction(this.contractId, methodName, args || {});
                 }
@@ -262,6 +263,7 @@ class Contract {
         options.changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
+                enumerable: true,
                 value: async function (args, gas, amount) {
                     const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
                     return providers_1.getTransactionLastResult(rawResult);
@@ -742,7 +744,7 @@ class JsonRpcProvider extends provider_1.Provider {
     }
     async query(path, data) {
         const result = await this.sendJsonRpc('query', [path, data]);
-        if (result.error) {
+        if (result && result.error) {
             throw new Error(`Quering ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
         }
         return result;
@@ -6330,7 +6332,7 @@ function hexSlice (buf, start, end) {
 
   var out = ''
   for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
+    out += hexSliceLookupTable[buf[i]]
   }
   return out
 }
@@ -6916,11 +6918,6 @@ function base64clean (str) {
   return str
 }
 
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
 function utf8ToBytes (string, units) {
   units = units || Infinity
   var codePoint
@@ -7050,6 +7047,20 @@ function numberIsNaN (obj) {
   // For IE11 support
   return obj !== obj // eslint-disable-line no-self-compare
 }
+
+// Create lookup table for `toString('hex')`
+// See: https://github.com/feross/buffer/issues/219
+var hexSliceLookupTable = (function () {
+  var alphabet = '0123456789abcdef'
+  var table = new Array(256)
+  for (var i = 0; i < 16; ++i) {
+    var i16 = i * 16
+    for (var j = 0; j < 16; ++j) {
+      table[i16 + j] = alphabet[i] + alphabet[j]
+    }
+  }
+  return table
+})()
 
 }).call(this,require("buffer").Buffer)
 },{"base64-js":26,"buffer":31,"ieee754":48}],32:[function(require,module,exports){
