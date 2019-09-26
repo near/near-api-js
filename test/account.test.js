@@ -43,13 +43,8 @@ test('delete account', async() => {
     const sender = await testUtils.createAccount(workingAccount);
     const receiver = await testUtils.createAccount(workingAccount);
     await sender.deleteAccount(receiver.accountId);
-    try {
-        const reloaded = new nearlib.Account(sender.connection, sender);
-        await reloaded.state();
-        fail('Getting state of deleted account was sucessful');
-    } catch (_) {
-        // Expected to throwroviders.test.js
-    }
+    const reloaded = new nearlib.Account(sender.connection, sender);
+    await expect(reloaded.state()).rejects.toThrow();
 });
 
 describe('errors', () => {
