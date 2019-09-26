@@ -3,31 +3,10 @@
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
+import { Enum, Assignable } from './utils/enums';
 import { serialize } from './utils/serialize';
 import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
-
-class Enum {
-    enum: string;
-
-    constructor(properties: any) {
-        if (Object.keys(properties).length !== 1) {
-            throw new Error('Enum can only take single value');
-        }
-        Object.keys(properties).map((key: string) => {
-            (this as any)[key] = properties[key];
-            this.enum = key;
-        });
-    }
-}
-
-class Assignable {
-    constructor(properties: any) {
-        Object.keys(properties).map((key: any) => {
-            (this as any)[key] = properties[key];
-        });
-    }
-}
 
 export class FunctionCallPermission extends Assignable {
     allowance?: BN;
