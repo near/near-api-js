@@ -32,8 +32,8 @@
     "rimraf": "^2.6.3",
     "ts-protoc-gen": "^0.10.0",
     "tslint": "^5.18.0",
-    "typedoc": "^0.14.2",
-    "typedoc-plugin-markdown": "^1.2.1",
+    "typedoc": "^0.15.0",
+    "typedoc-plugin-markdown": "^2.2.5",
     "uglifyify": "^5.0.1"
   },
   "jest": {
