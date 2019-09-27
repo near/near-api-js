@@ -710,6 +710,7 @@ const provider_1 = require("./provider");
 exports.Provider = provider_1.Provider;
 exports.getTransactionLastResult = provider_1.getTransactionLastResult;
 exports.FinalExecutionStatusBasic = provider_1.FinalExecutionStatusBasic;
+exports.adaptTransactionResult = provider_1.adaptTransactionResult;
 const json_rpc_provider_1 = require("./json-rpc-provider");
 exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
 
@@ -739,10 +740,10 @@ class JsonRpcProvider extends provider_1.Provider {
     }
     async sendTransaction(signedTransaction) {
         const bytes = signedTransaction.encode();
-        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
+        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]).then(provider_1.adaptTransactionResult);
     }
     async txStatus(txHash) {
-        return this.sendJsonRpc('tx', [serialize_1.base_encode(txHash)]);
+        return this.sendJsonRpc('tx', [serialize_1.base_encode(txHash)]).then(provider_1.adaptTransactionResult);
     }
     async query(path, data) {
         const result = await this.sendJsonRpc('query', [path, data]);
@@ -793,6 +794,61 @@ var FinalExecutionStatusBasic;
 class FinalExecutionStatus extends enums_1.Enum {
 }
 exports.FinalExecutionStatus = FinalExecutionStatus;
+var LegacyFinalTransactionStatus;
+(function (LegacyFinalTransactionStatus) {
+    LegacyFinalTransactionStatus["Unknown"] = "Unknown";
+    LegacyFinalTransactionStatus["Started"] = "Started";
+    LegacyFinalTransactionStatus["Failed"] = "Failed";
+    LegacyFinalTransactionStatus["Completed"] = "Completed";
+})(LegacyFinalTransactionStatus || (LegacyFinalTransactionStatus = {}));
+function mapLegacyTransactionLog(tl) {
+    return {
+        id: tl.hash,
+        outcome: {
+            status: ExecutionStatusBasic.Pending,
+            logs: tl.result.logs,
+            receipt_ids: tl.result.receipts,
+            gas_burnt: 0,
+        },
+    };
+}
+function adaptTransactionResult(txResult) {
+    if ('transactions' in txResult) {
+        txResult = txResult;
+        let status;
+        if (txResult.status === LegacyFinalTransactionStatus.Unknown) {
+            status = FinalExecutionStatusBasic.NotStarted;
+        }
+        else if (txResult.status === LegacyFinalTransactionStatus.Started) {
+            status = FinalExecutionStatusBasic.Started;
+        }
+        else if (txResult.status === LegacyFinalTransactionStatus.Failed) {
+            status = FinalExecutionStatusBasic.Failure;
+        }
+        else if (txResult.status === LegacyFinalTransactionStatus.Completed) {
+            let result = '';
+            for (let i = txResult.transactions.length - 1; i >= 0; --i) {
+                const r = txResult.transactions[i];
+                if (r.result && r.result.result && r.result.result.length > 0) {
+                    result = r.result.result;
+                    break;
+                }
+            }
+            status = {
+                SuccessValue: result,
+            };
+        }
+        return {
+            status: status,
+            transaction: mapLegacyTransactionLog(txResult.transactions.splice(0, 1)[0]),
+            receipts: txResult.transactions.map(mapLegacyTransactionLog),
+        };
+    }
+    else {
+        return txResult;
+    }
+}
+exports.adaptTransactionResult = adaptTransactionResult;
 class Provider {
 }
 exports.Provider = Provider;

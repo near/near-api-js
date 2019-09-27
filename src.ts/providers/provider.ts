@@ -80,9 +80,78 @@ export interface Transaction {
     body: any;
 }
 
+interface LegacyTransactionLog {
+    hash: string;
+    result: LegacyTransactionResult;
+}
+
+interface LegacyTransactionResult {
+    status: string;
+    logs: string[];
+    receipts: string[];
+    result?: string;
+}
+
+enum LegacyFinalTransactionStatus {
+    Unknown = 'Unknown',
+    Started = 'Started',
+    Failed = 'Failed',
+    Completed = 'Completed',
+}
+
+interface LegacyFinalTransactionResult {
+    status: LegacyFinalTransactionStatus;
+    transactions: LegacyTransactionLog[];
+}
+
 export interface BlockResult {
     header: BlockHeader;
     transactions: Transaction[];
+}
+
+function mapLegacyTransactionLog(tl: LegacyTransactionLog): ExecutionOutcomeWithId {
+    return {
+        id: tl.hash,
+        outcome: {
+            status: ExecutionStatusBasic.Pending,  // legacy reasons, so don't need it
+            logs: tl.result.logs,
+            receipt_ids: tl.result.receipts,
+            gas_burnt: 0,  // not available
+        },
+    };
+}
+
+export function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyFinalTransactionResult): FinalExecutionOutcome {
+    if ('transactions' in txResult) {
+        txResult = txResult as LegacyFinalTransactionResult;
+        let status;
+        if (txResult.status === LegacyFinalTransactionStatus.Unknown) {
+            status = FinalExecutionStatusBasic.NotStarted;
+        } else if (txResult.status === LegacyFinalTransactionStatus.Started) {
+            status = FinalExecutionStatusBasic.Started;
+        } else if (txResult.status === LegacyFinalTransactionStatus.Failed) {
+            status = FinalExecutionStatusBasic.Failure;
+        } else if (txResult.status === LegacyFinalTransactionStatus.Completed) {
+            let result = '';
+            for (let i = txResult.transactions.length - 1; i >= 0; --i) {
+                const r = txResult.transactions[i];
+                if (r.result && r.result.result && r.result.result.length > 0) {
+                    result = r.result.result;
+                    break;
+                }
+            }
+            status = {
+                SuccessValue: result,
+            };
+        }
+        return {
+            status: status,
+            transaction: mapLegacyTransactionLog(txResult.transactions.splice(0, 1)[0]),
+            receipts: txResult.transactions.map(mapLegacyTransactionLog),
+        };
+    } else {
+        return txResult;
+    }
 }
 
 export abstract class Provider {

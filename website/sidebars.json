@@ -37,6 +37,7 @@
       "nearlib/modules/_providers_provider_",
       "nearlib/enums/_providers_provider_.executionstatusbasic",
       "nearlib/enums/_providers_provider_.finalexecutionstatusbasic",
+      "nearlib/enums/_providers_provider_.legacyfinaltransactionstatus",
       "nearlib/classes/_providers_provider_.executionstatus",
       "nearlib/classes/_providers_provider_.finalexecutionstatus",
       "nearlib/classes/_providers_provider_.provider",
@@ -45,6 +46,9 @@
       "nearlib/interfaces/_providers_provider_.executionoutcome",
       "nearlib/interfaces/_providers_provider_.executionoutcomewithid",
       "nearlib/interfaces/_providers_provider_.finalexecutionoutcome",
+      "nearlib/interfaces/_providers_provider_.legacyfinaltransactionresult",
+      "nearlib/interfaces/_providers_provider_.legacytransactionlog",
+      "nearlib/interfaces/_providers_provider_.legacytransactionresult",
       "nearlib/interfaces/_providers_provider_.nodestatusresult",
       "nearlib/interfaces/_providers_provider_.syncinfo",
       "nearlib/interfaces/_providers_provider_.totalweight",
@@ -138,6 +142,7 @@
     "Enums": [
       "nearlib/enums/_providers_provider_.executionstatusbasic",
       "nearlib/enums/_providers_provider_.finalexecutionstatusbasic",
+      "nearlib/enums/_providers_provider_.legacyfinaltransactionstatus",
       "nearlib/enums/_utils_key_pair_.keytype"
     ],
     "Interfaces": [
@@ -148,6 +153,9 @@
       "nearlib/interfaces/_providers_provider_.executionoutcome",
       "nearlib/interfaces/_providers_provider_.executionoutcomewithid",
       "nearlib/interfaces/_providers_provider_.finalexecutionoutcome",
+      "nearlib/interfaces/_providers_provider_.legacyfinaltransactionresult",
+      "nearlib/interfaces/_providers_provider_.legacytransactionlog",
+      "nearlib/interfaces/_providers_provider_.legacytransactionresult",
       "nearlib/interfaces/_providers_provider_.nodestatusresult",
       "nearlib/interfaces/_providers_provider_.syncinfo",
       "nearlib/interfaces/_providers_provider_.totalweight",

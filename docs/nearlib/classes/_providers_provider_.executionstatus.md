@@ -30,7 +30,7 @@ sidebar_label: "ExecutionStatus"
 
 *Inherited from [Enum](_utils_enums_.enum.md).[constructor](_utils_enums_.enum.md#constructor)*
 
-*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/utils/enums.ts#L4)*
+*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/enums.ts#L4)*
 
 **Parameters:**
 
@@ -46,7 +46,7 @@ Name | Type |
 
 • **SuccessReceiptId**: *string*
 
-*Defined in [providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/providers/provider.ts#L29)*
+*Defined in [providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L29)*
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 • **SuccessValue**: *string*
 
-*Defined in [providers/provider.ts:28](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/providers/provider.ts#L28)*
+*Defined in [providers/provider.ts:28](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L28)*
 
 ___
 
@@ -64,4 +64,4 @@ ___
 
 *Inherited from [Enum](_utils_enums_.enum.md).[enum](_utils_enums_.enum.md#enum)*
 
-*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/utils/enums.ts#L4)*
+*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/enums.ts#L4)*

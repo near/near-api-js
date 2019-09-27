@@ -1,5 +1,5 @@
 
-import { Provider, FinalExecutionOutcome, ExecutionOutcomeWithId, getTransactionLastResult, FinalExecutionStatusBasic } from './provider';
+import { Provider, FinalExecutionOutcome, ExecutionOutcomeWithId, getTransactionLastResult, FinalExecutionStatusBasic, adaptTransactionResult } from './provider';
 import { JsonRpcProvider } from './json-rpc-provider';
 
 export {
@@ -8,5 +8,6 @@ export {
     JsonRpcProvider,
     ExecutionOutcomeWithId,
     FinalExecutionStatusBasic,
-    getTransactionLastResult
+    getTransactionLastResult,
+    adaptTransactionResult
 };

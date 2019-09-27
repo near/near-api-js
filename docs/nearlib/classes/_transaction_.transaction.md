@@ -33,7 +33,7 @@ sidebar_label: "Transaction"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/utils/enums.ts#L17)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -49,7 +49,7 @@ Name | Type |
 
 • **actions**: *[Action](_transaction_.action.md)[]*
 
-*Defined in [transaction.ts:95](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/transaction.ts#L95)*
+*Defined in [transaction.ts:95](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L95)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **blockHash**: *Uint8Array*
 
-*Defined in [transaction.ts:96](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/transaction.ts#L96)*
+*Defined in [transaction.ts:96](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L96)*
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 • **nonce**: *number*
 
-*Defined in [transaction.ts:93](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/transaction.ts#L93)*
+*Defined in [transaction.ts:93](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L93)*
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 • **publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [transaction.ts:92](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/transaction.ts#L92)*
+*Defined in [transaction.ts:92](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L92)*
 
 ___
 
@@ -81,7 +81,7 @@ ___
 
 • **receiverId**: *string*
 
-*Defined in [transaction.ts:94](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/transaction.ts#L94)*
+*Defined in [transaction.ts:94](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L94)*
 
 ___
 
@@ -89,4 +89,4 @@ ___
 
 • **signerId**: *string*
 
-*Defined in [transaction.ts:91](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/transaction.ts#L91)*
+*Defined in [transaction.ts:91](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L91)*

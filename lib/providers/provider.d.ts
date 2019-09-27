@@ -65,10 +65,31 @@ export interface Transaction {
     signature: string;
     body: any;
 }
+interface LegacyTransactionLog {
+    hash: string;
+    result: LegacyTransactionResult;
+}
+interface LegacyTransactionResult {
+    status: string;
+    logs: string[];
+    receipts: string[];
+    result?: string;
+}
+declare enum LegacyFinalTransactionStatus {
+    Unknown = "Unknown",
+    Started = "Started",
+    Failed = "Failed",
+    Completed = "Completed"
+}
+interface LegacyFinalTransactionResult {
+    status: LegacyFinalTransactionStatus;
+    transactions: LegacyTransactionLog[];
+}
 export interface BlockResult {
     header: BlockHeader;
     transactions: Transaction[];
 }
+export declare function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyFinalTransactionResult): FinalExecutionOutcome;
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
@@ -78,3 +99,4 @@ export declare abstract class Provider {
     abstract block(height: number): Promise<BlockResult>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
+export {};

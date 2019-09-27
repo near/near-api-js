@@ -1,6 +1,6 @@
 'use strict';
 
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockResult } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockResult, adaptTransactionResult } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { base_encode } from '../utils/serialize';
@@ -32,11 +32,11 @@ export class JsonRpcProvider extends Provider {
 
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
         const bytes = signedTransaction.encode();
-        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
+        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]).then(adaptTransactionResult);
     }
 
     async txStatus(txHash: Uint8Array): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', [base_encode(txHash)]);
+        return this.sendJsonRpc('tx', [base_encode(txHash)]).then(adaptTransactionResult);
     }
 
     async query(path: string, data: string): Promise<any> {

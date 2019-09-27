@@ -22,7 +22,7 @@ sidebar_label: "Network"
 
 • **_defaultProvider**? : *function*
 
-*Defined in [utils/network.ts:6](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/utils/network.ts#L6)*
+*Defined in [utils/network.ts:6](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/network.ts#L6)*
 
 #### Type declaration:
 
@@ -40,7 +40,7 @@ ___
 
 • **chainId**: *string*
 
-*Defined in [utils/network.ts:5](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/utils/network.ts#L5)*
+*Defined in [utils/network.ts:5](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/network.ts#L5)*
 
 ___
 
@@ -48,4 +48,4 @@ ___
 
 • **name**: *string*
 
-*Defined in [utils/network.ts:4](https://github.com/nearprotocol/nearlib/blob/f222a4e/src.ts/utils/network.ts#L4)*
+*Defined in [utils/network.ts:4](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/network.ts#L4)*
