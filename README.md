@@ -1,5 +1,7 @@
 # nearlib
 
+ ![Build Status](https://gitlab.com/near-protocol/near-wallet/badges/master/pipeline.svg)
+
 nearlib is a JavaScript/TypeScript library for development of DApps on NEAR platform.
 
 ## Install dependencies
