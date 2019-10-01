@@ -9,3 +9,4 @@ node_modules
 neardev/
 coverage/
 src\.ts/protos\.d\.ts
+package\-lock\.json

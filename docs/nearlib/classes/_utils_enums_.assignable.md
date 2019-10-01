@@ -1,5 +1,5 @@
 ---
-id: "_transaction_.assignable"
+id: "_utils_enums_.assignable"
 title: "Assignable"
 sidebar_label: "Assignable"
 ---
@@ -24,15 +24,15 @@ sidebar_label: "Assignable"
 
 ### Constructors
 
-* [constructor](_transaction_.assignable.md#constructor)
+* [constructor](_utils_enums_.assignable.md#constructor)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new Assignable**(`properties`: any): *[Assignable](_transaction_.assignable.md)*
+\+ **new Assignable**(`properties`: any): *[Assignable](_utils_enums_.assignable.md)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L24)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -40,4 +40,4 @@ Name | Type |
 ------ | ------ |
 `properties` | any |
 
-**Returns:** *[Assignable](_transaction_.assignable.md)*
+**Returns:** *[Assignable](_utils_enums_.assignable.md)*

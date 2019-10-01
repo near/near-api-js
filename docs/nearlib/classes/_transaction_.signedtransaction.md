@@ -6,7 +6,7 @@ sidebar_label: "SignedTransaction"
 
 ## Hierarchy
 
-* [Assignable](_transaction_.assignable.md)
+* [Assignable](_utils_enums_.assignable.md)
 
   ↳ **SignedTransaction**
 
@@ -31,9 +31,9 @@ sidebar_label: "SignedTransaction"
 
 \+ **new SignedTransaction**(`properties`: any): *[SignedTransaction](_transaction_.signedtransaction.md)*
 
-*Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
+*Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L24)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -49,7 +49,7 @@ Name | Type |
 
 • **signature**: *[Signature](_transaction_.signature.md)*
 
-*Defined in [transaction.ts:122](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L122)*
+*Defined in [transaction.ts:101](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L101)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **transaction**: *[Transaction](_transaction_.transaction.md)*
 
-*Defined in [transaction.ts:121](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L121)*
+*Defined in [transaction.ts:100](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L100)*
 
 ## Methods
 
@@ -65,6 +65,6 @@ ___
 
 ▸ **encode**(): *Uint8Array*
 
-*Defined in [transaction.ts:124](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L124)*
+*Defined in [transaction.ts:103](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L103)*
 
 **Returns:** *Uint8Array*

@@ -25,6 +25,7 @@ sidebar_label: "Globals"
 * ["providers/provider"](modules/_providers_provider_.md)
 * ["signer"](modules/_signer_.md)
 * ["transaction"](modules/_transaction_.md)
+* ["utils/enums"](modules/_utils_enums_.md)
 * ["utils/index"](modules/_utils_index_.md)
 * ["utils/key_pair"](modules/_utils_key_pair_.md)
 * ["utils/network"](modules/_utils_network_.md)

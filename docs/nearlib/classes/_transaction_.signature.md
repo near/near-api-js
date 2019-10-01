@@ -25,7 +25,7 @@ sidebar_label: "Signature"
 
 \+ **new Signature**(`signature`: Uint8Array): *[Signature](_transaction_.signature.md)*
 
-*Defined in [transaction.ts:103](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L103)*
+*Defined in [transaction.ts:82](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L82)*
 
 **Parameters:**
 
@@ -41,7 +41,7 @@ Name | Type |
 
 • **data**: *Uint8Array*
 
-*Defined in [transaction.ts:103](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L103)*
+*Defined in [transaction.ts:82](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L82)*
 
 ___
 
@@ -49,4 +49,4 @@ ___
 
 • **keyType**: *[KeyType](../enums/_utils_key_pair_.keytype.md)*
 
-*Defined in [transaction.ts:102](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L102)*
+*Defined in [transaction.ts:81](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L81)*

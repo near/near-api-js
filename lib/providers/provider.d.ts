@@ -1,3 +1,4 @@
+import { Enum } from '../utils/enums';
 import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
 export interface SyncInfo {
@@ -13,25 +14,36 @@ export interface NodeStatusResult {
     sync_info: SyncInfo;
     validators: string[];
 }
-export declare enum FinalTransactionStatus {
-    Unknown = "Unknown",
+export declare enum ExecutionStatusBasic {
+    Pending = "Pending",
+    Failure = "Failure"
+}
+export declare class ExecutionStatus extends Enum {
+    SuccessValue: string;
+    SuccessReceiptId: string;
+}
+export declare enum FinalExecutionStatusBasic {
+    NotStarted = "NotStarted",
     Started = "Started",
-    Failed = "Failed",
-    Completed = "Completed"
+    Failure = "Failure"
 }
-export interface TransactionLog {
-    hash: string;
-    result: TransactionResult;
+export declare class FinalExecutionStatus extends Enum {
+    SuccessValue: string;
 }
-export interface TransactionResult {
-    status: string;
+export interface ExecutionOutcomeWithId {
+    id: string;
+    outcome: ExecutionOutcome;
+}
+export interface ExecutionOutcome {
+    status: ExecutionStatus | ExecutionStatusBasic;
     logs: string[];
-    receipts: string[];
-    result?: string;
+    receipt_ids: string[];
+    gas_burnt: number;
 }
-export interface FinalTransactionResult {
-    status: FinalTransactionStatus;
-    transactions: TransactionLog[];
+export interface FinalExecutionOutcome {
+    status: FinalExecutionStatus | FinalExecutionStatusBasic;
+    transaction: ExecutionOutcomeWithId;
+    receipts: ExecutionOutcomeWithId[];
 }
 export interface TotalWeight {
     num: number;
@@ -53,16 +65,38 @@ export interface Transaction {
     signature: string;
     body: any;
 }
+interface LegacyTransactionLog {
+    hash: string;
+    result: LegacyTransactionResult;
+}
+interface LegacyTransactionResult {
+    status: string;
+    logs: string[];
+    receipts: string[];
+    result?: string;
+}
+declare enum LegacyFinalTransactionStatus {
+    Unknown = "Unknown",
+    Started = "Started",
+    Failed = "Failed",
+    Completed = "Completed"
+}
+interface LegacyFinalTransactionResult {
+    status: LegacyFinalTransactionStatus;
+    transactions: LegacyTransactionLog[];
+}
 export interface BlockResult {
     header: BlockHeader;
     transactions: Transaction[];
 }
+export declare function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyFinalTransactionResult): FinalExecutionOutcome;
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
-    abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalTransactionResult>;
-    abstract txStatus(txHash: Uint8Array): Promise<FinalTransactionResult>;
+    abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    abstract txStatus(txHash: Uint8Array): Promise<FinalExecutionOutcome>;
     abstract query(path: string, data: string): Promise<any>;
     abstract block(height: number): Promise<BlockResult>;
 }
-export declare function getTransactionLastResult(txResult: FinalTransactionResult): any;
+export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
+export {};

@@ -24,12 +24,24 @@ test('json rpc query account', async () => {
 
 test('final tx result', async() => {
     const result = {
-        status: 'Complete',
-        transactions: [
-            { hash: '11111', result: { status: 'completed', logs: [], receipts: [], result: null } },
-            { hash: '11111', result: { status: 'completed', logs: [], receipts: [], result: 'e30=' } },
-            { hash: '11111', result: { status: 'completed', logs: [], receipts: [], result: null } },
+        status: { SuccessValue: 'e30=' },
+        transaction: { id: '11111', outcome: { status: { SuccessReceiptId: '11112' }, logs: [], receipt_ids: ['11112'], gas_burnt: 1 } },
+        receipts: [
+            { id: '11112', outcome: { status: { SuccessValue: 'e30=' }, logs: [], receipt_ids: ['11112'], gas_burnt: 9001 } },
+            { id: '11113', outcome: { status: { SuccessValue: '' }, logs: [], receipt_ids: [], gas_burnt: 0 } }
         ]
     };
     expect(nearlib.providers.getTransactionLastResult(result)).toEqual({});
+});
+
+test('final tx result with null', async() => {
+    const result = {
+        status: 'Failure',
+        transaction: { id: '11111', outcome: { status: { SuccessReceiptId: '11112' }, logs: [], receipt_ids: ['11112'], gas_burnt: 1 } },
+        receipts: [
+            { id: '11112', outcome: { status: 'Failure', logs: [], receipt_ids: ['11112'], gas_burnt: 9001 } },
+            { id: '11113', outcome: { status: { SuccessValue: '' }, logs: [], receipt_ids: [], gas_burnt: 0 } }
+        ]
+    };
+    expect(nearlib.providers.getTransactionLastResult(result)).toEqual(null);
 });

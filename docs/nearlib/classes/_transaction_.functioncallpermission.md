@@ -6,7 +6,7 @@ sidebar_label: "FunctionCallPermission"
 
 ## Hierarchy
 
-* [Assignable](_transaction_.assignable.md)
+* [Assignable](_utils_enums_.assignable.md)
 
   ↳ **FunctionCallPermission**
 
@@ -28,9 +28,9 @@ sidebar_label: "FunctionCallPermission"
 
 \+ **new FunctionCallPermission**(`properties`: any): *[FunctionCallPermission](_transaction_.functioncallpermission.md)*
 
-*Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
+*Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L24)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -46,7 +46,7 @@ Name | Type |
 
 • **allowance**? : *BN*
 
-*Defined in [transaction.ts:33](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L33)*
+*Defined in [transaction.ts:12](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L12)*
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 • **methodNames**: *String[]*
 
-*Defined in [transaction.ts:35](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L35)*
+*Defined in [transaction.ts:14](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L14)*
 
 ___
 
@@ -62,4 +62,4 @@ ___
 
 • **receiverId**: *string*
 
-*Defined in [transaction.ts:34](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L34)*
+*Defined in [transaction.ts:13](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L13)*

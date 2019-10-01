@@ -3,7 +3,7 @@
 import BN from 'bn.js';
 import { Action, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
-import { FinalTransactionResult, FinalTransactionStatus } from './providers/provider';
+import { FinalExecutionOutcome, FinalExecutionStatusBasic } from './providers/provider';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
@@ -75,12 +75,13 @@ export class Account {
         }
     }
 
-    private async retryTxResult(txHash: Uint8Array): Promise<FinalTransactionResult> {
+    private async retryTxResult(txHash: Uint8Array): Promise<FinalExecutionOutcome> {
         let result;
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
-            if (result.status === 'Failed' || result.status === 'Completed') {
+            if (result.status === FinalExecutionStatusBasic.Failure ||
+                    typeof result.status === 'object' && typeof result.status.SuccessValue === 'string') {
                 return result;
             }
             await sleep(waitTime);
@@ -90,7 +91,7 @@ export class Account {
         throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`);
     }
 
-    private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalTransactionResult> {
+    private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
         if (!this._accessKey) {
             throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
@@ -113,13 +114,13 @@ export class Account {
             }
         }
 
-        const flatLogs = result.transactions.reduce((acc, it) => acc.concat(it.result.logs), []);
+        const flatLogs = [result.transaction, ...result.receipts].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
-        if (result.status === FinalTransactionStatus.Failed) {
+        if (result.status === FinalExecutionStatusBasic.Failure) {
             if (flatLogs) {
                 const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || flatLogs.find(it => it.startsWith('Runtime error:')) || '';
-                throw new Error(`Transaction ${result.transactions[0].hash} failed. ${errorMessage}`);
+                throw new Error(`Transaction ${result.transaction.id} failed. ${errorMessage}`);
             }
         }
         // TODO: if Tx is Unknown or Started.
@@ -134,11 +135,11 @@ export class Account {
         return contractAccount;
     }
 
-    async sendMoney(receiverId: string, amount: BN): Promise<FinalTransactionResult> {
+    async sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction(receiverId, [transfer(amount)]);
     }
 
-    async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult> {
+    async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]);
     }
@@ -147,11 +148,11 @@ export class Account {
         return this.signAndSendTransaction(this.accountId, [deleteAccount(beneficiaryId)]);
     }
 
-    async deployContract(data: Uint8Array): Promise<FinalTransactionResult> {
+    async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction(this.accountId, [deployContract(data)]);
     }
 
-    async functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalTransactionResult> {
+    async functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalExecutionOutcome> {
         if (!args) {
             args = {};
         }
@@ -159,7 +160,7 @@ export class Account {
     }
 
     // TODO: expand this API to support more options.
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalTransactionResult> {
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome> {
         let accessKey;
         if (contractId === null || contractId === undefined || contractId === '') {
             accessKey = fullAccessKey();
@@ -169,11 +170,11 @@ export class Account {
         return this.signAndSendTransaction(this.accountId, [addKey(PublicKey.from(publicKey), accessKey)]);
     }
 
-    async deleteKey(publicKey: string | PublicKey): Promise<FinalTransactionResult> {
+    async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction(this.accountId, [deleteKey(PublicKey.from(publicKey))]);
     }
 
-    async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalTransactionResult> {
+    async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction(this.accountId, [stake(amount, PublicKey.from(publicKey))]);
     }
 

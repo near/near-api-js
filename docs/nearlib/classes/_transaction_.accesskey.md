@@ -6,7 +6,7 @@ sidebar_label: "AccessKey"
 
 ## Hierarchy
 
-* [Assignable](_transaction_.assignable.md)
+* [Assignable](_utils_enums_.assignable.md)
 
   ↳ **AccessKey**
 
@@ -27,9 +27,9 @@ sidebar_label: "AccessKey"
 
 \+ **new AccessKey**(`properties`: any): *[AccessKey](_transaction_.accesskey.md)*
 
-*Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
+*Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L24)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -45,7 +45,7 @@ Name | Type |
 
 • **nonce**: *number*
 
-*Defined in [transaction.ts:46](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L46)*
+*Defined in [transaction.ts:25](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L25)*
 
 ___
 
@@ -53,4 +53,4 @@ ___
 
 • **permission**: *[AccessKeyPermission](_transaction_.accesskeypermission.md)*
 
-*Defined in [transaction.ts:47](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L47)*
+*Defined in [transaction.ts:26](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L26)*

@@ -27,9 +27,9 @@ sidebar_label: "Stake"
 
 \+ **new Stake**(`properties`: any): *[Stake](_transaction_.stake.md)*
 
-*Inherited from [Assignable](_transaction_.assignable.md).[constructor](_transaction_.assignable.md#constructor)*
+*Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [transaction.ts:24](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L24)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -45,7 +45,7 @@ Name | Type |
 
 • **publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [transaction.ts:64](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L64)*
+*Defined in [transaction.ts:43](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L43)*
 
 ___
 
@@ -53,4 +53,4 @@ ___
 
 • **stake**: *BN*
 
-*Defined in [transaction.ts:64](https://github.com/nearprotocol/nearlib/blob/2fe0e0d/src.ts/transaction.ts#L64)*
+*Defined in [transaction.ts:43](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/transaction.ts#L43)*
