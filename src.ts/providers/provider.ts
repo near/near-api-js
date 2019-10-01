@@ -86,7 +86,7 @@ interface LegacyTransactionLog {
 }
 
 interface LegacyTransactionResult {
-    status: string;
+    status: LegacyTransactionStatus;
     logs: string[];
     receipts: string[];
     result?: string;
@@ -97,6 +97,12 @@ enum LegacyFinalTransactionStatus {
     Started = 'Started',
     Failed = 'Failed',
     Completed = 'Completed',
+}
+
+enum LegacyTransactionStatus {
+    Unknown = 'Unknown',
+    Completed = 'Completed',
+    Failed = 'Failed',
 }
 
 interface LegacyFinalTransactionResult {
@@ -110,10 +116,20 @@ export interface BlockResult {
 }
 
 function mapLegacyTransactionLog(tl: LegacyTransactionLog): ExecutionOutcomeWithId {
+    let status;
+    if (tl.result.status === LegacyTransactionStatus.Unknown) {
+        status = ExecutionStatusBasic.Pending;
+    } else if (tl.result.status === LegacyTransactionStatus.Failed) {
+        status = ExecutionStatusBasic.Failure;
+    } else if (tl.result.status === LegacyTransactionStatus.Completed) {
+        status = {
+            SuccessValue: tl.result.result || ''
+        };
+    }
     return {
         id: tl.hash,
         outcome: {
-            status: ExecutionStatusBasic.Pending,  // legacy reasons, so don't need it
+            status,
             logs: tl.result.logs,
             receipt_ids: tl.result.receipts,
             gas_burnt: 0,  // not available

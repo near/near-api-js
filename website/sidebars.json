@@ -38,6 +38,7 @@
       "nearlib/enums/_providers_provider_.executionstatusbasic",
       "nearlib/enums/_providers_provider_.finalexecutionstatusbasic",
       "nearlib/enums/_providers_provider_.legacyfinaltransactionstatus",
+      "nearlib/enums/_providers_provider_.legacytransactionstatus",
       "nearlib/classes/_providers_provider_.executionstatus",
       "nearlib/classes/_providers_provider_.finalexecutionstatus",
       "nearlib/classes/_providers_provider_.provider",
@@ -143,6 +144,7 @@
       "nearlib/enums/_providers_provider_.executionstatusbasic",
       "nearlib/enums/_providers_provider_.finalexecutionstatusbasic",
       "nearlib/enums/_providers_provider_.legacyfinaltransactionstatus",
+      "nearlib/enums/_providers_provider_.legacytransactionstatus",
       "nearlib/enums/_utils_key_pair_.keytype"
     ],
     "Interfaces": [

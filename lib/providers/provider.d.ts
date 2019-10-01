@@ -70,7 +70,7 @@ interface LegacyTransactionLog {
     result: LegacyTransactionResult;
 }
 interface LegacyTransactionResult {
-    status: string;
+    status: LegacyTransactionStatus;
     logs: string[];
     receipts: string[];
     result?: string;
@@ -80,6 +80,11 @@ declare enum LegacyFinalTransactionStatus {
     Started = "Started",
     Failed = "Failed",
     Completed = "Completed"
+}
+declare enum LegacyTransactionStatus {
+    Unknown = "Unknown",
+    Completed = "Completed",
+    Failed = "Failed"
 }
 interface LegacyFinalTransactionResult {
     status: LegacyFinalTransactionStatus;

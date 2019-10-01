@@ -801,11 +801,29 @@ var LegacyFinalTransactionStatus;
     LegacyFinalTransactionStatus["Failed"] = "Failed";
     LegacyFinalTransactionStatus["Completed"] = "Completed";
 })(LegacyFinalTransactionStatus || (LegacyFinalTransactionStatus = {}));
+var LegacyTransactionStatus;
+(function (LegacyTransactionStatus) {
+    LegacyTransactionStatus["Unknown"] = "Unknown";
+    LegacyTransactionStatus["Completed"] = "Completed";
+    LegacyTransactionStatus["Failed"] = "Failed";
+})(LegacyTransactionStatus || (LegacyTransactionStatus = {}));
 function mapLegacyTransactionLog(tl) {
+    let status;
+    if (tl.result.status === LegacyTransactionStatus.Unknown) {
+        status = ExecutionStatusBasic.Pending;
+    }
+    else if (tl.result.status === LegacyTransactionStatus.Failed) {
+        status = ExecutionStatusBasic.Failure;
+    }
+    else if (tl.result.status === LegacyTransactionStatus.Completed) {
+        status = {
+            SuccessValue: tl.result.result || ''
+        };
+    }
     return {
         id: tl.hash,
         outcome: {
-            status: ExecutionStatusBasic.Pending,
+            status,
             logs: tl.result.logs,
             receipt_ids: tl.result.receipts,
             gas_burnt: 0,
