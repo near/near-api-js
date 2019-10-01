@@ -20,6 +20,7 @@ export interface NodeStatusResult {
 }
 
 export enum ExecutionStatusBasic {
+    Unknown = 'Unknown',
     Pending = 'Pending',
     Failure = 'Failure',
 }
@@ -118,7 +119,7 @@ export interface BlockResult {
 function mapLegacyTransactionLog(tl: LegacyTransactionLog): ExecutionOutcomeWithId {
     let status;
     if (tl.result.status === LegacyTransactionStatus.Unknown) {
-        status = ExecutionStatusBasic.Pending;
+        status = ExecutionStatusBasic.Unknown;
     } else if (tl.result.status === LegacyTransactionStatus.Failed) {
         status = ExecutionStatusBasic.Failure;
     } else if (tl.result.status === LegacyTransactionStatus.Completed) {

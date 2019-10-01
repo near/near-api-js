@@ -779,6 +779,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const enums_1 = require("../utils/enums");
 var ExecutionStatusBasic;
 (function (ExecutionStatusBasic) {
+    ExecutionStatusBasic["Unknown"] = "Unknown";
     ExecutionStatusBasic["Pending"] = "Pending";
     ExecutionStatusBasic["Failure"] = "Failure";
 })(ExecutionStatusBasic = exports.ExecutionStatusBasic || (exports.ExecutionStatusBasic = {}));
@@ -810,7 +811,7 @@ var LegacyTransactionStatus;
 function mapLegacyTransactionLog(tl) {
     let status;
     if (tl.result.status === LegacyTransactionStatus.Unknown) {
-        status = ExecutionStatusBasic.Pending;
+        status = ExecutionStatusBasic.Unknown;
     }
     else if (tl.result.status === LegacyTransactionStatus.Failed) {
         status = ExecutionStatusBasic.Failure;

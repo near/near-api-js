@@ -15,6 +15,7 @@ export interface NodeStatusResult {
     validators: string[];
 }
 export declare enum ExecutionStatusBasic {
+    Unknown = "Unknown",
     Pending = "Pending",
     Failure = "Failure"
 }
