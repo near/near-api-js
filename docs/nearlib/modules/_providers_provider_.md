@@ -11,6 +11,7 @@ sidebar_label: "providers/provider"
 * [ExecutionStatusBasic](../enums/_providers_provider_.executionstatusbasic.md)
 * [FinalExecutionStatusBasic](../enums/_providers_provider_.finalexecutionstatusbasic.md)
 * [LegacyFinalTransactionStatus](../enums/_providers_provider_.legacyfinaltransactionstatus.md)
+* [LegacyTransactionStatus](../enums/_providers_provider_.legacytransactionstatus.md)
 
 ### Classes
 
@@ -45,7 +46,7 @@ sidebar_label: "providers/provider"
 
 ▸ **adaptTransactionResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md) | [LegacyFinalTransactionResult](../interfaces/_providers_provider_.legacyfinaltransactionresult.md)): *[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)*
 
-*Defined in [providers/provider.ts:124](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L124)*
+*Defined in [providers/provider.ts:141](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L141)*
 
 **Parameters:**
 
@@ -61,7 +62,7 @@ ___
 
 ▸ **getTransactionLastResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)): *any*
 
-*Defined in [providers/provider.ts:167](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L167)*
+*Defined in [providers/provider.ts:184](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L184)*
 
 **Parameters:**
 
@@ -77,7 +78,7 @@ ___
 
 ▸ **mapLegacyTransactionLog**(`tl`: [LegacyTransactionLog](../interfaces/_providers_provider_.legacytransactionlog.md)): *[ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)*
 
-*Defined in [providers/provider.ts:112](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L112)*
+*Defined in [providers/provider.ts:119](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L119)*
 
 **Parameters:**
 

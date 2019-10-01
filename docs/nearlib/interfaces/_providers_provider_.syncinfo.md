@@ -24,7 +24,7 @@ sidebar_label: "SyncInfo"
 
 • **latest_block_hash**: *string*
 
-*Defined in [providers/provider.ts:8](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L8)*
+*Defined in [providers/provider.ts:8](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L8)*
 
 ___
 
@@ -32,7 +32,7 @@ ___
 
 • **latest_block_height**: *number*
 
-*Defined in [providers/provider.ts:9](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L9)*
+*Defined in [providers/provider.ts:9](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L9)*
 
 ___
 
@@ -40,7 +40,7 @@ ___
 
 • **latest_block_time**: *string*
 
-*Defined in [providers/provider.ts:10](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L10)*
+*Defined in [providers/provider.ts:10](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L10)*
 
 ___
 
@@ -48,7 +48,7 @@ ___
 
 • **latest_state_root**: *string*
 
-*Defined in [providers/provider.ts:11](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L11)*
+*Defined in [providers/provider.ts:11](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L11)*
 
 ___
 
@@ -56,4 +56,4 @@ ___
 
 • **syncing**: *boolean*
 
-*Defined in [providers/provider.ts:12](https://github.com/nearprotocol/nearlib/blob/be6b150/src.ts/providers/provider.ts#L12)*
+*Defined in [providers/provider.ts:12](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L12)*
