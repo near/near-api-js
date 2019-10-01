@@ -2,7 +2,6 @@ image: node:10
 
 variables:
   NODE_ENV: ci
-  HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:
   - test
@@ -12,10 +11,7 @@ test_master:
   tags:
     - gcloud
   script:
-    - git clone --depth 1 https://github.com/nearprotocol/nearcore.git nearcore
     - yarn
-    - yarn build
-    - (cd nearcore && ./scripts/build_wasm.sh)
     - yarn test
 
 test_staging:
@@ -23,11 +19,8 @@ test_staging:
   tags:
     - gcloud
   script:
-    - git clone --depth 1 --branch staging https://github.com/nearprotocol/nearcore.git nearcore
     - yarn
-    - yarn build
-    - (cd nearcore && ./scripts/build_wasm.sh)
-    - yarn test
+    - NODE_ENV=ci-staging yarn test
 
 lint:
   stage: test

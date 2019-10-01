@@ -7,7 +7,7 @@ const networkId = 'unittest';
 const testAccountName = 'test.near';
 
 const INITIAL_BALANCE = new BN(100000000000);
-const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
+const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/hello.wasm';
 
 async function setUpTestConnection() {
     const keyStore = new nearlib.keyStores.InMemoryKeyStore();

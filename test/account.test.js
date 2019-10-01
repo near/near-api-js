@@ -7,7 +7,7 @@ const BN = require('bn.js');
 let nearjs;
 let workingAccount;
 
-const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || '../nearcore/tests/hello.wasm';
+const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/hello.wasm';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
