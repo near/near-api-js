@@ -28,7 +28,7 @@
     "in-publish": "^2.0.0",
     "jest": "^24.1.0",
     "localstorage-memory": "^1.0.3",
-    "near-hello": "^0.2.0",
+    "near-hello": "^0.3.1",
     "rimraf": "^2.6.3",
     "ts-protoc-gen": "^0.10.0",
     "tslint": "^5.18.0",
