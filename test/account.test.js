@@ -145,7 +145,7 @@ describe('with deploy contract', () => {
         expect(logs.length).toBe(3);
         expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
         expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "expected to fail" filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
-//        expect(logs[2]).toEqual(`[${contractId}]: Runtime error: wasm async call execution failed with error: WasmerCallError("Smart contract has explicitly invoked \`panic\`.")`);
+        //        expect(logs[2]).toEqual(`[${contractId}]: Runtime error: wasm async call execution failed with error: WasmerCallError("Smart contract has explicitly invoked \`panic\`.")`);
     });
 
     test('test set/remove', async () => {
