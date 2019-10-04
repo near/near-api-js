@@ -1,6 +1,5 @@
 'use strict';
 
-import { Enum } from '../utils/enums';
 import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
 
@@ -25,9 +24,10 @@ export enum ExecutionStatusBasic {
     Failure = 'Failure',
 }
 
-export class ExecutionStatus extends Enum {
-    SuccessValue: string;
-    SuccessReceiptId: string;
+export interface ExecutionStatus {
+    SuccessValue?: string;
+    SuccessReceiptId?: string;
+    Failure?: ExecutionError;
 }
 
 export enum FinalExecutionStatusBasic {
@@ -36,8 +36,14 @@ export enum FinalExecutionStatusBasic {
     Failure = 'Failure',
 }
 
-export class FinalExecutionStatus extends Enum {
-    SuccessValue: string;
+export interface ExecutionError {
+    error_message: string;
+    error_type: string;
+}
+
+export interface FinalExecutionStatus {
+    SuccessValue?: string;
+    Failure?: ExecutionError;
 }
 
 export interface ExecutionOutcomeWithId {
@@ -138,7 +144,27 @@ function mapLegacyTransactionLog(tl: LegacyTransactionLog): ExecutionOutcomeWith
     };
 }
 
+function fixLegacyBasicExecutionOutcomeFailure(t: ExecutionOutcomeWithId): ExecutionOutcomeWithId {
+    if (t.outcome.status === ExecutionStatusBasic.Failure) {
+        t.outcome.status = {
+            Failure: {
+                error_message: t.outcome.logs.find(it => it.startsWith('ABORT:')) ||
+                    t.outcome.logs.find(it => it.startsWith('Runtime error:')) || '',
+                error_type: 'LegacyError',
+            }
+        };
+    }
+    // Currently FunctionCallError doesn't return logged message in the error.
+    if (typeof t.outcome.status === 'object' && typeof t.outcome.status.Failure === 'object' &&
+            t.outcome.status.Failure.error_type === 'ActionError::FunctionCallError') {
+        t.outcome.status.Failure.error_message = t.outcome.logs.find(it => it.startsWith('ABORT:')) ||
+            t.outcome.status.Failure.error_message;
+    }
+    return t;
+}
+
 export function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyFinalTransactionResult): FinalExecutionOutcome {
+    // Fixing legacy transaction result
     if ('transactions' in txResult) {
         txResult = txResult as LegacyFinalTransactionResult;
         let status;
@@ -161,14 +187,30 @@ export function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyF
                 SuccessValue: result,
             };
         }
-        return {
-            status: status,
+        txResult = {
+            status,
             transaction: mapLegacyTransactionLog(txResult.transactions.splice(0, 1)[0]),
             receipts: txResult.transactions.map(mapLegacyTransactionLog),
         };
-    } else {
-        return txResult;
     }
+
+    // Adapting from old error handling.
+    txResult.transaction = fixLegacyBasicExecutionOutcomeFailure(txResult.transaction);
+    txResult.receipts = txResult.receipts.map(fixLegacyBasicExecutionOutcomeFailure);
+
+    // Fixing master error status
+    if (txResult.status === FinalExecutionStatusBasic.Failure ||
+            (typeof txResult.status === 'object' && typeof txResult.status.Failure === 'object' &&
+            txResult.status.Failure.error_type === 'ActionError::FunctionCallError')) {
+        const err = ([txResult.transaction, ...txResult.receipts]
+            .find(t => typeof t.outcome.status === 'object' && typeof t.outcome.status.Failure === 'object')
+            .outcome.status as ExecutionStatus).Failure;
+        txResult.status = {
+            Failure: err
+        };
+    }
+
+    return txResult;
 }
 
 export abstract class Provider {

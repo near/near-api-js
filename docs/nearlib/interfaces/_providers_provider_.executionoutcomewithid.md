@@ -21,7 +21,7 @@ sidebar_label: "ExecutionOutcomeWithId"
 
 • **id**: *string*
 
-*Defined in [providers/provider.ts:44](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L44)*
+*Defined in [providers/provider.ts:50](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L50)*
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 • **outcome**: *[ExecutionOutcome](_providers_provider_.executionoutcome.md)*
 
-*Defined in [providers/provider.ts:45](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L45)*
+*Defined in [providers/provider.ts:51](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L51)*

@@ -21,7 +21,7 @@ sidebar_label: "BlockResult"
 
 • **header**: *[BlockHeader](_providers_provider_.blockheader.md)*
 
-*Defined in [providers/provider.ts:115](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L115)*
+*Defined in [providers/provider.ts:121](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L121)*
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 • **transactions**: *[Transaction](_providers_provider_.transaction.md)[]*
 
-*Defined in [providers/provider.ts:116](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L116)*
+*Defined in [providers/provider.ts:122](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L122)*

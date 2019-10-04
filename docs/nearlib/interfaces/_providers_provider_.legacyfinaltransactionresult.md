@@ -21,7 +21,7 @@ sidebar_label: "LegacyFinalTransactionResult"
 
 • **status**: *[LegacyFinalTransactionStatus](../enums/_providers_provider_.legacyfinaltransactionstatus.md)*
 
-*Defined in [providers/provider.ts:110](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L110)*
+*Defined in [providers/provider.ts:116](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L116)*
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 • **transactions**: *[LegacyTransactionLog](_providers_provider_.legacytransactionlog.md)[]*
 
-*Defined in [providers/provider.ts:111](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L111)*
+*Defined in [providers/provider.ts:117](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L117)*

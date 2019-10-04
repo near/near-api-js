@@ -25,7 +25,7 @@ sidebar_label: "ConnectionInfo"
 
 • **allowInsecure**? : *boolean*
 
-*Defined in [utils/web.ts:9](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/web.ts#L9)*
+*Defined in [utils/web.ts:9](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/utils/web.ts#L9)*
 
 ___
 
@@ -33,7 +33,7 @@ ___
 
 • **headers**? : *object*
 
-*Defined in [utils/web.ts:11](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/web.ts#L11)*
+*Defined in [utils/web.ts:11](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/utils/web.ts#L11)*
 
 #### Type declaration:
 
@@ -45,7 +45,7 @@ ___
 
 • **password**? : *string*
 
-*Defined in [utils/web.ts:8](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/web.ts#L8)*
+*Defined in [utils/web.ts:8](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/utils/web.ts#L8)*
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 • **timeout**? : *number*
 
-*Defined in [utils/web.ts:10](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/web.ts#L10)*
+*Defined in [utils/web.ts:10](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/utils/web.ts#L10)*
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 • **url**: *string*
 
-*Defined in [utils/web.ts:6](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/web.ts#L6)*
+*Defined in [utils/web.ts:6](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/utils/web.ts#L6)*
 
 ___
 
@@ -69,4 +69,4 @@ ___
 
 • **user**? : *string*
 
-*Defined in [utils/web.ts:7](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/web.ts#L7)*
+*Defined in [utils/web.ts:7](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/utils/web.ts#L7)*
