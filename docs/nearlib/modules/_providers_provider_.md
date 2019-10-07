@@ -48,7 +48,7 @@ sidebar_label: "providers/provider"
 
 ▸ **adaptTransactionResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md) | [LegacyFinalTransactionResult](../interfaces/_providers_provider_.legacyfinaltransactionresult.md)): *[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)*
 
-*Defined in [providers/provider.ts:166](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L166)*
+*Defined in [providers/provider.ts:160](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/providers/provider.ts#L160)*
 
 **Parameters:**
 
@@ -64,7 +64,7 @@ ___
 
 ▸ **fixLegacyBasicExecutionOutcomeFailure**(`t`: [ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)): *[ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)*
 
-*Defined in [providers/provider.ts:147](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L147)*
+*Defined in [providers/provider.ts:147](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/providers/provider.ts#L147)*
 
 **Parameters:**
 
@@ -80,7 +80,7 @@ ___
 
 ▸ **getTransactionLastResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)): *any*
 
-*Defined in [providers/provider.ts:226](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L226)*
+*Defined in [providers/provider.ts:218](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/providers/provider.ts#L218)*
 
 **Parameters:**
 
@@ -96,7 +96,7 @@ ___
 
 ▸ **mapLegacyTransactionLog**(`tl`: [LegacyTransactionLog](../interfaces/_providers_provider_.legacytransactionlog.md)): *[ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)*
 
-*Defined in [providers/provider.ts:125](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L125)*
+*Defined in [providers/provider.ts:125](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/providers/provider.ts#L125)*
 
 **Parameters:**
 

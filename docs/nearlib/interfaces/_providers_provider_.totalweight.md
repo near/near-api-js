@@ -20,4 +20,4 @@ sidebar_label: "TotalWeight"
 
 • **num**: *number*
 
-*Defined in [providers/provider.ts:68](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L68)*
+*Defined in [providers/provider.ts:68](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/providers/provider.ts#L68)*

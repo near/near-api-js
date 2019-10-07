@@ -20,4 +20,4 @@ sidebar_label: "key_stores/browser_local_storage_key_store"
 
 • **LOCAL_STORAGE_KEY_PREFIX**: *"nearlib:keystore:"* = "nearlib:keystore:"
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:6](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L6)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:6](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L6)*

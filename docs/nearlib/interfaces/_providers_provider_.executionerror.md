@@ -21,7 +21,7 @@ sidebar_label: "ExecutionError"
 
 • **error_message**: *string*
 
-*Defined in [providers/provider.ts:40](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L40)*
+*Defined in [providers/provider.ts:40](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/providers/provider.ts#L40)*
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 • **error_type**: *string*
 
-*Defined in [providers/provider.ts:41](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/providers/provider.ts#L41)*
+*Defined in [providers/provider.ts:41](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/providers/provider.ts#L41)*

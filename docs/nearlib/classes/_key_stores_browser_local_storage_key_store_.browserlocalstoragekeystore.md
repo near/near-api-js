@@ -38,7 +38,7 @@ sidebar_label: "BrowserLocalStorageKeyStore"
 
 \+ **new BrowserLocalStorageKeyStore**(`localStorage`: any, `prefix`: string): *[BrowserLocalStorageKeyStore](_key_stores_browser_local_storage_key_store_.browserlocalstoragekeystore.md)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:10](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L10)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:10](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L10)*
 
 **Parameters:**
 
@@ -55,7 +55,7 @@ Name | Type | Default |
 
 • **localStorage**: *any*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:9](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L9)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:9](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L9)*
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 • **prefix**: *string*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:10](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L10)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:10](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L10)*
 
 ## Methods
 
@@ -73,7 +73,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[clear](_key_stores_keystore_.keystore.md#abstract-clear)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:34](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L34)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:34](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L34)*
 
 **Returns:** *Promise‹void›*
 
@@ -85,7 +85,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getAccounts](_key_stores_keystore_.keystore.md#abstract-getaccounts)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:53](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L53)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:53](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L53)*
 
 **Parameters:**
 
@@ -103,7 +103,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getKey](_key_stores_keystore_.keystore.md#abstract-getkey)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:22](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L22)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:22](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L22)*
 
 **Parameters:**
 
@@ -122,7 +122,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getNetworks](_key_stores_keystore_.keystore.md#abstract-getnetworks)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:42](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L42)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:42](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L42)*
 
 **Returns:** *Promise‹string[]›*
 
@@ -134,7 +134,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[removeKey](_key_stores_keystore_.keystore.md#abstract-removekey)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:30](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L30)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:30](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L30)*
 
 **Parameters:**
 
@@ -153,7 +153,7 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[setKey](_key_stores_keystore_.keystore.md#abstract-setkey)*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:18](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L18)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:18](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L18)*
 
 **Parameters:**
 
@@ -171,7 +171,7 @@ ___
 
 ▸ **storageKeyForSecretKey**(`networkId`: string, `accountId`: string): *string*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:66](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L66)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:66](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L66)*
 
 **Parameters:**
 
@@ -188,6 +188,6 @@ ___
 
 ▸ **storageKeys**(): *IterableIterator‹string›*
 
-*Defined in [key_stores/browser_local_storage_key_store.ts:70](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/key_stores/browser_local_storage_key_store.ts#L70)*
+*Defined in [key_stores/browser_local_storage_key_store.ts:70](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/key_stores/browser_local_storage_key_store.ts#L70)*
 
 **Returns:** *IterableIterator‹string›*

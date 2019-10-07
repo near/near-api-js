@@ -21,7 +21,7 @@ sidebar_label: "connection"
 
 ▸ **getProvider**(`config`: any): *[Provider](../classes/_providers_provider_.provider.md)*
 
-*Defined in [connection.ts:6](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/connection.ts#L6)*
+*Defined in [connection.ts:6](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/connection.ts#L6)*
 
 **Parameters:**
 
@@ -37,7 +37,7 @@ ___
 
 ▸ **getSigner**(`networkId`: string, `config`: any): *[Signer](../classes/_signer_.signer.md)*
 
-*Defined in [connection.ts:13](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/connection.ts#L13)*
+*Defined in [connection.ts:13](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/connection.ts#L13)*
 
 **Parameters:**
 

@@ -29,7 +29,7 @@ sidebar_label: "AccessKey"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/utils/enums.ts#L17)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -45,7 +45,7 @@ Name | Type |
 
 • **nonce**: *number*
 
-*Defined in [transaction.ts:25](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/transaction.ts#L25)*
+*Defined in [transaction.ts:25](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/transaction.ts#L25)*
 
 ___
 
@@ -53,4 +53,4 @@ ___
 
 • **permission**: *[AccessKeyPermission](_transaction_.accesskeypermission.md)*
 
-*Defined in [transaction.ts:26](https://github.com/nearprotocol/nearlib/blob/2485e64/src.ts/transaction.ts#L26)*
+*Defined in [transaction.ts:26](https://github.com/nearprotocol/nearlib/blob/9123455/src.ts/transaction.ts#L26)*
