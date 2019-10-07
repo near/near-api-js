@@ -154,12 +154,6 @@ function fixLegacyBasicExecutionOutcomeFailure(t: ExecutionOutcomeWithId): Execu
             }
         };
     }
-    // Currently FunctionCallError doesn't return logged message in the error.
-    if (typeof t.outcome.status === 'object' && typeof t.outcome.status.Failure === 'object' &&
-            t.outcome.status.Failure.error_type === 'ActionError::FunctionCallError') {
-        t.outcome.status.Failure.error_message = t.outcome.logs.find(it => it.startsWith('ABORT:')) ||
-            t.outcome.status.Failure.error_message;
-    }
     return t;
 }
 
@@ -199,9 +193,7 @@ export function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyF
     txResult.receipts = txResult.receipts.map(fixLegacyBasicExecutionOutcomeFailure);
 
     // Fixing master error status
-    if (txResult.status === FinalExecutionStatusBasic.Failure ||
-            (typeof txResult.status === 'object' && typeof txResult.status.Failure === 'object' &&
-            txResult.status.Failure.error_type === 'ActionError::FunctionCallError')) {
+    if (txResult.status === FinalExecutionStatusBasic.Failure) {
         const err = ([txResult.transaction, ...txResult.receipts]
             .find(t => typeof t.outcome.status === 'object' && typeof t.outcome.status.Failure === 'object')
             .outcome.status as ExecutionStatus).Failure;
