@@ -6,7 +6,7 @@ import { Action, transfer, createAccount, signTransaction, deployContract,
 import { FinalExecutionOutcome, FinalExecutionStatusBasic } from './providers/provider';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
-import { PublicKey } from './utils/key_pair';
+import {BlsPublicKey, PublicKey} from './utils/key_pair';
 
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -174,8 +174,8 @@ export class Account {
         return this.signAndSendTransaction(this.accountId, [deleteKey(PublicKey.from(publicKey))]);
     }
 
-    async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction(this.accountId, [stake(amount, PublicKey.from(publicKey))]);
+    async stake(publicKey: string | BlsPublicKey, amount: BN): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction(this.accountId, [stake(amount, BlsPublicKey.from(publicKey))]);
     }
 
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {

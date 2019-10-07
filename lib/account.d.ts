@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 import { FinalExecutionOutcome } from './providers/provider';
 import { Connection } from './connection';
-import { PublicKey } from './utils/key_pair';
+import { BlsPublicKey, PublicKey } from './utils/key_pair';
 export interface AccountState {
     account_id: string;
     amount: string;
@@ -29,7 +29,7 @@ export declare class Account {
     functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalExecutionOutcome>;
     addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
     deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
-    stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    stake(publicKey: string | BlsPublicKey, amount: BN): Promise<FinalExecutionOutcome>;
     viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
     getAccessKeys(): Promise<any>;
     getAccountDetails(): Promise<any>;

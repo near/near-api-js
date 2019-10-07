@@ -10,6 +10,7 @@ export declare enum KeyType {
 export declare class BlsPublicKey {
     data: Uint8Array;
     constructor(data: Uint8Array);
+    static from(value: string | BlsPublicKey): BlsPublicKey;
     static fromString(encodedKey: string): BlsPublicKey;
 }
 /**

@@ -36,6 +36,13 @@ export class BlsPublicKey {
         this.data = data;
     }
 
+    static from(value: string | BlsPublicKey): BlsPublicKey {
+        if (typeof value === 'string') {
+            return BlsPublicKey.fromString(value);
+        }
+        return value;
+    }
+
     static fromString(encodedKey: string): BlsPublicKey {
         return new BlsPublicKey(base_decode(encodedKey));
     }
