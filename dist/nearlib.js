@@ -10,7 +10,6 @@ window.Buffer = Buffer;
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const transaction_1 = require("./transaction");
-const provider_1 = require("./providers/provider");
 const serialize_1 = require("./utils/serialize");
 const key_pair_1 = require("./utils/key_pair");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
@@ -62,8 +61,8 @@ class Account {
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
-            if (result.status === provider_1.FinalExecutionStatusBasic.Failure ||
-                typeof result.status === 'object' && typeof result.status.SuccessValue === 'string') {
+            if (typeof result.status === 'object' &&
+                (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
                 return result;
             }
             await sleep(waitTime);
@@ -93,11 +92,8 @@ class Account {
         }
         const flatLogs = [result.transaction, ...result.receipts].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
-        if (result.status === provider_1.FinalExecutionStatusBasic.Failure) {
-            if (flatLogs) {
-                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || flatLogs.find(it => it.startsWith('Runtime error:')) || '';
-                throw new Error(`Transaction ${result.transaction.id} failed. ${errorMessage}`);
-            }
+        if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
+            throw new Error(`Transaction ${result.transaction.id} failed with ${result.status.Failure.error_type}. ${result.status.Failure.error_message}`);
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.
@@ -178,7 +174,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers/provider":16,"./transaction":18,"./utils/key_pair":21,"./utils/serialize":23,"buffer":32}],3:[function(require,module,exports){
+},{"./transaction":18,"./utils/key_pair":21,"./utils/serialize":23,"buffer":32}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -776,25 +772,19 @@ exports.JsonRpcProvider = JsonRpcProvider;
 (function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const enums_1 = require("../utils/enums");
 var ExecutionStatusBasic;
 (function (ExecutionStatusBasic) {
     ExecutionStatusBasic["Unknown"] = "Unknown";
     ExecutionStatusBasic["Pending"] = "Pending";
     ExecutionStatusBasic["Failure"] = "Failure";
 })(ExecutionStatusBasic = exports.ExecutionStatusBasic || (exports.ExecutionStatusBasic = {}));
-class ExecutionStatus extends enums_1.Enum {
-}
-exports.ExecutionStatus = ExecutionStatus;
 var FinalExecutionStatusBasic;
 (function (FinalExecutionStatusBasic) {
     FinalExecutionStatusBasic["NotStarted"] = "NotStarted";
     FinalExecutionStatusBasic["Started"] = "Started";
     FinalExecutionStatusBasic["Failure"] = "Failure";
 })(FinalExecutionStatusBasic = exports.FinalExecutionStatusBasic || (exports.FinalExecutionStatusBasic = {}));
-class FinalExecutionStatus extends enums_1.Enum {
-}
-exports.FinalExecutionStatus = FinalExecutionStatus;
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 var LegacyFinalTransactionStatus;
 (function (LegacyFinalTransactionStatus) {
     LegacyFinalTransactionStatus["Unknown"] = "Unknown";
@@ -802,12 +792,14 @@ var LegacyFinalTransactionStatus;
     LegacyFinalTransactionStatus["Failed"] = "Failed";
     LegacyFinalTransactionStatus["Completed"] = "Completed";
 })(LegacyFinalTransactionStatus || (LegacyFinalTransactionStatus = {}));
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 var LegacyTransactionStatus;
 (function (LegacyTransactionStatus) {
     LegacyTransactionStatus["Unknown"] = "Unknown";
     LegacyTransactionStatus["Completed"] = "Completed";
     LegacyTransactionStatus["Failed"] = "Failed";
 })(LegacyTransactionStatus || (LegacyTransactionStatus = {}));
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 function mapLegacyTransactionLog(tl) {
     let status;
     if (tl.result.status === LegacyTransactionStatus.Unknown) {
@@ -831,7 +823,22 @@ function mapLegacyTransactionLog(tl) {
         },
     };
 }
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
+function fixLegacyBasicExecutionOutcomeFailure(t) {
+    if (t.outcome.status === ExecutionStatusBasic.Failure) {
+        t.outcome.status = {
+            Failure: {
+                error_message: t.outcome.logs.find(it => it.startsWith('ABORT:')) ||
+                    t.outcome.logs.find(it => it.startsWith('Runtime error:')) || '',
+                error_type: 'LegacyError',
+            }
+        };
+    }
+    return t;
+}
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 function adaptTransactionResult(txResult) {
+    // Fixing legacy transaction result
     if ('transactions' in txResult) {
         txResult = txResult;
         let status;
@@ -857,15 +864,25 @@ function adaptTransactionResult(txResult) {
                 SuccessValue: result,
             };
         }
-        return {
-            status: status,
+        txResult = {
+            status,
             transaction: mapLegacyTransactionLog(txResult.transactions.splice(0, 1)[0]),
             receipts: txResult.transactions.map(mapLegacyTransactionLog),
         };
     }
-    else {
-        return txResult;
+    // Adapting from old error handling.
+    txResult.transaction = fixLegacyBasicExecutionOutcomeFailure(txResult.transaction);
+    txResult.receipts = txResult.receipts.map(fixLegacyBasicExecutionOutcomeFailure);
+    // Fixing master error status
+    if (txResult.status === FinalExecutionStatusBasic.Failure) {
+        const err = [txResult.transaction, ...txResult.receipts]
+            .find(t => typeof t.outcome.status === 'object' && typeof t.outcome.status.Failure === 'object')
+            .outcome.status.Failure;
+        txResult.status = {
+            Failure: err
+        };
     }
+    return txResult;
 }
 exports.adaptTransactionResult = adaptTransactionResult;
 class Provider {
@@ -886,7 +903,7 @@ function getTransactionLastResult(txResult) {
 exports.getTransactionLastResult = getTransactionLastResult;
 
 }).call(this,require("buffer").Buffer)
-},{"../utils/enums":19,"buffer":32}],17:[function(require,module,exports){
+},{"buffer":32}],17:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };

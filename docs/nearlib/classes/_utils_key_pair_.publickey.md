@@ -33,7 +33,7 @@ PublicKey representation that has type and bytes of the key.
 
 \+ **new PublicKey**(`keyType`: [KeyType](../enums/_utils_key_pair_.keytype.md), `data`: Uint8Array): *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [utils/key_pair.ts:37](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/key_pair.ts#L37)*
+*Defined in [utils/key_pair.ts:37](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/key_pair.ts#L37)*
 
 **Parameters:**
 
@@ -50,7 +50,7 @@ Name | Type |
 
 • **data**: *Uint8Array*
 
-*Defined in [utils/key_pair.ts:37](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/key_pair.ts#L37)*
+*Defined in [utils/key_pair.ts:37](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/key_pair.ts#L37)*
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 • **keyType**: *[KeyType](../enums/_utils_key_pair_.keytype.md)*
 
-*Defined in [utils/key_pair.ts:36](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/key_pair.ts#L36)*
+*Defined in [utils/key_pair.ts:36](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/key_pair.ts#L36)*
 
 ## Methods
 
@@ -66,7 +66,7 @@ ___
 
 ▸ **toString**(): *string*
 
-*Defined in [utils/key_pair.ts:62](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/key_pair.ts#L62)*
+*Defined in [utils/key_pair.ts:62](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/key_pair.ts#L62)*
 
 **Returns:** *string*
 
@@ -76,7 +76,7 @@ ___
 
 ▸ **from**(`value`: string | [PublicKey](_utils_key_pair_.publickey.md)): *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [utils/key_pair.ts:44](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/key_pair.ts#L44)*
+*Defined in [utils/key_pair.ts:44](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/key_pair.ts#L44)*
 
 **Parameters:**
 
@@ -92,7 +92,7 @@ ___
 
 ▸ **fromString**(`encodedKey`: string): *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [utils/key_pair.ts:51](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/key_pair.ts#L51)*
+*Defined in [utils/key_pair.ts:51](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/key_pair.ts#L51)*
 
 **Parameters:**
 

@@ -142,10 +142,8 @@ describe('with deploy contract', () => {
 
     test('can get assert message from method result', async () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
-        expect(logs.length).toBe(3);
         expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
-        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "expected to fail" filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
-        //        expect(logs[2]).toEqual(`[${contractId}]: Runtime error: wasm async call execution failed with error: WasmerCallError("Smart contract has explicitly invoked \`panic\`.")`);
+        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
     });
 
     test('test set/remove', async () => {

@@ -3,7 +3,7 @@
 import BN from 'bn.js';
 import { Action, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
-import { FinalExecutionOutcome, FinalExecutionStatusBasic } from './providers/provider';
+import { FinalExecutionOutcome } from './providers/provider';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
@@ -80,8 +80,8 @@ export class Account {
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
-            if (result.status === FinalExecutionStatusBasic.Failure ||
-                    typeof result.status === 'object' && typeof result.status.SuccessValue === 'string') {
+            if (typeof result.status === 'object' &&
+                    (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
                 return result;
             }
             await sleep(waitTime);
@@ -117,11 +117,8 @@ export class Account {
         const flatLogs = [result.transaction, ...result.receipts].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
-        if (result.status === FinalExecutionStatusBasic.Failure) {
-            if (flatLogs) {
-                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || flatLogs.find(it => it.startsWith('Runtime error:')) || '';
-                throw new Error(`Transaction ${result.transaction.id} failed. ${errorMessage}`);
-            }
+        if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
+            throw new Error(`Transaction ${result.transaction.id} failed with ${result.status.Failure.error_type}. ${result.status.Failure.error_message}`);
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.

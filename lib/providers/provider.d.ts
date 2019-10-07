@@ -1,4 +1,3 @@
-import { Enum } from '../utils/enums';
 import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
 export interface SyncInfo {
@@ -19,17 +18,23 @@ export declare enum ExecutionStatusBasic {
     Pending = "Pending",
     Failure = "Failure"
 }
-export declare class ExecutionStatus extends Enum {
-    SuccessValue: string;
-    SuccessReceiptId: string;
+export interface ExecutionStatus {
+    SuccessValue?: string;
+    SuccessReceiptId?: string;
+    Failure?: ExecutionError;
 }
 export declare enum FinalExecutionStatusBasic {
     NotStarted = "NotStarted",
     Started = "Started",
     Failure = "Failure"
 }
-export declare class FinalExecutionStatus extends Enum {
-    SuccessValue: string;
+export interface ExecutionError {
+    error_message: string;
+    error_type: string;
+}
+export interface FinalExecutionStatus {
+    SuccessValue?: string;
+    Failure?: ExecutionError;
 }
 export interface ExecutionOutcomeWithId {
     id: string;

@@ -1,6 +1,5 @@
 'use strict';
 
-import { Enum } from '../utils/enums';
 import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
 
@@ -25,9 +24,10 @@ export enum ExecutionStatusBasic {
     Failure = 'Failure',
 }
 
-export class ExecutionStatus extends Enum {
-    SuccessValue: string;
-    SuccessReceiptId: string;
+export interface ExecutionStatus {
+    SuccessValue?: string;
+    SuccessReceiptId?: string;
+    Failure?: ExecutionError;
 }
 
 export enum FinalExecutionStatusBasic {
@@ -36,8 +36,14 @@ export enum FinalExecutionStatusBasic {
     Failure = 'Failure',
 }
 
-export class FinalExecutionStatus extends Enum {
-    SuccessValue: string;
+export interface ExecutionError {
+    error_message: string;
+    error_type: string;
+}
+
+export interface FinalExecutionStatus {
+    SuccessValue?: string;
+    Failure?: ExecutionError;
 }
 
 export interface ExecutionOutcomeWithId {
@@ -81,11 +87,13 @@ export interface Transaction {
     body: any;
 }
 
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 interface LegacyTransactionLog {
     hash: string;
     result: LegacyTransactionResult;
 }
 
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 interface LegacyTransactionResult {
     status: LegacyTransactionStatus;
     logs: string[];
@@ -93,6 +101,7 @@ interface LegacyTransactionResult {
     result?: string;
 }
 
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 enum LegacyFinalTransactionStatus {
     Unknown = 'Unknown',
     Started = 'Started',
@@ -100,12 +109,14 @@ enum LegacyFinalTransactionStatus {
     Completed = 'Completed',
 }
 
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 enum LegacyTransactionStatus {
     Unknown = 'Unknown',
     Completed = 'Completed',
     Failed = 'Failed',
 }
 
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 interface LegacyFinalTransactionResult {
     status: LegacyFinalTransactionStatus;
     transactions: LegacyTransactionLog[];
@@ -116,6 +127,7 @@ export interface BlockResult {
     transactions: Transaction[];
 }
 
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 function mapLegacyTransactionLog(tl: LegacyTransactionLog): ExecutionOutcomeWithId {
     let status;
     if (tl.result.status === LegacyTransactionStatus.Unknown) {
@@ -138,7 +150,23 @@ function mapLegacyTransactionLog(tl: LegacyTransactionLog): ExecutionOutcomeWith
     };
 }
 
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
+function fixLegacyBasicExecutionOutcomeFailure(t: ExecutionOutcomeWithId): ExecutionOutcomeWithId {
+    if (t.outcome.status === ExecutionStatusBasic.Failure) {
+        t.outcome.status = {
+            Failure: {
+                error_message: t.outcome.logs.find(it => it.startsWith('ABORT:')) ||
+                    t.outcome.logs.find(it => it.startsWith('Runtime error:')) || '',
+                error_type: 'LegacyError',
+            }
+        };
+    }
+    return t;
+}
+
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 export function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyFinalTransactionResult): FinalExecutionOutcome {
+    // Fixing legacy transaction result
     if ('transactions' in txResult) {
         txResult = txResult as LegacyFinalTransactionResult;
         let status;
@@ -161,14 +189,28 @@ export function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyF
                 SuccessValue: result,
             };
         }
-        return {
-            status: status,
+        txResult = {
+            status,
             transaction: mapLegacyTransactionLog(txResult.transactions.splice(0, 1)[0]),
             receipts: txResult.transactions.map(mapLegacyTransactionLog),
         };
-    } else {
-        return txResult;
     }
+
+    // Adapting from old error handling.
+    txResult.transaction = fixLegacyBasicExecutionOutcomeFailure(txResult.transaction);
+    txResult.receipts = txResult.receipts.map(fixLegacyBasicExecutionOutcomeFailure);
+
+    // Fixing master error status
+    if (txResult.status === FinalExecutionStatusBasic.Failure) {
+        const err = ([txResult.transaction, ...txResult.receipts]
+            .find(t => typeof t.outcome.status === 'object' && typeof t.outcome.status.Failure === 'object')
+            .outcome.status as ExecutionStatus).Failure;
+        txResult.status = {
+            Failure: err
+        };
+    }
+
+    return txResult;
 }
 
 export abstract class Provider {

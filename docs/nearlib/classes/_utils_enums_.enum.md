@@ -12,10 +12,6 @@ sidebar_label: "Enum"
 
   ↳ [Action](_transaction_.action.md)
 
-  ↳ [ExecutionStatus](_providers_provider_.executionstatus.md)
-
-  ↳ [FinalExecutionStatus](_providers_provider_.finalexecutionstatus.md)
-
 ## Index
 
 ### Constructors
@@ -32,7 +28,7 @@ sidebar_label: "Enum"
 
 \+ **new Enum**(`properties`: any): *[Enum](_utils_enums_.enum.md)*
 
-*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/enums.ts#L4)*
+*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/enums.ts#L4)*
 
 **Parameters:**
 
@@ -48,4 +44,4 @@ Name | Type |
 
 • **enum**: *string*
 
-*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/utils/enums.ts#L4)*
+*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/enums.ts#L4)*
