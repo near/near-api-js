@@ -1,6 +1,6 @@
 import BN from 'bn.js';
 import { Enum, Assignable } from './utils/enums';
-import { KeyType, PublicKey } from './utils/key_pair';
+import { BlsPublicKey, KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
 export declare class FunctionCallPermission extends Assignable {
     allowance?: BN;
@@ -37,7 +37,7 @@ declare class Transfer extends IAction {
 }
 declare class Stake extends IAction {
     stake: BN;
-    publicKey: PublicKey;
+    publicKey: BlsPublicKey;
 }
 declare class AddKey extends IAction {
     publicKey: PublicKey;
@@ -53,7 +53,7 @@ export declare function createAccount(): Action;
 export declare function deployContract(code: Uint8Array): Action;
 export declare function functionCall(methodName: string, args: Uint8Array, gas: number, deposit: BN): Action;
 export declare function transfer(deposit: BN): Action;
-export declare function stake(stake: BN, publicKey: PublicKey): Action;
+export declare function stake(stake: BN, publicKey: BlsPublicKey): Action;
 export declare function addKey(publicKey: PublicKey, accessKey: AccessKey): Action;
 export declare function deleteKey(publicKey: PublicKey): Action;
 export declare function deleteAccount(beneficiaryId: string): Action;

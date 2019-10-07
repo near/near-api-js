@@ -1,4 +1,3 @@
-
 const nearlib = require('../lib/index');
 
 class Test {
@@ -26,19 +25,20 @@ test('serialize and sign multi-action tx', async() => {
     const keyPair = nearlib.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
     await keyStore.setKey('test', 'test.near', keyPair);
     const publicKey = keyPair.publicKey;
+    const blsPublicKey = nearlib.utils.BlsPublicKey.fromString('62xLbaLBKDYuBAk32DRo6idnJPLCuZi9MnAMWH39RXsqRQ88TYFY8Tgm899SnbDtNo');
     const actions = [
         nearlib.transactions.createAccount(),
         nearlib.transactions.deployContract(new Uint8Array([1, 2, 3])),
         nearlib.transactions.functionCall('qqq', new Uint8Array([1, 2, 3]), 1000, 1000000),
         nearlib.transactions.transfer(123),
-        nearlib.transactions.stake(1000000, publicKey),
+        nearlib.transactions.stake(1000000, blsPublicKey),
         nearlib.transactions.addKey(publicKey, nearlib.transactions.functionCallAccessKey('zzz', ['www'], null)),
         nearlib.transactions.deleteKey(publicKey),
         nearlib.transactions.deleteAccount('123')
     ];
     const blockHash = nearlib.utils.serialize.base_decode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
     let [hash] = await nearlib.transactions.signTransaction('123', 1, actions, blockHash, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
-    expect(nearlib.utils.serialize.base_encode(hash)).toEqual('Fo3MJ9XzKjnKuDuQKhDAC6fra5H2UWawRejFSEpPNk3Y');
+    expect(nearlib.utils.serialize.base_encode(hash)).toEqual('CN64mZh6nfPjqAe2XD6zoNTNW2o8ojzKLQMmXwMyg9Us');
 });
 
 test('serialize transfer tx', async() => {

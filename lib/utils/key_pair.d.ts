@@ -7,6 +7,11 @@ export interface Signature {
 export declare enum KeyType {
     ED25519 = 0
 }
+export declare class BlsPublicKey {
+    data: Uint8Array;
+    constructor(data: Uint8Array);
+    static fromString(encodedKey: string): BlsPublicKey;
+}
 /**
  * PublicKey representation that has type and bytes of the key.
  */

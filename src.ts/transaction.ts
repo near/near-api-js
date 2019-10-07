@@ -5,7 +5,7 @@ import BN from 'bn.js';
 
 import { Enum, Assignable } from './utils/enums';
 import { serialize } from './utils/serialize';
-import { KeyType, PublicKey } from './utils/key_pair';
+import {BlsPublicKey, KeyType, PublicKey} from './utils/key_pair';
 import { Signer } from './signer';
 
 export class FunctionCallPermission extends Assignable {
@@ -40,7 +40,7 @@ class CreateAccount extends IAction {}
 class DeployContract extends IAction { code: Uint8Array; }
 class FunctionCall extends IAction { methodName: string; args: Uint8Array; gas: BN; deposit: BN; }
 class Transfer extends IAction { deposit: BN; }
-class Stake extends IAction { stake: BN; publicKey: PublicKey; }
+class Stake extends IAction { stake: BN; publicKey: BlsPublicKey; }
 class AddKey extends IAction { publicKey: PublicKey; accessKey: AccessKey; }
 class DeleteKey extends IAction { publicKey: PublicKey; }
 class DeleteAccount extends IAction { beneficiaryId: string; }
@@ -61,7 +61,7 @@ export function transfer(deposit: BN): Action {
     return new Action({transfer: new Transfer({ deposit }) });
 }
 
-export function stake(stake: BN, publicKey: PublicKey): Action {
+export function stake(stake: BN, publicKey: BlsPublicKey): Action {
     return new Action({stake: new Stake({ stake, publicKey }) });
 }
 
@@ -137,6 +137,9 @@ export const SCHEMA = new Map<Function, any>([
         ['keyType', 'u8'],
         ['data', [32]]
     ]}],
+    [BlsPublicKey, {kind: 'struct', fields: [
+        ['data', [48]]
+    ]}],
     [AccessKey, { kind: 'struct', fields: [
         ['nonce', 'u64'],
         ['permission', AccessKeyPermission],
@@ -176,7 +179,7 @@ export const SCHEMA = new Map<Function, any>([
     ]}],
     [Stake, { kind: 'struct', fields: [
         ['stake', 'u128'],
-        ['publicKey', PublicKey]
+        ['publicKey', BlsPublicKey]
     ]}],
     [AddKey, { kind: 'struct', fields: [
         ['publicKey', PublicKey],

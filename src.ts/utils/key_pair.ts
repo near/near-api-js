@@ -29,6 +29,18 @@ function str_to_key_type(keyType: string): KeyType {
     }
 }
 
+export class BlsPublicKey {
+    data: Uint8Array;
+
+    constructor(data: Uint8Array) {
+        this.data = data;
+    }
+
+    static fromString(encodedKey: string): BlsPublicKey {
+        return new BlsPublicKey(base_decode(encodedKey));
+    }
+}
+
 /**
  * PublicKey representation that has type and bytes of the key.
  */

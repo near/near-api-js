@@ -81,7 +81,7 @@ export class Account {
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
             if (result.status === FinalExecutionStatusBasic.Failure ||
-                    typeof result.status === 'object' && typeof result.status.SuccessValue === 'string') {
+                typeof result.status === 'object' && typeof result.status.SuccessValue === 'string') {
                 return result;
             }
             await sleep(waitTime);
@@ -185,6 +185,7 @@ export class Account {
         }
         return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
     }
+
 
     /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
     async getAccessKeys(): Promise<any> {
