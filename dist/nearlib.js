@@ -784,6 +784,7 @@ var FinalExecutionStatusBasic;
     FinalExecutionStatusBasic["Started"] = "Started";
     FinalExecutionStatusBasic["Failure"] = "Failure";
 })(FinalExecutionStatusBasic = exports.FinalExecutionStatusBasic || (exports.FinalExecutionStatusBasic = {}));
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 var LegacyFinalTransactionStatus;
 (function (LegacyFinalTransactionStatus) {
     LegacyFinalTransactionStatus["Unknown"] = "Unknown";
@@ -791,12 +792,14 @@ var LegacyFinalTransactionStatus;
     LegacyFinalTransactionStatus["Failed"] = "Failed";
     LegacyFinalTransactionStatus["Completed"] = "Completed";
 })(LegacyFinalTransactionStatus || (LegacyFinalTransactionStatus = {}));
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 var LegacyTransactionStatus;
 (function (LegacyTransactionStatus) {
     LegacyTransactionStatus["Unknown"] = "Unknown";
     LegacyTransactionStatus["Completed"] = "Completed";
     LegacyTransactionStatus["Failed"] = "Failed";
 })(LegacyTransactionStatus || (LegacyTransactionStatus = {}));
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 function mapLegacyTransactionLog(tl) {
     let status;
     if (tl.result.status === LegacyTransactionStatus.Unknown) {
@@ -820,6 +823,7 @@ function mapLegacyTransactionLog(tl) {
         },
     };
 }
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 function fixLegacyBasicExecutionOutcomeFailure(t) {
     if (t.outcome.status === ExecutionStatusBasic.Failure) {
         t.outcome.status = {
@@ -832,6 +836,7 @@ function fixLegacyBasicExecutionOutcomeFailure(t) {
     }
     return t;
 }
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 function adaptTransactionResult(txResult) {
     // Fixing legacy transaction result
     if ('transactions' in txResult) {
