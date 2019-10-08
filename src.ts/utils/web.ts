@@ -11,7 +11,29 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-const fetch = (typeof window === 'undefined' || window.name === 'nodejs') ? require('node-fetch') : window.fetch;
+let fetch;
+if (typeof window === 'undefined' || window.name === 'nodejs') {
+  const nodeFetch = require('node-fetch');
+  const http = require('http');
+  const https = require('https');
+
+  const httpAgent = new http.Agent({ keepAlive: true });
+  const httpsAgent = new https.Agent({ keepAlive: true });
+
+  function agent(_parsedURL) {
+    if (_parsedURL.protocol === 'http:') {
+      return httpAgent;
+    } else {
+      return httpsAgent;
+    }
+  }
+
+  fetch = function(resource, init) {
+    return nodeFetch(resource, { agent, ...init });
+  };
+} else {
+  fetch = window.fetch;
+}
 
 export async function fetchJson(connection: string | ConnectionInfo, json?: string): Promise<any> {
     let url: string = null;
