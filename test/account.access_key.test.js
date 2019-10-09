@@ -1,3 +1,5 @@
+const providers = require('../lib/providers');
+
 const BN = require('bn.js');
 const nearlib = require('../lib/index');
 const testUtils = require('./test-utils');
@@ -39,7 +41,10 @@ test('remove access key no longer works', async() => {
     await workingAccount.deleteKey(publicKey);
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
-    await expect(contract.setValue({ value: 'test' })).rejects.toThrow(new RegExp(`\\[-32000\\] Server error: Signer "${workingAccount.accountId}" doesn't have access key with the given public_key ${publicKey}`));
+    await expect(contract.setValue({ value: 'test' })).rejects.toThrow(new providers.TypedError(
+        `Signer "${workingAccount.accountId}" doesn't have access key with the given public_key ${publicKey}`,
+        'InvalidTxError::InvalidAccessKey::AccessKeyNotFound'
+    ));
 });
 
 test('view account details after adding access keys', async() => {

@@ -21,7 +21,7 @@ sidebar_label: "FinalExecutionStatus"
 
 • **Failure**? : *[ExecutionError](_providers_provider_.executionerror.md)*
 
-*Defined in [providers/provider.ts:46](https://github.com/nearprotocol/nearlib/blob/948b404/src.ts/providers/provider.ts#L46)*
+*Defined in [providers/provider.ts:46](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/providers/provider.ts#L46)*
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 • **SuccessValue**? : *string*
 
-*Defined in [providers/provider.ts:45](https://github.com/nearprotocol/nearlib/blob/948b404/src.ts/providers/provider.ts#L45)*
+*Defined in [providers/provider.ts:45](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/providers/provider.ts#L45)*

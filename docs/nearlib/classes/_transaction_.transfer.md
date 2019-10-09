@@ -28,7 +28,7 @@ sidebar_label: "Transfer"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/948b404/src.ts/utils/enums.ts#L17)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -44,4 +44,4 @@ Name | Type |
 
 • **deposit**: *BN*
 
-*Defined in [transaction.ts:42](https://github.com/nearprotocol/nearlib/blob/948b404/src.ts/transaction.ts#L42)*
+*Defined in [transaction.ts:42](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/transaction.ts#L42)*
