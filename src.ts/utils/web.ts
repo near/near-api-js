@@ -11,6 +11,8 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
+
+// TODO: Move into separate module and exclude node-fetch kludge from browser build
 let fetch;
 if (typeof window === 'undefined' || window.name === 'nodejs') {
   const nodeFetch = require('node-fetch');
