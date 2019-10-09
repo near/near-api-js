@@ -188,8 +188,7 @@ export class Account {
         }
         return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
     }
-
-
+    
     /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
     async getAccessKeys(): Promise<any> {
         const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
