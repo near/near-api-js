@@ -22,7 +22,7 @@ sidebar_label: "ExecutionStatus"
 
 • **Failure**? : *[ExecutionError](_providers_provider_.executionerror.md)*
 
-*Defined in [providers/provider.ts:30](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/provider.ts#L30)*
+*Defined in [providers/provider.ts:30](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L30)*
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 • **SuccessReceiptId**? : *string*
 
-*Defined in [providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/provider.ts#L29)*
+*Defined in [providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L29)*
 
 ___
 
@@ -38,4 +38,4 @@ ___
 
 • **SuccessValue**? : *string*
 
-*Defined in [providers/provider.ts:28](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/provider.ts#L28)*
+*Defined in [providers/provider.ts:28](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L28)*

@@ -30,7 +30,7 @@ sidebar_label: "Connection"
 
 \+ **new Connection**(`networkId`: string, `provider`: [Provider](_providers_provider_.provider.md), `signer`: [Signer](_signer_.signer.md)): *[Connection](_connection_.connection.md)*
 
-*Defined in [connection.ts:29](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/connection.ts#L29)*
+*Defined in [connection.ts:29](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/connection.ts#L29)*
 
 **Parameters:**
 
@@ -48,7 +48,7 @@ Name | Type |
 
 • **networkId**: *string*
 
-*Defined in [connection.ts:27](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/connection.ts#L27)*
+*Defined in [connection.ts:27](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/connection.ts#L27)*
 
 ___
 
@@ -56,7 +56,7 @@ ___
 
 • **provider**: *[Provider](_providers_provider_.provider.md)*
 
-*Defined in [connection.ts:28](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/connection.ts#L28)*
+*Defined in [connection.ts:28](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/connection.ts#L28)*
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 • **signer**: *[Signer](_signer_.signer.md)*
 
-*Defined in [connection.ts:29](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/connection.ts#L29)*
+*Defined in [connection.ts:29](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/connection.ts#L29)*
 
 ## Methods
 
@@ -72,7 +72,7 @@ ___
 
 ▸ **fromConfig**(`config`: any): *[Connection](_connection_.connection.md)*
 
-*Defined in [connection.ts:37](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/connection.ts#L37)*
+*Defined in [connection.ts:37](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/connection.ts#L37)*
 
 **Parameters:**
 

@@ -72,7 +72,7 @@ export class JsonRpcProvider extends Provider {
                 throw new TypedError(response.error.data.error_message, response.error.data.error_type);
             } else {
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-                if (errorMessage === '[-32000] Server error: ') {
+                if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
                     throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
                 } else {
                     throw new TypedError(errorMessage);

@@ -36,7 +36,7 @@ sidebar_label: "JsonRpcProvider"
 
 \+ **new JsonRpcProvider**(`url?`: string, `network?`: [Network](../interfaces/_utils_network_.network.md)): *[JsonRpcProvider](_providers_json_rpc_provider_.jsonrpcprovider.md)*
 
-*Defined in [providers/json-rpc-provider.ts:21](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L21)*
+*Defined in [providers/json-rpc-provider.ts:21](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L21)*
 
 **Parameters:**
 
@@ -53,7 +53,7 @@ Name | Type |
 
 • **connection**: *[ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md)*
 
-*Defined in [providers/json-rpc-provider.ts:21](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L21)*
+*Defined in [providers/json-rpc-provider.ts:21](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L21)*
 
 ## Methods
 
@@ -63,7 +63,7 @@ Name | Type |
 
 *Overrides [Provider](_providers_provider_.provider.md).[block](_providers_provider_.provider.md#abstract-block)*
 
-*Defined in [providers/json-rpc-provider.ts:58](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L58)*
+*Defined in [providers/json-rpc-provider.ts:58](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L58)*
 
 **Parameters:**
 
@@ -81,7 +81,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[getNetwork](_providers_provider_.provider.md#abstract-getnetwork)*
 
-*Defined in [providers/json-rpc-provider.ts:30](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L30)*
+*Defined in [providers/json-rpc-provider.ts:30](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L30)*
 
 **Returns:** *Promise‹[Network](../interfaces/_utils_network_.network.md)›*
 
@@ -93,7 +93,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[query](_providers_provider_.provider.md#abstract-query)*
 
-*Defined in [providers/json-rpc-provider.ts:50](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L50)*
+*Defined in [providers/json-rpc-provider.ts:50](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L50)*
 
 **Parameters:**
 
@@ -110,7 +110,7 @@ ___
 
 ▸ **sendJsonRpc**(`method`: string, `params`: any[]): *Promise‹any›*
 
-*Defined in [providers/json-rpc-provider.ts:62](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L62)*
+*Defined in [providers/json-rpc-provider.ts:62](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L62)*
 
 **Parameters:**
 
@@ -129,7 +129,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[sendTransaction](_providers_provider_.provider.md#abstract-sendtransaction)*
 
-*Defined in [providers/json-rpc-provider.ts:41](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L41)*
+*Defined in [providers/json-rpc-provider.ts:41](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L41)*
 
 **Parameters:**
 
@@ -147,7 +147,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[status](_providers_provider_.provider.md#abstract-status)*
 
-*Defined in [providers/json-rpc-provider.ts:37](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L37)*
+*Defined in [providers/json-rpc-provider.ts:37](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L37)*
 
 **Returns:** *Promise‹[NodeStatusResult](../interfaces/_providers_provider_.nodestatusresult.md)›*
 
@@ -159,7 +159,7 @@ ___
 
 *Overrides [Provider](_providers_provider_.provider.md).[txStatus](_providers_provider_.provider.md#abstract-txstatus)*
 
-*Defined in [providers/json-rpc-provider.ts:46](https://github.com/nearprotocol/nearlib/blob/8f79950/src.ts/providers/json-rpc-provider.ts#L46)*
+*Defined in [providers/json-rpc-provider.ts:46](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/json-rpc-provider.ts#L46)*
 
 **Parameters:**
 
