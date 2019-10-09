@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { FinalExecutionOutcome } from './providers/provider';
+import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { BlsPublicKey, PublicKey } from './utils/key_pair';
 export interface AccountState {

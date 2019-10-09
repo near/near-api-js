@@ -1,7 +1,7 @@
 {
   "name": "nearlib",
   "description": "Javascript library to interact with NEAR blockchain",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "repository": {
     "type": "git",
     "url": "git@:nearprotocol/nearcore.git"
@@ -44,7 +44,7 @@
   "license": "MIT",
   "scripts": {
     "dist": "yarn browserify && yarn doc",
-    "browserify": "browserify browser-exports.js -i node-fetch -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
+    "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/nearlib.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/nearlib.min.js",
     "prebrowserify": "yarn build",
     "prepublish": "not-in-install && (yarn build && yarn browserify) || in-install",
     "compile": "tsc -p ./tsconfig.json",

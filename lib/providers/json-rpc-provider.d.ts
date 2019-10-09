@@ -2,6 +2,10 @@ import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockResult } from '
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { SignedTransaction } from '../transaction';
+export declare class TypedError extends Error {
+    type: string;
+    constructor(message?: string, type?: string);
+}
 export declare class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
     constructor(url?: string, network?: Network);

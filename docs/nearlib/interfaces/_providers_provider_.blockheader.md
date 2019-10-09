@@ -28,7 +28,7 @@ sidebar_label: "BlockHeader"
 
 • **approval_mask**: *string*
 
-*Defined in [providers/provider.ts:66](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L66)*
+*Defined in [providers/provider.ts:72](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L72)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 • **approval_sigs**: *string*
 
-*Defined in [providers/provider.ts:67](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L67)*
+*Defined in [providers/provider.ts:73](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L73)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 • **hash**: *string*
 
-*Defined in [providers/provider.ts:68](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L68)*
+*Defined in [providers/provider.ts:74](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L74)*
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 • **height**: *number*
 
-*Defined in [providers/provider.ts:69](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L69)*
+*Defined in [providers/provider.ts:75](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L75)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 • **prev_hash**: *string*
 
-*Defined in [providers/provider.ts:70](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L70)*
+*Defined in [providers/provider.ts:76](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L76)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **prev_state_root**: *string*
 
-*Defined in [providers/provider.ts:71](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L71)*
+*Defined in [providers/provider.ts:77](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L77)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **timestamp**: *number*
 
-*Defined in [providers/provider.ts:72](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L72)*
+*Defined in [providers/provider.ts:78](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L78)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 • **total_weight**: *[TotalWeight](_providers_provider_.totalweight.md)*
 
-*Defined in [providers/provider.ts:73](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L73)*
+*Defined in [providers/provider.ts:79](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L79)*
 
 ___
 
@@ -92,4 +92,4 @@ ___
 
 • **tx_root**: *string*
 
-*Defined in [providers/provider.ts:74](https://github.com/nearprotocol/nearlib/blob/a23e44a/src.ts/providers/provider.ts#L74)*
+*Defined in [providers/provider.ts:80](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L80)*

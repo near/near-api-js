@@ -3,7 +3,7 @@
 import BN from 'bn.js';
 import { Action, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
-import { FinalExecutionOutcome, FinalExecutionStatusBasic } from './providers/provider';
+import { FinalExecutionOutcome, TypedError } from './providers';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import {BlsPublicKey, PublicKey} from './utils/key_pair';
@@ -80,21 +80,21 @@ export class Account {
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
-            if (result.status === FinalExecutionStatusBasic.Failure ||
-                typeof result.status === 'object' && typeof result.status.SuccessValue === 'string') {
+            if (typeof result.status === 'object' &&
+                    (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
                 return result;
             }
             await sleep(waitTime);
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`);
+        throw new TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`, 'RetriesExceeded');
     }
 
     private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
         if (!this._accessKey) {
-            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
+            throw new TypedError(`Can not sign transactions, initialize account with available public key in Signer.`, 'KeyNotFound');
         }
 
         const status = await this.connection.provider.status();
@@ -107,7 +107,7 @@ export class Account {
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
         } catch (error) {
-            if (error.message === '[-32000] Server error: send_tx_commit has timed out.') {
+            if (error.type === 'TimeoutError') {
                 result = await this.retryTxResult(txHash);
             } else {
                 throw error;
@@ -117,11 +117,10 @@ export class Account {
         const flatLogs = [result.transaction, ...result.receipts].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
-        if (result.status === FinalExecutionStatusBasic.Failure) {
-            if (flatLogs) {
-                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || flatLogs.find(it => it.startsWith('Runtime error:')) || '';
-                throw new Error(`Transaction ${result.transaction.id} failed. ${errorMessage}`);
-            }
+        if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
+            throw new TypedError(
+                `Transaction ${result.transaction.id} failed. ${result.status.Failure.error_message}`,
+                result.status.Failure.error_type);
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.

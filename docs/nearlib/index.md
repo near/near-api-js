@@ -6,6 +6,8 @@ sidebar_label: "README"
 
 # nearlib
 
+[![Build Status](https://gitlab.com/near-protocol/nearlib/badges/master/pipeline.svg)](https://gitlab.com/near-protocol/nearlib/pipelines)
+
 nearlib is a JavaScript/TypeScript library for development of DApps on NEAR platform.
 
 ## Install dependencies
@@ -37,4 +39,5 @@ Start the node by following instructions from nearcore/README.md, then
 ```
 yarn test
 ```
-Contract "hello.wasm" source code location: <https://github.com/nearprotocol/nearcore/tree/master/tests/hello>
+
+Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello

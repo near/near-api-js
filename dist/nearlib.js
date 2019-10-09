@@ -10,7 +10,7 @@ window.Buffer = Buffer;
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const transaction_1 = require("./transaction");
-const provider_1 = require("./providers/provider");
+const providers_1 = require("./providers");
 const serialize_1 = require("./utils/serialize");
 const key_pair_1 = require("./utils/key_pair");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
@@ -62,20 +62,20 @@ class Account {
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
             result = await this.connection.provider.txStatus(txHash);
-            if (result.status === provider_1.FinalExecutionStatusBasic.Failure ||
-                typeof result.status === 'object' && typeof result.status.SuccessValue === 'string') {
+            if (typeof result.status === 'object' &&
+                (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
                 return result;
             }
             await sleep(waitTime);
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`);
+        throw new providers_1.TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`, 'RetriesExceeded');
     }
     async signAndSendTransaction(receiverId, actions) {
         await this.ready;
         if (!this._accessKey) {
-            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
+            throw new providers_1.TypedError(`Can not sign transactions, initialize account with available public key in Signer.`, 'KeyNotFound');
         }
         const status = await this.connection.provider.status();
         const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
@@ -84,7 +84,7 @@ class Account {
             result = await this.connection.provider.sendTransaction(signedTx);
         }
         catch (error) {
-            if (error.message === '[-32000] Server error: send_tx_commit has timed out.') {
+            if (error.type === 'TimeoutError') {
                 result = await this.retryTxResult(txHash);
             }
             else {
@@ -93,11 +93,8 @@ class Account {
         }
         const flatLogs = [result.transaction, ...result.receipts].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
-        if (result.status === provider_1.FinalExecutionStatusBasic.Failure) {
-            if (flatLogs) {
-                const errorMessage = flatLogs.find(it => it.startsWith('ABORT:')) || flatLogs.find(it => it.startsWith('Runtime error:')) || '';
-                throw new Error(`Transaction ${result.transaction.id} failed. ${errorMessage}`);
-            }
+        if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
+            throw new providers_1.TypedError(`Transaction ${result.transaction.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.
@@ -178,7 +175,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers/provider":16,"./transaction":18,"./utils/key_pair":21,"./utils/serialize":23,"buffer":32}],3:[function(require,module,exports){
+},{"./providers":14,"./transaction":18,"./utils/key_pair":21,"./utils/serialize":23,"buffer":32}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -218,12 +215,16 @@ const providers_1 = require("./providers");
 const signer_1 = require("./signer");
 function getProvider(config) {
     switch (config.type) {
+        case undefined:
+            return config;
         case 'JsonRpcProvider': return new providers_1.JsonRpcProvider(config.args.url);
         default: throw new Error(`Unknown provider type ${config.type}`);
     }
 }
-function getSigner(networkId, config) {
+function getSigner(config) {
     switch (config.type) {
+        case undefined:
+            return config;
         case 'InMemorySigner': {
             return new signer_1.InMemorySigner(config.keyStore);
         }
@@ -238,7 +239,7 @@ class Connection {
     }
     static fromConfig(config) {
         const provider = getProvider(config.provider);
-        const signer = getSigner(config.networkId, config.signer);
+        const signer = getSigner(config.signer);
         return new Connection(config.networkId, provider, signer);
     }
 }
@@ -713,6 +714,7 @@ exports.FinalExecutionStatusBasic = provider_1.FinalExecutionStatusBasic;
 exports.adaptTransactionResult = provider_1.adaptTransactionResult;
 const json_rpc_provider_1 = require("./json-rpc-provider");
 exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
+exports.TypedError = json_rpc_provider_1.TypedError;
 
 },{"./json-rpc-provider":15,"./provider":16}],15:[function(require,module,exports){
 (function (Buffer){
@@ -723,6 +725,13 @@ const web_1 = require("../utils/web");
 const serialize_1 = require("../utils/serialize");
 /// Keep ids unique across all connections.
 let _nextId = 123;
+class TypedError extends Error {
+    constructor(message, type) {
+        super(message);
+        this.type = type || 'UntypedError';
+    }
+}
+exports.TypedError = TypedError;
 class JsonRpcProvider extends provider_1.Provider {
     constructor(url, network) {
         super();
@@ -762,11 +771,22 @@ class JsonRpcProvider extends provider_1.Provider {
             id: (_nextId++),
             jsonrpc: '2.0'
         };
-        const result = await web_1.fetchJson(this.connection, JSON.stringify(request));
-        if (result.error) {
-            throw new Error(`[${result.error.code}] ${result.error.message}: ${result.error.data}`);
+        const response = await web_1.fetchJson(this.connection, JSON.stringify(request));
+        if (response.error) {
+            if (typeof response.error.data === 'object') {
+                throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+            }
+            else {
+                const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
+                if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
+                    throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
+                }
+                else {
+                    throw new TypedError(errorMessage);
+                }
+            }
         }
-        return result.result;
+        return response.result;
     }
 }
 exports.JsonRpcProvider = JsonRpcProvider;
@@ -776,25 +796,19 @@ exports.JsonRpcProvider = JsonRpcProvider;
 (function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const enums_1 = require("../utils/enums");
 var ExecutionStatusBasic;
 (function (ExecutionStatusBasic) {
     ExecutionStatusBasic["Unknown"] = "Unknown";
     ExecutionStatusBasic["Pending"] = "Pending";
     ExecutionStatusBasic["Failure"] = "Failure";
 })(ExecutionStatusBasic = exports.ExecutionStatusBasic || (exports.ExecutionStatusBasic = {}));
-class ExecutionStatus extends enums_1.Enum {
-}
-exports.ExecutionStatus = ExecutionStatus;
 var FinalExecutionStatusBasic;
 (function (FinalExecutionStatusBasic) {
     FinalExecutionStatusBasic["NotStarted"] = "NotStarted";
     FinalExecutionStatusBasic["Started"] = "Started";
     FinalExecutionStatusBasic["Failure"] = "Failure";
 })(FinalExecutionStatusBasic = exports.FinalExecutionStatusBasic || (exports.FinalExecutionStatusBasic = {}));
-class FinalExecutionStatus extends enums_1.Enum {
-}
-exports.FinalExecutionStatus = FinalExecutionStatus;
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 var LegacyFinalTransactionStatus;
 (function (LegacyFinalTransactionStatus) {
     LegacyFinalTransactionStatus["Unknown"] = "Unknown";
@@ -802,12 +816,14 @@ var LegacyFinalTransactionStatus;
     LegacyFinalTransactionStatus["Failed"] = "Failed";
     LegacyFinalTransactionStatus["Completed"] = "Completed";
 })(LegacyFinalTransactionStatus || (LegacyFinalTransactionStatus = {}));
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 var LegacyTransactionStatus;
 (function (LegacyTransactionStatus) {
     LegacyTransactionStatus["Unknown"] = "Unknown";
     LegacyTransactionStatus["Completed"] = "Completed";
     LegacyTransactionStatus["Failed"] = "Failed";
 })(LegacyTransactionStatus || (LegacyTransactionStatus = {}));
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 function mapLegacyTransactionLog(tl) {
     let status;
     if (tl.result.status === LegacyTransactionStatus.Unknown) {
@@ -831,7 +847,22 @@ function mapLegacyTransactionLog(tl) {
         },
     };
 }
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
+function fixLegacyBasicExecutionOutcomeFailure(t) {
+    if (t.outcome.status === ExecutionStatusBasic.Failure) {
+        t.outcome.status = {
+            Failure: {
+                error_message: t.outcome.logs.find(it => it.startsWith('ABORT:')) ||
+                    t.outcome.logs.find(it => it.startsWith('Runtime error:')) || '',
+                error_type: 'LegacyError',
+            }
+        };
+    }
+    return t;
+}
+// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
 function adaptTransactionResult(txResult) {
+    // Fixing legacy transaction result
     if ('transactions' in txResult) {
         txResult = txResult;
         let status;
@@ -857,15 +888,25 @@ function adaptTransactionResult(txResult) {
                 SuccessValue: result,
             };
         }
-        return {
-            status: status,
+        txResult = {
+            status,
             transaction: mapLegacyTransactionLog(txResult.transactions.splice(0, 1)[0]),
             receipts: txResult.transactions.map(mapLegacyTransactionLog),
         };
     }
-    else {
-        return txResult;
+    // Adapting from old error handling.
+    txResult.transaction = fixLegacyBasicExecutionOutcomeFailure(txResult.transaction);
+    txResult.receipts = txResult.receipts.map(fixLegacyBasicExecutionOutcomeFailure);
+    // Fixing master error status
+    if (txResult.status === FinalExecutionStatusBasic.Failure) {
+        const err = [txResult.transaction, ...txResult.receipts]
+            .find(t => typeof t.outcome.status === 'object' && typeof t.outcome.status.Failure === 'object')
+            .outcome.status.Failure;
+        txResult.status = {
+            Failure: err
+        };
     }
+    return txResult;
 }
 exports.adaptTransactionResult = adaptTransactionResult;
 class Provider {
@@ -886,7 +927,7 @@ function getTransactionLastResult(txResult) {
 exports.getTransactionLastResult = getTransactionLastResult;
 
 }).call(this,require("buffer").Buffer)
-},{"../utils/enums":19,"buffer":32}],17:[function(require,module,exports){
+},{"buffer":32}],17:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -1119,7 +1160,7 @@ async function signTransaction(receiverId, nonce, actions, blockHash, signer, ac
     const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
     const message = serialize_1.serialize(exports.SCHEMA, transaction);
     const hash = new Uint8Array(js_sha256_1.default.sha256.array(message));
-    const signature = await signer.signHash(hash, accountId, networkId);
+    const signature = await signer.signMessage(message, accountId, networkId);
     const signedTx = new SignedTransaction({ transaction, signature: new Signature(signature.signature) });
     return [hash, signedTx];
 }
@@ -1528,7 +1569,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_errors_1 = __importDefault(require("http-errors"));
-const fetch = (typeof window === 'undefined' || window.name === 'nodejs') ? require('node-fetch') : window.fetch;
+// TODO: Move into separate module and exclude node-fetch kludge from browser build
+let fetch;
+if (typeof window === 'undefined' || window.name === 'nodejs') {
+    const nodeFetch = require('node-fetch');
+    const http = require('http');
+    const https = require('https');
+    const httpAgent = new http.Agent({ keepAlive: true });
+    const httpsAgent = new https.Agent({ keepAlive: true });
+    function agent(_parsedURL) {
+        if (_parsedURL.protocol === 'http:') {
+            return httpAgent;
+        }
+        else {
+            return httpsAgent;
+        }
+    }
+    fetch = function (resource, init) {
+        return nodeFetch(resource, { agent, ...init });
+    };
+}
+else {
+    fetch = window.fetch;
+}
 async function fetchJson(connection, json) {
     let url = null;
     if (typeof (connection) === 'string') {
@@ -1549,7 +1612,7 @@ async function fetchJson(connection, json) {
 }
 exports.fetchJson = fetchJson;
 
-},{"http-errors":48,"node-fetch":30}],25:[function(require,module,exports){
+},{"http":30,"http-errors":48,"https":30,"node-fetch":30}],25:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
