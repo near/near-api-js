@@ -47,6 +47,15 @@ test('delete account', async() => {
     await expect(reloaded.state()).rejects.toThrow();
 });
 
+test('stake', async() => {
+    const account = await testUtils.createAccount(workingAccount);
+    const state = await account.state();
+    await account.stake('62xLbaLBKDYuBAk32DRo6idnJPLCuZi9MnAMWH39RXsqRQ88TYFY8Tgm899SnbDtNo', new BN(100));
+    await account.fetchState();
+    const new_state = await account.state();
+    expect(state.amount).toEqual(new BN(new_state.amount).add(new BN(100)).toString());
+});
+
 describe('errors', () => {
     let oldLog;
     let logs;

@@ -12,11 +12,17 @@ export interface SyncInfo {
     syncing: boolean;
 }
 
+export interface Version {
+    build: string;
+    version: string;
+}
+
 export interface NodeStatusResult {
     chain_id: string;
     rpc_addr: string;
     sync_info: SyncInfo;
     validators: string[];
+    version: Version;
 }
 
 export enum ExecutionStatusBasic {

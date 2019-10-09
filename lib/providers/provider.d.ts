@@ -8,11 +8,16 @@ export interface SyncInfo {
     latest_state_root: string;
     syncing: boolean;
 }
+export interface Version {
+    build: string;
+    version: string;
+}
 export interface NodeStatusResult {
     chain_id: string;
     rpc_addr: string;
     sync_info: SyncInfo;
     validators: string[];
+    version: Version;
 }
 export declare enum ExecutionStatusBasic {
     Unknown = "Unknown",

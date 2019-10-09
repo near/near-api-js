@@ -175,6 +175,10 @@ export class Account {
     }
 
     async stake(publicKey: string | BlsPublicKey, amount: BN): Promise<FinalExecutionOutcome> {
+        const status = await this.connection.provider.status();
+        if (status.version.version < '0.4.0') {
+            throw new Error(`Staking for nearcore version under 0.4.0 is prohibited. Current nearcore version ${status.version.version}`);
+        }
         return this.signAndSendTransaction(this.accountId, [stake(amount, BlsPublicKey.from(publicKey))]);
     }
 
