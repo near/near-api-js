@@ -6,7 +6,7 @@ import { Signer, InMemorySigner } from './signer';
 function getProvider(config: any): Provider {
     switch (config.type) {
         case undefined:
-            return config
+            return config;
         case 'JsonRpcProvider': return new JsonRpcProvider(config.args.url);
         default: throw new Error(`Unknown provider type ${config.type}`);
     }
@@ -15,7 +15,7 @@ function getProvider(config: any): Provider {
 function getSigner(config: any): Signer {
     switch (config.type) {
         case undefined:
-            return config
+            return config;
         case 'InMemorySigner': {
             return new InMemorySigner(config.keyStore);
         }
