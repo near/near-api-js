@@ -195,7 +195,7 @@ export async function signTransaction(receiverId: string, nonce: number, actions
     const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
-    const signature = await signer.signHash(hash, accountId, networkId);
+    const signature = await signer.signMessage(message, accountId, networkId);
     const signedTx = new SignedTransaction({transaction, signature: new Signature(signature.signature) });
     return [hash, signedTx];
 }
