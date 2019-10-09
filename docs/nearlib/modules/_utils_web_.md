@@ -12,7 +12,7 @@ sidebar_label: "utils/web"
 
 ### Variables
 
-* [fetch](_utils_web_.md#const-fetch)
+* [fetch](_utils_web_.md#let-fetch)
 
 ### Functions
 
@@ -20,11 +20,11 @@ sidebar_label: "utils/web"
 
 ## Variables
 
-### `Const` fetch
+### `Let` fetch
 
-• **fetch**: *any* =  (typeof window === 'undefined' || window.name === 'nodejs') ? require('node-fetch') : window.fetch
+• **fetch**: *any*
 
-*Defined in [utils/web.ts:14](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/web.ts#L14)*
+*Defined in [utils/web.ts:16](https://github.com/nearprotocol/nearlib/blob/948b404/src.ts/utils/web.ts#L16)*
 
 ## Functions
 
@@ -32,7 +32,7 @@ sidebar_label: "utils/web"
 
 ▸ **fetchJson**(`connection`: string | [ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md), `json?`: string): *Promise‹any›*
 
-*Defined in [utils/web.ts:16](https://github.com/nearprotocol/nearlib/blob/08f7443/src.ts/utils/web.ts#L16)*
+*Defined in [utils/web.ts:40](https://github.com/nearprotocol/nearlib/blob/948b404/src.ts/utils/web.ts#L40)*
 
 **Parameters:**
 

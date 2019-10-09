@@ -214,12 +214,16 @@ const providers_1 = require("./providers");
 const signer_1 = require("./signer");
 function getProvider(config) {
     switch (config.type) {
+        case undefined:
+            return config;
         case 'JsonRpcProvider': return new providers_1.JsonRpcProvider(config.args.url);
         default: throw new Error(`Unknown provider type ${config.type}`);
     }
 }
-function getSigner(networkId, config) {
+function getSigner(config) {
     switch (config.type) {
+        case undefined:
+            return config;
         case 'InMemorySigner': {
             return new signer_1.InMemorySigner(config.keyStore);
         }
@@ -234,7 +238,7 @@ class Connection {
     }
     static fromConfig(config) {
         const provider = getProvider(config.provider);
-        const signer = getSigner(config.networkId, config.signer);
+        const signer = getSigner(config.signer);
         return new Connection(config.networkId, provider, signer);
     }
 }
@@ -1136,7 +1140,7 @@ async function signTransaction(receiverId, nonce, actions, blockHash, signer, ac
     const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
     const message = serialize_1.serialize(exports.SCHEMA, transaction);
     const hash = new Uint8Array(js_sha256_1.default.sha256.array(message));
-    const signature = await signer.signHash(hash, accountId, networkId);
+    const signature = await signer.signMessage(message, accountId, networkId);
     const signedTx = new SignedTransaction({ transaction, signature: new Signature(signature.signature) });
     return [hash, signedTx];
 }
@@ -1545,7 +1549,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_errors_1 = __importDefault(require("http-errors"));
-const fetch = (typeof window === 'undefined' || window.name === 'nodejs') ? require('node-fetch') : window.fetch;
+// TODO: Move into separate module and exclude node-fetch kludge from browser build
+let fetch;
+if (typeof window === 'undefined' || window.name === 'nodejs') {
+    const nodeFetch = require('node-fetch');
+    const http = require('http');
+    const https = require('https');
+    const httpAgent = new http.Agent({ keepAlive: true });
+    const httpsAgent = new https.Agent({ keepAlive: true });
+    function agent(_parsedURL) {
+        if (_parsedURL.protocol === 'http:') {
+            return httpAgent;
+        }
+        else {
+            return httpsAgent;
+        }
+    }
+    fetch = function (resource, init) {
+        return nodeFetch(resource, { agent, ...init });
+    };
+}
+else {
+    fetch = window.fetch;
+}
 async function fetchJson(connection, json) {
     let url = null;
     if (typeof (connection) === 'string') {
@@ -1566,7 +1592,7 @@ async function fetchJson(connection, json) {
 }
 exports.fetchJson = fetchJson;
 
-},{"http-errors":48,"node-fetch":30}],25:[function(require,module,exports){
+},{"http":30,"http-errors":48,"https":30,"node-fetch":30}],25:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
