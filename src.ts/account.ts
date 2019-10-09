@@ -94,7 +94,7 @@ export class Account {
     private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
         if (!this._accessKey) {
-            throw new TypedError(`Can not sign transactions, initialize account with available public key in Signer.`, 'CantSignError');
+            throw new TypedError(`Can not sign transactions, initialize account with available public key in Signer.`, 'KeyNotFound');
         }
 
         const status = await this.connection.provider.status();
