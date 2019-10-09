@@ -21,7 +21,7 @@ sidebar_label: "LegacyTransactionLog"
 
 • **hash**: *string*
 
-*Defined in [providers/provider.ts:92](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/providers/provider.ts#L92)*
+*Defined in [providers/provider.ts:92](https://github.com/nearprotocol/nearlib/blob/cbaa79a/src.ts/providers/provider.ts#L92)*
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 • **result**: *[LegacyTransactionResult](_providers_provider_.legacytransactionresult.md)*
 
-*Defined in [providers/provider.ts:93](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/providers/provider.ts#L93)*
+*Defined in [providers/provider.ts:93](https://github.com/nearprotocol/nearlib/blob/cbaa79a/src.ts/providers/provider.ts#L93)*

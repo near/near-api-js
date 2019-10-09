@@ -32,7 +32,7 @@ sidebar_label: "Assignable"
 
 \+ **new Assignable**(`properties`: any): *[Assignable](_utils_enums_.assignable.md)*
 
-*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/utils/enums.ts#L17)*
+*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/cbaa79a/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 

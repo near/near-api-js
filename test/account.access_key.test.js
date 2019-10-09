@@ -1,5 +1,3 @@
-const providers = require('../lib/providers');
-
 const BN = require('bn.js');
 const nearlib = require('../lib/index');
 const testUtils = require('./test-utils');
