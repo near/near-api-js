@@ -39,7 +39,13 @@ test('remove access key no longer works', async() => {
     await workingAccount.deleteKey(publicKey);
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
-    await expect(contract.setValue({ value: 'test' })).rejects.toThrow(new RegExp(`\\[-32000\\] Server error: Signer "${workingAccount.accountId}" doesn't have access key with the given public_key ${publicKey}`));
+    try {
+        await contract.setValue({value: 'test'});
+        fail('should throw an error');
+    } catch (e) {
+        expect(e.message).toMatch(new RegExp(`.*?Signer "${workingAccount.accountId}" doesn't have access key with the given public_key ${publicKey}`));
+        expect(e.type).toMatch(/InvalidTxError::InvalidAccessKey::AccessKeyNotFound|UntypedError/);
+    }
 });
 
 test('view account details after adding access keys', async() => {

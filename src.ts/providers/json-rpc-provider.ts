@@ -9,6 +9,14 @@ import { SignedTransaction } from '../transaction';
 /// Keep ids unique across all connections.
 let _nextId = 123;
 
+export class TypedError extends Error {
+    type: string;
+    constructor(message?: string, type?: string) {
+        super(message);
+        this.type = type || 'UntypedError';
+    }
+}
+
 export class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
 
@@ -58,10 +66,19 @@ export class JsonRpcProvider extends Provider {
             id: (_nextId++),
             jsonrpc: '2.0'
         };
-        const result = await fetchJson(this.connection, JSON.stringify(request));
-        if (result.error) {
-            throw new Error(`[${result.error.code}] ${result.error.message}: ${result.error.data}`);
+        const response = await fetchJson(this.connection, JSON.stringify(request));
+        if (response.error) {
+            if (typeof response.error.data === 'object') {
+                throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+            } else {
+                const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
+                if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
+                    throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
+                } else {
+                    throw new TypedError(errorMessage);
+                }
+            }
         }
-        return result.result;
+        return response.result;
     }
 }

@@ -3,7 +3,7 @@
 import BN from 'bn.js';
 import { Action, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
-import { FinalExecutionOutcome } from './providers/provider';
+import { FinalExecutionOutcome, TypedError } from './providers';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
@@ -88,13 +88,13 @@ export class Account {
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`);
+        throw new TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`, 'RetriesExceeded');
     }
 
     private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
         if (!this._accessKey) {
-            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
+            throw new TypedError(`Can not sign transactions, initialize account with available public key in Signer.`, 'KeyNotFound');
         }
 
         const status = await this.connection.provider.status();
@@ -107,7 +107,7 @@ export class Account {
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
         } catch (error) {
-            if (error.message === '[-32000] Server error: send_tx_commit has timed out.') {
+            if (error.type === 'TimeoutError') {
                 result = await this.retryTxResult(txHash);
             } else {
                 throw error;
@@ -118,7 +118,9 @@ export class Account {
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
-            throw new Error(`Transaction ${result.transaction.id} failed with ${result.status.Failure.error_type}. ${result.status.Failure.error_message}`);
+            throw new TypedError(
+                `Transaction ${result.transaction.id} failed. ${result.status.Failure.error_message}`,
+                result.status.Failure.error_type);
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.

@@ -10,6 +10,7 @@ window.Buffer = Buffer;
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const transaction_1 = require("./transaction");
+const providers_1 = require("./providers");
 const serialize_1 = require("./utils/serialize");
 const key_pair_1 = require("./utils/key_pair");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
@@ -69,12 +70,12 @@ class Account {
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        throw new Error(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`);
+        throw new providers_1.TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`, 'RetriesExceeded');
     }
     async signAndSendTransaction(receiverId, actions) {
         await this.ready;
         if (!this._accessKey) {
-            throw new Error(`Can not sign transactions, initialize account with available public key in Signer.`);
+            throw new providers_1.TypedError(`Can not sign transactions, initialize account with available public key in Signer.`, 'KeyNotFound');
         }
         const status = await this.connection.provider.status();
         const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
@@ -83,7 +84,7 @@ class Account {
             result = await this.connection.provider.sendTransaction(signedTx);
         }
         catch (error) {
-            if (error.message === '[-32000] Server error: send_tx_commit has timed out.') {
+            if (error.type === 'TimeoutError') {
                 result = await this.retryTxResult(txHash);
             }
             else {
@@ -93,7 +94,7 @@ class Account {
         const flatLogs = [result.transaction, ...result.receipts].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
-            throw new Error(`Transaction ${result.transaction.id} failed with ${result.status.Failure.error_type}. ${result.status.Failure.error_message}`);
+            throw new providers_1.TypedError(`Transaction ${result.transaction.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.
@@ -174,7 +175,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./transaction":18,"./utils/key_pair":21,"./utils/serialize":23,"buffer":32}],3:[function(require,module,exports){
+},{"./providers":14,"./transaction":18,"./utils/key_pair":21,"./utils/serialize":23,"buffer":32}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -713,6 +714,7 @@ exports.FinalExecutionStatusBasic = provider_1.FinalExecutionStatusBasic;
 exports.adaptTransactionResult = provider_1.adaptTransactionResult;
 const json_rpc_provider_1 = require("./json-rpc-provider");
 exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
+exports.TypedError = json_rpc_provider_1.TypedError;
 
 },{"./json-rpc-provider":15,"./provider":16}],15:[function(require,module,exports){
 (function (Buffer){
@@ -723,6 +725,13 @@ const web_1 = require("../utils/web");
 const serialize_1 = require("../utils/serialize");
 /// Keep ids unique across all connections.
 let _nextId = 123;
+class TypedError extends Error {
+    constructor(message, type) {
+        super(message);
+        this.type = type || 'UntypedError';
+    }
+}
+exports.TypedError = TypedError;
 class JsonRpcProvider extends provider_1.Provider {
     constructor(url, network) {
         super();
@@ -762,11 +771,22 @@ class JsonRpcProvider extends provider_1.Provider {
             id: (_nextId++),
             jsonrpc: '2.0'
         };
-        const result = await web_1.fetchJson(this.connection, JSON.stringify(request));
-        if (result.error) {
-            throw new Error(`[${result.error.code}] ${result.error.message}: ${result.error.data}`);
+        const response = await web_1.fetchJson(this.connection, JSON.stringify(request));
+        if (response.error) {
+            if (typeof response.error.data === 'object') {
+                throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+            }
+            else {
+                const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
+                if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
+                    throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
+                }
+                else {
+                    throw new TypedError(errorMessage);
+                }
+            }
         }
-        return result.result;
+        return response.result;
     }
 }
 exports.JsonRpcProvider = JsonRpcProvider;
