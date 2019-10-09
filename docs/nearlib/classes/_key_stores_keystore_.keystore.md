@@ -35,7 +35,7 @@ Key store interface for `InMemorySigner`.
 
 ▸ **clear**(): *Promise‹void›*
 
-*Defined in [key_stores/keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/key_stores/keystore.ts#L12)*
+*Defined in [key_stores/keystore.ts:12](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/key_stores/keystore.ts#L12)*
 
 **Returns:** *Promise‹void›*
 
@@ -45,7 +45,7 @@ ___
 
 ▸ **getAccounts**(`networkId`: string): *Promise‹string[]›*
 
-*Defined in [key_stores/keystore.ts:14](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/key_stores/keystore.ts#L14)*
+*Defined in [key_stores/keystore.ts:14](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/key_stores/keystore.ts#L14)*
 
 **Parameters:**
 
@@ -61,7 +61,7 @@ ___
 
 ▸ **getKey**(`networkId`: string, `accountId`: string): *Promise‹[KeyPair](_utils_key_pair_.keypair.md)›*
 
-*Defined in [key_stores/keystore.ts:10](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/key_stores/keystore.ts#L10)*
+*Defined in [key_stores/keystore.ts:10](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/key_stores/keystore.ts#L10)*
 
 **Parameters:**
 
@@ -78,7 +78,7 @@ ___
 
 ▸ **getNetworks**(): *Promise‹string[]›*
 
-*Defined in [key_stores/keystore.ts:13](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/key_stores/keystore.ts#L13)*
+*Defined in [key_stores/keystore.ts:13](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/key_stores/keystore.ts#L13)*
 
 **Returns:** *Promise‹string[]›*
 
@@ -88,7 +88,7 @@ ___
 
 ▸ **removeKey**(`networkId`: string, `accountId`: string): *Promise‹void›*
 
-*Defined in [key_stores/keystore.ts:11](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/key_stores/keystore.ts#L11)*
+*Defined in [key_stores/keystore.ts:11](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/key_stores/keystore.ts#L11)*
 
 **Parameters:**
 
@@ -105,7 +105,7 @@ ___
 
 ▸ **setKey**(`networkId`: string, `accountId`: string, `keyPair`: [KeyPair](_utils_key_pair_.keypair.md)): *Promise‹void›*
 
-*Defined in [key_stores/keystore.ts:9](https://github.com/nearprotocol/nearlib/blob/b73a399/src.ts/key_stores/keystore.ts#L9)*
+*Defined in [key_stores/keystore.ts:9](https://github.com/nearprotocol/nearlib/blob/bae5ebc/src.ts/key_stores/keystore.ts#L9)*
 
 **Parameters:**
 
