@@ -28,7 +28,7 @@ sidebar_label: "Enum"
 
 \+ **new Enum**(`properties`: any): *[Enum](_utils_enums_.enum.md)*
 
-*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/cbaa79a/src.ts/utils/enums.ts#L4)*
+*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/5640fe9/src.ts/utils/enums.ts#L4)*
 
 **Parameters:**
 
@@ -44,4 +44,4 @@ Name | Type |
 
 • **enum**: *string*
 
-*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/cbaa79a/src.ts/utils/enums.ts#L4)*
+*Defined in [utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/5640fe9/src.ts/utils/enums.ts#L4)*
