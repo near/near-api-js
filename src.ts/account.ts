@@ -1,6 +1,7 @@
 'use strict';
 
 import BN from 'bn.js';
+import compareVersions from 'compare-versions';
 import { Action, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
 import { FinalExecutionOutcome, TypedError } from './providers';
@@ -175,7 +176,7 @@ export class Account {
 
     async stake(publicKey: string | BlsPublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         const status = await this.connection.provider.status();
-        if (status.version.version < '0.4.0') {
+        if (compareVersions(status.version.version, '0.4.0') == -1) {
             throw new Error(`Staking for nearcore version under 0.4.0 is prohibited. Current nearcore version ${status.version.version}`);
         }
         return this.signAndSendTransaction(this.accountId, [stake(amount, BlsPublicKey.from(publicKey))]);
@@ -188,7 +189,7 @@ export class Account {
         }
         return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
     }
-    
+
     /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
     async getAccessKeys(): Promise<any> {
         const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');

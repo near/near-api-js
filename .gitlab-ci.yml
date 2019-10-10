@@ -6,13 +6,13 @@ variables:
 stages:
   - test
 
-test_master:
-  stage: test
-  tags:
-    - gcloud
-  script:
-    - yarn
-    - yarn test
+#test_master:
+#  stage: test
+#  tags:
+#    - gcloud
+#  script:
+#    - yarn
+#    - yarn test
 
 test_staging:
   stage: test
