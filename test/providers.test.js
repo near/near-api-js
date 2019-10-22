@@ -13,6 +13,18 @@ test('json rpc fetch block info', async () => {
     const provider = new nearlib.providers.JsonRpcProvider(config.nodeUrl);
     let response = await provider.block(1);
     expect(response.header.height).toEqual(1);
+    let sameBlock = await provider.block(response.header.hash);
+    expect(sameBlock.header.height).toEqual(1);
+});
+
+test('json rpc fetch chunk info', async () => {
+    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
+    const provider = new nearlib.providers.JsonRpcProvider(config.nodeUrl);
+    let response = await provider.chunk([1, 0]);
+    expect(response.header.shard_id).toEqual(0);
+    let sameChunk = await provider.chunk(response.header.chunk_hash);
+    expect(sameChunk.header.chunk_hash).toEqual(response.header.chunk_hash);
+    expect(sameChunk.header.shard_id).toEqual(0);
 });
 
 test('json rpc query account', async () => {
