@@ -1690,6 +1690,9 @@ class WalletAccount {
             window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
             await this._moveKeyFromTempToPermanent(accountId, publicKey);
         }
+        currentUrl.searchParams.delete('public_key');
+        currentUrl.searchParams.delete('account_id');
+        window.history.replaceState({}, document.title, currentUrl.toString());
     }
     async _moveKeyFromTempToPermanent(accountId, publicKey) {
         const keyPair = await this._keyStore.getKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
