@@ -3,11 +3,13 @@ const url = require('url');
 const nearlib = require('../lib/index');
 
 let windowSpy;
+let documentSpy;
 let nearFake;
 let walletAccount;
 let keyStore = new nearlib.keyStores.InMemoryKeyStore();
 beforeEach(() => {
     windowSpy = jest.spyOn(global, 'window', 'get');
+    documentSpy = jest.spyOn(global, 'document', 'get');
     nearFake = {
         config: {
             networkId: 'networkId',
@@ -63,11 +65,18 @@ it('can request sign in', async () => {
 it('can complete sign in', async () => {
     const localStorage = require('localstorage-memory');
     const keyPair = nearlib.KeyPair.fromRandom('ed25519'); 
+    const history = [];
     windowSpy.mockImplementation(() => ({
         location: {
             href: `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`
         },
+        history: {
+            replaceState: (state, title, url) => history.push([state, title, url])
+        },
         localStorage
+    }));
+    documentSpy.mockImplementation(() => ({
+        title: 'documentTitle'
     }));
     await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
 
@@ -75,4 +84,7 @@ it('can complete sign in', async () => {
 
     expect(await keyStore.getKey('networkId', 'near.account')).toEqual(keyPair);
     expect(localStorage.getItem('contractId_wallet_auth_key'));
+    expect(history).toEqual([
+        [{}, 'documentTitle', 'http://example.com/location']
+    ]);
 });
