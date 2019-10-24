@@ -6762,9 +6762,9 @@ typedoc-default-themes@^0.6.0:
     underscore "^1.9.1"
 
 typedoc-plugin-markdown@^2.2.6:
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/typedoc-plugin-markdown/-/typedoc-plugin-markdown-2.2.6.tgz#f958e0fa9f569b604ceb1fbbf8ea33f9f26625fa"
-  integrity sha512-1c6Vml1WIlUclLP/NX0Fq8UnQ9K9mak8o9J5P7g4kx3SzPsC1vY4/1rQPffKo1YYbRwU7qWBiM1J9vSEHoYSRQ==
+  version "2.2.11"
+  resolved "https://registry.yarnpkg.com/typedoc-plugin-markdown/-/typedoc-plugin-markdown-2.2.11.tgz#81ea607a7bc82cf3ae0bc6de4bbb7e8ea6b437f2"
+  integrity sha512-tzBJJjM23DZMbfV+wds+M/IH8xNUVX4iyvABWyL9+gQZY6Fwbf2xGur2Dg6jNXGn2OsuqjZRI3dvSeqw64MSMA==
   dependencies:
     fs-extra "^8.1.0"
 
