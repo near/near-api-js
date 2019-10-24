@@ -105,7 +105,7 @@ export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
-    abstract txStatus(txHash: Uint8Array): Promise<FinalExecutionOutcome>;
+    abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract query(path: string, data: string): Promise<any>;
     abstract block(height: number): Promise<BlockResult>;
 }
