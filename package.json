@@ -11,7 +11,7 @@
   "types": "lib/index.d.ts",
   "dependencies": {
     "@types/bn.js": "^4.11.5",
-    "bn.js": "^4.11.5",
+    "bn.js": "^5.0.0",
     "bs58": "^4.0.0",
     "error-polyfill": "^0.1.2",
     "http-errors": "^1.7.2",
