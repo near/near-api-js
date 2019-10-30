@@ -254,7 +254,7 @@ export abstract class Provider {
     abstract async status(): Promise<NodeStatusResult>;
 
     abstract async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
-    abstract async txStatus(txHash: Uint8Array): Promise<FinalExecutionOutcome>;
+    abstract async txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract async query(path: string, data: string): Promise<any>;
     abstract async block(blockId: BlockId): Promise<BlockResult>;
     abstract async chunk(chunkId: ChunkId): Promise<ChunkResult>;

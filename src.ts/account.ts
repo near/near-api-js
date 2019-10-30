@@ -75,11 +75,11 @@ export class Account {
         }
     }
 
-    private async retryTxResult(txHash: Uint8Array): Promise<FinalExecutionOutcome> {
+    private async retryTxResult(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
         let result;
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
-            result = await this.connection.provider.txStatus(txHash);
+            result = await this.connection.provider.txStatus(txHash, accountId);
             if (typeof result.status === 'object' &&
                     (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
                 return result;
@@ -108,7 +108,7 @@ export class Account {
             result = await this.connection.provider.sendTransaction(signedTx);
         } catch (error) {
             if (error.type === 'TimeoutError') {
-                result = await this.retryTxResult(txHash);
+                result = await this.retryTxResult(txHash, this.accountId);
             } else {
                 throw error;
             }

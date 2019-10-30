@@ -12,7 +12,7 @@ export declare class JsonRpcProvider extends Provider {
     getNetwork(): Promise<Network>;
     status(): Promise<NodeStatusResult>;
     sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
-    txStatus(txHash: Uint8Array): Promise<FinalExecutionOutcome>;
+    txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     query(path: string, data: string): Promise<any>;
     block(blockId: BlockId): Promise<BlockResult>;
     chunk(chunkId: ChunkId): Promise<ChunkResult>;

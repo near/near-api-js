@@ -46,8 +46,8 @@ export class JsonRpcProvider extends Provider {
         return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]).then(adaptTransactionResult);
     }
 
-    async txStatus(txHash: Uint8Array): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', [base_encode(txHash)]).then(adaptTransactionResult);
+    async txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
+        return this.sendJsonRpc('tx', [base_encode(txHash), accountId]).then(adaptTransactionResult);
     }
 
     async query(path: string, data: string): Promise<any> {
