@@ -15,6 +15,7 @@ sidebar_label: "Provider"
 ### Methods
 
 * [block](_providers_provider_.provider.md#abstract-block)
+* [chunk](_providers_provider_.provider.md#abstract-chunk)
 * [getNetwork](_providers_provider_.provider.md#abstract-getnetwork)
 * [query](_providers_provider_.provider.md#abstract-query)
 * [sendTransaction](_providers_provider_.provider.md#abstract-sendtransaction)
@@ -25,17 +26,33 @@ sidebar_label: "Provider"
 
 ### `Abstract` block
 
-▸ **block**(`height`: number): *Promise‹[BlockResult](../interfaces/_providers_provider_.blockresult.md)›*
+▸ **block**(`blockId`: [BlockId](../modules/_providers_provider_.md#blockid)): *Promise‹[BlockResult](../interfaces/_providers_provider_.blockresult.md)›*
 
-*Defined in [providers/provider.ts:223](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L223)*
+*Defined in [providers/provider.ts:259](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L259)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`height` | number |
+`blockId` | [BlockId](../modules/_providers_provider_.md#blockid) |
 
 **Returns:** *Promise‹[BlockResult](../interfaces/_providers_provider_.blockresult.md)›*
+
+___
+
+### `Abstract` chunk
+
+▸ **chunk**(`chunkId`: [ChunkId](../modules/_providers_provider_.md#chunkid)): *Promise‹[ChunkResult](../interfaces/_providers_provider_.chunkresult.md)›*
+
+*Defined in [providers/provider.ts:260](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L260)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`chunkId` | [ChunkId](../modules/_providers_provider_.md#chunkid) |
+
+**Returns:** *Promise‹[ChunkResult](../interfaces/_providers_provider_.chunkresult.md)›*
 
 ___
 
@@ -43,7 +60,7 @@ ___
 
 ▸ **getNetwork**(): *Promise‹[Network](../interfaces/_utils_network_.network.md)›*
 
-*Defined in [providers/provider.ts:217](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L217)*
+*Defined in [providers/provider.ts:253](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L253)*
 
 **Returns:** *Promise‹[Network](../interfaces/_utils_network_.network.md)›*
 
@@ -53,7 +70,7 @@ ___
 
 ▸ **query**(`path`: string, `data`: string): *Promise‹any›*
 
-*Defined in [providers/provider.ts:222](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L222)*
+*Defined in [providers/provider.ts:258](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L258)*
 
 **Parameters:**
 
@@ -70,7 +87,7 @@ ___
 
 ▸ **sendTransaction**(`signedTransaction`: [SignedTransaction](_transaction_.signedtransaction.md)): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [providers/provider.ts:220](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L220)*
+*Defined in [providers/provider.ts:256](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L256)*
 
 **Parameters:**
 
@@ -86,7 +103,7 @@ ___
 
 ▸ **status**(): *Promise‹[NodeStatusResult](../interfaces/_providers_provider_.nodestatusresult.md)›*
 
-*Defined in [providers/provider.ts:218](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L218)*
+*Defined in [providers/provider.ts:254](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L254)*
 
 **Returns:** *Promise‹[NodeStatusResult](../interfaces/_providers_provider_.nodestatusresult.md)›*
 
@@ -94,14 +111,15 @@ ___
 
 ### `Abstract` txStatus
 
-▸ **txStatus**(`txHash`: Uint8Array): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
+▸ **txStatus**(`txHash`: Uint8Array, `accountId`: string): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [providers/provider.ts:221](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L221)*
+*Defined in [providers/provider.ts:257](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L257)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `txHash` | Uint8Array |
+`accountId` | string |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*

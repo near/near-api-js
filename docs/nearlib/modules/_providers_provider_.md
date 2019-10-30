@@ -21,6 +21,8 @@ sidebar_label: "providers/provider"
 
 * [BlockHeader](../interfaces/_providers_provider_.blockheader.md)
 * [BlockResult](../interfaces/_providers_provider_.blockresult.md)
+* [ChunkHeader](../interfaces/_providers_provider_.chunkheader.md)
+* [ChunkResult](../interfaces/_providers_provider_.chunkresult.md)
 * [ExecutionError](../interfaces/_providers_provider_.executionerror.md)
 * [ExecutionOutcome](../interfaces/_providers_provider_.executionoutcome.md)
 * [ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)
@@ -35,6 +37,16 @@ sidebar_label: "providers/provider"
 * [TotalWeight](../interfaces/_providers_provider_.totalweight.md)
 * [Transaction](../interfaces/_providers_provider_.transaction.md)
 
+### Type aliases
+
+* [BlockHash](_providers_provider_.md#blockhash)
+* [BlockHeight](_providers_provider_.md#blockheight)
+* [BlockId](_providers_provider_.md#blockid)
+* [BlockShardId](_providers_provider_.md#blockshardid)
+* [ChunkHash](_providers_provider_.md#chunkhash)
+* [ChunkId](_providers_provider_.md#chunkid)
+* [ShardId](_providers_provider_.md#shardid)
+
 ### Functions
 
 * [adaptTransactionResult](_providers_provider_.md#adapttransactionresult)
@@ -42,13 +54,69 @@ sidebar_label: "providers/provider"
 * [getTransactionLastResult](_providers_provider_.md#gettransactionlastresult)
 * [mapLegacyTransactionLog](_providers_provider_.md#maplegacytransactionlog)
 
+## Type aliases
+
+###  BlockHash
+
+Ƭ **BlockHash**: *string*
+
+*Defined in [providers/provider.ts:21](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L21)*
+
+___
+
+###  BlockHeight
+
+Ƭ **BlockHeight**: *number*
+
+*Defined in [providers/provider.ts:22](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L22)*
+
+___
+
+###  BlockId
+
+Ƭ **BlockId**: *[BlockHash](_providers_provider_.md#blockhash) | [BlockHeight](_providers_provider_.md#blockheight)*
+
+*Defined in [providers/provider.ts:23](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L23)*
+
+___
+
+###  BlockShardId
+
+Ƭ **BlockShardId**: *[[BlockId](_providers_provider_.md#blockid), [ShardId](_providers_provider_.md#shardid)]*
+
+*Defined in [providers/provider.ts:89](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L89)*
+
+___
+
+###  ChunkHash
+
+Ƭ **ChunkHash**: *string*
+
+*Defined in [providers/provider.ts:87](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L87)*
+
+___
+
+###  ChunkId
+
+Ƭ **ChunkId**: *[ChunkHash](_providers_provider_.md#chunkhash) | [BlockShardId](_providers_provider_.md#blockshardid)*
+
+*Defined in [providers/provider.ts:90](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L90)*
+
+___
+
+###  ShardId
+
+Ƭ **ShardId**: *number*
+
+*Defined in [providers/provider.ts:88](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L88)*
+
 ## Functions
 
 ###  adaptTransactionResult
 
 ▸ **adaptTransactionResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md) | [LegacyFinalTransactionResult](../interfaces/_providers_provider_.legacyfinaltransactionresult.md)): *[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)*
 
-*Defined in [providers/provider.ts:168](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L168)*
+*Defined in [providers/provider.ts:204](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L204)*
 
 **Parameters:**
 
@@ -64,7 +132,7 @@ ___
 
 ▸ **fixLegacyBasicExecutionOutcomeFailure**(`t`: [ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)): *[ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)*
 
-*Defined in [providers/provider.ts:154](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L154)*
+*Defined in [providers/provider.ts:190](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L190)*
 
 **Parameters:**
 
@@ -80,7 +148,7 @@ ___
 
 ▸ **getTransactionLastResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)): *any*
 
-*Defined in [providers/provider.ts:226](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L226)*
+*Defined in [providers/provider.ts:263](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L263)*
 
 **Parameters:**
 
@@ -96,7 +164,7 @@ ___
 
 ▸ **mapLegacyTransactionLog**(`tl`: [LegacyTransactionLog](../interfaces/_providers_provider_.legacytransactionlog.md)): *[ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)*
 
-*Defined in [providers/provider.ts:131](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L131)*
+*Defined in [providers/provider.ts:167](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L167)*
 
 **Parameters:**
 

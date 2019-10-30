@@ -18,7 +18,7 @@ sidebar_label: "LegacyTransactionStatus"
 
 • **Completed**: = "Completed"
 
-*Defined in [providers/provider.ts:115](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L115)*
+*Defined in [providers/provider.ts:151](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L151)*
 
 ___
 
@@ -26,7 +26,7 @@ ___
 
 • **Failed**: = "Failed"
 
-*Defined in [providers/provider.ts:116](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L116)*
+*Defined in [providers/provider.ts:152](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L152)*
 
 ___
 
@@ -34,4 +34,4 @@ ___
 
 • **Unknown**: = "Unknown"
 
-*Defined in [providers/provider.ts:114](https://github.com/nearprotocol/nearlib/blob/a0bd9b2/src.ts/providers/provider.ts#L114)*
+*Defined in [providers/provider.ts:150](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L150)*
