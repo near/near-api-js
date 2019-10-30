@@ -1,6 +1,9 @@
 'use strict';
 
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockResult, adaptTransactionResult } from './provider';
+import {
+  Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
+  BlockResult, ChunkId, ChunkResult, adaptTransactionResult
+} from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { base_encode } from '../utils/serialize';
@@ -55,8 +58,12 @@ export class JsonRpcProvider extends Provider {
         return result;
     }
 
-    async block(height: number): Promise<BlockResult> {
-        return this.sendJsonRpc('block', [height]);
+    async block(blockId: BlockId): Promise<BlockResult> {
+        return this.sendJsonRpc('block', [blockId]);
+    }
+
+    async chunk(chunkId: ChunkId): Promise<ChunkResult> {
+        return this.sendJsonRpc('chunk', [chunkId]);
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {

@@ -18,6 +18,10 @@ export interface NodeStatusResult {
     validators: string[];
 }
 
+export type BlockHash = string;
+export type BlockHeight = number;
+export type BlockId = BlockHash | BlockHeight;
+
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',
     Pending = 'Pending',
@@ -78,6 +82,38 @@ export interface BlockHeader {
     timestamp: number;
     total_weight: TotalWeight;
     tx_root: string;
+}
+
+export type ChunkHash = string;
+export type ShardId = number;
+export type BlockShardId = [BlockId, ShardId];
+export type ChunkId = ChunkHash | BlockShardId;
+
+export interface ChunkHeader {
+  balance_burnt: string;
+  chunk_hash: ChunkHash;
+  encoded_length: number;
+  encoded_merkle_root: string;
+  gas_limit: number;
+  gas_used: number;
+  height_created: number;
+  height_included: number;
+  outgoing_receipts_root: string;
+  prev_block_hash: string;
+  prev_state_num_parts: number;
+  prev_state_root_hash: string;
+  rent_paid: string;
+  shard_id: number;
+  signature: string;
+  tx_root: string;
+  validator_proposals: any[];
+  validator_reward: string;
+}
+
+export interface ChunkResult {
+  header: ChunkHeader;
+  receipts: any[];
+  transactions: Transaction[];
 }
 
 export interface Transaction {
@@ -220,7 +256,8 @@ export abstract class Provider {
     abstract async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract async txStatus(txHash: Uint8Array): Promise<FinalExecutionOutcome>;
     abstract async query(path: string, data: string): Promise<any>;
-    abstract async block(height: number): Promise<BlockResult>;
+    abstract async block(blockId: BlockId): Promise<BlockResult>;
+    abstract async chunk(chunkId: ChunkId): Promise<ChunkResult>;
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
