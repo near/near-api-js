@@ -91,10 +91,10 @@ class Account {
                 throw error;
             }
         }
-        const flatLogs = [result.transaction, ...result.receipts].reduce((acc, it) => acc.concat(it.outcome.logs), []);
+        const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
-            throw new providers_1.TypedError(`Transaction ${result.transaction.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
+            throw new providers_1.TypedError(`Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.
@@ -708,7 +708,7 @@ class Near {
         console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
         const account = new account_1.Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);
-        return result.transaction.id;
+        return result.transaction_outcome.id;
     }
 }
 exports.Near = Near;
@@ -744,7 +744,6 @@ const provider_1 = require("./provider");
 exports.Provider = provider_1.Provider;
 exports.getTransactionLastResult = provider_1.getTransactionLastResult;
 exports.FinalExecutionStatusBasic = provider_1.FinalExecutionStatusBasic;
-exports.adaptTransactionResult = provider_1.adaptTransactionResult;
 const json_rpc_provider_1 = require("./json-rpc-provider");
 exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
 exports.TypedError = json_rpc_provider_1.TypedError;
@@ -844,107 +843,6 @@ var FinalExecutionStatusBasic;
     FinalExecutionStatusBasic["Started"] = "Started";
     FinalExecutionStatusBasic["Failure"] = "Failure";
 })(FinalExecutionStatusBasic = exports.FinalExecutionStatusBasic || (exports.FinalExecutionStatusBasic = {}));
-// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
-var LegacyFinalTransactionStatus;
-(function (LegacyFinalTransactionStatus) {
-    LegacyFinalTransactionStatus["Unknown"] = "Unknown";
-    LegacyFinalTransactionStatus["Started"] = "Started";
-    LegacyFinalTransactionStatus["Failed"] = "Failed";
-    LegacyFinalTransactionStatus["Completed"] = "Completed";
-})(LegacyFinalTransactionStatus || (LegacyFinalTransactionStatus = {}));
-// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
-var LegacyTransactionStatus;
-(function (LegacyTransactionStatus) {
-    LegacyTransactionStatus["Unknown"] = "Unknown";
-    LegacyTransactionStatus["Completed"] = "Completed";
-    LegacyTransactionStatus["Failed"] = "Failed";
-})(LegacyTransactionStatus || (LegacyTransactionStatus = {}));
-// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
-function mapLegacyTransactionLog(tl) {
-    let status;
-    if (tl.result.status === LegacyTransactionStatus.Unknown) {
-        status = ExecutionStatusBasic.Unknown;
-    }
-    else if (tl.result.status === LegacyTransactionStatus.Failed) {
-        status = ExecutionStatusBasic.Failure;
-    }
-    else if (tl.result.status === LegacyTransactionStatus.Completed) {
-        status = {
-            SuccessValue: tl.result.result || ''
-        };
-    }
-    return {
-        id: tl.hash,
-        outcome: {
-            status,
-            logs: tl.result.logs,
-            receipt_ids: tl.result.receipts,
-            gas_burnt: 0,
-        },
-    };
-}
-// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
-function fixLegacyBasicExecutionOutcomeFailure(t) {
-    if (t.outcome.status === ExecutionStatusBasic.Failure) {
-        t.outcome.status = {
-            Failure: {
-                error_message: t.outcome.logs.find(it => it.startsWith('ABORT:')) ||
-                    t.outcome.logs.find(it => it.startsWith('Runtime error:')) || '',
-                error_type: 'LegacyError',
-            }
-        };
-    }
-    return t;
-}
-// TODO(#86): Remove legacy code, once nearcore 0.4.0 is released.
-function adaptTransactionResult(txResult) {
-    // Fixing legacy transaction result
-    if ('transactions' in txResult) {
-        txResult = txResult;
-        let status;
-        if (txResult.status === LegacyFinalTransactionStatus.Unknown) {
-            status = FinalExecutionStatusBasic.NotStarted;
-        }
-        else if (txResult.status === LegacyFinalTransactionStatus.Started) {
-            status = FinalExecutionStatusBasic.Started;
-        }
-        else if (txResult.status === LegacyFinalTransactionStatus.Failed) {
-            status = FinalExecutionStatusBasic.Failure;
-        }
-        else if (txResult.status === LegacyFinalTransactionStatus.Completed) {
-            let result = '';
-            for (let i = txResult.transactions.length - 1; i >= 0; --i) {
-                const r = txResult.transactions[i];
-                if (r.result && r.result.result && r.result.result.length > 0) {
-                    result = r.result.result;
-                    break;
-                }
-            }
-            status = {
-                SuccessValue: result,
-            };
-        }
-        txResult = {
-            status,
-            transaction: mapLegacyTransactionLog(txResult.transactions.splice(0, 1)[0]),
-            receipts: txResult.transactions.map(mapLegacyTransactionLog),
-        };
-    }
-    // Adapting from old error handling.
-    txResult.transaction = fixLegacyBasicExecutionOutcomeFailure(txResult.transaction);
-    txResult.receipts = txResult.receipts.map(fixLegacyBasicExecutionOutcomeFailure);
-    // Fixing master error status
-    if (txResult.status === FinalExecutionStatusBasic.Failure) {
-        const err = [txResult.transaction, ...txResult.receipts]
-            .find(t => typeof t.outcome.status === 'object' && typeof t.outcome.status.Failure === 'object')
-            .outcome.status.Failure;
-        txResult.status = {
-            Failure: err
-        };
-    }
-    return txResult;
-}
-exports.adaptTransactionResult = adaptTransactionResult;
 class Provider {
 }
 exports.Provider = Provider;
@@ -961,6 +859,19 @@ function getTransactionLastResult(txResult) {
     return null;
 }
 exports.getTransactionLastResult = getTransactionLastResult;
+function adaptTransactionResult(txResult) {
+    if ('receipts' in txResult) {
+        txResult = {
+            status: txResult.status,
+            // not available
+            transaction: null,
+            transaction_outcome: txResult.transaction,
+            receipts_outcome: txResult.receipts
+        };
+    }
+    return txResult;
+}
+exports.adaptTransactionResult = adaptTransactionResult;
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":34}],17:[function(require,module,exports){
@@ -1865,9 +1776,12 @@ async function fetchJson(connection, json) {
 exports.fetchJson = fetchJson;
 
 },{"http":32,"http-errors":50,"https":32,"node-fetch":32}],27:[function(require,module,exports){
+(function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
+const transaction_1 = require("./transaction");
+const utils_2 = require("./utils");
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
@@ -1928,6 +1842,20 @@ class WalletAccount {
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         window.location.assign(newUrl.toString());
     }
+    async requestSignTransactions(transactions, callbackUrl, options) {
+        const currentUrl = new URL(window.location.href);
+        const newUrl = new URL('sign', this._walletBaseUrl);
+        newUrl.searchParams.set('accountId', options.accountId);
+        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
+        newUrl.searchParams.set('transactions', transactions
+            .map(transaction => utils_2.serialize.serialize(transaction_1.SCHEMA, transaction))
+            .map(serialized => Buffer.from(serialized).toString('base64'))
+            .join(','));
+        newUrl.searchParams.set('accountId', options.accountId);
+        newUrl.searchParams.set('publicKey', options.publicKey);
+        newUrl.searchParams.set('send', (!!options.send).toString());
+        window.location.assign(newUrl.toString());
+    }
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
@@ -1963,7 +1891,8 @@ class WalletAccount {
 }
 exports.WalletAccount = WalletAccount;
 
-},{"./utils":22}],28:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"./transaction":18,"./utils":22,"buffer":34}],28:[function(require,module,exports){
 'use strict'
 // base-x encoding / decoding
 // Copyright (c) 2018 base-x contributors

@@ -4,11 +4,19 @@ import { Near } from './near';
 import { KeyStore } from './key_stores';
 import { KeyPair } from './utils';
 import { InMemorySigner } from './signer';
+import { Transaction, SCHEMA } from './transaction';
+import { serialize } from './utils';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
+
+interface SignOptions {
+    accountId: string;
+    publicKey: string;
+    send: boolean;
+}
 
 export class WalletAccount {
     _walletBaseUrl: string;
@@ -75,6 +83,23 @@ export class WalletAccount {
         const accessKey = KeyPair.fromRandom('ed25519');
         newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+        window.location.assign(newUrl.toString());
+    }
+
+    async requestSignTransactions(transactions: Transaction[], callbackUrl: string, options: SignOptions) {
+        const currentUrl = new URL(window.location.href);
+        const newUrl = new URL('sign', this._walletBaseUrl);
+
+        newUrl.searchParams.set('accountId', options.accountId);
+        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
+        newUrl.searchParams.set('transactions', transactions
+            .map(transaction => serialize.serialize(SCHEMA, transaction))
+            .map(serialized => Buffer.from(serialized).toString('base64'))
+            .join(','));
+        newUrl.searchParams.set('accountId', options.accountId);
+        newUrl.searchParams.set('publicKey', options.publicKey);
+        newUrl.searchParams.set('send', (!!options.send).toString());
+
         window.location.assign(newUrl.toString());
     }
 
