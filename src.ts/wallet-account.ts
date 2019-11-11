@@ -16,6 +16,7 @@ interface SignOptions {
     accountId: string;
     publicKey: string;
     send: boolean;
+    callbackUrl: string;
 }
 
 export class WalletAccount {
@@ -86,12 +87,10 @@ export class WalletAccount {
         window.location.assign(newUrl.toString());
     }
 
-    async requestSignTransactions(transactions: Transaction[], callbackUrl: string, options: SignOptions) {
+    async requestSignTransactions(transactions: Transaction[], options: SignOptions) {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
-        newUrl.searchParams.set('accountId', options.accountId);
-        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
         newUrl.searchParams.set('transactions', transactions
             .map(transaction => serialize.serialize(SCHEMA, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
@@ -99,6 +98,7 @@ export class WalletAccount {
         newUrl.searchParams.set('accountId', options.accountId);
         newUrl.searchParams.set('publicKey', options.publicKey);
         newUrl.searchParams.set('send', (!!options.send).toString());
+        newUrl.searchParams.set('callbackUrl', options.callbackUrl || currentUrl.href);
 
         window.location.assign(newUrl.toString());
     }
