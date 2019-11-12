@@ -228,7 +228,7 @@ function deserializeStruct(schema: Schema, classType: any, reader: BinaryReader)
         const result = {};
         for (const [fieldName, fieldType] of schema.get(classType).fields) {
             result[fieldName] = deserializeField(schema, fieldType, reader);
-        };
+        }
         return new classType(result);
     }
 
