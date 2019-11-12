@@ -2,6 +2,7 @@
 
 import nacl from 'tweetnacl';
 import { base_encode, base_decode } from './serialize';
+import { Assignable } from './enums';
 
 export type Arrayish = string | ArrayLike<number>;
 
@@ -32,14 +33,9 @@ function str_to_key_type(keyType: string): KeyType {
 /**
  * PublicKey representation that has type and bytes of the key.
  */
-export class PublicKey {
+export class PublicKey extends Assignable {
     keyType: KeyType;
     data: Uint8Array;
-
-    constructor(keyType: KeyType, data: Uint8Array) {
-        this.keyType = keyType;
-        this.data = data;
-    }
 
     static from(value: string | PublicKey): PublicKey {
         if (typeof value === 'string') {
@@ -51,11 +47,11 @@ export class PublicKey {
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
         if (parts.length === 1) {
-            return new PublicKey(KeyType.ED25519, base_decode(parts[0]));
+            return new PublicKey({ keyType: KeyType.ED25519, data: base_decode(parts[0]) });
         } else if (parts.length === 2) {
-            return new PublicKey(str_to_key_type(parts[0]), base_decode(parts[1]));
+            return new PublicKey({ keyType: str_to_key_type(parts[0]), data: base_decode(parts[1]) });
         } else {
-            throw new Error('Invlaid encoded key format, must be <curve>:<encoded key>');
+            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
     }
 
@@ -108,7 +104,7 @@ export class KeyPairEd25519 extends KeyPair {
     constructor(secretKey: string) {
         super();
         const keyPair = nacl.sign.keyPair.fromSecretKey(base_decode(secretKey));
-        this.publicKey = new PublicKey(KeyType.ED25519, keyPair.publicKey);
+        this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: keyPair.publicKey });
         this.secretKey = secretKey;
     }
 

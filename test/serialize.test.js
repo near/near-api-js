@@ -1,17 +1,11 @@
 
 const nearlib = require('../lib/index');
 
-class Test {
-    constructor(x, y, z, q) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.q = q;
-    }
+class Test extends nearlib.utils.enums.Assignable {
 }
 
 test('serialize object', async () => {
-    const value = new Test(255, 20, '123', [1, 2, 3]);
+    const value = new Test({ x: 255, y: 20, z: '123', q: [1, 2, 3]});
     const schema = new Map([[Test, {kind: 'struct', fields: [['x', 'u8'], ['y', 'u64'], ['z', 'string'], ['q', [3]]] }]]);
     let buf = nearlib.utils.serialize.serialize(schema, value);
     let new_value = nearlib.utils.serialize.deserialize(schema, Test, buf);
@@ -58,7 +52,7 @@ test('serialize transfer tx', async() => {
     expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
 
     const deserialized = nearlib.utils.serialize.deserialize(nearlib.transactions.SCHEMA, nearlib.transactions.Transaction, serialized);
-    expect(deserialized).toEqual(transaction);
+    expect(nearlib.utils.serialize.serialize(nearlib.transactions.SCHEMA, deserialized)).toEqual(serialized);
 });
 
 test('serialize and sign transfer tx', async() => {

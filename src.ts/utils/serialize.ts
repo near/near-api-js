@@ -110,13 +110,12 @@ export class BinaryReader {
 
     read_u64(): BN {
         const buf = this.read_buffer(8);
-        buf.reverse();
-        return new BN(`${buf.toString('hex')}`, 16);
+        return new BN(buf, 'le');
     }
 
     read_u128(): BN {
         const buf = this.read_buffer(16);
-        return new BN(buf);
+        return new BN(buf, 'le');
     }
 
     private read_buffer(len: number): Buffer {
@@ -203,25 +202,44 @@ export function serialize(schema: Schema, obj: any): Uint8Array {
     return writer.toArray();
 }
 
-function deserializeField(schema: Schema, fieldType: any, reader: any): any {
+function deserializeField(schema: Schema, fieldType: any, reader: BinaryReader): any {
     if (typeof fieldType === 'string') {
         return reader[`read_${fieldType}`]();
-    } else if (fieldType instanceof Array) {
+    }
+
+    if (fieldType instanceof Array) {
         if (typeof fieldType[0] === 'number') {
             return reader.read_fixed_array(fieldType[0]);
-        } else {
-            return reader.read_array(() => deserializeField(schema, fieldType[0], reader));
         }
-    } else {
-        return deserializeStruct(schema, fieldType, reader);
+
+        return reader.read_array(() => deserializeField(schema, fieldType[0], reader));
     }
+
+    return deserializeStruct(schema, fieldType, reader);
 }
 
-function deserializeStruct(schema: Schema, classType: any, reader: any) {
-    const fields = schema.get(classType).fields.map(([fieldName, fieldType]: [any, any]) => {
-        return deserializeField(schema, fieldType, reader);
-    });
-    return new classType(...fields);
+function deserializeStruct(schema: Schema, classType: any, reader: BinaryReader) {
+    const structSchema = schema.get(classType);
+    if (!structSchema) {
+        throw new Error(`Class ${classType.name} is missing in schema`);
+    }
+
+    if (structSchema.kind === 'struct') {
+        const result = {};
+        for (const [fieldName, fieldType] of schema.get(classType).fields) {
+            result[fieldName] = deserializeField(schema, fieldType, reader);
+        };
+        return new classType(result);
+    }
+
+    if (structSchema.kind === 'enum') {
+        const idx = reader.read_u8();
+        const [fieldName, fieldType] = structSchema.values[idx];
+        const fieldValue = deserializeField(schema, fieldType, reader);
+        return new classType({ [fieldName]: fieldValue });
+    }
+
+    throw new Error(`Unexpected schema kind: ${structSchema.kind} for ${classType.constructor.name}`);
 }
 
 /// Deserializes object from bytes using schema.

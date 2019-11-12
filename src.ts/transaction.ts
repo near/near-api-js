@@ -154,12 +154,12 @@ export const SCHEMA = new Map<Function, any>([
     [Action, {kind: 'enum', field: 'enum', values: [
         ['createAccount', CreateAccount],
         ['deployContract', DeployContract],
-        ['functionCall', functionCall],
-        ['transfer', transfer],
-        ['stake', stake],
-        ['addKey', addKey],
-        ['deleteKey', deleteKey],
-        ['deleteAccount', deleteAccount],
+        ['functionCall', FunctionCall],
+        ['transfer', Transfer],
+        ['stake', Stake],
+        ['addKey', AddKey],
+        ['deleteKey', DeleteKey],
+        ['deleteAccount', DeleteAccount],
     ]}],
     [CreateAccount, { kind: 'struct', fields: [] }],
     [DeployContract, { kind: 'struct', fields: [
