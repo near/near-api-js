@@ -1,4 +1,5 @@
 
+const fs = require('fs');
 const nearlib = require('../lib/index');
 
 class Test extends nearlib.utils.enums.Assignable {
@@ -69,4 +70,21 @@ test('serialize and sign transfer tx', async() => {
     expect(Buffer.from(signedTx.signature.data).toString('base64')).toEqual('lpqDMyGG7pdV5IOTJVJYBuGJo9LSu0tHYOlEQ+l+HE8i3u7wBZqOlxMQDtpuGRRNp+ig735TmyBwi6HY0CG9AQ==');
     const serialized = nearlib.utils.serialize.serialize(nearlib.transactions.SCHEMA, signedTx);
     expect(serialized.toString('base64')).toEqual('CQAAAHRlc3QubmVhcgCRez0mjUtY9/7BsVC9aNab4+5dTMOYVeNBU4Rlu3eGDQEAAAAAAAAADQAAAHdoYXRldmVyLm5lYXIPpHP9JpAd8pa+atxMxN800EDvokNSJLaYaRDmMML+9gEAAAADAQAAAAAAAAAAAAAAAAAAAACWmoMzIYbul1Xkg5MlUlgG4Ymj0tK7S0dg6URD6X4cTyLe7vAFmo6XExAO2m4ZFE2n6KDvflObIHCLodjQIb0B');
+});
+
+describe('roundtrip test', () => {
+    const dataDir = './test/data';
+    const testFiles = fs.readdirSync(dataDir);
+    for (const testFile of testFiles) {
+        if (/.+\.json$/.exec(testFiles)) {
+            const testDefinition = JSON.parse(fs.readFileSync(dataDir + '/'  + testFile));
+            test(testFile, () => {
+                const data = Buffer.from(testDefinition.data, 'hex');
+                const type = Array.from(nearlib.transactions.SCHEMA.keys()).find(key => key.name === testDefinition.type);
+                const deserialized = nearlib.utils.serialize.deserialize(nearlib.transactions.SCHEMA, type, data);
+                const serialized = nearlib.utils.serialize.serialize(nearlib.transactions.SCHEMA, deserialized);
+                expect(serialized).toEqual(data);
+            });
+        }
+    }
 });
