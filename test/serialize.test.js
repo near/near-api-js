@@ -56,6 +56,9 @@ test('serialize transfer tx', async() => {
     });
     const serialized = nearlib.utils.serialize.serialize(nearlib.transactions.SCHEMA, transaction);
     expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
+
+    const deserialized = nearlib.utils.serialize.deserialize(nearlib.transactions.SCHEMA, nearlib.transactions.Transaction, serialized);
+    expect(deserialized).toEqual(transaction);
 });
 
 test('serialize and sign transfer tx', async() => {
