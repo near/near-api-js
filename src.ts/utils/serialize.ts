@@ -149,7 +149,7 @@ function serializeField(schema: Schema, value: any, fieldType: any, writer: any)
         writer[`write_${fieldType}`](value);
     } else if (fieldType instanceof Array) {
         if (typeof fieldType[0] === 'number') {
-            if (value.length != fieldType[0]) {
+            if (value.length !== fieldType[0]) {
                 throw new Error(`Expecting byte array of length ${fieldType[0]}, but got ${value.length} bytes`);
             }
             writer.write_fixed_array(value);
