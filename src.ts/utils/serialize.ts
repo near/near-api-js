@@ -144,10 +144,14 @@ export class BinaryReader {
 }
 
 function serializeField(schema: Schema, value: any, fieldType: any, writer: any) {
+    // TODO: Handle missing values properly (make sure they never result in just skipped write)
     if (typeof fieldType === 'string') {
         writer[`write_${fieldType}`](value);
     } else if (fieldType instanceof Array) {
         if (typeof fieldType[0] === 'number') {
+            if (value.length != fieldType[0]) {
+                throw new Error(`Expecting byte array of length ${fieldType[0]}, but got ${value.length} bytes`);
+            }
             writer.write_fixed_array(value);
         } else {
             writer.write_array(value, (item: any) => { serializeField(schema, item, fieldType[0], writer); });
