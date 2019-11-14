@@ -18,6 +18,22 @@ const INITIAL_LENGTH = 1024;
 
 export type Schema = Map<Function, any>;
 
+export class BorshError extends Error {
+    originalMessage: string;
+    fieldPath: string[] = [];
+
+    constructor(message: string) {
+        super(message);
+        this.originalMessage = message;
+    }
+
+    addToFieldPath(fieldName: string) {
+        this.fieldPath.splice(0, 0, fieldName);
+        // NOTE: Modifying message directly as jest doesn't use .toString()
+        this.message = this.originalMessage + ': ' + this.fieldPath.join('.');
+    }
+}
+
 /// Binary encoder.
 export class BinaryWriter {
     buf: Buffer;
@@ -143,45 +159,52 @@ export class BinaryReader {
     }
 }
 
-function serializeField(schema: Schema, value: any, fieldType: any, writer: any) {
-    // TODO: Handle missing values properly (make sure they never result in just skipped write)
-    if (typeof fieldType === 'string') {
-        writer[`write_${fieldType}`](value);
-    } else if (fieldType instanceof Array) {
-        if (typeof fieldType[0] === 'number') {
-            if (value.length !== fieldType[0]) {
-                throw new Error(`Expecting byte array of length ${fieldType[0]}, but got ${value.length} bytes`);
-            }
-            writer.write_fixed_array(value);
-        } else {
-            writer.write_array(value, (item: any) => { serializeField(schema, item, fieldType[0], writer); });
-        }
-    } else if (fieldType.kind !== undefined) {
-        switch (fieldType.kind) {
-            case 'option': {
-                if (value === null) {
-                    writer.write_u8(0);
-                } else {
-                    writer.write_u8(1);
-                    serializeField(schema, value, fieldType.type, writer);
+function serializeField(schema: Schema, fieldName: string, value: any, fieldType: any, writer: any) {
+    try {
+        // TODO: Handle missing values properly (make sure they never result in just skipped write)
+        if (typeof fieldType === 'string') {
+            writer[`write_${fieldType}`](value);
+        } else if (fieldType instanceof Array) {
+            if (typeof fieldType[0] === 'number') {
+                if (value.length !== fieldType[0]) {
+                    throw new BorshError(`Expecting byte array of length ${fieldType[0]}, but got ${value.length} bytes`);
                 }
-                break;
+                writer.write_fixed_array(value);
+            } else {
+                writer.write_array(value, (item: any) => { serializeField(schema, fieldName, item, fieldType[0], writer); });
             }
-            default: throw new Error(`FieldType ${fieldType} unrecognized`);
+        } else if (fieldType.kind !== undefined) {
+            switch (fieldType.kind) {
+                case 'option': {
+                    if (value === null) {
+                        writer.write_u8(0);
+                    } else {
+                        writer.write_u8(1);
+                        serializeField(schema, fieldName, value, fieldType.type, writer);
+                    }
+                    break;
+                }
+                default: throw new BorshError(`FieldType ${fieldType} unrecognized`);
+            }
+        } else {
+            serializeStruct(schema, value, writer);
         }
-    } else {
-        serializeStruct(schema, value, writer);
+    } catch (error) {
+        if (error instanceof BorshError) {
+            error.addToFieldPath(fieldName);
+        }
+        throw error;
     }
 }
 
 function serializeStruct(schema: Schema, obj: any, writer: any) {
     const structSchema = schema.get(obj.constructor);
     if (!structSchema) {
-        throw new Error(`Class ${obj.constructor.name} is missing in schema`);
+        throw new BorshError(`Class ${obj.constructor.name} is missing in schema`);
     }
     if (structSchema.kind === 'struct') {
         structSchema.fields.map(([fieldName, fieldType]: [any, any]) => {
-            serializeField(schema, obj[fieldName], fieldType, writer);
+            serializeField(schema, fieldName, obj[fieldName], fieldType, writer);
         });
     } else if (structSchema.kind === 'enum') {
         const name = obj[structSchema.field];
@@ -189,12 +212,12 @@ function serializeStruct(schema: Schema, obj: any, writer: any) {
             const [fieldName, fieldType]: [any, any] = structSchema.values[idx];
             if (fieldName === name) {
                 writer.write_u8(idx);
-                serializeField(schema, obj[fieldName], fieldType, writer);
+                serializeField(schema, fieldName, obj[fieldName], fieldType, writer);
                 break;
             }
         }
     } else {
-        throw new Error(`Unexpected schema kind: ${structSchema.kind} for ${obj.constructor.name}`);
+        throw new BorshError(`Unexpected schema kind: ${structSchema.kind} for ${obj.constructor.name}`);
     }
 }
 
@@ -206,32 +229,39 @@ export function serialize(schema: Schema, obj: any): Uint8Array {
     return writer.toArray();
 }
 
-function deserializeField(schema: Schema, fieldType: any, reader: BinaryReader): any {
-    if (typeof fieldType === 'string') {
-        return reader[`read_${fieldType}`]();
-    }
-
-    if (fieldType instanceof Array) {
-        if (typeof fieldType[0] === 'number') {
-            return reader.read_fixed_array(fieldType[0]);
+function deserializeField(schema: Schema, fieldName: string, fieldType: any, reader: BinaryReader): any {
+    try {
+        if (typeof fieldType === 'string') {
+            return reader[`read_${fieldType}`]();
         }
 
-        return reader.read_array(() => deserializeField(schema, fieldType[0], reader));
-    }
+        if (fieldType instanceof Array) {
+            if (typeof fieldType[0] === 'number') {
+                return reader.read_fixed_array(fieldType[0]);
+            }
 
-    return deserializeStruct(schema, fieldType, reader);
+            return reader.read_array(() => deserializeField(schema, fieldName, fieldType[0], reader));
+        }
+
+        return deserializeStruct(schema, fieldType, reader);
+    } catch (error) {
+        if (error instanceof BorshError) {
+            error.addToFieldPath(fieldName);
+        }
+        throw error;
+    }
 }
 
 function deserializeStruct(schema: Schema, classType: any, reader: BinaryReader) {
     const structSchema = schema.get(classType);
     if (!structSchema) {
-        throw new Error(`Class ${classType.name} is missing in schema`);
+        throw new BorshError(`Class ${classType.name} is missing in schema`);
     }
 
     if (structSchema.kind === 'struct') {
         const result = {};
         for (const [fieldName, fieldType] of schema.get(classType).fields) {
-            result[fieldName] = deserializeField(schema, fieldType, reader);
+            result[fieldName] = deserializeField(schema, fieldName, fieldType, reader);
         }
         return new classType(result);
     }
@@ -239,11 +269,11 @@ function deserializeStruct(schema: Schema, classType: any, reader: BinaryReader)
     if (structSchema.kind === 'enum') {
         const idx = reader.read_u8();
         const [fieldName, fieldType] = structSchema.values[idx];
-        const fieldValue = deserializeField(schema, fieldType, reader);
+        const fieldValue = deserializeField(schema, fieldName, fieldType, reader);
         return new classType({ [fieldName]: fieldValue });
     }
 
-    throw new Error(`Unexpected schema kind: ${structSchema.kind} for ${classType.constructor.name}`);
+    throw new BorshError(`Unexpected schema kind: ${structSchema.kind} for ${classType.constructor.name}`);
 }
 
 /// Deserializes object from bytes using schema.
