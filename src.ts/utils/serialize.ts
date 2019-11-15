@@ -5,8 +5,8 @@ import BN from 'bn.js';
 
 // TODO: Make sure this polyfill not included when not required
 import * as encoding from 'text-encoding';
-if (typeof (<any>global).TextDecoder !== 'function') {
-    (<any>global).TextDecoder = encoding.TextDecoder;
+if (typeof (global as any).TextDecoder !== 'function') {
+    (global as any).TextDecoder = encoding.TextDecoder;
 }
 
 const textDecoder = new TextDecoder('utf8', { fatal: true });
@@ -116,16 +116,16 @@ function handlingRangeError(target: any, propertyKey: string, propertyDescriptor
     propertyDescriptor.value = function(...args: any[]) {
         try {
             return originalMethod.apply(this, args);
-        } catch(e) {
+        } catch (e) {
             if (e instanceof RangeError ) {
-                const code = (<any>e).code;
+                const code = (e as any).code;
                 if (['ERR_BUFFER_OUT_OF_BOUNDS', 'ERR_OUT_OF_RANGE'].indexOf(code) >= 0) {
                     throw new BorshError('Reached the end of buffer when deserializing');
                 }
             }
             throw e;
         }
-    }
+    };
 }
 
 export class BinaryReader {
