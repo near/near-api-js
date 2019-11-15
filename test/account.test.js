@@ -131,18 +131,18 @@ describe('with deploy contract', () => {
 
     test('can get logs from method result', async () => {
         await contract.generateLogs();
-        expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
+        expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
     });
 
     test('can get logs from view call', async () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
-        expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
+        expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
     });
 
     test('can get assert message from method result', async () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
-        expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
+        expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
         expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
     });
 
