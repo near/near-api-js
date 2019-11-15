@@ -17,6 +17,7 @@
     "http-errors": "^1.7.2",
     "js-sha256": "^0.9.0",
     "node-fetch": "^2.3.0",
+    "text-encoding": "^0.7.0",
     "tweetnacl": "^1.0.1",
     "typescript": "^3.5.1"
   },
@@ -52,7 +53,9 @@
     "test": "jest test --runInBand",
     "lint": "eslint test && tslint -p ./tsconfig.json -t codeFrame",
     "fix": "eslint test --fix && tslint -p ./tsconfig.json -t codeFrame --fix",
-    "doc": "typedoc --out docs/nearlib --theme docusaurus src.ts/ --hideBreadcrumbs"
+    "doc": "typedoc --out docs/nearlib --theme docusaurus src.ts/ --hideBreadcrumbs",
+    "prefuzz": "yarn build",
+    "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
   },
   "author": "NEAR Inc"
 }
