@@ -8,5 +8,9 @@ node_modules
 # Nearlib files & coverage
 neardev/
 coverage/
+.nyc_output
 src\.ts/protos\.d\.ts
 package\-lock\.json
+
+# OS X
+.DS_Store
