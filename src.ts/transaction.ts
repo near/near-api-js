@@ -119,7 +119,7 @@ export class Action extends Enum {
 export const SCHEMA = new Map<Function, any>([
     [Signature, {kind: 'struct', fields: [
         ['keyType', 'u8'],
-        ['data', [32]]
+        ['data', [64]]
     ]}],
     [SignedTransaction, {kind: 'struct', fields: [
         ['transaction', Transaction],
@@ -154,12 +154,12 @@ export const SCHEMA = new Map<Function, any>([
     [Action, {kind: 'enum', field: 'enum', values: [
         ['createAccount', CreateAccount],
         ['deployContract', DeployContract],
-        ['functionCall', functionCall],
-        ['transfer', transfer],
-        ['stake', stake],
-        ['addKey', addKey],
-        ['deleteKey', deleteKey],
-        ['deleteAccount', deleteAccount],
+        ['functionCall', FunctionCall],
+        ['transfer', Transfer],
+        ['stake', Stake],
+        ['addKey', AddKey],
+        ['deleteKey', DeleteKey],
+        ['deleteAccount', DeleteAccount],
     ]}],
     [CreateAccount, { kind: 'struct', fields: [] }],
     [DeployContract, { kind: 'struct', fields: [

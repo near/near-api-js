@@ -18,7 +18,8 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": false,
         "noImplicitReturns": true,
-        "noUnusedLocals": true
+        "noUnusedLocals": true,
+        "experimentalDecorators": true
     },
     "files": [
         "./src.ts/index.ts",
