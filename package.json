@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/http-errors": "^1.6.1",
     "browserify": "^16.2.3",
+    "bundlewatch": "^0.2.5",
     "eslint": "^6.5.1",
     "in-publish": "^2.0.0",
     "jest": "^24.1.0",
@@ -56,6 +57,14 @@
     "doc": "typedoc --out docs/nearlib --theme docusaurus src.ts/ --hideBreadcrumbs",
     "prefuzz": "yarn build",
     "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
+  },
+  "bundlewatch" : {
+    "files": [
+        {
+            "path": "dist/nearlib.min.js",
+            "maxSize": "80kB"
+        }
+    ]
   },
   "author": "NEAR Inc"
 }

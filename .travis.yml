@@ -7,4 +7,5 @@ cache: yarn
 script:
   - yarn lint
   - yarn test
+  - yarn run bundlewatch
 
