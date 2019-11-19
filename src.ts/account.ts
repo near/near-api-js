@@ -55,7 +55,6 @@ export class Account {
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
-            console.log(`Missing public key for ${this.accountId} in ${this.connection.networkId}`);
             return;
         }
         this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
@@ -94,7 +93,7 @@ export class Account {
     private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
         if (!this._accessKey) {
-            throw new TypedError(`Can not sign transactions, initialize account with available public key in Signer.`, 'KeyNotFound');
+            throw new TypedError(`Can not sign transactions, no matching key pair found in Signer.`, 'KeyNotFound');
         }
 
         const status = await this.connection.provider.status();
