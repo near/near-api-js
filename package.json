@@ -6,7 +6,7 @@
     "type": "git",
     "url": "git@:nearprotocol/nearcore.git"
   },
-  "homepage": "https://github.com/nearprotocol/nearcore",
+  "homepage": "https://github.com/nearprotocol/nearlib",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
