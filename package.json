@@ -31,6 +31,7 @@
     "localstorage-memory": "^1.0.3",
     "near-hello": "^0.3.1",
     "rimraf": "^3.0.0",
+    "semver": "^6.3.0",
     "tslint": "^5.18.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.2.6",
@@ -58,12 +59,12 @@
     "prefuzz": "yarn build",
     "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
   },
-  "bundlewatch" : {
+  "bundlewatch": {
     "files": [
-        {
-            "path": "dist/nearlib.min.js",
-            "maxSize": "80kB"
-        }
+      {
+        "path": "dist/nearlib.min.js",
+        "maxSize": "80kB"
+      }
     ]
   },
   "author": "NEAR Inc"

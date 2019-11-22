@@ -3,9 +3,11 @@ const nearlib = require('../lib/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
+const semver = require('semver');
 
 let nearjs;
 let workingAccount;
+let afterVersion;
 
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
 
@@ -14,6 +16,8 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
     workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
+    let nodeStatus = await nearjs.connection.provider.status();
+    afterVersion = (version) => semver.gt(nodeStatus.version.version, version);
 });
 
 test('view pre-defined account works and returns correct name', async () => {
@@ -131,18 +135,31 @@ describe('with deploy contract', () => {
 
     test('can get logs from method result', async () => {
         await contract.generateLogs();
-        expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
+        if (afterVersion('0.4.5')) {
+            expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
+        } else {
+            expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
+        }
+
     });
 
     test('can get logs from view call', async () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
-        expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
+        if (afterVersion('0.4.5')) {
+            expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
+        } else {
+            expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
+        }
     });
 
     test('can get assert message from method result', async () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
-        expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
+        if (afterVersion('0.4.5')) {
+            expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
+        } else {
+            expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
+        }
         expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
     });
 

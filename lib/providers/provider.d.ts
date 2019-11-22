@@ -7,11 +7,16 @@ export interface SyncInfo {
     latest_state_root: string;
     syncing: boolean;
 }
+interface Version {
+    version: string;
+    build: string;
+}
 export interface NodeStatusResult {
     chain_id: string;
     rpc_addr: string;
     sync_info: SyncInfo;
     validators: string[];
+    version: Version;
 }
 export declare type BlockHash = string;
 export declare type BlockHeight = number;

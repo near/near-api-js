@@ -11,11 +11,17 @@ export interface SyncInfo {
     syncing: boolean;
 }
 
+interface Version {
+    version: string;
+    build: string;
+}
+
 export interface NodeStatusResult {
     chain_id: string;
     rpc_addr: string;
     sync_info: SyncInfo;
     validators: string[];
+    version: Version;
 }
 
 export type BlockHash = string;
