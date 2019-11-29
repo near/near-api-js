@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import BN from 'bn.js';
 import { Enum, Assignable } from './utils/enums';
 import { KeyType, PublicKey } from './utils/key_pair';
@@ -69,11 +70,14 @@ export declare class Transaction extends Assignable {
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
+    encode(): Uint8Array;
+    static decode(bytes: Buffer): Transaction;
 }
 export declare class SignedTransaction extends Assignable {
     transaction: Transaction;
     signature: Signature;
     encode(): Uint8Array;
+    static decode(bytes: Buffer): SignedTransaction;
 }
 export declare class Action extends Enum {
     createAccount: CreateAccount;
@@ -86,5 +90,6 @@ export declare class Action extends Enum {
     deleteAccount: DeleteAccount;
 }
 export declare const SCHEMA: Map<Function, any>;
+export declare function createTransaction(signerId: string, publicKey: PublicKey, receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array): Transaction;
 export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export {};

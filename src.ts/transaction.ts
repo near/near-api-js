@@ -4,7 +4,7 @@ import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
 import { Enum, Assignable } from './utils/enums';
-import { serialize } from './utils/serialize';
+import { serialize, deserialize } from './utils/serialize';
 import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
 
@@ -94,6 +94,14 @@ export class Transaction extends Assignable {
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
+
+    encode(): Uint8Array {
+        return serialize(SCHEMA, this);
+    }
+
+    static decode(bytes: Buffer): Transaction {
+        return deserialize(SCHEMA, Transaction, bytes);
+    }
 }
 
 export class SignedTransaction extends Assignable {
@@ -102,6 +110,10 @@ export class SignedTransaction extends Assignable {
 
     encode(): Uint8Array {
         return serialize(SCHEMA, this);
+    }
+
+    static decode(bytes: Buffer): SignedTransaction {
+        return deserialize(SCHEMA, SignedTransaction, bytes);
     }
 }
 
@@ -190,9 +202,13 @@ export const SCHEMA = new Map<Function, any>([
     ]}],
 ]);
 
+export function createTransaction(signerId: string, publicKey: PublicKey, receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array): Transaction {
+    return new Transaction({ signerId, publicKey, nonce, receiverId, actions, blockHash });
+}
+
 export async function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const publicKey = await signer.getPublicKey(accountId, networkId);
-    const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
+    const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);
