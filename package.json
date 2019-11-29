@@ -18,8 +18,7 @@
     "js-sha256": "^0.9.0",
     "node-fetch": "^2.3.0",
     "text-encoding-utf-8": "^1.0.2",
-    "tweetnacl": "^1.0.1",
-    "typescript": "^3.5.1"
+    "tweetnacl": "^1.0.1"
   },
   "devDependencies": {
     "@types/http-errors": "^1.6.1",
@@ -34,6 +33,7 @@
     "tslint": "^5.18.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.2.6",
+    "typescript": "^3.5.1",
     "uglifyify": "^5.0.1"
   },
   "jest": {
