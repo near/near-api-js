@@ -30,7 +30,7 @@ sidebar_label: "TypedError"
 
 \+ **new TypedError**(`message?`: string, `type?`: string): *[TypedError](_providers_json_rpc_provider_.typederror.md)*
 
-*Defined in [providers/json-rpc-provider.ts:16](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/json-rpc-provider.ts#L16)*
+*Defined in [src.ts/providers/json-rpc-provider.ts:16](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/json-rpc-provider.ts#L16)*
 
 **Parameters:**
 
@@ -49,7 +49,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /Users/vg/Documents/nearlib/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:974
+Defined in node_modules/typescript/lib/lib.es5.d.ts:974
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/vg/Documents/nearlib/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:973
+Defined in node_modules/typescript/lib/lib.es5.d.ts:973
 
 ___
 
@@ -71,7 +71,7 @@ ___
 
 *Overrides void*
 
-Defined in /Users/vg/Documents/nearlib/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:975
+Defined in node_modules/typescript/lib/lib.es5.d.ts:975
 
 ___
 
@@ -79,7 +79,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [providers/json-rpc-provider.ts:16](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/json-rpc-provider.ts#L16)*
+*Defined in [src.ts/providers/json-rpc-provider.ts:16](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/json-rpc-provider.ts#L16)*
 
 ___
 
@@ -87,4 +87,4 @@ ___
 
 ▪ **Error**: *ErrorConstructor*
 
-Defined in /Users/vg/Documents/nearlib/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:984
+Defined in node_modules/typescript/lib/lib.es5.d.ts:984
