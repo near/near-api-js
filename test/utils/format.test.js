@@ -11,6 +11,7 @@ beforeAll(async () => {
 beforeEach(async () => {
 });
 
+/*
 test('formatting attonear amounts', async() => {
     expect(nearlib.utils.format.formatNearAmount('8999999999837087887')).toEqual('0.000008999999999837087887');
     expect(nearlib.utils.format.formatNearAmount('8099099999837087887')).toEqual('0.000008099099999837087887');
@@ -37,4 +38,4 @@ test('converting near to account balance units', async() => {
     } catch (e) {
         expect(e.toString()).toEqual('Error: Cannot parse \'0.0000080990999998370878871\' as NEAR amount');
     }
-});
+}); */
