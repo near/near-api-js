@@ -23,7 +23,7 @@ sidebar_label: "ExecutionOutcome"
 
 • **gas_burnt**: *number*
 
-*Defined in [src.ts/providers/provider.ts:62](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L62)*
+*Defined in [src.ts/providers/provider.ts:62](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L62)*
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 • **logs**: *string[]*
 
-*Defined in [src.ts/providers/provider.ts:60](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L60)*
+*Defined in [src.ts/providers/provider.ts:60](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L60)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **receipt_ids**: *string[]*
 
-*Defined in [src.ts/providers/provider.ts:61](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L61)*
+*Defined in [src.ts/providers/provider.ts:61](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L61)*
 
 ___
 
@@ -47,4 +47,4 @@ ___
 
 • **status**: *[ExecutionStatus](_providers_provider_.executionstatus.md) | [ExecutionStatusBasic](../enums/_providers_provider_.executionstatusbasic.md)*
 
-*Defined in [src.ts/providers/provider.ts:59](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L59)*
+*Defined in [src.ts/providers/provider.ts:59](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L59)*

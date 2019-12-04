@@ -39,7 +39,7 @@ sidebar_label: "utils/serialize"
 
 Ƭ **Schema**: *Map‹Function, any›*
 
-*Defined in [src.ts/utils/serialize.ts:27](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L27)*
+*Defined in [src.ts/utils/serialize.ts:27](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L27)*
 
 ## Variables
 
@@ -47,7 +47,7 @@ sidebar_label: "utils/serialize"
 
 • **INITIAL_LENGTH**: *1024* = 1024
 
-*Defined in [src.ts/utils/serialize.ts:25](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L25)*
+*Defined in [src.ts/utils/serialize.ts:25](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L25)*
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 • **textDecoder**: *TextDecoder* =  new TextDecoder('utf-8', { fatal: true })
 
-*Defined in [src.ts/utils/serialize.ts:12](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L12)*
+*Defined in [src.ts/utils/serialize.ts:12](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L12)*
 
 ## Functions
 
@@ -63,7 +63,7 @@ ___
 
 ▸ **base_decode**(`value`: string): *Uint8Array*
 
-*Defined in [src.ts/utils/serialize.ts:21](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L21)*
+*Defined in [src.ts/utils/serialize.ts:21](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L21)*
 
 **Parameters:**
 
@@ -79,7 +79,7 @@ ___
 
 ▸ **base_encode**(`value`: Uint8Array | string): *string*
 
-*Defined in [src.ts/utils/serialize.ts:14](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L14)*
+*Defined in [src.ts/utils/serialize.ts:14](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L14)*
 
 **Parameters:**
 
@@ -95,7 +95,7 @@ ___
 
 ▸ **deserialize**(`schema`: [Schema](_utils_serialize_.md#schema), `classType`: any, `buffer`: Buffer): *any*
 
-*Defined in [src.ts/utils/serialize.ts:324](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L324)*
+*Defined in [src.ts/utils/serialize.ts:324](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L324)*
 
 **Parameters:**
 
@@ -113,7 +113,7 @@ ___
 
 ▸ **deserializeField**(`schema`: [Schema](_utils_serialize_.md#schema), `fieldName`: string, `fieldType`: any, `reader`: [BinaryReader](../classes/_utils_serialize_.binaryreader.md)): *any*
 
-*Defined in [src.ts/utils/serialize.ts:273](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L273)*
+*Defined in [src.ts/utils/serialize.ts:273](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L273)*
 
 **Parameters:**
 
@@ -132,7 +132,7 @@ ___
 
 ▸ **deserializeStruct**(`schema`: [Schema](_utils_serialize_.md#schema), `classType`: any, `reader`: [BinaryReader](../classes/_utils_serialize_.binaryreader.md)): *any*
 
-*Defined in [src.ts/utils/serialize.ts:296](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L296)*
+*Defined in [src.ts/utils/serialize.ts:296](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L296)*
 
 **Parameters:**
 
@@ -150,7 +150,7 @@ ___
 
 ▸ **handlingRangeError**(`target`: any, `propertyKey`: string, `propertyDescriptor`: PropertyDescriptor): *void*
 
-*Defined in [src.ts/utils/serialize.ts:114](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L114)*
+*Defined in [src.ts/utils/serialize.ts:114](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L114)*
 
 **Parameters:**
 
@@ -168,7 +168,7 @@ ___
 
 ▸ **serialize**(`schema`: [Schema](_utils_serialize_.md#schema), `obj`: any): *Uint8Array*
 
-*Defined in [src.ts/utils/serialize.ts:267](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L267)*
+*Defined in [src.ts/utils/serialize.ts:267](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L267)*
 
 **Parameters:**
 
@@ -185,7 +185,7 @@ ___
 
 ▸ **serializeField**(`schema`: [Schema](_utils_serialize_.md#schema), `fieldName`: string, `value`: any, `fieldType`: any, `writer`: any): *void*
 
-*Defined in [src.ts/utils/serialize.ts:203](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L203)*
+*Defined in [src.ts/utils/serialize.ts:203](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L203)*
 
 **Parameters:**
 
@@ -205,7 +205,7 @@ ___
 
 ▸ **serializeStruct**(`schema`: [Schema](_utils_serialize_.md#schema), `obj`: any, `writer`: any): *void*
 
-*Defined in [src.ts/utils/serialize.ts:241](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L241)*
+*Defined in [src.ts/utils/serialize.ts:241](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L241)*
 
 **Parameters:**
 

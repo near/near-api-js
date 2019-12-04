@@ -35,7 +35,7 @@ sidebar_label: "BorshError"
 
 \+ **new BorshError**(`message`: string): *[BorshError](_utils_serialize_.borsherror.md)*
 
-*Defined in [src.ts/utils/serialize.ts:31](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L31)*
+*Defined in [src.ts/utils/serialize.ts:31](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L31)*
 
 **Parameters:**
 
@@ -51,7 +51,7 @@ Name | Type |
 
 • **fieldPath**: *string[]* =  []
 
-*Defined in [src.ts/utils/serialize.ts:31](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L31)*
+*Defined in [src.ts/utils/serialize.ts:31](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L31)*
 
 ___
 
@@ -79,7 +79,7 @@ ___
 
 • **originalMessage**: *string*
 
-*Defined in [src.ts/utils/serialize.ts:30](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L30)*
+*Defined in [src.ts/utils/serialize.ts:30](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L30)*
 
 ___
 
@@ -107,7 +107,7 @@ Defined in node_modules/typescript/lib/lib.es5.d.ts:984
 
 ▸ **addToFieldPath**(`fieldName`: string): *void*
 
-*Defined in [src.ts/utils/serialize.ts:38](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/utils/serialize.ts#L38)*
+*Defined in [src.ts/utils/serialize.ts:38](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L38)*
 
 **Parameters:**
 

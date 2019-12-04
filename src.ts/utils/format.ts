@@ -1,37 +1,37 @@
 const BN = require ('bn.js');
 
 // Exponent for calculating how many units of account balance are in one near.
-const exp = 24;
+const NEAR_NOMINATION_EXP = 24;
 // actual number of units of account balance in one near.
-const unitsInOneNear = new BN('10', 10).pow(new BN(exp, 10));
+const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
 
 /**
- * Convert account balance to near.
+ * Convert account balance value from internal units (currently yoctoNEAR) to NEAR.
  * @param balance
  */
-export function convertAccountBalanceAmountToNear(balance: string): string {
+export function formatNearAmount(balance: string): string {
     const amtBN = new BN(balance, 10);
-    if (amtBN.lte(unitsInOneNear)) {
-        return `0.${balance.padStart(exp, '0')}`;
+    if (amtBN.lte(NEAR_NOMINATION)) {
+        return `0.${balance.padStart(NEAR_NOMINATION_EXP, '0')}`;
     }
-    return `${amtBN.div(unitsInOneNear).toString(10, 0)}.${amtBN.mod(unitsInOneNear).toString(10, 0)}`;
+    return `${amtBN.div(NEAR_NOMINATION).toString(10, 0)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`;
 }
 
 /**
- *
+ * Convert human readable near amount to internal account balance units.
  * @param amt
  */
-export function nearAmountToAccountBalanceAmount(amt) {
+export function parseNearAmount(amt?: string): string | null {
     if (!amt) { return amt; }
     amt = amt.trim();
     const split = amt.split('.');
     if (split.length === 1) {
-        return `${amt.padEnd(exp + 1, '0')}`;
+        return `${amt.padEnd(NEAR_NOMINATION_EXP + 1, '0')}`;
     }
-    if (split.length > 2 || split[1].length > exp) {
-        throw new Error('Invalid input format');
+    if (split.length > 2 || split[1].length > NEAR_NOMINATION_EXP) {
+        throw new Error(`Cannot parse '${amt}' as NEAR amount`);
     }
-    const wholePart = new BN(split[0], 10).mul(unitsInOneNear);
-    const fractionPart = new BN(split[1].padEnd(exp, '0'), 10);
+    const wholePart = new BN(split[0], 10).mul(NEAR_NOMINATION);
+    const fractionPart = new BN(split[1].padEnd(NEAR_NOMINATION_EXP, '0'), 10);
     return `${wholePart.add(fractionPart).toString(10, 0)}`;
 }

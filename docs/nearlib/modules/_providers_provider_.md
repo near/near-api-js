@@ -60,7 +60,7 @@ sidebar_label: "providers/provider"
 
 Ƭ **BlockHash**: *string*
 
-*Defined in [src.ts/providers/provider.ts:21](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L21)*
+*Defined in [src.ts/providers/provider.ts:21](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L21)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 Ƭ **BlockHeight**: *number*
 
-*Defined in [src.ts/providers/provider.ts:22](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L22)*
+*Defined in [src.ts/providers/provider.ts:22](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L22)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 Ƭ **BlockId**: *[BlockHash](_providers_provider_.md#blockhash) | [BlockHeight](_providers_provider_.md#blockheight)*
 
-*Defined in [src.ts/providers/provider.ts:23](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L23)*
+*Defined in [src.ts/providers/provider.ts:23](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L23)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 Ƭ **BlockShardId**: *[[BlockId](_providers_provider_.md#blockid), [ShardId](_providers_provider_.md#shardid)]*
 
-*Defined in [src.ts/providers/provider.ts:89](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L89)*
+*Defined in [src.ts/providers/provider.ts:89](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L89)*
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 Ƭ **ChunkHash**: *string*
 
-*Defined in [src.ts/providers/provider.ts:87](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L87)*
+*Defined in [src.ts/providers/provider.ts:87](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L87)*
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 Ƭ **ChunkId**: *[ChunkHash](_providers_provider_.md#chunkhash) | [BlockShardId](_providers_provider_.md#blockshardid)*
 
-*Defined in [src.ts/providers/provider.ts:90](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L90)*
+*Defined in [src.ts/providers/provider.ts:90](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L90)*
 
 ___
 
@@ -108,7 +108,7 @@ ___
 
 Ƭ **ShardId**: *number*
 
-*Defined in [src.ts/providers/provider.ts:88](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L88)*
+*Defined in [src.ts/providers/provider.ts:88](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L88)*
 
 ## Functions
 
@@ -116,7 +116,7 @@ ___
 
 ▸ **adaptTransactionResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md) | [LegacyFinalTransactionResult](../interfaces/_providers_provider_.legacyfinaltransactionresult.md)): *[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)*
 
-*Defined in [src.ts/providers/provider.ts:204](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L204)*
+*Defined in [src.ts/providers/provider.ts:204](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L204)*
 
 **Parameters:**
 
@@ -132,7 +132,7 @@ ___
 
 ▸ **fixLegacyBasicExecutionOutcomeFailure**(`t`: [ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)): *[ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)*
 
-*Defined in [src.ts/providers/provider.ts:190](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L190)*
+*Defined in [src.ts/providers/provider.ts:190](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L190)*
 
 **Parameters:**
 
@@ -148,7 +148,7 @@ ___
 
 ▸ **getTransactionLastResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)): *any*
 
-*Defined in [src.ts/providers/provider.ts:263](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L263)*
+*Defined in [src.ts/providers/provider.ts:263](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L263)*
 
 **Parameters:**
 
@@ -164,7 +164,7 @@ ___
 
 ▸ **mapLegacyTransactionLog**(`tl`: [LegacyTransactionLog](../interfaces/_providers_provider_.legacytransactionlog.md)): *[ExecutionOutcomeWithId](../interfaces/_providers_provider_.executionoutcomewithid.md)*
 
-*Defined in [src.ts/providers/provider.ts:167](https://github.com/nearprotocol/nearlib/blob/2987fdb/src.ts/providers/provider.ts#L167)*
+*Defined in [src.ts/providers/provider.ts:167](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L167)*
 
 **Parameters:**
 

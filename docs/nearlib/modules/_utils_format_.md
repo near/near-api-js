@@ -9,13 +9,13 @@ sidebar_label: "utils/format"
 ### Variables
 
 * [BN](_utils_format_.md#const-bn)
-* [exp](_utils_format_.md#const-exp)
-* [unitsInOneNear](_utils_format_.md#const-unitsinonenear)
+* [NEAR_NOMINATION](_utils_format_.md#const-near_nomination)
+* [NEAR_NOMINATION_EXP](_utils_format_.md#const-near_nomination_exp)
 
 ### Functions
 
-* [convertAccountBalanceAmountToNear](_utils_format_.md#convertaccountbalanceamounttonear)
-* [nearAmountToAccountBalanceAmount](_utils_format_.md#nearamounttoaccountbalanceamount)
+* [formatNearAmount](_utils_format_.md#formatnearamount)
+* [parseNearAmount](_utils_format_.md#parsenearamount)
 
 ## Variables
 
@@ -23,33 +23,33 @@ sidebar_label: "utils/format"
 
 • **BN**: *any* =  require ('bn.js')
 
-Defined in src.ts/utils/format.ts:1
+*Defined in [src.ts/utils/format.ts:1](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L1)*
 
 ___
 
-### `Const` exp
+### `Const` NEAR_NOMINATION
 
-• **exp**: *24* = 24
+• **NEAR_NOMINATION**: *any* =  new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10))
 
-Defined in src.ts/utils/format.ts:4
+*Defined in [src.ts/utils/format.ts:6](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L6)*
 
 ___
 
-### `Const` unitsInOneNear
+### `Const` NEAR_NOMINATION_EXP
 
-• **unitsInOneNear**: *any* =  new BN('10', 10).pow(new BN(exp, 10))
+• **NEAR_NOMINATION_EXP**: *24* = 24
 
-Defined in src.ts/utils/format.ts:6
+*Defined in [src.ts/utils/format.ts:4](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L4)*
 
 ## Functions
 
-###  convertAccountBalanceAmountToNear
+###  formatNearAmount
 
-▸ **convertAccountBalanceAmountToNear**(`balance`: string): *string*
+▸ **formatNearAmount**(`balance`: string): *string*
 
-Defined in src.ts/utils/format.ts:12
+*Defined in [src.ts/utils/format.ts:12](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L12)*
 
-Convert account balance to near.
+Convert account balance value from internal units (currently yoctoNEAR) to NEAR.
 
 **Parameters:**
 
@@ -61,16 +61,18 @@ Name | Type | Description |
 
 ___
 
-###  nearAmountToAccountBalanceAmount
+###  parseNearAmount
 
-▸ **nearAmountToAccountBalanceAmount**(`amt`: any): *any*
+▸ **parseNearAmount**(`amt?`: string): *string | null*
 
-Defined in src.ts/utils/format.ts:24
+*Defined in [src.ts/utils/format.ts:24](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L24)*
+
+Convert human readable near amount to internal account balance units.
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`amt` | any |   |
+`amt?` | string |   |
 
-**Returns:** *any*
+**Returns:** *string | null*
