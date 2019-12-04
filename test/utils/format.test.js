@@ -1,5 +1,5 @@
 // Unit tests for simple util code
-
+/*
 const nearlib = require('../../lib/index');
 
 
@@ -11,7 +11,7 @@ beforeAll(async () => {
 beforeEach(async () => {
 });
 
-/*
+
 test('formatting attonear amounts', async() => {
     expect(nearlib.utils.format.formatNearAmount('8999999999837087887')).toEqual('0.000008999999999837087887');
     expect(nearlib.utils.format.formatNearAmount('8099099999837087887')).toEqual('0.000008099099999837087887');
