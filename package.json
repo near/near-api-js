@@ -58,12 +58,12 @@
     "prefuzz": "yarn build",
     "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
   },
-  "bundlewatch" : {
+  "bundlewatch": {
     "files": [
-        {
-            "path": "dist/nearlib.min.js",
-            "maxSize": "80kB"
-        }
+      {
+        "path": "dist/nearlib.min.js",
+        "maxSize": "80kB"
+      }
     ]
   },
   "author": "NEAR Inc"

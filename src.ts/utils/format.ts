@@ -1,7 +1,7 @@
 const BN = require ('bn.js');
 
 // Exponent for calculating how many units of account balance are in one near.
-const NEAR_NOMINATION_EXP = 24;
+const NEAR_NOMINATION_EXP = 18;
 // actual number of units of account balance in one near.
 const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
 
