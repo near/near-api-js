@@ -28,7 +28,7 @@ sidebar_label: "DeleteAccount"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/enums.ts#L17)*
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -44,4 +44,4 @@ Name | Type |
 
 • **beneficiaryId**: *string*
 
-*Defined in [transaction.ts:46](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/transaction.ts#L46)*
+*Defined in [src.ts/transaction.ts:46](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/transaction.ts#L46)*

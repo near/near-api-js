@@ -82,6 +82,7 @@
       "nearlib/modules/_utils_enums_",
       "nearlib/classes/_utils_enums_.assignable",
       "nearlib/classes/_utils_enums_.enum",
+      "nearlib/modules/_utils_format_",
       "nearlib/modules/_utils_index_",
       "nearlib/modules/_utils_key_pair_",
       "nearlib/enums/_utils_key_pair_.keytype",
@@ -94,6 +95,7 @@
       "nearlib/modules/_utils_serialize_",
       "nearlib/classes/_utils_serialize_.binaryreader",
       "nearlib/classes/_utils_serialize_.binarywriter",
+      "nearlib/classes/_utils_serialize_.borsherror",
       "nearlib/modules/_utils_web_",
       "nearlib/interfaces/_utils_web_.connectioninfo",
       "nearlib/modules/_wallet_account_",
@@ -141,6 +143,7 @@
       "nearlib/classes/_utils_key_pair_.publickey",
       "nearlib/classes/_utils_serialize_.binaryreader",
       "nearlib/classes/_utils_serialize_.binarywriter",
+      "nearlib/classes/_utils_serialize_.borsherror",
       "nearlib/classes/_wallet_account_.walletaccount"
     ],
     "Enums": [

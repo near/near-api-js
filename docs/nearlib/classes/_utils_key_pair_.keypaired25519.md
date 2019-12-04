@@ -39,7 +39,7 @@ generating key pairs, encoding key pairs, signing and verifying.
 
 \+ **new KeyPairEd25519**(`secretKey`: string): *[KeyPairEd25519](_utils_key_pair_.keypaired25519.md)*
 
-*Defined in [utils/key_pair.ts:101](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L101)*
+*Defined in [src.ts/utils/key_pair.ts:97](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L97)*
 
 Construct an instance of key pair given a secret key.
 It's generally assumed that these are encoded in base58.
@@ -58,7 +58,7 @@ Name | Type | Description |
 
 • **publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [utils/key_pair.ts:100](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L100)*
+*Defined in [src.ts/utils/key_pair.ts:96](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L96)*
 
 ___
 
@@ -66,7 +66,7 @@ ___
 
 • **secretKey**: *string*
 
-*Defined in [utils/key_pair.ts:101](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L101)*
+*Defined in [src.ts/utils/key_pair.ts:97](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L97)*
 
 ## Methods
 
@@ -76,7 +76,7 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[getPublicKey](_utils_key_pair_.keypair.md#abstract-getpublickey)*
 
-*Defined in [utils/key_pair.ts:143](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L143)*
+*Defined in [src.ts/utils/key_pair.ts:139](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L139)*
 
 **Returns:** *[PublicKey](_utils_key_pair_.publickey.md)*
 
@@ -88,7 +88,7 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[sign](_utils_key_pair_.keypair.md#abstract-sign)*
 
-*Defined in [utils/key_pair.ts:130](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L130)*
+*Defined in [src.ts/utils/key_pair.ts:126](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L126)*
 
 **Parameters:**
 
@@ -106,7 +106,7 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[toString](_utils_key_pair_.keypair.md#abstract-tostring)*
 
-*Defined in [utils/key_pair.ts:139](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L139)*
+*Defined in [src.ts/utils/key_pair.ts:135](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L135)*
 
 **Returns:** *string*
 
@@ -118,7 +118,7 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[verify](_utils_key_pair_.keypair.md#abstract-verify)*
 
-*Defined in [utils/key_pair.ts:135](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L135)*
+*Defined in [src.ts/utils/key_pair.ts:131](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L131)*
 
 **Parameters:**
 
@@ -133,11 +133,11 @@ ___
 
 ### `Static` fromRandom
 
-▸ **fromRandom**(): *[KeyPairEd25519](_utils_key_pair_.keypaired25519.md)*
+▸ **fromRandom**(): *[KeyPairEd25519](_utils_key_pair_.keypaired25519.md)‹›*
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[fromRandom](_utils_key_pair_.keypair.md#static-fromrandom)*
 
-*Defined in [utils/key_pair.ts:125](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L125)*
+*Defined in [src.ts/utils/key_pair.ts:121](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L121)*
 
 Generate a new random keypair.
 
@@ -149,7 +149,7 @@ keyRandom.publicKey
 keyRandom.secretKey
 // returns [SECRET_KEY]
 
-**Returns:** *[KeyPairEd25519](_utils_key_pair_.keypaired25519.md)*
+**Returns:** *[KeyPairEd25519](_utils_key_pair_.keypaired25519.md)‹›*
 
 ___
 
@@ -159,7 +159,7 @@ ___
 
 *Inherited from [KeyPair](_utils_key_pair_.keypair.md).[fromString](_utils_key_pair_.keypair.md#static-fromstring)*
 
-*Defined in [utils/key_pair.ts:80](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L80)*
+*Defined in [src.ts/utils/key_pair.ts:76](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L76)*
 
 **Parameters:**
 

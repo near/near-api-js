@@ -18,7 +18,7 @@ sidebar_label: "FinalExecutionStatusBasic"
 
 • **Failure**: = "Failure"
 
-*Defined in [providers/provider.ts:40](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L40)*
+*Defined in [src.ts/providers/provider.ts:40](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L40)*
 
 ___
 
@@ -26,7 +26,7 @@ ___
 
 • **NotStarted**: = "NotStarted"
 
-*Defined in [providers/provider.ts:38](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L38)*
+*Defined in [src.ts/providers/provider.ts:38](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L38)*
 
 ___
 
@@ -34,4 +34,4 @@ ___
 
 • **Started**: = "Started"
 
-*Defined in [providers/provider.ts:39](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/providers/provider.ts#L39)*
+*Defined in [src.ts/providers/provider.ts:39](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L39)*

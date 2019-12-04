@@ -38,7 +38,7 @@ sidebar_label: "BinaryWriter"
 
 \+ **new BinaryWriter**(): *[BinaryWriter](_utils_serialize_.binarywriter.md)*
 
-*Defined in [utils/serialize.ts:24](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L24)*
+*Defined in [src.ts/utils/serialize.ts:48](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L48)*
 
 **Returns:** *[BinaryWriter](_utils_serialize_.binarywriter.md)*
 
@@ -48,7 +48,7 @@ sidebar_label: "BinaryWriter"
 
 • **buf**: *Buffer*
 
-*Defined in [utils/serialize.ts:23](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L23)*
+*Defined in [src.ts/utils/serialize.ts:47](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L47)*
 
 ___
 
@@ -56,7 +56,7 @@ ___
 
 • **length**: *number*
 
-*Defined in [utils/serialize.ts:24](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L24)*
+*Defined in [src.ts/utils/serialize.ts:48](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L48)*
 
 ## Methods
 
@@ -64,7 +64,7 @@ ___
 
 ▸ **maybe_resize**(): *void*
 
-*Defined in [utils/serialize.ts:31](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L31)*
+*Defined in [src.ts/utils/serialize.ts:55](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L55)*
 
 **Returns:** *void*
 
@@ -74,7 +74,7 @@ ___
 
 ▸ **toArray**(): *Uint8Array*
 
-*Defined in [utils/serialize.ts:85](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L85)*
+*Defined in [src.ts/utils/serialize.ts:109](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L109)*
 
 **Returns:** *Uint8Array*
 
@@ -84,7 +84,7 @@ ___
 
 ▸ **write_array**(`array`: any[], `fn`: any): *void*
 
-*Defined in [utils/serialize.ts:76](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L76)*
+*Defined in [src.ts/utils/serialize.ts:100](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L100)*
 
 **Parameters:**
 
@@ -101,7 +101,7 @@ ___
 
 ▸ **write_buffer**(`buffer`: Buffer): *void*
 
-*Defined in [utils/serialize.ts:59](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L59)*
+*Defined in [src.ts/utils/serialize.ts:83](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L83)*
 
 **Parameters:**
 
@@ -117,7 +117,7 @@ ___
 
 ▸ **write_fixed_array**(`array`: Uint8Array): *void*
 
-*Defined in [utils/serialize.ts:72](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L72)*
+*Defined in [src.ts/utils/serialize.ts:96](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L96)*
 
 **Parameters:**
 
@@ -133,7 +133,7 @@ ___
 
 ▸ **write_string**(`str`: string): *void*
 
-*Defined in [utils/serialize.ts:65](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L65)*
+*Defined in [src.ts/utils/serialize.ts:89](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L89)*
 
 **Parameters:**
 
@@ -149,7 +149,7 @@ ___
 
 ▸ **write_u128**(`value`: BN): *void*
 
-*Defined in [utils/serialize.ts:54](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L54)*
+*Defined in [src.ts/utils/serialize.ts:78](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L78)*
 
 **Parameters:**
 
@@ -165,7 +165,7 @@ ___
 
 ▸ **write_u32**(`value`: number): *void*
 
-*Defined in [utils/serialize.ts:43](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L43)*
+*Defined in [src.ts/utils/serialize.ts:67](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L67)*
 
 **Parameters:**
 
@@ -181,7 +181,7 @@ ___
 
 ▸ **write_u64**(`value`: BN): *void*
 
-*Defined in [utils/serialize.ts:49](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L49)*
+*Defined in [src.ts/utils/serialize.ts:73](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L73)*
 
 **Parameters:**
 
@@ -197,7 +197,7 @@ ___
 
 ▸ **write_u8**(`value`: number): *void*
 
-*Defined in [utils/serialize.ts:37](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/serialize.ts#L37)*
+*Defined in [src.ts/utils/serialize.ts:61](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L61)*
 
 **Parameters:**
 

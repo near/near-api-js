@@ -8,7 +8,9 @@ PublicKey representation that has type and bytes of the key.
 
 ## Hierarchy
 
-* **PublicKey**
+* [Assignable](_utils_enums_.assignable.md)
+
+  ↳ **PublicKey**
 
 ## Index
 
@@ -31,16 +33,17 @@ PublicKey representation that has type and bytes of the key.
 
 ###  constructor
 
-\+ **new PublicKey**(`keyType`: [KeyType](../enums/_utils_key_pair_.keytype.md), `data`: Uint8Array): *[PublicKey](_utils_key_pair_.publickey.md)*
+\+ **new PublicKey**(`properties`: any): *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [utils/key_pair.ts:37](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L37)*
+*Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
+
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`keyType` | [KeyType](../enums/_utils_key_pair_.keytype.md) |
-`data` | Uint8Array |
+`properties` | any |
 
 **Returns:** *[PublicKey](_utils_key_pair_.publickey.md)*
 
@@ -50,7 +53,7 @@ Name | Type |
 
 • **data**: *Uint8Array*
 
-*Defined in [utils/key_pair.ts:37](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L37)*
+*Defined in [src.ts/utils/key_pair.ts:38](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L38)*
 
 ___
 
@@ -58,7 +61,7 @@ ___
 
 • **keyType**: *[KeyType](../enums/_utils_key_pair_.keytype.md)*
 
-*Defined in [utils/key_pair.ts:36](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L36)*
+*Defined in [src.ts/utils/key_pair.ts:37](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L37)*
 
 ## Methods
 
@@ -66,7 +69,7 @@ ___
 
 ▸ **toString**(): *string*
 
-*Defined in [utils/key_pair.ts:62](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L62)*
+*Defined in [src.ts/utils/key_pair.ts:58](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L58)*
 
 **Returns:** *string*
 
@@ -76,7 +79,7 @@ ___
 
 ▸ **from**(`value`: string | [PublicKey](_utils_key_pair_.publickey.md)): *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [utils/key_pair.ts:44](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L44)*
+*Defined in [src.ts/utils/key_pair.ts:40](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L40)*
 
 **Parameters:**
 
@@ -92,7 +95,7 @@ ___
 
 ▸ **fromString**(`encodedKey`: string): *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [utils/key_pair.ts:51](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/key_pair.ts#L51)*
+*Defined in [src.ts/utils/key_pair.ts:47](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L47)*
 
 **Parameters:**
 

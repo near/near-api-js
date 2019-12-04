@@ -8,6 +8,8 @@ sidebar_label: "Assignable"
 
 * **Assignable**
 
+  ↳ [PublicKey](_utils_key_pair_.publickey.md)
+
   ↳ [FunctionCallPermission](_transaction_.functioncallpermission.md)
 
   ↳ [FullAccessPermission](_transaction_.fullaccesspermission.md)
@@ -32,7 +34,7 @@ sidebar_label: "Assignable"
 
 \+ **new Assignable**(`properties`: any): *[Assignable](_utils_enums_.assignable.md)*
 
-*Defined in [utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/b8cdef5/src.ts/utils/enums.ts#L17)*
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
