@@ -151,7 +151,13 @@ class Account {
     /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
     async getAccessKeys() {
         const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
-        return response;
+        // A breaking API change introduced extra information into the
+        // response, so it now returns an object with a `keys` field instead
+        // of an array: https://github.com/nearprotocol/nearcore/pull/1789
+        if (Array.isArray(response)) {
+            return response;
+        }
+        return response.keys;
     }
     async getAccountDetails() {
         // TODO: update the response value to return all the different keys, not just app keys.
@@ -6700,7 +6706,7 @@ function hexSlice (buf, start, end) {
 
   var out = ''
   for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
+    out += hexSliceLookupTable[buf[i]]
   }
   return out
 }
@@ -7286,11 +7292,6 @@ function base64clean (str) {
   return str
 }
 
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
 function utf8ToBytes (string, units) {
   units = units || Infinity
   var codePoint
@@ -7420,6 +7421,20 @@ function numberIsNaN (obj) {
   // For IE11 support
   return obj !== obj // eslint-disable-line no-self-compare
 }
+
+// Create lookup table for `toString('hex')`
+// See: https://github.com/feross/buffer/issues/219
+var hexSliceLookupTable = (function () {
+  var alphabet = '0123456789abcdef'
+  var table = new Array(256)
+  for (var i = 0; i < 16; ++i) {
+    var i16 = i * 16
+    for (var j = 0; j < 16; ++j) {
+      table[i16 + j] = alphabet[i] + alphabet[j]
+    }
+  }
+  return table
+})()
 
 }).call(this,require("buffer").Buffer)
 },{"base64-js":28,"buffer":33,"ieee754":50}],34:[function(require,module,exports){
