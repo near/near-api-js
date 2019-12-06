@@ -187,7 +187,13 @@ export class Account {
     /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
     async getAccessKeys(): Promise<any> {
         const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
-        return response;
+        // A breaking API change introduced extra information into the
+        // response, so it now returns an object with a `keys` field instead
+        // of an array: https://github.com/nearprotocol/nearcore/pull/1789
+        if (Array.isArray(response)) {
+            return response;
+        }
+        return response.keys;
     }
 
     async getAccountDetails(): Promise<any> {
