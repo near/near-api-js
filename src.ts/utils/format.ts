@@ -38,7 +38,7 @@ export function parseNearAmount(amt?: string): string | null {
 
 function trimTrailingZeroes(value: string): string {
     for (let i = value.length - 1; i >= 0; i--) {
-        if (value[i] == '.' || value[i] != '0') {
+        if (value[i] === '.' || value[i] !== '0') {
             return value.substring(0, i + 1);
         }
     }
