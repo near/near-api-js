@@ -77,14 +77,9 @@ export function deleteAccount(beneficiaryId: string): Action {
     return new Action({deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
 
-class Signature {
+class Signature extends Assignable {
     keyType: KeyType;
     data: Uint8Array;
-
-    constructor(signature: Uint8Array) {
-        this.keyType = KeyType.ED25519;
-        this.data = signature;
-    }
 }
 
 export class Transaction extends Assignable {
@@ -212,6 +207,9 @@ export async function signTransaction(receiverId: string, nonce: number, actions
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);
-    const signedTx = new SignedTransaction({transaction, signature: new Signature(signature.signature) });
+    const signedTx = new SignedTransaction({
+        transaction,
+        signature: new Signature({ keyType: publicKey.keyType, data: signature.signature })
+    });
     return [hash, signedTx];
 }

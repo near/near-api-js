@@ -58,10 +58,9 @@ export declare function stake(stake: BN, publicKey: PublicKey): Action;
 export declare function addKey(publicKey: PublicKey, accessKey: AccessKey): Action;
 export declare function deleteKey(publicKey: PublicKey): Action;
 export declare function deleteAccount(beneficiaryId: string): Action;
-declare class Signature {
+declare class Signature extends Assignable {
     keyType: KeyType;
     data: Uint8Array;
-    constructor(signature: Uint8Array);
 }
 export declare class Transaction extends Assignable {
     signerId: string;
