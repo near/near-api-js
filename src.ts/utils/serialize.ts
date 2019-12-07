@@ -5,10 +5,7 @@ import BN from 'bn.js';
 
 // TODO: Make sure this polyfill not included when not required
 import * as encoding from 'text-encoding-utf-8';
-if (typeof (global as any).TextDecoder !== 'function') {
-    (global as any).TextDecoder = encoding.TextDecoder;
-}
-
+const TextDecoder = (typeof (global as any).TextDecoder !== 'function') ? encoding.TextDecoder : (global as any).TextDecoder;
 const textDecoder = new TextDecoder('utf-8', { fatal: true });
 
 export function base_encode(value: Uint8Array | string): string {
