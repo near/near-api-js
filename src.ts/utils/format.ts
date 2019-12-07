@@ -47,9 +47,9 @@ function trimTrailingZeroes(value: string): string {
 }
 
 function formatWithCommas(value: string): string {
-    var pattern = /(-?\d+)(\d{3})/;
+    const pattern = /(-?\d+)(\d{3})/;
     while (pattern.test(value)) {
-        value = value.replace(pattern, "$1,$2");
+        value = value.replace(pattern, '$1,$2');
     }
     return value;
 }
