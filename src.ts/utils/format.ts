@@ -14,7 +14,8 @@ export function formatNearAmount(balance: string): string {
     if (amtBN.lte(NEAR_NOMINATION)) {
         return trimTrailingZeroes(`0.${balance.padStart(NEAR_NOMINATION_EXP, '0')}`);
     }
-    return trimTrailingZeroes(`${amtBN.div(NEAR_NOMINATION).toString(10, 0)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`);
+    const wholePart = amtBN.div(NEAR_NOMINATION).toString(10, 0);
+    return trimTrailingZeroes(`${formatWithCommas(wholePart)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`);
 }
 
 /**
@@ -41,6 +42,14 @@ function trimTrailingZeroes(value: string): string {
         if (value[i] === '.' || value[i] !== '0') {
             return value.substring(0, i + 1);
         }
+    }
+    return value;
+}
+
+function formatWithCommas(value: string): string {
+    var pattern = /(-?\d+)(\d{3})/;
+    while (pattern.test(value)) {
+        value = value.replace(pattern, "$1,$2");
     }
     return value;
 }

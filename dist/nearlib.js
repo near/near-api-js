@@ -1215,7 +1215,8 @@ function formatNearAmount(balance) {
     if (amtBN.lte(NEAR_NOMINATION)) {
         return trimTrailingZeroes(`0.${balance.padStart(NEAR_NOMINATION_EXP, '0')}`);
     }
-    return trimTrailingZeroes(`${amtBN.div(NEAR_NOMINATION).toString(10, 0)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`);
+    const wholePart = amtBN.div(NEAR_NOMINATION).toString(10, 0);
+    return trimTrailingZeroes(`${formatWithCommas(wholePart)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`);
 }
 exports.formatNearAmount = formatNearAmount;
 /**
@@ -1241,9 +1242,16 @@ function parseNearAmount(amt) {
 exports.parseNearAmount = parseNearAmount;
 function trimTrailingZeroes(value) {
     for (let i = value.length - 1; i >= 0; i--) {
-        if (value[i] == '.' || value[i] != '0') {
+        if (value[i] === '.' || value[i] !== '0') {
             return value.substring(0, i + 1);
         }
+    }
+    return value;
+}
+function formatWithCommas(value) {
+    var pattern = /(-?\d+)(\d{3})/;
+    while (pattern.test(value)) {
+        value = value.replace(pattern, "$1,$2");
     }
     return value;
 }
