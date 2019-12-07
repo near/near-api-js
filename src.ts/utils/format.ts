@@ -12,9 +12,9 @@ const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
 export function formatNearAmount(balance: string): string {
     const amtBN = new BN(balance, 10);
     if (amtBN.lte(NEAR_NOMINATION)) {
-        return `0.${balance.padStart(NEAR_NOMINATION_EXP, '0')}`;
+        return trimTrailingZeroes(`0.${balance.padStart(NEAR_NOMINATION_EXP, '0')}`);
     }
-    return `${amtBN.div(NEAR_NOMINATION).toString(10, 0)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`;
+    return trimTrailingZeroes(`${amtBN.div(NEAR_NOMINATION).toString(10, 0)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`);
 }
 
 /**
@@ -34,4 +34,13 @@ export function parseNearAmount(amt?: string): string | null {
     const wholePart = new BN(split[0], 10).mul(NEAR_NOMINATION);
     const fractionPart = new BN(split[1].padEnd(NEAR_NOMINATION_EXP, '0'), 10);
     return `${wholePart.add(fractionPart).toString(10, 0)}`;
+}
+
+function trimTrailingZeroes(value: string): string {
+    for (let i = value.length - 1; i >= 0; i--) {
+        if (value[i] === '.' || value[i] !== '0') {
+            return value.substring(0, i + 1);
+        }
+    }
+    return value;
 }

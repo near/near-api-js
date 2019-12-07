@@ -1213,9 +1213,9 @@ const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
 function formatNearAmount(balance) {
     const amtBN = new BN(balance, 10);
     if (amtBN.lte(NEAR_NOMINATION)) {
-        return `0.${balance.padStart(NEAR_NOMINATION_EXP, '0')}`;
+        return trimTrailingZeroes(`0.${balance.padStart(NEAR_NOMINATION_EXP, '0')}`);
     }
-    return `${amtBN.div(NEAR_NOMINATION).toString(10, 0)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`;
+    return trimTrailingZeroes(`${amtBN.div(NEAR_NOMINATION).toString(10, 0)}.${amtBN.mod(NEAR_NOMINATION).toString(10, 0)}`);
 }
 exports.formatNearAmount = formatNearAmount;
 /**
@@ -1239,6 +1239,14 @@ function parseNearAmount(amt) {
     return `${wholePart.add(fractionPart).toString(10, 0)}`;
 }
 exports.parseNearAmount = parseNearAmount;
+function trimTrailingZeroes(value) {
+    for (let i = value.length - 1; i >= 0; i--) {
+        if (value[i] == '.' || value[i] != '0') {
+            return value.substring(0, i + 1);
+        }
+    }
+    return value;
+}
 
 },{"bn.js":29}],21:[function(require,module,exports){
 "use strict";
@@ -6706,7 +6714,7 @@ function hexSlice (buf, start, end) {
 
   var out = ''
   for (var i = start; i < end; ++i) {
-    out += hexSliceLookupTable[buf[i]]
+    out += toHex(buf[i])
   }
   return out
 }
@@ -7292,6 +7300,11 @@ function base64clean (str) {
   return str
 }
 
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
 function utf8ToBytes (string, units) {
   units = units || Infinity
   var codePoint
@@ -7421,20 +7434,6 @@ function numberIsNaN (obj) {
   // For IE11 support
   return obj !== obj // eslint-disable-line no-self-compare
 }
-
-// Create lookup table for `toString('hex')`
-// See: https://github.com/feross/buffer/issues/219
-var hexSliceLookupTable = (function () {
-  var alphabet = '0123456789abcdef'
-  var table = new Array(256)
-  for (var i = 0; i < 16; ++i) {
-    var i16 = i * 16
-    for (var j = 0; j < 16; ++j) {
-      table[i16 + j] = alphabet[i] + alphabet[j]
-    }
-  }
-  return table
-})()
 
 }).call(this,require("buffer").Buffer)
 },{"base64-js":28,"buffer":33,"ieee754":50}],34:[function(require,module,exports){

@@ -16,7 +16,8 @@ test('formatting attonear amounts', async() => {
     /*expect(nearlib.utils.format.formatNearAmount('8999999999837087887')).toEqual('0.000008999999999837087887');
     expect(nearlib.utils.format.formatNearAmount('8099099999837087887')).toEqual('0.000008099099999837087887');
     expect(nearlib.utils.format.formatNearAmount('8099099999837087887')).not.toEqual('0.000008099099999837087888');
-    expect(nearlib.utils.format.formatNearAmount('999998999999999837087887000')).toEqual('999.998999999999837087887000');
+    expect(nearlib.utils.format.formatNearAmount('999998999999999837087887000')).toEqual('999.998999999999837087887');
+    expect(nearlib.utils.format.formatNearAmount(contextSmall)).toEqual('0.00000000001');
     // TODO: do not format smaller values */
 });
 
