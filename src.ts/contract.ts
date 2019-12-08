@@ -3,6 +3,7 @@
 import BN from 'bn.js';
 import { Account } from './account';
 import { getTransactionLastResult } from './providers';
+import { PositionalArgsError } from './utils/errors';
 
 export class Contract {
     readonly account: Account;
@@ -16,6 +17,9 @@ export class Contract {
                 writable: false,
                 enumerable: true,
                 value: async function(args: any) {
+                    if (arguments.length > 1) {
+                        throw new PositionalArgsError();
+                    }
                     return this.account.viewFunction(this.contractId, methodName, args || {});
                 }
             });
@@ -24,7 +28,10 @@ export class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
-                value: async function(args: any, gas: number, amount?: BN) {
+                value: async function(args: any, gas?: number, amount?: BN) {
+                    if (arguments.length > 3) {
+                        throw new PositionalArgsError();
+                    }
                     const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
                     return getTransactionLastResult(rawResult);
                 }

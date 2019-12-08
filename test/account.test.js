@@ -124,13 +124,15 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via contract with gas', async() => {
-        const result = await contract.hello({ name: 'trex' });
-        expect(result).toEqual('hello trex');
-
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({ value: setCallValue }, 100000);
         expect(result2).toEqual(setCallValue);
         expect(await contract.getValue()).toEqual(setCallValue);
+    });
+
+    test('gives error mesage when accidentally using positional arguments', async() => {
+        await expect(contract.hello('trex')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
+        await expect(contract.hello({ a: 1 }, 'trex')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
     });
 
     test('can get logs from method result', async () => {

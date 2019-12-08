@@ -14,7 +14,7 @@ export declare class Account {
     private _state;
     private _accessKey;
     private _ready;
-    protected readonly ready: Promise<void>;
+    protected get ready(): Promise<void>;
     constructor(connection: Connection, accountId: string);
     fetchState(): Promise<void>;
     state(): Promise<AccountState>;
@@ -30,6 +30,7 @@ export declare class Account {
     addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
     deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
     stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    private validateArgs;
     viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
     getAccessKeys(): Promise<any>;
     getAccountDetails(): Promise<any>;
