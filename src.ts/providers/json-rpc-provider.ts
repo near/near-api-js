@@ -53,7 +53,7 @@ export class JsonRpcProvider extends Provider {
     async query(path: string, data: string): Promise<any> {
         const result = await this.sendJsonRpc('query', [path, data]);
         if (result && result.error) {
-            throw new Error(`Quering ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
+            throw new Error(`Querying ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
         }
         return result;
     }
