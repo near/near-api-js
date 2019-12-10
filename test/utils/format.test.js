@@ -1,5 +1,5 @@
 // Unit tests for simple util code
-/*
+
 const nearlib = require('../../lib/index');
 
 
@@ -11,15 +11,19 @@ beforeAll(async () => {
 beforeEach(async () => {
 });
 
-*/
+
 test('formatting attonear amounts', async() => {
     /*expect(nearlib.utils.format.formatNearAmount('8999999999837087887')).toEqual('0.000008999999999837087887');
     expect(nearlib.utils.format.formatNearAmount('8099099999837087887')).toEqual('0.000008099099999837087887');
     expect(nearlib.utils.format.formatNearAmount('8099099999837087887')).not.toEqual('0.000008099099999837087888');
     expect(nearlib.utils.format.formatNearAmount('999998999999999837087887000')).toEqual('999.998999999999837087887');
     expect(nearlib.utils.format.formatNearAmount('1'+'0'.repeat(13))).toEqual('0.00000000001');
-    expect(nearlib.utils.format.formatNearAmount('9999989999999998370878870000000')).toEqual('9,999,989.99999999837087887');
-    // TODO: do not format smaller values */
+    expect(nearlib.utils.format.formatNearAmount('9999989999999998370878870000000')).toEqual('9,999,989.99999999837087887'); */
+
+    // These tests are in atto near right now. Need to update when the constant changes. 
+    expect(nearlib.utils.format.formatNearAmount('1000000000000000000')).toEqual('1');
+    expect(nearlib.utils.format.formatNearAmount('10000000999999997410')).toEqual('10.00000099999999741');
+    // TODO: do not format smaller values 
 });
 
 /*
