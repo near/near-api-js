@@ -18,6 +18,8 @@ sidebar_label: "Assignable"
 
   ↳ [IAction](_transaction_.iaction.md)
 
+  ↳ [Signature](_transaction_.signature.md)
+
   ↳ [Transaction](_transaction_.transaction.md)
 
   ↳ [SignedTransaction](_transaction_.signedtransaction.md)
@@ -34,7 +36,7 @@ sidebar_label: "Assignable"
 
 \+ **new Assignable**(`properties`: any): *[Assignable](_utils_enums_.assignable.md)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/enums.ts#L17)*
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 

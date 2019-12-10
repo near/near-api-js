@@ -36,7 +36,7 @@ sidebar_label: "BinaryReader"
 
 \+ **new BinaryReader**(`buf`: Buffer): *[BinaryReader](_utils_serialize_.binaryreader.md)*
 
-*Defined in [src.ts/utils/serialize.ts:133](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L133)*
+*Defined in [src.ts/utils/serialize.ts:130](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L130)*
 
 **Parameters:**
 
@@ -52,7 +52,7 @@ Name | Type |
 
 • **buf**: *Buffer*
 
-*Defined in [src.ts/utils/serialize.ts:132](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L132)*
+*Defined in [src.ts/utils/serialize.ts:129](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L129)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 • **offset**: *number*
 
-*Defined in [src.ts/utils/serialize.ts:133](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L133)*
+*Defined in [src.ts/utils/serialize.ts:130](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L130)*
 
 ## Methods
 
@@ -68,7 +68,7 @@ ___
 
 ▸ **read_array**(`fn`: any): *any[]*
 
-*Defined in [src.ts/utils/serialize.ts:193](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L193)*
+*Defined in [src.ts/utils/serialize.ts:190](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L190)*
 
 **Parameters:**
 
@@ -84,7 +84,7 @@ ___
 
 ▸ **read_buffer**(`len`: number): *Buffer*
 
-*Defined in [src.ts/utils/serialize.ts:166](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L166)*
+*Defined in [src.ts/utils/serialize.ts:163](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L163)*
 
 **Parameters:**
 
@@ -100,7 +100,7 @@ ___
 
 ▸ **read_fixed_array**(`len`: number): *Uint8Array*
 
-*Defined in [src.ts/utils/serialize.ts:188](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L188)*
+*Defined in [src.ts/utils/serialize.ts:185](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L185)*
 
 **Parameters:**
 
@@ -116,7 +116,7 @@ ___
 
 ▸ **read_string**(): *string*
 
-*Defined in [src.ts/utils/serialize.ts:176](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L176)*
+*Defined in [src.ts/utils/serialize.ts:173](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L173)*
 
 **Returns:** *string*
 
@@ -126,7 +126,7 @@ ___
 
 ▸ **read_u128**(): *BN*
 
-*Defined in [src.ts/utils/serialize.ts:161](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L161)*
+*Defined in [src.ts/utils/serialize.ts:158](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L158)*
 
 **Returns:** *BN*
 
@@ -136,7 +136,7 @@ ___
 
 ▸ **read_u32**(): *number*
 
-*Defined in [src.ts/utils/serialize.ts:148](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L148)*
+*Defined in [src.ts/utils/serialize.ts:145](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L145)*
 
 **Returns:** *number*
 
@@ -146,7 +146,7 @@ ___
 
 ▸ **read_u64**(): *BN*
 
-*Defined in [src.ts/utils/serialize.ts:155](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L155)*
+*Defined in [src.ts/utils/serialize.ts:152](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L152)*
 
 **Returns:** *BN*
 
@@ -156,6 +156,6 @@ ___
 
 ▸ **read_u8**(): *number*
 
-*Defined in [src.ts/utils/serialize.ts:141](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/serialize.ts#L141)*
+*Defined in [src.ts/utils/serialize.ts:138](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/serialize.ts#L138)*
 
 **Returns:** *number*

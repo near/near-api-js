@@ -24,6 +24,7 @@ sidebar_label: "SignedTransaction"
 ### Methods
 
 * [encode](_transaction_.signedtransaction.md#encode)
+* [decode](_transaction_.signedtransaction.md#static-decode)
 
 ## Constructors
 
@@ -33,7 +34,7 @@ sidebar_label: "SignedTransaction"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/enums.ts#L17)*
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -49,7 +50,7 @@ Name | Type |
 
 • **signature**: *[Signature](_transaction_.signature.md)*
 
-*Defined in [src.ts/transaction.ts:101](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/transaction.ts#L101)*
+*Defined in [src.ts/transaction.ts:104](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/transaction.ts#L104)*
 
 ___
 
@@ -57,7 +58,7 @@ ___
 
 • **transaction**: *[Transaction](_transaction_.transaction.md)*
 
-*Defined in [src.ts/transaction.ts:100](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/transaction.ts#L100)*
+*Defined in [src.ts/transaction.ts:103](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/transaction.ts#L103)*
 
 ## Methods
 
@@ -65,6 +66,22 @@ ___
 
 ▸ **encode**(): *Uint8Array*
 
-*Defined in [src.ts/transaction.ts:103](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/transaction.ts#L103)*
+*Defined in [src.ts/transaction.ts:106](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/transaction.ts#L106)*
 
 **Returns:** *Uint8Array*
+
+___
+
+### `Static` decode
+
+▸ **decode**(`bytes`: Buffer): *[SignedTransaction](_transaction_.signedtransaction.md)*
+
+*Defined in [src.ts/transaction.ts:110](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/transaction.ts#L110)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`bytes` | Buffer |
+
+**Returns:** *[SignedTransaction](_transaction_.signedtransaction.md)*

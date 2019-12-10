@@ -16,7 +16,7 @@ const key_pair_1 = require("./utils/key_pair");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-const DEFAULT_FUNC_CALL_AMOUNT = 2000000;
+const DEFAULT_FUNC_CALL_AMOUNT = 2000000 * 1000000;
 // Default number of retries before giving up on a transactioin.
 const TX_STATUS_RETRY_NUMBER = 10;
 // Default wait until next retry in millis.
@@ -762,7 +762,7 @@ class JsonRpcProvider extends provider_1.Provider {
     async query(path, data) {
         const result = await this.sendJsonRpc('query', [path, data]);
         if (result && result.error) {
-            throw new Error(`Quering ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
+            throw new Error(`Querying ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
         }
         return result;
     }
@@ -1072,18 +1072,23 @@ function deleteAccount(beneficiaryId) {
     return new Action({ deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
 exports.deleteAccount = deleteAccount;
-class Signature {
-    constructor(signature) {
-        this.keyType = key_pair_1.KeyType.ED25519;
-        this.data = signature;
-    }
+class Signature extends enums_1.Assignable {
 }
 class Transaction extends enums_1.Assignable {
+    encode() {
+        return serialize_1.serialize(exports.SCHEMA, this);
+    }
+    static decode(bytes) {
+        return serialize_1.deserialize(exports.SCHEMA, Transaction, bytes);
+    }
 }
 exports.Transaction = Transaction;
 class SignedTransaction extends enums_1.Assignable {
     encode() {
         return serialize_1.serialize(exports.SCHEMA, this);
+    }
+    static decode(bytes) {
+        return serialize_1.deserialize(exports.SCHEMA, SignedTransaction, bytes);
     }
 }
 exports.SignedTransaction = SignedTransaction;
@@ -1163,13 +1168,20 @@ exports.SCHEMA = new Map([
                 ['beneficiaryId', 'string']
             ] }],
 ]);
+function createTransaction(signerId, publicKey, receiverId, nonce, actions, blockHash) {
+    return new Transaction({ signerId, publicKey, nonce, receiverId, actions, blockHash });
+}
+exports.createTransaction = createTransaction;
 async function signTransaction(receiverId, nonce, actions, blockHash, signer, accountId, networkId) {
     const publicKey = await signer.getPublicKey(accountId, networkId);
-    const transaction = new Transaction({ signerId: accountId, publicKey, nonce, receiverId, actions, blockHash });
+    const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
     const message = serialize_1.serialize(exports.SCHEMA, transaction);
     const hash = new Uint8Array(js_sha256_1.default.sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);
-    const signedTx = new SignedTransaction({ transaction, signature: new Signature(signature.signature) });
+    const signedTx = new SignedTransaction({
+        transaction,
+        signature: new Signature({ keyType: publicKey.keyType, data: signature.signature })
+    });
     return [hash, signedTx];
 }
 exports.signTransaction = signTransaction;
@@ -1434,9 +1446,7 @@ const bs58_1 = __importDefault(require("bs58"));
 const bn_js_1 = __importDefault(require("bn.js"));
 // TODO: Make sure this polyfill not included when not required
 const encoding = __importStar(require("text-encoding-utf-8"));
-if (typeof global.TextDecoder !== 'function') {
-    global.TextDecoder = encoding.TextDecoder;
-}
+const TextDecoder = (typeof global.TextDecoder !== 'function') ? encoding.TextDecoder : global.TextDecoder;
 const textDecoder = new TextDecoder('utf-8', { fatal: true });
 function base_encode(value) {
     if (typeof (value) === 'string') {
@@ -6722,7 +6732,7 @@ function hexSlice (buf, start, end) {
 
   var out = ''
   for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
+    out += hexSliceLookupTable[buf[i]]
   }
   return out
 }
@@ -7308,11 +7318,6 @@ function base64clean (str) {
   return str
 }
 
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
 function utf8ToBytes (string, units) {
   units = units || Infinity
   var codePoint
@@ -7442,6 +7447,20 @@ function numberIsNaN (obj) {
   // For IE11 support
   return obj !== obj // eslint-disable-line no-self-compare
 }
+
+// Create lookup table for `toString('hex')`
+// See: https://github.com/feross/buffer/issues/219
+var hexSliceLookupTable = (function () {
+  var alphabet = '0123456789abcdef'
+  var table = new Array(256)
+  for (var i = 0; i < 16; ++i) {
+    var i16 = i * 16
+    for (var j = 0; j < 16; ++j) {
+      table[i16 + j] = alphabet[i] + alphabet[j]
+    }
+  }
+  return table
+})()
 
 }).call(this,require("buffer").Buffer)
 },{"base64-js":28,"buffer":33,"ieee754":50}],34:[function(require,module,exports){

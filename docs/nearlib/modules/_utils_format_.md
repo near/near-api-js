@@ -15,7 +15,9 @@ sidebar_label: "utils/format"
 ### Functions
 
 * [formatNearAmount](_utils_format_.md#formatnearamount)
+* [formatWithCommas](_utils_format_.md#formatwithcommas)
 * [parseNearAmount](_utils_format_.md#parsenearamount)
+* [trimTrailingZeroes](_utils_format_.md#trimtrailingzeroes)
 
 ## Variables
 
@@ -23,7 +25,7 @@ sidebar_label: "utils/format"
 
 • **BN**: *any* =  require ('bn.js')
 
-*Defined in [src.ts/utils/format.ts:1](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L1)*
+*Defined in [src.ts/utils/format.ts:1](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/format.ts#L1)*
 
 ___
 
@@ -31,15 +33,15 @@ ___
 
 • **NEAR_NOMINATION**: *any* =  new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10))
 
-*Defined in [src.ts/utils/format.ts:6](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L6)*
+*Defined in [src.ts/utils/format.ts:6](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/format.ts#L6)*
 
 ___
 
 ### `Const` NEAR_NOMINATION_EXP
 
-• **NEAR_NOMINATION_EXP**: *24* = 24
+• **NEAR_NOMINATION_EXP**: *18* = 18
 
-*Defined in [src.ts/utils/format.ts:4](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L4)*
+*Defined in [src.ts/utils/format.ts:4](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/format.ts#L4)*
 
 ## Functions
 
@@ -47,7 +49,7 @@ ___
 
 ▸ **formatNearAmount**(`balance`: string): *string*
 
-*Defined in [src.ts/utils/format.ts:12](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L12)*
+*Defined in [src.ts/utils/format.ts:12](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/format.ts#L12)*
 
 Convert account balance value from internal units (currently yoctoNEAR) to NEAR.
 
@@ -61,11 +63,27 @@ Name | Type | Description |
 
 ___
 
+###  formatWithCommas
+
+▸ **formatWithCommas**(`value`: string): *string*
+
+*Defined in [src.ts/utils/format.ts:49](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/format.ts#L49)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | string |
+
+**Returns:** *string*
+
+___
+
 ###  parseNearAmount
 
 ▸ **parseNearAmount**(`amt?`: string): *string | null*
 
-*Defined in [src.ts/utils/format.ts:24](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/format.ts#L24)*
+*Defined in [src.ts/utils/format.ts:25](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/format.ts#L25)*
 
 Convert human readable near amount to internal account balance units.
 
@@ -76,3 +94,19 @@ Name | Type | Description |
 `amt?` | string |   |
 
 **Returns:** *string | null*
+
+___
+
+###  trimTrailingZeroes
+
+▸ **trimTrailingZeroes**(`value`: string): *string*
+
+*Defined in [src.ts/utils/format.ts:40](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/format.ts#L40)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | string |
+
+**Returns:** *string*

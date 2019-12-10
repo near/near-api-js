@@ -23,7 +23,7 @@ sidebar_label: "NodeStatusResult"
 
 • **chain_id**: *string*
 
-*Defined in [src.ts/providers/provider.ts:15](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L15)*
+*Defined in [src.ts/providers/provider.ts:15](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L15)*
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 • **rpc_addr**: *string*
 
-*Defined in [src.ts/providers/provider.ts:16](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L16)*
+*Defined in [src.ts/providers/provider.ts:16](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L16)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **sync_info**: *[SyncInfo](_providers_provider_.syncinfo.md)*
 
-*Defined in [src.ts/providers/provider.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L17)*
+*Defined in [src.ts/providers/provider.ts:17](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L17)*
 
 ___
 
@@ -47,4 +47,4 @@ ___
 
 • **validators**: *string[]*
 
-*Defined in [src.ts/providers/provider.ts:18](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L18)*
+*Defined in [src.ts/providers/provider.ts:18](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L18)*
