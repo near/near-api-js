@@ -29,7 +29,7 @@ sidebar_label: "AddKey"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/enums.ts#L17)*
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -45,7 +45,7 @@ Name | Type |
 
 • **accessKey**: *[AccessKey](_transaction_.accesskey.md)*
 
-*Defined in [src.ts/transaction.ts:44](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/transaction.ts#L44)*
+*Defined in [src.ts/transaction.ts:44](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/transaction.ts#L44)*
 
 ___
 
@@ -53,4 +53,4 @@ ___
 
 • **publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [src.ts/transaction.ts:44](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/transaction.ts#L44)*
+*Defined in [src.ts/transaction.ts:44](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/transaction.ts#L44)*

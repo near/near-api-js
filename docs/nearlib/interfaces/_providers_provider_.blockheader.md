@@ -28,7 +28,7 @@ sidebar_label: "BlockHeader"
 
 • **approval_mask**: *string*
 
-*Defined in [src.ts/providers/provider.ts:76](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L76)*
+*Defined in [src.ts/providers/provider.ts:76](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L76)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 • **approval_sigs**: *string*
 
-*Defined in [src.ts/providers/provider.ts:77](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L77)*
+*Defined in [src.ts/providers/provider.ts:77](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L77)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 • **hash**: *string*
 
-*Defined in [src.ts/providers/provider.ts:78](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L78)*
+*Defined in [src.ts/providers/provider.ts:78](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L78)*
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 • **height**: *number*
 
-*Defined in [src.ts/providers/provider.ts:79](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L79)*
+*Defined in [src.ts/providers/provider.ts:79](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L79)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 • **prev_hash**: *string*
 
-*Defined in [src.ts/providers/provider.ts:80](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L80)*
+*Defined in [src.ts/providers/provider.ts:80](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L80)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **prev_state_root**: *string*
 
-*Defined in [src.ts/providers/provider.ts:81](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L81)*
+*Defined in [src.ts/providers/provider.ts:81](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L81)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **timestamp**: *number*
 
-*Defined in [src.ts/providers/provider.ts:82](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L82)*
+*Defined in [src.ts/providers/provider.ts:82](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L82)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 • **total_weight**: *[TotalWeight](_providers_provider_.totalweight.md)*
 
-*Defined in [src.ts/providers/provider.ts:83](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L83)*
+*Defined in [src.ts/providers/provider.ts:83](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L83)*
 
 ___
 
@@ -92,4 +92,4 @@ ___
 
 • **tx_root**: *string*
 
-*Defined in [src.ts/providers/provider.ts:84](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L84)*
+*Defined in [src.ts/providers/provider.ts:84](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/providers/provider.ts#L84)*

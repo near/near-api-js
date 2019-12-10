@@ -36,7 +36,7 @@ sidebar_label: "key_stores/unencrypted_file_system_keystore"
 
 • **exists**: *Function* =  promisify(fs.exists)
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:18](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L18)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:18](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L18)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 • **mkdir**: *Function* =  promisify(fs.mkdir)
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:23](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L23)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:23](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L23)*
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 • **readFile**: *Function* =  promisify(fs.readFile)
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:19](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L19)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:19](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L19)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 • **readdir**: *Function* =  promisify(fs.readdir)
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:22](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L22)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:22](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L22)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **unlink**: *Function* =  promisify(fs.unlink)
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:21](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L21)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:21](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L21)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **writeFile**: *Function* =  promisify(fs.writeFile)
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:20](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L20)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:20](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L20)*
 
 ## Functions
 
@@ -84,7 +84,7 @@ ___
 
 ▸ **ensureDir**(`path`: string): *Promise‹void›*
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:38](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L38)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:38](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L38)*
 
 **Parameters:**
 
@@ -100,7 +100,7 @@ ___
 
 ▸ **loadJsonFile**(`path`: string): *Promise‹any›*
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:33](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L33)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:33](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L33)*
 
 **Parameters:**
 
@@ -116,7 +116,7 @@ ___
 
 ▸ **promisify**(`fn`: any): *Function*
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:9](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L9)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:9](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L9)*
 
 **Parameters:**
 
@@ -132,7 +132,7 @@ ___
 
 ▸ **readKeyFile**(`path`: string): *Promise‹[string, [KeyPair](../classes/_utils_key_pair_.keypair.md)]›*
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:46](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/key_stores/unencrypted_file_system_keystore.ts#L46)*
+*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:46](https://github.com/nearprotocol/nearlib/blob/a71bd4f/src.ts/key_stores/unencrypted_file_system_keystore.ts#L46)*
 
 **Parameters:**
 
