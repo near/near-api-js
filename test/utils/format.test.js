@@ -17,7 +17,6 @@ test('formatting attonear amounts', async() => {
     // These tests are in atto near right now. Need to update when the constant changes. 
     expect(nearlib.utils.format.formatNearAmount('1000000000000000000')).toEqual('1');
     expect(nearlib.utils.format.formatNearAmount('10000000999999997410')).toEqual('10.00000099999999741');
-    // TODO: do not format smaller values 
 });
 
 // TODO: Renable after moving to yoctonear
