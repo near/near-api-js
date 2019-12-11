@@ -3,7 +3,7 @@
 import BN from 'bn.js';
 import { Account } from './account';
 import { getTransactionLastResult } from './providers';
-import { PositionalArgsError } from './utils/errors';
+import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
 
 export class Contract {
     readonly account: Account;
@@ -32,10 +32,21 @@ export class Contract {
                     if (arguments.length > 3) {
                         throw new PositionalArgsError();
                     }
+                    validateBNLike({ gas, amount });
                     const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
                     return getTransactionLastResult(rawResult);
                 }
             });
         });
+    }
+}
+
+function validateBNLike(argMap: { [name: string]: any }) {
+    const bnLike = 'number, decimal string or BN';
+    for (const argName in argMap) {
+        const argValue = argMap[argName];
+        if (argValue && !BN.isBN(argValue) && isNaN(argValue)) {
+            throw new ArgumentTypeError(argName, bnLike, argValue);
+        }
     }
 }

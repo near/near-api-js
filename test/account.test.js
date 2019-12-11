@@ -130,9 +130,21 @@ describe('with deploy contract', () => {
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
-    test('gives error mesage when accidentally using positional arguments', async() => {
+    test('view call gives error mesage when accidentally using positional arguments', async() => {
         await expect(contract.hello('trex')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
         await expect(contract.hello({ a: 1 }, 'trex')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
+    });
+
+    test('change call gives error mesage when accidentally using positional arguments', async() => {
+        await expect(contract.setValue('whatever')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
+    });
+
+    test('change call gives error mesage for invalid gas argument', async() => {
+        await expect(contract.setValue({ a: 1}, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'gas' argument, but got.+/);
+    });
+
+    test('change call gives error mesage for invalid amount argument', async() => {
+        await expect(contract.setValue({ a: 1}, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
     });
 
     test('can get logs from method result', async () => {
