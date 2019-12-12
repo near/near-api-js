@@ -45,7 +45,7 @@ describe('with promises', () => {
             receiver: contractName1,
             methodName: 'callbackWithName',
             args: null,
-            gas: 300000,
+            gas: 300000 * 10000000,
             balance: 0,
             callback: null,
             callbackArgs: null,

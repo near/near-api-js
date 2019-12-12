@@ -124,7 +124,7 @@ describe('with deploy contract', () => {
         expect(result).toEqual('hello trex');
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-        const result2 = await contract.setValue({ value: setCallValue }, 100000);
+        const result2 = await contract.setValue({ value: setCallValue }, 1000000 * 1000000);
         expect(result2).toEqual(setCallValue);
         expect(await contract.getValue()).toEqual(setCallValue);
     });
