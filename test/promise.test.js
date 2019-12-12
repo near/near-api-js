@@ -45,13 +45,13 @@ describe('with promises', () => {
             receiver: contractName1,
             methodName: 'callbackWithName',
             args: null,
-            gas: 300000,
-            balance: 0,
+            gas: '3000000000000',
+            balance: '0',
             callback: null,
             callbackArgs: null,
-            callbackBalance: 0,
-            callbackGas: 0,
-        }});
+            callbackBalance: '0',
+            callbackGas: '0',
+        }}, new BN(30000000000000));
         const lastResult = await contract1.getLastResult();
         expect(lastResult).toEqual({
             rs: [],
