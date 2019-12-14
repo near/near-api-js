@@ -43,7 +43,7 @@ export class Contract {
 
 function validateBNLike(argMap: { [name: string]: any }) {
     const bnLike = 'number, decimal string or BN';
-    for (const argName in argMap) {
+    for (const argName of Object.keys(argMap)) {
         const argValue = argMap[argName];
         if (argValue && !BN.isBN(argValue) && isNaN(argValue)) {
             throw new ArgumentTypeError(argName, bnLike, argValue);
