@@ -44,7 +44,7 @@ export function parseNearAmount(amt?: string): string | null {
 /**
  * Truncates the fraction part of a number to a given number of digits and then trims extra zeroes.
  * @param value
- * @param digits 
+ * @param digits
  */
 function truncateFractionPart(value: string, digits?: number): string {
     if (digits && value.length > digits) {
