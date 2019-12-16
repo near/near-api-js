@@ -63,14 +63,7 @@ export function parseNearAmount(amt?: string): string | null {
 }
 
 function trimTrailingZeroes(value: string): string {
-    for (let i = value.length - 1; i >= 0; i--) {
-        if (value[i] === '.') {
-            return value.substring(0, i);
-        } else if (value[i] !== '0') {
-            return value.substring(0, i + 1);
-        }
-    }
-    return value;
+    return value.replace(/\.?0+$/, '');
 }
 
 function formatWithCommas(value: string): string {
