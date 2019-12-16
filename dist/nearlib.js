@@ -1224,15 +1224,24 @@ const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
  */
 function formatNearAmount(balance, digits) {
     balance = trimLeadingZeroes(balance);
-    console.log(balance);
     const amtBN = new BN(balance, 10);
-    if (amtBN.lt(NEAR_NOMINATION)) {
-        const fractionPart = balance.padStart(NEAR_NOMINATION_EXP, '0');
-        return trimTrailingZeroes(`0.${truncateFractionPart(fractionPart, digits)}`);
+    let wholeBN = amtBN.div(NEAR_NOMINATION);
+    let fractionString = amtBN.mod(NEAR_NOMINATION).toString(10, NEAR_NOMINATION_EXP);
+    // truncate fraction if needed
+    if (digits && fractionString.length > digits) {
+        if (fractionString[digits] >= '5') {
+            const oneBN = new BN('1', 10);
+            fractionString = new BN(fractionString.substring(0, digits), 10).add(oneBN).toString(10).padStart(digits, '0');
+            if (fractionString.length > digits) {
+                wholeBN = wholeBN.add(oneBN);
+                fractionString = fractionString.substring(1, fractionString.length);
+            }
+        }
+        else {
+            fractionString = fractionString.substring(0, digits);
+        }
     }
-    const wholePart = amtBN.div(NEAR_NOMINATION).toString(10, 0);
-    const fractionPart = amtBN.mod(NEAR_NOMINATION).toString(10, NEAR_NOMINATION_EXP);
-    return trimTrailingZeroes(`${formatWithCommas(wholePart)}.${truncateFractionPart(fractionPart, digits)}`);
+    return trimTrailingZeroes(`${formatWithCommas(wholeBN.toString(10, 0))}.${fractionString}`);
 }
 exports.formatNearAmount = formatNearAmount;
 /**
@@ -1256,22 +1265,6 @@ function parseNearAmount(amt) {
     return `${wholePart.add(fractionPart).toString(10, 0)}`;
 }
 exports.parseNearAmount = parseNearAmount;
-/**
- * Truncates the fraction part of a number to a given number of digits and then trims extra zeroes.
- * @param value
- * @param digits
- */
-function truncateFractionPart(value, digits) {
-    if (digits && value.length > digits) {
-        if (value[digits] >= '5') {
-            return value.substring(0, digits - 1) + String.fromCharCode(value[digits - 1].charCodeAt(0) + 1);
-        }
-        else {
-            return value.substring(0, digits);
-        }
-    }
-    return value;
-}
 function trimLeadingZeroes(value) {
     return value.replace(/^0+/, '');
 }
