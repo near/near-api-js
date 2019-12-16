@@ -95,6 +95,7 @@ export class WalletAccount {
             .map(transaction => serialize.serialize(SCHEMA, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
+        // TODO: Make sure all options are handled on wallet side
         newUrl.searchParams.set('accountId', options.accountId);
         newUrl.searchParams.set('publicKey', options.publicKey);
         newUrl.searchParams.set('send', (!!options.send).toString());
@@ -102,6 +103,9 @@ export class WalletAccount {
 
         window.location.assign(newUrl.toString());
     }
+    
+    // TODO: Implement all account / contract functions with "can refresh page in browser" before callback assumption.
+    // TODO: Implement custom Signer with "can refresh page in browser" before callback assumption.
 
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
