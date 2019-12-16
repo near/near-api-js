@@ -1,39 +1,51 @@
 const BN = require ('bn.js');
 
-// Exponent for calculating how many units of account balance are in one near.
-const NEAR_NOMINATION_EXP = 18;
-// actual number of units of account balance in one near.
-const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
+/**
+ * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
+ */
+export const NEAR_NOMINATION_EXP = 18;
 
 /**
- * Convert account balance value from internal units (currently yoctoNEAR) to NEAR.
- * @param balance
+ * Number of indivisible units in one NEAR. Derived from {@link NEAR_NOMINATION_EXP}.
  */
-export function formatNearAmount(balance: string, digits?: number): string {
-    balance = trimLeadingZeroes(balance);
-    const amtBN = new BN(balance, 10);
-    let wholeBN = amtBN.div(NEAR_NOMINATION);
-    let fractionString = amtBN.mod(NEAR_NOMINATION).toString(10, NEAR_NOMINATION_EXP);
+export const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
 
-    // truncate fraction if needed
-    if (digits && fractionString.length > digits) {
-        if (fractionString[digits] >= '5') {
-            const oneBN = new BN('1', 10);
-            fractionString = new BN(fractionString.substring(0, digits), 10).add(oneBN).toString(10).padStart(digits, '0');
-            if (fractionString.length > digits) {
-                wholeBN = wholeBN.add(oneBN);
-                fractionString = fractionString.substring(1, fractionString.length);
-            } 
-        } else {
-            fractionString = fractionString.substring(0, digits);
-        }
-    }
-    return trimTrailingZeroes(`${formatWithCommas(wholeBN.toString(10, 0))}.${fractionString}`);
+// Pre-calculate offests used for rounding to different number of digits
+const ROUNDING_OFFSETS = [];
+const BN10 = new BN(10);
+for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offset.mul(BN10)) {
+    ROUNDING_OFFSETS[i] = offset;
 }
 
 /**
- * Convert human readable near amount to internal account balance units.
- * @param amt
+ * Convert account balance value from internal indivisible units to NEAR. 1 NEAR is defined by {@link NEAR_NOMINATION}.
+ * Effectively this divides given amount by {@link NEAR_NOMINATION}.
+ *
+ * @param balance decimal string representing balance in smallest non-divisible NEAR units (as specified by {@link NEAR_NOMINATION})
+ */
+export function formatNearAmount(balance: string, digits?: number): string {
+    const balanceBN = new BN(balance, 10);
+    if (digits) {
+        // Adjust balance for rounding at given number of digits
+        const roundingExp = NEAR_NOMINATION_EXP - digits - 1;
+        if (roundingExp > 0) {
+            balanceBN.iadd(ROUNDING_OFFSETS[roundingExp]);
+        }
+    }
+
+    balance = balanceBN.toString();
+    const wholeStr = balance.substring(0, balance.length - NEAR_NOMINATION_EXP) || '0';
+    const fractionStr = balance.substring(balance.length - NEAR_NOMINATION_EXP)
+        .padStart(NEAR_NOMINATION_EXP, '0').substring(0, digits || NEAR_NOMINATION_EXP);
+
+    return trimTrailingZeroes(`${formatWithCommas(wholeStr)}.${fractionStr}`);
+}
+
+/**
+ * Convert human readable NEAR amount to internal indivisible units.
+ * Effectively this multiplies given amount by {@link NEAR_NOMINATION}.
+ *
+ * @param amt decimal string (potentially fractional) denominated in NEAR.
  */
 export function parseNearAmount(amt?: string): string | null {
     if (!amt) { return amt; }
@@ -48,10 +60,6 @@ export function parseNearAmount(amt?: string): string | null {
     const wholePart = new BN(split[0], 10).mul(NEAR_NOMINATION);
     const fractionPart = new BN(split[1].padEnd(NEAR_NOMINATION_EXP, '0'), 10);
     return `${wholePart.add(fractionPart).toString(10, 0)}`;
-}
-
-function trimLeadingZeroes(value: string): string {
-    return value.replace(/^0+/, '');
 }
 
 function trimTrailingZeroes(value: string): string {
