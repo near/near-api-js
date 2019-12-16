@@ -22,22 +22,12 @@ export abstract class Signer {
     abstract async getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey>;
 
     /**
-     * Signs given hash.
-     * @param hash hash to sign.
-     * @param accountId accountId to use for signing.
-     * @param networkId network for this accontId.
-     */
-    abstract async signHash(hash: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
-
-    /**
      * Signs given message, by first hashing with sha256.
      * @param message message to sign.
      * @param accountId accountId to use for signing.
      * @param networkId network for this accontId.
      */
-    async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature> {
-        return this.signHash(new Uint8Array(sha256.sha256.array(message)), accountId, networkId);
-    }
+    abstract async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
 }
 
 /**
@@ -65,7 +55,8 @@ export class InMemorySigner extends Signer {
         return keyPair.getPublicKey();
     }
 
-    async signHash(hash: Uint8Array, accountId?: string, networkId?: string): Promise<Signature> {
+    async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature> {
+        const hash = new Uint8Array(sha256.sha256.array(message));
         if (!accountId) {
             throw new Error('InMemorySigner requires provided account id');
         }
