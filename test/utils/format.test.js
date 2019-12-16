@@ -30,6 +30,7 @@ test('formatting attonear amounts', async() => {
     expect(nearlib.utils.format.formatNearAmount('10999000999999997410', 2)).toEqual('11');
     expect(nearlib.utils.format.formatNearAmount('1000000100000000000000000')).toEqual('1,000,000.1');
     expect(nearlib.utils.format.formatNearAmount('1000100000000000000000000')).toEqual('1,000,100');
+    expect(nearlib.utils.format.formatNearAmount('910000000000000000', 0)).toEqual('1');
 });
 
 // TODO: Renable after moving to yoctonear

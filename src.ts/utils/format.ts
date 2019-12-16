@@ -22,12 +22,13 @@ for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offse
  * Effectively this divides given amount by {@link NEAR_NOMINATION}.
  *
  * @param balance decimal string representing balance in smallest non-divisible NEAR units (as specified by {@link NEAR_NOMINATION})
+ * @param fracDigits number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits.
  */
-export function formatNearAmount(balance: string, digits?: number): string {
+export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMINATION_EXP): string {
     const balanceBN = new BN(balance, 10);
-    if (digits) {
+    if (fracDigits !== NEAR_NOMINATION_EXP) {
         // Adjust balance for rounding at given number of digits
-        const roundingExp = NEAR_NOMINATION_EXP - digits - 1;
+        const roundingExp = NEAR_NOMINATION_EXP - fracDigits - 1;
         if (roundingExp > 0) {
             balanceBN.iadd(ROUNDING_OFFSETS[roundingExp]);
         }
@@ -36,7 +37,7 @@ export function formatNearAmount(balance: string, digits?: number): string {
     balance = balanceBN.toString();
     const wholeStr = balance.substring(0, balance.length - NEAR_NOMINATION_EXP) || '0';
     const fractionStr = balance.substring(balance.length - NEAR_NOMINATION_EXP)
-        .padStart(NEAR_NOMINATION_EXP, '0').substring(0, digits || NEAR_NOMINATION_EXP);
+        .padStart(NEAR_NOMINATION_EXP, '0').substring(0, fracDigits);
 
     return trimTrailingZeroes(`${formatWithCommas(wholeStr)}.${fractionStr}`);
 }
@@ -63,7 +64,7 @@ export function parseNearAmount(amt?: string): string | null {
 }
 
 function trimTrailingZeroes(value: string): string {
-    return value.replace(/\.?0+$/, '');
+    return value.replace(/\.?0*$/, '');
 }
 
 function formatWithCommas(value: string): string {

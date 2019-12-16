@@ -11,8 +11,9 @@ export declare const NEAR_NOMINATION: any;
  * Effectively this divides given amount by {@link NEAR_NOMINATION}.
  *
  * @param balance decimal string representing balance in smallest non-divisible NEAR units (as specified by {@link NEAR_NOMINATION})
+ * @param fracDigits number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits.
  */
-export declare function formatNearAmount(balance: string, digits?: number): string;
+export declare function formatNearAmount(balance: string, fracDigits?: number): string;
 /**
  * Convert human readable NEAR amount to internal indivisible units.
  * Effectively this multiplies given amount by {@link NEAR_NOMINATION}.
