@@ -149,7 +149,7 @@ describe('with deploy contract', () => {
 
     test('can get logs from method result', async () => {
         await contract.generateLogs();
-        if (afterVersion('0.4.5')) {
+        if (afterVersion('0.4.10')) {
             expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
         } else {
             expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
@@ -160,7 +160,7 @@ describe('with deploy contract', () => {
     test('can get logs from view call', async () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
-        if (afterVersion('0.4.5')) {
+        if (afterVersion('0.4.10')) {
             expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
         } else {
             expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
@@ -169,7 +169,7 @@ describe('with deploy contract', () => {
 
     test('can get assert message from method result', async () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
-        if (afterVersion('0.4.5')) {
+        if (afterVersion('0.4.10')) {
             expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
         } else {
             expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
