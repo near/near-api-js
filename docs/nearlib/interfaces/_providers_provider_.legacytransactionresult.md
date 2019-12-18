@@ -23,7 +23,7 @@ sidebar_label: "LegacyTransactionResult"
 
 • **logs**: *string[]*
 
-*Defined in [src.ts/providers/provider.ts:141](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/providers/provider.ts#L141)*
+*Defined in [src.ts/providers/provider.ts:141](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L141)*
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 • **receipts**: *string[]*
 
-*Defined in [src.ts/providers/provider.ts:142](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/providers/provider.ts#L142)*
+*Defined in [src.ts/providers/provider.ts:142](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L142)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **result**? : *string*
 
-*Defined in [src.ts/providers/provider.ts:143](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/providers/provider.ts#L143)*
+*Defined in [src.ts/providers/provider.ts:143](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L143)*
 
 ___
 
@@ -47,4 +47,4 @@ ___
 
 • **status**: *[LegacyTransactionStatus](../enums/_providers_provider_.legacytransactionstatus.md)*
 
-*Defined in [src.ts/providers/provider.ts:140](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/providers/provider.ts#L140)*
+*Defined in [src.ts/providers/provider.ts:140](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L140)*

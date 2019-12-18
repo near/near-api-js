@@ -22,7 +22,7 @@ sidebar_label: "wallet-account"
 
 • **LOCAL_STORAGE_KEY_SUFFIX**: *"_wallet_auth_key"* = "_wallet_auth_key"
 
-*Defined in [src.ts/wallet-account.ts:10](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/wallet-account.ts#L10)*
+*Defined in [src.ts/wallet-account.ts:10](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/wallet-account.ts#L10)*
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 • **LOGIN_WALLET_URL_SUFFIX**: *"/login/"* = "/login/"
 
-*Defined in [src.ts/wallet-account.ts:8](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/wallet-account.ts#L8)*
+*Defined in [src.ts/wallet-account.ts:8](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/wallet-account.ts#L8)*
 
 ___
 
@@ -38,4 +38,4 @@ ___
 
 • **PENDING_ACCESS_KEY_PREFIX**: *"pending_key"* = "pending_key"
 
-*Defined in [src.ts/wallet-account.ts:11](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/wallet-account.ts#L11)*
+*Defined in [src.ts/wallet-account.ts:11](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/wallet-account.ts#L11)*
