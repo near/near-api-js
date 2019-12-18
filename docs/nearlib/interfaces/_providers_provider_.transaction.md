@@ -23,7 +23,7 @@ sidebar_label: "Transaction"
 
 • **body**: *any*
 
-*Defined in [src.ts/providers/provider.ts:129](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L129)*
+*Defined in [src.ts/providers/provider.ts:129](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L129)*
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 • **hash**: *string*
 
-*Defined in [src.ts/providers/provider.ts:126](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L126)*
+*Defined in [src.ts/providers/provider.ts:126](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L126)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **public_key**: *string*
 
-*Defined in [src.ts/providers/provider.ts:127](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L127)*
+*Defined in [src.ts/providers/provider.ts:127](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L127)*
 
 ___
 
@@ -47,4 +47,4 @@ ___
 
 • **signature**: *string*
 
-*Defined in [src.ts/providers/provider.ts:128](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L128)*
+*Defined in [src.ts/providers/provider.ts:128](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L128)*

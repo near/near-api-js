@@ -30,7 +30,7 @@ sidebar_label: "TypedError"
 
 \+ **new TypedError**(`message?`: string, `type?`: string): *[TypedError](_providers_json_rpc_provider_.typederror.md)*
 
-*Defined in [src.ts/providers/json-rpc-provider.ts:16](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/json-rpc-provider.ts#L16)*
+*Defined in [src.ts/providers/json-rpc-provider.ts:16](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/json-rpc-provider.ts#L16)*
 
 **Parameters:**
 
@@ -79,7 +79,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [src.ts/providers/json-rpc-provider.ts:16](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/json-rpc-provider.ts#L16)*
+*Defined in [src.ts/providers/json-rpc-provider.ts:16](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/json-rpc-provider.ts#L16)*
 
 ___
 

@@ -38,7 +38,7 @@ sidebar_label: "Transaction"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/utils/enums.ts#L17)*
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -54,7 +54,7 @@ Name | Type |
 
 • **actions**: *[Action](_transaction_.action.md)[]*
 
-*Defined in [src.ts/transaction.ts:90](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/transaction.ts#L90)*
+*Defined in [src.ts/transaction.ts:90](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L90)*
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 • **blockHash**: *Uint8Array*
 
-*Defined in [src.ts/transaction.ts:91](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/transaction.ts#L91)*
+*Defined in [src.ts/transaction.ts:91](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L91)*
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 • **nonce**: *number*
 
-*Defined in [src.ts/transaction.ts:88](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/transaction.ts#L88)*
+*Defined in [src.ts/transaction.ts:88](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L88)*
 
 ___
 
@@ -78,7 +78,7 @@ ___
 
 • **publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [src.ts/transaction.ts:87](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/transaction.ts#L87)*
+*Defined in [src.ts/transaction.ts:87](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L87)*
 
 ___
 
@@ -86,7 +86,7 @@ ___
 
 • **receiverId**: *string*
 
-*Defined in [src.ts/transaction.ts:89](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/transaction.ts#L89)*
+*Defined in [src.ts/transaction.ts:89](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L89)*
 
 ___
 
@@ -94,7 +94,7 @@ ___
 
 • **signerId**: *string*
 
-*Defined in [src.ts/transaction.ts:86](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/transaction.ts#L86)*
+*Defined in [src.ts/transaction.ts:86](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L86)*
 
 ## Methods
 
@@ -102,7 +102,7 @@ ___
 
 ▸ **encode**(): *Uint8Array*
 
-*Defined in [src.ts/transaction.ts:93](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/transaction.ts#L93)*
+*Defined in [src.ts/transaction.ts:93](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L93)*
 
 **Returns:** *Uint8Array*
 
@@ -112,7 +112,7 @@ ___
 
 ▸ **decode**(`bytes`: Buffer): *[Transaction](_transaction_.transaction.md)*
 
-*Defined in [src.ts/transaction.ts:97](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/transaction.ts#L97)*
+*Defined in [src.ts/transaction.ts:97](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L97)*
 
 **Parameters:**
 

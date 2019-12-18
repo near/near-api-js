@@ -21,7 +21,7 @@ sidebar_label: "Version"
 
 • **build**: *string*
 
-*Defined in [src.ts/providers/provider.ts:16](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L16)*
+*Defined in [src.ts/providers/provider.ts:16](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L16)*
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 • **version**: *string*
 
-*Defined in [src.ts/providers/provider.ts:15](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L15)*
+*Defined in [src.ts/providers/provider.ts:15](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/provider.ts#L15)*
