@@ -27,6 +27,9 @@ export class AccessKey extends Assignable {
 }
 
 export function fullAccessKey(): AccessKey {
+    if (arguments.length != 0) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected none`);
+    }
     return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({fullAccess: new FullAccessPermission({})}) });
 }
 
@@ -46,34 +49,58 @@ class DeleteKey extends IAction { publicKey: PublicKey; }
 class DeleteAccount extends IAction { beneficiaryId: string; }
 
 export function createAccount(): Action {
+    if (arguments.length != 0) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected none`);
+    }
     return new Action({createAccount: new CreateAccount({}) });
 }
 
 export function deployContract(code: Uint8Array): Action {
+    if (arguments.length != 1) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected code`);
+    }
     return new Action({ deployContract: new DeployContract({code}) });
 }
 
 export function functionCall(methodName: string, args: Uint8Array, gas: number, deposit: BN): Action {
+    if (arguments.length != 4) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected methodName, args, gas, deposit`);
+    }
     return new Action({functionCall: new FunctionCall({methodName, args, gas, deposit }) });
 }
 
 export function transfer(deposit: BN): Action {
+    if (arguments.length != 1) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected deposit`);
+    }
     return new Action({transfer: new Transfer({ deposit }) });
 }
 
 export function stake(stake: BN, publicKey: PublicKey): Action {
+    if (arguments.length != 2) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected stake and publicKey`);
+    }
     return new Action({stake: new Stake({ stake, publicKey }) });
 }
 
 export function addKey(publicKey: PublicKey, accessKey: AccessKey): Action {
+    if (arguments.length != 2) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected publicKey and accessKey`);
+    }
     return new Action({addKey: new AddKey({ publicKey, accessKey}) });
 }
 
 export function deleteKey(publicKey: PublicKey): Action {
+    if (arguments.length != 1) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected publicKey`);
+    }
     return new Action({deleteKey: new DeleteKey({ publicKey }) });
 }
 
 export function deleteAccount(beneficiaryId: string): Action {
+    if (arguments.length != 1) {
+        throw new Error(`Wrong number of arguments ${arguments.length}: expected beneficiaryId`);
+    }
     return new Action({deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
 
