@@ -22,7 +22,7 @@ sidebar_label: "FinalExecutionOutcome"
 
 • **receipts**: *[ExecutionOutcomeWithId](_providers_provider_.executionoutcomewithid.md)[]*
 
-*Defined in [src.ts/providers/provider.ts:68](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L68)*
+*Defined in [src.ts/providers/provider.ts:74](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L74)*
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 • **status**: *[FinalExecutionStatus](_providers_provider_.finalexecutionstatus.md) | [FinalExecutionStatusBasic](../enums/_providers_provider_.finalexecutionstatusbasic.md)*
 
-*Defined in [src.ts/providers/provider.ts:66](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L66)*
+*Defined in [src.ts/providers/provider.ts:72](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L72)*
 
 ___
 
@@ -38,4 +38,4 @@ ___
 
 • **transaction**: *[ExecutionOutcomeWithId](_providers_provider_.executionoutcomewithid.md)*
 
-*Defined in [src.ts/providers/provider.ts:67](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L67)*
+*Defined in [src.ts/providers/provider.ts:73](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L73)*

@@ -3,7 +3,7 @@ const BN = require ('bn.js');
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
  */
-export const NEAR_NOMINATION_EXP = 18;
+export const NEAR_NOMINATION_EXP = 24;
 
 /**
  * Number of indivisible units in one NEAR. Derived from {@link NEAR_NOMINATION_EXP}.

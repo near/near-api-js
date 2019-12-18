@@ -22,7 +22,7 @@ sidebar_label: "ChunkResult"
 
 • **header**: *[ChunkHeader](_providers_provider_.chunkheader.md)*
 
-*Defined in [src.ts/providers/provider.ts:114](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L114)*
+*Defined in [src.ts/providers/provider.ts:120](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L120)*
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 • **receipts**: *any[]*
 
-*Defined in [src.ts/providers/provider.ts:115](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L115)*
+*Defined in [src.ts/providers/provider.ts:121](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L121)*
 
 ___
 
@@ -38,4 +38,4 @@ ___
 
 • **transactions**: *[Transaction](_providers_provider_.transaction.md)[]*
 
-*Defined in [src.ts/providers/provider.ts:116](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/providers/provider.ts#L116)*
+*Defined in [src.ts/providers/provider.ts:122](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/providers/provider.ts#L122)*

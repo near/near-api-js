@@ -31,7 +31,7 @@ sidebar_label: "account"
 
 • **DEFAULT_FUNC_CALL_AMOUNT**: *2000000* = 2000000
 
-*Defined in [src.ts/account.ts:14](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/account.ts#L14)*
+*Defined in [src.ts/account.ts:15](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/account.ts#L15)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **TX_STATUS_RETRY_NUMBER**: *10* = 10
 
-*Defined in [src.ts/account.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/account.ts#L17)*
+*Defined in [src.ts/account.ts:18](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/account.ts#L18)*
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 • **TX_STATUS_RETRY_WAIT**: *500* = 500
 
-*Defined in [src.ts/account.ts:20](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/account.ts#L20)*
+*Defined in [src.ts/account.ts:21](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/account.ts#L21)*
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 • **TX_STATUS_RETRY_WAIT_BACKOFF**: *1.5* = 1.5
 
-*Defined in [src.ts/account.ts:23](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/account.ts#L23)*
+*Defined in [src.ts/account.ts:24](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/account.ts#L24)*
 
 ## Functions
 
@@ -63,7 +63,7 @@ ___
 
 ▸ **sleep**(`millis`: number): *Promise‹any›*
 
-*Defined in [src.ts/account.ts:26](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/account.ts#L26)*
+*Defined in [src.ts/account.ts:27](https://github.com/nearprotocol/nearlib/blob/476d416/src.ts/account.ts#L27)*
 
 **Parameters:**
 
