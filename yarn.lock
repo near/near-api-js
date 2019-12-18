@@ -3348,10 +3348,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-near-hello@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/near-hello/-/near-hello-0.3.1.tgz#cfbda435d321ca5daa531cabf8e093016479121f"
-  integrity sha512-RfQPabVsDu/fjjk55yaeTtOKMYo2yFIyeZeZp0IMuk+NOOp+tm4nLGLudG7ZrYhfWFju9cQ0Qr7G8sTszWwHSQ==
+near-hello@^0.4.0-preview:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/near-hello/-/near-hello-0.4.0.tgz#0b3db86ecde7e931986cc236d05788eeb0cb9d26"
+  integrity sha512-pqnpVSwsNF5Z9R/4aiuXmp3c4WDhZtCV3OUbhpALx2zPNQ4SoweAubMmd11ofUoCMZ3Nh0OsTXXdoQq0qw1n9Q==
   dependencies:
     assemblyscript-json "^0.2.0"
     near-runtime-ts "^0.3.1"
