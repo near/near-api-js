@@ -30,7 +30,7 @@ test('formatting yoctonear amounts', async() => {
 });
 
 // TODO: Renable after moving to yoctonear
-xtest('converting near to account balance units', async() => {
+test('converting near to account balance units', async() => {
     expect(nearlib.utils.format.parseNearAmount(null)).toEqual(null);
     expect(nearlib.utils.format.parseNearAmount('5.3')).toEqual('5300000000000000000000000');
     expect(nearlib.utils.format.parseNearAmount('5')).toEqual('5000000000000000000000000');
