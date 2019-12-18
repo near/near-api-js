@@ -27,7 +27,7 @@ General signing interface, can be used for in memory signing, RPC singing, exter
 
 ▸ **createKey**(`accountId`: string, `networkId?`: string): *Promise‹[PublicKey](_utils_key_pair_.publickey.md)›*
 
-*Defined in [src.ts/signer.ts:15](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/signer.ts#L15)*
+*Defined in [src.ts/signer.ts:15](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/signer.ts#L15)*
 
 Creates new key and returns public key.
 
@@ -46,7 +46,7 @@ ___
 
 ▸ **getPublicKey**(`accountId?`: string, `networkId?`: string): *Promise‹[PublicKey](_utils_key_pair_.publickey.md)›*
 
-*Defined in [src.ts/signer.ts:22](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/signer.ts#L22)*
+*Defined in [src.ts/signer.ts:22](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/signer.ts#L22)*
 
 Returns public key for given account / network.
 
@@ -65,7 +65,7 @@ ___
 
 ▸ **signHash**(`hash`: Uint8Array, `accountId?`: string, `networkId?`: string): *Promise‹[Signature](../interfaces/_utils_key_pair_.signature.md)›*
 
-*Defined in [src.ts/signer.ts:30](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/signer.ts#L30)*
+*Defined in [src.ts/signer.ts:30](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/signer.ts#L30)*
 
 Signs given hash.
 
@@ -85,7 +85,7 @@ ___
 
 ▸ **signMessage**(`message`: Uint8Array, `accountId?`: string, `networkId?`: string): *Promise‹[Signature](../interfaces/_utils_key_pair_.signature.md)›*
 
-*Defined in [src.ts/signer.ts:38](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/signer.ts#L38)*
+*Defined in [src.ts/signer.ts:38](https://github.com/nearprotocol/nearlib/blob/06c3a45/src.ts/signer.ts#L38)*
 
 Signs given message, by first hashing with sha256.
 

@@ -17,7 +17,7 @@ const errors_1 = require("./utils/errors");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-const DEFAULT_FUNC_CALL_AMOUNT = 2000000;
+const DEFAULT_FUNC_CALL_AMOUNT = 2000000 * 1000000;
 // Default number of retries before giving up on a transactioin.
 const TX_STATUS_RETRY_NUMBER = 10;
 // Default wait until next retry in millis.
@@ -1258,39 +1258,48 @@ exports.ArgumentTypeError = ArgumentTypeError;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const BN = require('bn.js');
-// Exponent for calculating how many units of account balance are in one near.
-const NEAR_NOMINATION_EXP = 18;
-// actual number of units of account balance in one near.
-const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
 /**
- * Convert account balance value from internal units (currently yoctoNEAR) to NEAR.
- * @param balance
+ * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
  */
-function formatNearAmount(balance, digits) {
-    balance = trimLeadingZeroes(balance);
-    const amtBN = new BN(balance, 10);
-    let wholeBN = amtBN.div(NEAR_NOMINATION);
-    let fractionString = amtBN.mod(NEAR_NOMINATION).toString(10, NEAR_NOMINATION_EXP);
-    // truncate fraction if needed
-    if (digits && fractionString.length > digits) {
-        if (fractionString[digits] >= '5') {
-            const oneBN = new BN('1', 10);
-            fractionString = new BN(fractionString.substring(0, digits), 10).add(oneBN).toString(10).padStart(digits, '0');
-            if (fractionString.length > digits) {
-                wholeBN = wholeBN.add(oneBN);
-                fractionString = fractionString.substring(1, fractionString.length);
-            }
-        }
-        else {
-            fractionString = fractionString.substring(0, digits);
+exports.NEAR_NOMINATION_EXP = 18;
+/**
+ * Number of indivisible units in one NEAR. Derived from {@link NEAR_NOMINATION_EXP}.
+ */
+exports.NEAR_NOMINATION = new BN('10', 10).pow(new BN(exports.NEAR_NOMINATION_EXP, 10));
+// Pre-calculate offests used for rounding to different number of digits
+const ROUNDING_OFFSETS = [];
+const BN10 = new BN(10);
+for (let i = 0, offset = new BN(5); i < exports.NEAR_NOMINATION_EXP; i++, offset = offset.mul(BN10)) {
+    ROUNDING_OFFSETS[i] = offset;
+}
+/**
+ * Convert account balance value from internal indivisible units to NEAR. 1 NEAR is defined by {@link NEAR_NOMINATION}.
+ * Effectively this divides given amount by {@link NEAR_NOMINATION}.
+ *
+ * @param balance decimal string representing balance in smallest non-divisible NEAR units (as specified by {@link NEAR_NOMINATION})
+ * @param fracDigits number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits.
+ */
+function formatNearAmount(balance, fracDigits = exports.NEAR_NOMINATION_EXP) {
+    const balanceBN = new BN(balance, 10);
+    if (fracDigits !== exports.NEAR_NOMINATION_EXP) {
+        // Adjust balance for rounding at given number of digits
+        const roundingExp = exports.NEAR_NOMINATION_EXP - fracDigits - 1;
+        if (roundingExp > 0) {
+            balanceBN.iadd(ROUNDING_OFFSETS[roundingExp]);
         }
     }
-    return trimTrailingZeroes(`${formatWithCommas(wholeBN.toString(10, 0))}.${fractionString}`);
+    balance = balanceBN.toString();
+    const wholeStr = balance.substring(0, balance.length - exports.NEAR_NOMINATION_EXP) || '0';
+    const fractionStr = balance.substring(balance.length - exports.NEAR_NOMINATION_EXP)
+        .padStart(exports.NEAR_NOMINATION_EXP, '0').substring(0, fracDigits);
+    return trimTrailingZeroes(`${formatWithCommas(wholeStr)}.${fractionStr}`);
 }
 exports.formatNearAmount = formatNearAmount;
 /**
- * Convert human readable near amount to internal account balance units.
- * @param amt
+ * Convert human readable NEAR amount to internal indivisible units.
+ * Effectively this multiplies given amount by {@link NEAR_NOMINATION}.
+ *
+ * @param amt decimal string (potentially fractional) denominated in NEAR.
  */
 function parseNearAmount(amt) {
     if (!amt) {
@@ -1299,29 +1308,18 @@ function parseNearAmount(amt) {
     amt = amt.trim();
     const split = amt.split('.');
     if (split.length === 1) {
-        return `${amt.padEnd(NEAR_NOMINATION_EXP + 1, '0')}`;
+        return `${amt.padEnd(exports.NEAR_NOMINATION_EXP + 1, '0')}`;
     }
-    if (split.length > 2 || split[1].length > NEAR_NOMINATION_EXP) {
+    if (split.length > 2 || split[1].length > exports.NEAR_NOMINATION_EXP) {
         throw new Error(`Cannot parse '${amt}' as NEAR amount`);
     }
-    const wholePart = new BN(split[0], 10).mul(NEAR_NOMINATION);
-    const fractionPart = new BN(split[1].padEnd(NEAR_NOMINATION_EXP, '0'), 10);
+    const wholePart = new BN(split[0], 10).mul(exports.NEAR_NOMINATION);
+    const fractionPart = new BN(split[1].padEnd(exports.NEAR_NOMINATION_EXP, '0'), 10);
     return `${wholePart.add(fractionPart).toString(10, 0)}`;
 }
 exports.parseNearAmount = parseNearAmount;
-function trimLeadingZeroes(value) {
-    return value.replace(/^0+/, '');
-}
 function trimTrailingZeroes(value) {
-    for (let i = value.length - 1; i >= 0; i--) {
-        if (value[i] === '.') {
-            return value.substring(0, i);
-        }
-        else if (value[i] !== '0') {
-            return value.substring(0, i + 1);
-        }
-    }
-    return value;
+    return value.replace(/\.?0*$/, '');
 }
 function formatWithCommas(value) {
     const pattern = /(-?\d+)(\d{3})/;
@@ -6795,7 +6793,7 @@ function hexSlice (buf, start, end) {
 
   var out = ''
   for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
+    out += hexSliceLookupTable[buf[i]]
   }
   return out
 }
@@ -7381,11 +7379,6 @@ function base64clean (str) {
   return str
 }
 
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
 function utf8ToBytes (string, units) {
   units = units || Infinity
   var codePoint
@@ -7515,6 +7508,20 @@ function numberIsNaN (obj) {
   // For IE11 support
   return obj !== obj // eslint-disable-line no-self-compare
 }
+
+// Create lookup table for `toString('hex')`
+// See: https://github.com/feross/buffer/issues/219
+var hexSliceLookupTable = (function () {
+  var alphabet = '0123456789abcdef'
+  var table = new Array(256)
+  for (var i = 0; i < 16; ++i) {
+    var i16 = i * 16
+    for (var j = 0; j < 16; ++j) {
+      table[i16 + j] = alphabet[i] + alphabet[j]
+    }
+  }
+  return table
+})()
 
 }).call(this,require("buffer").Buffer)
 },{"base64-js":29,"buffer":34,"ieee754":51}],35:[function(require,module,exports){
