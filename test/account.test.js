@@ -124,18 +124,32 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via contract with gas', async() => {
-        const result = await contract.hello({ name: 'trex' });
-        expect(result).toEqual('hello trex');
-
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({ value: setCallValue }, 1000000 * 1000000);
         expect(result2).toEqual(setCallValue);
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
+    test('view call gives error mesage when accidentally using positional arguments', async() => {
+        await expect(contract.hello('trex')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
+        await expect(contract.hello({ a: 1 }, 'trex')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
+    });
+
+    test('change call gives error mesage when accidentally using positional arguments', async() => {
+        await expect(contract.setValue('whatever')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
+    });
+
+    test('change call gives error mesage for invalid gas argument', async() => {
+        await expect(contract.setValue({ a: 1}, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'gas' argument, but got.+/);
+    });
+
+    test('change call gives error mesage for invalid amount argument', async() => {
+        await expect(contract.setValue({ a: 1}, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
+    });
+
     test('can get logs from method result', async () => {
         await contract.generateLogs();
-        if (afterVersion('0.4.5')) {
+        if (afterVersion('0.4.10')) {
             expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
         } else {
             expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
@@ -146,7 +160,7 @@ describe('with deploy contract', () => {
     test('can get logs from view call', async () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
-        if (afterVersion('0.4.5')) {
+        if (afterVersion('0.4.10')) {
             expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
         } else {
             expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
@@ -155,7 +169,7 @@ describe('with deploy contract', () => {
 
     test('can get assert message from method result', async () => {
         await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
-        if (afterVersion('0.4.5')) {
+        if (afterVersion('0.4.10')) {
             expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
         } else {
             expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);

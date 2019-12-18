@@ -7,6 +7,7 @@ import { FinalExecutionOutcome, TypedError } from './providers';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
+import { PositionalArgsError } from './utils/errors';
 
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -151,9 +152,8 @@ export class Account {
     }
 
     async functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalExecutionOutcome> {
-        if (!args) {
-            args = {};
-        }
+        args = args || {};
+        this.validateArgs(args);
         return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
     }
 
@@ -176,7 +176,15 @@ export class Account {
         return this.signAndSendTransaction(this.accountId, [stake(amount, PublicKey.from(publicKey))]);
     }
 
+    private validateArgs(args: any) {
+        if (Array.isArray(args) || typeof args !== 'object') {
+            throw new PositionalArgsError();
+        }
+    }
+
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
+        args = args || {};
+        this.validateArgs(args);
         const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, base_encode(JSON.stringify(args)));
         if (result.logs) {
             this.printLogs(contractId, result.logs);
