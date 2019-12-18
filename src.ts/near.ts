@@ -65,7 +65,7 @@ export class Near {
         console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
         const account = new Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);
-        return result.transaction.id;
+        return result.transaction_outcome.id;
     }
 }
 

@@ -56,8 +56,9 @@ export interface ExecutionOutcome {
 }
 export interface FinalExecutionOutcome {
     status: FinalExecutionStatus | FinalExecutionStatusBasic;
-    transaction: ExecutionOutcomeWithId;
-    receipts: ExecutionOutcomeWithId[];
+    transaction: any;
+    transaction_outcome: ExecutionOutcomeWithId;
+    receipts_outcome: ExecutionOutcomeWithId[];
 }
 export interface TotalWeight {
     num: number;
@@ -108,36 +109,10 @@ export interface Transaction {
     signature: string;
     body: any;
 }
-interface LegacyTransactionLog {
-    hash: string;
-    result: LegacyTransactionResult;
-}
-interface LegacyTransactionResult {
-    status: LegacyTransactionStatus;
-    logs: string[];
-    receipts: string[];
-    result?: string;
-}
-declare enum LegacyFinalTransactionStatus {
-    Unknown = "Unknown",
-    Started = "Started",
-    Failed = "Failed",
-    Completed = "Completed"
-}
-declare enum LegacyTransactionStatus {
-    Unknown = "Unknown",
-    Completed = "Completed",
-    Failed = "Failed"
-}
-interface LegacyFinalTransactionResult {
-    status: LegacyFinalTransactionStatus;
-    transactions: LegacyTransactionLog[];
-}
 export interface BlockResult {
     header: BlockHeader;
     transactions: Transaction[];
 }
-export declare function adaptTransactionResult(txResult: FinalExecutionOutcome | LegacyFinalTransactionResult): FinalExecutionOutcome;
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
@@ -148,4 +123,5 @@ export declare abstract class Provider {
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
+export declare function adaptTransactionResult(txResult: any): FinalExecutionOutcome;
 export {};
