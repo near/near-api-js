@@ -39,7 +39,8 @@ export class Account {
     readonly connection: Connection;
     readonly accountId: string;
     private _state: AccountState;
-    private _accessKey: AccessKey;
+    // TODO: Better hooks for extending vs exposing fields?
+    protected _accessKey: AccessKey;
 
     private _ready: Promise<void>;
     protected get ready(): Promise<void> {
@@ -91,7 +92,7 @@ export class Account {
         throw new TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`, 'RetriesExceeded');
     }
 
-    private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
         if (!this._accessKey) {
             throw new TypedError(`Can not sign transactions, no matching key pair found in Signer.`, 'KeyNotFound');
