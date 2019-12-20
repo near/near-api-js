@@ -166,7 +166,7 @@ export function adaptTransactionResult(txResult: any): FinalExecutionOutcome {
             transaction: null,
             transaction_outcome: txResult.transaction,
             receipts_outcome: txResult.receipts
-        }
+        };
     }
-    return txResult
+    return txResult;
 }
