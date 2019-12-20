@@ -114,12 +114,12 @@ export class Account {
             }
         }
 
-        const flatLogs = [result.transaction, ...result.receipts].reduce((acc, it) => acc.concat(it.outcome.logs), []);
+        const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
             throw new TypedError(
-                `Transaction ${result.transaction.id} failed. ${result.status.Failure.error_message}`,
+                `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
                 result.status.Failure.error_type);
         }
         // TODO: if Tx is Unknown or Started.

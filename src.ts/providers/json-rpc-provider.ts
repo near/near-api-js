@@ -1,8 +1,8 @@
 'use strict';
 
 import {
-  Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
-  BlockResult, ChunkId, ChunkResult, adaptTransactionResult
+    Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
+    BlockResult, ChunkId, ChunkResult, adaptTransactionResult
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
