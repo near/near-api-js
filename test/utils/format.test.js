@@ -29,11 +29,12 @@ test('formatting yoctonear amounts', async() => {
     expect(nearlib.utils.format.formatNearAmount('910000000000000000000000', 0)).toEqual('1');
 });
 
-// TODO: Renable after moving to yoctonear
 test('converting near to account balance units', async() => {
     expect(nearlib.utils.format.parseNearAmount(null)).toEqual(null);
     expect(nearlib.utils.format.parseNearAmount('5.3')).toEqual('5300000000000000000000000');
     expect(nearlib.utils.format.parseNearAmount('5')).toEqual('5000000000000000000000000');
+    expect(nearlib.utils.format.parseNearAmount('1')).toEqual('1000000000000000000000000');
+    expect(nearlib.utils.format.parseNearAmount('10')).toEqual('10000000000000000000000000');
     expect(nearlib.utils.format.parseNearAmount('0.000008999999999837087887')).toEqual('8999999999837087887');
     expect(nearlib.utils.format.parseNearAmount('0.000008099099999837087887')).toEqual('8099099999837087887');
     expect(nearlib.utils.format.parseNearAmount('0.000008099099999837087887')).not.toEqual('8099099999837087888');

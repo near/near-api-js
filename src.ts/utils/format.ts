@@ -53,7 +53,7 @@ export function parseNearAmount(amt?: string): string | null {
     amt = amt.trim();
     const split = amt.split('.');
     if (split.length === 1) {
-        return `${amt.padEnd(NEAR_NOMINATION_EXP + 1, '0')}`;
+        return amt + '0'.repeat(NEAR_NOMINATION_EXP);
     }
     if (split.length > 2 || split[1].length > NEAR_NOMINATION_EXP) {
         throw new Error(`Cannot parse '${amt}' as NEAR amount`);
