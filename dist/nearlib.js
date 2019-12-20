@@ -1307,19 +1307,19 @@ function parseNearAmount(amt) {
     }
     amt = amt.trim();
     const split = amt.split('.');
-    if (split.length === 1) {
-        return `${amt.padEnd(exports.NEAR_NOMINATION_EXP + 1, '0')}`;
-    }
-    if (split.length > 2 || split[1].length > exports.NEAR_NOMINATION_EXP) {
+    const wholePart = split[0];
+    const fracPart = split[1] || '';
+    if (split.length > 2 || fracPart.length > exports.NEAR_NOMINATION_EXP) {
         throw new Error(`Cannot parse '${amt}' as NEAR amount`);
     }
-    const wholePart = new BN(split[0], 10).mul(exports.NEAR_NOMINATION);
-    const fractionPart = new BN(split[1].padEnd(exports.NEAR_NOMINATION_EXP, '0'), 10);
-    return `${wholePart.add(fractionPart).toString(10, 0)}`;
+    return trimLeadingZeroes(wholePart + fracPart.padEnd(exports.NEAR_NOMINATION_EXP, '0'));
 }
 exports.parseNearAmount = parseNearAmount;
 function trimTrailingZeroes(value) {
     return value.replace(/\.?0*$/, '');
+}
+function trimLeadingZeroes(value) {
+    return value.replace(/^0+/, '');
 }
 function formatWithCommas(value) {
     const pattern = /(-?\d+)(\d{3})/;
