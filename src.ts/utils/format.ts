@@ -52,19 +52,20 @@ export function parseNearAmount(amt?: string): string | null {
     if (!amt) { return amt; }
     amt = amt.trim();
     const split = amt.split('.');
-    if (split.length === 1) {
-        return amt + '0'.repeat(NEAR_NOMINATION_EXP);
-    }
-    if (split.length > 2 || split[1].length > NEAR_NOMINATION_EXP) {
+    const wholePart = split[0];
+    const fracPart = split[1] || '';
+    if (split.length > 2 || fracPart.length > NEAR_NOMINATION_EXP) {
         throw new Error(`Cannot parse '${amt}' as NEAR amount`);
     }
-    const wholePart = new BN(split[0], 10).mul(NEAR_NOMINATION);
-    const fractionPart = new BN(split[1].padEnd(NEAR_NOMINATION_EXP, '0'), 10);
-    return `${wholePart.add(fractionPart).toString(10, 0)}`;
+    return trimLeadingZeroes(wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, '0'));
 }
 
 function trimTrailingZeroes(value: string): string {
     return value.replace(/\.?0*$/, '');
+}
+
+function trimLeadingZeroes(value: string): string {
+    return value.replace(/^0+/, '');
 }
 
 function formatWithCommas(value: string): string {
