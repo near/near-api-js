@@ -28,7 +28,7 @@ sidebar_label: "DeployContract"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/enums.ts#L17)*
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -44,4 +44,4 @@ Name | Type |
 
 • **code**: *Uint8Array*
 
-*Defined in [src.ts/transaction.ts:40](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/transaction.ts#L40)*
+*Defined in [src.ts/transaction.ts:40](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/transaction.ts#L40)*

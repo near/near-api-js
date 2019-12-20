@@ -6,6 +6,8 @@ let workingAccount;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
 
+const CONTRACT_CALL_GAS = new BN(300000000000000);
+
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
     workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
@@ -45,13 +47,13 @@ describe('with promises', () => {
             receiver: contractName1,
             methodName: 'callbackWithName',
             args: null,
-            gas: 300000,
-            balance: 0,
+            gas: '3000000000000',
+            balance: '0',
             callback: null,
             callbackArgs: null,
-            callbackBalance: 0,
-            callbackGas: 0,
-        }});
+            callbackBalance: '0',
+            callbackGas: '0',
+        }}, CONTRACT_CALL_GAS);
         const lastResult = await contract1.getLastResult();
         expect(lastResult).toEqual({
             rs: [],
@@ -65,13 +67,13 @@ describe('with promises', () => {
             receiver: contractName1,
             methodName: 'callbackWithName',
             args: null,
-            gas: 300000,
-            balance: 0,
+            gas: '3000000000000',
+            balance: '0',
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackBalance: 0,
-            callbackGas: 200000,
-        }});
+            callbackBalance: '0',
+            callbackGas: '2000000000000', 
+        }}, CONTRACT_CALL_GAS);
         const lastResult1 = await contract1.getLastResult();
         expect(lastResult1).toEqual({
             rs: [],
@@ -96,20 +98,20 @@ describe('with promises', () => {
                 receiver: contractName2,
                 methodName: 'callbackWithName',
                 args: null,
-                gas: 400000,
-                balance: 0,
+                gas: '40000000000000',
+                balance: '0',
                 callback: null,
                 callbackArgs: null,
-                callbackBalance: 0,
-                callbackGas: 200000,
+                callbackBalance: '0',
+                callbackGas: '20000000000000',
             },
-            gas: 600000,
-            balance: 0,
+            gas: '60000000000000',
+            balance: '0',
             callback: null,
             callbackArgs: null,
-            callbackBalance: 0,
-            callbackGas: 600000,
-        }});
+            callbackBalance: '0',
+            callbackGas: '60000000000000',
+        }}, CONTRACT_CALL_GAS);
         const lastResult2 = await contract2.getLastResult();
         expect(lastResult2).toEqual({
             rs: [],
@@ -126,20 +128,20 @@ describe('with promises', () => {
                 receiver: contractName2,
                 methodName: 'callbackWithName',
                 args: null,
-                gas: 400000,
-                balance: 0,
+                gas: '40000000000000',
+                balance: '0',
                 callback: 'callbackWithName',
                 callbackArgs: null,
-                callbackBalance: 0,
-                callbackGas: 200000,
+                callbackBalance: '0',
+                callbackGas: '20000000000000',
             },
-            gas: 1000000,
-            balance: 0,
+            gas: '100000000000000',
+            balance: '0',
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackBalance: 0,
-            callbackGas: 300000,
-        }});
+            callbackBalance: '0',
+            callbackGas: '30000000000000',
+        }}, CONTRACT_CALL_GAS);
         const lastResult2 = await contract2.getLastResult();
         expect(lastResult2).toEqual({
             rs: [],
@@ -172,20 +174,20 @@ describe('with promises', () => {
                 receiver: contractName,
                 methodName: 'callbackWithName',
                 args: null,
-                gas: 400000,
-                balance: 0,
+                gas: '40000000000000',
+                balance: '0',
                 callback: 'callbackWithName',
                 callbackArgs: null,
-                callbackBalance: 0,
-                callbackGas: 400000,
+                callbackBalance: '0',
+                callbackGas: '40000000000000',
             },
-            gas: 1000000,
-            balance: 0,
+            gas: '100000000000000',
+            balance: '0',
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackBalance: 0,
-            callbackGas: 300000,
-        }});
+            callbackBalance: '0',
+            callbackGas: '30000000000000',
+        }}, CONTRACT_CALL_GAS);
         const lastResult1 = await contract1.getLastResult();
         expect(lastResult1).toEqual({
             rs: [{
@@ -216,20 +218,20 @@ describe('with promises', () => {
                 receiver: contractName2,
                 methodName: 'callbackWithName',
                 args: null,
-                gas: 200000,
-                balance: 0,
+                gas: '20000000000000',
+                balance: '0',
                 callback: null,
                 callbackArgs: null,
-                callbackBalance: 0,
-                callbackGas: 200000,
+                callbackBalance: '0',
+                callbackGas: '20000000000000',
             },
-            gas: 500000,
-            balance: 0,
+            gas: '50000000000000',
+            balance: '0',
             callback: 'callbackWithName',
             callbackArgs: null,
-            callbackBalance: 0,
-            callbackGas: 300000
-        }});
+            callbackBalance: '0',
+            callbackGas: '30000000000000'
+        }}, CONTRACT_CALL_GAS);
         const lastResult2 = await contract2.getLastResult();
         expect(lastResult2).toEqual({
             rs: [],
@@ -254,20 +256,20 @@ describe('with promises', () => {
                 receiver: contractName2,
                 methodName: 'callbackWithName',
                 args: null,
-                gas: 400000,
-                balance: 0,
+                gas: '40000000000000',
+                balance: '0',
                 callback: 'callbackWithName',
                 callbackArgs: null,
-                callbackBalance: 0,
-                callbackGas: 400000,
+                callbackBalance: '0',
+                callbackGas: '40000000000000',
             },
-            gas: 1000000,
-            balance: 0,
+            gas: '100000000000000',
+            balance: '0',
             callback: null,
             callbackArgs: null,
-            callbackBalance: 0,
-            callbackGas: 0,
-        }});
+            callbackBalance: '0',
+            callbackGas: '0',
+        }}, CONTRACT_CALL_GAS);
         const lastResult2 = await contract2.getLastResult();
         expect(lastResult2).toEqual({
             rs: [],

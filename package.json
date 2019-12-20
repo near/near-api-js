@@ -1,7 +1,7 @@
 {
   "name": "nearlib",
   "description": "Javascript library to interact with NEAR blockchain",
-  "version": "0.18.5",
+  "version": "0.19.0",
   "repository": {
     "type": "git",
     "url": "git@:nearprotocol/nearcore.git"
@@ -28,7 +28,7 @@
     "in-publish": "^2.0.0",
     "jest": "^24.1.0",
     "localstorage-memory": "^1.0.3",
-    "near-hello": "^0.3.1",
+    "near-hello": "^0.4.0-preview",
     "rimraf": "^3.0.0",
     "semver": "^6.3.0",
     "tslint": "^5.18.0",

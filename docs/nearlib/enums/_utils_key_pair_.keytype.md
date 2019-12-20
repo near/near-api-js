@@ -18,4 +18,4 @@ All supported key types
 
 • **ED25519**: = 0
 
-*Defined in [src.ts/utils/key_pair.ts:16](https://github.com/nearprotocol/nearlib/blob/fe97eb6/src.ts/utils/key_pair.ts#L16)*
+*Defined in [src.ts/utils/key_pair.ts:16](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/key_pair.ts#L16)*
