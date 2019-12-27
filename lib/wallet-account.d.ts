@@ -1,18 +1,23 @@
+import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
-import { Transaction } from './transaction';
+import { FinalExecutionOutcome } from './providers';
+import { Transaction, Action } from './transaction';
+import { Connection } from './connection';
 interface SignOptions {
     accountId: string;
     publicKey: string;
     send: boolean;
     callbackUrl: string;
 }
-export declare class WalletAccount {
+export declare class WalletConnection {
     _walletBaseUrl: string;
     _authDataKey: string;
     _keyStore: KeyStore;
     _authData: any;
     _networkId: string;
+    _near: Near;
+    _connectedAccount: ConnectedWalletAccount;
     constructor(near: Near, appKeyPrefix: string | null);
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
@@ -52,5 +57,13 @@ export declare class WalletAccount {
      * walletAccount.signOut();
      */
     signOut(): void;
+    account(): ConnectedWalletAccount;
+}
+export declare const WalletAccount: typeof WalletConnection;
+declare class ConnectedWalletAccount extends Account {
+    walletConnection: WalletConnection;
+    constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
+    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    accessKeyForTransaction(receiverId: string, actions: Action[]): Promise<any>;
 }
 export {};

@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Action } from './transaction';
+import { Action, AccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
@@ -13,7 +13,7 @@ export declare class Account {
     readonly connection: Connection;
     readonly accountId: string;
     private _state;
-    private _accessKey;
+    protected _accessKey: AccessKey;
     private _ready;
     protected get ready(): Promise<void>;
     constructor(connection: Connection, accountId: string);
@@ -21,8 +21,7 @@ export declare class Account {
     state(): Promise<AccountState>;
     private printLogs;
     private retryTxResult;
-    transaction(receiverId: string, actions: Action[]): Promise<void>;
-    private signAndSendTransaction;
+    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
     sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
     createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
