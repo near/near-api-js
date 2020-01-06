@@ -31,6 +31,7 @@
     "near-hello": "^0.4.0-preview",
     "rimraf": "^3.0.0",
     "semver": "^7.1.1",
+    "ts-morph": "^6.0.2",
     "tslint": "^5.18.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.2.6",

@@ -7,6 +7,7 @@ import {
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { base_encode } from '../utils/serialize';
+import { parseRpcError } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
 /// Keep ids unique across all connections.
@@ -76,7 +77,7 @@ export class JsonRpcProvider extends Provider {
         const response = await fetchJson(this.connection, JSON.stringify(request));
         if (response.error) {
             if (typeof response.error.data === 'object') {
-                throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+                throw parseRpcError(response.error.data);
             } else {
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
                 if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
