@@ -45,10 +45,10 @@ export interface ExecutionOutcomeWithId {
 }
 
 export interface ExecutionOutcome {
-    status: ExecutionStatus | ExecutionStatusBasic;
     logs: string[];
     receipt_ids: string[];
     gas_burnt: number;
+    status: ExecutionStatus | ExecutionStatusBasic;
 }
 
 export interface FinalExecutionOutcome {
