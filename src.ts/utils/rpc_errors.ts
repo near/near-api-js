@@ -1,6 +1,11 @@
+
+import Mustache from 'mustache';
 import schema from '../generated/rpc_error_schema.json';
+import messages from '../res/error_messages.json';
 import * as CLASSMAP from '../generated/rpc_error_types';
+import { ServerError } from '../generated/rpc_error_types';;
 export * from '../generated/rpc_error_types';
+
 
 export function parseRpcError(errorObj: Object) {
     let result = {};
@@ -9,6 +14,14 @@ export function parseRpcError(errorObj: Object) {
     Object.assign(error, result);
     return error;
 }
+
+export function formatError(error: ServerError): string {
+    if (typeof messages[error.constructor.name] === 'string') {
+        return Mustache.render(messages[error.constructor.name], error);
+    }
+    return JSON.stringify(error);
+}
+
 
 function walkSubtype(errorObj, schema, result, typeName) {
     let error;
@@ -40,3 +53,4 @@ function walkSubtype(errorObj, schema, result, typeName) {
 function isObject(n) {
     return Object.prototype.toString.call(n) === '[object Object]';
 }
+
