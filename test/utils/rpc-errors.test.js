@@ -13,4 +13,6 @@ test('test parseRpcError', async () => {
     let error = parseRpcError(rpc_error);
     expect(error instanceof TxExecutionError).toBe(true);
     expect(error instanceof AccountAlreadyExists).toBe(true);
+    expect(error.index).toBe(1);
+    expect(error.account_id).toBe('bob.near');
 });

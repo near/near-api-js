@@ -4,6 +4,7 @@ const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
 const semver = require('semver');
+const errors = nearlib.utils.rpc_errors;
 
 let nearjs;
 let workingAccount;
@@ -68,7 +69,14 @@ describe('errors', () => {
     });
 
     test('create existing account', async() => {
-        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100)).rejects.toThrow(/Transaction .+ failed.+already exists/);
+        try {
+            await workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100);
+            fail('should throw an error');
+        } catch (e) {
+            expect(e instanceof errors.AccountAlreadyExists);
+            expect(e.account_id === workingAccount.accountId);
+            expect(e.index === 0);
+        }
     });
 });
 
@@ -168,13 +176,21 @@ describe('with deploy contract', () => {
     });
 
     test('can get assert message from method result', async () => {
-        await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
-        if (afterVersion('0.4.10')) {
-            expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
-        } else {
-            expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
+        try {
+            await contract.triggerAssert();
+            fail('should throw an error');
+        } catch (e) {
+            expect(e instanceof errors.GuestPanic);
+            expect(e.msg === 'expected to fail, filename: "assembly/main.ts" line: 505 col: 2');
+            if (afterVersion('0.4.10')) {
+                expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
+            } else {
+                expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
+            }
+            expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
+            console.debug(e);
         }
-        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
+        return;
     });
 
     test('test set/remove', async () => {
