@@ -49,10 +49,10 @@ export interface ExecutionOutcomeWithId {
     outcome: ExecutionOutcome;
 }
 export interface ExecutionOutcome {
-    status: ExecutionStatus | ExecutionStatusBasic;
     logs: string[];
     receipt_ids: string[];
     gas_burnt: number;
+    status: ExecutionStatus | ExecutionStatusBasic;
 }
 export interface FinalExecutionOutcome {
     status: FinalExecutionStatus | FinalExecutionStatusBasic;
