@@ -3,13 +3,10 @@ const nearlib = require('../lib/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
-const semver = require('semver');
 const errors = nearlib.utils.rpc_errors;
 
 let nearjs;
 let workingAccount;
-let afterVersion;
-
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
@@ -17,8 +14,6 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
     workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
-    let nodeStatus = await nearjs.connection.provider.status();
-    afterVersion = (version) => semver.gt(nodeStatus.version.version, version);
 });
 
 test('view pre-defined account works and returns correct name', async () => {
@@ -148,31 +143,23 @@ describe('with deploy contract', () => {
     });
 
     test('change call gives error mesage for invalid gas argument', async() => {
-        await expect(contract.setValue({ a: 1}, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'gas' argument, but got.+/);
+        await expect(contract.setValue({ a: 1 }, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'gas' argument, but got.+/);
     });
 
     test('change call gives error mesage for invalid amount argument', async() => {
-        await expect(contract.setValue({ a: 1}, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
+        await expect(contract.setValue({ a: 1 }, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
     });
 
     test('can get logs from method result', async () => {
         await contract.generateLogs();
-        if (afterVersion('0.4.10')) {
-            expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
-        } else {
-            expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
-        }
+        expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
 
     });
 
     test('can get logs from view call', async () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
-        if (afterVersion('0.4.10')) {
-            expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
-        } else {
-            expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
-        }
+        expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
     });
 
     test('can get assert message from method result', async () => {
@@ -182,13 +169,8 @@ describe('with deploy contract', () => {
         } catch (e) {
             expect(e instanceof errors.GuestPanic);
             expect(e.msg === 'expected to fail, filename: "assembly/main.ts" line: 505 col: 2');
-            if (afterVersion('0.4.10')) {
-                expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
-            } else {
-                expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
-            }
+            expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
             expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
-            console.debug(e);
         }
         return;
     });

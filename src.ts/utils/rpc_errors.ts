@@ -3,14 +3,14 @@ import Mustache from 'mustache';
 import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
 import * as CLASSMAP from '../generated/rpc_error_types';
-import { ServerError } from '../generated/rpc_error_types';;
+import { ServerError } from '../generated/rpc_error_types';
+
 export * from '../generated/rpc_error_types';
 
-
 export function parseRpcError(errorObj: Object) {
-    let result = {};
-    let errorClassName = walkSubtype(errorObj, schema.schema, result, '');
-    let error = new CLASSMAP[errorClassName];
+    const result = {};
+    const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
+    const error = new CLASSMAP[errorClassName]();
     Object.assign(error, result);
     return error;
 }
@@ -22,12 +22,14 @@ export function formatError(error: ServerError): string {
     return JSON.stringify(error);
 }
 
-
 function walkSubtype(errorObj, schema, result, typeName) {
     let error;
     let type;
     let errorTypeName;
-    for (let errorName in schema) {
+    for (const errorName in schema) {
+        if (!type.props.hasOwnProperty(prop)) {
+            continue;
+        }
         if (isObject(errorObj[errorName])) {
             error = errorObj[errorName];
             type = schema[errorName];
@@ -41,8 +43,10 @@ function walkSubtype(errorObj, schema, result, typeName) {
         }
     }
     if (error && type) {
-        for (let prop in type.props) {
-            result[prop] = error[prop];
+        for (const prop in type.props) {
+            if (type.props.hasOwnProperty(prop)) {
+                result[prop] = error[prop];
+            }
         }
         return walkSubtype(error, schema, result, errorTypeName);
     } else {
@@ -53,4 +57,3 @@ function walkSubtype(errorObj, schema, result, typeName) {
 function isObject(n) {
     return Object.prototype.toString.call(n) === '[object Object]';
 }
-
