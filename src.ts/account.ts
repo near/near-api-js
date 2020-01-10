@@ -7,7 +7,7 @@ import { FinalExecutionOutcome, TypedError } from './providers';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
-import { parseRpcError } from './utils/rpc_errors';
+import { parseIntoOldTypedError } from './utils/rpc_errors';
 import { PositionalArgsError } from './utils/errors';
 
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
@@ -117,8 +117,17 @@ export class Account {
 
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
+
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
-            throw parseRpcError(result.status.Failure);
+            if (result.status.Failure.error_message && result.status.Failure.error_type) {
+                throw new TypedError(
+                    `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
+                    result.status.Failure.error_type);
+            } else {
+                const typedError = parseIntoOldTypedError(result.status.Failure);
+                throw new TypedError(`Transaction ${result.transaction_outcome.id} failed. ${typedError.message}`,
+                '');
+            }
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.

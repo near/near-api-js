@@ -4,15 +4,25 @@ import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
 import * as CLASSMAP from '../generated/rpc_error_types';
 import { ServerError } from '../generated/rpc_error_types';
+import { TypedError } from './errors';
 
 export * from '../generated/rpc_error_types';
 
-export function parseRpcError(errorObj: Object) {
+export function parseRpcError(errorObj: Object): ServerError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
     const error = new CLASSMAP[errorClassName]();
     Object.assign(error, result);
     return error;
+}
+
+// Transforms error to the old "TypedError"
+export function parseIntoOldTypedError(errorObj: Object): TypedError {
+    const result = {};
+    const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
+    const error = new CLASSMAP[errorClassName]();
+    Object.assign(error, result);
+    return new TypedError(formatError(error), '');
 }
 
 export function formatError(error: ServerError): string {
@@ -27,9 +37,6 @@ function walkSubtype(errorObj, schema, result, typeName) {
     let type;
     let errorTypeName;
     for (const errorName in schema) {
-        if (!type.props.hasOwnProperty(prop)) {
-            continue;
-        }
         if (isObject(errorObj[errorName])) {
             error = errorObj[errorName];
             type = schema[errorName];

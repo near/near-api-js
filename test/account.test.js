@@ -3,10 +3,12 @@ const nearlib = require('../lib/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
-const errors = nearlib.utils.rpc_errors;
+const semver = require('semver');
 
 let nearjs;
 let workingAccount;
+let afterVersion;
+
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
@@ -14,6 +16,8 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
     workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
+    let nodeStatus = await nearjs.connection.provider.status();
+    afterVersion = (version) => semver.gt(nodeStatus.version.version, version);
 });
 
 test('view pre-defined account works and returns correct name', async () => {
@@ -64,14 +68,7 @@ describe('errors', () => {
     });
 
     test('create existing account', async() => {
-        try {
-            await workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100);
-            fail('should throw an error');
-        } catch (e) {
-            expect(e instanceof errors.AccountAlreadyExists);
-            expect(e.account_id === workingAccount.accountId);
-            expect(e.index === 0);
-        }
+        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100)).rejects.toThrow(/Transaction .+ failed.+already exists/);
     });
 });
 
@@ -133,46 +130,51 @@ describe('with deploy contract', () => {
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
-    test('view call gives error message when accidentally using positional arguments', async() => {
+    test('view call gives error mesage when accidentally using positional arguments', async() => {
         await expect(contract.hello('trex')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
         await expect(contract.hello({ a: 1 }, 'trex')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
     });
 
-    test('change call gives error message when accidentally using positional arguments', async() => {
+    test('change call gives error mesage when accidentally using positional arguments', async() => {
         await expect(contract.setValue('whatever')).rejects.toThrow(/Contract method calls expect named arguments wrapped in object.+/);
     });
 
-    test('change call gives error message for invalid gas argument', async() => {
-        await expect(contract.setValue({ a: 1 }, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'gas' argument, but got.+/);
+    test('change call gives error mesage for invalid gas argument', async() => {
+        await expect(contract.setValue({ a: 1}, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'gas' argument, but got.+/);
     });
 
-    test('change call gives error message for invalid amount argument', async() => {
-        await expect(contract.setValue({ a: 1 }, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
+    test('change call gives error mesage for invalid amount argument', async() => {
+        await expect(contract.setValue({ a: 1}, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
     });
 
     test('can get logs from method result', async () => {
         await contract.generateLogs();
-        expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
+        if (afterVersion('0.4.10')) {
+            expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
+        } else {
+            expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
+        }
 
     });
 
     test('can get logs from view call', async () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
-        expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
+        if (afterVersion('0.4.10')) {
+            expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
+        } else {
+            expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
+        }
     });
 
     test('can get assert message from method result', async () => {
-        try {
-            await contract.triggerAssert();
-            fail('should throw an error');
-        } catch (e) {
-            expect(e instanceof errors.GuestPanic);
-            expect(e.msg === 'expected to fail, filename: "assembly/main.ts" line: 505 col: 2');
+        await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
+        if (afterVersion('0.4.10')) {
             expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
-            expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
+        } else {
+            expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
         }
-        return;
+        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
     });
 
     test('test set/remove', async () => {

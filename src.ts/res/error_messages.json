@@ -40,7 +40,7 @@
     "ReceiverMismatch": "Transaction receiver_id {{tx_receiver}} doesn't match the access key receiver_id {{ak_receiver}}",
     "CostOverflow": "Transaction gas or balance cost is too high",
     "InvalidSignature": "Transaction is not signed with the given public key",
-    "AccessKeyNotFound": "Signer {{account_id}} doesn't have access key with the given public_key {{public_key}}",
+    "AccessKeyNotFound": "Signer \"{{account_id}}\" doesn't have access key with the given public_key {{public_key}}",
     "NotEnoughBalance": "Sender {{signer_id}} does not have enough balance {} for operation costing {}",
     "NotEnoughAllowance": "Access Key {:?}:{} does not have enough balance {{balance}} for transaction costing {{cost}}",
     "Expired": "Transaction has expired",

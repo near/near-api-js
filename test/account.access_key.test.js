@@ -1,7 +1,6 @@
 const BN = require('bn.js');
 const nearlib = require('../lib/index');
 const testUtils = require('./test-utils');
-const errors = nearlib.utils.rpc_errors;
 
 let nearjs;
 let testAccount;
@@ -44,9 +43,8 @@ test('remove access key no longer works', async() => {
         await contract.setValue({value: 'test'});
         fail('should throw an error');
     } catch (e) {
-        expect(e instanceof errors.AccessKeyNotFound);
-        expect(e.account_id === workingAccount.accountId);
-        expect(e.publicKey === publicKey);
+        expect(e.message).toMatch(new RegExp(`.*?Signer "${workingAccount.accountId}" doesn't have access key with the given public_key ${publicKey}`));
+        expect(e.type).toMatch(/InvalidTxError::InvalidAccessKey::AccessKeyNotFound|UntypedError/);
     }
 });
 

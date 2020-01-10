@@ -1,6 +1,5 @@
 const fs = require('fs').promises;
 const BN = require('bn.js');
-const semver = require('semver');
 
 const nearlib = require('../lib/index');
 
@@ -9,12 +8,6 @@ const testAccountName = 'test.near';
 
 const INITIAL_BALANCE = new BN(100000000000);
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
-
-async function afterVersion (version) {
-    const nearjs = await setUpTestConnection();
-    const status = await nearjs.connection.provider.status();
-    return semver.gt(status.version.version, version);
-}
 
 async function setUpTestConnection() {
     const keyStore = new nearlib.keyStores.InMemoryKeyStore();
@@ -65,4 +58,4 @@ async function ensureDir(dirpath) {
 }
 
 module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE,
-    generateUniqueString, createAccount, deployContract, sleep, ensureDir, afterVersion };
+    generateUniqueString, createAccount, deployContract, sleep, ensureDir };
