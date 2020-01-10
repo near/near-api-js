@@ -72,8 +72,8 @@ export class JsonRpcProvider extends Provider {
         const response = await fetchJson(this.connection, JSON.stringify(request));
         if (response.error) {
             if (typeof response.error.data === 'object') {
-                // if error data has error_message and error_type properties, we consider that node returned an error in old format
                 if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
+                    // if error data has error_message and error_type properties, we consider that node returned an error in the old format
                     throw new TypedError(response.error.data.error_message, response.error.data.error_type);
                 } else {
                     // overwise we need to transform the new format into the old one for a transition period
