@@ -65,7 +65,7 @@
     "files": [
       {
         "path": "dist/nearlib.min.js",
-        "maxSize": "80kB"
+        "maxSize": "85kB"
       }
     ]
   },
