@@ -6,19 +6,15 @@ import {
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
+import { TypedError } from '../utils/errors';
 import { base_encode } from '../utils/serialize';
+import { parseIntoOldTypedError } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
+
+export { TypedError };
 
 /// Keep ids unique across all connections.
 let _nextId = 123;
-
-export class TypedError extends Error {
-    type: string;
-    constructor(message?: string, type?: string) {
-        super(message);
-        this.type = type || 'UntypedError';
-    }
-}
 
 export class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
@@ -76,7 +72,15 @@ export class JsonRpcProvider extends Provider {
         const response = await fetchJson(this.connection, JSON.stringify(request));
         if (response.error) {
             if (typeof response.error.data === 'object') {
-                throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+                if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
+                    // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+                    throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+                } else {
+                    // overwise we need to transform the new format into the old one for a transition period
+                    throw parseIntoOldTypedError(response.error.data);
+                    // later we'll use this to parse and throw an error in the new format
+                    // throw parseRpcError(response.error.data);
+                }
             } else {
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
                 if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {

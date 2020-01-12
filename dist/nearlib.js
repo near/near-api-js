@@ -694,6 +694,7 @@ class Near {
      * @param options
      */
     async loadContract(contractId, options) {
+        console.warn('near.loadContract is deprecated. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.');
         const account = new account_1.Account(this.connection, options.sender);
         return new contract_1.Contract(account, contractId, options);
     }
@@ -1215,7 +1216,7 @@ function parseNearAmount(amt) {
     if (!amt) {
         return amt;
     }
-    amt = cleanupAmount(amt);
+    amt = amt.trim();
     const split = amt.split('.');
     const wholePart = split[0];
     const fracPart = split[1] || '';
@@ -1225,9 +1226,6 @@ function parseNearAmount(amt) {
     return trimLeadingZeroes(wholePart + fracPart.padEnd(exports.NEAR_NOMINATION_EXP, '0'));
 }
 exports.parseNearAmount = parseNearAmount;
-function cleanupAmount(amount) {
-    return amount.replace(/,/g, '').trim();
-}
 function trimTrailingZeroes(value) {
     return value.replace(/\.?0*$/, '');
 }

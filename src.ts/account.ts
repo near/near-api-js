@@ -7,6 +7,7 @@ import { FinalExecutionOutcome, TypedError } from './providers';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
+import { parseIntoOldTypedError } from './utils/rpc_errors';
 import { PositionalArgsError } from './utils/errors';
 
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
@@ -118,9 +119,19 @@ export class Account {
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
-            throw new TypedError(
-                `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
-                result.status.Failure.error_type);
+            // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+            if (result.status.Failure.error_message && result.status.Failure.error_type) {
+                throw new TypedError(
+                    `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
+                    result.status.Failure.error_type);
+            } else {
+                // overwise we need to transform the new format into the old one for a transition period
+                const typedError = parseIntoOldTypedError(result.status.Failure);
+                throw new TypedError(`Transaction ${result.transaction_outcome.id} failed. ${typedError.message}`,
+                '');
+                // later we'll use this to parse and throw an error in the new format
+                // throw parseRpcError(response.error.data);
+            }
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.

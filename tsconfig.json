@@ -19,7 +19,8 @@
         "noImplicitAny": false,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "resolveJsonModule": true,
     },
     "files": [
         "./src.ts/index.ts",

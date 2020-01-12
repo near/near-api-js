@@ -1,11 +1,9 @@
 import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockResult, ChunkId, ChunkResult } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
+import { TypedError } from '../utils/errors';
 import { SignedTransaction } from '../transaction';
-export declare class TypedError extends Error {
-    type: string;
-    constructor(message?: string, type?: string);
-}
+export { TypedError };
 export declare class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
     constructor(url?: string, network?: Network);
