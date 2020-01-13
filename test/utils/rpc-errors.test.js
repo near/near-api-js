@@ -3,8 +3,8 @@ const {
     parseRpcError,
     AccountAlreadyExists,
     ReceiverMismatch,
-    InvalidTx,
-    Action,
+    InvalidTxError,
+    ActionError,
     TxExecutionError,
     InvalidAccessKey,
     FunctionCall,
@@ -17,7 +17,7 @@ describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {
         let rpc_error = {
             TxExecutionError: {
-                Action: {
+                ActionError: {
                     index: 1,
                     kind: { AccountAlreadyExists: { account_id: 'bob.near' } }
                 }
@@ -34,7 +34,7 @@ describe('rpc-errors', () => {
     test('test ReceiverMismatch error', async () => {
         let rpc_error = {
             TxExecutionError: {
-                InvalidTx: {
+                InvalidTxError: {
                     InvalidAccessKey: {
                         ReceiverMismatch: {
                             ak_receiver: 'test.near',
@@ -46,7 +46,7 @@ describe('rpc-errors', () => {
         };
         let error = parseRpcError(rpc_error);
         expect(error instanceof TxExecutionError).toBe(true);
-        expect(error instanceof InvalidTx).toBe(true);
+        expect(error instanceof InvalidTxError).toBe(true);
         expect(error instanceof InvalidAccessKey).toBe(true);
         expect(error instanceof ReceiverMismatch).toBe(true);
         expect(error.ak_receiver).toBe('test.near');
@@ -59,7 +59,7 @@ describe('rpc-errors', () => {
     test('test InvalidIteratorIndex error', async () => {
         let rpc_error = {
             TxExecutionError: {
-                Action: {
+                ActionError: {
                     FunctionCall: {
                         FunctionExecError: {
                             HostError: {
@@ -73,7 +73,7 @@ describe('rpc-errors', () => {
         let error = parseRpcError(rpc_error);
         expect(error instanceof TxExecutionError).toBe(true);
         expect(error instanceof AccountAlreadyExists).toBe(false);
-        expect(error instanceof Action).toBe(true);
+        expect(error instanceof ActionError).toBe(true);
         expect(error instanceof FunctionCall).toBe(true);
         expect(error instanceof FunctionExecError).toBe(true);
         expect(error instanceof HostError).toBe(true);

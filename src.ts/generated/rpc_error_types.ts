@@ -4,11 +4,11 @@ export class ServerError {
 export class TxExecutionError extends ServerError {
 }
 
-export class Action extends TxExecutionError {
+export class ActionError extends TxExecutionError {
     public index;
 }
 
-export class FunctionCall extends Action {
+export class FunctionCall extends ActionError {
 }
 
 export class FunctionExecError extends FunctionCall {
@@ -17,149 +17,146 @@ export class FunctionExecError extends FunctionCall {
 export class HostError extends FunctionExecError {
 }
 
-export class GasLimitExceeded extends HostError {
-}
-
-export class ResolveError extends FunctionExecError {
-}
-
-export class MethodEmptyName extends ResolveError {
-}
-
-export class CompilationError extends FunctionExecError {
-}
-
-export class WasmerCompileError extends CompilationError {
-    public msg;
-}
-
-export class GuestPanic extends HostError {
-    public panic_msg;
-}
-
-export class PrepareError extends CompilationError {
-}
-
-export class Memory extends PrepareError {
-}
-
-export class GasExceeded extends HostError {
-}
-
-export class MethodUTF8Error extends ResolveError {
-}
-
-export class BadUTF16 extends HostError {
-}
-
-export class WasmTrap extends FunctionExecError {
-    public msg;
-}
-
-export class GasInstrumentation extends PrepareError {
-}
-
-export class InvalidPromiseIndex extends HostError {
-    public promise_idx;
-}
-
-export class InvalidPromiseResultIndex extends HostError {
-    public result_idx;
-}
-
-export class Deserialization extends PrepareError {
-}
-
-export class MethodNotFound extends ResolveError {
-}
-
-export class InvalidRegisterId extends HostError {
-    public register_id;
-}
-
-export class InvalidReceiptIndex extends HostError {
-    public receipt_index;
-}
-
-export class EmptyMethodName extends HostError {
-}
-
-export class CannotReturnJointPromise extends HostError {
-}
-
-export class StackHeightInstrumentation extends PrepareError {
-}
-
-export class CodeDoesNotExist extends CompilationError {
-    public account_id;
-}
-
-export class MethodInvalidSignature extends ResolveError {
-}
-
-export class IntegerOverflow extends HostError {
-}
-
-export class MemoryAccessViolation extends HostError {
-}
-
 export class InvalidIteratorIndex extends HostError {
     public iterator_index;
 }
 
-export class IteratorWasInvalidated extends HostError {
-    public iterator_index;
-}
-
-export class InvalidAccountId extends HostError {
-}
-
-export class Serialization extends PrepareError {
+export class InvalidPublicKey extends HostError {
 }
 
 export class CannotAppendActionToJointPromise extends HostError {
 }
 
-export class InternalMemoryDeclared extends PrepareError {
+export class CompilationError extends FunctionExecError {
+}
+
+export class PrepareError extends CompilationError {
 }
 
 export class Instantiate extends PrepareError {
 }
 
-export class ProhibitedInView extends HostError {
-    public method_name;
+export class MemoryAccessViolation extends HostError {
 }
 
-export class InvalidMethodName extends HostError {
-}
-
-export class BadUTF8 extends HostError {
-}
-
-export class BalanceExceeded extends HostError {
+export class BadUTF16 extends HostError {
 }
 
 export class LinkError extends FunctionExecError {
     public msg;
 }
 
-export class InvalidPublicKey extends HostError {
+export class StackHeightInstrumentation extends PrepareError {
 }
 
-export class InvalidTx extends TxExecutionError {
+export class WasmerCompileError extends CompilationError {
+    public msg;
 }
 
-export class ActorNoPermission extends Action {
-    public actor_id;
+export class Memory extends PrepareError {
+}
+
+export class InvalidAccountId extends HostError {
+}
+
+export class ResolveError extends FunctionExecError {
+}
+
+export class InternalMemoryDeclared extends PrepareError {
+}
+
+export class GasInstrumentation extends PrepareError {
+}
+
+export class MethodUTF8Error extends ResolveError {
+}
+
+export class CannotReturnJointPromise extends HostError {
+}
+
+export class MethodInvalidSignature extends ResolveError {
+}
+
+export class InvalidRegisterId extends HostError {
+    public register_id;
+}
+
+export class GasExceeded extends HostError {
+}
+
+export class Deserialization extends PrepareError {
+}
+
+export class GasLimitExceeded extends HostError {
+}
+
+export class BalanceExceeded extends HostError {
+}
+
+export class Serialization extends PrepareError {
+}
+
+export class WasmTrap extends FunctionExecError {
+    public msg;
+}
+
+export class ProhibitedInView extends HostError {
+    public method_name;
+}
+
+export class MethodEmptyName extends ResolveError {
+}
+
+export class EmptyMethodName extends HostError {
+}
+
+export class GuestPanic extends HostError {
+    public panic_msg;
+}
+
+export class InvalidMethodName extends HostError {
+}
+
+export class MethodNotFound extends ResolveError {
+}
+
+export class InvalidPromiseResultIndex extends HostError {
+    public result_idx;
+}
+
+export class IteratorWasInvalidated extends HostError {
+    public iterator_index;
+}
+
+export class InvalidPromiseIndex extends HostError {
+    public promise_idx;
+}
+
+export class BadUTF8 extends HostError {
+}
+
+export class InvalidReceiptIndex extends HostError {
+    public receipt_index;
+}
+
+export class CodeDoesNotExist extends CompilationError {
     public account_id;
 }
 
-export class RentUnpaid extends InvalidTx {
-    public account_id;
-    public amount;
+export class IntegerOverflow extends HostError {
 }
 
-export class InvalidAccessKey extends InvalidTx {
+export class InvalidTxError extends TxExecutionError {
+}
+
+export class InvalidAccessKey extends InvalidTxError {
+}
+
+export class NotEnoughAllowance extends InvalidAccessKey {
+    public public_key;
+    public allowance;
+    public account_id;
+    public cost;
 }
 
 export class ReceiverMismatch extends InvalidAccessKey {
@@ -167,105 +164,105 @@ export class ReceiverMismatch extends InvalidAccessKey {
     public tx_receiver;
 }
 
-export class CostOverflow extends InvalidTx {
+export class DeleteAccountStaking extends ActionError {
+    public account_id;
 }
 
-export class InvalidSignature extends InvalidTx {
+export class TriesToStake extends ActionError {
+    public balance;
+    public account_id;
+    public locked;
+    public stake;
+}
+
+export class InvalidReceiverId extends InvalidTxError {
+    public receiver_id;
 }
 
 export class AccessKeyNotFound extends InvalidAccessKey {
-    public account_id;
     public public_key;
-}
-
-export class NotEnoughBalance extends InvalidTx {
-    public balance;
-    public cost;
-    public signer_id;
-}
-
-export class NotEnoughAllowance extends InvalidAccessKey {
-    public account_id;
-    public allowance;
-    public cost;
-    public public_key;
-}
-
-export class Expired extends InvalidTx {
-}
-
-export class DeleteAccountStaking extends Action {
     public account_id;
 }
 
-export class SignerDoesNotExist extends InvalidTx {
-    public signer_id;
-}
-
-export class TriesToStake extends Action {
-    public stake;
-    public locked;
-    public account_id;
-    public balance;
-}
-
-export class AddKeyAlreadyExists extends Action {
-    public account_id;
-    public public_key;
-}
-
-export class InvalidSigner extends InvalidTx {
-    public signer_id;
-}
-
-export class CreateAccountNotAllowed extends Action {
-    public account_id;
-    public predecessor_id;
-}
-
-export class ActionError extends InvalidAccessKey {
-}
-
-export class TriesToUnstake extends Action {
+export class RentUnpaid extends InvalidTxError {
+    public amount;
     public account_id;
 }
 
-export class InvalidNonce extends InvalidTx {
-    public ak_nonce;
-    public tx_nonce;
+export class Expired extends InvalidTxError {
 }
 
-export class AccountAlreadyExists extends Action {
-    public account_id;
+export class InvalidSignature extends InvalidTxError {
 }
 
-export class InvalidChain extends InvalidTx {
-}
-
-export class AccountDoesNotExist extends Action {
-    public account_id;
+export class InvalidChain extends InvalidTxError {
 }
 
 export class MethodNameMismatch extends InvalidAccessKey {
     public method_name;
 }
 
-export class DeleteAccountHasRent extends Action {
+export class InvalidSignerId extends InvalidTxError {
+    public signer_id;
+}
+
+export class CostOverflow extends InvalidTxError {
+}
+
+export class ActorNoPermission extends ActionError {
     public account_id;
-    public balance;
+    public actor_id;
 }
 
-export class InvalidReceiver extends InvalidTx {
-    public receiver_id;
-}
-
-export class DeleteKeyDoesNotExist extends Action {
+export class DeleteKeyDoesNotExist extends ActionError {
     public account_id;
     public public_key;
 }
 
-export class Timeout extends ServerError {
+export class AddKeyAlreadyExists extends ActionError {
+    public public_key;
+    public account_id;
+}
+
+export class DeleteAccountHasRent extends ActionError {
+    public balance;
+    public account_id;
+}
+
+export class TriesToUnstake extends ActionError {
+    public account_id;
+}
+
+export class AccountAlreadyExists extends ActionError {
+    public account_id;
+}
+
+export class NotEnoughBalance extends InvalidTxError {
+    public balance;
+    public signer_id;
+    public cost;
+}
+
+export class InvalidNonce extends InvalidTxError {
+    public ak_nonce;
+    public tx_nonce;
+}
+
+export class SignerDoesNotExist extends InvalidTxError {
+    public signer_id;
+}
+
+export class AccountDoesNotExist extends ActionError {
+    public account_id;
+}
+
+export class CreateAccountNotAllowed extends ActionError {
+    public predecessor_id;
+    public account_id;
 }
 
 export class Closed extends ServerError {
+}
+
+export class Timeout extends ServerError {
 }
