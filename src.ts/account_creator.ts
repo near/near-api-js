@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 import { Connection } from './connection';
 import { Account } from './account';
-import { ConnectionInfo } from './utils/web';
+import { fetchJson } from './utils/web';
 import { PublicKey } from './utils/key_pair';
 
 /**
@@ -23,21 +23,20 @@ export class LocalAccountCreator extends AccountCreator {
 
     async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
         await this.masterAccount.createAccount(newAccountId, publicKey, this.initialBalance);
-        // TODO: check the response here for status and raise if didn't complete.
     }
 }
 
 export class UrlAccountCreator extends AccountCreator {
     readonly connection: Connection;
-    readonly helperConnection: ConnectionInfo;
+    readonly helperUrl: string;
 
     constructor(connection: Connection, helperUrl: string) {
         super();
         this.connection = connection;
-        this.helperConnection = { url: helperUrl };
+        this.helperUrl = helperUrl;
     }
 
     async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
-        // TODO: hit url to create account.
+        await fetchJson(`${this.helperUrl}/account`, JSON.stringify({ newAccountId, newAccountPublicKey: publicKey.toString() }));
     }
 }
