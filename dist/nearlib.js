@@ -5,7 +5,7 @@ window.nearlib = require('./lib/index');
 window.Buffer = Buffer;
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/index":6,"buffer":34,"error-polyfill":41}],2:[function(require,module,exports){
+},{"./lib/index":8,"buffer":38,"error-polyfill":45}],2:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -14,6 +14,7 @@ const providers_1 = require("./providers");
 const serialize_1 = require("./utils/serialize");
 const key_pair_1 = require("./utils/key_pair");
 const errors_1 = require("./utils/errors");
+const rpc_errors_1 = require("./utils/rpc_errors");
 // Default amount of tokens to be send with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
@@ -94,7 +95,13 @@ class Account {
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
-            throw new providers_1.TypedError(`Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
+            // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+            if (result.status.Failure.error_message && result.status.Failure.error_type) {
+                throw new providers_1.TypedError(`Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
+            }
+            else {
+                throw rpc_errors_1.parseRpcError(result.status.Failure);
+            }
         }
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.
@@ -187,9 +194,10 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers":14,"./transaction":18,"./utils/errors":20,"./utils/key_pair":23,"./utils/serialize":25,"buffer":34}],3:[function(require,module,exports){
+},{"./providers":16,"./transaction":21,"./utils/errors":23,"./utils/key_pair":26,"./utils/rpc_errors":28,"./utils/serialize":29,"buffer":38}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const web_1 = require("./utils/web");
 /**
  * Account creator provides interface to specific implementation to acutally create account.
  */
@@ -204,7 +212,6 @@ class LocalAccountCreator extends AccountCreator {
     }
     async createAccount(newAccountId, publicKey) {
         await this.masterAccount.createAccount(newAccountId, publicKey, this.initialBalance);
-        // TODO: check the response here for status and raise if didn't complete.
     }
 }
 exports.LocalAccountCreator = LocalAccountCreator;
@@ -212,15 +219,15 @@ class UrlAccountCreator extends AccountCreator {
     constructor(connection, helperUrl) {
         super();
         this.connection = connection;
-        this.helperConnection = { url: helperUrl };
+        this.helperUrl = helperUrl;
     }
     async createAccount(newAccountId, publicKey) {
-        // TODO: hit url to create account.
+        await web_1.fetchJson(`${this.helperUrl}/account`, JSON.stringify({ newAccountId, newAccountPublicKey: publicKey.toString() }));
     }
 }
 exports.UrlAccountCreator = UrlAccountCreator;
 
-},{}],4:[function(require,module,exports){
+},{"./utils/web":30}],4:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const providers_1 = require("./providers");
@@ -257,7 +264,7 @@ class Connection {
 }
 exports.Connection = Connection;
 
-},{"./providers":14,"./signer":17}],5:[function(require,module,exports){
+},{"./providers":16,"./signer":20}],5:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -309,7 +316,771 @@ function validateBNLike(argMap) {
     }
 }
 
-},{"./providers":14,"./utils/errors":20,"bn.js":30}],6:[function(require,module,exports){
+},{"./providers":16,"./utils/errors":23,"bn.js":34}],6:[function(require,module,exports){
+module.exports={
+    "schema": {
+        "InvalidIteratorIndex": {
+            "name": "InvalidIteratorIndex",
+            "subtypes": [],
+            "props": {
+                "iterator_index": ""
+            }
+        },
+        "InvalidPublicKey": {
+            "name": "InvalidPublicKey",
+            "subtypes": [],
+            "props": {}
+        },
+        "CannotAppendActionToJointPromise": {
+            "name": "CannotAppendActionToJointPromise",
+            "subtypes": [],
+            "props": {}
+        },
+        "Instantiate": {
+            "name": "Instantiate",
+            "subtypes": [],
+            "props": {}
+        },
+        "MemoryAccessViolation": {
+            "name": "MemoryAccessViolation",
+            "subtypes": [],
+            "props": {}
+        },
+        "BadUTF16": {
+            "name": "BadUTF16",
+            "subtypes": [],
+            "props": {}
+        },
+        "LinkError": {
+            "name": "LinkError",
+            "subtypes": [],
+            "props": {
+                "msg": ""
+            }
+        },
+        "StackHeightInstrumentation": {
+            "name": "StackHeightInstrumentation",
+            "subtypes": [],
+            "props": {}
+        },
+        "WasmerCompileError": {
+            "name": "WasmerCompileError",
+            "subtypes": [],
+            "props": {
+                "msg": ""
+            }
+        },
+        "Memory": {
+            "name": "Memory",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidAccountId": {
+            "name": "InvalidAccountId",
+            "subtypes": [],
+            "props": {}
+        },
+        "ResolveError": {
+            "name": "ResolveError",
+            "subtypes": [
+                "MethodEmptyName",
+                "MethodUTF8Error",
+                "MethodNotFound",
+                "MethodInvalidSignature"
+            ],
+            "props": {}
+        },
+        "InternalMemoryDeclared": {
+            "name": "InternalMemoryDeclared",
+            "subtypes": [],
+            "props": {}
+        },
+        "GasInstrumentation": {
+            "name": "GasInstrumentation",
+            "subtypes": [],
+            "props": {}
+        },
+        "MethodUTF8Error": {
+            "name": "MethodUTF8Error",
+            "subtypes": [],
+            "props": {}
+        },
+        "PrepareError": {
+            "name": "PrepareError",
+            "subtypes": [
+                "Serialization",
+                "Deserialization",
+                "InternalMemoryDeclared",
+                "GasInstrumentation",
+                "StackHeightInstrumentation",
+                "Instantiate",
+                "Memory"
+            ],
+            "props": {}
+        },
+        "CannotReturnJointPromise": {
+            "name": "CannotReturnJointPromise",
+            "subtypes": [],
+            "props": {}
+        },
+        "MethodInvalidSignature": {
+            "name": "MethodInvalidSignature",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidRegisterId": {
+            "name": "InvalidRegisterId",
+            "subtypes": [],
+            "props": {
+                "register_id": ""
+            }
+        },
+        "GasExceeded": {
+            "name": "GasExceeded",
+            "subtypes": [],
+            "props": {}
+        },
+        "FunctionCall": {
+            "name": "FunctionCall",
+            "subtypes": [
+                "FunctionExecError",
+                "StorageError"
+            ],
+            "props": {}
+        },
+        "Deserialization": {
+            "name": "Deserialization",
+            "subtypes": [],
+            "props": {}
+        },
+        "FunctionExecError": {
+            "name": "FunctionExecError",
+            "subtypes": [
+                "CompilationError",
+                "LinkError",
+                "ResolveError",
+                "WasmTrap",
+                "HostError"
+            ],
+            "props": {}
+        },
+        "GasLimitExceeded": {
+            "name": "GasLimitExceeded",
+            "subtypes": [],
+            "props": {}
+        },
+        "BalanceExceeded": {
+            "name": "BalanceExceeded",
+            "subtypes": [],
+            "props": {}
+        },
+        "Serialization": {
+            "name": "Serialization",
+            "subtypes": [],
+            "props": {}
+        },
+        "WasmTrap": {
+            "name": "WasmTrap",
+            "subtypes": [],
+            "props": {
+                "msg": ""
+            }
+        },
+        "ProhibitedInView": {
+            "name": "ProhibitedInView",
+            "subtypes": [],
+            "props": {
+                "method_name": ""
+            }
+        },
+        "MethodEmptyName": {
+            "name": "MethodEmptyName",
+            "subtypes": [],
+            "props": {}
+        },
+        "EmptyMethodName": {
+            "name": "EmptyMethodName",
+            "subtypes": [],
+            "props": {}
+        },
+        "GuestPanic": {
+            "name": "GuestPanic",
+            "subtypes": [],
+            "props": {
+                "panic_msg": ""
+            }
+        },
+        "InvalidMethodName": {
+            "name": "InvalidMethodName",
+            "subtypes": [],
+            "props": {}
+        },
+        "MethodNotFound": {
+            "name": "MethodNotFound",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidPromiseResultIndex": {
+            "name": "InvalidPromiseResultIndex",
+            "subtypes": [],
+            "props": {
+                "result_idx": ""
+            }
+        },
+        "IteratorWasInvalidated": {
+            "name": "IteratorWasInvalidated",
+            "subtypes": [],
+            "props": {
+                "iterator_index": ""
+            }
+        },
+        "CompilationError": {
+            "name": "CompilationError",
+            "subtypes": [
+                "CodeDoesNotExist",
+                "PrepareError",
+                "WasmerCompileError"
+            ],
+            "props": {}
+        },
+        "InvalidPromiseIndex": {
+            "name": "InvalidPromiseIndex",
+            "subtypes": [],
+            "props": {
+                "promise_idx": ""
+            }
+        },
+        "BadUTF8": {
+            "name": "BadUTF8",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidReceiptIndex": {
+            "name": "InvalidReceiptIndex",
+            "subtypes": [],
+            "props": {
+                "receipt_index": ""
+            }
+        },
+        "CodeDoesNotExist": {
+            "name": "CodeDoesNotExist",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
+            }
+        },
+        "HostError": {
+            "name": "HostError",
+            "subtypes": [
+                "BadUTF16",
+                "BadUTF8",
+                "GasExceeded",
+                "GasLimitExceeded",
+                "BalanceExceeded",
+                "EmptyMethodName",
+                "GuestPanic",
+                "IntegerOverflow",
+                "InvalidPromiseIndex",
+                "CannotAppendActionToJointPromise",
+                "CannotReturnJointPromise",
+                "InvalidPromiseResultIndex",
+                "InvalidRegisterId",
+                "IteratorWasInvalidated",
+                "MemoryAccessViolation",
+                "InvalidReceiptIndex",
+                "InvalidIteratorIndex",
+                "InvalidAccountId",
+                "InvalidMethodName",
+                "InvalidPublicKey",
+                "ProhibitedInView"
+            ],
+            "props": {}
+        },
+        "IntegerOverflow": {
+            "name": "IntegerOverflow",
+            "subtypes": [],
+            "props": {}
+        },
+        "NotEnoughAllowance": {
+            "name": "NotEnoughAllowance",
+            "subtypes": [],
+            "props": {
+                "public_key": "",
+                "allowance": "",
+                "account_id": "",
+                "cost": ""
+            }
+        },
+        "ReceiverMismatch": {
+            "name": "ReceiverMismatch",
+            "subtypes": [],
+            "props": {
+                "ak_receiver": "",
+                "tx_receiver": ""
+            }
+        },
+        "DeleteAccountStaking": {
+            "name": "DeleteAccountStaking",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
+            }
+        },
+        "TriesToStake": {
+            "name": "TriesToStake",
+            "subtypes": [],
+            "props": {
+                "balance": "",
+                "account_id": "",
+                "locked": "",
+                "stake": ""
+            }
+        },
+        "InvalidReceiverId": {
+            "name": "InvalidReceiverId",
+            "subtypes": [],
+            "props": {
+                "receiver_id": ""
+            }
+        },
+        "AccessKeyNotFound": {
+            "name": "AccessKeyNotFound",
+            "subtypes": [],
+            "props": {
+                "public_key": "",
+                "account_id": ""
+            }
+        },
+        "RentUnpaid": {
+            "name": "RentUnpaid",
+            "subtypes": [],
+            "props": {
+                "amount": "",
+                "account_id": ""
+            }
+        },
+        "Expired": {
+            "name": "Expired",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidSignature": {
+            "name": "InvalidSignature",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidChain": {
+            "name": "InvalidChain",
+            "subtypes": [],
+            "props": {}
+        },
+        "MethodNameMismatch": {
+            "name": "MethodNameMismatch",
+            "subtypes": [],
+            "props": {
+                "method_name": ""
+            }
+        },
+        "InvalidTxError": {
+            "name": "InvalidTxError",
+            "subtypes": [
+                "InvalidAccessKey",
+                "InvalidSignerId",
+                "SignerDoesNotExist",
+                "InvalidNonce",
+                "InvalidReceiverId",
+                "InvalidSignature",
+                "NotEnoughBalance",
+                "RentUnpaid",
+                "CostOverflow",
+                "InvalidChain",
+                "Expired"
+            ],
+            "props": {}
+        },
+        "InvalidSignerId": {
+            "name": "InvalidSignerId",
+            "subtypes": [],
+            "props": {
+                "signer_id": ""
+            }
+        },
+        "CostOverflow": {
+            "name": "CostOverflow",
+            "subtypes": [],
+            "props": {}
+        },
+        "ActorNoPermission": {
+            "name": "ActorNoPermission",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "actor_id": ""
+            }
+        },
+        "DeleteKeyDoesNotExist": {
+            "name": "DeleteKeyDoesNotExist",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "public_key": ""
+            }
+        },
+        "AddKeyAlreadyExists": {
+            "name": "AddKeyAlreadyExists",
+            "subtypes": [],
+            "props": {
+                "public_key": "",
+                "account_id": ""
+            }
+        },
+        "DeleteAccountHasRent": {
+            "name": "DeleteAccountHasRent",
+            "subtypes": [],
+            "props": {
+                "balance": "",
+                "account_id": ""
+            }
+        },
+        "TriesToUnstake": {
+            "name": "TriesToUnstake",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
+            }
+        },
+        "TxExecutionError": {
+            "name": "TxExecutionError",
+            "subtypes": [
+                "ActionError",
+                "InvalidTxError"
+            ],
+            "props": {}
+        },
+        "AccountAlreadyExists": {
+            "name": "AccountAlreadyExists",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
+            }
+        },
+        "NotEnoughBalance": {
+            "name": "NotEnoughBalance",
+            "subtypes": [],
+            "props": {
+                "balance": "",
+                "signer_id": "",
+                "cost": ""
+            }
+        },
+        "InvalidAccessKey": {
+            "name": "InvalidAccessKey",
+            "subtypes": [
+                "AccessKeyNotFound",
+                "ReceiverMismatch",
+                "MethodNameMismatch",
+                "ActionError",
+                "NotEnoughAllowance"
+            ],
+            "props": {}
+        },
+        "InvalidNonce": {
+            "name": "InvalidNonce",
+            "subtypes": [],
+            "props": {
+                "ak_nonce": "",
+                "tx_nonce": ""
+            }
+        },
+        "SignerDoesNotExist": {
+            "name": "SignerDoesNotExist",
+            "subtypes": [],
+            "props": {
+                "signer_id": ""
+            }
+        },
+        "ActionError": {
+            "name": "ActionError",
+            "subtypes": [
+                "AccountAlreadyExists",
+                "AccountDoesNotExist",
+                "CreateAccountNotAllowed",
+                "ActorNoPermission",
+                "DeleteKeyDoesNotExist",
+                "AddKeyAlreadyExists",
+                "DeleteAccountStaking",
+                "DeleteAccountHasRent",
+                "RentUnpaid",
+                "TriesToUnstake",
+                "TriesToStake",
+                "FunctionCall"
+            ],
+            "props": {
+                "index": ""
+            }
+        },
+        "AccountDoesNotExist": {
+            "name": "AccountDoesNotExist",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
+            }
+        },
+        "CreateAccountNotAllowed": {
+            "name": "CreateAccountNotAllowed",
+            "subtypes": [],
+            "props": {
+                "predecessor_id": "",
+                "account_id": ""
+            }
+        },
+        "Closed": {
+            "name": "Closed",
+            "subtypes": [],
+            "props": {}
+        },
+        "Timeout": {
+            "name": "Timeout",
+            "subtypes": [],
+            "props": {}
+        },
+        "ServerError": {
+            "name": "ServerError",
+            "subtypes": [
+                "TxExecutionError",
+                "Timeout",
+                "Closed"
+            ],
+            "props": {}
+        }
+    }
+}
+
+},{}],7:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const errors_1 = require("../utils/errors");
+class ServerError extends errors_1.TypedError {
+}
+exports.ServerError = ServerError;
+class TxExecutionError extends ServerError {
+}
+exports.TxExecutionError = TxExecutionError;
+class ActionError extends TxExecutionError {
+}
+exports.ActionError = ActionError;
+class FunctionCall extends ActionError {
+}
+exports.FunctionCall = FunctionCall;
+class FunctionExecError extends FunctionCall {
+}
+exports.FunctionExecError = FunctionExecError;
+class HostError extends FunctionExecError {
+}
+exports.HostError = HostError;
+class InvalidIteratorIndex extends HostError {
+}
+exports.InvalidIteratorIndex = InvalidIteratorIndex;
+class InvalidPublicKey extends HostError {
+}
+exports.InvalidPublicKey = InvalidPublicKey;
+class CannotAppendActionToJointPromise extends HostError {
+}
+exports.CannotAppendActionToJointPromise = CannotAppendActionToJointPromise;
+class CompilationError extends FunctionExecError {
+}
+exports.CompilationError = CompilationError;
+class PrepareError extends CompilationError {
+}
+exports.PrepareError = PrepareError;
+class Instantiate extends PrepareError {
+}
+exports.Instantiate = Instantiate;
+class MemoryAccessViolation extends HostError {
+}
+exports.MemoryAccessViolation = MemoryAccessViolation;
+class BadUTF16 extends HostError {
+}
+exports.BadUTF16 = BadUTF16;
+class LinkError extends FunctionExecError {
+}
+exports.LinkError = LinkError;
+class StackHeightInstrumentation extends PrepareError {
+}
+exports.StackHeightInstrumentation = StackHeightInstrumentation;
+class WasmerCompileError extends CompilationError {
+}
+exports.WasmerCompileError = WasmerCompileError;
+class Memory extends PrepareError {
+}
+exports.Memory = Memory;
+class InvalidAccountId extends HostError {
+}
+exports.InvalidAccountId = InvalidAccountId;
+class ResolveError extends FunctionExecError {
+}
+exports.ResolveError = ResolveError;
+class InternalMemoryDeclared extends PrepareError {
+}
+exports.InternalMemoryDeclared = InternalMemoryDeclared;
+class GasInstrumentation extends PrepareError {
+}
+exports.GasInstrumentation = GasInstrumentation;
+class MethodUTF8Error extends ResolveError {
+}
+exports.MethodUTF8Error = MethodUTF8Error;
+class CannotReturnJointPromise extends HostError {
+}
+exports.CannotReturnJointPromise = CannotReturnJointPromise;
+class MethodInvalidSignature extends ResolveError {
+}
+exports.MethodInvalidSignature = MethodInvalidSignature;
+class InvalidRegisterId extends HostError {
+}
+exports.InvalidRegisterId = InvalidRegisterId;
+class GasExceeded extends HostError {
+}
+exports.GasExceeded = GasExceeded;
+class Deserialization extends PrepareError {
+}
+exports.Deserialization = Deserialization;
+class GasLimitExceeded extends HostError {
+}
+exports.GasLimitExceeded = GasLimitExceeded;
+class BalanceExceeded extends HostError {
+}
+exports.BalanceExceeded = BalanceExceeded;
+class Serialization extends PrepareError {
+}
+exports.Serialization = Serialization;
+class WasmTrap extends FunctionExecError {
+}
+exports.WasmTrap = WasmTrap;
+class ProhibitedInView extends HostError {
+}
+exports.ProhibitedInView = ProhibitedInView;
+class MethodEmptyName extends ResolveError {
+}
+exports.MethodEmptyName = MethodEmptyName;
+class EmptyMethodName extends HostError {
+}
+exports.EmptyMethodName = EmptyMethodName;
+class GuestPanic extends HostError {
+}
+exports.GuestPanic = GuestPanic;
+class InvalidMethodName extends HostError {
+}
+exports.InvalidMethodName = InvalidMethodName;
+class MethodNotFound extends ResolveError {
+}
+exports.MethodNotFound = MethodNotFound;
+class InvalidPromiseResultIndex extends HostError {
+}
+exports.InvalidPromiseResultIndex = InvalidPromiseResultIndex;
+class IteratorWasInvalidated extends HostError {
+}
+exports.IteratorWasInvalidated = IteratorWasInvalidated;
+class InvalidPromiseIndex extends HostError {
+}
+exports.InvalidPromiseIndex = InvalidPromiseIndex;
+class BadUTF8 extends HostError {
+}
+exports.BadUTF8 = BadUTF8;
+class InvalidReceiptIndex extends HostError {
+}
+exports.InvalidReceiptIndex = InvalidReceiptIndex;
+class CodeDoesNotExist extends CompilationError {
+}
+exports.CodeDoesNotExist = CodeDoesNotExist;
+class IntegerOverflow extends HostError {
+}
+exports.IntegerOverflow = IntegerOverflow;
+class InvalidTxError extends TxExecutionError {
+}
+exports.InvalidTxError = InvalidTxError;
+class InvalidAccessKey extends InvalidTxError {
+}
+exports.InvalidAccessKey = InvalidAccessKey;
+class NotEnoughAllowance extends InvalidAccessKey {
+}
+exports.NotEnoughAllowance = NotEnoughAllowance;
+class ReceiverMismatch extends InvalidAccessKey {
+}
+exports.ReceiverMismatch = ReceiverMismatch;
+class DeleteAccountStaking extends ActionError {
+}
+exports.DeleteAccountStaking = DeleteAccountStaking;
+class TriesToStake extends ActionError {
+}
+exports.TriesToStake = TriesToStake;
+class InvalidReceiverId extends InvalidTxError {
+}
+exports.InvalidReceiverId = InvalidReceiverId;
+class AccessKeyNotFound extends InvalidAccessKey {
+}
+exports.AccessKeyNotFound = AccessKeyNotFound;
+class RentUnpaid extends InvalidTxError {
+}
+exports.RentUnpaid = RentUnpaid;
+class Expired extends InvalidTxError {
+}
+exports.Expired = Expired;
+class InvalidSignature extends InvalidTxError {
+}
+exports.InvalidSignature = InvalidSignature;
+class InvalidChain extends InvalidTxError {
+}
+exports.InvalidChain = InvalidChain;
+class MethodNameMismatch extends InvalidAccessKey {
+}
+exports.MethodNameMismatch = MethodNameMismatch;
+class InvalidSignerId extends InvalidTxError {
+}
+exports.InvalidSignerId = InvalidSignerId;
+class CostOverflow extends InvalidTxError {
+}
+exports.CostOverflow = CostOverflow;
+class ActorNoPermission extends ActionError {
+}
+exports.ActorNoPermission = ActorNoPermission;
+class DeleteKeyDoesNotExist extends ActionError {
+}
+exports.DeleteKeyDoesNotExist = DeleteKeyDoesNotExist;
+class AddKeyAlreadyExists extends ActionError {
+}
+exports.AddKeyAlreadyExists = AddKeyAlreadyExists;
+class DeleteAccountHasRent extends ActionError {
+}
+exports.DeleteAccountHasRent = DeleteAccountHasRent;
+class TriesToUnstake extends ActionError {
+}
+exports.TriesToUnstake = TriesToUnstake;
+class AccountAlreadyExists extends ActionError {
+}
+exports.AccountAlreadyExists = AccountAlreadyExists;
+class NotEnoughBalance extends InvalidTxError {
+}
+exports.NotEnoughBalance = NotEnoughBalance;
+class InvalidNonce extends InvalidTxError {
+}
+exports.InvalidNonce = InvalidNonce;
+class SignerDoesNotExist extends InvalidTxError {
+}
+exports.SignerDoesNotExist = SignerDoesNotExist;
+class AccountDoesNotExist extends ActionError {
+}
+exports.AccountDoesNotExist = AccountDoesNotExist;
+class CreateAccountNotAllowed extends ActionError {
+}
+exports.CreateAccountNotAllowed = CreateAccountNotAllowed;
+class Closed extends ServerError {
+}
+exports.Closed = Closed;
+class Timeout extends ServerError {
+}
+exports.Timeout = Timeout;
+
+},{"../utils/errors":23}],8:[function(require,module,exports){
 'use strict';
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -345,7 +1116,7 @@ exports.connect = near_1.connect;
 const wallet_account_1 = require("./wallet-account");
 exports.WalletAccount = wallet_account_1.WalletAccount;
 
-},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":9,"./near":13,"./providers":14,"./signer":17,"./transaction":18,"./utils":22,"./utils/key_pair":23,"./wallet-account":27}],7:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":11,"./near":15,"./providers":16,"./signer":20,"./transaction":21,"./utils":25,"./utils/key_pair":26,"./wallet-account":31}],9:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -410,7 +1181,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
 }
 exports.BrowserLocalStorageKeyStore = BrowserLocalStorageKeyStore;
 
-},{"../utils/key_pair":23,"./keystore":10}],8:[function(require,module,exports){
+},{"../utils/key_pair":26,"./keystore":12}],10:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -460,7 +1231,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
 }
 exports.InMemoryKeyStore = InMemoryKeyStore;
 
-},{"../utils/key_pair":23,"./keystore":10}],9:[function(require,module,exports){
+},{"../utils/key_pair":26,"./keystore":12}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -474,7 +1245,7 @@ exports.UnencryptedFileSystemKeyStore = unencrypted_file_system_keystore_1.Unenc
 const merge_key_store_1 = require("./merge_key_store");
 exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 
-},{"./browser_local_storage_key_store":7,"./in_memory_key_store":8,"./keystore":10,"./merge_key_store":11,"./unencrypted_file_system_keystore":12}],10:[function(require,module,exports){
+},{"./browser_local_storage_key_store":9,"./in_memory_key_store":10,"./keystore":12,"./merge_key_store":13,"./unencrypted_file_system_keystore":14}],12:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -484,7 +1255,7 @@ class KeyStore {
 }
 exports.KeyStore = KeyStore;
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -542,7 +1313,7 @@ class MergeKeyStore extends keystore_1.KeyStore {
 }
 exports.MergeKeyStore = MergeKeyStore;
 
-},{"./keystore":10}],12:[function(require,module,exports){
+},{"./keystore":12}],14:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -644,7 +1415,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
 }
 exports.UnencryptedFileSystemKeyStore = UnencryptedFileSystemKeyStore;
 
-},{"../utils/key_pair":23,"./keystore":10,"fs":32,"util":72}],13:[function(require,module,exports){
+},{"../utils/key_pair":26,"./keystore":12,"fs":36,"util":77}],15:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -694,7 +1465,6 @@ class Near {
      * @param options
      */
     async loadContract(contractId, options) {
-        console.warn('near.loadContract is deprecated. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.');
         const account = new account_1.Account(this.connection, options.sender);
         return new contract_1.Contract(account, contractId, options);
     }
@@ -737,7 +1507,7 @@ async function connect(config) {
 }
 exports.connect = connect;
 
-},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":9,"./key_stores/unencrypted_file_system_keystore":12,"bn.js":30}],14:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":11,"./key_stores/unencrypted_file_system_keystore":14,"bn.js":34}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
@@ -748,22 +1518,18 @@ const json_rpc_provider_1 = require("./json-rpc-provider");
 exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
 exports.TypedError = json_rpc_provider_1.TypedError;
 
-},{"./json-rpc-provider":15,"./provider":16}],15:[function(require,module,exports){
+},{"./json-rpc-provider":17,"./provider":18}],17:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
 const web_1 = require("../utils/web");
+const errors_1 = require("../utils/errors");
+exports.TypedError = errors_1.TypedError;
 const serialize_1 = require("../utils/serialize");
+const rpc_errors_1 = require("../utils/rpc_errors");
 /// Keep ids unique across all connections.
 let _nextId = 123;
-class TypedError extends Error {
-    constructor(message, type) {
-        super(message);
-        this.type = type || 'UntypedError';
-    }
-}
-exports.TypedError = TypedError;
 class JsonRpcProvider extends provider_1.Provider {
     constructor(url, network) {
         super();
@@ -809,15 +1575,21 @@ class JsonRpcProvider extends provider_1.Provider {
         const response = await web_1.fetchJson(this.connection, JSON.stringify(request));
         if (response.error) {
             if (typeof response.error.data === 'object') {
-                throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+                if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
+                    // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+                    throw new errors_1.TypedError(response.error.data.error_message, response.error.data.error_type);
+                }
+                else {
+                    throw rpc_errors_1.parseRpcError(response.error.data);
+                }
             }
             else {
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
                 if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
-                    throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
+                    throw new errors_1.TypedError('send_tx_commit has timed out.', 'TimeoutError');
                 }
                 else {
-                    throw new TypedError(errorMessage);
+                    throw new errors_1.TypedError(errorMessage);
                 }
             }
         }
@@ -827,7 +1599,7 @@ class JsonRpcProvider extends provider_1.Provider {
 exports.JsonRpcProvider = JsonRpcProvider;
 
 }).call(this,require("buffer").Buffer)
-},{"../utils/serialize":25,"../utils/web":26,"./provider":16,"buffer":34}],16:[function(require,module,exports){
+},{"../utils/errors":23,"../utils/rpc_errors":28,"../utils/serialize":29,"../utils/web":30,"./provider":18,"buffer":38}],18:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -874,7 +1646,74 @@ function adaptTransactionResult(txResult) {
 exports.adaptTransactionResult = adaptTransactionResult;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":34}],17:[function(require,module,exports){
+},{"buffer":38}],19:[function(require,module,exports){
+module.exports={
+    "GasLimitExceeded": "Exceeded the maximum amount of gas allowed to burn per contract",
+    "MethodEmptyName": "Method name is empty",
+    "WasmerCompileError": "Wasmer compilation error: {{msg}}",
+    "GuestPanic": "Smart contract panicked: {{panic_msg}}",
+    "Memory": "Error creating Wasm memory",
+    "GasExceeded": "Exceeded the prepaid gas",
+    "MethodUTF8Error": "Method name is not valid UTF8 string",
+    "BadUTF16": "String encoding is bad UTF-16 sequence",
+    "WasmTrap": "WebAssembly trap: {{msg}}",
+    "GasInstrumentation": "Gas instrumentation failed or contract has denied instructions.",
+    "InvalidPromiseIndex": "{{promise_idx}} does not correspond to existing promises",
+    "InvalidPromiseResultIndex": "Accessed invalid promise result index: {{result_idx}}",
+    "Deserialization": "Error happened while deserializing the module",
+    "MethodNotFound": "Contract method is not found",
+    "InvalidRegisterId": "Accessed invalid register id: {{register_id}}",
+    "InvalidReceiptIndex": "VM Logic returned an invalid receipt index: {{receipt_index}}",
+    "EmptyMethodName": "Method name is empty in contract call",
+    "CannotReturnJointPromise": "Returning joint promise is currently prohibited",
+    "StackHeightInstrumentation": "Stack instrumentation failed",
+    "CodeDoesNotExist": "Cannot find contract code for account {{account_id}}",
+    "MethodInvalidSignature": "Invalid method signature",
+    "IntegerOverflow": "Integer overflow happened during contract execution",
+    "MemoryAccessViolation": "MemoryAccessViolation",
+    "InvalidIteratorIndex": "Iterator index {{iterator_index}} does not exist",
+    "IteratorWasInvalidated": "Iterator {{iterator_index}} was invalidated after its creation by performing a mutable operation on trie",
+    "InvalidAccountId": "VM Logic returned an invalid account id",
+    "Serialization": "Error happened while serializing the module",
+    "CannotAppendActionToJointPromise": "Actions can only be appended to non-joint promise.",
+    "InternalMemoryDeclared": "Internal memory declaration has been found in the module",
+    "Instantiate": "Error happened during instantiation",
+    "ProhibitedInView": "{{method_name}} is not allowed in view calls",
+    "InvalidMethodName": "VM Logic returned an invalid method name",
+    "BadUTF8": "String encoding is bad UTF-8 sequence",
+    "BalanceExceeded": "Exceeded the account balance",
+    "LinkError": "Wasm contract link error: {{msg}}",
+    "InvalidPublicKey": "VM Logic provided an invalid public key",
+    "ActorNoPermission": "Actor {{actor_id}} doesn't have permission to account {{account_id}} to complete the action",
+    "RentUnpaid": "The account {{account_id}} wouldn't have enough balance to pay required rent {{amount}}",
+    "ReceiverMismatch": "Transaction receiver_id {{tx_receiver}} doesn't match the access key receiver_id {{ak_receiver}}",
+    "CostOverflow": "Transaction gas or balance cost is too high",
+    "InvalidSignature": "Transaction is not signed with the given public key",
+    "AccessKeyNotFound": "Signer \"{{account_id}}\" doesn't have access key with the given public_key {{public_key}}",
+    "NotEnoughBalance": "Sender {{signer_id}} does not have enough balance {} for operation costing {}",
+    "NotEnoughAllowance": "Access Key {:?}:{} does not have enough balance {{balance}} for transaction costing {{cost}}",
+    "Expired": "Transaction has expired",
+    "DeleteAccountStaking": "Account {{account_id}} is staking and can not be deleted",
+    "SignerDoesNotExist": "Signer {{signer_id}} does not exist",
+    "TriesToStake": "Account {{account_id}} tries to stake {{stake}}, but has staked {{locked}} and only has {{balance}}",
+    "AddKeyAlreadyExists": "The public key {{public_key}} is already used for an existing access key",
+    "InvalidSigner": "Invalid signer account ID {{signer_id}} according to requirements",
+    "CreateAccountNotAllowed": "The new account_id {{account_id}} can't be created by {{predecessor_id}}",
+    "ActionError": "The used access key requires exactly one FunctionCall action",
+    "TriesToUnstake": "Account {{account_id}} is not yet staked, but tries to unstake",
+    "InvalidNonce": "Transaction nonce {{tx_nonce}} must be larger than nonce of the used access key {{ak_nonce}}",
+    "AccountAlreadyExists": "Can't create a new account {{account_id}}, because it already exists",
+    "InvalidChain": "Transaction parent block hash doesn't belong to the current chain",
+    "AccountDoesNotExist": "Can't complete the action because account {{account_id}} doesn't exist",
+    "MethodNameMismatch": "Transaction method name {{method_name}} isn't allowed by the access key",
+    "DeleteAccountHasRent": "Account {{account_id}} can't be deleted. It has {balance{}}, which is enough to cover the rent",
+    "InvalidReceiver": "Invalid receiver account ID {{receiver_id}} according to requirements",
+    "DeleteKeyDoesNotExist": "Account {{account_id}} tries to remove an access key that doesn't exist",
+    "Timeout": "Timeout exceeded",
+    "Closed": "Connection closed"
+}
+
+},{}],20:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -930,7 +1769,7 @@ class InMemorySigner extends Signer {
 }
 exports.InMemorySigner = InMemorySigner;
 
-},{"./utils/key_pair":23,"js-sha256":53}],18:[function(require,module,exports){
+},{"./utils/key_pair":26,"js-sha256":57}],21:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -1125,7 +1964,7 @@ async function signTransaction(receiverId, nonce, actions, blockHash, signer, ac
 }
 exports.signTransaction = signTransaction;
 
-},{"./utils/enums":19,"./utils/key_pair":23,"./utils/serialize":25,"js-sha256":53}],19:[function(require,module,exports){
+},{"./utils/enums":22,"./utils/key_pair":26,"./utils/serialize":29,"js-sha256":57}],22:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 class Enum {
@@ -1149,7 +1988,7 @@ class Assignable {
 }
 exports.Assignable = Assignable;
 
-},{}],20:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class PositionalArgsError extends Error {
@@ -1164,8 +2003,15 @@ class ArgumentTypeError extends Error {
     }
 }
 exports.ArgumentTypeError = ArgumentTypeError;
+class TypedError extends Error {
+    constructor(message, type) {
+        super(message);
+        this.type = type || 'UntypedError';
+    }
+}
+exports.TypedError = TypedError;
 
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const BN = require('bn.js');
@@ -1216,7 +2062,7 @@ function parseNearAmount(amt) {
     if (!amt) {
         return amt;
     }
-    amt = amt.trim();
+    amt = cleanupAmount(amt);
     const split = amt.split('.');
     const wholePart = split[0];
     const fracPart = split[1] || '';
@@ -1226,6 +2072,9 @@ function parseNearAmount(amt) {
     return trimLeadingZeroes(wholePart + fracPart.padEnd(exports.NEAR_NOMINATION_EXP, '0'));
 }
 exports.parseNearAmount = parseNearAmount;
+function cleanupAmount(amount) {
+    return amount.replace(/,/g, '').trim();
+}
 function trimTrailingZeroes(value) {
     return value.replace(/\.?0*$/, '');
 }
@@ -1240,7 +2089,7 @@ function formatWithCommas(value) {
     return value;
 }
 
-},{"bn.js":30}],22:[function(require,module,exports){
+},{"bn.js":34}],25:[function(require,module,exports){
 "use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -1262,12 +2111,14 @@ const enums = __importStar(require("./enums"));
 exports.enums = enums;
 const format = __importStar(require("./format"));
 exports.format = format;
+const rpc_errors = __importStar(require("./rpc_errors"));
+exports.rpc_errors = rpc_errors;
 const key_pair_1 = require("./key_pair");
 exports.PublicKey = key_pair_1.PublicKey;
 exports.KeyPair = key_pair_1.KeyPair;
 exports.KeyPairEd25519 = key_pair_1.KeyPairEd25519;
 
-},{"./enums":19,"./format":21,"./key_pair":23,"./network":24,"./serialize":25,"./web":26}],23:[function(require,module,exports){
+},{"./enums":22,"./format":24,"./key_pair":26,"./network":27,"./rpc_errors":28,"./serialize":29,"./web":30}],26:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -1390,11 +2241,83 @@ class KeyPairEd25519 extends KeyPair {
 }
 exports.KeyPairEd25519 = KeyPairEd25519;
 
-},{"./enums":19,"./serialize":25,"tweetnacl":65}],24:[function(require,module,exports){
+},{"./enums":22,"./serialize":29,"tweetnacl":70}],27:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 
-},{}],25:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const mustache_1 = __importDefault(require("mustache"));
+const rpc_error_schema_json_1 = __importDefault(require("../generated/rpc_error_schema.json"));
+const error_messages_json_1 = __importDefault(require("../res/error_messages.json"));
+const CLASSMAP = __importStar(require("../generated/rpc_error_types"));
+__export(require("../generated/rpc_error_types"));
+function parseRpcError(errorObj) {
+    const result = {};
+    const errorClassName = walkSubtype(errorObj, rpc_error_schema_json_1.default.schema, result, '');
+    // NOTE: This assumes that all errors extend TypedError
+    const error = new CLASSMAP[errorClassName](formatError(errorClassName, result), errorClassName);
+    Object.assign(error, result);
+    return error;
+}
+exports.parseRpcError = parseRpcError;
+function formatError(errorClassName, errorData) {
+    if (typeof error_messages_json_1.default[errorClassName] === 'string') {
+        return mustache_1.default.render(error_messages_json_1.default[errorClassName], errorData);
+    }
+    return JSON.stringify(errorData);
+}
+exports.formatError = formatError;
+function walkSubtype(errorObj, schema, result, typeName) {
+    let error;
+    let type;
+    let errorTypeName;
+    for (const errorName in schema) {
+        if (isObject(errorObj[errorName])) {
+            error = errorObj[errorName];
+            type = schema[errorName];
+            errorTypeName = errorName;
+        }
+        else if (isObject(errorObj.kind) && isObject(errorObj.kind[errorName])) {
+            error = errorObj.kind[errorName];
+            type = schema[errorName];
+            errorTypeName = errorName;
+        }
+        else {
+            continue;
+        }
+    }
+    if (error && type) {
+        for (const prop in type.props) {
+            if (type.props.hasOwnProperty(prop)) {
+                result[prop] = error[prop];
+            }
+        }
+        return walkSubtype(error, schema, result, errorTypeName);
+    }
+    else {
+        return typeName;
+    }
+}
+function isObject(n) {
+    return Object.prototype.toString.call(n) === '[object Object]';
+}
+
+},{"../generated/rpc_error_schema.json":6,"../generated/rpc_error_types":7,"../res/error_messages.json":19,"mustache":58}],29:[function(require,module,exports){
 (function (global,Buffer){
 'use strict';
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -1725,7 +2648,7 @@ function deserialize(schema, classType, buffer) {
 exports.deserialize = deserialize;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bn.js":30,"bs58":33,"buffer":34,"text-encoding-utf-8":63}],26:[function(require,module,exports){
+},{"bn.js":34,"bs58":37,"buffer":38,"text-encoding-utf-8":68}],30:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -1775,7 +2698,7 @@ async function fetchJson(connection, json) {
 }
 exports.fetchJson = fetchJson;
 
-},{"http":32,"http-errors":50,"https":32,"node-fetch":32}],27:[function(require,module,exports){
+},{"http":36,"http-errors":54,"https":36,"node-fetch":36}],31:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
@@ -1874,7 +2797,7 @@ class WalletAccount {
 }
 exports.WalletAccount = WalletAccount;
 
-},{"./utils":22}],28:[function(require,module,exports){
+},{"./utils":25}],32:[function(require,module,exports){
 'use strict'
 // base-x encoding / decoding
 // Copyright (c) 2018 base-x contributors
@@ -1996,7 +2919,7 @@ function base (ALPHABET) {
 }
 module.exports = base
 
-},{"safe-buffer":59}],29:[function(require,module,exports){
+},{"safe-buffer":64}],33:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -2150,7 +3073,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],30:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -5622,17 +6545,17 @@ function fromByteArray (uint8) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":31}],31:[function(require,module,exports){
+},{"buffer":35}],35:[function(require,module,exports){
 
-},{}],32:[function(require,module,exports){
-arguments[4][31][0].apply(exports,arguments)
-},{"dup":31}],33:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
+arguments[4][35][0].apply(exports,arguments)
+},{"dup":35}],37:[function(require,module,exports){
 var basex = require('base-x')
 var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 module.exports = basex(ALPHABET)
 
-},{"base-x":28}],34:[function(require,module,exports){
+},{"base-x":32}],38:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -7435,13 +8358,13 @@ var hexSliceLookupTable = (function () {
 })()
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":29,"buffer":34,"ieee754":51}],35:[function(require,module,exports){
+},{"base64-js":33,"buffer":38,"ieee754":55}],39:[function(require,module,exports){
 require(".").check("es5");
-},{".":36}],36:[function(require,module,exports){
+},{".":40}],40:[function(require,module,exports){
 require("./lib/definitions");
 module.exports = require("./lib");
 
-},{"./lib":39,"./lib/definitions":38}],37:[function(require,module,exports){
+},{"./lib":43,"./lib/definitions":42}],41:[function(require,module,exports){
 var CapabilityDetector = function () {
     this.tests = {};
     this.cache = {};
@@ -7471,7 +8394,7 @@ CapabilityDetector.prototype = {
 };
 
 module.exports = CapabilityDetector;
-},{}],38:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var capability = require("."),
     define = capability.define,
     test = capability.test;
@@ -7540,7 +8463,7 @@ define("Error.prototype.stack", function () {
         return e.stack || e.stacktrace;
     }
 });
-},{".":39}],39:[function(require,module,exports){
+},{".":43}],43:[function(require,module,exports){
 var CapabilityDetector = require("./CapabilityDetector");
 
 var detector = new CapabilityDetector();
@@ -7557,7 +8480,7 @@ capability.check = function (name) {
 capability.test = capability;
 
 module.exports = capability;
-},{"./CapabilityDetector":37}],40:[function(require,module,exports){
+},{"./CapabilityDetector":41}],44:[function(require,module,exports){
 /*!
  * depd
  * Copyright(c) 2015 Douglas Christopher Wilson
@@ -7636,9 +8559,9 @@ function wrapproperty (obj, prop, message) {
   }
 }
 
-},{}],41:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = require("./lib");
-},{"./lib":42}],42:[function(require,module,exports){
+},{"./lib":46}],46:[function(require,module,exports){
 require("capability/es5");
 
 var capability = require("capability");
@@ -7652,7 +8575,7 @@ else
     polyfill = require("./unsupported");
 
 module.exports = polyfill();
-},{"./non-v8/index":46,"./unsupported":48,"./v8":49,"capability":36,"capability/es5":35}],43:[function(require,module,exports){
+},{"./non-v8/index":50,"./unsupported":52,"./v8":53,"capability":40,"capability/es5":39}],47:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod;
 
@@ -7683,7 +8606,7 @@ var Frame = Class(Object, {
 });
 
 module.exports = Frame;
-},{"o3":54}],44:[function(require,module,exports){
+},{"o3":59}],48:[function(require,module,exports){
 var Class = require("o3").Class,
     Frame = require("./Frame"),
     cache = require("u3").cache;
@@ -7722,7 +8645,7 @@ module.exports = {
         return instance;
     })
 };
-},{"./Frame":43,"o3":54,"u3":66}],45:[function(require,module,exports){
+},{"./Frame":47,"o3":59,"u3":71}],49:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod,
     eachCombination = require("u3").eachCombination,
@@ -7856,7 +8779,7 @@ module.exports = {
         return instance;
     })
 };
-},{"capability":36,"o3":54,"u3":66}],46:[function(require,module,exports){
+},{"capability":40,"o3":59,"u3":71}],50:[function(require,module,exports){
 var FrameStringSource = require("./FrameStringSource"),
     FrameStringParser = require("./FrameStringParser"),
     cache = require("u3").cache,
@@ -7930,7 +8853,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"../prepareStackTrace":47,"./FrameStringParser":44,"./FrameStringSource":45,"u3":66}],47:[function(require,module,exports){
+},{"../prepareStackTrace":51,"./FrameStringParser":48,"./FrameStringSource":49,"u3":71}],51:[function(require,module,exports){
 var prepareStackTrace = function (throwable, frames, warnings) {
     var string = "";
     string += throwable.name || "Error";
@@ -7948,7 +8871,7 @@ var prepareStackTrace = function (throwable, frames, warnings) {
 };
 
 module.exports = prepareStackTrace;
-},{}],48:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 var cache = require("u3").cache,
     prepareStackTrace = require("./prepareStackTrace");
 
@@ -7999,7 +8922,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":47,"u3":66}],49:[function(require,module,exports){
+},{"./prepareStackTrace":51,"u3":71}],53:[function(require,module,exports){
 var prepareStackTrace = require("./prepareStackTrace");
 
 module.exports = function () {
@@ -8011,7 +8934,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":47}],50:[function(require,module,exports){
+},{"./prepareStackTrace":51}],54:[function(require,module,exports){
 /*!
  * http-errors
  * Copyright(c) 2014 Jonathan Ong
@@ -8279,7 +9202,7 @@ function populateConstructorExports (exports, codes, HttpError) {
     '"I\'mateapot"; use "ImATeapot" instead')
 }
 
-},{"depd":40,"inherits":52,"setprototypeof":60,"statuses":62,"toidentifier":64}],51:[function(require,module,exports){
+},{"depd":44,"inherits":56,"setprototypeof":65,"statuses":67,"toidentifier":69}],55:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -8365,7 +9288,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],52:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -8394,7 +9317,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],53:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 (function (process,global){
 /**
  * [js-sha256]{@link https://github.com/emn178/js-sha256}
@@ -8916,11 +9839,739 @@ if (typeof Object.create === 'function') {
 })();
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":58}],54:[function(require,module,exports){
+},{"_process":63}],58:[function(require,module,exports){
+// This file has been generated from mustache.mjs
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, global.Mustache = factory());
+}(this, (function () { 'use strict';
+
+  /*!
+   * mustache.js - Logic-less {{mustache}} templates with JavaScript
+   * http://github.com/janl/mustache.js
+   */
+
+  var objectToString = Object.prototype.toString;
+  var isArray = Array.isArray || function isArrayPolyfill (object) {
+    return objectToString.call(object) === '[object Array]';
+  };
+
+  function isFunction (object) {
+    return typeof object === 'function';
+  }
+
+  /**
+   * More correct typeof string handling array
+   * which normally returns typeof 'object'
+   */
+  function typeStr (obj) {
+    return isArray(obj) ? 'array' : typeof obj;
+  }
+
+  function escapeRegExp (string) {
+    return string.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
+  }
+
+  /**
+   * Null safe way of checking whether or not an object,
+   * including its prototype, has a given property
+   */
+  function hasProperty (obj, propName) {
+    return obj != null && typeof obj === 'object' && (propName in obj);
+  }
+
+  /**
+   * Safe way of detecting whether or not the given thing is a primitive and
+   * whether it has the given property
+   */
+  function primitiveHasOwnProperty (primitive, propName) {
+    return (
+      primitive != null
+      && typeof primitive !== 'object'
+      && primitive.hasOwnProperty
+      && primitive.hasOwnProperty(propName)
+    );
+  }
+
+  // Workaround for https://issues.apache.org/jira/browse/COUCHDB-577
+  // See https://github.com/janl/mustache.js/issues/189
+  var regExpTest = RegExp.prototype.test;
+  function testRegExp (re, string) {
+    return regExpTest.call(re, string);
+  }
+
+  var nonSpaceRe = /\S/;
+  function isWhitespace (string) {
+    return !testRegExp(nonSpaceRe, string);
+  }
+
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  function escapeHtml (string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap (s) {
+      return entityMap[s];
+    });
+  }
+
+  var whiteRe = /\s*/;
+  var spaceRe = /\s+/;
+  var equalsRe = /\s*=/;
+  var curlyRe = /\s*\}/;
+  var tagRe = /#|\^|\/|>|\{|&|=|!/;
+
+  /**
+   * Breaks up the given `template` string into a tree of tokens. If the `tags`
+   * argument is given here it must be an array with two string values: the
+   * opening and closing tags used in the template (e.g. [ "<%", "%>" ]). Of
+   * course, the default is to use mustaches (i.e. mustache.tags).
+   *
+   * A token is an array with at least 4 elements. The first element is the
+   * mustache symbol that was used inside the tag, e.g. "#" or "&". If the tag
+   * did not contain a symbol (i.e. {{myValue}}) this element is "name". For
+   * all text that appears outside a symbol this element is "text".
+   *
+   * The second element of a token is its "value". For mustache tags this is
+   * whatever else was inside the tag besides the opening symbol. For text tokens
+   * this is the text itself.
+   *
+   * The third and fourth elements of the token are the start and end indices,
+   * respectively, of the token in the original template.
+   *
+   * Tokens that are the root node of a subtree contain two more elements: 1) an
+   * array of tokens in the subtree and 2) the index in the original template at
+   * which the closing tag for that section begins.
+   *
+   * Tokens for partials also contain two more elements: 1) a string value of
+   * indendation prior to that tag and 2) the index of that tag on that line -
+   * eg a value of 2 indicates the partial is the third tag on this line.
+   */
+  function parseTemplate (template, tags) {
+    if (!template)
+      return [];
+    var lineHasNonSpace = false;
+    var sections = [];     // Stack to hold section tokens
+    var tokens = [];       // Buffer to hold the tokens
+    var spaces = [];       // Indices of whitespace tokens on the current line
+    var hasTag = false;    // Is there a {{tag}} on the current line?
+    var nonSpace = false;  // Is there a non-space char on the current line?
+    var indentation = '';  // Tracks indentation for tags that use it
+    var tagIndex = 0;      // Stores a count of number of tags encountered on a line
+
+    // Strips all whitespace tokens array for the current line
+    // if there was a {{#tag}} on it and otherwise only space.
+    function stripSpace () {
+      if (hasTag && !nonSpace) {
+        while (spaces.length)
+          delete tokens[spaces.pop()];
+      } else {
+        spaces = [];
+      }
+
+      hasTag = false;
+      nonSpace = false;
+    }
+
+    var openingTagRe, closingTagRe, closingCurlyRe;
+    function compileTags (tagsToCompile) {
+      if (typeof tagsToCompile === 'string')
+        tagsToCompile = tagsToCompile.split(spaceRe, 2);
+
+      if (!isArray(tagsToCompile) || tagsToCompile.length !== 2)
+        throw new Error('Invalid tags: ' + tagsToCompile);
+
+      openingTagRe = new RegExp(escapeRegExp(tagsToCompile[0]) + '\\s*');
+      closingTagRe = new RegExp('\\s*' + escapeRegExp(tagsToCompile[1]));
+      closingCurlyRe = new RegExp('\\s*' + escapeRegExp('}' + tagsToCompile[1]));
+    }
+
+    compileTags(tags || mustache.tags);
+
+    var scanner = new Scanner(template);
+
+    var start, type, value, chr, token, openSection;
+    while (!scanner.eos()) {
+      start = scanner.pos;
+
+      // Match any text between tags.
+      value = scanner.scanUntil(openingTagRe);
+
+      if (value) {
+        for (var i = 0, valueLength = value.length; i < valueLength; ++i) {
+          chr = value.charAt(i);
+
+          if (isWhitespace(chr)) {
+            spaces.push(tokens.length);
+            indentation += chr;
+          } else {
+            nonSpace = true;
+            lineHasNonSpace = true;
+            indentation += ' ';
+          }
+
+          tokens.push([ 'text', chr, start, start + 1 ]);
+          start += 1;
+
+          // Check for whitespace on the current line.
+          if (chr === '\n') {
+            stripSpace();
+            indentation = '';
+            tagIndex = 0;
+            lineHasNonSpace = false;
+          }
+        }
+      }
+
+      // Match the opening tag.
+      if (!scanner.scan(openingTagRe))
+        break;
+
+      hasTag = true;
+
+      // Get the tag type.
+      type = scanner.scan(tagRe) || 'name';
+      scanner.scan(whiteRe);
+
+      // Get the tag value.
+      if (type === '=') {
+        value = scanner.scanUntil(equalsRe);
+        scanner.scan(equalsRe);
+        scanner.scanUntil(closingTagRe);
+      } else if (type === '{') {
+        value = scanner.scanUntil(closingCurlyRe);
+        scanner.scan(curlyRe);
+        scanner.scanUntil(closingTagRe);
+        type = '&';
+      } else {
+        value = scanner.scanUntil(closingTagRe);
+      }
+
+      // Match the closing tag.
+      if (!scanner.scan(closingTagRe))
+        throw new Error('Unclosed tag at ' + scanner.pos);
+
+      if (type == '>') {
+        token = [ type, value, start, scanner.pos, indentation, tagIndex, lineHasNonSpace ];
+      } else {
+        token = [ type, value, start, scanner.pos ];
+      }
+      tagIndex++;
+      tokens.push(token);
+
+      if (type === '#' || type === '^') {
+        sections.push(token);
+      } else if (type === '/') {
+        // Check section nesting.
+        openSection = sections.pop();
+
+        if (!openSection)
+          throw new Error('Unopened section "' + value + '" at ' + start);
+
+        if (openSection[1] !== value)
+          throw new Error('Unclosed section "' + openSection[1] + '" at ' + start);
+      } else if (type === 'name' || type === '{' || type === '&') {
+        nonSpace = true;
+      } else if (type === '=') {
+        // Set the tags for the next time around.
+        compileTags(value);
+      }
+    }
+
+    stripSpace();
+
+    // Make sure there are no open sections when we're done.
+    openSection = sections.pop();
+
+    if (openSection)
+      throw new Error('Unclosed section "' + openSection[1] + '" at ' + scanner.pos);
+
+    return nestTokens(squashTokens(tokens));
+  }
+
+  /**
+   * Combines the values of consecutive text tokens in the given `tokens` array
+   * to a single token.
+   */
+  function squashTokens (tokens) {
+    var squashedTokens = [];
+
+    var token, lastToken;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      token = tokens[i];
+
+      if (token) {
+        if (token[0] === 'text' && lastToken && lastToken[0] === 'text') {
+          lastToken[1] += token[1];
+          lastToken[3] = token[3];
+        } else {
+          squashedTokens.push(token);
+          lastToken = token;
+        }
+      }
+    }
+
+    return squashedTokens;
+  }
+
+  /**
+   * Forms the given array of `tokens` into a nested tree structure where
+   * tokens that represent a section have two additional items: 1) an array of
+   * all tokens that appear in that section and 2) the index in the original
+   * template that represents the end of that section.
+   */
+  function nestTokens (tokens) {
+    var nestedTokens = [];
+    var collector = nestedTokens;
+    var sections = [];
+
+    var token, section;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      token = tokens[i];
+
+      switch (token[0]) {
+        case '#':
+        case '^':
+          collector.push(token);
+          sections.push(token);
+          collector = token[4] = [];
+          break;
+        case '/':
+          section = sections.pop();
+          section[5] = token[2];
+          collector = sections.length > 0 ? sections[sections.length - 1][4] : nestedTokens;
+          break;
+        default:
+          collector.push(token);
+      }
+    }
+
+    return nestedTokens;
+  }
+
+  /**
+   * A simple string scanner that is used by the template parser to find
+   * tokens in template strings.
+   */
+  function Scanner (string) {
+    this.string = string;
+    this.tail = string;
+    this.pos = 0;
+  }
+
+  /**
+   * Returns `true` if the tail is empty (end of string).
+   */
+  Scanner.prototype.eos = function eos () {
+    return this.tail === '';
+  };
+
+  /**
+   * Tries to match the given regular expression at the current position.
+   * Returns the matched text if it can match, the empty string otherwise.
+   */
+  Scanner.prototype.scan = function scan (re) {
+    var match = this.tail.match(re);
+
+    if (!match || match.index !== 0)
+      return '';
+
+    var string = match[0];
+
+    this.tail = this.tail.substring(string.length);
+    this.pos += string.length;
+
+    return string;
+  };
+
+  /**
+   * Skips all text until the given regular expression can be matched. Returns
+   * the skipped string, which is the entire tail if no match can be made.
+   */
+  Scanner.prototype.scanUntil = function scanUntil (re) {
+    var index = this.tail.search(re), match;
+
+    switch (index) {
+      case -1:
+        match = this.tail;
+        this.tail = '';
+        break;
+      case 0:
+        match = '';
+        break;
+      default:
+        match = this.tail.substring(0, index);
+        this.tail = this.tail.substring(index);
+    }
+
+    this.pos += match.length;
+
+    return match;
+  };
+
+  /**
+   * Represents a rendering context by wrapping a view object and
+   * maintaining a reference to the parent context.
+   */
+  function Context (view, parentContext) {
+    this.view = view;
+    this.cache = { '.': this.view };
+    this.parent = parentContext;
+  }
+
+  /**
+   * Creates a new context using the given view with this context
+   * as the parent.
+   */
+  Context.prototype.push = function push (view) {
+    return new Context(view, this);
+  };
+
+  /**
+   * Returns the value of the given name in this context, traversing
+   * up the context hierarchy if the value is absent in this context's view.
+   */
+  Context.prototype.lookup = function lookup (name) {
+    var cache = this.cache;
+
+    var value;
+    if (cache.hasOwnProperty(name)) {
+      value = cache[name];
+    } else {
+      var context = this, intermediateValue, names, index, lookupHit = false;
+
+      while (context) {
+        if (name.indexOf('.') > 0) {
+          intermediateValue = context.view;
+          names = name.split('.');
+          index = 0;
+
+          /**
+           * Using the dot notion path in `name`, we descend through the
+           * nested objects.
+           *
+           * To be certain that the lookup has been successful, we have to
+           * check if the last object in the path actually has the property
+           * we are looking for. We store the result in `lookupHit`.
+           *
+           * This is specially necessary for when the value has been set to
+           * `undefined` and we want to avoid looking up parent contexts.
+           *
+           * In the case where dot notation is used, we consider the lookup
+           * to be successful even if the last "object" in the path is
+           * not actually an object but a primitive (e.g., a string, or an
+           * integer), because it is sometimes useful to access a property
+           * of an autoboxed primitive, such as the length of a string.
+           **/
+          while (intermediateValue != null && index < names.length) {
+            if (index === names.length - 1)
+              lookupHit = (
+                hasProperty(intermediateValue, names[index])
+                || primitiveHasOwnProperty(intermediateValue, names[index])
+              );
+
+            intermediateValue = intermediateValue[names[index++]];
+          }
+        } else {
+          intermediateValue = context.view[name];
+
+          /**
+           * Only checking against `hasProperty`, which always returns `false` if
+           * `context.view` is not an object. Deliberately omitting the check
+           * against `primitiveHasOwnProperty` if dot notation is not used.
+           *
+           * Consider this example:
+           * ```
+           * Mustache.render("The length of a football field is {{#length}}{{length}}{{/length}}.", {length: "100 yards"})
+           * ```
+           *
+           * If we were to check also against `primitiveHasOwnProperty`, as we do
+           * in the dot notation case, then render call would return:
+           *
+           * "The length of a football field is 9."
+           *
+           * rather than the expected:
+           *
+           * "The length of a football field is 100 yards."
+           **/
+          lookupHit = hasProperty(context.view, name);
+        }
+
+        if (lookupHit) {
+          value = intermediateValue;
+          break;
+        }
+
+        context = context.parent;
+      }
+
+      cache[name] = value;
+    }
+
+    if (isFunction(value))
+      value = value.call(this.view);
+
+    return value;
+  };
+
+  /**
+   * A Writer knows how to take a stream of tokens and render them to a
+   * string, given a context. It also maintains a cache of templates to
+   * avoid the need to parse the same template twice.
+   */
+  function Writer () {
+    this.cache = {};
+  }
+
+  /**
+   * Clears all cached templates in this writer.
+   */
+  Writer.prototype.clearCache = function clearCache () {
+    this.cache = {};
+  };
+
+  /**
+   * Parses and caches the given `template` according to the given `tags` or
+   * `mustache.tags` if `tags` is omitted,  and returns the array of tokens
+   * that is generated from the parse.
+   */
+  Writer.prototype.parse = function parse (template, tags) {
+    var cache = this.cache;
+    var cacheKey = template + ':' + (tags || mustache.tags).join(':');
+    var tokens = cache[cacheKey];
+
+    if (tokens == null)
+      tokens = cache[cacheKey] = parseTemplate(template, tags);
+
+    return tokens;
+  };
+
+  /**
+   * High-level method that is used to render the given `template` with
+   * the given `view`.
+   *
+   * The optional `partials` argument may be an object that contains the
+   * names and templates of partials that are used in the template. It may
+   * also be a function that is used to load partial templates on the fly
+   * that takes a single argument: the name of the partial.
+   *
+   * If the optional `tags` argument is given here it must be an array with two
+   * string values: the opening and closing tags used in the template (e.g.
+   * [ "<%", "%>" ]). The default is to mustache.tags.
+   */
+  Writer.prototype.render = function render (template, view, partials, tags) {
+    var tokens = this.parse(template, tags);
+    var context = (view instanceof Context) ? view : new Context(view, undefined);
+    return this.renderTokens(tokens, context, partials, template, tags);
+  };
+
+  /**
+   * Low-level method that renders the given array of `tokens` using
+   * the given `context` and `partials`.
+   *
+   * Note: The `originalTemplate` is only ever used to extract the portion
+   * of the original template that was contained in a higher-order section.
+   * If the template doesn't use higher-order sections, this argument may
+   * be omitted.
+   */
+  Writer.prototype.renderTokens = function renderTokens (tokens, context, partials, originalTemplate, tags) {
+    var buffer = '';
+
+    var token, symbol, value;
+    for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
+      value = undefined;
+      token = tokens[i];
+      symbol = token[0];
+
+      if (symbol === '#') value = this.renderSection(token, context, partials, originalTemplate);
+      else if (symbol === '^') value = this.renderInverted(token, context, partials, originalTemplate);
+      else if (symbol === '>') value = this.renderPartial(token, context, partials, tags);
+      else if (symbol === '&') value = this.unescapedValue(token, context);
+      else if (symbol === 'name') value = this.escapedValue(token, context);
+      else if (symbol === 'text') value = this.rawValue(token);
+
+      if (value !== undefined)
+        buffer += value;
+    }
+
+    return buffer;
+  };
+
+  Writer.prototype.renderSection = function renderSection (token, context, partials, originalTemplate) {
+    var self = this;
+    var buffer = '';
+    var value = context.lookup(token[1]);
+
+    // This function is used to render an arbitrary template
+    // in the current context by higher-order sections.
+    function subRender (template) {
+      return self.render(template, context, partials);
+    }
+
+    if (!value) return;
+
+    if (isArray(value)) {
+      for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
+        buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
+      }
+    } else if (typeof value === 'object' || typeof value === 'string' || typeof value === 'number') {
+      buffer += this.renderTokens(token[4], context.push(value), partials, originalTemplate);
+    } else if (isFunction(value)) {
+      if (typeof originalTemplate !== 'string')
+        throw new Error('Cannot use higher-order sections without the original template');
+
+      // Extract the portion of the original template that the section contains.
+      value = value.call(context.view, originalTemplate.slice(token[3], token[5]), subRender);
+
+      if (value != null)
+        buffer += value;
+    } else {
+      buffer += this.renderTokens(token[4], context, partials, originalTemplate);
+    }
+    return buffer;
+  };
+
+  Writer.prototype.renderInverted = function renderInverted (token, context, partials, originalTemplate) {
+    var value = context.lookup(token[1]);
+
+    // Use JavaScript's definition of falsy. Include empty arrays.
+    // See https://github.com/janl/mustache.js/issues/186
+    if (!value || (isArray(value) && value.length === 0))
+      return this.renderTokens(token[4], context, partials, originalTemplate);
+  };
+
+  Writer.prototype.indentPartial = function indentPartial (partial, indentation, lineHasNonSpace) {
+    var filteredIndentation = indentation.replace(/[^ \t]/g, '');
+    var partialByNl = partial.split('\n');
+    for (var i = 0; i < partialByNl.length; i++) {
+      if (partialByNl[i].length && (i > 0 || !lineHasNonSpace)) {
+        partialByNl[i] = filteredIndentation + partialByNl[i];
+      }
+    }
+    return partialByNl.join('\n');
+  };
+
+  Writer.prototype.renderPartial = function renderPartial (token, context, partials, tags) {
+    if (!partials) return;
+
+    var value = isFunction(partials) ? partials(token[1]) : partials[token[1]];
+    if (value != null) {
+      var lineHasNonSpace = token[6];
+      var tagIndex = token[5];
+      var indentation = token[4];
+      var indentedValue = value;
+      if (tagIndex == 0 && indentation) {
+        indentedValue = this.indentPartial(value, indentation, lineHasNonSpace);
+      }
+      return this.renderTokens(this.parse(indentedValue, tags), context, partials, indentedValue);
+    }
+  };
+
+  Writer.prototype.unescapedValue = function unescapedValue (token, context) {
+    var value = context.lookup(token[1]);
+    if (value != null)
+      return value;
+  };
+
+  Writer.prototype.escapedValue = function escapedValue (token, context) {
+    var value = context.lookup(token[1]);
+    if (value != null)
+      return mustache.escape(value);
+  };
+
+  Writer.prototype.rawValue = function rawValue (token) {
+    return token[1];
+  };
+
+  var mustache = {
+    name: 'mustache.js',
+    version: '3.2.1',
+    tags: [ '{{', '}}' ],
+    clearCache: undefined,
+    escape: undefined,
+    parse: undefined,
+    render: undefined,
+    to_html: undefined,
+    Scanner: undefined,
+    Context: undefined,
+    Writer: undefined
+  };
+
+  // All high-level mustache.* functions use this writer.
+  var defaultWriter = new Writer();
+
+  /**
+   * Clears all cached templates in the default writer.
+   */
+  mustache.clearCache = function clearCache () {
+    return defaultWriter.clearCache();
+  };
+
+  /**
+   * Parses and caches the given template in the default writer and returns the
+   * array of tokens it contains. Doing this ahead of time avoids the need to
+   * parse templates on the fly as they are rendered.
+   */
+  mustache.parse = function parse (template, tags) {
+    return defaultWriter.parse(template, tags);
+  };
+
+  /**
+   * Renders the `template` with the given `view` and `partials` using the
+   * default writer. If the optional `tags` argument is given here it must be an
+   * array with two string values: the opening and closing tags used in the
+   * template (e.g. [ "<%", "%>" ]). The default is to mustache.tags.
+   */
+  mustache.render = function render (template, view, partials, tags) {
+    if (typeof template !== 'string') {
+      throw new TypeError('Invalid template! Template should be a "string" ' +
+                          'but "' + typeStr(template) + '" was given as the first ' +
+                          'argument for mustache#render(template, view, partials)');
+    }
+
+    return defaultWriter.render(template, view, partials, tags);
+  };
+
+  // This is here for backwards compatibility with 0.4.x.,
+  /*eslint-disable */ // eslint wants camel cased function name
+  mustache.to_html = function to_html (template, view, partials, send) {
+    /*eslint-enable*/
+
+    var result = mustache.render(template, view, partials);
+
+    if (isFunction(send)) {
+      send(result);
+    } else {
+      return result;
+    }
+  };
+
+  // Export the escaping function so that the user may override it.
+  // See https://github.com/janl/mustache.js/issues/244
+  mustache.escape = escapeHtml;
+
+  // Export these mainly for testing, but also for advanced usage.
+  mustache.Scanner = Scanner;
+  mustache.Context = Context;
+  mustache.Writer = Writer;
+
+  return mustache;
+
+})));
+
+},{}],59:[function(require,module,exports){
 require("capability/es5");
 
 module.exports = require("./lib");
-},{"./lib":57,"capability/es5":35}],55:[function(require,module,exports){
+},{"./lib":62,"capability/es5":39}],60:[function(require,module,exports){
 var Class = function () {
     var options = Object.create({
         Source: Object,
@@ -9055,16 +10706,16 @@ Class.newInstance = function () {
 };
 
 module.exports = Class;
-},{}],56:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function () {
     throw new Error("Not implemented.");
 };
-},{}],57:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = {
     Class: require("./Class"),
     abstractMethod: require("./abstractMethod")
 };
-},{"./Class":55,"./abstractMethod":56}],58:[function(require,module,exports){
+},{"./Class":60,"./abstractMethod":61}],63:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -9250,7 +10901,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],59:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -9316,7 +10967,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":34}],60:[function(require,module,exports){
+},{"buffer":38}],65:[function(require,module,exports){
 'use strict'
 /* eslint no-proto: 0 */
 module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
@@ -9335,7 +10986,7 @@ function mixinProperties (obj, proto) {
   return obj
 }
 
-},{}],61:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports={
   "100": "Continue",
   "101": "Switching Protocols",
@@ -9403,7 +11054,7 @@ module.exports={
   "511": "Network Authentication Required"
 }
 
-},{}],62:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 /*!
  * statuses
  * Copyright(c) 2014 Jonathan Ong
@@ -9518,7 +11169,7 @@ function status (code) {
   return n
 }
 
-},{"./codes.json":61}],63:[function(require,module,exports){
+},{"./codes.json":66}],68:[function(require,module,exports){
 'use strict';
 
 // This is free and unencumbered software released into the public domain.
@@ -10161,7 +11812,7 @@ function UTF8Encoder(options) {
 
 exports.TextEncoder = TextEncoder;
 exports.TextDecoder = TextDecoder;
-},{}],64:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /*!
  * toidentifier
  * Copyright(c) 2016 Douglas Christopher Wilson
@@ -10193,7 +11844,7 @@ function toIdentifier (str) {
     .replace(/[^ _0-9a-z]/gi, '')
 }
 
-},{}],65:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -12572,9 +14223,9 @@ nacl.setPRNG = function(fn) {
 
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-},{"crypto":31}],66:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"./lib":69,"dup":41}],67:[function(require,module,exports){
+},{"crypto":35}],71:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"./lib":74,"dup":45}],72:[function(require,module,exports){
 var cache = function (fn) {
     var called = false,
         store;
@@ -12596,7 +14247,7 @@ var cache = function (fn) {
 };
 
 module.exports = cache;
-},{}],68:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function eachCombination(alternativesByDimension, callback, combination) {
     if (!combination)
         combination = [];
@@ -12611,12 +14262,12 @@ module.exports = function eachCombination(alternativesByDimension, callback, com
     else
         callback.apply(null, combination);
 };
-},{}],69:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = {
     cache: require("./cache"),
     eachCombination: require("./eachCombination")
 };
-},{"./cache":67,"./eachCombination":68}],70:[function(require,module,exports){
+},{"./cache":72,"./eachCombination":73}],75:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -12641,14 +14292,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],71:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],72:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -13238,4 +14889,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":71,"_process":58,"inherits":70}]},{},[1]);
+},{"./support/isBuffer":76,"_process":63,"inherits":75}]},{},[1]);

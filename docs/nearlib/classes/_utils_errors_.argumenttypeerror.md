@@ -29,7 +29,7 @@ sidebar_label: "ArgumentTypeError"
 
 \+ **new ArgumentTypeError**(`argName`: string, `argType`: string, `argValue`: any): *[ArgumentTypeError](_utils_errors_.argumenttypeerror.md)*
 
-*Defined in [src.ts/utils/errors.ts:7](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/errors.ts#L7)*
+*Defined in [src.ts/utils/errors.ts:7](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/errors.ts#L7)*
 
 **Parameters:**
 

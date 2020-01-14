@@ -9,7 +9,6 @@ sidebar_label: "providers/json-rpc-provider"
 ### Classes
 
 * [JsonRpcProvider](../classes/_providers_json_rpc_provider_.jsonrpcprovider.md)
-* [TypedError](../classes/_providers_json_rpc_provider_.typederror.md)
 
 ### Variables
 
@@ -21,4 +20,4 @@ sidebar_label: "providers/json-rpc-provider"
 
 • **_nextId**: *number* = 123
 
-*Defined in [src.ts/providers/json-rpc-provider.ts:13](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/providers/json-rpc-provider.ts#L13)*
+*Defined in [src.ts/providers/json-rpc-provider.ts:17](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/providers/json-rpc-provider.ts#L17)*

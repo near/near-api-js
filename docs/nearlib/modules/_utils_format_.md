@@ -16,9 +16,11 @@ sidebar_label: "utils/format"
 
 ### Functions
 
+* [cleanupAmount](_utils_format_.md#cleanupamount)
 * [formatNearAmount](_utils_format_.md#formatnearamount)
 * [formatWithCommas](_utils_format_.md#formatwithcommas)
 * [parseNearAmount](_utils_format_.md#parsenearamount)
+* [trimLeadingZeroes](_utils_format_.md#trimleadingzeroes)
 * [trimTrailingZeroes](_utils_format_.md#trimtrailingzeroes)
 
 ## Variables
@@ -27,7 +29,7 @@ sidebar_label: "utils/format"
 
 • **BN**: *any* =  require ('bn.js')
 
-*Defined in [src.ts/utils/format.ts:1](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L1)*
+*Defined in [src.ts/utils/format.ts:1](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L1)*
 
 ___
 
@@ -35,7 +37,7 @@ ___
 
 • **BN10**: *any* =  new BN(10)
 
-*Defined in [src.ts/utils/format.ts:15](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L15)*
+*Defined in [src.ts/utils/format.ts:15](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L15)*
 
 ___
 
@@ -43,7 +45,7 @@ ___
 
 • **NEAR_NOMINATION**: *any* =  new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10))
 
-*Defined in [src.ts/utils/format.ts:11](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L11)*
+*Defined in [src.ts/utils/format.ts:11](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L11)*
 
 Number of indivisible units in one NEAR. Derived from [NEAR_NOMINATION_EXP](_utils_format_.md#const-near_nomination_exp).
 
@@ -53,7 +55,7 @@ ___
 
 • **NEAR_NOMINATION_EXP**: *24* = 24
 
-*Defined in [src.ts/utils/format.ts:6](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L6)*
+*Defined in [src.ts/utils/format.ts:6](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L6)*
 
 Exponent for calculating how many indivisible units are there in one NEAR. See [NEAR_NOMINATION](_utils_format_.md#const-near_nomination).
 
@@ -63,15 +65,31 @@ ___
 
 • **ROUNDING_OFFSETS**: *any[]* =  []
 
-*Defined in [src.ts/utils/format.ts:14](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L14)*
+*Defined in [src.ts/utils/format.ts:14](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L14)*
 
 ## Functions
+
+###  cleanupAmount
+
+▸ **cleanupAmount**(`amount`: string): *string*
+
+*Defined in [src.ts/utils/format.ts:63](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L63)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`amount` | string |
+
+**Returns:** *string*
+
+___
 
 ###  formatNearAmount
 
 ▸ **formatNearAmount**(`balance`: string, `fracDigits`: number): *string*
 
-*Defined in [src.ts/utils/format.ts:27](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L27)*
+*Defined in [src.ts/utils/format.ts:27](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L27)*
 
 Convert account balance value from internal indivisible units to NEAR. 1 NEAR is defined by [NEAR_NOMINATION](_utils_format_.md#const-near_nomination).
 Effectively this divides given amount by [NEAR_NOMINATION](_utils_format_.md#const-near_nomination).
@@ -91,7 +109,7 @@ ___
 
 ▸ **formatWithCommas**(`value`: string): *string*
 
-*Defined in [src.ts/utils/format.ts:70](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L70)*
+*Defined in [src.ts/utils/format.ts:75](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L75)*
 
 **Parameters:**
 
@@ -107,7 +125,7 @@ ___
 
 ▸ **parseNearAmount**(`amt?`: string): *string | null*
 
-*Defined in [src.ts/utils/format.ts:51](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L51)*
+*Defined in [src.ts/utils/format.ts:51](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L51)*
 
 Convert human readable NEAR amount to internal indivisible units.
 Effectively this multiplies given amount by [NEAR_NOMINATION](_utils_format_.md#const-near_nomination).
@@ -122,11 +140,27 @@ Name | Type | Description |
 
 ___
 
+###  trimLeadingZeroes
+
+▸ **trimLeadingZeroes**(`value`: string): *string*
+
+*Defined in [src.ts/utils/format.ts:71](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L71)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | string |
+
+**Returns:** *string*
+
+___
+
 ###  trimTrailingZeroes
 
 ▸ **trimTrailingZeroes**(`value`: string): *string*
 
-*Defined in [src.ts/utils/format.ts:66](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/format.ts#L66)*
+*Defined in [src.ts/utils/format.ts:67](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/format.ts#L67)*
 
 **Parameters:**
 
