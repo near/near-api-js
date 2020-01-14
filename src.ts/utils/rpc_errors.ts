@@ -4,32 +4,23 @@ import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
 import * as CLASSMAP from '../generated/rpc_error_types';
 import { ServerError } from '../generated/rpc_error_types';
-import { TypedError } from './errors';
 
 export * from '../generated/rpc_error_types';
 
 export function parseRpcError(errorObj: Object): ServerError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
-    const error = new CLASSMAP[errorClassName]();
+    // NOTE: This assumes that all errors extend TypedError
+    const error = new CLASSMAP[errorClassName](formatError(errorClassName, result), errorClassName);
     Object.assign(error, result);
     return error;
 }
 
-// Transforms error to the old "TypedError"
-export function parseIntoOldTypedError(errorObj: Object): TypedError {
-    const result = {};
-    const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
-    const error = new CLASSMAP[errorClassName]();
-    Object.assign(error, result);
-    return new TypedError(formatError(error), '');
-}
-
-export function formatError(error: ServerError): string {
-    if (typeof messages[error.constructor.name] === 'string') {
-        return Mustache.render(messages[error.constructor.name], error);
+export function formatError(errorClassName: string, errorData): string {
+    if (typeof messages[errorClassName] === 'string') {
+        return Mustache.render(messages[errorClassName], errorData);
     }
-    return JSON.stringify(error);
+    return JSON.stringify(errorData);
 }
 
 function walkSubtype(errorObj, schema, result, typeName) {

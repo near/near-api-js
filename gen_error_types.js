@@ -3,8 +3,6 @@ const fs = require('fs');
 const {
     Project,
     Scope,
-    WriterFunctions,
-    VariableDeclarationKind
 } = require('ts-morph');
 
 const ERROR_SCHEMA_URL =
@@ -55,6 +53,8 @@ function genErrorClass(schema, sourceFile, tyName) {
     });
     if (superClassName) {
         classDecl.setExtends(superClassName);
+    } else {
+        classDecl.setExtends('TypedError');
     }
     const type = schema[tyName];
     classDecl.setIsExported(true);
@@ -73,6 +73,10 @@ function genErrorTypes(jsonSchema, targetFilePath) {
     const sourceFile = project.createSourceFile(targetFilePath, '', {
         overwrite: true
     });
+
+    sourceFile.addImportDeclaration({
+        moduleSpecifier: '../utils/errors'
+    }).addNamedImport('TypedError');
 
     const classMap = {};
     for (let tyName in jsonSchema.schema) {

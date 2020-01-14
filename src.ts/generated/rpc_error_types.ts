@@ -1,4 +1,6 @@
-export class ServerError {
+import { TypedError } from "../utils/errors";
+
+export class ServerError extends TypedError {
 }
 
 export class TxExecutionError extends ServerError {

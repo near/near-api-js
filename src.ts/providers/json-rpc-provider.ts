@@ -8,7 +8,7 @@ import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { TypedError } from '../utils/errors';
 import { base_encode } from '../utils/serialize';
-import { parseIntoOldTypedError } from '../utils/rpc_errors';
+import { parseRpcError } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
 export { TypedError };
@@ -76,10 +76,7 @@ export class JsonRpcProvider extends Provider {
                     // if error data has error_message and error_type properties, we consider that node returned an error in the old format
                     throw new TypedError(response.error.data.error_message, response.error.data.error_type);
                 } else {
-                    // overwise we need to transform the new format into the old one for a transition period
-                    throw parseIntoOldTypedError(response.error.data);
-                    // later we'll use this to parse and throw an error in the new format
-                    // throw parseRpcError(response.error.data);
+                    throw parseRpcError(response.error.data);
                 }
             } else {
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;

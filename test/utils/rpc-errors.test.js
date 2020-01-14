@@ -28,7 +28,7 @@ describe('rpc-errors', () => {
         expect(error instanceof AccountAlreadyExists).toBe(true);
         expect(error.index).toBe(1);
         expect(error.account_id).toBe('bob.near');
-        expect(formatError(error)).toBe('Can\'t create a new account bob.near, because it already exists');
+        expect(formatError(error.type, error)).toBe('Can\'t create a new account bob.near, because it already exists');
     });
 
     test('test ReceiverMismatch error', async () => {
@@ -51,7 +51,7 @@ describe('rpc-errors', () => {
         expect(error instanceof ReceiverMismatch).toBe(true);
         expect(error.ak_receiver).toBe('test.near');
         expect(error.tx_receiver).toBe('bob.near');
-        expect(formatError(error)).toBe(
+        expect(formatError(error.type, error)).toBe(
             'Transaction receiver_id bob.near doesn\'t match the access key receiver_id test.near'
         );
     });
@@ -79,7 +79,7 @@ describe('rpc-errors', () => {
         expect(error instanceof HostError).toBe(true);
         expect(error instanceof InvalidIteratorIndex).toBe(true);
         expect(error.iterator_index).toBe(42);
-        expect(formatError(error)).toBe('Iterator index 42 does not exist');
+        expect(formatError(error.type, error)).toBe('Iterator index 42 does not exist');
     });
 
 });
