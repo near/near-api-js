@@ -6,6 +6,7 @@ env:
 cache: yarn
 script:
   - yarn lint
+  - yarn audit
   - yarn test
   - yarn browserify && yarn run bundlewatch
 
