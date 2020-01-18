@@ -40,7 +40,6 @@ export class Account {
     readonly connection: Connection;
     readonly accountId: string;
     private _state: AccountState;
-    private _accessKey: AccessKey;
 
     private _ready: Promise<void>;
     protected get ready(): Promise<void> {
@@ -53,16 +52,7 @@ export class Account {
     }
 
     async fetchState(): Promise<void> {
-        this._accessKey = null;
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
-        const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
-        if (!publicKey) {
-            return;
-        }
-        this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
-        if (!this._accessKey) {
-            throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey.toString()}`);
-        }
     }
 
     async state(): Promise<AccountState> {
@@ -94,14 +84,17 @@ export class Account {
 
     private async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
-        if (!this._accessKey) {
-            throw new TypedError(`Can not sign transactions, no matching key pair found in Signer.`, 'KeyNotFound');
+
+        // TODO: Find matching access key based on transaction
+        const accessKey = await this.findAccessKey();
+        if (!accessKey) {
+            throw new TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
         }
 
         const status = await this.connection.provider.status();
 
         const [txHash, signedTx] = await signTransaction(
-            receiverId, ++this._accessKey.nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
+            receiverId, ++accessKey.nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
         );
 
         let result;
@@ -131,6 +124,15 @@ export class Account {
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.
         return result;
+    }
+
+    private async findAccessKey(): Promise<AccessKey> {
+        const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        if (!publicKey) {
+            return null;
+        }
+        // TODO: Cache keys and handle nonce errors automatically
+        return await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
     }
 
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
