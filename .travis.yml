@@ -8,4 +8,5 @@ script:
   - yarn lint
   - yarn test
   - yarn browserify && yarn run bundlewatch
+  - yarn audit
 
