@@ -12,7 +12,6 @@ export declare class Account {
     readonly connection: Connection;
     readonly accountId: string;
     private _state;
-    private _accessKey;
     private _ready;
     protected get ready(): Promise<void>;
     constructor(connection: Connection, accountId: string);
@@ -21,6 +20,7 @@ export declare class Account {
     private printLogs;
     private retryTxResult;
     private signAndSendTransaction;
+    private findAccessKey;
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
     sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
     createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
