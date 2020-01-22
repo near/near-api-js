@@ -201,9 +201,8 @@ export function createTransaction(signerId: string, publicKey: PublicKey, receiv
     return new Transaction({ signerId, publicKey, nonce, receiverId, actions, blockHash });
 }
 
-export async function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
+export async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const publicKey = await signer.getPublicKey(accountId, networkId);
-    const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);
@@ -212,4 +211,10 @@ export async function signTransaction(receiverId: string, nonce: number, actions
         signature: new Signature({ keyType: publicKey.keyType, data: signature.signature })
     });
     return [hash, signedTx];
+}
+
+export async function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
+    const publicKey = await signer.getPublicKey(accountId, networkId);
+    const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
+    return signTransactionObject(transaction, signer, accountId, networkId);
 }
