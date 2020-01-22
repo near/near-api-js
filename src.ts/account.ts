@@ -131,8 +131,19 @@ export class Account {
         if (!publicKey) {
             return null;
         }
+
         // TODO: Cache keys and handle nonce errors automatically
-        return await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+
+        try {
+            return await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+        } catch (e) {
+            // TODO: Check based on .type when nearcore starts returning query errors in structured format
+            if (e.message.includes('does not exist while viewing')) {
+                return null;
+            }
+
+            throw e;
+        }
     }
 
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
