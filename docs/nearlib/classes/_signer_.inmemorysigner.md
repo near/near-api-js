@@ -35,7 +35,7 @@ Signs using in memory key store.
 
 \+ **new InMemorySigner**(`keyStore`: [KeyStore](_key_stores_keystore_.keystore.md)): *[InMemorySigner](_signer_.inmemorysigner.md)*
 
-*Defined in [src.ts/signer.ts:47](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/signer.ts#L47)*
+*Defined in [src.ts/signer.ts:47](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/signer.ts#L47)*
 
 **Parameters:**
 
@@ -51,7 +51,7 @@ Name | Type |
 
 • **keyStore**: *[KeyStore](_key_stores_keystore_.keystore.md)*
 
-*Defined in [src.ts/signer.ts:47](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/signer.ts#L47)*
+*Defined in [src.ts/signer.ts:47](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/signer.ts#L47)*
 
 ## Methods
 
@@ -61,7 +61,7 @@ Name | Type |
 
 *Overrides [Signer](_signer_.signer.md).[createKey](_signer_.signer.md#abstract-createkey)*
 
-*Defined in [src.ts/signer.ts:54](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/signer.ts#L54)*
+*Defined in [src.ts/signer.ts:54](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/signer.ts#L54)*
 
 **Parameters:**
 
@@ -80,7 +80,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[getPublicKey](_signer_.signer.md#abstract-getpublickey)*
 
-*Defined in [src.ts/signer.ts:60](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/signer.ts#L60)*
+*Defined in [src.ts/signer.ts:60](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/signer.ts#L60)*
 
 **Parameters:**
 
@@ -99,7 +99,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[signHash](_signer_.signer.md#abstract-signhash)*
 
-*Defined in [src.ts/signer.ts:68](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/signer.ts#L68)*
+*Defined in [src.ts/signer.ts:68](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/signer.ts#L68)*
 
 **Parameters:**
 
@@ -119,7 +119,7 @@ ___
 
 *Inherited from [Signer](_signer_.signer.md).[signMessage](_signer_.signer.md#signmessage)*
 
-*Defined in [src.ts/signer.ts:38](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/signer.ts#L38)*
+*Defined in [src.ts/signer.ts:38](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/signer.ts#L38)*
 
 Signs given message, by first hashing with sha256.
 

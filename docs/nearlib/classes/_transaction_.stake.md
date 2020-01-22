@@ -29,7 +29,7 @@ sidebar_label: "Stake"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/enums.ts#L17)*
+*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/enums.ts#L17)*
 
 **Parameters:**
 
@@ -45,12 +45,12 @@ Name | Type |
 
 • **publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [src.ts/transaction.ts:43](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L43)*
+*Defined in [src.ts/transaction.ts:43](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L43)*
 
 ___
 
 ###  stake
 
-• **stake**: *BN*
+• **stake**: *[BN](../modules/_utils_format_.md#const-bn)*
 
-*Defined in [src.ts/transaction.ts:43](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L43)*
+*Defined in [src.ts/transaction.ts:43](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L43)*

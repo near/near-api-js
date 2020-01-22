@@ -6,7 +6,7 @@ sidebar_label: "TypedError"
 
 ## Hierarchy
 
-* Error
+* [Error](_utils_serialize_.borsherror.md#static-error)
 
   ↳ **TypedError**
 
@@ -32,7 +32,7 @@ sidebar_label: "TypedError"
 
 \+ **new TypedError**(`message?`: string, `type?`: string): *[TypedError](_utils_errors_.typederror.md)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -49,7 +49,7 @@ Name | Type |
 
 • **message**: *string*
 
-*Inherited from void*
+*Inherited from [BorshError](_utils_serialize_.borsherror.md).[message](_utils_serialize_.borsherror.md#message)*
 
 Defined in node_modules/typescript/lib/lib.es5.d.ts:974
 
@@ -59,7 +59,7 @@ ___
 
 • **name**: *string*
 
-*Inherited from void*
+*Inherited from [BorshError](_utils_serialize_.borsherror.md).[name](_utils_serialize_.borsherror.md#name)*
 
 Defined in node_modules/typescript/lib/lib.es5.d.ts:973
 
@@ -69,9 +69,7 @@ ___
 
 • **stack**? : *string*
 
-*Inherited from void*
-
-*Overrides void*
+*Inherited from [BorshError](_utils_serialize_.borsherror.md).[stack](_utils_serialize_.borsherror.md#optional-stack)*
 
 Defined in node_modules/typescript/lib/lib.es5.d.ts:975
 
@@ -81,7 +79,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
 
 ___
 

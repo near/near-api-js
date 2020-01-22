@@ -36,7 +36,7 @@ sidebar_label: "Action"
 
 *Inherited from [Enum](_utils_enums_.enum.md).[constructor](_utils_enums_.enum.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/enums.ts#L4)*
+*Defined in [src.ts/utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/enums.ts#L4)*
 
 **Parameters:**
 
@@ -52,7 +52,7 @@ Name | Type |
 
 • **addKey**: *[AddKey](_transaction_.addkey.md)*
 
-*Defined in [src.ts/transaction.ts:121](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L121)*
+*Defined in [src.ts/transaction.ts:121](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L121)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 • **createAccount**: *[CreateAccount](_transaction_.createaccount.md)*
 
-*Defined in [src.ts/transaction.ts:116](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L116)*
+*Defined in [src.ts/transaction.ts:116](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L116)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **deleteAccount**: *[DeleteAccount](_transaction_.deleteaccount.md)*
 
-*Defined in [src.ts/transaction.ts:123](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L123)*
+*Defined in [src.ts/transaction.ts:123](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L123)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **deleteKey**: *[DeleteKey](_transaction_.deletekey.md)*
 
-*Defined in [src.ts/transaction.ts:122](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L122)*
+*Defined in [src.ts/transaction.ts:122](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L122)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 • **deployContract**: *[DeployContract](_transaction_.deploycontract.md)*
 
-*Defined in [src.ts/transaction.ts:117](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L117)*
+*Defined in [src.ts/transaction.ts:117](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L117)*
 
 ___
 
@@ -94,7 +94,7 @@ ___
 
 *Inherited from [Enum](_utils_enums_.enum.md).[enum](_utils_enums_.enum.md#enum)*
 
-*Defined in [src.ts/utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/utils/enums.ts#L4)*
+*Defined in [src.ts/utils/enums.ts:4](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/enums.ts#L4)*
 
 ___
 
@@ -102,7 +102,7 @@ ___
 
 • **functionCall**: *[FunctionCall](_transaction_.functioncall.md)*
 
-*Defined in [src.ts/transaction.ts:118](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L118)*
+*Defined in [src.ts/transaction.ts:118](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L118)*
 
 ___
 
@@ -110,7 +110,7 @@ ___
 
 • **stake**: *[Stake](_transaction_.stake.md)*
 
-*Defined in [src.ts/transaction.ts:120](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L120)*
+*Defined in [src.ts/transaction.ts:120](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L120)*
 
 ___
 
@@ -118,4 +118,4 @@ ___
 
 • **transfer**: *[Transfer](_transaction_.transfer.md)*
 
-*Defined in [src.ts/transaction.ts:119](https://github.com/nearprotocol/nearlib/blob/36a8ddc/src.ts/transaction.ts#L119)*
+*Defined in [src.ts/transaction.ts:119](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/transaction.ts#L119)*

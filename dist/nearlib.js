@@ -106,7 +106,16 @@ class Account {
             return null;
         }
         // TODO: Cache keys and handle nonce errors automatically
-        return await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+        try {
+            return await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+        }
+        catch (e) {
+            // TODO: Check based on .type when nearcore starts returning query errors in structured format
+            if (e.message.includes('does not exist while viewing')) {
+                return null;
+            }
+            throw e;
+        }
     }
     async createAndDeployContract(contractId, publicKey, data, amount) {
         const accessKey = transaction_1.fullAccessKey();
@@ -1951,17 +1960,27 @@ function createTransaction(signerId, publicKey, receiverId, nonce, actions, bloc
     return new Transaction({ signerId, publicKey, nonce, receiverId, actions, blockHash });
 }
 exports.createTransaction = createTransaction;
-async function signTransaction(receiverId, nonce, actions, blockHash, signer, accountId, networkId) {
-    const publicKey = await signer.getPublicKey(accountId, networkId);
-    const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
+async function signTransactionObject(transaction, signer, accountId, networkId) {
     const message = serialize_1.serialize(exports.SCHEMA, transaction);
     const hash = new Uint8Array(js_sha256_1.default.sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);
     const signedTx = new SignedTransaction({
         transaction,
-        signature: new Signature({ keyType: publicKey.keyType, data: signature.signature })
+        signature: new Signature({ keyType: transaction.publicKey.keyType, data: signature.signature })
     });
     return [hash, signedTx];
+}
+async function signTransaction(...args) {
+    if (args[0].constructor === Transaction) {
+        const [transaction, signer, accountId, networkId] = args;
+        return signTransactionObject(transaction, signer, accountId, networkId);
+    }
+    else {
+        const [receiverId, nonce, actions, blockHash, signer, accountId, networkId] = args;
+        const publicKey = await signer.getPublicKey(accountId, networkId);
+        const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
+        return signTransactionObject(transaction, signer, accountId, networkId);
+    }
 }
 exports.signTransaction = signTransaction;
 
