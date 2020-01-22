@@ -43,8 +43,8 @@ test('remove access key no longer works', async() => {
         await contract.setValue({value: 'test'});
         fail('should throw an error');
     } catch (e) {
-        expect(e.message).toMatch(new RegExp(`.*?Signer "${workingAccount.accountId}" doesn't have access key with the given public_key ${publicKey}`));
-        expect(e.type).toMatch(/InvalidTxError::InvalidAccessKey::AccessKeyNotFound|UntypedError/);
+        expect(e.message).toEqual(`Can not sign transactions for account ${workingAccount.accountId}, no matching key pair found in Signer.`);
+        expect(e.type).toEqual('KeyNotFound');
     }
 });
 
