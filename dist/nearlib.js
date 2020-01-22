@@ -38,16 +38,7 @@ class Account {
         return this._ready || (this._ready = Promise.resolve(this.fetchState()));
     }
     async fetchState() {
-        this._accessKey = null;
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
-        const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
-        if (!publicKey) {
-            return;
-        }
-        this._accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
-        if (!this._accessKey) {
-            throw new Error(`Failed to fetch access key for '${this.accountId}' with public key ${publicKey.toString()}`);
-        }
     }
     async state() {
         await this.ready;
@@ -75,11 +66,13 @@ class Account {
     }
     async signAndSendTransaction(receiverId, actions) {
         await this.ready;
-        if (!this._accessKey) {
-            throw new providers_1.TypedError(`Can not sign transactions, no matching key pair found in Signer.`, 'KeyNotFound');
+        // TODO: Find matching access key based on transaction
+        const accessKey = await this.findAccessKey();
+        if (!accessKey) {
+            throw new providers_1.TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
         }
         const status = await this.connection.provider.status();
-        const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++this._accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
+        const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
         let result;
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
@@ -106,6 +99,14 @@ class Account {
         // TODO: if Tx is Unknown or Started.
         // TODO: deal with timeout on node side.
         return result;
+    }
+    async findAccessKey() {
+        const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        if (!publicKey) {
+            return null;
+        }
+        // TODO: Cache keys and handle nonce errors automatically
+        return await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
     }
     async createAndDeployContract(contractId, publicKey, data, amount) {
         const accessKey = transaction_1.fullAccessKey();
@@ -3192,7 +3193,7 @@ function fromByteArray (uint8) {
       number = -number;
     }
     if (number < 0x4000000) {
-      this.words = [ number & 0x3ffffff ];
+      this.words = [number & 0x3ffffff];
       this.length = 1;
     } else if (number < 0x10000000000000) {
       this.words = [
@@ -3220,7 +3221,7 @@ function fromByteArray (uint8) {
     // Perhaps a Uint8Array
     assert(typeof number.length === 'number');
     if (number.length <= 0) {
-      this.words = [ 0 ];
+      this.words = [0];
       this.length = 1;
       return this;
     }
@@ -3350,7 +3351,7 @@ function fromByteArray (uint8) {
 
   BN.prototype._parseBase = function _parseBase (number, base, start) {
     // Initialize as zero
-    this.words = [ 0 ];
+    this.words = [0];
     this.length = 1;
 
     // Find length of limb in base
@@ -3403,11 +3404,15 @@ function fromByteArray (uint8) {
     dest.red = this.red;
   };
 
+  function move (dest, src) {
+    dest.words = src.words;
+    dest.length = src.length;
+    dest.negative = src.negative;
+    dest.red = src.red;
+  }
+
   BN.prototype._move = function _move (dest) {
-    dest.words = this.words;
-    dest.length = this.length;
-    dest.negative = this.negative;
-    dest.red = this.red;
+    move(dest, this);
   };
 
   BN.prototype.clone = function clone () {
@@ -3439,9 +3444,17 @@ function fromByteArray (uint8) {
     return this;
   };
 
-  BN.prototype.inspect = function inspect () {
+  // Check Symbol.for because not everywhere where Symbol defined
+  // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#Browser_compatibility
+  if (typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') {
+    BN.prototype[Symbol.for('nodejs.util.inspect.custom')] = inspect;
+  } else {
+    BN.prototype.inspect = inspect;
+  }
+
+  function inspect () {
     return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
-  };
+  }
 
   /*
 
@@ -3616,51 +3629,97 @@ function fromByteArray (uint8) {
     return this.toArrayLike(Array, endian, length);
   };
 
-  BN.prototype.toArrayLike = function toArrayLike (ArrayType, endian, length) {
-    var byteLength = this.byteLength();
-    var reqLength = length || Math.max(1, byteLength);
-    assert(byteLength <= reqLength, 'byte array longer than desired length');
-    assert(reqLength > 0, 'Requested array length <= 0');
-
-    this._strip();
-    var littleEndian = endian === 'le';
-    var res = allocate(ArrayType, reqLength);
-
-    var b, i;
-    var q = this.clone();
-    if (!littleEndian) {
-      // Assume big-endian
-      for (i = 0; i < reqLength - byteLength; i++) {
-        res[i] = 0;
-      }
-
-      for (i = 0; !q.isZero(); i++) {
-        b = q.andln(0xff);
-        q.iushrn(8);
-
-        res[reqLength - i - 1] = b;
-      }
-    } else {
-      for (i = 0; !q.isZero(); i++) {
-        b = q.andln(0xff);
-        q.iushrn(8);
-
-        res[i] = b;
-      }
-
-      for (; i < reqLength; i++) {
-        res[i] = 0;
-      }
-    }
-
-    return res;
-  };
-
   var allocate = function allocate (ArrayType, size) {
     if (ArrayType.allocUnsafe) {
       return ArrayType.allocUnsafe(size);
     }
     return new ArrayType(size);
+  };
+
+  BN.prototype.toArrayLike = function toArrayLike (ArrayType, endian, length) {
+    this._strip();
+
+    var byteLength = this.byteLength();
+    var reqLength = length || Math.max(1, byteLength);
+    assert(byteLength <= reqLength, 'byte array longer than desired length');
+    assert(reqLength > 0, 'Requested array length <= 0');
+
+    var res = allocate(ArrayType, reqLength);
+    var postfix = endian === 'le' ? 'LE' : 'BE';
+    this['_toArrayLike' + postfix](res, byteLength);
+    return res;
+  };
+
+  BN.prototype._toArrayLikeLE = function _toArrayLikeLE (res, byteLength) {
+    var position = 0;
+    var carry = 0;
+
+    for (var i = 0, shift = 0; i < this.length; i++) {
+      var word = (this.words[i] << shift) | carry;
+
+      res[position++] = word & 0xff;
+      if (position < res.length) {
+        res[position++] = (word >> 8) & 0xff;
+      }
+      if (position < res.length) {
+        res[position++] = (word >> 16) & 0xff;
+      }
+
+      if (shift === 6) {
+        if (position < res.length) {
+          res[position++] = (word >> 24) & 0xff;
+        }
+        carry = 0;
+        shift = 0;
+      } else {
+        carry = word >>> 24;
+        shift += 2;
+      }
+    }
+
+    if (position < res.length) {
+      res[position++] = carry;
+
+      while (position < res.length) {
+        res[position++] = 0;
+      }
+    }
+  };
+
+  BN.prototype._toArrayLikeBE = function _toArrayLikeBE (res, byteLength) {
+    var position = res.length - 1;
+    var carry = 0;
+
+    for (var i = 0, shift = 0; i < this.length; i++) {
+      var word = (this.words[i] << shift) | carry;
+
+      res[position--] = word & 0xff;
+      if (position >= 0) {
+        res[position--] = (word >> 8) & 0xff;
+      }
+      if (position >= 0) {
+        res[position--] = (word >> 16) & 0xff;
+      }
+
+      if (shift === 6) {
+        if (position >= 0) {
+          res[position--] = (word >> 24) & 0xff;
+        }
+        carry = 0;
+        shift = 0;
+      } else {
+        carry = word >>> 24;
+        shift += 2;
+      }
+    }
+
+    if (position >= 0) {
+      res[position--] = carry;
+
+      while (position >= 0) {
+        res[position--] = 0;
+      }
+    }
   };
 
   if (Math.clz32) {
@@ -3733,7 +3792,7 @@ function fromByteArray (uint8) {
       var off = (bit / 26) | 0;
       var wbit = bit % 26;
 
-      w[bit] = (num.words[off] & (1 << wbit)) >>> wbit;
+      w[bit] = (num.words[off] >>> wbit) & 0x01;
     }
 
     return w;
@@ -4755,8 +4814,10 @@ function fromByteArray (uint8) {
   }
 
   function jumboMulTo (self, num, out) {
-    var fftm = new FFTM();
-    return fftm.mulp(self, num, out);
+    // Temporary disable, see https://github.com/indutny/bn.js/issues/211
+    // var fftm = new FFTM();
+    // return fftm.mulp(self, num, out);
+    return bigMulTo(self, num, out);
   }
 
   BN.prototype.mulTo = function mulTo (num, out) {
@@ -5236,7 +5297,7 @@ function fromByteArray (uint8) {
 
     // Possible sign change
     if (this.negative !== 0) {
-      if (this.length === 1 && (this.words[0] | 0) < num) {
+      if (this.length === 1 && (this.words[0] | 0) <= num) {
         this.words[0] = num - (this.words[0] | 0);
         this.negative = 0;
         return this;
@@ -5553,7 +5614,7 @@ function fromByteArray (uint8) {
     var cmp = mod.cmp(half);
 
     // Round down
-    if (cmp < 0 || r2 === 1 && cmp === 0) return dm.div;
+    if (cmp < 0 || (r2 === 1 && cmp === 0)) return dm.div;
 
     // Round up
     return dm.div.negative !== 0 ? dm.div.isubn(1) : dm.div.iaddn(1);
@@ -6263,7 +6324,7 @@ function fromByteArray (uint8) {
   Red.prototype.imod = function imod (a) {
     if (this.prime) return this.prime.ireduce(a)._forceRed(this);
 
-    a.umod(this.m)._forceRed(this)._move(a);
+    move(a, a.umod(this.m)._forceRed(this));
     return a;
   };
 
@@ -10328,14 +10389,27 @@ if (typeof Object.create === 'function') {
    * avoid the need to parse the same template twice.
    */
   function Writer () {
-    this.cache = {};
+    this.templateCache = {
+      _cache: {},
+      set: function set (key, value) {
+        this._cache[key] = value;
+      },
+      get: function get (key) {
+        return this._cache[key];
+      },
+      clear: function clear () {
+        this._cache = {};
+      }
+    };
   }
 
   /**
    * Clears all cached templates in this writer.
    */
   Writer.prototype.clearCache = function clearCache () {
-    this.cache = {};
+    if (typeof this.templateCache !== 'undefined') {
+      this.templateCache.clear();
+    }
   };
 
   /**
@@ -10344,13 +10418,15 @@ if (typeof Object.create === 'function') {
    * that is generated from the parse.
    */
   Writer.prototype.parse = function parse (template, tags) {
-    var cache = this.cache;
+    var cache = this.templateCache;
     var cacheKey = template + ':' + (tags || mustache.tags).join(':');
-    var tokens = cache[cacheKey];
+    var isCacheEnabled = typeof cache !== 'undefined';
+    var tokens = isCacheEnabled ? cache.get(cacheKey) : undefined;
 
-    if (tokens == null)
-      tokens = cache[cacheKey] = parseTemplate(template, tags);
-
+    if (tokens == undefined) {
+      tokens = parseTemplate(template, tags);
+      isCacheEnabled && cache.set(cacheKey, tokens);
+    }
     return tokens;
   };
 
@@ -10493,16 +10569,29 @@ if (typeof Object.create === 'function') {
 
   var mustache = {
     name: 'mustache.js',
-    version: '3.2.1',
+    version: '4.0.0',
     tags: [ '{{', '}}' ],
     clearCache: undefined,
     escape: undefined,
     parse: undefined,
     render: undefined,
-    to_html: undefined,
     Scanner: undefined,
     Context: undefined,
-    Writer: undefined
+    Writer: undefined,
+    /**
+     * Allows a user to override the default caching strategy, by providing an
+     * object with set, get and clear methods. This can also be used to disable
+     * the cache by setting it to the literal `undefined`.
+     */
+    set templateCache (cache) {
+      defaultWriter.templateCache = cache;
+    },
+    /**
+     * Gets the default or overridden caching object from the default writer.
+     */
+    get templateCache () {
+      return defaultWriter.templateCache;
+    }
   };
 
   // All high-level mustache.* functions use this writer.
@@ -10538,20 +10627,6 @@ if (typeof Object.create === 'function') {
     }
 
     return defaultWriter.render(template, view, partials, tags);
-  };
-
-  // This is here for backwards compatibility with 0.4.x.,
-  /*eslint-disable */ // eslint wants camel cased function name
-  mustache.to_html = function to_html (template, view, partials, send) {
-    /*eslint-enable*/
-
-    var result = mustache.render(template, view, partials);
-
-    if (isFunction(send)) {
-      send(result);
-    } else {
-      return result;
-    }
   };
 
   // Export the escaping function so that the user may override it.
@@ -13888,12 +13963,11 @@ function unpackneg(r, p) {
 }
 
 function crypto_sign_open(m, sm, n, pk) {
-  var i, mlen;
+  var i;
   var t = new Uint8Array(32), h = new Uint8Array(64);
   var p = [gf(), gf(), gf(), gf()],
       q = [gf(), gf(), gf(), gf()];
 
-  mlen = -1;
   if (n < 64) return -1;
 
   if (unpackneg(q, pk)) return -1;
@@ -13915,8 +13989,7 @@ function crypto_sign_open(m, sm, n, pk) {
   }
 
   for (i = 0; i < n; i++) m[i] = sm[i + 64];
-  mlen = n;
-  return mlen;
+  return n;
 }
 
 var crypto_secretbox_KEYBYTES = 32,
@@ -13977,7 +14050,23 @@ nacl.lowlevel = {
   crypto_sign_PUBLICKEYBYTES: crypto_sign_PUBLICKEYBYTES,
   crypto_sign_SECRETKEYBYTES: crypto_sign_SECRETKEYBYTES,
   crypto_sign_SEEDBYTES: crypto_sign_SEEDBYTES,
-  crypto_hash_BYTES: crypto_hash_BYTES
+  crypto_hash_BYTES: crypto_hash_BYTES,
+
+  gf: gf,
+  D: D,
+  L: L,
+  pack25519: pack25519,
+  unpack25519: unpack25519,
+  M: M,
+  A: A,
+  S: S,
+  Z: Z,
+  pow2523: pow2523,
+  add: add,
+  set25519: set25519,
+  modL: modL,
+  scalarmult: scalarmult,
+  scalarbase: scalarbase,
 };
 
 /* High-level API */
