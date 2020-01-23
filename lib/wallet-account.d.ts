@@ -3,13 +3,8 @@ import { Near } from './near';
 import { KeyStore } from './key_stores';
 import { FinalExecutionOutcome } from './providers';
 import { Transaction, Action } from './transaction';
+import { PublicKey } from './utils';
 import { Connection } from './connection';
-interface SignOptions {
-    accountId: string;
-    publicKey: string;
-    send: boolean;
-    callbackUrl: string;
-}
 export declare class WalletConnection {
     _walletBaseUrl: string;
     _authDataKey: string;
@@ -45,7 +40,7 @@ export declare class WalletConnection {
      *     onFailureHref);
      */
     requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string): Promise<void>;
-    requestSignTransactions(transactions: Transaction[], options: SignOptions): Promise<void>;
+    requestSignTransactions(transactions: Transaction[], callbackUrl?: string): Promise<void>;
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
@@ -60,10 +55,14 @@ export declare class WalletConnection {
     account(): ConnectedWalletAccount;
 }
 export declare const WalletAccount: typeof WalletConnection;
+/**
+ * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
+ */
 declare class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
-    accessKeyForTransaction(receiverId: string, actions: Action[]): Promise<any>;
+    accessKeyMatchesTransaction(accessKey: any, receiverId: string, actions: Action[]): Promise<boolean>;
+    accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any>;
 }
 export {};

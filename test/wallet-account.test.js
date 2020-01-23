@@ -88,3 +88,40 @@ it('can complete sign in', async () => {
         [{}, 'documentTitle', 'http://example.com/location']
     ]);
 });
+
+function createTransferTx() {
+    const actions = [
+        nearlib.transactions.transfer(1),
+    ];
+    const blockHash = nearlib.utils.serialize.base_decode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
+    return nearlib.transactions.createTransaction(
+        'test.near',
+        nearlib.utils.PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
+        'whatever.near',
+        1,
+        actions,
+        blockHash);
+}
+
+it('can request transaction signing', async () => {
+    let newUrl;
+    windowSpy.mockImplementation(() => ({
+        location: {
+            href: 'http://example.com/location',
+            assign(url) {
+                newUrl = url;
+            }
+        }
+    }));
+
+    await walletAccount.requestSignTransactions([createTransferTx()], 'http://example.com/callback');
+
+    expect(url.parse(newUrl, true)).toMatchObject({
+        protocol: 'http:',
+        host: 'example.com',
+        query: {
+            callbackUrl: 'http://example.com/callback',
+            transactions: 'CQAAAHRlc3QubmVhcgCRez0mjUtY9/7BsVC9aNab4+5dTMOYVeNBU4Rlu3eGDQEAAAAAAAAADQAAAHdoYXRldmVyLm5lYXIPpHP9JpAd8pa+atxMxN800EDvokNSJLaYaRDmMML+9gEAAAADAQAAAAAAAAAAAAAAAAAAAA=='
+        }
+    });
+});

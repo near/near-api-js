@@ -15,13 +15,6 @@ const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
-interface SignOptions {
-    accountId: string;
-    publicKey: string;
-    send: boolean;
-    callbackUrl: string;
-}
-
 export class WalletConnection {
     _walletBaseUrl: string;
     _authDataKey: string;
@@ -96,7 +89,7 @@ export class WalletConnection {
         window.location.assign(newUrl.toString());
     }
 
-    async requestSignTransactions(transactions: Transaction[], options: SignOptions) {
+    async requestSignTransactions(transactions: Transaction[], callbackUrl?: string) {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
@@ -104,7 +97,7 @@ export class WalletConnection {
             .map(transaction => serialize.serialize(SCHEMA, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
-        newUrl.searchParams.set('callbackUrl', options.callbackUrl || currentUrl.href);
+        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
 
         window.location.assign(newUrl.toString());
     }
@@ -191,12 +184,7 @@ class ConnectedWalletAccount extends Account {
         const status = await this.connection.provider.status();
         const blockHash = base_decode(status.sync_info.latest_block_hash);
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash)
-        await this.walletConnection.requestSignTransactions([transaction], {
-            accountId: this.accountId,
-            publicKey: publicKey.toString(),
-            send: true,
-            callbackUrl: window.location.href
-        });
+        await this.walletConnection.requestSignTransactions([transaction], window.location.href);
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
