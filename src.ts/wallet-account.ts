@@ -183,7 +183,7 @@ class ConnectedWalletAccount extends Account {
         const nonce = accessKey.access_key.nonce + 1;
         const status = await this.connection.provider.status();
         const blockHash = base_decode(status.sync_info.latest_block_hash);
-        const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash)
+        const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
         await this.walletConnection.requestSignTransactions([transaction], window.location.href);
 
         return new Promise((resolve, reject) => {
@@ -206,7 +206,7 @@ class ConnectedWalletAccount extends Account {
             const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
             if (allowedReceiverId === receiverId) {
                 return actions.every(({ functionCall }) => functionCall &&
-                    (allowedMethods.length == 0 || allowedMethods.indexOf(functionCall.methodName) !== -1));
+                    (allowedMethods.length === 0 || allowedMethods.indexOf(functionCall.methodName) !== -1));
             }
         }
         // TODO: Support other permissions than FunctionCall
