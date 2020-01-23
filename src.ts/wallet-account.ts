@@ -104,17 +104,10 @@ export class WalletConnection {
             .map(transaction => serialize.serialize(SCHEMA, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
-        // TODO: Make sure all options are handled on wallet side
-        newUrl.searchParams.set('accountId', options.accountId);
-        newUrl.searchParams.set('publicKey', options.publicKey);
-        newUrl.searchParams.set('send', (!!options.send).toString());
         newUrl.searchParams.set('callbackUrl', options.callbackUrl || currentUrl.href);
 
         window.location.assign(newUrl.toString());
     }
-    
-    // TODO: Implement all account / contract functions with "can refresh page in browser" before callback assumption.
-    // TODO: Implement custom Signer with "can refresh page in browser" before callback assumption.
 
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
@@ -165,6 +158,9 @@ export class WalletConnection {
 
 export const WalletAccount = WalletConnection;
 
+/**
+ * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
+ */
 class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
 
@@ -178,14 +174,15 @@ class ConnectedWalletAccount extends Account {
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
 
-        const accessKey = await this.accessKeyForTransaction(receiverId, actions);
-        if (false) {
-            // TODO: Check whether AccessKey allows to sign transaction locally
-            return super.signAndSendTransaction(receiverId, actions);
-        }
-
+        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        const accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
             throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
+        }
+
+        if (localKey && localKey.toString() === accessKey.public_key) {
+            return super.signAndSendTransaction(receiverId, actions);
+            // TODO: Handle NotEnoughAllowance error
         }
 
         const publicKey = PublicKey.from(accessKey.public_key);
@@ -206,15 +203,46 @@ class ConnectedWalletAccount extends Account {
                 reject(new Error('Failed to redirect to sign transaction'));
             }, 1000);
         });
-  
-        // TODO: Aggregate multiple transaction request with "debounce". Introduce TrasactionQueue which also can be used to watch for status?
-        // TODO: Return unresolved promise which returns error on debounce timeout?
+
+        // TODO: Aggregate multiple transaction request with "debounce".
+        // TODO: Introduce TrasactionQueue which also can be used to watch for status?
     }
 
-    async accessKeyForTransaction(receiverId: string, actions: Action[]): Promise<any> {
+    async accessKeyMatchesTransaction(accessKey, receiverId: string, actions: Action[]): Promise<boolean> {
+        const { access_key: { permission } } = accessKey;
+        if (permission === 'FullAccess') {
+            return true;
+        }
+
+        if (permission.FunctionCall) {
+            const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
+            if (allowedReceiverId === receiverId) {
+                return actions.every(({ functionCall }) => functionCall &&
+                    (allowedMethods.length == 0 || allowedMethods.indexOf(functionCall.methodName) !== -1));
+            }
+        }
+        // TODO: Support other permissions than FunctionCall
+
+        return false;
+    }
+
+    async accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any> {
         const accessKeys = await this.getAccessKeys();
-        // TODO: Filter by what key can perform all of the actions
-        // TODO: Return local access key when it works for all actions
-        return accessKeys.find(accessKey => this.walletConnection._authData.allKeys.indexOf(accessKey.public_key) !== -1);
+
+        if (localKey) {
+            const accessKey = accessKeys.find(key => key.public_key === localKey.toString());
+            if (accessKey && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
+                return accessKey;
+            }
+        }
+
+        const walletKeys = this.walletConnection._authData.allKeys;
+        for (const accessKey of accessKeys) {
+            if (walletKeys.indexOf(accessKey.public_key) !== -1 && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
+                return accessKey;
+            }
+        }
+
+        return null;
     }
 }
