@@ -1,4 +1,5 @@
 const url = require('url');
+const BN = require('bn.js');
 
 const nearlib = require('../lib/index');
 
@@ -17,9 +18,7 @@ beforeEach(() => {
             walletUrl: 'http://example.com/wallet',
         },
         connection: {
-            signer: {
-                keyStore
-            }
+            signer: new nearlib.InMemorySigner(keyStore)
         }
     };
     walletAccount = new nearlib.WalletAccount(nearFake);
@@ -64,7 +63,7 @@ it('can request sign in', async () => {
 
 it('can complete sign in', async () => {
     const localStorage = require('localstorage-memory');
-    const keyPair = nearlib.KeyPair.fromRandom('ed25519'); 
+    const keyPair = nearlib.KeyPair.fromRandom('ed25519');
     const history = [];
     windowSpy.mockImplementation(() => ({
         location: {
@@ -89,11 +88,12 @@ it('can complete sign in', async () => {
     ]);
 });
 
+const BLOCK_HASH = '244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM';
+const blockHash = nearlib.utils.serialize.base_decode(BLOCK_HASH);
 function createTransferTx() {
     const actions = [
         nearlib.transactions.transfer(1),
     ];
-    const blockHash = nearlib.utils.serialize.base_decode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
     return nearlib.transactions.createTransaction(
         'test.near',
         nearlib.utils.PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
@@ -124,4 +124,82 @@ it('can request transaction signing', async () => {
             transactions: 'CQAAAHRlc3QubmVhcgCRez0mjUtY9/7BsVC9aNab4+5dTMOYVeNBU4Rlu3eGDQEAAAAAAAAADQAAAHdoYXRldmVyLm5lYXIPpHP9JpAd8pa+atxMxN800EDvokNSJLaYaRDmMML+9gEAAAADAQAAAAAAAAAAAAAAAAAAAA=='
         }
     });
+});
+
+it('requests transaction signing automatically when there is no local key', async () => {
+    // TODO: Refactor copy-pasted common setup code
+    let newUrl;
+    windowSpy.mockImplementation(() => ({
+        location: {
+            href: 'http://example.com/location',
+            assign(url) {
+                newUrl = url;
+            }
+        }
+    }));
+    let keyPair = nearlib.KeyPair.fromRandom('ed25519');
+    walletAccount._authData = {
+        allKeys: [ 'no_such_access_key', keyPair.publicKey.toString() ],
+        accountId: 'signer.near'
+    };
+    nearFake.connection.provider = {
+        query(path, data) {
+            if (path === 'account/signer.near') {
+                return { };
+            }
+            if (path === 'access_key/signer.near') {
+                return { keys: [{
+                    access_key: {
+                        nonce: 1,
+                        permission: 'FullAccess'
+                    },
+                    public_key: keyPair.publicKey.toString()
+                }] };
+            }
+            fail(`Unexpected query: ${path} ${data}`);
+        },
+        status() {
+            return {
+                sync_info: {
+                    latest_block_hash: BLOCK_HASH
+                }
+            };
+        }
+    }
+
+    try {
+        await walletAccount.account().signAndSendTransaction('receiver.near', [nearlib.transactions.transfer(1)]);
+        fail('expected to throw');
+    } catch (e) {
+        expect(e.message).toEqual('Failed to redirect to sign transaction');
+    }
+
+    const parsedUrl = url.parse(newUrl, true);
+    expect(parsedUrl).toMatchObject({
+        protocol: 'http:',
+        host: 'example.com',
+        query: {
+            callbackUrl: 'http://example.com/location'
+        }
+    });
+    const transactions = parsedUrl.query.transactions.split(',')
+        .map(txBase64 => nearlib.utils.serialize.deserialize(
+            nearlib.transactions.SCHEMA,
+            nearlib.transactions.Transaction,
+            Buffer.from(txBase64, 'base64')));
+
+    expect(transactions).toHaveLength(1);
+    expect(transactions[0]).toMatchObject({
+        signerId: 'signer.near',
+        // nonce: new BN(2)
+        receiverId: 'receiver.near',
+        actions: [{
+            transfer: {
+                // deposit: new BN(1)
+            }
+        }]
+    });
+    expect(transactions[0].nonce.toString()).toEqual('2');
+    expect(transactions[0].actions[0].transfer.deposit.toString()).toEqual('1');
+    expect(Buffer.from(transactions[0].publicKey.data)).toEqual(Buffer.from(keyPair.publicKey.data));
 });
