@@ -1,0 +1,538 @@
+{
+  "schema": {
+    "InvalidIteratorIndex": {
+      "name": "InvalidIteratorIndex",
+      "subtypes": [],
+      "props": {
+        "iterator_index": ""
+      }
+    },
+    "InvalidPublicKey": {
+      "name": "InvalidPublicKey",
+      "subtypes": [],
+      "props": {}
+    },
+    "CannotAppendActionToJointPromise": {
+      "name": "CannotAppendActionToJointPromise",
+      "subtypes": [],
+      "props": {}
+    },
+    "Instantiate": {
+      "name": "Instantiate",
+      "subtypes": [],
+      "props": {}
+    },
+    "MemoryAccessViolation": {
+      "name": "MemoryAccessViolation",
+      "subtypes": [],
+      "props": {}
+    },
+    "BadUTF16": {
+      "name": "BadUTF16",
+      "subtypes": [],
+      "props": {}
+    },
+    "LinkError": {
+      "name": "LinkError",
+      "subtypes": [],
+      "props": {
+        "msg": ""
+      }
+    },
+    "StackHeightInstrumentation": {
+      "name": "StackHeightInstrumentation",
+      "subtypes": [],
+      "props": {}
+    },
+    "WasmerCompileError": {
+      "name": "WasmerCompileError",
+      "subtypes": [],
+      "props": {
+        "msg": ""
+      }
+    },
+    "Memory": {
+      "name": "Memory",
+      "subtypes": [],
+      "props": {}
+    },
+    "InvalidAccountId": {
+      "name": "InvalidAccountId",
+      "subtypes": [],
+      "props": {}
+    },
+    "ResolveError": {
+      "name": "ResolveError",
+      "subtypes": [
+        "MethodEmptyName",
+        "MethodUTF8Error",
+        "MethodNotFound",
+        "MethodInvalidSignature"
+      ],
+      "props": {}
+    },
+    "InternalMemoryDeclared": {
+      "name": "InternalMemoryDeclared",
+      "subtypes": [],
+      "props": {}
+    },
+    "GasInstrumentation": {
+      "name": "GasInstrumentation",
+      "subtypes": [],
+      "props": {}
+    },
+    "MethodUTF8Error": {
+      "name": "MethodUTF8Error",
+      "subtypes": [],
+      "props": {}
+    },
+    "PrepareError": {
+      "name": "PrepareError",
+      "subtypes": [
+        "Serialization",
+        "Deserialization",
+        "InternalMemoryDeclared",
+        "GasInstrumentation",
+        "StackHeightInstrumentation",
+        "Instantiate",
+        "Memory"
+      ],
+      "props": {}
+    },
+    "CannotReturnJointPromise": {
+      "name": "CannotReturnJointPromise",
+      "subtypes": [],
+      "props": {}
+    },
+    "MethodInvalidSignature": {
+      "name": "MethodInvalidSignature",
+      "subtypes": [],
+      "props": {}
+    },
+    "InvalidRegisterId": {
+      "name": "InvalidRegisterId",
+      "subtypes": [],
+      "props": {
+        "register_id": ""
+      }
+    },
+    "GasExceeded": {
+      "name": "GasExceeded",
+      "subtypes": [],
+      "props": {}
+    },
+    "FunctionCall": {
+      "name": "FunctionCall",
+      "subtypes": [
+        "FunctionExecError",
+        "StorageError"
+      ],
+      "props": {}
+    },
+    "Deserialization": {
+      "name": "Deserialization",
+      "subtypes": [],
+      "props": {}
+    },
+    "FunctionExecError": {
+      "name": "FunctionExecError",
+      "subtypes": [
+        "CompilationError",
+        "LinkError",
+        "ResolveError",
+        "WasmTrap",
+        "HostError"
+      ],
+      "props": {}
+    },
+    "GasLimitExceeded": {
+      "name": "GasLimitExceeded",
+      "subtypes": [],
+      "props": {}
+    },
+    "BalanceExceeded": {
+      "name": "BalanceExceeded",
+      "subtypes": [],
+      "props": {}
+    },
+    "Serialization": {
+      "name": "Serialization",
+      "subtypes": [],
+      "props": {}
+    },
+    "WasmTrap": {
+      "name": "WasmTrap",
+      "subtypes": [],
+      "props": {
+        "msg": ""
+      }
+    },
+    "ProhibitedInView": {
+      "name": "ProhibitedInView",
+      "subtypes": [],
+      "props": {
+        "method_name": ""
+      }
+    },
+    "MethodEmptyName": {
+      "name": "MethodEmptyName",
+      "subtypes": [],
+      "props": {}
+    },
+    "EmptyMethodName": {
+      "name": "EmptyMethodName",
+      "subtypes": [],
+      "props": {}
+    },
+    "GuestPanic": {
+      "name": "GuestPanic",
+      "subtypes": [],
+      "props": {
+        "panic_msg": ""
+      }
+    },
+    "InvalidMethodName": {
+      "name": "InvalidMethodName",
+      "subtypes": [],
+      "props": {}
+    },
+    "MethodNotFound": {
+      "name": "MethodNotFound",
+      "subtypes": [],
+      "props": {}
+    },
+    "InvalidPromiseResultIndex": {
+      "name": "InvalidPromiseResultIndex",
+      "subtypes": [],
+      "props": {
+        "result_idx": ""
+      }
+    },
+    "IteratorWasInvalidated": {
+      "name": "IteratorWasInvalidated",
+      "subtypes": [],
+      "props": {
+        "iterator_index": ""
+      }
+    },
+    "CompilationError": {
+      "name": "CompilationError",
+      "subtypes": [
+        "CodeDoesNotExist",
+        "PrepareError",
+        "WasmerCompileError"
+      ],
+      "props": {}
+    },
+    "InvalidPromiseIndex": {
+      "name": "InvalidPromiseIndex",
+      "subtypes": [],
+      "props": {
+        "promise_idx": ""
+      }
+    },
+    "BadUTF8": {
+      "name": "BadUTF8",
+      "subtypes": [],
+      "props": {}
+    },
+    "InvalidReceiptIndex": {
+      "name": "InvalidReceiptIndex",
+      "subtypes": [],
+      "props": {
+        "receipt_index": ""
+      }
+    },
+    "CodeDoesNotExist": {
+      "name": "CodeDoesNotExist",
+      "subtypes": [],
+      "props": {
+        "account_id": ""
+      }
+    },
+    "HostError": {
+      "name": "HostError",
+      "subtypes": [
+        "BadUTF16",
+        "BadUTF8",
+        "GasExceeded",
+        "GasLimitExceeded",
+        "BalanceExceeded",
+        "EmptyMethodName",
+        "GuestPanic",
+        "IntegerOverflow",
+        "InvalidPromiseIndex",
+        "CannotAppendActionToJointPromise",
+        "CannotReturnJointPromise",
+        "InvalidPromiseResultIndex",
+        "InvalidRegisterId",
+        "IteratorWasInvalidated",
+        "MemoryAccessViolation",
+        "InvalidReceiptIndex",
+        "InvalidIteratorIndex",
+        "InvalidAccountId",
+        "InvalidMethodName",
+        "InvalidPublicKey",
+        "ProhibitedInView"
+      ],
+      "props": {}
+    },
+    "IntegerOverflow": {
+      "name": "IntegerOverflow",
+      "subtypes": [],
+      "props": {}
+    },
+    "NotEnoughAllowance": {
+      "name": "NotEnoughAllowance",
+      "subtypes": [],
+      "props": {
+        "public_key": "",
+        "allowance": "",
+        "account_id": "",
+        "cost": ""
+      }
+    },
+    "ReceiverMismatch": {
+      "name": "ReceiverMismatch",
+      "subtypes": [],
+      "props": {
+        "ak_receiver": "",
+        "tx_receiver": ""
+      }
+    },
+    "DeleteAccountStaking": {
+      "name": "DeleteAccountStaking",
+      "subtypes": [],
+      "props": {
+        "account_id": ""
+      }
+    },
+    "TriesToStake": {
+      "name": "TriesToStake",
+      "subtypes": [],
+      "props": {
+        "balance": "",
+        "account_id": "",
+        "locked": "",
+        "stake": ""
+      }
+    },
+    "InvalidReceiverId": {
+      "name": "InvalidReceiverId",
+      "subtypes": [],
+      "props": {
+        "receiver_id": ""
+      }
+    },
+    "AccessKeyNotFound": {
+      "name": "AccessKeyNotFound",
+      "subtypes": [],
+      "props": {
+        "public_key": "",
+        "account_id": ""
+      }
+    },
+    "RentUnpaid": {
+      "name": "RentUnpaid",
+      "subtypes": [],
+      "props": {
+        "amount": "",
+        "account_id": ""
+      }
+    },
+    "Expired": {
+      "name": "Expired",
+      "subtypes": [],
+      "props": {}
+    },
+    "InvalidSignature": {
+      "name": "InvalidSignature",
+      "subtypes": [],
+      "props": {}
+    },
+    "InvalidChain": {
+      "name": "InvalidChain",
+      "subtypes": [],
+      "props": {}
+    },
+    "MethodNameMismatch": {
+      "name": "MethodNameMismatch",
+      "subtypes": [],
+      "props": {
+        "method_name": ""
+      }
+    },
+    "InvalidTxError": {
+      "name": "InvalidTxError",
+      "subtypes": [
+        "InvalidAccessKey",
+        "InvalidSignerId",
+        "SignerDoesNotExist",
+        "InvalidNonce",
+        "InvalidReceiverId",
+        "InvalidSignature",
+        "NotEnoughBalance",
+        "RentUnpaid",
+        "CostOverflow",
+        "InvalidChain",
+        "Expired"
+      ],
+      "props": {}
+    },
+    "InvalidSignerId": {
+      "name": "InvalidSignerId",
+      "subtypes": [],
+      "props": {
+        "signer_id": ""
+      }
+    },
+    "CostOverflow": {
+      "name": "CostOverflow",
+      "subtypes": [],
+      "props": {}
+    },
+    "ActorNoPermission": {
+      "name": "ActorNoPermission",
+      "subtypes": [],
+      "props": {
+        "account_id": "",
+        "actor_id": ""
+      }
+    },
+    "DeleteKeyDoesNotExist": {
+      "name": "DeleteKeyDoesNotExist",
+      "subtypes": [],
+      "props": {
+        "account_id": "",
+        "public_key": ""
+      }
+    },
+    "AddKeyAlreadyExists": {
+      "name": "AddKeyAlreadyExists",
+      "subtypes": [],
+      "props": {
+        "public_key": "",
+        "account_id": ""
+      }
+    },
+    "DeleteAccountHasRent": {
+      "name": "DeleteAccountHasRent",
+      "subtypes": [],
+      "props": {
+        "balance": "",
+        "account_id": ""
+      }
+    },
+    "TriesToUnstake": {
+      "name": "TriesToUnstake",
+      "subtypes": [],
+      "props": {
+        "account_id": ""
+      }
+    },
+    "TxExecutionError": {
+      "name": "TxExecutionError",
+      "subtypes": [
+        "ActionError",
+        "InvalidTxError"
+      ],
+      "props": {}
+    },
+    "AccountAlreadyExists": {
+      "name": "AccountAlreadyExists",
+      "subtypes": [],
+      "props": {
+        "account_id": ""
+      }
+    },
+    "NotEnoughBalance": {
+      "name": "NotEnoughBalance",
+      "subtypes": [],
+      "props": {
+        "balance": "",
+        "signer_id": "",
+        "cost": ""
+      }
+    },
+    "InvalidAccessKey": {
+      "name": "InvalidAccessKey",
+      "subtypes": [
+        "AccessKeyNotFound",
+        "ReceiverMismatch",
+        "MethodNameMismatch",
+        "ActionError",
+        "NotEnoughAllowance"
+      ],
+      "props": {}
+    },
+    "InvalidNonce": {
+      "name": "InvalidNonce",
+      "subtypes": [],
+      "props": {
+        "ak_nonce": "",
+        "tx_nonce": ""
+      }
+    },
+    "SignerDoesNotExist": {
+      "name": "SignerDoesNotExist",
+      "subtypes": [],
+      "props": {
+        "signer_id": ""
+      }
+    },
+    "ActionError": {
+      "name": "ActionError",
+      "subtypes": [
+        "AccountAlreadyExists",
+        "AccountDoesNotExist",
+        "CreateAccountNotAllowed",
+        "ActorNoPermission",
+        "DeleteKeyDoesNotExist",
+        "AddKeyAlreadyExists",
+        "DeleteAccountStaking",
+        "DeleteAccountHasRent",
+        "RentUnpaid",
+        "TriesToUnstake",
+        "TriesToStake",
+        "FunctionCall"
+      ],
+      "props": {
+        "index": ""
+      }
+    },
+    "AccountDoesNotExist": {
+      "name": "AccountDoesNotExist",
+      "subtypes": [],
+      "props": {
+        "account_id": ""
+      }
+    },
+    "CreateAccountNotAllowed": {
+      "name": "CreateAccountNotAllowed",
+      "subtypes": [],
+      "props": {
+        "predecessor_id": "",
+        "account_id": ""
+      }
+    },
+    "Closed": {
+      "name": "Closed",
+      "subtypes": [],
+      "props": {}
+    },
+    "Timeout": {
+      "name": "Timeout",
+      "subtypes": [],
+      "props": {}
+    },
+    "ServerError": {
+      "name": "ServerError",
+      "subtypes": [
+        "TxExecutionError",
+        "Timeout",
+        "Closed"
+      ],
+      "props": {}
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name": "nearlib",
   "description": "Javascript library to interact with NEAR blockchain",
-  "version": "0.19.1",
+  "version": "0.21.0",
   "repository": {
     "type": "git",
     "url": "git@:nearprotocol/nearcore.git"
@@ -16,6 +16,7 @@
     "error-polyfill": "^0.1.2",
     "http-errors": "^1.7.2",
     "js-sha256": "^0.9.0",
+    "mustache": "^4.0.0",
     "node-fetch": "^2.3.0",
     "text-encoding-utf-8": "^1.0.2",
     "tweetnacl": "^1.0.1"
@@ -31,8 +32,9 @@
     "near-hello": "^0.4.0-preview",
     "rimraf": "^3.0.0",
     "semver": "^7.1.1",
+    "ts-morph": "^6.0.2",
     "tslint": "^5.18.0",
-    "typedoc": "^0.15.0",
+    "typedoc": "^0.16.5",
     "typedoc-plugin-markdown": "^2.2.6",
     "typescript": "^3.5.1",
     "uglifyify": "^5.0.1"
@@ -63,7 +65,7 @@
     "files": [
       {
         "path": "dist/nearlib.min.js",
-        "maxSize": "80kB"
+        "maxSize": "85kB"
       }
     ]
   },

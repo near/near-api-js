@@ -43,7 +43,8 @@ test('converting near to account balance units', async() => {
     expect(nearlib.utils.format.parseNearAmount('0.000001')).toEqual('1000000000000000000');
     expect(nearlib.utils.format.parseNearAmount('.000001')).toEqual('1000000000000000000');
     expect(nearlib.utils.format.parseNearAmount('000000.000001')).toEqual('1000000000000000000');
-  
+    expect(nearlib.utils.format.parseNearAmount('1,000,000.1')).toEqual('1000000100000000000000000000000');
+
     try  {
         // Too many decimals
         expect(nearlib.utils.format.parseNearAmount('0.0000080990999998370878871')).toFail();

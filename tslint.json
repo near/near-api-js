@@ -5,6 +5,7 @@
     ],
     "linterOptions": {
         "exclude": [
+            "src.ts/generated/*"
         ]
     },
     "jsRules": {},

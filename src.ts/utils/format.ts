@@ -50,7 +50,7 @@ export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMI
  */
 export function parseNearAmount(amt?: string): string | null {
     if (!amt) { return amt; }
-    amt = amt.trim();
+    amt = cleanupAmount(amt);
     const split = amt.split('.');
     const wholePart = split[0];
     const fracPart = split[1] || '';
@@ -58,6 +58,10 @@ export function parseNearAmount(amt?: string): string | null {
         throw new Error(`Cannot parse '${amt}' as NEAR amount`);
     }
     return trimLeadingZeroes(wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, '0'));
+}
+
+function cleanupAmount(amount: string): string {
+    return amount.replace(/,/g, '').trim();
 }
 
 function trimTrailingZeroes(value: string): string {

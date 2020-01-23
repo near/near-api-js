@@ -19,7 +19,7 @@ sidebar_label: "UrlAccountCreator"
 ### Properties
 
 * [connection](_account_creator_.urlaccountcreator.md#connection)
-* [helperConnection](_account_creator_.urlaccountcreator.md#helperconnection)
+* [helperUrl](_account_creator_.urlaccountcreator.md#helperurl)
 
 ### Methods
 
@@ -31,7 +31,7 @@ sidebar_label: "UrlAccountCreator"
 
 \+ **new UrlAccountCreator**(`connection`: [Connection](_connection_.connection.md), `helperUrl`: string): *[UrlAccountCreator](_account_creator_.urlaccountcreator.md)*
 
-*Defined in [src.ts/account_creator.ts:32](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/account_creator.ts#L32)*
+*Defined in [src.ts/account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account_creator.ts#L31)*
 
 **Parameters:**
 
@@ -48,15 +48,15 @@ Name | Type |
 
 • **connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [src.ts/account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/account_creator.ts#L31)*
+*Defined in [src.ts/account_creator.ts:30](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account_creator.ts#L30)*
 
 ___
 
-###  helperConnection
+###  helperUrl
 
-• **helperConnection**: *[ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md)*
+• **helperUrl**: *string*
 
-*Defined in [src.ts/account_creator.ts:32](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/account_creator.ts#L32)*
+*Defined in [src.ts/account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account_creator.ts#L31)*
 
 ## Methods
 
@@ -66,7 +66,7 @@ ___
 
 *Overrides [AccountCreator](_account_creator_.accountcreator.md).[createAccount](_account_creator_.accountcreator.md#abstract-createaccount)*
 
-*Defined in [src.ts/account_creator.ts:40](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/account_creator.ts#L40)*
+*Defined in [src.ts/account_creator.ts:39](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account_creator.ts#L39)*
 
 **Parameters:**
 

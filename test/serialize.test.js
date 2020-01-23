@@ -38,18 +38,23 @@ test('serialize and sign multi-action tx', async() => {
     expect(serialized.toString('hex')).toEqual('09000000746573742e6e656172000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef80100000000000000030000003132330fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef608000000000103000000010203020300000071717103000000010203e80300000000000040420f00000000000000000000000000037b0000000000000000000000000000000440420f00000000000000000000000000000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef805000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef800000000000000000000030000007a7a7a010000000300000077777706000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef80703000000313233');
 });
 
-test('serialize transfer tx', async() => {
+function createTransferTx() {
     const actions = [
         nearlib.transactions.transfer(1),
     ];
     const blockHash = nearlib.utils.serialize.base_decode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
-    const transaction = nearlib.transactions.createTransaction(
+    return nearlib.transactions.createTransaction(
         'test.near',
         nearlib.utils.PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
         'whatever.near',
         1,
         actions,
         blockHash);
+}
+
+test('serialize transfer tx', async() => {
+    const transaction = createTransferTx();
+
     const serialized = transaction.encode();
     expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
 
@@ -57,23 +62,38 @@ test('serialize transfer tx', async() => {
     expect(deserialized.encode()).toEqual(serialized);
 });
 
-test('serialize and sign transfer tx', async() => {
+async function createKeyStore() {
     const keyStore = new nearlib.keyStores.InMemoryKeyStore();
     const keyPair = nearlib.utils.KeyPair.fromString('ed25519:3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv');
     await keyStore.setKey('test', 'test.near', keyPair);
-    const actions = [
-        nearlib.transactions.transfer(1),
-    ];
-    const blockHash = nearlib.utils.serialize.base_decode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
+    return keyStore;
+}
 
-    let [, signedTx] = await nearlib.transactions.signTransaction('whatever.near', 1, actions, blockHash, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
-
+async function verifySignedTransferTx(signedTx) {
     expect(Buffer.from(signedTx.signature.data).toString('base64')).toEqual('lpqDMyGG7pdV5IOTJVJYBuGJo9LSu0tHYOlEQ+l+HE8i3u7wBZqOlxMQDtpuGRRNp+ig735TmyBwi6HY0CG9AQ==');
     const serialized = signedTx.encode();
     expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef601000000030100000000000000000000000000000000969a83332186ee9755e4839325525806e189a3d2d2bb4b4760e94443e97e1c4f22deeef0059a8e9713100eda6e19144da7e8a0ef7e539b20708ba1d8d021bd01');
     
     const deserialized = nearlib.transactions.SignedTransaction.decode(serialized);
     expect(deserialized.encode()).toEqual(serialized);
+}
+
+test('serialize and sign transfer tx', async() => {
+    const transaction = createTransferTx();
+    const keyStore = await createKeyStore();
+
+    let [, signedTx] = await nearlib.transactions.signTransaction(transaction.receiverId, transaction.nonce, transaction.actions, transaction.blockHash, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
+
+    verifySignedTransferTx(signedTx);
+});
+
+test('serialize and sign transfer tx object', async() => {
+    const transaction = createTransferTx();
+    const keyStore = await createKeyStore();
+
+    let [, signedTx] = await nearlib.transactions.signTransaction(transaction, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
+
+    verifySignedTransferTx(signedTx);
 });
 
 describe('roundtrip test', () => {

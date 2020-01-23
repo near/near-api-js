@@ -6,7 +6,7 @@ sidebar_label: "BorshError"
 
 ## Hierarchy
 
-* Error
+* [Error](_utils_serialize_.borsherror.md#static-error)
 
   ↳ **BorshError**
 
@@ -35,7 +35,7 @@ sidebar_label: "BorshError"
 
 \+ **new BorshError**(`message`: string): *[BorshError](_utils_serialize_.borsherror.md)*
 
-*Defined in [src.ts/utils/serialize.ts:28](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/serialize.ts#L28)*
+*Defined in [src.ts/utils/serialize.ts:28](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/serialize.ts#L28)*
 
 **Parameters:**
 
@@ -49,9 +49,9 @@ Name | Type |
 
 ###  fieldPath
 
-• **fieldPath**: *string[]* =  []
+• **fieldPath**: *string[]* = []
 
-*Defined in [src.ts/utils/serialize.ts:28](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/serialize.ts#L28)*
+*Defined in [src.ts/utils/serialize.ts:28](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/serialize.ts#L28)*
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 • **message**: *string*
 
-*Inherited from void*
+*Inherited from [BorshError](_utils_serialize_.borsherror.md).[message](_utils_serialize_.borsherror.md#message)*
 
 Defined in node_modules/typescript/lib/lib.es5.d.ts:974
 
@@ -69,7 +69,7 @@ ___
 
 • **name**: *string*
 
-*Inherited from void*
+*Inherited from [BorshError](_utils_serialize_.borsherror.md).[name](_utils_serialize_.borsherror.md#name)*
 
 Defined in node_modules/typescript/lib/lib.es5.d.ts:973
 
@@ -79,7 +79,7 @@ ___
 
 • **originalMessage**: *string*
 
-*Defined in [src.ts/utils/serialize.ts:27](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/serialize.ts#L27)*
+*Defined in [src.ts/utils/serialize.ts:27](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/serialize.ts#L27)*
 
 ___
 
@@ -87,9 +87,7 @@ ___
 
 • **stack**? : *string*
 
-*Inherited from void*
-
-*Overrides void*
+*Inherited from [BorshError](_utils_serialize_.borsherror.md).[stack](_utils_serialize_.borsherror.md#optional-stack)*
 
 Defined in node_modules/typescript/lib/lib.es5.d.ts:975
 
@@ -107,7 +105,7 @@ Defined in node_modules/typescript/lib/lib.es5.d.ts:984
 
 ▸ **addToFieldPath**(`fieldName`: string): *void*
 
-*Defined in [src.ts/utils/serialize.ts:35](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/serialize.ts#L35)*
+*Defined in [src.ts/utils/serialize.ts:35](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/serialize.ts#L35)*
 
 **Parameters:**
 

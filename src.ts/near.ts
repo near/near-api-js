@@ -50,7 +50,6 @@ export class Near {
      * @param options
      */
     async loadContract(contractId: string, options: { viewMethods: string[], changeMethods: string[], sender: string }): Promise<Contract> {
-        console.warn('near.loadContract is deprecated. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.');
         const account = new Account(this.connection, options.sender);
         return new Contract(account, contractId, options);
     }

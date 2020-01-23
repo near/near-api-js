@@ -10,3 +10,4 @@ sidebar_label: "utils/errors"
 
 * [ArgumentTypeError](../classes/_utils_errors_.argumenttypeerror.md)
 * [PositionalArgsError](../classes/_utils_errors_.positionalargserror.md)
+* [TypedError](../classes/_utils_errors_.typederror.md)

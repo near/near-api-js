@@ -24,7 +24,7 @@ sidebar_label: "utils/web"
 
 • **fetch**: *any*
 
-*Defined in [src.ts/utils/web.ts:15](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/web.ts#L15)*
+*Defined in [src.ts/utils/web.ts:15](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/web.ts#L15)*
 
 ## Functions
 
@@ -32,7 +32,7 @@ sidebar_label: "utils/web"
 
 ▸ **fetchJson**(`connection`: string | [ConnectionInfo](../interfaces/_utils_web_.connectioninfo.md), `json?`: string): *Promise‹any›*
 
-*Defined in [src.ts/utils/web.ts:39](https://github.com/nearprotocol/nearlib/blob/d578981/src.ts/utils/web.ts#L39)*
+*Defined in [src.ts/utils/web.ts:39](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/web.ts#L39)*
 
 **Parameters:**
 

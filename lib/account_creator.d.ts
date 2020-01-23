@@ -1,7 +1,6 @@
 import BN from 'bn.js';
 import { Connection } from './connection';
 import { Account } from './account';
-import { ConnectionInfo } from './utils/web';
 import { PublicKey } from './utils/key_pair';
 /**
  * Account creator provides interface to specific implementation to acutally create account.
@@ -17,7 +16,7 @@ export declare class LocalAccountCreator extends AccountCreator {
 }
 export declare class UrlAccountCreator extends AccountCreator {
     readonly connection: Connection;
-    readonly helperConnection: ConnectionInfo;
+    readonly helperUrl: string;
     constructor(connection: Connection, helperUrl: string);
     createAccount(newAccountId: string, publicKey: PublicKey): Promise<void>;
 }
