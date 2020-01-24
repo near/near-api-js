@@ -12,7 +12,7 @@ const nearlib = require('../lib/index');
 
 let history;
 let nearFake;
-let walletAccount;
+let walletConnection;
 let keyStore = new nearlib.keyStores.InMemoryKeyStore();
 beforeEach(() => {
     nearFake = {
@@ -38,15 +38,15 @@ beforeEach(() => {
             replaceState: (state, title, url) => history.push([state, title, url])
         }
     });
-    walletAccount = new nearlib.WalletAccount(nearFake);
+    walletConnection = new nearlib.WalletConnection(nearFake);
 });
 
 it('not signed in by default', () => {
-    expect(walletAccount.isSignedIn()).not.toBeTruthy();
+    expect(walletConnection.isSignedIn()).not.toBeTruthy();
 });
 
 it('can request sign in', async () => {
-    await walletAccount.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail');
+    await walletConnection.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail');
 
     let accounts = await keyStore.getAccounts('networkId');
     expect(accounts).toHaveLength(1);
@@ -69,7 +69,7 @@ it('can complete sign in', async () => {
     global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
     await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
 
-    await walletAccount._completeSignInWithAccessKey();
+    await walletConnection._completeSignInWithAccessKey();
 
     expect(await keyStore.getKey('networkId', 'near.account')).toEqual(keyPair);
     expect(localStorage.getItem('contractId_wallet_auth_key'));
@@ -94,7 +94,7 @@ function createTransferTx() {
 }
 
 it('can request transaction signing', async () => {
-    await walletAccount.requestSignTransactions([createTransferTx()], 'http://example.com/callback');
+    await walletConnection.requestSignTransactions([createTransferTx()], 'http://example.com/callback');
 
     expect(url.parse(newUrl, true)).toMatchObject({
         protocol: 'http:',
@@ -109,7 +109,7 @@ it('can request transaction signing', async () => {
 it('requests transaction signing automatically when there is no local key', async () => {
     // TODO: Refactor copy-pasted common setup code
     let keyPair = nearlib.KeyPair.fromRandom('ed25519');
-    walletAccount._authData = {
+    walletConnection._authData = {
         allKeys: [ 'no_such_access_key', keyPair.publicKey.toString() ],
         accountId: 'signer.near'
     };
@@ -139,7 +139,7 @@ it('requests transaction signing automatically when there is no local key', asyn
     };
 
     try {
-        await walletAccount.account().signAndSendTransaction('receiver.near', [nearlib.transactions.transfer(1)]);
+        await walletConnection.account().signAndSendTransaction('receiver.near', [nearlib.transactions.transfer(1)]);
         fail('expected to throw');
     } catch (e) {
         expect(e.message).toEqual('Failed to redirect to sign transaction');
