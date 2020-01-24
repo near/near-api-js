@@ -1,16 +1,20 @@
 const url = require('url');
-const BN = require('bn.js');
+const localStorage = require('localstorage-memory');
 
+let newUrl;
+global.window = {
+    localStorage
+};
+global.document = {
+    title: 'documentTitle'
+};
 const nearlib = require('../lib/index');
 
-let windowSpy;
-let documentSpy;
+let history;
 let nearFake;
 let walletAccount;
 let keyStore = new nearlib.keyStores.InMemoryKeyStore();
 beforeEach(() => {
-    windowSpy = jest.spyOn(global, 'window', 'get');
-    documentSpy = jest.spyOn(global, 'document', 'get');
     nearFake = {
         config: {
             networkId: 'networkId',
@@ -21,11 +25,20 @@ beforeEach(() => {
             signer: new nearlib.InMemorySigner(keyStore)
         }
     };
+    newUrl = null;
+    history = [];
+    Object.assign(global.window, {
+        location: {
+            href: 'http://example.com/location',
+            assign(url) {
+                newUrl = url;
+            }
+        },
+        history: {
+            replaceState: (state, title, url) => history.push([state, title, url])
+        }
+    });
     walletAccount = new nearlib.WalletAccount(nearFake);
-});
-
-afterEach(() => {
-    windowSpy.mockRestore();
 });
 
 it('not signed in by default', () => {
@@ -33,16 +46,6 @@ it('not signed in by default', () => {
 });
 
 it('can request sign in', async () => {
-    let newUrl;
-    windowSpy.mockImplementation(() => ({
-        location: {
-            href: 'http://example.com/location',
-            assign(url) {
-                newUrl = url;
-            }
-        }
-    }));
-
     await walletAccount.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail');
 
     let accounts = await keyStore.getAccounts('networkId');
@@ -62,28 +65,15 @@ it('can request sign in', async () => {
 });
 
 it('can complete sign in', async () => {
-    const localStorage = require('localstorage-memory');
     const keyPair = nearlib.KeyPair.fromRandom('ed25519');
-    const history = [];
-    windowSpy.mockImplementation(() => ({
-        location: {
-            href: `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`
-        },
-        history: {
-            replaceState: (state, title, url) => history.push([state, title, url])
-        },
-        localStorage
-    }));
-    documentSpy.mockImplementation(() => ({
-        title: 'documentTitle'
-    }));
+    global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
     await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
 
     await walletAccount._completeSignInWithAccessKey();
 
     expect(await keyStore.getKey('networkId', 'near.account')).toEqual(keyPair);
     expect(localStorage.getItem('contractId_wallet_auth_key'));
-    expect(history).toEqual([
+    expect(history.slice(1)).toEqual([
         [{}, 'documentTitle', 'http://example.com/location']
     ]);
 });
@@ -104,16 +94,6 @@ function createTransferTx() {
 }
 
 it('can request transaction signing', async () => {
-    let newUrl;
-    windowSpy.mockImplementation(() => ({
-        location: {
-            href: 'http://example.com/location',
-            assign(url) {
-                newUrl = url;
-            }
-        }
-    }));
-
     await walletAccount.requestSignTransactions([createTransferTx()], 'http://example.com/callback');
 
     expect(url.parse(newUrl, true)).toMatchObject({
@@ -128,15 +108,6 @@ it('can request transaction signing', async () => {
 
 it('requests transaction signing automatically when there is no local key', async () => {
     // TODO: Refactor copy-pasted common setup code
-    let newUrl;
-    windowSpy.mockImplementation(() => ({
-        location: {
-            href: 'http://example.com/location',
-            assign(url) {
-                newUrl = url;
-            }
-        }
-    }));
     let keyPair = nearlib.KeyPair.fromRandom('ed25519');
     walletAccount._authData = {
         allKeys: [ 'no_such_access_key', keyPair.publicKey.toString() ],

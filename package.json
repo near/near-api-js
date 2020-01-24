@@ -27,7 +27,7 @@
     "bundlewatch": "^0.2.5",
     "eslint": "^6.5.1",
     "in-publish": "^2.0.0",
-    "jest": "^24.1.0",
+    "jest": "^25.1.0",
     "localstorage-memory": "^1.0.3",
     "near-hello": "^0.4.0-preview",
     "rimraf": "^3.0.0",
@@ -40,6 +40,7 @@
     "uglifyify": "^5.0.1"
   },
   "jest": {
+    "testEnvironment": "node",
     "coverageDirectory": "./coverage/",
     "collectCoverage": true
   },
