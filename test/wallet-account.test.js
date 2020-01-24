@@ -136,7 +136,7 @@ it('requests transaction signing automatically when there is no local key', asyn
                 }
             };
         }
-    }
+    };
 
     try {
         await walletAccount.account().signAndSendTransaction('receiver.near', [nearlib.transactions.transfer(1)]);
