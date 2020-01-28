@@ -213,8 +213,11 @@ class ConnectedWalletAccount extends Account {
         if (permission.FunctionCall) {
             const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
             if (allowedReceiverId === receiverId) {
-                return actions.every(({ functionCall }) => functionCall &&
-                    (allowedMethods.length === 0 || allowedMethods.indexOf(functionCall.methodName) !== -1));
+                if (actions.length !== 1) {
+                    return false;
+                }
+                const [{ functionCall }] = actions;
+                return functionCall && (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
             }
         }
         // TODO: Support other permissions than FunctionCall
