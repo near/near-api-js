@@ -28,7 +28,7 @@ export class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
-                value: async function(args: any, gas?: number, amount?: BN) {
+                value: async function(args: any, gas?: BN, amount?: BN) {
                     if (arguments.length > 3) {
                         throw new PositionalArgsError();
                     }
