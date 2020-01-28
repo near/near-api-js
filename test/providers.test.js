@@ -13,14 +13,18 @@ test('json rpc fetch node status', withProvider(async (provider) => {
 }));
 
 test('json rpc fetch block info', withProvider(async (provider) => {
-    let response = await provider.block(1);
-    expect(response.header.height).toEqual(1);
+    let stat = await provider.status();
+    let height = stat.sync_info.latest_block_height - 1;
+    let response = await provider.block(height);
+    expect(response.header.height).toEqual(height);
     let sameBlock = await provider.block(response.header.hash);
-    expect(sameBlock.header.height).toEqual(1);
+    expect(sameBlock.header.height).toEqual(height);
 }));
 
 test('json rpc fetch chunk info', withProvider(async (provider) => {
-    let response = await provider.chunk([1, 0]);
+    let stat = await provider.status();
+    let height = stat.sync_info.latest_block_height - 1;
+    let response = await provider.chunk([height, 0]);
     expect(response.header.shard_id).toEqual(0);
     let sameChunk = await provider.chunk(response.header.chunk_hash);
     expect(sameChunk.header.chunk_hash).toEqual(response.header.chunk_hash);
