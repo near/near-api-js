@@ -175,7 +175,7 @@ class ConnectedWalletAccount extends Account {
 
         if (localKey && localKey.toString() === accessKey.public_key) {
             try {
-                return super.signAndSendTransaction(receiverId, actions);
+                return await super.signAndSendTransaction(receiverId, actions);
             } catch (e) {
                 // TODO: Use TypedError when available
                 if (e.message.includes('does not have enough balance')) {
