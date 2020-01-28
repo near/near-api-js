@@ -168,14 +168,22 @@ class ConnectedWalletAccount extends Account {
         await this.ready;
 
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
-        const accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
+        let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
             throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
         }
 
         if (localKey && localKey.toString() === accessKey.public_key) {
-            return super.signAndSendTransaction(receiverId, actions);
-            // TODO: Handle NotEnoughAllowance error
+            try {
+                return super.signAndSendTransaction(receiverId, actions);
+            } catch (e) {
+                // TODO: Use TypedError when available
+                if (e.message.includes('does not have enough balance')) {
+                    accessKey = await this.accessKeyForTransaction(receiverId, actions);
+                } else {
+                    throw e;
+                }
+            }
         }
 
         const publicKey = PublicKey.from(accessKey.public_key);
