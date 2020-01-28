@@ -1123,8 +1123,10 @@ const key_pair_1 = require("./utils/key_pair");
 exports.KeyPair = key_pair_1.KeyPair;
 const near_1 = require("./near");
 exports.connect = near_1.connect;
+// TODO: Deprecate and remove WalletAccount
 const wallet_account_1 = require("./wallet-account");
 exports.WalletAccount = wallet_account_1.WalletAccount;
+exports.WalletConnection = wallet_account_1.WalletConnection;
 
 },{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":11,"./near":15,"./providers":16,"./signer":20,"./transaction":21,"./utils":25,"./utils/key_pair":26,"./wallet-account":31}],9:[function(require,module,exports){
 'use strict';
@@ -2781,22 +2783,16 @@ class WalletConnection {
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         window.location.assign(newUrl.toString());
     }
-    async requestSignTransactions(transactions, options) {
+    async requestSignTransactions(transactions, callbackUrl) {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
         newUrl.searchParams.set('transactions', transactions
             .map(transaction => utils_1.serialize.serialize(transaction_1.SCHEMA, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
-        // TODO: Make sure all options are handled on wallet side
-        newUrl.searchParams.set('accountId', options.accountId);
-        newUrl.searchParams.set('publicKey', options.publicKey);
-        newUrl.searchParams.set('send', (!!options.send).toString());
-        newUrl.searchParams.set('callbackUrl', options.callbackUrl || currentUrl.href);
+        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
         window.location.assign(newUrl.toString());
     }
-    // TODO: Implement all account / contract functions with "can refresh page in browser" before callback assumption.
-    // TODO: Implement custom Signer with "can refresh page in browser" before callback assumption.
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
@@ -2842,6 +2838,9 @@ class WalletConnection {
 }
 exports.WalletConnection = WalletConnection;
 exports.WalletAccount = WalletConnection;
+/**
+ * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
+ */
 class ConnectedWalletAccount extends account_1.Account {
     constructor(walletConnection, connection, accountId) {
         super(connection, accountId);
@@ -2850,13 +2849,24 @@ class ConnectedWalletAccount extends account_1.Account {
     // Overriding Account methods
     async signAndSendTransaction(receiverId, actions) {
         await this.ready;
-        const accessKey = await this.accessKeyForTransaction(receiverId, actions);
-        if (false) {
-            // TODO: Check whether AccessKey allows to sign transaction locally
-            return super.signAndSendTransaction(receiverId, actions);
-        }
+        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
             throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
+        }
+        if (localKey && localKey.toString() === accessKey.public_key) {
+            try {
+                return await super.signAndSendTransaction(receiverId, actions);
+            }
+            catch (e) {
+                // TODO: Use TypedError when available
+                if (e.message.includes('does not have enough balance')) {
+                    accessKey = await this.accessKeyForTransaction(receiverId, actions);
+                }
+                else {
+                    throw e;
+                }
+            }
         }
         const publicKey = utils_1.PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
@@ -2864,25 +2874,48 @@ class ConnectedWalletAccount extends account_1.Account {
         const status = await this.connection.provider.status();
         const blockHash = serialize_1.base_decode(status.sync_info.latest_block_hash);
         const transaction = transaction_1.createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
-        await this.walletConnection.requestSignTransactions([transaction], {
-            accountId: this.accountId,
-            publicKey: publicKey.toString(),
-            send: true,
-            callbackUrl: window.location.href
-        });
+        await this.walletConnection.requestSignTransactions([transaction], window.location.href);
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 reject(new Error('Failed to redirect to sign transaction'));
             }, 1000);
         });
-        // TODO: Aggregate multiple transaction request with "debounce". Introduce TrasactionQueue which also can be used to watch for status?
-        // TODO: Return unresolved promise which returns error on debounce timeout?
+        // TODO: Aggregate multiple transaction request with "debounce".
+        // TODO: Introduce TrasactionQueue which also can be used to watch for status?
     }
-    async accessKeyForTransaction(receiverId, actions) {
+    async accessKeyMatchesTransaction(accessKey, receiverId, actions) {
+        const { access_key: { permission } } = accessKey;
+        if (permission === 'FullAccess') {
+            return true;
+        }
+        if (permission.FunctionCall) {
+            const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
+            if (allowedReceiverId === receiverId) {
+                if (actions.length !== 1) {
+                    return false;
+                }
+                const [{ functionCall }] = actions;
+                return functionCall && (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
+            }
+        }
+        // TODO: Support other permissions than FunctionCall
+        return false;
+    }
+    async accessKeyForTransaction(receiverId, actions, localKey) {
         const accessKeys = await this.getAccessKeys();
-        // TODO: Filter by what key can perform all of the actions
-        // TODO: Return local access key when it works for all actions
-        return accessKeys.find(accessKey => this.walletConnection._authData.allKeys.indexOf(accessKey.public_key) !== -1);
+        if (localKey) {
+            const accessKey = accessKeys.find(key => key.public_key === localKey.toString());
+            if (accessKey && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
+                return accessKey;
+            }
+        }
+        const walletKeys = this.walletConnection._authData.allKeys;
+        for (const accessKey of accessKeys) {
+            if (walletKeys.indexOf(accessKey.public_key) !== -1 && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
+                return accessKey;
+            }
+        }
+        return null;
     }
 }
 
