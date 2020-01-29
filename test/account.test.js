@@ -191,4 +191,18 @@ describe('with deploy contract', () => {
     test('test set/remove', async () => {
         await contract.testSetRemove({ value: '123' });
     });
+    
+    test('can have view methods only', async () => {
+        const contract = new nearlib.Contract(workingAccount, contractId, {
+            viewMethods: ['hello'],
+        });
+        expect(await contract.hello({ name: 'world' }).toEqual('hello world');
+    });
+    
+    test('can have change methods only', async () => {
+        const contract = new nearlib.Contract(workingAccount, contractId, {
+            changeMethods: ['hello'],
+        });
+        expect(await contract.hello({ name: 'world' }).toEqual('hello world');
+    });
 });
