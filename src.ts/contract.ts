@@ -12,7 +12,8 @@ export class Contract {
     constructor(account: Account, contractId: string, options: { viewMethods: string[], changeMethods: string[] }) {
         this.account = account;
         this.contractId = contractId;
-        options.viewMethods.forEach((methodName) => {
+        const { viewMethods = [], changeMethods = [] } = options;
+        viewMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
@@ -24,7 +25,7 @@ export class Contract {
                 }
             });
         });
-        options.changeMethods.forEach((methodName) => {
+        changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
