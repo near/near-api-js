@@ -1,29 +1,40 @@
 'use strict';
 
+import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
-import { KeyPair } from './utils';
+import { FinalExecutionOutcome } from './providers';
 import { InMemorySigner } from './signer';
+import { Transaction, Action, SCHEMA, createTransaction } from './transaction';
+import { KeyPair, serialize, PublicKey } from './utils';
+import { base_decode } from './utils/serialize';
+import { Connection } from './connection';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
-export class WalletAccount {
+export class WalletConnection {
     _walletBaseUrl: string;
     _authDataKey: string;
     _keyStore: KeyStore;
     _authData: any;
     _networkId: string;
 
+    _near: Near;
+    _connectedAccount: ConnectedWalletAccount;
+
     constructor(near: Near, appKeyPrefix: string | null) {
+        this._near = near;
+        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
-        this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
-        this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');
+        this._authData = authData || { allKeys: [] };
+        this._authDataKey = authDataKey;
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
         }
@@ -78,21 +89,38 @@ export class WalletAccount {
         window.location.assign(newUrl.toString());
     }
 
+    async requestSignTransactions(transactions: Transaction[], callbackUrl?: string) {
+        const currentUrl = new URL(window.location.href);
+        const newUrl = new URL('sign', this._walletBaseUrl);
+
+        newUrl.searchParams.set('transactions', transactions
+            .map(transaction => serialize.serialize(SCHEMA, transaction))
+            .map(serialized => Buffer.from(serialized).toString('base64'))
+            .join(','));
+        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
+
+        window.location.assign(newUrl.toString());
+    }
+
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     async _completeSignInWithAccessKey() {
         const currentUrl = new URL(window.location.href);
         const publicKey = currentUrl.searchParams.get('public_key') || '';
+        const allKeys = (currentUrl.searchParams.get('all_keys') || '').split(',');
         const accountId = currentUrl.searchParams.get('account_id') || '';
+        // TODO: Handle situation when access key is not added
         if (accountId && publicKey) {
             this._authData = {
-                accountId
+                accountId,
+                allKeys
             };
             window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
             await this._moveKeyFromTempToPermanent(accountId, publicKey);
         }
         currentUrl.searchParams.delete('public_key');
+        currentUrl.searchParams.delete('all_keys');
         currentUrl.searchParams.delete('account_id');
         window.history.replaceState({}, document.title, currentUrl.toString());
     }
@@ -111,5 +139,109 @@ export class WalletAccount {
     signOut() {
         this._authData = {};
         window.localStorage.removeItem(this._authDataKey);
+    }
+
+    account() {
+        if (!this._connectedAccount) {
+            this._connectedAccount = new ConnectedWalletAccount(this, this._near.connection, this._authData.accountId);
+        }
+        return this._connectedAccount;
+    }
+}
+
+export const WalletAccount = WalletConnection;
+
+/**
+ * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
+ */
+class ConnectedWalletAccount extends Account {
+    walletConnection: WalletConnection;
+
+    constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
+        super(connection, accountId);
+        this.walletConnection = walletConnection;
+    }
+
+    // Overriding Account methods
+
+    protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+        await this.ready;
+
+        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
+        if (!accessKey) {
+            throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
+        }
+
+        if (localKey && localKey.toString() === accessKey.public_key) {
+            try {
+                return await super.signAndSendTransaction(receiverId, actions);
+            } catch (e) {
+                // TODO: Use TypedError when available
+                if (e.message.includes('does not have enough balance')) {
+                    accessKey = await this.accessKeyForTransaction(receiverId, actions);
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        const publicKey = PublicKey.from(accessKey.public_key);
+        // TODO: Cache & listen for nonce updates for given access key
+        const nonce = accessKey.access_key.nonce + 1;
+        const status = await this.connection.provider.status();
+        const blockHash = base_decode(status.sync_info.latest_block_hash);
+        const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+        await this.walletConnection.requestSignTransactions([transaction], window.location.href);
+
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                reject(new Error('Failed to redirect to sign transaction'));
+            }, 1000);
+        });
+
+        // TODO: Aggregate multiple transaction request with "debounce".
+        // TODO: Introduce TrasactionQueue which also can be used to watch for status?
+    }
+
+    async accessKeyMatchesTransaction(accessKey, receiverId: string, actions: Action[]): Promise<boolean> {
+        const { access_key: { permission } } = accessKey;
+        if (permission === 'FullAccess') {
+            return true;
+        }
+
+        if (permission.FunctionCall) {
+            const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
+            if (allowedReceiverId === receiverId) {
+                if (actions.length !== 1) {
+                    return false;
+                }
+                const [{ functionCall }] = actions;
+                return functionCall && (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
+            }
+        }
+        // TODO: Support other permissions than FunctionCall
+
+        return false;
+    }
+
+    async accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any> {
+        const accessKeys = await this.getAccessKeys();
+
+        if (localKey) {
+            const accessKey = accessKeys.find(key => key.public_key === localKey.toString());
+            if (accessKey && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
+                return accessKey;
+            }
+        }
+
+        const walletKeys = this.walletConnection._authData.allKeys;
+        for (const accessKey of accessKeys) {
+            if (walletKeys.indexOf(accessKey.public_key) !== -1 && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
+                return accessKey;
+            }
+        }
+
+        return null;
     }
 }

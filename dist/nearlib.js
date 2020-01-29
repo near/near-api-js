@@ -1123,8 +1123,10 @@ const key_pair_1 = require("./utils/key_pair");
 exports.KeyPair = key_pair_1.KeyPair;
 const near_1 = require("./near");
 exports.connect = near_1.connect;
+// TODO: Deprecate and remove WalletAccount
 const wallet_account_1 = require("./wallet-account");
 exports.WalletAccount = wallet_account_1.WalletAccount;
+exports.WalletConnection = wallet_account_1.WalletConnection;
 
 },{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":11,"./near":15,"./providers":16,"./signer":20,"./transaction":21,"./utils":25,"./utils/key_pair":26,"./wallet-account":31}],9:[function(require,module,exports){
 'use strict';
@@ -1735,15 +1737,6 @@ const key_pair_1 = require("./utils/key_pair");
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
  */
 class Signer {
-    /**
-     * Signs given message, by first hashing with sha256.
-     * @param message message to sign.
-     * @param accountId accountId to use for signing.
-     * @param networkId network for this accontId.
-     */
-    async signMessage(message, accountId, networkId) {
-        return this.signHash(new Uint8Array(js_sha256_1.default.sha256.array(message)), accountId, networkId);
-    }
 }
 exports.Signer = Signer;
 /**
@@ -1766,7 +1759,8 @@ class InMemorySigner extends Signer {
         }
         return keyPair.getPublicKey();
     }
-    async signHash(hash, accountId, networkId) {
+    async signMessage(message, accountId, networkId) {
+        const hash = new Uint8Array(js_sha256_1.default.sha256.array(message));
         if (!accountId) {
             throw new Error('InMemorySigner requires provided account id');
         }
@@ -2719,20 +2713,27 @@ async function fetchJson(connection, json) {
 exports.fetchJson = fetchJson;
 
 },{"http":36,"http-errors":54,"https":36,"node-fetch":36}],31:[function(require,module,exports){
+(function (Buffer){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+const account_1 = require("./account");
+const transaction_1 = require("./transaction");
 const utils_1 = require("./utils");
+const serialize_1 = require("./utils/serialize");
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
-class WalletAccount {
+class WalletConnection {
     constructor(near, appKeyPrefix) {
+        this._near = near;
+        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
-        this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         this._keyStore = near.connection.signer.keyStore;
-        this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey) || '{}');
+        this._authData = authData || { allKeys: [] };
+        this._authDataKey = authDataKey;
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
         }
@@ -2782,21 +2783,35 @@ class WalletAccount {
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         window.location.assign(newUrl.toString());
     }
+    async requestSignTransactions(transactions, callbackUrl) {
+        const currentUrl = new URL(window.location.href);
+        const newUrl = new URL('sign', this._walletBaseUrl);
+        newUrl.searchParams.set('transactions', transactions
+            .map(transaction => utils_1.serialize.serialize(transaction_1.SCHEMA, transaction))
+            .map(serialized => Buffer.from(serialized).toString('base64'))
+            .join(','));
+        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
+        window.location.assign(newUrl.toString());
+    }
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     async _completeSignInWithAccessKey() {
         const currentUrl = new URL(window.location.href);
         const publicKey = currentUrl.searchParams.get('public_key') || '';
+        const allKeys = (currentUrl.searchParams.get('all_keys') || '').split(',');
         const accountId = currentUrl.searchParams.get('account_id') || '';
+        // TODO: Handle situation when access key is not added
         if (accountId && publicKey) {
             this._authData = {
-                accountId
+                accountId,
+                allKeys
             };
             window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
             await this._moveKeyFromTempToPermanent(accountId, publicKey);
         }
         currentUrl.searchParams.delete('public_key');
+        currentUrl.searchParams.delete('all_keys');
         currentUrl.searchParams.delete('account_id');
         window.history.replaceState({}, document.title, currentUrl.toString());
     }
@@ -2814,10 +2829,98 @@ class WalletAccount {
         this._authData = {};
         window.localStorage.removeItem(this._authDataKey);
     }
+    account() {
+        if (!this._connectedAccount) {
+            this._connectedAccount = new ConnectedWalletAccount(this, this._near.connection, this._authData.accountId);
+        }
+        return this._connectedAccount;
+    }
 }
-exports.WalletAccount = WalletAccount;
+exports.WalletConnection = WalletConnection;
+exports.WalletAccount = WalletConnection;
+/**
+ * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
+ */
+class ConnectedWalletAccount extends account_1.Account {
+    constructor(walletConnection, connection, accountId) {
+        super(connection, accountId);
+        this.walletConnection = walletConnection;
+    }
+    // Overriding Account methods
+    async signAndSendTransaction(receiverId, actions) {
+        await this.ready;
+        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
+        if (!accessKey) {
+            throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
+        }
+        if (localKey && localKey.toString() === accessKey.public_key) {
+            try {
+                return await super.signAndSendTransaction(receiverId, actions);
+            }
+            catch (e) {
+                // TODO: Use TypedError when available
+                if (e.message.includes('does not have enough balance')) {
+                    accessKey = await this.accessKeyForTransaction(receiverId, actions);
+                }
+                else {
+                    throw e;
+                }
+            }
+        }
+        const publicKey = utils_1.PublicKey.from(accessKey.public_key);
+        // TODO: Cache & listen for nonce updates for given access key
+        const nonce = accessKey.access_key.nonce + 1;
+        const status = await this.connection.provider.status();
+        const blockHash = serialize_1.base_decode(status.sync_info.latest_block_hash);
+        const transaction = transaction_1.createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+        await this.walletConnection.requestSignTransactions([transaction], window.location.href);
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                reject(new Error('Failed to redirect to sign transaction'));
+            }, 1000);
+        });
+        // TODO: Aggregate multiple transaction request with "debounce".
+        // TODO: Introduce TrasactionQueue which also can be used to watch for status?
+    }
+    async accessKeyMatchesTransaction(accessKey, receiverId, actions) {
+        const { access_key: { permission } } = accessKey;
+        if (permission === 'FullAccess') {
+            return true;
+        }
+        if (permission.FunctionCall) {
+            const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
+            if (allowedReceiverId === receiverId) {
+                if (actions.length !== 1) {
+                    return false;
+                }
+                const [{ functionCall }] = actions;
+                return functionCall && (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
+            }
+        }
+        // TODO: Support other permissions than FunctionCall
+        return false;
+    }
+    async accessKeyForTransaction(receiverId, actions, localKey) {
+        const accessKeys = await this.getAccessKeys();
+        if (localKey) {
+            const accessKey = accessKeys.find(key => key.public_key === localKey.toString());
+            if (accessKey && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
+                return accessKey;
+            }
+        }
+        const walletKeys = this.walletConnection._authData.allKeys;
+        for (const accessKey of accessKeys) {
+            if (walletKeys.indexOf(accessKey.public_key) !== -1 && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
+                return accessKey;
+            }
+        }
+        return null;
+    }
+}
 
-},{"./utils":25}],32:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"./account":2,"./transaction":21,"./utils":25,"./utils/serialize":29,"buffer":38}],32:[function(require,module,exports){
 'use strict'
 // base-x encoding / decoding
 // Copyright (c) 2018 base-x contributors

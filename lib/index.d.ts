@@ -9,5 +9,5 @@ import { Signer, InMemorySigner } from './signer';
 import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { connect } from './near';
-import { WalletAccount } from './wallet-account';
-export { accountCreator, keyStores, providers, utils, transactions, Account, Connection, Contract, InMemorySigner, Signer, KeyPair, connect, WalletAccount };
+import { WalletAccount, WalletConnection } from './wallet-account';
+export { accountCreator, keyStores, providers, utils, transactions, Account, Connection, Contract, InMemorySigner, Signer, KeyPair, connect, WalletAccount, WalletConnection };

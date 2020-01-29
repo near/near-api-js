@@ -32,8 +32,10 @@ test('serialize and sign multi-action tx', async() => {
         nearlib.transactions.deleteAccount('123')
     ];
     const blockHash = nearlib.utils.serialize.base_decode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
-    let [hash] = await nearlib.transactions.signTransaction('123', 1, actions, blockHash, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
+    let [hash, { transaction }] = await nearlib.transactions.signTransaction('123', 1, actions, blockHash, new nearlib.InMemorySigner(keyStore), 'test.near', 'test');
     expect(nearlib.utils.serialize.base_encode(hash)).toEqual('Fo3MJ9XzKjnKuDuQKhDAC6fra5H2UWawRejFSEpPNk3Y');
+    const serialized = nearlib.utils.serialize.serialize(nearlib.transactions.SCHEMA, transaction);
+    expect(serialized.toString('hex')).toEqual('09000000746573742e6e656172000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef80100000000000000030000003132330fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef608000000000103000000010203020300000071717103000000010203e80300000000000040420f00000000000000000000000000037b0000000000000000000000000000000440420f00000000000000000000000000000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef805000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef800000000000000000000030000007a7a7a010000000300000077777706000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef80703000000313233');
 });
 
 function createTransferTx() {
