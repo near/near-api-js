@@ -1,0 +1,19 @@
+env:
+  es6: true
+  node: true
+extends:
+  - 'eslint:recommended'
+  - 'plugin:@typescript-eslint/eslint-recommended'
+  - 'plugin:@typescript-eslint/recommended'
+parser: '@typescript-eslint/parser'
+rules:
+  no-inner-declarations: off
+  '@typescript-eslint/no-explicit-any': off
+  # TODO: Clean-up code and enable following rules
+  '@typescript-eslint/camelcase': off
+  '@typescript-eslint/explicit-function-return-type': off
+  '@typescript-eslint/no-use-before-define': off
+
+parserOptions:
+  ecmaVersion: 2018
+  sourceType: module

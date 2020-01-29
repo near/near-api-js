@@ -16,17 +16,17 @@ export enum KeyType {
     ED25519 = 0,
 }
 
-function key_type_to_str(keyType: KeyType): String {
+function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
-        case KeyType.ED25519: return 'ed25519';
-        default: throw new Error(`Unknown key type ${keyType}`);
+    case KeyType.ED25519: return 'ed25519';
+    default: throw new Error(`Unknown key type ${keyType}`);
     }
 }
 
 function str_to_key_type(keyType: string): KeyType {
     switch (keyType.toLowerCase()) {
-        case 'ed25519': return KeyType.ED25519;
-        default: throw new Error(`Unknown key type ${keyType}`);
+    case 'ed25519': return KeyType.ED25519;
+    default: throw new Error(`Unknown key type ${keyType}`);
     }
 }
 
@@ -68,8 +68,8 @@ export abstract class KeyPair {
 
     static fromRandom(curve: string): KeyPair {
         switch (curve.toUpperCase()) {
-            case 'ED25519': return KeyPairEd25519.fromRandom();
-            default: throw new Error(`Unknown curve ${curve}`);
+        case 'ED25519': return KeyPairEd25519.fromRandom();
+        default: throw new Error(`Unknown curve ${curve}`);
         }
     }
 
@@ -79,8 +79,8 @@ export abstract class KeyPair {
             return new KeyPairEd25519(parts[0]);
         } else if (parts.length === 2) {
             switch (parts[0].toUpperCase()) {
-                case 'ED25519': return new KeyPairEd25519(parts[1]);
-                default: throw new Error(`Unknown curve: ${parts[0]}`);
+            case 'ED25519': return new KeyPairEd25519(parts[1]);
+            default: throw new Error(`Unknown curve: ${parts[0]}`);
             }
         } else {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
