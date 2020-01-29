@@ -196,13 +196,13 @@ describe('with deploy contract', () => {
         const contract = new nearlib.Contract(workingAccount, contractId, {
             viewMethods: ['hello'],
         });
-        expect(await contract.hello({ name: 'world' }).toEqual('hello world');
+        expect(await contract.hello({ name: 'world' })).toEqual('hello world');
     });
     
     test('can have change methods only', async () => {
         const contract = new nearlib.Contract(workingAccount, contractId, {
             changeMethods: ['hello'],
         });
-        expect(await contract.hello({ name: 'world' }).toEqual('hello world');
+        expect(await contract.hello({ name: 'world' })).toEqual('hello world');
     });
 });
