@@ -7,7 +7,7 @@ import { ServerError } from '../generated/rpc_error_types';
 
 export * from '../generated/rpc_error_types';
 
-export function parseRpcError(errorObj: Object): ServerError {
+export function parseRpcError(errorObj: Record<string, any>): ServerError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
     // NOTE: This assumes that all errors extend TypedError
@@ -41,10 +41,8 @@ function walkSubtype(errorObj, schema, result, typeName) {
         }
     }
     if (error && type) {
-        for (const prop in type.props) {
-            if (type.props.hasOwnProperty(prop)) {
-                result[prop] = error[prop];
-            }
+        for (const prop of Object.keys(type.props)) {
+            result[prop] = error[prop];
         }
         return walkSubtype(error, schema, result, errorTypeName);
     } else {

@@ -1,4 +1,4 @@
-const BN = require ('bn.js');
+import BN from 'bn.js';
 
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.

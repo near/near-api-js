@@ -2,5 +2,6 @@ extends: '../.eslintrc.yml'
 env:
   jest: true
 globals:
+  jasmine: true
   window: false
   fail: true
