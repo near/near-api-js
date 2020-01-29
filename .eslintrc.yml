@@ -1,11 +1,10 @@
 env:
   es6: true
   node: true
-extends: 'eslint:recommended'
-parser: '@typescript-eslint/parser'
+extends:
+  - 'eslint:recommended'
 parserOptions:
   ecmaVersion: 2018
-  sourceType: module
 rules:
   indent:
     - error
@@ -21,7 +20,6 @@ rules:
     - always
   no-console: off
 globals:
-  jasmine: true
   window: true
   fetch: true
   Headers: true

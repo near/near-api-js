@@ -16,7 +16,7 @@ export enum KeyType {
     ED25519 = 0,
 }
 
-function key_type_to_str(keyType: KeyType): String {
+function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
     case KeyType.ED25519: return 'ed25519';
     default: throw new Error(`Unknown key type ${keyType}`);

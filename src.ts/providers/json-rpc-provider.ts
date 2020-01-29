@@ -19,10 +19,8 @@ let _nextId = 123;
 export class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
 
-    constructor(url?: string, network?: Network) {
+    constructor(url?: string) {
         super();
-        // TODO: resolve network to url...
-
         this.connection = { url };
     }
 
