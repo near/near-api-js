@@ -34,7 +34,7 @@ sidebar_label: "AddKeyAlreadyExists"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -51,7 +51,7 @@ Name | Type |
 
 • **account_id**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:226](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L226)*
+*Defined in [src.ts/generated/rpc_error_types.ts:212](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L212)*
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 *Inherited from [ActionError](_generated_rpc_error_types_.actionerror.md).[index](_generated_rpc_error_types_.actionerror.md#index)*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L10)*
+*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L10)*
 
 ___
 
@@ -89,7 +89,7 @@ ___
 
 • **public_key**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:225](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L225)*
+*Defined in [src.ts/generated/rpc_error_types.ts:213](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L213)*
 
 ___
 
@@ -109,4 +109,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

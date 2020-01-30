@@ -6,7 +6,7 @@ sidebar_label: "ReceiverMismatch"
 
 ## Hierarchy
 
-  ↳ [InvalidAccessKey](_generated_rpc_error_types_.invalidaccesskey.md)
+  ↳ [InvalidAccessKeyError](_generated_rpc_error_types_.invalidaccesskeyerror.md)
 
   ↳ **ReceiverMismatch**
 
@@ -33,7 +33,7 @@ sidebar_label: "ReceiverMismatch"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -50,7 +50,7 @@ Name | Type |
 
 • **ak_receiver**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:165](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L165)*
+*Defined in [src.ts/generated/rpc_error_types.ts:297](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L297)*
 
 ___
 
@@ -88,7 +88,7 @@ ___
 
 • **tx_receiver**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:166](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L166)*
+*Defined in [src.ts/generated/rpc_error_types.ts:298](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L298)*
 
 ___
 
@@ -98,4 +98,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

@@ -6,51 +6,67 @@ sidebar_label: "HostError"
 
 ## Hierarchy
 
-  ↳ [FunctionExecError](_generated_rpc_error_types_.functionexecerror.md)
+  ↳ [FunctionCallError](_generated_rpc_error_types_.functioncallerror.md)
 
   ↳ **HostError**
 
-  ↳ [InvalidIteratorIndex](_generated_rpc_error_types_.invaliditeratorindex.md)
+  ↳ [BadUTF16](_generated_rpc_error_types_.badutf16.md)
 
-  ↳ [InvalidPublicKey](_generated_rpc_error_types_.invalidpublickey.md)
+  ↳ [BadUTF8](_generated_rpc_error_types_.badutf8.md)
+
+  ↳ [BalanceExceeded](_generated_rpc_error_types_.balanceexceeded.md)
 
   ↳ [CannotAppendActionToJointPromise](_generated_rpc_error_types_.cannotappendactiontojointpromise.md)
 
-  ↳ [MemoryAccessViolation](_generated_rpc_error_types_.memoryaccessviolation.md)
-
-  ↳ [BadUTF16](_generated_rpc_error_types_.badutf16.md)
-
-  ↳ [InvalidAccountId](_generated_rpc_error_types_.invalidaccountid.md)
-
   ↳ [CannotReturnJointPromise](_generated_rpc_error_types_.cannotreturnjointpromise.md)
 
-  ↳ [InvalidRegisterId](_generated_rpc_error_types_.invalidregisterid.md)
+  ↳ [ContractSizeExceeded](_generated_rpc_error_types_.contractsizeexceeded.md)
+
+  ↳ [EmptyMethodName](_generated_rpc_error_types_.emptymethodname.md)
 
   ↳ [GasExceeded](_generated_rpc_error_types_.gasexceeded.md)
 
   ↳ [GasLimitExceeded](_generated_rpc_error_types_.gaslimitexceeded.md)
 
-  ↳ [BalanceExceeded](_generated_rpc_error_types_.balanceexceeded.md)
-
-  ↳ [ProhibitedInView](_generated_rpc_error_types_.prohibitedinview.md)
-
-  ↳ [EmptyMethodName](_generated_rpc_error_types_.emptymethodname.md)
-
   ↳ [GuestPanic](_generated_rpc_error_types_.guestpanic.md)
+
+  ↳ [IntegerOverflow](_generated_rpc_error_types_.integeroverflow.md)
+
+  ↳ [InvalidAccountId](_generated_rpc_error_types_.invalidaccountid.md)
+
+  ↳ [InvalidIteratorIndex](_generated_rpc_error_types_.invaliditeratorindex.md)
 
   ↳ [InvalidMethodName](_generated_rpc_error_types_.invalidmethodname.md)
 
-  ↳ [InvalidPromiseResultIndex](_generated_rpc_error_types_.invalidpromiseresultindex.md)
-
-  ↳ [IteratorWasInvalidated](_generated_rpc_error_types_.iteratorwasinvalidated.md)
-
   ↳ [InvalidPromiseIndex](_generated_rpc_error_types_.invalidpromiseindex.md)
 
-  ↳ [BadUTF8](_generated_rpc_error_types_.badutf8.md)
+  ↳ [InvalidPromiseResultIndex](_generated_rpc_error_types_.invalidpromiseresultindex.md)
+
+  ↳ [InvalidPublicKey](_generated_rpc_error_types_.invalidpublickey.md)
 
   ↳ [InvalidReceiptIndex](_generated_rpc_error_types_.invalidreceiptindex.md)
 
-  ↳ [IntegerOverflow](_generated_rpc_error_types_.integeroverflow.md)
+  ↳ [InvalidRegisterId](_generated_rpc_error_types_.invalidregisterid.md)
+
+  ↳ [IteratorWasInvalidated](_generated_rpc_error_types_.iteratorwasinvalidated.md)
+
+  ↳ [KeyLengthExceeded](_generated_rpc_error_types_.keylengthexceeded.md)
+
+  ↳ [MemoryAccessViolation](_generated_rpc_error_types_.memoryaccessviolation.md)
+
+  ↳ [NumberInputDataDependenciesExceeded](_generated_rpc_error_types_.numberinputdatadependenciesexceeded.md)
+
+  ↳ [NumberOfLogsExceeded](_generated_rpc_error_types_.numberoflogsexceeded.md)
+
+  ↳ [NumberPromisesExceeded](_generated_rpc_error_types_.numberpromisesexceeded.md)
+
+  ↳ [ProhibitedInView](_generated_rpc_error_types_.prohibitedinview.md)
+
+  ↳ [ReturnedValueLengthExceeded](_generated_rpc_error_types_.returnedvaluelengthexceeded.md)
+
+  ↳ [TotalLogLengthExceeded](_generated_rpc_error_types_.totalloglengthexceeded.md)
+
+  ↳ [ValueLengthExceeded](_generated_rpc_error_types_.valuelengthexceeded.md)
 
 ## Index
 
@@ -74,7 +90,7 @@ sidebar_label: "HostError"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -93,7 +109,7 @@ Name | Type |
 
 *Inherited from [ActionError](_generated_rpc_error_types_.actionerror.md).[index](_generated_rpc_error_types_.actionerror.md#index)*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L10)*
+*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L10)*
 
 ___
 
@@ -133,4 +149,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

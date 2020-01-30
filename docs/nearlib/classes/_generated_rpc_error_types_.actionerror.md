@@ -10,27 +10,29 @@ sidebar_label: "ActionError"
 
   ↳ **ActionError**
 
-  ↳ [FunctionCall](_generated_rpc_error_types_.functioncall.md)
-
-  ↳ [DeleteAccountStaking](_generated_rpc_error_types_.deleteaccountstaking.md)
-
-  ↳ [TriesToStake](_generated_rpc_error_types_.triestostake.md)
-
-  ↳ [ActorNoPermission](_generated_rpc_error_types_.actornopermission.md)
-
-  ↳ [DeleteKeyDoesNotExist](_generated_rpc_error_types_.deletekeydoesnotexist.md)
-
-  ↳ [AddKeyAlreadyExists](_generated_rpc_error_types_.addkeyalreadyexists.md)
-
-  ↳ [DeleteAccountHasRent](_generated_rpc_error_types_.deleteaccounthasrent.md)
-
-  ↳ [TriesToUnstake](_generated_rpc_error_types_.triestounstake.md)
+  ↳ [FunctionCallError](_generated_rpc_error_types_.functioncallerror.md)
 
   ↳ [AccountAlreadyExists](_generated_rpc_error_types_.accountalreadyexists.md)
 
   ↳ [AccountDoesNotExist](_generated_rpc_error_types_.accountdoesnotexist.md)
 
+  ↳ [ActorNoPermission](_generated_rpc_error_types_.actornopermission.md)
+
+  ↳ [AddKeyAlreadyExists](_generated_rpc_error_types_.addkeyalreadyexists.md)
+
   ↳ [CreateAccountNotAllowed](_generated_rpc_error_types_.createaccountnotallowed.md)
+
+  ↳ [DeleteAccountHasRent](_generated_rpc_error_types_.deleteaccounthasrent.md)
+
+  ↳ [DeleteAccountStaking](_generated_rpc_error_types_.deleteaccountstaking.md)
+
+  ↳ [DeleteKeyDoesNotExist](_generated_rpc_error_types_.deletekeydoesnotexist.md)
+
+  ↳ [RentUnpaid](_generated_rpc_error_types_.rentunpaid.md)
+
+  ↳ [TriesToStake](_generated_rpc_error_types_.triestostake.md)
+
+  ↳ [TriesToUnstake](_generated_rpc_error_types_.triestounstake.md)
 
 ## Index
 
@@ -54,7 +56,7 @@ sidebar_label: "ActionError"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -71,7 +73,7 @@ Name | Type |
 
 • **index**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L10)*
+*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L10)*
 
 ___
 
@@ -111,4 +113,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

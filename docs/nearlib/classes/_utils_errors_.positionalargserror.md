@@ -29,7 +29,7 @@ sidebar_label: "PositionalArgsError"
 
 \+ **new PositionalArgsError**(): *[PositionalArgsError](_utils_errors_.positionalargserror.md)*
 
-*Defined in [src.ts/utils/errors.ts:1](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L1)*
+*Defined in [src.ts/utils/errors.ts:1](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L1)*
 
 **Returns:** *[PositionalArgsError](_utils_errors_.positionalargserror.md)*
 

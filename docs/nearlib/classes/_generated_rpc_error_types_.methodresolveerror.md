@@ -1,46 +1,46 @@
 ---
-id: "_generated_rpc_error_types_.resolveerror"
-title: "ResolveError"
-sidebar_label: "ResolveError"
+id: "_generated_rpc_error_types_.methodresolveerror"
+title: "MethodResolveError"
+sidebar_label: "MethodResolveError"
 ---
 
 ## Hierarchy
 
-  ↳ [FunctionExecError](_generated_rpc_error_types_.functionexecerror.md)
+  ↳ [FunctionCallError](_generated_rpc_error_types_.functioncallerror.md)
 
-  ↳ **ResolveError**
-
-  ↳ [MethodUTF8Error](_generated_rpc_error_types_.methodutf8error.md)
-
-  ↳ [MethodInvalidSignature](_generated_rpc_error_types_.methodinvalidsignature.md)
+  ↳ **MethodResolveError**
 
   ↳ [MethodEmptyName](_generated_rpc_error_types_.methodemptyname.md)
 
+  ↳ [MethodInvalidSignature](_generated_rpc_error_types_.methodinvalidsignature.md)
+
   ↳ [MethodNotFound](_generated_rpc_error_types_.methodnotfound.md)
+
+  ↳ [MethodUTF8Error](_generated_rpc_error_types_.methodutf8error.md)
 
 ## Index
 
 ### Constructors
 
-* [constructor](_generated_rpc_error_types_.resolveerror.md#constructor)
+* [constructor](_generated_rpc_error_types_.methodresolveerror.md#constructor)
 
 ### Properties
 
-* [index](_generated_rpc_error_types_.resolveerror.md#index)
-* [message](_generated_rpc_error_types_.resolveerror.md#message)
-* [name](_generated_rpc_error_types_.resolveerror.md#name)
-* [stack](_generated_rpc_error_types_.resolveerror.md#optional-stack)
-* [type](_generated_rpc_error_types_.resolveerror.md#type)
+* [index](_generated_rpc_error_types_.methodresolveerror.md#index)
+* [message](_generated_rpc_error_types_.methodresolveerror.md#message)
+* [name](_generated_rpc_error_types_.methodresolveerror.md#name)
+* [stack](_generated_rpc_error_types_.methodresolveerror.md#optional-stack)
+* [type](_generated_rpc_error_types_.methodresolveerror.md#type)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new ResolveError**(`message?`: string, `type?`: string): *[ResolveError](_generated_rpc_error_types_.resolveerror.md)*
+\+ **new MethodResolveError**(`message?`: string, `type?`: string): *[MethodResolveError](_generated_rpc_error_types_.methodresolveerror.md)*
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -49,7 +49,7 @@ Name | Type |
 `message?` | string |
 `type?` | string |
 
-**Returns:** *[ResolveError](_generated_rpc_error_types_.resolveerror.md)*
+**Returns:** *[MethodResolveError](_generated_rpc_error_types_.methodresolveerror.md)*
 
 ## Properties
 
@@ -59,7 +59,7 @@ Name | Type |
 
 *Inherited from [ActionError](_generated_rpc_error_types_.actionerror.md).[index](_generated_rpc_error_types_.actionerror.md#index)*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L10)*
+*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L10)*
 
 ___
 
@@ -99,4 +99,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

@@ -17,21 +17,23 @@ sidebar_label: "utils/rpc_errors"
 * [BadUTF16](_utils_rpc_errors_.md#badutf16)
 * [BadUTF8](_utils_rpc_errors_.md#badutf8)
 * [BalanceExceeded](_utils_rpc_errors_.md#balanceexceeded)
+* [BalanceMismatchError](_utils_rpc_errors_.md#balancemismatcherror)
 * [CannotAppendActionToJointPromise](_utils_rpc_errors_.md#cannotappendactiontojointpromise)
 * [CannotReturnJointPromise](_utils_rpc_errors_.md#cannotreturnjointpromise)
 * [Closed](_utils_rpc_errors_.md#closed)
 * [CodeDoesNotExist](_utils_rpc_errors_.md#codedoesnotexist)
 * [CompilationError](_utils_rpc_errors_.md#compilationerror)
+* [ContractSizeExceeded](_utils_rpc_errors_.md#contractsizeexceeded)
 * [CostOverflow](_utils_rpc_errors_.md#costoverflow)
 * [CreateAccountNotAllowed](_utils_rpc_errors_.md#createaccountnotallowed)
 * [DeleteAccountHasRent](_utils_rpc_errors_.md#deleteaccounthasrent)
 * [DeleteAccountStaking](_utils_rpc_errors_.md#deleteaccountstaking)
 * [DeleteKeyDoesNotExist](_utils_rpc_errors_.md#deletekeydoesnotexist)
+* [DepositWithFunctionCall](_utils_rpc_errors_.md#depositwithfunctioncall)
 * [Deserialization](_utils_rpc_errors_.md#deserialization)
 * [EmptyMethodName](_utils_rpc_errors_.md#emptymethodname)
 * [Expired](_utils_rpc_errors_.md#expired)
-* [FunctionCall](_utils_rpc_errors_.md#functioncall)
-* [FunctionExecError](_utils_rpc_errors_.md#functionexecerror)
+* [FunctionCallError](_utils_rpc_errors_.md#functioncallerror)
 * [GasExceeded](_utils_rpc_errors_.md#gasexceeded)
 * [GasInstrumentation](_utils_rpc_errors_.md#gasinstrumentation)
 * [GasLimitExceeded](_utils_rpc_errors_.md#gaslimitexceeded)
@@ -40,7 +42,7 @@ sidebar_label: "utils/rpc_errors"
 * [Instantiate](_utils_rpc_errors_.md#instantiate)
 * [IntegerOverflow](_utils_rpc_errors_.md#integeroverflow)
 * [InternalMemoryDeclared](_utils_rpc_errors_.md#internalmemorydeclared)
-* [InvalidAccessKey](_utils_rpc_errors_.md#invalidaccesskey)
+* [InvalidAccessKeyError](_utils_rpc_errors_.md#invalidaccesskeyerror)
 * [InvalidAccountId](_utils_rpc_errors_.md#invalidaccountid)
 * [InvalidChain](_utils_rpc_errors_.md#invalidchain)
 * [InvalidIteratorIndex](_utils_rpc_errors_.md#invaliditeratorindex)
@@ -56,6 +58,7 @@ sidebar_label: "utils/rpc_errors"
 * [InvalidSignerId](_utils_rpc_errors_.md#invalidsignerid)
 * [InvalidTxError](_utils_rpc_errors_.md#invalidtxerror)
 * [IteratorWasInvalidated](_utils_rpc_errors_.md#iteratorwasinvalidated)
+* [KeyLengthExceeded](_utils_rpc_errors_.md#keylengthexceeded)
 * [LinkError](_utils_rpc_errors_.md#linkerror)
 * [Memory](_utils_rpc_errors_.md#memory)
 * [MemoryAccessViolation](_utils_rpc_errors_.md#memoryaccessviolation)
@@ -63,22 +66,29 @@ sidebar_label: "utils/rpc_errors"
 * [MethodInvalidSignature](_utils_rpc_errors_.md#methodinvalidsignature)
 * [MethodNameMismatch](_utils_rpc_errors_.md#methodnamemismatch)
 * [MethodNotFound](_utils_rpc_errors_.md#methodnotfound)
+* [MethodResolveError](_utils_rpc_errors_.md#methodresolveerror)
 * [MethodUTF8Error](_utils_rpc_errors_.md#methodutf8error)
 * [NotEnoughAllowance](_utils_rpc_errors_.md#notenoughallowance)
 * [NotEnoughBalance](_utils_rpc_errors_.md#notenoughbalance)
+* [NumberInputDataDependenciesExceeded](_utils_rpc_errors_.md#numberinputdatadependenciesexceeded)
+* [NumberOfLogsExceeded](_utils_rpc_errors_.md#numberoflogsexceeded)
+* [NumberPromisesExceeded](_utils_rpc_errors_.md#numberpromisesexceeded)
 * [PrepareError](_utils_rpc_errors_.md#prepareerror)
 * [ProhibitedInView](_utils_rpc_errors_.md#prohibitedinview)
 * [ReceiverMismatch](_utils_rpc_errors_.md#receivermismatch)
 * [RentUnpaid](_utils_rpc_errors_.md#rentunpaid)
-* [ResolveError](_utils_rpc_errors_.md#resolveerror)
+* [RequiresFullAccess](_utils_rpc_errors_.md#requiresfullaccess)
+* [ReturnedValueLengthExceeded](_utils_rpc_errors_.md#returnedvaluelengthexceeded)
 * [Serialization](_utils_rpc_errors_.md#serialization)
 * [ServerError](_utils_rpc_errors_.md#servererror)
 * [SignerDoesNotExist](_utils_rpc_errors_.md#signerdoesnotexist)
 * [StackHeightInstrumentation](_utils_rpc_errors_.md#stackheightinstrumentation)
 * [Timeout](_utils_rpc_errors_.md#timeout)
+* [TotalLogLengthExceeded](_utils_rpc_errors_.md#totalloglengthexceeded)
 * [TriesToStake](_utils_rpc_errors_.md#triestostake)
 * [TriesToUnstake](_utils_rpc_errors_.md#triestounstake)
 * [TxExecutionError](_utils_rpc_errors_.md#txexecutionerror)
+* [ValueLengthExceeded](_utils_rpc_errors_.md#valuelengthexceeded)
 * [WasmTrap](_utils_rpc_errors_.md#wasmtrap)
 * [WasmerCompileError](_utils_rpc_errors_.md#wasmercompileerror)
 
@@ -145,6 +155,12 @@ ___
 
 ___
 
+###  BalanceMismatchError
+
+• **BalanceMismatchError**:
+
+___
+
 ###  CannotAppendActionToJointPromise
 
 • **CannotAppendActionToJointPromise**:
@@ -172,6 +188,12 @@ ___
 ###  CompilationError
 
 • **CompilationError**:
+
+___
+
+###  ContractSizeExceeded
+
+• **ContractSizeExceeded**:
 
 ___
 
@@ -205,6 +227,12 @@ ___
 
 ___
 
+###  DepositWithFunctionCall
+
+• **DepositWithFunctionCall**:
+
+___
+
 ###  Deserialization
 
 • **Deserialization**:
@@ -223,15 +251,9 @@ ___
 
 ___
 
-###  FunctionCall
+###  FunctionCallError
 
-• **FunctionCall**:
-
-___
-
-###  FunctionExecError
-
-• **FunctionExecError**:
+• **FunctionCallError**:
 
 ___
 
@@ -283,9 +305,9 @@ ___
 
 ___
 
-###  InvalidAccessKey
+###  InvalidAccessKeyError
 
-• **InvalidAccessKey**:
+• **InvalidAccessKeyError**:
 
 ___
 
@@ -379,6 +401,12 @@ ___
 
 ___
 
+###  KeyLengthExceeded
+
+• **KeyLengthExceeded**:
+
+___
+
 ###  LinkError
 
 • **LinkError**:
@@ -421,6 +449,12 @@ ___
 
 ___
 
+###  MethodResolveError
+
+• **MethodResolveError**:
+
+___
+
 ###  MethodUTF8Error
 
 • **MethodUTF8Error**:
@@ -436,6 +470,24 @@ ___
 ###  NotEnoughBalance
 
 • **NotEnoughBalance**:
+
+___
+
+###  NumberInputDataDependenciesExceeded
+
+• **NumberInputDataDependenciesExceeded**:
+
+___
+
+###  NumberOfLogsExceeded
+
+• **NumberOfLogsExceeded**:
+
+___
+
+###  NumberPromisesExceeded
+
+• **NumberPromisesExceeded**:
 
 ___
 
@@ -463,9 +515,15 @@ ___
 
 ___
 
-###  ResolveError
+###  RequiresFullAccess
 
-• **ResolveError**:
+• **RequiresFullAccess**:
+
+___
+
+###  ReturnedValueLengthExceeded
+
+• **ReturnedValueLengthExceeded**:
 
 ___
 
@@ -499,6 +557,12 @@ ___
 
 ___
 
+###  TotalLogLengthExceeded
+
+• **TotalLogLengthExceeded**:
+
+___
+
 ###  TriesToStake
 
 • **TriesToStake**:
@@ -514,6 +578,12 @@ ___
 ###  TxExecutionError
 
 • **TxExecutionError**:
+
+___
+
+###  ValueLengthExceeded
+
+• **ValueLengthExceeded**:
 
 ___
 
@@ -533,7 +603,7 @@ ___
 
 ▸ **formatError**(`errorClassName`: string, `errorData`: any): *string*
 
-*Defined in [src.ts/utils/rpc_errors.ts:19](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/rpc_errors.ts#L19)*
+*Defined in [src.ts/utils/rpc_errors.ts:19](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/rpc_errors.ts#L19)*
 
 **Parameters:**
 
@@ -550,7 +620,7 @@ ___
 
 ▸ **isObject**(`n`: any): *boolean*
 
-*Defined in [src.ts/utils/rpc_errors.ts:55](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/rpc_errors.ts#L55)*
+*Defined in [src.ts/utils/rpc_errors.ts:53](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/rpc_errors.ts#L53)*
 
 **Parameters:**
 
@@ -564,15 +634,15 @@ ___
 
 ###  parseRpcError
 
-▸ **parseRpcError**(`errorObj`: Object): *[ServerError](../classes/_generated_rpc_error_types_.servererror.md)*
+▸ **parseRpcError**(`errorObj`: Record‹string, any›): *[ServerError](../classes/_generated_rpc_error_types_.servererror.md)*
 
-*Defined in [src.ts/utils/rpc_errors.ts:10](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/rpc_errors.ts#L10)*
+*Defined in [src.ts/utils/rpc_errors.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/rpc_errors.ts#L10)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`errorObj` | Object |
+`errorObj` | Record‹string, any› |
 
 **Returns:** *[ServerError](../classes/_generated_rpc_error_types_.servererror.md)*
 
@@ -582,7 +652,7 @@ ___
 
 ▸ **walkSubtype**(`errorObj`: any, `schema`: any, `result`: any, `typeName`: any): *any*
 
-*Defined in [src.ts/utils/rpc_errors.ts:26](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/rpc_errors.ts#L26)*
+*Defined in [src.ts/utils/rpc_errors.ts:26](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/rpc_errors.ts#L26)*
 
 **Parameters:**
 

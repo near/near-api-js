@@ -23,7 +23,7 @@ sidebar_label: "AccountState"
 
 • **account_id**: *string*
 
-*Defined in [src.ts/account.ts:33](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L33)*
+*Defined in [src.ts/account.ts:35](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L35)*
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 • **amount**: *string*
 
-*Defined in [src.ts/account.ts:34](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L34)*
+*Defined in [src.ts/account.ts:36](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L36)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **code_hash**: *string*
 
-*Defined in [src.ts/account.ts:36](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L36)*
+*Defined in [src.ts/account.ts:38](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L38)*
 
 ___
 
@@ -47,4 +47,4 @@ ___
 
 • **staked**: *string*
 
-*Defined in [src.ts/account.ts:35](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L35)*
+*Defined in [src.ts/account.ts:37](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L37)*

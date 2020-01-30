@@ -34,7 +34,7 @@ sidebar_label: "NotEnoughBalance"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -51,7 +51,7 @@ Name | Type |
 
 • **balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:243](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L243)*
+*Defined in [src.ts/generated/rpc_error_types.ts:291](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L291)*
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 • **cost**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:245](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L245)*
+*Defined in [src.ts/generated/rpc_error_types.ts:292](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L292)*
 
 ___
 
@@ -87,7 +87,7 @@ ___
 
 • **signer_id**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:244](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L244)*
+*Defined in [src.ts/generated/rpc_error_types.ts:293](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L293)*
 
 ___
 
@@ -107,4 +107,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

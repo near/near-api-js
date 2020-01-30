@@ -6,7 +6,7 @@ import { SignedTransaction } from '../transaction';
 export { TypedError };
 export declare class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
-    constructor(url?: string, network?: Network);
+    constructor(url?: string);
     getNetwork(): Promise<Network>;
     status(): Promise<NodeStatusResult>;
     sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;

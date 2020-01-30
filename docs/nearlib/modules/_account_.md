@@ -16,7 +16,7 @@ sidebar_label: "account"
 
 ### Variables
 
-* [DEFAULT_FUNC_CALL_AMOUNT](_account_.md#const-default_func_call_amount)
+* [DEFAULT_FUNC_CALL_GAS](_account_.md#const-default_func_call_gas)
 * [TX_STATUS_RETRY_NUMBER](_account_.md#const-tx_status_retry_number)
 * [TX_STATUS_RETRY_WAIT](_account_.md#const-tx_status_retry_wait)
 * [TX_STATUS_RETRY_WAIT_BACKOFF](_account_.md#const-tx_status_retry_wait_backoff)
@@ -27,11 +27,11 @@ sidebar_label: "account"
 
 ## Variables
 
-### `Const` DEFAULT_FUNC_CALL_AMOUNT
+### `Const` DEFAULT_FUNC_CALL_GAS
 
-• **DEFAULT_FUNC_CALL_AMOUNT**: *number* = 2000000 * 1000000
+• **DEFAULT_FUNC_CALL_GAS**: *BN‹›* = new BN('10000000000000000')
 
-*Defined in [src.ts/account.ts:16](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L16)*
+*Defined in [src.ts/account.ts:18](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L18)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **TX_STATUS_RETRY_NUMBER**: *10* = 10
 
-*Defined in [src.ts/account.ts:19](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L19)*
+*Defined in [src.ts/account.ts:21](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L21)*
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 • **TX_STATUS_RETRY_WAIT**: *500* = 500
 
-*Defined in [src.ts/account.ts:22](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L22)*
+*Defined in [src.ts/account.ts:24](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L24)*
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 • **TX_STATUS_RETRY_WAIT_BACKOFF**: *1.5* = 1.5
 
-*Defined in [src.ts/account.ts:25](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L25)*
+*Defined in [src.ts/account.ts:27](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L27)*
 
 ## Functions
 
@@ -63,7 +63,7 @@ ___
 
 ▸ **sleep**(`millis`: number): *Promise‹any›*
 
-*Defined in [src.ts/account.ts:28](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/account.ts#L28)*
+*Defined in [src.ts/account.ts:30](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L30)*
 
 **Parameters:**
 

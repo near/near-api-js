@@ -54,7 +54,7 @@ sidebar_label: "providers/provider"
 
 Ƭ **BlockHash**: *string*
 
-*Defined in [src.ts/providers/provider.ts:27](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L27)*
+*Defined in [src.ts/providers/provider.ts:27](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L27)*
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 Ƭ **BlockHeight**: *number*
 
-*Defined in [src.ts/providers/provider.ts:28](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L28)*
+*Defined in [src.ts/providers/provider.ts:28](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L28)*
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 Ƭ **BlockId**: *[BlockHash](_providers_provider_.md#blockhash) | [BlockHeight](_providers_provider_.md#blockheight)*
 
-*Defined in [src.ts/providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L29)*
+*Defined in [src.ts/providers/provider.ts:29](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L29)*
 
 ___
 
@@ -78,7 +78,7 @@ ___
 
 Ƭ **BlockShardId**: *[[BlockId](_providers_provider_.md#blockid), [ShardId](_providers_provider_.md#shardid)]*
 
-*Defined in [src.ts/providers/provider.ts:96](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L96)*
+*Defined in [src.ts/providers/provider.ts:96](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L96)*
 
 ___
 
@@ -86,7 +86,7 @@ ___
 
 Ƭ **ChunkHash**: *string*
 
-*Defined in [src.ts/providers/provider.ts:94](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L94)*
+*Defined in [src.ts/providers/provider.ts:94](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L94)*
 
 ___
 
@@ -94,7 +94,7 @@ ___
 
 Ƭ **ChunkId**: *[ChunkHash](_providers_provider_.md#chunkhash) | [BlockShardId](_providers_provider_.md#blockshardid)*
 
-*Defined in [src.ts/providers/provider.ts:97](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L97)*
+*Defined in [src.ts/providers/provider.ts:97](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L97)*
 
 ___
 
@@ -102,7 +102,7 @@ ___
 
 Ƭ **ShardId**: *number*
 
-*Defined in [src.ts/providers/provider.ts:95](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L95)*
+*Defined in [src.ts/providers/provider.ts:95](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L95)*
 
 ## Functions
 
@@ -110,7 +110,7 @@ ___
 
 ▸ **adaptTransactionResult**(`txResult`: any): *[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)*
 
-*Defined in [src.ts/providers/provider.ts:161](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L161)*
+*Defined in [src.ts/providers/provider.ts:161](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L161)*
 
 **Parameters:**
 
@@ -126,7 +126,7 @@ ___
 
 ▸ **getTransactionLastResult**(`txResult`: [FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)): *any*
 
-*Defined in [src.ts/providers/provider.ts:149](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/providers/provider.ts#L149)*
+*Defined in [src.ts/providers/provider.ts:149](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/providers/provider.ts#L149)*
 
 **Parameters:**
 

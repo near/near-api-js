@@ -8,17 +8,23 @@ window.Buffer = Buffer;
 },{"./lib/index":8,"buffer":38,"error-polyfill":45}],2:[function(require,module,exports){
 (function (Buffer){
 'use strict';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const bn_js_1 = __importDefault(require("bn.js"));
 const transaction_1 = require("./transaction");
 const providers_1 = require("./providers");
 const serialize_1 = require("./utils/serialize");
 const key_pair_1 = require("./utils/key_pair");
 const errors_1 = require("./utils/errors");
 const rpc_errors_1 = require("./utils/rpc_errors");
-// Default amount of tokens to be send with the function calls. Used to pay for the fees
+// Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-const DEFAULT_FUNC_CALL_AMOUNT = 2000000 * 1000000;
+// Default value is set to equal to max_prepaid_gas as discussed here:
+// https://github.com/nearprotocol/nearlib/pull/191#discussion_r369671912
+const DEFAULT_FUNC_CALL_GAS = new bn_js_1.default('10000000000000000');
 // Default number of retries before giving up on a transactioin.
 const TX_STATUS_RETRY_NUMBER = 10;
 // Default wait until next retry in millis.
@@ -139,7 +145,7 @@ class Account {
     async functionCall(contractId, methodName, args, gas, amount) {
         args = args || {};
         this.validateArgs(args);
-        return this.signAndSendTransaction(contractId, [transaction_1.functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
+        return this.signAndSendTransaction(contractId, [transaction_1.functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_GAS, amount)]);
     }
     // TODO: expand this API to support more options.
     async addKey(publicKey, contractId, methodName, amount) {
@@ -204,7 +210,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers":16,"./transaction":21,"./utils/errors":23,"./utils/key_pair":26,"./utils/rpc_errors":28,"./utils/serialize":29,"buffer":38}],3:[function(require,module,exports){
+},{"./providers":16,"./transaction":21,"./utils/errors":23,"./utils/key_pair":26,"./utils/rpc_errors":28,"./utils/serialize":29,"bn.js":34,"buffer":38}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const web_1 = require("./utils/web");
@@ -287,7 +293,8 @@ class Contract {
     constructor(account, contractId, options) {
         this.account = account;
         this.contractId = contractId;
-        options.viewMethods.forEach((methodName) => {
+        const { viewMethods = [], changeMethods = [] } = options;
+        viewMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
@@ -299,7 +306,7 @@ class Contract {
                 }
             });
         });
-        options.changeMethods.forEach((methodName) => {
+        changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
@@ -329,153 +336,13 @@ function validateBNLike(argMap) {
 },{"./providers":16,"./utils/errors":23,"bn.js":34}],6:[function(require,module,exports){
 module.exports={
     "schema": {
-        "InvalidIteratorIndex": {
-            "name": "InvalidIteratorIndex",
-            "subtypes": [],
-            "props": {
-                "iterator_index": ""
-            }
-        },
-        "InvalidPublicKey": {
-            "name": "InvalidPublicKey",
-            "subtypes": [],
-            "props": {}
-        },
-        "CannotAppendActionToJointPromise": {
-            "name": "CannotAppendActionToJointPromise",
-            "subtypes": [],
-            "props": {}
-        },
-        "Instantiate": {
-            "name": "Instantiate",
-            "subtypes": [],
-            "props": {}
-        },
-        "MemoryAccessViolation": {
-            "name": "MemoryAccessViolation",
-            "subtypes": [],
-            "props": {}
-        },
         "BadUTF16": {
             "name": "BadUTF16",
             "subtypes": [],
             "props": {}
         },
-        "LinkError": {
-            "name": "LinkError",
-            "subtypes": [],
-            "props": {
-                "msg": ""
-            }
-        },
-        "StackHeightInstrumentation": {
-            "name": "StackHeightInstrumentation",
-            "subtypes": [],
-            "props": {}
-        },
-        "WasmerCompileError": {
-            "name": "WasmerCompileError",
-            "subtypes": [],
-            "props": {
-                "msg": ""
-            }
-        },
-        "Memory": {
-            "name": "Memory",
-            "subtypes": [],
-            "props": {}
-        },
-        "InvalidAccountId": {
-            "name": "InvalidAccountId",
-            "subtypes": [],
-            "props": {}
-        },
-        "ResolveError": {
-            "name": "ResolveError",
-            "subtypes": [
-                "MethodEmptyName",
-                "MethodUTF8Error",
-                "MethodNotFound",
-                "MethodInvalidSignature"
-            ],
-            "props": {}
-        },
-        "InternalMemoryDeclared": {
-            "name": "InternalMemoryDeclared",
-            "subtypes": [],
-            "props": {}
-        },
-        "GasInstrumentation": {
-            "name": "GasInstrumentation",
-            "subtypes": [],
-            "props": {}
-        },
-        "MethodUTF8Error": {
-            "name": "MethodUTF8Error",
-            "subtypes": [],
-            "props": {}
-        },
-        "PrepareError": {
-            "name": "PrepareError",
-            "subtypes": [
-                "Serialization",
-                "Deserialization",
-                "InternalMemoryDeclared",
-                "GasInstrumentation",
-                "StackHeightInstrumentation",
-                "Instantiate",
-                "Memory"
-            ],
-            "props": {}
-        },
-        "CannotReturnJointPromise": {
-            "name": "CannotReturnJointPromise",
-            "subtypes": [],
-            "props": {}
-        },
-        "MethodInvalidSignature": {
-            "name": "MethodInvalidSignature",
-            "subtypes": [],
-            "props": {}
-        },
-        "InvalidRegisterId": {
-            "name": "InvalidRegisterId",
-            "subtypes": [],
-            "props": {
-                "register_id": ""
-            }
-        },
-        "GasExceeded": {
-            "name": "GasExceeded",
-            "subtypes": [],
-            "props": {}
-        },
-        "FunctionCall": {
-            "name": "FunctionCall",
-            "subtypes": [
-                "FunctionExecError",
-                "StorageError"
-            ],
-            "props": {}
-        },
-        "Deserialization": {
-            "name": "Deserialization",
-            "subtypes": [],
-            "props": {}
-        },
-        "FunctionExecError": {
-            "name": "FunctionExecError",
-            "subtypes": [
-                "CompilationError",
-                "LinkError",
-                "ResolveError",
-                "WasmTrap",
-                "HostError"
-            ],
-            "props": {}
-        },
-        "GasLimitExceeded": {
-            "name": "GasLimitExceeded",
+        "BadUTF8": {
+            "name": "BadUTF8",
             "subtypes": [],
             "props": {}
         },
@@ -484,64 +351,21 @@ module.exports={
             "subtypes": [],
             "props": {}
         },
-        "Serialization": {
-            "name": "Serialization",
+        "CannotAppendActionToJointPromise": {
+            "name": "CannotAppendActionToJointPromise",
             "subtypes": [],
             "props": {}
         },
-        "WasmTrap": {
-            "name": "WasmTrap",
-            "subtypes": [],
-            "props": {
-                "msg": ""
-            }
-        },
-        "ProhibitedInView": {
-            "name": "ProhibitedInView",
-            "subtypes": [],
-            "props": {
-                "method_name": ""
-            }
-        },
-        "MethodEmptyName": {
-            "name": "MethodEmptyName",
+        "CannotReturnJointPromise": {
+            "name": "CannotReturnJointPromise",
             "subtypes": [],
             "props": {}
         },
-        "EmptyMethodName": {
-            "name": "EmptyMethodName",
-            "subtypes": [],
-            "props": {}
-        },
-        "GuestPanic": {
-            "name": "GuestPanic",
+        "CodeDoesNotExist": {
+            "name": "CodeDoesNotExist",
             "subtypes": [],
             "props": {
-                "panic_msg": ""
-            }
-        },
-        "InvalidMethodName": {
-            "name": "InvalidMethodName",
-            "subtypes": [],
-            "props": {}
-        },
-        "MethodNotFound": {
-            "name": "MethodNotFound",
-            "subtypes": [],
-            "props": {}
-        },
-        "InvalidPromiseResultIndex": {
-            "name": "InvalidPromiseResultIndex",
-            "subtypes": [],
-            "props": {
-                "result_idx": ""
-            }
-        },
-        "IteratorWasInvalidated": {
-            "name": "IteratorWasInvalidated",
-            "subtypes": [],
-            "props": {
-                "iterator_index": ""
+                "account_id": ""
             }
         },
         "CompilationError": {
@@ -553,30 +377,55 @@ module.exports={
             ],
             "props": {}
         },
-        "InvalidPromiseIndex": {
-            "name": "InvalidPromiseIndex",
+        "ContractSizeExceeded": {
+            "name": "ContractSizeExceeded",
             "subtypes": [],
             "props": {
-                "promise_idx": ""
+                "limit": "",
+                "size": ""
             }
         },
-        "BadUTF8": {
-            "name": "BadUTF8",
+        "Deserialization": {
+            "name": "Deserialization",
             "subtypes": [],
             "props": {}
         },
-        "InvalidReceiptIndex": {
-            "name": "InvalidReceiptIndex",
+        "EmptyMethodName": {
+            "name": "EmptyMethodName",
             "subtypes": [],
-            "props": {
-                "receipt_index": ""
-            }
+            "props": {}
         },
-        "CodeDoesNotExist": {
-            "name": "CodeDoesNotExist",
+        "FunctionCallError": {
+            "name": "FunctionCallError",
+            "subtypes": [
+                "CompilationError",
+                "LinkError",
+                "MethodResolveError",
+                "WasmTrap",
+                "HostError"
+            ],
+            "props": {}
+        },
+        "GasExceeded": {
+            "name": "GasExceeded",
+            "subtypes": [],
+            "props": {}
+        },
+        "GasInstrumentation": {
+            "name": "GasInstrumentation",
+            "subtypes": [],
+            "props": {}
+        },
+        "GasLimitExceeded": {
+            "name": "GasLimitExceeded",
+            "subtypes": [],
+            "props": {}
+        },
+        "GuestPanic": {
+            "name": "GuestPanic",
             "subtypes": [],
             "props": {
-                "account_id": ""
+                "panic_msg": ""
             }
         },
         "HostError": {
@@ -602,8 +451,21 @@ module.exports={
                 "InvalidAccountId",
                 "InvalidMethodName",
                 "InvalidPublicKey",
-                "ProhibitedInView"
+                "ProhibitedInView",
+                "NumberOfLogsExceeded",
+                "KeyLengthExceeded",
+                "ValueLengthExceeded",
+                "TotalLogLengthExceeded",
+                "NumberPromisesExceeded",
+                "NumberInputDataDependenciesExceeded",
+                "ReturnedValueLengthExceeded",
+                "ContractSizeExceeded"
             ],
+            "props": {}
+        },
+        "Instantiate": {
+            "name": "Instantiate",
+            "subtypes": [],
             "props": {}
         },
         "IntegerOverflow": {
@@ -611,114 +473,256 @@ module.exports={
             "subtypes": [],
             "props": {}
         },
-        "NotEnoughAllowance": {
-            "name": "NotEnoughAllowance",
+        "InternalMemoryDeclared": {
+            "name": "InternalMemoryDeclared",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidAccountId": {
+            "name": "InvalidAccountId",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidIteratorIndex": {
+            "name": "InvalidIteratorIndex",
             "subtypes": [],
             "props": {
-                "public_key": "",
-                "allowance": "",
-                "account_id": "",
-                "cost": ""
+                "iterator_index": ""
             }
         },
-        "ReceiverMismatch": {
-            "name": "ReceiverMismatch",
+        "InvalidMethodName": {
+            "name": "InvalidMethodName",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidPromiseIndex": {
+            "name": "InvalidPromiseIndex",
             "subtypes": [],
             "props": {
-                "ak_receiver": "",
-                "tx_receiver": ""
+                "promise_idx": ""
             }
         },
-        "DeleteAccountStaking": {
-            "name": "DeleteAccountStaking",
+        "InvalidPromiseResultIndex": {
+            "name": "InvalidPromiseResultIndex",
             "subtypes": [],
             "props": {
-                "account_id": ""
+                "result_idx": ""
             }
         },
-        "TriesToStake": {
-            "name": "TriesToStake",
+        "InvalidPublicKey": {
+            "name": "InvalidPublicKey",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidReceiptIndex": {
+            "name": "InvalidReceiptIndex",
             "subtypes": [],
             "props": {
-                "balance": "",
-                "account_id": "",
-                "locked": "",
-                "stake": ""
+                "receipt_index": ""
             }
         },
-        "InvalidReceiverId": {
-            "name": "InvalidReceiverId",
+        "InvalidRegisterId": {
+            "name": "InvalidRegisterId",
             "subtypes": [],
             "props": {
-                "receiver_id": ""
+                "register_id": ""
+            }
+        },
+        "IteratorWasInvalidated": {
+            "name": "IteratorWasInvalidated",
+            "subtypes": [],
+            "props": {
+                "iterator_index": ""
+            }
+        },
+        "KeyLengthExceeded": {
+            "name": "KeyLengthExceeded",
+            "subtypes": [],
+            "props": {
+                "length": "",
+                "limit": ""
+            }
+        },
+        "LinkError": {
+            "name": "LinkError",
+            "subtypes": [],
+            "props": {
+                "msg": ""
+            }
+        },
+        "Memory": {
+            "name": "Memory",
+            "subtypes": [],
+            "props": {}
+        },
+        "MemoryAccessViolation": {
+            "name": "MemoryAccessViolation",
+            "subtypes": [],
+            "props": {}
+        },
+        "MethodEmptyName": {
+            "name": "MethodEmptyName",
+            "subtypes": [],
+            "props": {}
+        },
+        "MethodInvalidSignature": {
+            "name": "MethodInvalidSignature",
+            "subtypes": [],
+            "props": {}
+        },
+        "MethodNotFound": {
+            "name": "MethodNotFound",
+            "subtypes": [],
+            "props": {}
+        },
+        "MethodResolveError": {
+            "name": "MethodResolveError",
+            "subtypes": [
+                "MethodEmptyName",
+                "MethodUTF8Error",
+                "MethodNotFound",
+                "MethodInvalidSignature"
+            ],
+            "props": {}
+        },
+        "MethodUTF8Error": {
+            "name": "MethodUTF8Error",
+            "subtypes": [],
+            "props": {}
+        },
+        "NumberInputDataDependenciesExceeded": {
+            "name": "NumberInputDataDependenciesExceeded",
+            "subtypes": [],
+            "props": {
+                "limit": "",
+                "number_of_input_data_dependencies": ""
+            }
+        },
+        "NumberOfLogsExceeded": {
+            "name": "NumberOfLogsExceeded",
+            "subtypes": [],
+            "props": {
+                "limit": ""
+            }
+        },
+        "NumberPromisesExceeded": {
+            "name": "NumberPromisesExceeded",
+            "subtypes": [],
+            "props": {
+                "limit": "",
+                "number_of_promises": ""
+            }
+        },
+        "PrepareError": {
+            "name": "PrepareError",
+            "subtypes": [
+                "Serialization",
+                "Deserialization",
+                "InternalMemoryDeclared",
+                "GasInstrumentation",
+                "StackHeightInstrumentation",
+                "Instantiate",
+                "Memory"
+            ],
+            "props": {}
+        },
+        "ProhibitedInView": {
+            "name": "ProhibitedInView",
+            "subtypes": [],
+            "props": {
+                "method_name": ""
+            }
+        },
+        "ReturnedValueLengthExceeded": {
+            "name": "ReturnedValueLengthExceeded",
+            "subtypes": [],
+            "props": {
+                "length": "",
+                "limit": ""
+            }
+        },
+        "Serialization": {
+            "name": "Serialization",
+            "subtypes": [],
+            "props": {}
+        },
+        "StackHeightInstrumentation": {
+            "name": "StackHeightInstrumentation",
+            "subtypes": [],
+            "props": {}
+        },
+        "TotalLogLengthExceeded": {
+            "name": "TotalLogLengthExceeded",
+            "subtypes": [],
+            "props": {
+                "length": "",
+                "limit": ""
+            }
+        },
+        "ValueLengthExceeded": {
+            "name": "ValueLengthExceeded",
+            "subtypes": [],
+            "props": {
+                "length": "",
+                "limit": ""
+            }
+        },
+        "WasmTrap": {
+            "name": "WasmTrap",
+            "subtypes": [],
+            "props": {
+                "msg": ""
+            }
+        },
+        "WasmerCompileError": {
+            "name": "WasmerCompileError",
+            "subtypes": [],
+            "props": {
+                "msg": ""
             }
         },
         "AccessKeyNotFound": {
             "name": "AccessKeyNotFound",
             "subtypes": [],
             "props": {
-                "public_key": "",
+                "account_id": "",
+                "public_key": ""
+            }
+        },
+        "AccountAlreadyExists": {
+            "name": "AccountAlreadyExists",
+            "subtypes": [],
+            "props": {
                 "account_id": ""
             }
         },
-        "RentUnpaid": {
-            "name": "RentUnpaid",
+        "AccountDoesNotExist": {
+            "name": "AccountDoesNotExist",
             "subtypes": [],
             "props": {
-                "amount": "",
                 "account_id": ""
             }
         },
-        "Expired": {
-            "name": "Expired",
-            "subtypes": [],
-            "props": {}
-        },
-        "InvalidSignature": {
-            "name": "InvalidSignature",
-            "subtypes": [],
-            "props": {}
-        },
-        "InvalidChain": {
-            "name": "InvalidChain",
-            "subtypes": [],
-            "props": {}
-        },
-        "MethodNameMismatch": {
-            "name": "MethodNameMismatch",
-            "subtypes": [],
-            "props": {
-                "method_name": ""
-            }
-        },
-        "InvalidTxError": {
-            "name": "InvalidTxError",
+        "ActionError": {
+            "name": "ActionError",
             "subtypes": [
-                "InvalidAccessKey",
-                "InvalidSignerId",
-                "SignerDoesNotExist",
-                "InvalidNonce",
-                "InvalidReceiverId",
-                "InvalidSignature",
-                "NotEnoughBalance",
+                "AccountAlreadyExists",
+                "AccountDoesNotExist",
+                "CreateAccountNotAllowed",
+                "ActorNoPermission",
+                "DeleteKeyDoesNotExist",
+                "AddKeyAlreadyExists",
+                "DeleteAccountStaking",
+                "DeleteAccountHasRent",
                 "RentUnpaid",
-                "CostOverflow",
-                "InvalidChain",
-                "Expired"
+                "TriesToUnstake",
+                "TriesToStake",
+                "FunctionCallError",
+                "NewReceiptValidationError"
             ],
-            "props": {}
-        },
-        "InvalidSignerId": {
-            "name": "InvalidSignerId",
-            "subtypes": [],
             "props": {
-                "signer_id": ""
+                "index": ""
             }
-        },
-        "CostOverflow": {
-            "name": "CostOverflow",
-            "subtypes": [],
-            "props": {}
         },
         "ActorNoPermission": {
             "name": "ActorNoPermission",
@@ -726,6 +730,61 @@ module.exports={
             "props": {
                 "account_id": "",
                 "actor_id": ""
+            }
+        },
+        "AddKeyAlreadyExists": {
+            "name": "AddKeyAlreadyExists",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "public_key": ""
+            }
+        },
+        "BalanceMismatchError": {
+            "name": "BalanceMismatchError",
+            "subtypes": [],
+            "props": {
+                "final_accounts_balance": "",
+                "final_postponed_receipts_balance": "",
+                "incoming_receipts_balance": "",
+                "incoming_validator_rewards": "",
+                "initial_accounts_balance": "",
+                "initial_postponed_receipts_balance": "",
+                "new_delayed_receipts_balance": "",
+                "outgoing_receipts_balance": "",
+                "processed_delayed_receipts_balance": "",
+                "total_balance_burnt": "",
+                "total_balance_slashed": "",
+                "total_rent_paid": "",
+                "total_validator_reward": ""
+            }
+        },
+        "CostOverflow": {
+            "name": "CostOverflow",
+            "subtypes": [],
+            "props": {}
+        },
+        "CreateAccountNotAllowed": {
+            "name": "CreateAccountNotAllowed",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "predecessor_id": ""
+            }
+        },
+        "DeleteAccountHasRent": {
+            "name": "DeleteAccountHasRent",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "balance": ""
+            }
+        },
+        "DeleteAccountStaking": {
+            "name": "DeleteAccountStaking",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
             }
         },
         "DeleteKeyDoesNotExist": {
@@ -736,20 +795,140 @@ module.exports={
                 "public_key": ""
             }
         },
-        "AddKeyAlreadyExists": {
-            "name": "AddKeyAlreadyExists",
+        "DepositWithFunctionCall": {
+            "name": "DepositWithFunctionCall",
+            "subtypes": [],
+            "props": {}
+        },
+        "Expired": {
+            "name": "Expired",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidAccessKeyError": {
+            "name": "InvalidAccessKeyError",
+            "subtypes": [
+                "AccessKeyNotFound",
+                "ReceiverMismatch",
+                "MethodNameMismatch",
+                "RequiresFullAccess",
+                "NotEnoughAllowance",
+                "DepositWithFunctionCall"
+            ],
+            "props": {}
+        },
+        "InvalidChain": {
+            "name": "InvalidChain",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidNonce": {
+            "name": "InvalidNonce",
             "subtypes": [],
             "props": {
-                "public_key": "",
-                "account_id": ""
+                "ak_nonce": "",
+                "tx_nonce": ""
             }
         },
-        "DeleteAccountHasRent": {
-            "name": "DeleteAccountHasRent",
+        "InvalidReceiverId": {
+            "name": "InvalidReceiverId",
+            "subtypes": [],
+            "props": {
+                "receiver_id": ""
+            }
+        },
+        "InvalidSignature": {
+            "name": "InvalidSignature",
+            "subtypes": [],
+            "props": {}
+        },
+        "InvalidSignerId": {
+            "name": "InvalidSignerId",
+            "subtypes": [],
+            "props": {
+                "signer_id": ""
+            }
+        },
+        "InvalidTxError": {
+            "name": "InvalidTxError",
+            "subtypes": [
+                "InvalidAccessKeyError",
+                "InvalidSignerId",
+                "SignerDoesNotExist",
+                "InvalidNonce",
+                "InvalidReceiverId",
+                "InvalidSignature",
+                "NotEnoughBalance",
+                "RentUnpaid",
+                "CostOverflow",
+                "InvalidChain",
+                "Expired",
+                "ActionsValidation"
+            ],
+            "props": {}
+        },
+        "MethodNameMismatch": {
+            "name": "MethodNameMismatch",
+            "subtypes": [],
+            "props": {
+                "method_name": ""
+            }
+        },
+        "NotEnoughAllowance": {
+            "name": "NotEnoughAllowance",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "allowance": "",
+                "cost": "",
+                "public_key": ""
+            }
+        },
+        "NotEnoughBalance": {
+            "name": "NotEnoughBalance",
             "subtypes": [],
             "props": {
                 "balance": "",
-                "account_id": ""
+                "cost": "",
+                "signer_id": ""
+            }
+        },
+        "ReceiverMismatch": {
+            "name": "ReceiverMismatch",
+            "subtypes": [],
+            "props": {
+                "ak_receiver": "",
+                "tx_receiver": ""
+            }
+        },
+        "RentUnpaid": {
+            "name": "RentUnpaid",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "amount": ""
+            }
+        },
+        "RequiresFullAccess": {
+            "name": "RequiresFullAccess",
+            "subtypes": [],
+            "props": {}
+        },
+        "SignerDoesNotExist": {
+            "name": "SignerDoesNotExist",
+            "subtypes": [],
+            "props": {
+                "signer_id": ""
+            }
+        },
+        "TriesToStake": {
+            "name": "TriesToStake",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "balance": "",
+                "locked": "",
+                "stake": ""
             }
         },
         "TriesToUnstake": {
@@ -767,90 +946,8 @@ module.exports={
             ],
             "props": {}
         },
-        "AccountAlreadyExists": {
-            "name": "AccountAlreadyExists",
-            "subtypes": [],
-            "props": {
-                "account_id": ""
-            }
-        },
-        "NotEnoughBalance": {
-            "name": "NotEnoughBalance",
-            "subtypes": [],
-            "props": {
-                "balance": "",
-                "signer_id": "",
-                "cost": ""
-            }
-        },
-        "InvalidAccessKey": {
-            "name": "InvalidAccessKey",
-            "subtypes": [
-                "AccessKeyNotFound",
-                "ReceiverMismatch",
-                "MethodNameMismatch",
-                "ActionError",
-                "NotEnoughAllowance"
-            ],
-            "props": {}
-        },
-        "InvalidNonce": {
-            "name": "InvalidNonce",
-            "subtypes": [],
-            "props": {
-                "ak_nonce": "",
-                "tx_nonce": ""
-            }
-        },
-        "SignerDoesNotExist": {
-            "name": "SignerDoesNotExist",
-            "subtypes": [],
-            "props": {
-                "signer_id": ""
-            }
-        },
-        "ActionError": {
-            "name": "ActionError",
-            "subtypes": [
-                "AccountAlreadyExists",
-                "AccountDoesNotExist",
-                "CreateAccountNotAllowed",
-                "ActorNoPermission",
-                "DeleteKeyDoesNotExist",
-                "AddKeyAlreadyExists",
-                "DeleteAccountStaking",
-                "DeleteAccountHasRent",
-                "RentUnpaid",
-                "TriesToUnstake",
-                "TriesToStake",
-                "FunctionCall"
-            ],
-            "props": {
-                "index": ""
-            }
-        },
-        "AccountDoesNotExist": {
-            "name": "AccountDoesNotExist",
-            "subtypes": [],
-            "props": {
-                "account_id": ""
-            }
-        },
-        "CreateAccountNotAllowed": {
-            "name": "CreateAccountNotAllowed",
-            "subtypes": [],
-            "props": {
-                "predecessor_id": "",
-                "account_id": ""
-            }
-        },
         "Closed": {
             "name": "Closed",
-            "subtypes": [],
-            "props": {}
-        },
-        "Timeout": {
-            "name": "Timeout",
             "subtypes": [],
             "props": {}
         },
@@ -861,6 +958,11 @@ module.exports={
                 "Timeout",
                 "Closed"
             ],
+            "props": {}
+        },
+        "Timeout": {
+            "name": "Timeout",
+            "subtypes": [],
             "props": {}
         }
     }
@@ -879,210 +981,240 @@ exports.TxExecutionError = TxExecutionError;
 class ActionError extends TxExecutionError {
 }
 exports.ActionError = ActionError;
-class FunctionCall extends ActionError {
+class FunctionCallError extends ActionError {
 }
-exports.FunctionCall = FunctionCall;
-class FunctionExecError extends FunctionCall {
-}
-exports.FunctionExecError = FunctionExecError;
-class HostError extends FunctionExecError {
+exports.FunctionCallError = FunctionCallError;
+class HostError extends FunctionCallError {
 }
 exports.HostError = HostError;
-class InvalidIteratorIndex extends HostError {
-}
-exports.InvalidIteratorIndex = InvalidIteratorIndex;
-class InvalidPublicKey extends HostError {
-}
-exports.InvalidPublicKey = InvalidPublicKey;
-class CannotAppendActionToJointPromise extends HostError {
-}
-exports.CannotAppendActionToJointPromise = CannotAppendActionToJointPromise;
-class CompilationError extends FunctionExecError {
-}
-exports.CompilationError = CompilationError;
-class PrepareError extends CompilationError {
-}
-exports.PrepareError = PrepareError;
-class Instantiate extends PrepareError {
-}
-exports.Instantiate = Instantiate;
-class MemoryAccessViolation extends HostError {
-}
-exports.MemoryAccessViolation = MemoryAccessViolation;
 class BadUTF16 extends HostError {
 }
 exports.BadUTF16 = BadUTF16;
-class LinkError extends FunctionExecError {
-}
-exports.LinkError = LinkError;
-class StackHeightInstrumentation extends PrepareError {
-}
-exports.StackHeightInstrumentation = StackHeightInstrumentation;
-class WasmerCompileError extends CompilationError {
-}
-exports.WasmerCompileError = WasmerCompileError;
-class Memory extends PrepareError {
-}
-exports.Memory = Memory;
-class InvalidAccountId extends HostError {
-}
-exports.InvalidAccountId = InvalidAccountId;
-class ResolveError extends FunctionExecError {
-}
-exports.ResolveError = ResolveError;
-class InternalMemoryDeclared extends PrepareError {
-}
-exports.InternalMemoryDeclared = InternalMemoryDeclared;
-class GasInstrumentation extends PrepareError {
-}
-exports.GasInstrumentation = GasInstrumentation;
-class MethodUTF8Error extends ResolveError {
-}
-exports.MethodUTF8Error = MethodUTF8Error;
-class CannotReturnJointPromise extends HostError {
-}
-exports.CannotReturnJointPromise = CannotReturnJointPromise;
-class MethodInvalidSignature extends ResolveError {
-}
-exports.MethodInvalidSignature = MethodInvalidSignature;
-class InvalidRegisterId extends HostError {
-}
-exports.InvalidRegisterId = InvalidRegisterId;
-class GasExceeded extends HostError {
-}
-exports.GasExceeded = GasExceeded;
-class Deserialization extends PrepareError {
-}
-exports.Deserialization = Deserialization;
-class GasLimitExceeded extends HostError {
-}
-exports.GasLimitExceeded = GasLimitExceeded;
-class BalanceExceeded extends HostError {
-}
-exports.BalanceExceeded = BalanceExceeded;
-class Serialization extends PrepareError {
-}
-exports.Serialization = Serialization;
-class WasmTrap extends FunctionExecError {
-}
-exports.WasmTrap = WasmTrap;
-class ProhibitedInView extends HostError {
-}
-exports.ProhibitedInView = ProhibitedInView;
-class MethodEmptyName extends ResolveError {
-}
-exports.MethodEmptyName = MethodEmptyName;
-class EmptyMethodName extends HostError {
-}
-exports.EmptyMethodName = EmptyMethodName;
-class GuestPanic extends HostError {
-}
-exports.GuestPanic = GuestPanic;
-class InvalidMethodName extends HostError {
-}
-exports.InvalidMethodName = InvalidMethodName;
-class MethodNotFound extends ResolveError {
-}
-exports.MethodNotFound = MethodNotFound;
-class InvalidPromiseResultIndex extends HostError {
-}
-exports.InvalidPromiseResultIndex = InvalidPromiseResultIndex;
-class IteratorWasInvalidated extends HostError {
-}
-exports.IteratorWasInvalidated = IteratorWasInvalidated;
-class InvalidPromiseIndex extends HostError {
-}
-exports.InvalidPromiseIndex = InvalidPromiseIndex;
 class BadUTF8 extends HostError {
 }
 exports.BadUTF8 = BadUTF8;
-class InvalidReceiptIndex extends HostError {
+class BalanceExceeded extends HostError {
 }
-exports.InvalidReceiptIndex = InvalidReceiptIndex;
+exports.BalanceExceeded = BalanceExceeded;
+class CannotAppendActionToJointPromise extends HostError {
+}
+exports.CannotAppendActionToJointPromise = CannotAppendActionToJointPromise;
+class CannotReturnJointPromise extends HostError {
+}
+exports.CannotReturnJointPromise = CannotReturnJointPromise;
+class CompilationError extends FunctionCallError {
+}
+exports.CompilationError = CompilationError;
 class CodeDoesNotExist extends CompilationError {
 }
 exports.CodeDoesNotExist = CodeDoesNotExist;
+class ContractSizeExceeded extends HostError {
+}
+exports.ContractSizeExceeded = ContractSizeExceeded;
+class PrepareError extends CompilationError {
+}
+exports.PrepareError = PrepareError;
+class Deserialization extends PrepareError {
+}
+exports.Deserialization = Deserialization;
+class EmptyMethodName extends HostError {
+}
+exports.EmptyMethodName = EmptyMethodName;
+class GasExceeded extends HostError {
+}
+exports.GasExceeded = GasExceeded;
+class GasInstrumentation extends PrepareError {
+}
+exports.GasInstrumentation = GasInstrumentation;
+class GasLimitExceeded extends HostError {
+}
+exports.GasLimitExceeded = GasLimitExceeded;
+class GuestPanic extends HostError {
+}
+exports.GuestPanic = GuestPanic;
+class Instantiate extends PrepareError {
+}
+exports.Instantiate = Instantiate;
 class IntegerOverflow extends HostError {
 }
 exports.IntegerOverflow = IntegerOverflow;
+class InternalMemoryDeclared extends PrepareError {
+}
+exports.InternalMemoryDeclared = InternalMemoryDeclared;
+class InvalidAccountId extends HostError {
+}
+exports.InvalidAccountId = InvalidAccountId;
+class InvalidIteratorIndex extends HostError {
+}
+exports.InvalidIteratorIndex = InvalidIteratorIndex;
+class InvalidMethodName extends HostError {
+}
+exports.InvalidMethodName = InvalidMethodName;
+class InvalidPromiseIndex extends HostError {
+}
+exports.InvalidPromiseIndex = InvalidPromiseIndex;
+class InvalidPromiseResultIndex extends HostError {
+}
+exports.InvalidPromiseResultIndex = InvalidPromiseResultIndex;
+class InvalidPublicKey extends HostError {
+}
+exports.InvalidPublicKey = InvalidPublicKey;
+class InvalidReceiptIndex extends HostError {
+}
+exports.InvalidReceiptIndex = InvalidReceiptIndex;
+class InvalidRegisterId extends HostError {
+}
+exports.InvalidRegisterId = InvalidRegisterId;
+class IteratorWasInvalidated extends HostError {
+}
+exports.IteratorWasInvalidated = IteratorWasInvalidated;
+class KeyLengthExceeded extends HostError {
+}
+exports.KeyLengthExceeded = KeyLengthExceeded;
+class LinkError extends FunctionCallError {
+}
+exports.LinkError = LinkError;
+class Memory extends PrepareError {
+}
+exports.Memory = Memory;
+class MemoryAccessViolation extends HostError {
+}
+exports.MemoryAccessViolation = MemoryAccessViolation;
+class MethodResolveError extends FunctionCallError {
+}
+exports.MethodResolveError = MethodResolveError;
+class MethodEmptyName extends MethodResolveError {
+}
+exports.MethodEmptyName = MethodEmptyName;
+class MethodInvalidSignature extends MethodResolveError {
+}
+exports.MethodInvalidSignature = MethodInvalidSignature;
+class MethodNotFound extends MethodResolveError {
+}
+exports.MethodNotFound = MethodNotFound;
+class MethodUTF8Error extends MethodResolveError {
+}
+exports.MethodUTF8Error = MethodUTF8Error;
+class NumberInputDataDependenciesExceeded extends HostError {
+}
+exports.NumberInputDataDependenciesExceeded = NumberInputDataDependenciesExceeded;
+class NumberOfLogsExceeded extends HostError {
+}
+exports.NumberOfLogsExceeded = NumberOfLogsExceeded;
+class NumberPromisesExceeded extends HostError {
+}
+exports.NumberPromisesExceeded = NumberPromisesExceeded;
+class ProhibitedInView extends HostError {
+}
+exports.ProhibitedInView = ProhibitedInView;
+class ReturnedValueLengthExceeded extends HostError {
+}
+exports.ReturnedValueLengthExceeded = ReturnedValueLengthExceeded;
+class Serialization extends PrepareError {
+}
+exports.Serialization = Serialization;
+class StackHeightInstrumentation extends PrepareError {
+}
+exports.StackHeightInstrumentation = StackHeightInstrumentation;
+class TotalLogLengthExceeded extends HostError {
+}
+exports.TotalLogLengthExceeded = TotalLogLengthExceeded;
+class ValueLengthExceeded extends HostError {
+}
+exports.ValueLengthExceeded = ValueLengthExceeded;
+class WasmTrap extends FunctionCallError {
+}
+exports.WasmTrap = WasmTrap;
+class WasmerCompileError extends CompilationError {
+}
+exports.WasmerCompileError = WasmerCompileError;
 class InvalidTxError extends TxExecutionError {
 }
 exports.InvalidTxError = InvalidTxError;
-class InvalidAccessKey extends InvalidTxError {
+class InvalidAccessKeyError extends InvalidTxError {
 }
-exports.InvalidAccessKey = InvalidAccessKey;
-class NotEnoughAllowance extends InvalidAccessKey {
-}
-exports.NotEnoughAllowance = NotEnoughAllowance;
-class ReceiverMismatch extends InvalidAccessKey {
-}
-exports.ReceiverMismatch = ReceiverMismatch;
-class DeleteAccountStaking extends ActionError {
-}
-exports.DeleteAccountStaking = DeleteAccountStaking;
-class TriesToStake extends ActionError {
-}
-exports.TriesToStake = TriesToStake;
-class InvalidReceiverId extends InvalidTxError {
-}
-exports.InvalidReceiverId = InvalidReceiverId;
-class AccessKeyNotFound extends InvalidAccessKey {
+exports.InvalidAccessKeyError = InvalidAccessKeyError;
+class AccessKeyNotFound extends InvalidAccessKeyError {
 }
 exports.AccessKeyNotFound = AccessKeyNotFound;
-class RentUnpaid extends InvalidTxError {
-}
-exports.RentUnpaid = RentUnpaid;
-class Expired extends InvalidTxError {
-}
-exports.Expired = Expired;
-class InvalidSignature extends InvalidTxError {
-}
-exports.InvalidSignature = InvalidSignature;
-class InvalidChain extends InvalidTxError {
-}
-exports.InvalidChain = InvalidChain;
-class MethodNameMismatch extends InvalidAccessKey {
-}
-exports.MethodNameMismatch = MethodNameMismatch;
-class InvalidSignerId extends InvalidTxError {
-}
-exports.InvalidSignerId = InvalidSignerId;
-class CostOverflow extends InvalidTxError {
-}
-exports.CostOverflow = CostOverflow;
-class ActorNoPermission extends ActionError {
-}
-exports.ActorNoPermission = ActorNoPermission;
-class DeleteKeyDoesNotExist extends ActionError {
-}
-exports.DeleteKeyDoesNotExist = DeleteKeyDoesNotExist;
-class AddKeyAlreadyExists extends ActionError {
-}
-exports.AddKeyAlreadyExists = AddKeyAlreadyExists;
-class DeleteAccountHasRent extends ActionError {
-}
-exports.DeleteAccountHasRent = DeleteAccountHasRent;
-class TriesToUnstake extends ActionError {
-}
-exports.TriesToUnstake = TriesToUnstake;
 class AccountAlreadyExists extends ActionError {
 }
 exports.AccountAlreadyExists = AccountAlreadyExists;
-class NotEnoughBalance extends InvalidTxError {
-}
-exports.NotEnoughBalance = NotEnoughBalance;
-class InvalidNonce extends InvalidTxError {
-}
-exports.InvalidNonce = InvalidNonce;
-class SignerDoesNotExist extends InvalidTxError {
-}
-exports.SignerDoesNotExist = SignerDoesNotExist;
 class AccountDoesNotExist extends ActionError {
 }
 exports.AccountDoesNotExist = AccountDoesNotExist;
+class ActorNoPermission extends ActionError {
+}
+exports.ActorNoPermission = ActorNoPermission;
+class AddKeyAlreadyExists extends ActionError {
+}
+exports.AddKeyAlreadyExists = AddKeyAlreadyExists;
+class BalanceMismatchError extends errors_1.TypedError {
+}
+exports.BalanceMismatchError = BalanceMismatchError;
+class CostOverflow extends InvalidTxError {
+}
+exports.CostOverflow = CostOverflow;
 class CreateAccountNotAllowed extends ActionError {
 }
 exports.CreateAccountNotAllowed = CreateAccountNotAllowed;
+class DeleteAccountHasRent extends ActionError {
+}
+exports.DeleteAccountHasRent = DeleteAccountHasRent;
+class DeleteAccountStaking extends ActionError {
+}
+exports.DeleteAccountStaking = DeleteAccountStaking;
+class DeleteKeyDoesNotExist extends ActionError {
+}
+exports.DeleteKeyDoesNotExist = DeleteKeyDoesNotExist;
+class DepositWithFunctionCall extends InvalidAccessKeyError {
+}
+exports.DepositWithFunctionCall = DepositWithFunctionCall;
+class Expired extends InvalidTxError {
+}
+exports.Expired = Expired;
+class InvalidChain extends InvalidTxError {
+}
+exports.InvalidChain = InvalidChain;
+class InvalidNonce extends InvalidTxError {
+}
+exports.InvalidNonce = InvalidNonce;
+class InvalidReceiverId extends InvalidTxError {
+}
+exports.InvalidReceiverId = InvalidReceiverId;
+class InvalidSignature extends InvalidTxError {
+}
+exports.InvalidSignature = InvalidSignature;
+class InvalidSignerId extends InvalidTxError {
+}
+exports.InvalidSignerId = InvalidSignerId;
+class MethodNameMismatch extends InvalidAccessKeyError {
+}
+exports.MethodNameMismatch = MethodNameMismatch;
+class NotEnoughAllowance extends InvalidAccessKeyError {
+}
+exports.NotEnoughAllowance = NotEnoughAllowance;
+class NotEnoughBalance extends InvalidTxError {
+}
+exports.NotEnoughBalance = NotEnoughBalance;
+class ReceiverMismatch extends InvalidAccessKeyError {
+}
+exports.ReceiverMismatch = ReceiverMismatch;
+class RentUnpaid extends ActionError {
+}
+exports.RentUnpaid = RentUnpaid;
+class RequiresFullAccess extends InvalidAccessKeyError {
+}
+exports.RequiresFullAccess = RequiresFullAccess;
+class SignerDoesNotExist extends InvalidTxError {
+}
+exports.SignerDoesNotExist = SignerDoesNotExist;
+class TriesToStake extends ActionError {
+}
+exports.TriesToStake = TriesToStake;
+class TriesToUnstake extends ActionError {
+}
+exports.TriesToUnstake = TriesToUnstake;
 class Closed extends ServerError {
 }
 exports.Closed = Closed;
@@ -1543,9 +1675,8 @@ const rpc_errors_1 = require("../utils/rpc_errors");
 /// Keep ids unique across all connections.
 let _nextId = 123;
 class JsonRpcProvider extends provider_1.Provider {
-    constructor(url, network) {
+    constructor(url) {
         super();
-        // TODO: resolve network to url...
         this.connection = { url };
     }
     async getNetwork() {
@@ -2027,8 +2158,11 @@ exports.TypedError = TypedError;
 
 },{}],24:[function(require,module,exports){
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const BN = require('bn.js');
+const bn_js_1 = __importDefault(require("bn.js"));
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
  */
@@ -2036,11 +2170,11 @@ exports.NEAR_NOMINATION_EXP = 24;
 /**
  * Number of indivisible units in one NEAR. Derived from {@link NEAR_NOMINATION_EXP}.
  */
-exports.NEAR_NOMINATION = new BN('10', 10).pow(new BN(exports.NEAR_NOMINATION_EXP, 10));
+exports.NEAR_NOMINATION = new bn_js_1.default('10', 10).pow(new bn_js_1.default(exports.NEAR_NOMINATION_EXP, 10));
 // Pre-calculate offests used for rounding to different number of digits
 const ROUNDING_OFFSETS = [];
-const BN10 = new BN(10);
-for (let i = 0, offset = new BN(5); i < exports.NEAR_NOMINATION_EXP; i++, offset = offset.mul(BN10)) {
+const BN10 = new bn_js_1.default(10);
+for (let i = 0, offset = new bn_js_1.default(5); i < exports.NEAR_NOMINATION_EXP; i++, offset = offset.mul(BN10)) {
     ROUNDING_OFFSETS[i] = offset;
 }
 /**
@@ -2051,7 +2185,7 @@ for (let i = 0, offset = new BN(5); i < exports.NEAR_NOMINATION_EXP; i++, offset
  * @param fracDigits number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits.
  */
 function formatNearAmount(balance, fracDigits = exports.NEAR_NOMINATION_EXP) {
-    const balanceBN = new BN(balance, 10);
+    const balanceBN = new bn_js_1.default(balance, 10);
     if (fracDigits !== exports.NEAR_NOMINATION_EXP) {
         // Adjust balance for rounding at given number of digits
         const roundingExp = exports.NEAR_NOMINATION_EXP - fracDigits - 1;
@@ -2316,10 +2450,8 @@ function walkSubtype(errorObj, schema, result, typeName) {
         }
     }
     if (error && type) {
-        for (const prop in type.props) {
-            if (type.props.hasOwnProperty(prop)) {
-                result[prop] = error[prop];
-            }
+        for (const prop of Object.keys(type.props)) {
+            result[prop] = error[prop];
         }
         return walkSubtype(error, schema, result, errorTypeName);
     }
@@ -2672,9 +2804,11 @@ const http_errors_1 = __importDefault(require("http-errors"));
 // TODO: Move into separate module and exclude node-fetch kludge from browser build
 let fetch;
 if (typeof window === 'undefined' || window.name === 'nodejs') {
+    /* eslint-disable @typescript-eslint/no-var-requires */
     const nodeFetch = require('node-fetch');
     const http = require('http');
     const https = require('https');
+    /* eslint-enable @typescript-eslint/no-var-requires */
     const httpAgent = new http.Agent({ keepAlive: true });
     const httpsAgent = new https.Agent({ keepAlive: true });
     function agent(_parsedURL) {

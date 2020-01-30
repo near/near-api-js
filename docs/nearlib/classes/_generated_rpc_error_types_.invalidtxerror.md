@@ -10,25 +10,23 @@ sidebar_label: "InvalidTxError"
 
   ↳ **InvalidTxError**
 
-  ↳ [InvalidAccessKey](_generated_rpc_error_types_.invalidaccesskey.md)
-
-  ↳ [InvalidReceiverId](_generated_rpc_error_types_.invalidreceiverid.md)
-
-  ↳ [RentUnpaid](_generated_rpc_error_types_.rentunpaid.md)
-
-  ↳ [Expired](_generated_rpc_error_types_.expired.md)
-
-  ↳ [InvalidSignature](_generated_rpc_error_types_.invalidsignature.md)
-
-  ↳ [InvalidChain](_generated_rpc_error_types_.invalidchain.md)
-
-  ↳ [InvalidSignerId](_generated_rpc_error_types_.invalidsignerid.md)
+  ↳ [InvalidAccessKeyError](_generated_rpc_error_types_.invalidaccesskeyerror.md)
 
   ↳ [CostOverflow](_generated_rpc_error_types_.costoverflow.md)
 
-  ↳ [NotEnoughBalance](_generated_rpc_error_types_.notenoughbalance.md)
+  ↳ [Expired](_generated_rpc_error_types_.expired.md)
+
+  ↳ [InvalidChain](_generated_rpc_error_types_.invalidchain.md)
 
   ↳ [InvalidNonce](_generated_rpc_error_types_.invalidnonce.md)
+
+  ↳ [InvalidReceiverId](_generated_rpc_error_types_.invalidreceiverid.md)
+
+  ↳ [InvalidSignature](_generated_rpc_error_types_.invalidsignature.md)
+
+  ↳ [InvalidSignerId](_generated_rpc_error_types_.invalidsignerid.md)
+
+  ↳ [NotEnoughBalance](_generated_rpc_error_types_.notenoughbalance.md)
 
   ↳ [SignerDoesNotExist](_generated_rpc_error_types_.signerdoesnotexist.md)
 
@@ -53,7 +51,7 @@ sidebar_label: "InvalidTxError"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -102,4 +100,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

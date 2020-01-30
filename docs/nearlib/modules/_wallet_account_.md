@@ -8,13 +8,15 @@ sidebar_label: "wallet-account"
 
 ### Classes
 
-* [WalletAccount](../classes/_wallet_account_.walletaccount.md)
+* [ConnectedWalletAccount](../classes/_wallet_account_.connectedwalletaccount.md)
+* [WalletConnection](../classes/_wallet_account_.walletconnection.md)
 
 ### Variables
 
 * [LOCAL_STORAGE_KEY_SUFFIX](_wallet_account_.md#const-local_storage_key_suffix)
 * [LOGIN_WALLET_URL_SUFFIX](_wallet_account_.md#const-login_wallet_url_suffix)
 * [PENDING_ACCESS_KEY_PREFIX](_wallet_account_.md#const-pending_access_key_prefix)
+* [WalletAccount](_wallet_account_.md#const-walletaccount)
 
 ## Variables
 
@@ -22,7 +24,7 @@ sidebar_label: "wallet-account"
 
 • **LOCAL_STORAGE_KEY_SUFFIX**: *"_wallet_auth_key"* = "_wallet_auth_key"
 
-*Defined in [src.ts/wallet-account.ts:10](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/wallet-account.ts#L10)*
+*Defined in [src.ts/wallet-account.ts:15](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L15)*
 
 ___
 
@@ -30,7 +32,7 @@ ___
 
 • **LOGIN_WALLET_URL_SUFFIX**: *"/login/"* = "/login/"
 
-*Defined in [src.ts/wallet-account.ts:8](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/wallet-account.ts#L8)*
+*Defined in [src.ts/wallet-account.ts:13](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L13)*
 
 ___
 
@@ -38,4 +40,12 @@ ___
 
 • **PENDING_ACCESS_KEY_PREFIX**: *"pending_key"* = "pending_key"
 
-*Defined in [src.ts/wallet-account.ts:11](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/wallet-account.ts#L11)*
+*Defined in [src.ts/wallet-account.ts:16](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L16)*
+
+___
+
+### `Const` WalletAccount
+
+• **WalletAccount**: *[WalletConnection](../classes/_wallet_account_.walletconnection.md)* = WalletConnection
+
+*Defined in [src.ts/wallet-account.ts:152](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L152)*

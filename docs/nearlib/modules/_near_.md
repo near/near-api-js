@@ -20,7 +20,7 @@ sidebar_label: "near"
 
 ▸ **connect**(`config`: any): *Promise‹[Near](../classes/_near_.near.md)›*
 
-*Defined in [src.ts/near.ts:71](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/near.ts#L71)*
+*Defined in [src.ts/near.ts:71](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L71)*
 
 **Parameters:**
 

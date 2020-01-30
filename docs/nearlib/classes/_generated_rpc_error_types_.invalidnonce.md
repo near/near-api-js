@@ -33,7 +33,7 @@ sidebar_label: "InvalidNonce"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -50,7 +50,7 @@ Name | Type |
 
 • **ak_nonce**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:249](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L249)*
+*Defined in [src.ts/generated/rpc_error_types.ts:264](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L264)*
 
 ___
 
@@ -88,7 +88,7 @@ ___
 
 • **tx_nonce**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:250](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L250)*
+*Defined in [src.ts/generated/rpc_error_types.ts:265](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L265)*
 
 ___
 
@@ -98,4 +98,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

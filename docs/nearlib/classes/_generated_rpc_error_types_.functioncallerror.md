@@ -1,14 +1,14 @@
 ---
-id: "_generated_rpc_error_types_.functionexecerror"
-title: "FunctionExecError"
-sidebar_label: "FunctionExecError"
+id: "_generated_rpc_error_types_.functioncallerror"
+title: "FunctionCallError"
+sidebar_label: "FunctionCallError"
 ---
 
 ## Hierarchy
 
-  ↳ [FunctionCall](_generated_rpc_error_types_.functioncall.md)
+  ↳ [ActionError](_generated_rpc_error_types_.actionerror.md)
 
-  ↳ **FunctionExecError**
+  ↳ **FunctionCallError**
 
   ↳ [HostError](_generated_rpc_error_types_.hosterror.md)
 
@@ -16,7 +16,7 @@ sidebar_label: "FunctionExecError"
 
   ↳ [LinkError](_generated_rpc_error_types_.linkerror.md)
 
-  ↳ [ResolveError](_generated_rpc_error_types_.resolveerror.md)
+  ↳ [MethodResolveError](_generated_rpc_error_types_.methodresolveerror.md)
 
   ↳ [WasmTrap](_generated_rpc_error_types_.wasmtrap.md)
 
@@ -24,25 +24,25 @@ sidebar_label: "FunctionExecError"
 
 ### Constructors
 
-* [constructor](_generated_rpc_error_types_.functionexecerror.md#constructor)
+* [constructor](_generated_rpc_error_types_.functioncallerror.md#constructor)
 
 ### Properties
 
-* [index](_generated_rpc_error_types_.functionexecerror.md#index)
-* [message](_generated_rpc_error_types_.functionexecerror.md#message)
-* [name](_generated_rpc_error_types_.functionexecerror.md#name)
-* [stack](_generated_rpc_error_types_.functionexecerror.md#optional-stack)
-* [type](_generated_rpc_error_types_.functionexecerror.md#type)
+* [index](_generated_rpc_error_types_.functioncallerror.md#index)
+* [message](_generated_rpc_error_types_.functioncallerror.md#message)
+* [name](_generated_rpc_error_types_.functioncallerror.md#name)
+* [stack](_generated_rpc_error_types_.functioncallerror.md#optional-stack)
+* [type](_generated_rpc_error_types_.functioncallerror.md#type)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new FunctionExecError**(`message?`: string, `type?`: string): *[FunctionExecError](_generated_rpc_error_types_.functionexecerror.md)*
+\+ **new FunctionCallError**(`message?`: string, `type?`: string): *[FunctionCallError](_generated_rpc_error_types_.functioncallerror.md)*
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -51,7 +51,7 @@ Name | Type |
 `message?` | string |
 `type?` | string |
 
-**Returns:** *[FunctionExecError](_generated_rpc_error_types_.functionexecerror.md)*
+**Returns:** *[FunctionCallError](_generated_rpc_error_types_.functioncallerror.md)*
 
 ## Properties
 
@@ -61,7 +61,7 @@ Name | Type |
 
 *Inherited from [ActionError](_generated_rpc_error_types_.actionerror.md).[index](_generated_rpc_error_types_.actionerror.md#index)*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L10)*
+*Defined in [src.ts/generated/rpc_error_types.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L10)*
 
 ___
 
@@ -101,4 +101,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*

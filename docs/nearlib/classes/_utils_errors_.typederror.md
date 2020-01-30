@@ -12,6 +12,8 @@ sidebar_label: "TypedError"
 
   ↳ [ServerError](_generated_rpc_error_types_.servererror.md)
 
+  ↳ [BalanceMismatchError](_generated_rpc_error_types_.balancemismatcherror.md)
+
 ## Index
 
 ### Constructors
@@ -32,7 +34,7 @@ sidebar_label: "TypedError"
 
 \+ **new TypedError**(`message?`: string, `type?`: string): *[TypedError](_utils_errors_.typederror.md)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -79,7 +81,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 ___
 

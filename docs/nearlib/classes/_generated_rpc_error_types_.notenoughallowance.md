@@ -6,7 +6,7 @@ sidebar_label: "NotEnoughAllowance"
 
 ## Hierarchy
 
-  ↳ [InvalidAccessKey](_generated_rpc_error_types_.invalidaccesskey.md)
+  ↳ [InvalidAccessKeyError](_generated_rpc_error_types_.invalidaccesskeyerror.md)
 
   ↳ **NotEnoughAllowance**
 
@@ -35,7 +35,7 @@ sidebar_label: "NotEnoughAllowance"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -52,7 +52,7 @@ Name | Type |
 
 • **account_id**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:160](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L160)*
+*Defined in [src.ts/generated/rpc_error_types.ts:284](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L284)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 • **allowance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:159](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L159)*
+*Defined in [src.ts/generated/rpc_error_types.ts:285](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L285)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **cost**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:161](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L161)*
+*Defined in [src.ts/generated/rpc_error_types.ts:286](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L286)*
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 • **public_key**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:158](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/generated/rpc_error_types.ts#L158)*
+*Defined in [src.ts/generated/rpc_error_types.ts:287](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L287)*
 
 ___
 
@@ -116,4 +116,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/bf1ce09/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
