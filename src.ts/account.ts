@@ -10,10 +10,12 @@ import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError } from './utils/rpc_errors';
 
-// Default amount of tokens to be send with the function calls. Used to pay for the fees
+// Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-const DEFAULT_FUNC_CALL_AMOUNT = 2000000 * 1000000;
+// Default value is set to equal to max_prepaid_gas as discussed here:
+// https://github.com/nearprotocol/nearlib/pull/191#discussion_r369671912
+const DEFAULT_FUNC_CALL_GAS = new BN('10000000000000000');
 
 // Default number of retries before giving up on a transactioin.
 const TX_STATUS_RETRY_NUMBER = 10;
@@ -170,10 +172,10 @@ export class Account {
         return this.signAndSendTransaction(this.accountId, [deployContract(data)]);
     }
 
-    async functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalExecutionOutcome> {
+    async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
         args = args || {};
         this.validateArgs(args);
-        return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_AMOUNT, amount)]);
+        return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_GAS, amount)]);
     }
 
     // TODO: expand this API to support more options.

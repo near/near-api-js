@@ -14,7 +14,7 @@ export declare class Account {
     readonly accountId: string;
     private _state;
     private _ready;
-    protected readonly ready: Promise<void>;
+    protected get ready(): Promise<void>;
     constructor(connection: Connection, accountId: string);
     fetchState(): Promise<void>;
     state(): Promise<AccountState>;
@@ -27,7 +27,7 @@ export declare class Account {
     createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
     deleteAccount(beneficiaryId: string): Promise<FinalExecutionOutcome>;
     deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
-    functionCall(contractId: string, methodName: string, args: any, gas: number, amount?: BN): Promise<FinalExecutionOutcome>;
+    functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>;
     addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
     deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
     stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;

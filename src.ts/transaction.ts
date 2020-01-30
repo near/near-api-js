@@ -53,7 +53,7 @@ export function deployContract(code: Uint8Array): Action {
     return new Action({ deployContract: new DeployContract({code}) });
 }
 
-export function functionCall(methodName: string, args: Uint8Array, gas: number, deposit: BN): Action {
+export function functionCall(methodName: string, args: Uint8Array, gas: BN, deposit: BN): Action {
     return new Action({functionCall: new FunctionCall({methodName, args, gas, deposit }) });
 }
 
