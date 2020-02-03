@@ -17,7 +17,5 @@ export {
     enums,
     format,
     PublicKey,
-    KeyPair,
-    KeyPairEd25519,
     rpc_errors
 };
