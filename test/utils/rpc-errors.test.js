@@ -10,6 +10,7 @@ const {
     FunctionCallError,
     HostError,
     InvalidIteratorIndex,
+    GasLimitExceeded,
     formatError
 } = nearlib.utils.rpc_errors;
 describe('rpc-errors', () => {
@@ -18,7 +19,7 @@ describe('rpc-errors', () => {
             TxExecutionError: {
                 ActionError: {
                     index: 1,
-                    kind: { AccountAlreadyExists: { account_id: 'bob.near' } }
+                    kind: {AccountAlreadyExists: {account_id: 'bob.near'}}
                 }
             }
         };
@@ -61,7 +62,7 @@ describe('rpc-errors', () => {
                 ActionError: {
                     FunctionCallError: {
                         HostError: {
-                            InvalidIteratorIndex: { iterator_index: 42 }
+                            InvalidIteratorIndex: {iterator_index: 42}
                         }
                     }
                 }
@@ -76,6 +77,28 @@ describe('rpc-errors', () => {
         expect(error instanceof InvalidIteratorIndex).toBe(true);
         expect(error.iterator_index).toBe(42);
         expect(formatError(error.type, error)).toBe('Iterator index 42 does not exist');
+    });
+
+    test('test ActionError::FunctionCallError::GasLimitExceeded error', async () => {
+        let rpc_error = {
+            ActionError: {
+                'index': 0,
+                'kind': {
+                    FunctionCallError: {
+                        'HostError': 'GasLimitExceeded'
+                    }
+                }
+            }
+        };
+        let error = parseRpcError(rpc_error);
+        expect(error instanceof TxExecutionError).toBe(true);
+
+        expect(error instanceof ActionError).toBe(true);
+        expect(error instanceof FunctionCallError).toBe(true);
+        expect(error instanceof HostError).toBe(true);
+        expect(error instanceof GasLimitExceeded).toBe(true);
+
+        expect(formatError(error.type, error)).toBe('Exceeded the maximum amount of gas allowed to burn per contract');
     });
 
 });

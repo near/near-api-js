@@ -50,7 +50,7 @@
     "AddKeyAlreadyExists": "The public key {{public_key}} is already used for an existing access key",
     "InvalidSigner": "Invalid signer account ID {{signer_id}} according to requirements",
     "CreateAccountNotAllowed": "The new account_id {{account_id}} can't be created by {{predecessor_id}}",
-    "ActionError": "The used access key requires exactly one FunctionCall action",
+    "RequiresFullAccess": "The used access key requires exactly one FunctionCall action",
     "TriesToUnstake": "Account {{account_id}} is not yet staked, but tries to unstake",
     "InvalidNonce": "Transaction nonce {{tx_nonce}} must be larger than nonce of the used access key {{ak_nonce}}",
     "AccountAlreadyExists": "Can't create a new account {{account_id}}, because it already exists",
