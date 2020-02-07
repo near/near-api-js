@@ -1842,7 +1842,7 @@ module.exports={
     "AddKeyAlreadyExists": "The public key {{public_key}} is already used for an existing access key",
     "InvalidSigner": "Invalid signer account ID {{signer_id}} according to requirements",
     "CreateAccountNotAllowed": "The new account_id {{account_id}} can't be created by {{predecessor_id}}",
-    "ActionError": "The used access key requires exactly one FunctionCall action",
+    "RequiresFullAccess": "The used access key requires exactly one FunctionCall action",
     "TriesToUnstake": "Account {{account_id}} is not yet staked, but tries to unstake",
     "InvalidNonce": "Transaction nonce {{tx_nonce}} must be larger than nonce of the used access key {{ak_nonce}}",
     "AccountAlreadyExists": "Can't create a new account {{account_id}}, because it already exists",
@@ -2435,6 +2435,10 @@ function walkSubtype(errorObj, schema, result, typeName) {
     let type;
     let errorTypeName;
     for (const errorName in schema) {
+        if (isString(errorObj[errorName])) {
+            // Return early if error type is in a schema
+            return errorObj[errorName];
+        }
         if (isObject(errorObj[errorName])) {
             error = errorObj[errorName];
             type = schema[errorName];
@@ -2461,6 +2465,9 @@ function walkSubtype(errorObj, schema, result, typeName) {
 }
 function isObject(n) {
     return Object.prototype.toString.call(n) === '[object Object]';
+}
+function isString(n) {
+    return Object.prototype.toString.call(n) === '[object String]';
 }
 
 },{"../generated/rpc_error_schema.json":6,"../generated/rpc_error_types":7,"../res/error_messages.json":19,"mustache":58}],29:[function(require,module,exports){
@@ -2611,7 +2618,7 @@ class BinaryReader {
         return new bn_js_1.default(buf, 'le');
     }
     read_buffer(len) {
-        if (len >= this.buf.length || (this.offset + len) > this.buf.length) {
+        if ((this.offset + len) > this.buf.length) {
             throw new BorshError(`Expected buffer length ${len} isn't within bounds`);
         }
         const result = this.buf.slice(this.offset, this.offset + len);
@@ -14219,11 +14226,12 @@ function unpackneg(r, p) {
 }
 
 function crypto_sign_open(m, sm, n, pk) {
-  var i;
+  var i, mlen;
   var t = new Uint8Array(32), h = new Uint8Array(64);
   var p = [gf(), gf(), gf(), gf()],
       q = [gf(), gf(), gf(), gf()];
 
+  mlen = -1;
   if (n < 64) return -1;
 
   if (unpackneg(q, pk)) return -1;
@@ -14245,7 +14253,8 @@ function crypto_sign_open(m, sm, n, pk) {
   }
 
   for (i = 0; i < n; i++) m[i] = sm[i + 64];
-  return n;
+  mlen = n;
+  return mlen;
 }
 
 var crypto_secretbox_KEYBYTES = 32,
@@ -14306,23 +14315,7 @@ nacl.lowlevel = {
   crypto_sign_PUBLICKEYBYTES: crypto_sign_PUBLICKEYBYTES,
   crypto_sign_SECRETKEYBYTES: crypto_sign_SECRETKEYBYTES,
   crypto_sign_SEEDBYTES: crypto_sign_SEEDBYTES,
-  crypto_hash_BYTES: crypto_hash_BYTES,
-
-  gf: gf,
-  D: D,
-  L: L,
-  pack25519: pack25519,
-  unpack25519: unpack25519,
-  M: M,
-  A: A,
-  S: S,
-  Z: Z,
-  pow2523: pow2523,
-  add: add,
-  set25519: set25519,
-  modL: modL,
-  scalarmult: scalarmult,
-  scalarbase: scalarbase,
+  crypto_hash_BYTES: crypto_hash_BYTES
 };
 
 /* High-level API */
