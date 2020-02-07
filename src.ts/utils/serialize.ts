@@ -161,7 +161,7 @@ export class BinaryReader {
     }
 
     private read_buffer(len: number): Buffer {
-        if (len >= this.buf.length || (this.offset + len) > this.buf.length) {
+        if ((this.offset + len) > this.buf.length) {
             throw new BorshError(`Expected buffer length ${len} isn't within bounds`);
         }
         const result = this.buf.slice(this.offset, this.offset + len);
