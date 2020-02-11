@@ -32,7 +32,7 @@ if (typeof window === 'undefined' || window.name === 'nodejs') {
     }
 
     fetch = function(resource, init) {
-        return nodeFetch(resource, { agent, ...init });
+        return nodeFetch(resource, { agent: agent(new URL(resource)), ...init });
     };
 } else {
     fetch = window.fetch;
