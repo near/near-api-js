@@ -37,7 +37,7 @@
     "InvalidPublicKey": "VM Logic provided an invalid public key",
     "ActorNoPermission": "Actor {{actor_id}} doesn't have permission to account {{account_id}} to complete the action",
     "RentUnpaid": "The account {{account_id}} wouldn't have enough balance to pay required rent {{amount}}",
-    "ReceiverMismatch": "Transaction receiver_id {{tx_receiver}} doesn't match the access key receiver_id {{ak_receiver}}",
+    "ReceiverMismatch": "Wrong AccessKey used for transaction: transaction is sent to receiver_id={{tx_receiver}}, but is signed with function call access key that restricted to only use with receiver_id={{ak_receiver}}. Either change receiver_id in your transaction or switch to use a FullAccessKey.",
     "CostOverflow": "Transaction gas or balance cost is too high",
     "InvalidSignature": "Transaction is not signed with the given public key",
     "AccessKeyNotFound": "Signer \"{{account_id}}\" doesn't have access key with the given public_key {{public_key}}",
