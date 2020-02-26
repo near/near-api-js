@@ -52,7 +52,7 @@ describe('rpc-errors', () => {
         expect(error.ak_receiver).toBe('test.near');
         expect(error.tx_receiver).toBe('bob.near');
         expect(formatError(error.type, error)).toBe(
-            'Transaction receiver_id bob.near doesn\'t match the access key receiver_id test.near'
+            'Wrong AccessKey used for transaction: transaction is sent to receiver_id=bob.near, but is signed with function call access key that restricted to only use with receiver_id=test.near. Either change receiver_id in your transaction or switch to use a FullAccessKey.'
         );
     });
 
