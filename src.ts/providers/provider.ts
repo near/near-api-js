@@ -136,7 +136,7 @@ export interface BlockResult {
 }
 
 export interface GasPrice {
-    gas_price: string;
+    gas_price: number;
 }
 
 export abstract class Provider {

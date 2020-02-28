@@ -114,7 +114,7 @@ export interface BlockResult {
     transactions: Transaction[];
 }
 export interface GasPrice {
-    gas_price: string;
+    gas_price: number;
 }
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
