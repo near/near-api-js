@@ -2,7 +2,7 @@
 
 import {
     Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
-    BlockResult, ChunkId, ChunkResult, adaptTransactionResult
+    BlockResult, ChunkId, ChunkResult, adaptTransactionResult, GasPrice
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -58,6 +58,10 @@ export class JsonRpcProvider extends Provider {
 
     async chunk(chunkId: ChunkId): Promise<ChunkResult> {
         return this.sendJsonRpc('chunk', [chunkId]);
+    }
+
+    async gasPrice(blockId: BlockId|null): Promise<GasPrice> {
+        return this.sendJsonRpc('Gas Price', [blockId])
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {
