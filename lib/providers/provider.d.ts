@@ -113,6 +113,9 @@ export interface BlockResult {
     header: BlockHeader;
     transactions: Transaction[];
 }
+export interface GasPrice {
+    gas_price: string;
+}
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
@@ -121,6 +124,7 @@ export declare abstract class Provider {
     abstract query(path: string, data: string): Promise<any>;
     abstract block(blockId: BlockId): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
+    abstract gasPrice(blockId: BlockId | null): Promise<GasPrice>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
 export declare function adaptTransactionResult(txResult: any): FinalExecutionOutcome;

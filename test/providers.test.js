@@ -21,6 +21,16 @@ test('json rpc fetch block info', withProvider(async (provider) => {
     expect(sameBlock.header.height).toEqual(height);
 }));
 
+test('json rpc fetch gas price', withProvider(async (provider) => {
+    const testHash = '8ehA3NYL5uSF8zefbnqnz66twYJ45rfst6SrqBNv7oka';
+    let response = await provider.gasPrice(testHash);
+    expect(response.gas_price).toEqual('5000');
+    let block = await provider.block(testHash);
+    let height = block.header.height;
+    let samePrice = await provider.gasPrice(height);
+    expect(samePrice.gas_price).toEqual('5000');
+}));
+
 test('json rpc fetch chunk info', withProvider(async (provider) => {
     let stat = await provider.status();
     let height = stat.sync_info.latest_block_height - 1;

@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockResult, ChunkId, ChunkResult } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockResult, ChunkId, ChunkResult, GasPrice } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError } from '../utils/errors';
@@ -14,5 +14,6 @@ export declare class JsonRpcProvider extends Provider {
     query(path: string, data: string): Promise<any>;
     block(blockId: BlockId): Promise<BlockResult>;
     chunk(chunkId: ChunkId): Promise<ChunkResult>;
+    gasPrice(blockId: BlockId | null): Promise<GasPrice>;
     private sendJsonRpc;
 }
