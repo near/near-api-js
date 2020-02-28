@@ -61,7 +61,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     async gasPrice(blockId: BlockId|null): Promise<GasPrice> {
-        return this.sendJsonRpc('Gas Price', [blockId])
+        return this.sendJsonRpc('gas_price', [blockId])
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {
