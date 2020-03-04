@@ -11,7 +11,7 @@ import { PositionalArgsError } from './utils/errors';
 import { parseRpcError } from './utils/rpc_errors';
 
 // NOTE: not clear how to import function module using TypeScript syntax
-const debug = require('debug')('nearlib:json-rpc-provider');
+const debug = require('debug')('nearlib:account');
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
