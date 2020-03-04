@@ -13,6 +13,9 @@ import { SignedTransaction } from '../transaction';
 
 export { TypedError };
 
+// NOTE: not clear how to import function module using TypeScript syntax
+const debug = require('debug')('nearlib:json-rpc-provider');
+
 /// Keep ids unique across all connections.
 let _nextId = 123;
 
@@ -61,30 +64,36 @@ export class JsonRpcProvider extends Provider {
     }
 
     private async sendJsonRpc(method: string, params: any[]): Promise<any> {
-        const request = {
-            method,
-            params,
-            id: (_nextId++),
-            jsonrpc: '2.0'
-        };
-        const response = await fetchJson(this.connection, JSON.stringify(request));
-        if (response.error) {
-            if (typeof response.error.data === 'object') {
-                if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
-                    // if error data has error_message and error_type properties, we consider that node returned an error in the old format
-                    throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+        debug('sendJsonRpc request', method, ...params);
+        try {
+            const request = {
+                method,
+                params,
+                id: (_nextId++),
+                jsonrpc: '2.0'
+            };
+            const response = await fetchJson(this.connection, JSON.stringify(request));
+            if (response.error) {
+                if (typeof response.error.data === 'object') {
+                    if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
+                        // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+                        throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+                    } else {
+                        throw parseRpcError(response.error.data);
+                    }
                 } else {
-                    throw parseRpcError(response.error.data);
-                }
-            } else {
-                const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-                if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
-                    throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
-                } else {
-                    throw new TypedError(errorMessage);
+                    const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
+                    if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
+                        throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
+                    } else {
+                        throw new TypedError(errorMessage);
+                    }
                 }
             }
+            debug('sendJsonRpc result', response.result);
+            return response.result;
+        } catch(e) {
+            debug('sendJsonRpc error', e);
         }
-        return response.result;
     }
 }
