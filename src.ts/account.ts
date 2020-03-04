@@ -1,7 +1,7 @@
 'use strict';
 
 import BN from 'bn.js';
-import { Action, transfer, createAccount, signTransaction, deployContract,
+import { Action, SignedTransaction, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
 import { FinalExecutionOutcome, TypedError } from './providers';
 import { Connection } from './connection';
@@ -9,6 +9,9 @@ import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError } from './utils/rpc_errors';
+
+// NOTE: not clear how to import function module using TypeScript syntax
+const debug = require('debug')('nearlib:json-rpc-provider');
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -98,34 +101,44 @@ export class Account {
         const [txHash, signedTx] = await signTransaction(
             receiverId, ++accessKey.nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
         );
+        return this.sendTransaction(txHash, signedTx);
+    }
 
-        let result;
+    protected async sendTransaction(txHash: Uint8Array, signedTx: SignedTransaction): Promise<FinalExecutionOutcome> {
+        debug('sendTransaction request', base_encode(txHash), signedTx.transaction);
         try {
-            result = await this.connection.provider.sendTransaction(signedTx);
-        } catch (error) {
-            if (error.type === 'TimeoutError') {
-                result = await this.retryTxResult(txHash, this.accountId);
-            } else {
-                throw error;
+            let result;
+            try {
+                result = await this.connection.provider.sendTransaction(signedTx);
+            } catch (error) {
+                if (error.type === 'TimeoutError') {
+                    result = await this.retryTxResult(txHash, this.accountId);
+                } else {
+                    throw error;
+                }
             }
-        }
 
-        const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
-        this.printLogs(signedTx.transaction.receiverId, flatLogs);
+            const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
+            this.printLogs(signedTx.transaction.receiverId, flatLogs);
 
-        if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
-            // if error data has error_message and error_type properties, we consider that node returned an error in the old format
-            if (result.status.Failure.error_message && result.status.Failure.error_type) {
-                throw new TypedError(
-                    `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
-                    result.status.Failure.error_type);
-            } else {
-                throw parseRpcError(result.status.Failure);
+            if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
+                // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+                if (result.status.Failure.error_message && result.status.Failure.error_type) {
+                    throw new TypedError(
+                        `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
+                        result.status.Failure.error_type);
+                } else {
+                    throw parseRpcError(result.status.Failure);
+                }
             }
+            // TODO: if Tx is Unknown or Started.
+            // TODO: deal with timeout on node side.
+            debug('sendTransaction result', result);
+            return result;
+        } catch (e) {
+            debug('sendTransaction error', e);
+            throw e;
         }
-        // TODO: if Tx is Unknown or Started.
-        // TODO: deal with timeout on node side.
-        return result;
     }
 
     private async findAccessKey(): Promise<AccessKey> {

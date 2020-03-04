@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Action } from './transaction';
+import { Action, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
@@ -21,6 +21,7 @@ export declare class Account {
     private printLogs;
     private retryTxResult;
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    protected sendTransaction(txHash: Uint8Array, signedTx: SignedTransaction): Promise<FinalExecutionOutcome>;
     private findAccessKey;
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
     sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
