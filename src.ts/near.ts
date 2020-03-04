@@ -22,7 +22,9 @@ export class Near {
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
-            this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), new BN(config.initialBalance) || new BN(1000 * 1000 * 1000 * 1000));
+            // Hardcoded number below is roughly five times the gas cost to dev-deploy with near-shell
+            const initialBalance = config.initialBalance ? new BN(config.initialBalance) : new BN('100000000000000000');
+            this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), initialBalance);
         } else if (config.helperUrl) {
             this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);
         } else {
