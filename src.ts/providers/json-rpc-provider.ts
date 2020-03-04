@@ -94,6 +94,7 @@ export class JsonRpcProvider extends Provider {
             return response.result;
         } catch(e) {
             debug('sendJsonRpc error', e);
+            throw e;
         }
     }
 }
