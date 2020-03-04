@@ -105,7 +105,14 @@ export class Account {
     }
 
     protected async sendTransaction(txHash: Uint8Array, signedTx: SignedTransaction): Promise<FinalExecutionOutcome> {
-        debug('sendTransaction request', base_encode(txHash), signedTx.transaction);
+        const tx = signedTx.transaction;
+        const txForLog = {
+            ...tx,
+            publicKey: tx.publicKey.toString(),
+            actions: tx.actions.map(a => a[a.enum]),
+            blockHash: base_encode(tx.blockHash)
+        };
+        debug('sendTransaction request', base_encode(txHash), txForLog);
         try {
             let result;
             try {
