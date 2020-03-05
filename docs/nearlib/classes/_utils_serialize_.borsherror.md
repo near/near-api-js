@@ -35,7 +35,7 @@ sidebar_label: "BorshError"
 
 \+ **new BorshError**(`message`: string): *[BorshError](_utils_serialize_.borsherror.md)*
 
-*Defined in [src.ts/utils/serialize.ts:28](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/serialize.ts#L28)*
+*Defined in [src.ts/utils/serialize.ts:28](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/serialize.ts#L28)*
 
 **Parameters:**
 
@@ -51,7 +51,7 @@ Name | Type |
 
 • **fieldPath**: *string[]* = []
 
-*Defined in [src.ts/utils/serialize.ts:28](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/serialize.ts#L28)*
+*Defined in [src.ts/utils/serialize.ts:28](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/serialize.ts#L28)*
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[message](_utils_serialize_.borsherror.md#message)*
 
-Defined in node_modules/typescript/lib/lib.es5.d.ts:974
+Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:974
 
 ___
 
@@ -71,7 +71,7 @@ ___
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[name](_utils_serialize_.borsherror.md#name)*
 
-Defined in node_modules/typescript/lib/lib.es5.d.ts:973
+Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:973
 
 ___
 
@@ -79,7 +79,7 @@ ___
 
 • **originalMessage**: *string*
 
-*Defined in [src.ts/utils/serialize.ts:27](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/serialize.ts#L27)*
+*Defined in [src.ts/utils/serialize.ts:27](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/serialize.ts#L27)*
 
 ___
 
@@ -89,7 +89,7 @@ ___
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[stack](_utils_serialize_.borsherror.md#optional-stack)*
 
-Defined in node_modules/typescript/lib/lib.es5.d.ts:975
+Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:975
 
 ___
 
@@ -97,7 +97,7 @@ ___
 
 ▪ **Error**: *ErrorConstructor*
 
-Defined in node_modules/typescript/lib/lib.es5.d.ts:984
+Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:984
 
 ## Methods
 
@@ -105,7 +105,7 @@ Defined in node_modules/typescript/lib/lib.es5.d.ts:984
 
 ▸ **addToFieldPath**(`fieldName`: string): *void*
 
-*Defined in [src.ts/utils/serialize.ts:35](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/serialize.ts#L35)*
+*Defined in [src.ts/utils/serialize.ts:35](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/serialize.ts#L35)*
 
 **Parameters:**
 

@@ -56,7 +56,7 @@ sidebar_label: "ConnectedWalletAccount"
 
 *Overrides [Account](_account_.account.md).[constructor](_account_.account.md#constructor)*
 
-*Defined in [src.ts/wallet-account.ts:158](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L158)*
+*Defined in [src.ts/wallet-account.ts:158](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L158)*
 
 **Parameters:**
 
@@ -76,7 +76,7 @@ Name | Type |
 
 *Inherited from [Account](_account_.account.md).[accountId](_account_.account.md#accountid)*
 
-*Defined in [src.ts/account.ts:43](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L43)*
+*Defined in [src.ts/account.ts:43](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L43)*
 
 ___
 
@@ -86,7 +86,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[connection](_account_.account.md#connection)*
 
-*Defined in [src.ts/account.ts:42](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L42)*
+*Defined in [src.ts/account.ts:42](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L42)*
 
 ___
 
@@ -94,7 +94,7 @@ ___
 
 • **walletConnection**: *[WalletConnection](_wallet_account_.walletconnection.md)*
 
-*Defined in [src.ts/wallet-account.ts:158](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L158)*
+*Defined in [src.ts/wallet-account.ts:158](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L158)*
 
 ## Accessors
 
@@ -104,7 +104,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[ready](_account_.account.md#protected-ready)*
 
-*Defined in [src.ts/account.ts:47](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L47)*
+*Defined in [src.ts/account.ts:47](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L47)*
 
 **Returns:** *Promise‹void›*
 
@@ -114,7 +114,7 @@ ___
 
 ▸ **accessKeyForTransaction**(`receiverId`: string, `actions`: [Action](_transaction_.action.md)[], `localKey?`: [PublicKey](_utils_key_pair_.publickey.md)): *Promise‹any›*
 
-*Defined in [src.ts/wallet-account.ts:228](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L228)*
+*Defined in [src.ts/wallet-account.ts:228](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L228)*
 
 **Parameters:**
 
@@ -132,7 +132,7 @@ ___
 
 ▸ **accessKeyMatchesTransaction**(`accessKey`: any, `receiverId`: string, `actions`: [Action](_transaction_.action.md)[]): *Promise‹boolean›*
 
-*Defined in [src.ts/wallet-account.ts:207](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L207)*
+*Defined in [src.ts/wallet-account.ts:207](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L207)*
 
 **Parameters:**
 
@@ -152,7 +152,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[addKey](_account_.account.md#addkey)*
 
-*Defined in [src.ts/account.ts:182](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L182)*
+*Defined in [src.ts/account.ts:182](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L182)*
 
 **Parameters:**
 
@@ -173,7 +173,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[createAccount](_account_.account.md#createaccount)*
 
-*Defined in [src.ts/account.ts:162](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L162)*
+*Defined in [src.ts/account.ts:162](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L162)*
 
 **Parameters:**
 
@@ -193,7 +193,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[createAndDeployContract](_account_.account.md#createanddeploycontract)*
 
-*Defined in [src.ts/account.ts:151](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L151)*
+*Defined in [src.ts/account.ts:151](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L151)*
 
 **Parameters:**
 
@@ -214,7 +214,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[deleteAccount](_account_.account.md#deleteaccount)*
 
-*Defined in [src.ts/account.ts:167](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L167)*
+*Defined in [src.ts/account.ts:167](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L167)*
 
 **Parameters:**
 
@@ -232,7 +232,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[deleteKey](_account_.account.md#deletekey)*
 
-*Defined in [src.ts/account.ts:192](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L192)*
+*Defined in [src.ts/account.ts:192](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L192)*
 
 **Parameters:**
 
@@ -250,7 +250,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[deployContract](_account_.account.md#deploycontract)*
 
-*Defined in [src.ts/account.ts:171](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L171)*
+*Defined in [src.ts/account.ts:171](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L171)*
 
 **Parameters:**
 
@@ -268,7 +268,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[fetchState](_account_.account.md#fetchstate)*
 
-*Defined in [src.ts/account.ts:56](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L56)*
+*Defined in [src.ts/account.ts:56](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L56)*
 
 **Returns:** *Promise‹void›*
 
@@ -280,7 +280,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[functionCall](_account_.account.md#functioncall)*
 
-*Defined in [src.ts/account.ts:175](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L175)*
+*Defined in [src.ts/account.ts:175](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L175)*
 
 **Parameters:**
 
@@ -302,7 +302,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[getAccessKeys](_account_.account.md#getaccesskeys)*
 
-*Defined in [src.ts/account.ts:217](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L217)*
+*Defined in [src.ts/account.ts:217](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L217)*
 
 **Returns:** *Promise‹any›*
 
@@ -314,7 +314,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[getAccountDetails](_account_.account.md#getaccountdetails)*
 
-*Defined in [src.ts/account.ts:228](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L228)*
+*Defined in [src.ts/account.ts:228](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L228)*
 
 **Returns:** *Promise‹any›*
 
@@ -326,7 +326,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[sendMoney](_account_.account.md#sendmoney)*
 
-*Defined in [src.ts/account.ts:158](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L158)*
+*Defined in [src.ts/account.ts:158](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L158)*
 
 **Parameters:**
 
@@ -345,7 +345,7 @@ ___
 
 *Overrides [Account](_account_.account.md).[signAndSendTransaction](_account_.account.md#protected-signandsendtransaction)*
 
-*Defined in [src.ts/wallet-account.ts:167](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L167)*
+*Defined in [src.ts/wallet-account.ts:167](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L167)*
 
 **Parameters:**
 
@@ -364,7 +364,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[stake](_account_.account.md#stake)*
 
-*Defined in [src.ts/account.ts:196](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L196)*
+*Defined in [src.ts/account.ts:196](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L196)*
 
 **Parameters:**
 
@@ -383,7 +383,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[state](_account_.account.md#state)*
 
-*Defined in [src.ts/account.ts:60](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L60)*
+*Defined in [src.ts/account.ts:60](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L60)*
 
 **Returns:** *Promise‹[AccountState](../interfaces/_account_.accountstate.md)›*
 
@@ -395,7 +395,7 @@ ___
 
 *Inherited from [Account](_account_.account.md).[viewFunction](_account_.account.md#viewfunction)*
 
-*Defined in [src.ts/account.ts:206](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/account.ts#L206)*
+*Defined in [src.ts/account.ts:206](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L206)*
 
 **Parameters:**
 

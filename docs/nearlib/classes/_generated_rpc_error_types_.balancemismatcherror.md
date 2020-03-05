@@ -44,7 +44,7 @@ sidebar_label: "BalanceMismatchError"
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/errors.ts#L14)*
 
 **Parameters:**
 
@@ -61,7 +61,7 @@ Name | Type |
 
 • **final_accounts_balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:217](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L217)*
+*Defined in [src.ts/generated/rpc_error_types.ts:217](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L217)*
 
 ___
 
@@ -69,7 +69,7 @@ ___
 
 • **final_postponed_receipts_balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:218](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L218)*
+*Defined in [src.ts/generated/rpc_error_types.ts:218](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L218)*
 
 ___
 
@@ -77,7 +77,7 @@ ___
 
 • **incoming_receipts_balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:219](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L219)*
+*Defined in [src.ts/generated/rpc_error_types.ts:219](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L219)*
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 • **incoming_validator_rewards**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:220](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L220)*
+*Defined in [src.ts/generated/rpc_error_types.ts:220](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L220)*
 
 ___
 
@@ -93,7 +93,7 @@ ___
 
 • **initial_accounts_balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:221](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L221)*
+*Defined in [src.ts/generated/rpc_error_types.ts:221](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L221)*
 
 ___
 
@@ -101,7 +101,7 @@ ___
 
 • **initial_postponed_receipts_balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:222](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L222)*
+*Defined in [src.ts/generated/rpc_error_types.ts:222](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L222)*
 
 ___
 
@@ -111,7 +111,7 @@ ___
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[message](_utils_serialize_.borsherror.md#message)*
 
-Defined in node_modules/typescript/lib/lib.es5.d.ts:974
+Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:974
 
 ___
 
@@ -121,7 +121,7 @@ ___
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[name](_utils_serialize_.borsherror.md#name)*
 
-Defined in node_modules/typescript/lib/lib.es5.d.ts:973
+Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:973
 
 ___
 
@@ -129,7 +129,7 @@ ___
 
 • **new_delayed_receipts_balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:223](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L223)*
+*Defined in [src.ts/generated/rpc_error_types.ts:223](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L223)*
 
 ___
 
@@ -137,7 +137,7 @@ ___
 
 • **outgoing_receipts_balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:224](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L224)*
+*Defined in [src.ts/generated/rpc_error_types.ts:224](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L224)*
 
 ___
 
@@ -145,7 +145,7 @@ ___
 
 • **processed_delayed_receipts_balance**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:225](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L225)*
+*Defined in [src.ts/generated/rpc_error_types.ts:225](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L225)*
 
 ___
 
@@ -155,7 +155,7 @@ ___
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[stack](_utils_serialize_.borsherror.md#optional-stack)*
 
-Defined in node_modules/typescript/lib/lib.es5.d.ts:975
+Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:975
 
 ___
 
@@ -163,7 +163,7 @@ ___
 
 • **total_balance_burnt**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:226](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L226)*
+*Defined in [src.ts/generated/rpc_error_types.ts:226](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L226)*
 
 ___
 
@@ -171,7 +171,7 @@ ___
 
 • **total_balance_slashed**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:227](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L227)*
+*Defined in [src.ts/generated/rpc_error_types.ts:227](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L227)*
 
 ___
 
@@ -179,7 +179,7 @@ ___
 
 • **total_rent_paid**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:228](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L228)*
+*Defined in [src.ts/generated/rpc_error_types.ts:228](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L228)*
 
 ___
 
@@ -187,7 +187,7 @@ ___
 
 • **total_validator_reward**: *any*
 
-*Defined in [src.ts/generated/rpc_error_types.ts:229](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/generated/rpc_error_types.ts#L229)*
+*Defined in [src.ts/generated/rpc_error_types.ts:229](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/generated/rpc_error_types.ts#L229)*
 
 ___
 
@@ -197,4 +197,4 @@ ___
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[type](_utils_errors_.typederror.md#type)*
 
-*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/errors.ts#L14)*
+*Defined in [src.ts/utils/errors.ts:14](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/errors.ts#L14)*
