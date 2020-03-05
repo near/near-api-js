@@ -28,7 +28,7 @@ test('json rpc fetch gas price', withProvider(async (provider) => {
         provider.gasPrice(stat.sync_info.latest_block_hash),
         provider.gasPrice(null)
     ])) {
-        expect(gasPriceResponse.gas_price).toBeGreaterThan(0);
+        expect(Number(gasPriceResponse.gas_price)).toBeGreaterThan(0);
     }
 }));
 
