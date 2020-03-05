@@ -20,7 +20,7 @@ sidebar_label: "contract"
 
 ▸ **validateBNLike**(`argMap`: object): *void*
 
-*Defined in [src.ts/contract.ts:45](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/contract.ts#L45)*
+*Defined in [src.ts/contract.ts:45](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/contract.ts#L45)*
 
 **Parameters:**
 

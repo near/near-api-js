@@ -33,7 +33,7 @@ sidebar_label: "Near"
 
 \+ **new Near**(`config`: any): *[Near](_near_.near.md)*
 
-*Defined in [src.ts/near.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L14)*
+*Defined in [src.ts/near.ts:14](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L14)*
 
 **Parameters:**
 
@@ -49,7 +49,7 @@ Name | Type |
 
 • **accountCreator**: *[AccountCreator](_account_creator_.accountcreator.md)*
 
-*Defined in [src.ts/near.ts:14](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L14)*
+*Defined in [src.ts/near.ts:14](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L14)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **config**: *any*
 
-*Defined in [src.ts/near.ts:12](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L12)*
+*Defined in [src.ts/near.ts:12](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L12)*
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 • **connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [src.ts/near.ts:13](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L13)*
+*Defined in [src.ts/near.ts:13](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L13)*
 
 ## Methods
 
@@ -73,7 +73,7 @@ ___
 
 ▸ **account**(`accountId`: string): *Promise‹[Account](_account_.account.md)›*
 
-*Defined in [src.ts/near.ts:33](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L33)*
+*Defined in [src.ts/near.ts:35](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L35)*
 
 **Parameters:**
 
@@ -89,7 +89,7 @@ ___
 
 ▸ **createAccount**(`accountId`: string, `publicKey`: [PublicKey](_utils_key_pair_.publickey.md)): *Promise‹[Account](_account_.account.md)›*
 
-*Defined in [src.ts/near.ts:39](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L39)*
+*Defined in [src.ts/near.ts:41](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L41)*
 
 **Parameters:**
 
@@ -106,7 +106,7 @@ ___
 
 ▸ **loadContract**(`contractId`: string, `options`: object): *Promise‹[Contract](_contract_.contract.md)›*
 
-*Defined in [src.ts/near.ts:52](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L52)*
+*Defined in [src.ts/near.ts:54](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L54)*
 
 Backwards compatibility method. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
 
@@ -130,7 +130,7 @@ ___
 
 ▸ **sendTokens**(`amount`: BN, `originator`: string, `receiver`: string): *Promise‹string›*
 
-*Defined in [src.ts/near.ts:63](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/near.ts#L63)*
+*Defined in [src.ts/near.ts:65](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L65)*
 
 Backwards compatibility method. Use `yourAccount.sendMoney` instead.
 

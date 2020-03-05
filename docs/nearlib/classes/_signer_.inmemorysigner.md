@@ -34,7 +34,7 @@ Signs using in memory key store.
 
 \+ **new InMemorySigner**(`keyStore`: [KeyStore](_key_stores_keystore_.keystore.md)): *[InMemorySigner](_signer_.inmemorysigner.md)*
 
-*Defined in [src.ts/signer.ts:37](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/signer.ts#L37)*
+*Defined in [src.ts/signer.ts:37](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L37)*
 
 **Parameters:**
 
@@ -50,7 +50,7 @@ Name | Type |
 
 • **keyStore**: *[KeyStore](_key_stores_keystore_.keystore.md)*
 
-*Defined in [src.ts/signer.ts:37](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/signer.ts#L37)*
+*Defined in [src.ts/signer.ts:37](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L37)*
 
 ## Methods
 
@@ -60,7 +60,7 @@ Name | Type |
 
 *Overrides [Signer](_signer_.signer.md).[createKey](_signer_.signer.md#abstract-createkey)*
 
-*Defined in [src.ts/signer.ts:44](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/signer.ts#L44)*
+*Defined in [src.ts/signer.ts:44](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L44)*
 
 **Parameters:**
 
@@ -79,7 +79,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[getPublicKey](_signer_.signer.md#abstract-getpublickey)*
 
-*Defined in [src.ts/signer.ts:50](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/signer.ts#L50)*
+*Defined in [src.ts/signer.ts:50](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L50)*
 
 **Parameters:**
 
@@ -98,7 +98,7 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[signMessage](_signer_.signer.md#abstract-signmessage)*
 
-*Defined in [src.ts/signer.ts:58](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/signer.ts#L58)*
+*Defined in [src.ts/signer.ts:58](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L58)*
 
 **Parameters:**
 

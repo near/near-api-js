@@ -41,7 +41,7 @@ sidebar_label: "WalletConnection"
 
 \+ **new WalletConnection**(`near`: [Near](_near_.near.md), `appKeyPrefix`: string | null): *[WalletConnection](_wallet_account_.walletconnection.md)*
 
-*Defined in [src.ts/wallet-account.ts:26](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L26)*
+*Defined in [src.ts/wallet-account.ts:26](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L26)*
 
 **Parameters:**
 
@@ -58,7 +58,7 @@ Name | Type |
 
 • **_authData**: *any*
 
-*Defined in [src.ts/wallet-account.ts:22](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L22)*
+*Defined in [src.ts/wallet-account.ts:22](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L22)*
 
 ___
 
@@ -66,7 +66,7 @@ ___
 
 • **_authDataKey**: *string*
 
-*Defined in [src.ts/wallet-account.ts:20](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L20)*
+*Defined in [src.ts/wallet-account.ts:20](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L20)*
 
 ___
 
@@ -74,7 +74,7 @@ ___
 
 • **_connectedAccount**: *[ConnectedWalletAccount](_wallet_account_.connectedwalletaccount.md)*
 
-*Defined in [src.ts/wallet-account.ts:26](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L26)*
+*Defined in [src.ts/wallet-account.ts:26](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L26)*
 
 ___
 
@@ -82,7 +82,7 @@ ___
 
 • **_keyStore**: *[KeyStore](_key_stores_keystore_.keystore.md)*
 
-*Defined in [src.ts/wallet-account.ts:21](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L21)*
+*Defined in [src.ts/wallet-account.ts:21](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L21)*
 
 ___
 
@@ -90,7 +90,7 @@ ___
 
 • **_near**: *[Near](_near_.near.md)*
 
-*Defined in [src.ts/wallet-account.ts:25](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L25)*
+*Defined in [src.ts/wallet-account.ts:25](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L25)*
 
 ___
 
@@ -98,7 +98,7 @@ ___
 
 • **_networkId**: *string*
 
-*Defined in [src.ts/wallet-account.ts:23](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L23)*
+*Defined in [src.ts/wallet-account.ts:23](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L23)*
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 • **_walletBaseUrl**: *string*
 
-*Defined in [src.ts/wallet-account.ts:19](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L19)*
+*Defined in [src.ts/wallet-account.ts:19](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L19)*
 
 ## Methods
 
@@ -114,7 +114,7 @@ ___
 
 ▸ **_completeSignInWithAccessKey**(): *Promise‹void›*
 
-*Defined in [src.ts/wallet-account.ts:108](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L108)*
+*Defined in [src.ts/wallet-account.ts:108](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L108)*
 
 Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
 
@@ -126,7 +126,7 @@ ___
 
 ▸ **_moveKeyFromTempToPermanent**(`accountId`: string, `publicKey`: string): *Promise‹void›*
 
-*Defined in [src.ts/wallet-account.ts:128](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L128)*
+*Defined in [src.ts/wallet-account.ts:128](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L128)*
 
 **Parameters:**
 
@@ -143,7 +143,7 @@ ___
 
 ▸ **account**(): *[ConnectedWalletAccount](_wallet_account_.connectedwalletaccount.md)‹›*
 
-*Defined in [src.ts/wallet-account.ts:144](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L144)*
+*Defined in [src.ts/wallet-account.ts:144](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L144)*
 
 **Returns:** *[ConnectedWalletAccount](_wallet_account_.connectedwalletaccount.md)‹›*
 
@@ -153,7 +153,7 @@ ___
 
 ▸ **getAccountId**(): *any*
 
-*Defined in [src.ts/wallet-account.ts:57](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L57)*
+*Defined in [src.ts/wallet-account.ts:57](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L57)*
 
 Returns authorized Account ID.
 
@@ -168,7 +168,7 @@ ___
 
 ▸ **isSignedIn**(): *boolean*
 
-*Defined in [src.ts/wallet-account.ts:48](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L48)*
+*Defined in [src.ts/wallet-account.ts:48](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L48)*
 
 Returns true, if this WalletAccount is authorized with the wallet.
 
@@ -183,7 +183,7 @@ ___
 
 ▸ **requestSignIn**(`contractId`: string, `title`: string, `successUrl`: string, `failureUrl`: string): *Promise‹void›*
 
-*Defined in [src.ts/wallet-account.ts:74](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L74)*
+*Defined in [src.ts/wallet-account.ts:74](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L74)*
 
 Redirects current page to the wallet authentication page.
 
@@ -211,7 +211,7 @@ ___
 
 ▸ **requestSignTransactions**(`transactions`: [Transaction](_transaction_.transaction.md)[], `callbackUrl?`: string): *Promise‹void›*
 
-*Defined in [src.ts/wallet-account.ts:92](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L92)*
+*Defined in [src.ts/wallet-account.ts:92](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L92)*
 
 **Parameters:**
 
@@ -228,7 +228,7 @@ ___
 
 ▸ **signOut**(): *void*
 
-*Defined in [src.ts/wallet-account.ts:139](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/wallet-account.ts#L139)*
+*Defined in [src.ts/wallet-account.ts:139](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L139)*
 
 Sign out from the current account
 

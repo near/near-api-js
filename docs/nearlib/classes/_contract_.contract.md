@@ -25,7 +25,7 @@ sidebar_label: "Contract"
 
 \+ **new Contract**(`account`: [Account](_account_.account.md), `contractId`: string, `options`: object): *[Contract](_contract_.contract.md)*
 
-*Defined in [src.ts/contract.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/contract.ts#L10)*
+*Defined in [src.ts/contract.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/contract.ts#L10)*
 
 **Parameters:**
 
@@ -48,7 +48,7 @@ Name | Type |
 
 • **account**: *[Account](_account_.account.md)*
 
-*Defined in [src.ts/contract.ts:9](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/contract.ts#L9)*
+*Defined in [src.ts/contract.ts:9](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/contract.ts#L9)*
 
 ___
 
@@ -56,4 +56,4 @@ ___
 
 • **contractId**: *string*
 
-*Defined in [src.ts/contract.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/contract.ts#L10)*
+*Defined in [src.ts/contract.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/contract.ts#L10)*

@@ -96,6 +96,7 @@ sidebar_label: "utils/rpc_errors"
 
 * [formatError](_utils_rpc_errors_.md#formaterror)
 * [isObject](_utils_rpc_errors_.md#isobject)
+* [isString](_utils_rpc_errors_.md#isstring)
 * [parseRpcError](_utils_rpc_errors_.md#parserpcerror)
 * [walkSubtype](_utils_rpc_errors_.md#walksubtype)
 
@@ -603,7 +604,7 @@ ___
 
 ▸ **formatError**(`errorClassName`: string, `errorData`: any): *string*
 
-*Defined in [src.ts/utils/rpc_errors.ts:19](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/rpc_errors.ts#L19)*
+*Defined in [src.ts/utils/rpc_errors.ts:19](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L19)*
 
 **Parameters:**
 
@@ -620,7 +621,23 @@ ___
 
 ▸ **isObject**(`n`: any): *boolean*
 
-*Defined in [src.ts/utils/rpc_errors.ts:53](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/rpc_errors.ts#L53)*
+*Defined in [src.ts/utils/rpc_errors.ts:57](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L57)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`n` | any |
+
+**Returns:** *boolean*
+
+___
+
+###  isString
+
+▸ **isString**(`n`: any): *boolean*
+
+*Defined in [src.ts/utils/rpc_errors.ts:61](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L61)*
 
 **Parameters:**
 
@@ -636,7 +653,7 @@ ___
 
 ▸ **parseRpcError**(`errorObj`: Record‹string, any›): *[ServerError](../classes/_generated_rpc_error_types_.servererror.md)*
 
-*Defined in [src.ts/utils/rpc_errors.ts:10](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/rpc_errors.ts#L10)*
+*Defined in [src.ts/utils/rpc_errors.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L10)*
 
 **Parameters:**
 
@@ -652,7 +669,7 @@ ___
 
 ▸ **walkSubtype**(`errorObj`: any, `schema`: any, `result`: any, `typeName`: any): *any*
 
-*Defined in [src.ts/utils/rpc_errors.ts:26](https://github.com/nearprotocol/nearlib/blob/213b318/src.ts/utils/rpc_errors.ts#L26)*
+*Defined in [src.ts/utils/rpc_errors.ts:26](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L26)*
 
 **Parameters:**
 
