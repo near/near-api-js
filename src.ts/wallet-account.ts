@@ -71,7 +71,7 @@ export class WalletConnection {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    async requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string) {
+    async requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string, fundingKey: string) {
         if (this.getAccountId() || await this._keyStore.getKey(this._networkId, this.getAccountId())) {
             return Promise.resolve();
         }
@@ -83,6 +83,7 @@ export class WalletConnection {
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
         newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
+        newUrl.searchParams.set('funding_key', fundingKey);
         const accessKey = KeyPair.fromRandom('ed25519');
         newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
         await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);

@@ -39,7 +39,7 @@ export declare class WalletConnection {
      *     onSuccessHref,
      *     onFailureHref);
      */
-    requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string): Promise<void>;
+    requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string, fundingKey: string): Promise<void>;
     requestSignTransactions(transactions: Transaction[], callbackUrl?: string): Promise<void>;
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
