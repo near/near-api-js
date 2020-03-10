@@ -1,0 +1,7 @@
+tasks:
+  - init: yarn install && yarn run build
+    command: yarn run dev
+github:
+  prebuilds:
+    addCheck: true
+    addComment: true
