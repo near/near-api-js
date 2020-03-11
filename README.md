@@ -1,8 +1,7 @@
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/nearprotocol/nearlib) 
-
 # nearlib
 
 [![Build Status](https://travis-ci.com/nearprotocol/nearlib.svg?branch=master)](https://travis-ci.com/nearprotocol/nearlib)
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/nearprotocol/nearlib) 
 
 nearlib is a JavaScript/TypeScript library for development of DApps on NEAR platform.
 
