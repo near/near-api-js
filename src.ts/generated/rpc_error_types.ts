@@ -1,4 +1,4 @@
-import { TypedError } from '../utils/errors';
+import { TypedError } from "../utils/errors";
 
 export class ServerError extends TypedError {
 }
@@ -237,7 +237,7 @@ export class CreateAccountNotAllowed extends ActionError {
     public predecessor_id;
 }
 
-export class DeleteAccountHasRent extends ActionError {
+export class DeleteAccountHasRent extends TypedError {
     public account_id;
     public balance;
 }
@@ -298,7 +298,7 @@ export class ReceiverMismatch extends InvalidAccessKeyError {
     public tx_receiver;
 }
 
-export class RentUnpaid extends ActionError {
+export class RentUnpaid extends TypedError {
     public account_id;
     public amount;
 }
@@ -325,4 +325,23 @@ export class Closed extends ServerError {
 }
 
 export class Timeout extends ServerError {
+}
+
+export class UnsuitableStakingKey extends ActionError {
+    public public_key;
+}
+
+export class LackBalanceForState extends ActionError {
+    public amount;
+    public signer_id;
+    public account_id;
+}
+
+export class DeleteAccountHasEnoughBalance extends ActionError {
+    public account_id;
+    public balance;
+}
+
+export class Deprecated extends HostError {
+    public method_name;
 }
