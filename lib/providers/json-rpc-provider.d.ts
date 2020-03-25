@@ -14,5 +14,5 @@ export declare class JsonRpcProvider extends Provider {
     query(path: string, data: string): Promise<any>;
     block(blockId: BlockId): Promise<BlockResult>;
     chunk(chunkId: ChunkId): Promise<ChunkResult>;
-    private sendJsonRpc;
+    sendJsonRpc(method: string, params: any[]): Promise<any>;
 }

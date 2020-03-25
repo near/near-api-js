@@ -60,7 +60,7 @@ export class JsonRpcProvider extends Provider {
         return this.sendJsonRpc('chunk', [chunkId]);
     }
 
-    private async sendJsonRpc(method: string, params: any[]): Promise<any> {
+    async sendJsonRpc(method: string, params: any[]): Promise<any> {
         const request = {
             method,
             params,
