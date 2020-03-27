@@ -6,7 +6,7 @@ const nearlib = require('../lib/index');
 const networkId = 'unittest';
 const testAccountName = 'test.near';
 
-const INITIAL_BALANCE = new BN(100000000000);
+const INITIAL_BALANCE = new BN("10000000000000000000000000");
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
 
 async function setUpTestConnection() {
@@ -25,7 +25,7 @@ function generateUniqueString(prefix) {
     return prefix + Date.now() + Math.round(Math.random() * 1000);
 }
 
-async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE, trials: 5 }) {
+async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE.mul(new BN(10)), trials: 5 }) {
     await masterAccount.fetchState();
     const newAccountName = generateUniqueString('test');
     const newPublicKey = await masterAccount.connection.signer.createKey(newAccountName, networkId);
@@ -33,7 +33,7 @@ async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE,
     return new nearlib.Account(masterAccount.connection, newAccountName);
 }
 
-async function deployContract(workingAccount, contractId, options = { amount: new BN(10000000) }) {
+async function deployContract(workingAccount, contractId, options = { amount: INITIAL_BALANCE }) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = [...(await fs.readFile(HELLO_WASM_PATH))];
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, options.amount);
