@@ -1,4 +1,4 @@
-import { TypedError } from '../utils/errors';
+import { TypedError } from "../utils/errors";
 export declare class ServerError extends TypedError {
 }
 export declare class TxExecutionError extends ServerError {
@@ -174,7 +174,7 @@ export declare class CreateAccountNotAllowed extends ActionError {
     account_id: any;
     predecessor_id: any;
 }
-export declare class DeleteAccountHasRent extends ActionError {
+export declare class DeleteAccountHasRent extends TypedError {
     account_id: any;
     balance: any;
 }
@@ -221,7 +221,7 @@ export declare class ReceiverMismatch extends InvalidAccessKeyError {
     ak_receiver: any;
     tx_receiver: any;
 }
-export declare class RentUnpaid extends ActionError {
+export declare class RentUnpaid extends TypedError {
     account_id: any;
     amount: any;
 }
@@ -242,4 +242,19 @@ export declare class TriesToUnstake extends ActionError {
 export declare class Closed extends ServerError {
 }
 export declare class Timeout extends ServerError {
+}
+export declare class UnsuitableStakingKey extends ActionError {
+    public_key: any;
+}
+export declare class LackBalanceForState extends ActionError {
+    amount: any;
+    signer_id: any;
+    account_id: any;
+}
+export declare class DeleteAccountHasEnoughBalance extends ActionError {
+    account_id: any;
+    balance: any;
+}
+export declare class Deprecated extends HostError {
+    method_name: any;
 }
