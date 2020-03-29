@@ -43,6 +43,6 @@ Follow next steps:
 
 1. [Change hash for the commit with errors in the nearcore](https://github.com/nearprotocol/nearlib/blob/master/gen_error_types.js#L7-L9)
 2. Generate new types for errors: `node gen_error_types.js`
-3. `yarn lint --fix` fix any issues with linter.
+3. `yarn fix` fix any issues with linter.
 4. `yarn build` to update `lib/**.js` files
 
