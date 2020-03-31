@@ -25,6 +25,7 @@ export declare abstract class KeyPair {
     abstract getPublicKey(): PublicKey;
     static fromRandom(curve: string): KeyPair;
     static fromString(encodedKey: string): KeyPair;
+    static fromSeed(seedStr: string): KeyPair;
 }
 /**
  * This class provides key pair functionality for Ed25519 curve:

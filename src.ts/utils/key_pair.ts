@@ -86,6 +86,20 @@ export abstract class KeyPair {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
     }
+    
+    static fromSeed(seedStr: string): KeyPair {
+        let seed = new Uint8Array(32);
+        for (let i = 0; i < 32; i++) {
+            if (i < seedStr.length) {
+                seed[i] = seedStr.charCodeAt(i);
+            } else {
+                seed[i] = " ".charCodeAt(0);
+            }
+        }
+        let keyPair = nacl.sign.keyPair.fromSeed(seed);
+        let nearKeyPair = KeyPair.fromString(base_encode(keyPair.secretKey));
+        return nearKeyPair;
+    }
 }
 
 /**

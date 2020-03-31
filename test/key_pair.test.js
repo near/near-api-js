@@ -22,6 +22,11 @@ test('test from secret', async () => {
     expect(keyPair.publicKey.toString()).toEqual('ed25519:EWrekY1deMND7N3Q7Dixxj12wD7AVjFRt2H9q21QHUSW');
 });
 
+test('test from seed', async () => {
+    const keyPair = nearlib.utils.key_pair.KeyPair.fromSeed('near');
+    expect(keyPair.publicKey.toString()).toEqual('ed25519:546XB2oHhj7PzUKHiH9Xve3Ze5q1JiW2WTh6abXFED3c');
+})
+
 test('convert to string', async () => {
     const keyPair = nearlib.utils.key_pair.KeyPairEd25519.fromRandom();
     const newKeyPair = nearlib.utils.key_pair.KeyPair.fromString(keyPair.toString());
