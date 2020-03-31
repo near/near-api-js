@@ -88,16 +88,16 @@ export abstract class KeyPair {
     }
     
     static fromSeed(seedStr: string): KeyPair {
-        let seed = new Uint8Array(32);
+        const seed = new Uint8Array(32);
         for (let i = 0; i < 32; i++) {
             if (i < seedStr.length) {
                 seed[i] = seedStr.charCodeAt(i);
             } else {
-                seed[i] = " ".charCodeAt(0);
+                seed[i] = ' '.charCodeAt(0);
             }
         }
-        let keyPair = nacl.sign.keyPair.fromSeed(seed);
-        let nearKeyPair = KeyPair.fromString(base_encode(keyPair.secretKey));
+        const keyPair = nacl.sign.keyPair.fromSeed(seed);
+        const nearKeyPair = KeyPair.fromString(base_encode(keyPair.secretKey));
         return nearKeyPair;
     }
 }
