@@ -4,9 +4,9 @@
   "version": "0.22.0",
   "repository": {
     "type": "git",
-    "url": "git@:nearprotocol/nearcore.git"
+    "url": "git+https://github.com/near/near-api-js.git"
   },
-  "homepage": "https://github.com/nearprotocol/nearlib",
+  "homepage": "https://github.com/near/near-api-js",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
