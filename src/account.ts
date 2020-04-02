@@ -80,8 +80,8 @@ export class Account {
     }
 
     /**
-     * @txHash: the transaction hash to retry
-     * @accountId: the NEAR account sending the transaction
+     * @param txHash The transaction hash to retry
+     * @param accountId The NEAR account sending the transaction
      * @returns {Promise<FinalExecutionOutcome>}
      */
     private async retryTxResult(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
@@ -101,8 +101,8 @@ export class Account {
     }
 
     /**
-     * @receiverId: NEAR account receiving the transaction
-     * @actions: the transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
      * @returns {Promise<FinalExecutionOutcome>}
      */
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
@@ -170,9 +170,9 @@ export class Account {
     }
 
     /**
-     * @contractId: NEAR account where the contract is deployed
-     * @publicKey: the public key to add while signing and sending the transaction
-     * @data: the compiled contract code
+     * @param contractId NEAR account where the contract is deployed
+     * @param publicKey The public key to add while signing and sending the transaction
+     * @param data The compiled contract code
      * @returns {Promise<Account>}
      */
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
@@ -183,8 +183,8 @@ export class Account {
     }
 
     /**
-     * @receiverId: NEAR account receiving Ⓝ
-     * @amount: amount to send in yoctoⓃ
+     * @param receiverId NEAR account receiving Ⓝ
+     * @param amount Amount to send in yoctoⓃ
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome> {
@@ -192,8 +192,8 @@ export class Account {
     }
 
     /**
-     * @newAccountId: NEAR account name to be created
-     * @publicKey: a public key created from the masterAccount
+     * @param newAccountId NEAR account name to be created
+     * @param publicKey A public key created from the masterAccount
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
@@ -202,7 +202,7 @@ export class Account {
     }
 
     /**
-     * @beneficiaryId: the NEAR account that will receive the remaining Ⓝ balance from the account being deleted
+     * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
      * @returns void
      */
     async deleteAccount(beneficiaryId: string) {
@@ -210,7 +210,7 @@ export class Account {
     }
 
     /**
-     * @data: the compiled contract code
+     * @param data The compiled contract code
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
@@ -218,12 +218,12 @@ export class Account {
     }
 
     /**
-     * @contractId: NEAR account where the contract is deployed
-     * @methodName: the method name on the contract as it is written in the contract code
-     * @args: any arguments to the contract method, wrapped in JSON
-     * @data: the compiled contract code
-     * @gas: an amount of yoctoⓃ attached to cover the gas cost of this function call
-     * @amount: payment in yoctoⓃ that is sent to the contract during this function call
+     * @param contractId NEAR account where the contract is deployed
+     * @param methodName The method name on the contract as it is written in the contract code
+     * @param args Any arguments to the contract method, wrapped in JSON
+     * @param data The compiled contract code
+     * @param gas An amount of yoctoⓃ attached to cover the gas cost of this function call
+     * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
@@ -233,12 +233,12 @@ export class Account {
     }
 
     /**
-     * @publicKey: a public key to be associated with the contract
-     * @contractId: NEAR account where the contract is deployed
-     * @methodName: the method name on the contract as it is written in the contract code
-     * @amount: payment in yoctoⓃ that is sent to the contract during this function call
-     * TODO: expand this API to support more options.
+     * @param publicKey A public key to be associated with the contract
+     * @param contractId NEAR account where the contract is deployed
+     * @param methodName The method name on the contract as it is written in the contract code
+     * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
      * @returns {Promise<FinalExecutionOutcome>}
+     * TODO: expand this API to support more options.
      */
     async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome> {
         let accessKey;
@@ -251,7 +251,7 @@ export class Account {
     }
 
     /**
-     * @publicKey: the public key to be deleted
+     * @param publicKey The public key to be deleted
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
@@ -259,7 +259,8 @@ export class Account {
     }
 
     /**
-     * @publicKey: the public key for the account that's staking
+     * @param publicKey The public key for the account that's staking
+     * @param amount The account to stake in yoctoⓃ
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
@@ -273,9 +274,9 @@ export class Account {
     }
 
     /**
-     * @contractId: NEAR account where the contract is deployed
-     * @methodName: the view-only method (no state mutations) name on the contract as it is written in the contract code
-     * @args: any arguments to the view contract method, wrapped in JSON
+     * @param contractId NEAR account where the contract is deployed
+     * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
+     * @param args Any arguments to the view contract method, wrapped in JSON
      * @returns {Promise<any>}
      */
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
