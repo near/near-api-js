@@ -9,10 +9,19 @@ export declare class Near {
     readonly connection: Connection;
     readonly accountCreator: AccountCreator;
     constructor(config: any);
+    /**
+     *
+     * @param accountId near accountId used to interact with the network.
+     */
     account(accountId: string): Promise<Account>;
+    /**
+     *
+     * @param accountId
+     * @param publicKey
+     */
     createAccount(accountId: string, publicKey: PublicKey): Promise<Account>;
     /**
-     * Backwards compatibility method. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
+     * @deprecated Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
      * @param contractId
      * @param options
      */
@@ -22,11 +31,15 @@ export declare class Near {
         sender: string;
     }): Promise<Contract>;
     /**
-     * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
+     * @deprecated Use `yourAccount.sendMoney` instead.
      * @param amount
      * @param originator
      * @param receiver
      */
     sendTokens(amount: BN, originator: string, receiver: string): Promise<string>;
 }
+/**
+ * Initialize connection to Near network.
+ * @param config
+ */
 export declare function connect(config: any): Promise<Near>;

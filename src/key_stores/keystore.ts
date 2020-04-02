@@ -1,5 +1,3 @@
-'use strict';
-
 import { KeyPair } from '../utils/key_pair';
 
 /**

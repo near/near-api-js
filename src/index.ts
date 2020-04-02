@@ -1,5 +1,3 @@
-'use strict';
-
 import * as providers from './providers';
 import * as utils from './utils';
 import * as keyStores from './key_stores';

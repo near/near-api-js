@@ -1,5 +1,3 @@
-'use strict';
-
 import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';

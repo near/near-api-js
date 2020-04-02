@@ -1,5 +1,3 @@
-'use strict';
-
 import { Provider, JsonRpcProvider } from './providers';
 import { Signer, InMemorySigner } from './signer';
 

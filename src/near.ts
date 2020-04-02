@@ -32,12 +32,21 @@ export class Near {
         }
     }
 
+    /**
+     * 
+     * @param accountId near accountId used to interact with the network.
+     */
     async account(accountId: string): Promise<Account> {
         const account = new Account(this.connection, accountId);
         await account.state();
         return account;
     }
 
+    /**
+     * 
+     * @param accountId 
+     * @param publicKey 
+     */
     async createAccount(accountId: string, publicKey: PublicKey): Promise<Account> {
         if (!this.accountCreator) {
             throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
@@ -47,7 +56,7 @@ export class Near {
     }
 
     /**
-     * Backwards compatibility method. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
+     * @deprecated Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
      * @param contractId
      * @param options
      */
@@ -57,7 +66,7 @@ export class Near {
     }
 
     /**
-     * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
+     * @deprecated Use `yourAccount.sendMoney` instead.
      * @param amount
      * @param originator
      * @param receiver
@@ -69,7 +78,10 @@ export class Near {
         return result.transaction_outcome.id;
     }
 }
-
+/**
+ * Initialize connection to Near network.
+ * @param config 
+ */
 export async function connect(config: any): Promise<Near> {
     // Try to find extra key in `KeyPath` if provided.
     if (config.keyPath && config.deps && config.deps.keyStore) {

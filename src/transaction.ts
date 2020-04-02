@@ -1,5 +1,3 @@
-'use strict';
-
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
 

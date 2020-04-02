@@ -1,5 +1,3 @@
-'use strict';
-
 import fs from 'fs';
 import { promisify as _promisify } from 'util';
 

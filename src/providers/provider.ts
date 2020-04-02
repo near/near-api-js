@@ -1,5 +1,3 @@
-'use strict';
-
 import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
 

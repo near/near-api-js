@@ -1,5 +1,3 @@
-'use strict';
-
 import {
     Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
     BlockResult, ChunkId, ChunkResult, adaptTransactionResult

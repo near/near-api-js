@@ -1,5 +1,3 @@
-'use strict';
-
 import createError from 'http-errors';
 
 export interface ConnectionInfo {
