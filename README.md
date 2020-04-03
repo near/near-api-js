@@ -46,3 +46,6 @@ Follow next steps:
 3. `yarn fix` fix any issues with linter.
 4. `yarn build` to update `lib/**.js` files
 
+## License
+This repository is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
+See [LICENSE](LICENSE) and [LICENSE-APACHE](LICENSE-APACHE) for details.
