@@ -15,10 +15,22 @@ export class MergeKeyStore extends KeyStore {
         this.keyStores = keyStores;
     }
 
+    /**
+     * Sets a storage item to the first index of a key store array
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param accountId The NEAR account tied to the key pair
+     * @param keyPair The key pair to store in local storage
+     */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
         this.keyStores[0].setKey(networkId, accountId, keyPair);
     }
 
+    /**
+     * Gets a key from the array of key stores
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param accountId The NEAR account tied to the key pair
+     * @returns {Promise<KeyPair>}
+     */
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
         for (const keyStore of this.keyStores) {
             const keyPair = await keyStore.getKey(networkId, accountId);
@@ -28,19 +40,31 @@ export class MergeKeyStore extends KeyStore {
         }
         return null;
     }
-
+    
+    /**
+     * Removes a key from the array of key stores
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param accountId The NEAR account tied to the key pair
+     */
     async removeKey(networkId: string, accountId: string): Promise<void> {
         for (const keyStore of this.keyStores) {
             keyStore.removeKey(networkId, accountId);
         }
     }
-
+    
+    /**
+     * Removes all items from each key store
+     */
     async clear(): Promise<void> {
         for (const keyStore of this.keyStores) {
             keyStore.clear();
         }
     }
-
+    
+    /**
+     * Get the network(s) from the array of key stores
+     * @returns {Promise<string[]>}
+     */    
     async getNetworks(): Promise<string[]> {
         const result = new Set<string>();
         for (const keyStore of this.keyStores) {
@@ -50,7 +74,12 @@ export class MergeKeyStore extends KeyStore {
         }
         return Array.from(result);
     }
-
+    
+    /**
+     * Gets the account(s) from the array of key stores
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @returns{Promise<string[]>}
+     */    
     async getAccounts(networkId: string): Promise<string[]> {
         const result = new Set<string>();
         for (const keyStore of this.keyStores) {

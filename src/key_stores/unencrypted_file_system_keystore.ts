@@ -59,12 +59,24 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         this.keyDir = keyDir;
     }
 
+    /**
+     * Sets a storage item in a file, unencrypted
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param accountId The NEAR account tied to the key pair
+     * @param keyPair The key pair to store in local storage
+     */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
         await ensureDir(`${this.keyDir}/${networkId}`);
         const content: AccountInfo = { account_id: accountId, private_key: keyPair.toString() };
         await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content));
     }
 
+    /**
+     * Gets a key from local storage
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param accountId The NEAR account tied to the key pair
+     * @returns {Promise<KeyPair>}
+     */
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
         // Find key / account id.
         if (!await exists(this.getKeyFilePath(networkId, accountId))) {
@@ -74,12 +86,20 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         return accountKeyPair[1];
     }
 
+    /**
+     * Removes a key from local storage
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param accountId The NEAR account tied to the key pair
+     */
     async removeKey(networkId: string, accountId: string): Promise<void> {
         if (await exists(this.getKeyFilePath(networkId, accountId))) {
             await unlink(this.getKeyFilePath(networkId, accountId));
         }
     }
 
+    /**
+     * Removes all items from local storage
+     */
     async clear(): Promise<void> {
         for (const network of await this.getNetworks()) {
             for (const account of await this.getAccounts(network)) {
@@ -92,6 +112,10 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         return `${this.keyDir}/${networkId}/${accountId}.json`;
     }
 
+    /**
+     * Get the network(s) from local storage
+     * @returns {Promise<string[]>}
+     */
     async getNetworks(): Promise<string[]> {
         const files: string[] = await readdir(this.keyDir);
         const result = new Array<string>();
@@ -101,6 +125,11 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         return result;
     }
 
+    /**
+     * Gets the account(s) from local storage
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @returns{Promise<string[]>}
+     */
     async getAccounts(networkId: string): Promise<string[]> {
         if (!await exists(`${this.keyDir}/${networkId}`)) {
             return [];
