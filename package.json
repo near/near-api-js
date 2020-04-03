@@ -57,9 +57,9 @@
     "build": "yarn compile",
     "pretest": "yarn build",
     "test": "jest test --runInBand",
-    "lint": "eslint test && eslint src.ts/**/*.ts",
-    "fix": "eslint test --fix && eslint src.ts/**/*.ts --fix",
-    "doc": "typedoc --out docs/nearlib --theme docusaurus src.ts/ --hideBreadcrumbs",
+    "lint": "eslint test && eslint src/**/*.ts",
+    "fix": "eslint test --fix && eslint src/**/*.ts --fix",
+    "doc": "typedoc --out docs/nearlib --theme docusaurus src/ --hideBreadcrumbs",
     "prefuzz": "yarn build",
     "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
   },
