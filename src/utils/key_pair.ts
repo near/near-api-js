@@ -64,10 +64,14 @@ export abstract class KeyPair {
     abstract toString(): string;
     abstract getPublicKey(): PublicKey;
 
+    /**
+     * @param curve Name of elliptical curve, case-insensitive
+     * @returns Random KeyPair based on the curve
+     */
     static fromRandom(curve: string): KeyPair {
         switch (curve.toUpperCase()) {
-        case 'ED25519': return KeyPairEd25519.fromRandom();
-        default: throw new Error(`Unknown curve ${curve}`);
+            case 'ED25519': return KeyPairEd25519.fromRandom();
+            default: throw new Error(`Unknown curve ${curve}`);
         }
     }
 

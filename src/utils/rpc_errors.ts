@@ -23,6 +23,13 @@ export function formatError(errorClassName: string, errorData): string {
     return JSON.stringify(errorData);
 }
 
+/**
+ * Walks through defined schema returning error(s) recursively
+ * @param errorObj The error to be parsed
+ * @param schema A defined schema in JSON mapping to the RPC errors
+ * @param result An object used in recursion or called directly
+ * @param typeName The human-readable error type name as defined in the JSON mapping
+ */
 function walkSubtype(errorObj, schema, result, typeName) {
     let error;
     let type;
@@ -54,10 +61,18 @@ function walkSubtype(errorObj, schema, result, typeName) {
     }
 }
 
+/**
+ * Helper function determining if the argument is an object
+ * @param n Value to check
+ */
 function isObject(n) {
     return Object.prototype.toString.call(n) === '[object Object]';
 }
 
+/**
+ * Helper function determining if the argument is a string
+ * @param n Value to check
+ */
 function isString(n) {
     return Object.prototype.toString.call(n) === '[object String]';
 }
