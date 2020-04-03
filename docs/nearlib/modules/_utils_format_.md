@@ -56,13 +56,17 @@ ___
 
 ▸ **cleanupAmount**(`amount`: string): *string*
 
+Removes commas from the input
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`amount` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`amount` | string | A value or amount that may contain commas |
 
 **Returns:** *string*
+
+string The cleaned value
 
 ___
 
@@ -78,9 +82,11 @@ Effectively this divides given amount by [NEAR_NOMINATION](_utils_format_.md#con
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
 `balance` | string | - | decimal string representing balance in smallest non-divisible NEAR units (as specified by [NEAR_NOMINATION](_utils_format_.md#const-near_nomination)) |
-`fracDigits` | number | NEAR_NOMINATION_EXP | number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits.  |
+`fracDigits` | number | NEAR_NOMINATION_EXP | number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits. |
 
 **Returns:** *string*
+
+Value in Ⓝ
 
 ___
 
@@ -88,13 +94,17 @@ ___
 
 ▸ **formatWithCommas**(`value`: string): *string*
 
+Returns a human-readable value with commas
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | A value that may not contain commas |
 
 **Returns:** *string*
+
+string A value with commas
 
 ___
 
@@ -109,9 +119,11 @@ Effectively this multiplies given amount by [NEAR_NOMINATION](_utils_format_.md#
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`amt?` | string | decimal string (potentially fractional) denominated in NEAR.  |
+`amt?` | string | decimal string (potentially fractional) denominated in NEAR. |
 
 **Returns:** *string | null*
+
+The parsed yoctoⓃ amount or null if no amount was passed in
 
 ___
 
@@ -119,13 +131,17 @@ ___
 
 ▸ **trimLeadingZeroes**(`value`: string): *string*
 
+Removes leading zeroes from an input
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | A value that may contain leading zeroes |
 
 **Returns:** *string*
+
+string The value without the leading zeroes
 
 ___
 
@@ -133,10 +149,14 @@ ___
 
 ▸ **trimTrailingZeroes**(`value`: string): *string*
 
+Removes .000… from an input
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`value` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`value` | string | A value that may contain trailing zeroes in the decimals place |
 
 **Returns:** *string*
+
+string The value without the trailing zeros

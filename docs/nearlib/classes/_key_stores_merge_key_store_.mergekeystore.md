@@ -59,6 +59,8 @@ Name | Type | Description |
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[clear](_key_stores_keystore_.keystore.md#abstract-clear)*
 
+Removes all items from each key store
+
 **Returns:** *Promise‹void›*
 
 ___
@@ -69,11 +71,15 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getAccounts](_key_stores_keystore_.keystore.md#abstract-getaccounts)*
 
+Gets the account(s) from the array of key stores
+
+**`returns{promise&lt;string[]&gt;}`** 
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`networkId` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`networkId` | string | The targeted network. (ex. default, devnet, betanet, etc…) |
 
 **Returns:** *Promise‹string[]›*
 
@@ -85,12 +91,14 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getKey](_key_stores_keystore_.keystore.md#abstract-getkey)*
 
+Gets a key from the array of key stores
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`networkId` | string |
-`accountId` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`networkId` | string | The targeted network. (ex. default, devnet, betanet, etc…) |
+`accountId` | string | The NEAR account tied to the key pair |
 
 **Returns:** *Promise‹[KeyPair](_utils_key_pair_.keypair.md)›*
 
@@ -102,6 +110,8 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getNetworks](_key_stores_keystore_.keystore.md#abstract-getnetworks)*
 
+Get the network(s) from the array of key stores
+
 **Returns:** *Promise‹string[]›*
 
 ___
@@ -112,12 +122,14 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[removeKey](_key_stores_keystore_.keystore.md#abstract-removekey)*
 
+Removes a key from the array of key stores
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`networkId` | string |
-`accountId` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`networkId` | string | The targeted network. (ex. default, devnet, betanet, etc…) |
+`accountId` | string | The NEAR account tied to the key pair  |
 
 **Returns:** *Promise‹void›*
 
@@ -129,12 +141,14 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[setKey](_key_stores_keystore_.keystore.md#abstract-setkey)*
 
+Sets a storage item to the first index of a key store array
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`networkId` | string |
-`accountId` | string |
-`keyPair` | [KeyPair](_utils_key_pair_.keypair.md) |
+Name | Type | Description |
+------ | ------ | ------ |
+`networkId` | string | The targeted network. (ex. default, devnet, betanet, etc…) |
+`accountId` | string | The NEAR account tied to the key pair |
+`keyPair` | [KeyPair](_utils_key_pair_.keypair.md) | The key pair to store in local storage  |
 
 **Returns:** *Promise‹void›*

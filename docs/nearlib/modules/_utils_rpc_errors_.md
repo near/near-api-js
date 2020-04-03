@@ -647,11 +647,13 @@ ___
 
 ▸ **isObject**(`n`: any): *boolean*
 
+Helper function determining if the argument is an object
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`n` | any |
+Name | Type | Description |
+------ | ------ | ------ |
+`n` | any | Value to check  |
 
 **Returns:** *boolean*
 
@@ -661,11 +663,13 @@ ___
 
 ▸ **isString**(`n`: any): *boolean*
 
+Helper function determining if the argument is a string
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`n` | any |
+Name | Type | Description |
+------ | ------ | ------ |
+`n` | any | Value to check  |
 
 **Returns:** *boolean*
 
@@ -689,13 +693,15 @@ ___
 
 ▸ **walkSubtype**(`errorObj`: any, `schema`: any, `result`: any, `typeName`: any): *any*
 
+Walks through defined schema returning error(s) recursively
+
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`errorObj` | any |
-`schema` | any |
-`result` | any |
-`typeName` | any |
+Name | Type | Description |
+------ | ------ | ------ |
+`errorObj` | any | The error to be parsed |
+`schema` | any | A defined schema in JSON mapping to the RPC errors |
+`result` | any | An object used in recursion or called directly |
+`typeName` | any | The human-readable error type name as defined in the JSON mapping  |
 
 **Returns:** *any*

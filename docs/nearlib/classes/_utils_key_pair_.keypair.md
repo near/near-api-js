@@ -74,11 +74,13 @@ ___
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`curve` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`curve` | string | Name of elliptical curve, case-insensitive |
 
 **Returns:** *[KeyPair](_utils_key_pair_.keypair.md)*
+
+Random KeyPair based on the curve
 
 ___
 
