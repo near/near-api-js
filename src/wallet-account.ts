@@ -87,6 +87,11 @@ export class WalletConnection {
         window.location.assign(newUrl.toString());
     }
 
+    /**
+     * Requests the user to quickly sign for a transaction or batch of transactions
+     * @param transactions Array of Transaction objects that will be requested to sign
+     * @param callbackUrl The url to navigate to after the user is prompted to sign
+     */
     async requestSignTransactions(transactions: Transaction[], callbackUrl?: string) {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
@@ -123,6 +128,11 @@ export class WalletConnection {
         window.history.replaceState({}, document.title, currentUrl.toString());
     }
 
+    /**
+     * 
+     * @param accountId The NEAR account owning the given public key
+     * @param publicKey The public key being set to the key store
+     */
     async _moveKeyFromTempToPermanent(accountId: string, publicKey: string) {
         const keyPair = await this._keyStore.getKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
         await this._keyStore.setKey(this._networkId, accountId, keyPair);
@@ -139,6 +149,9 @@ export class WalletConnection {
         window.localStorage.removeItem(this._authDataKey);
     }
 
+    /**
+     * Returns the current connected wallet account
+     */
     account() {
         if (!this._connectedAccount) {
             this._connectedAccount = new ConnectedWalletAccount(this, this._near.connection, this._authData.accountId);
@@ -202,6 +215,12 @@ class ConnectedWalletAccount extends Account {
         // TODO: Introduce TrasactionQueue which also can be used to watch for status?
     }
 
+    /**
+     * Check if given access key allows the function call or method attempted in transaction
+     * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
+     * @param receiverId The NEAR account attempting to have access
+     * @param actions The action(s) needed to be checked for access
+     */
     async accessKeyMatchesTransaction(accessKey, receiverId: string, actions: Action[]): Promise<boolean> {
         const { access_key: { permission } } = accessKey;
         if (permission === 'FullAccess') {
@@ -223,6 +242,13 @@ class ConnectedWalletAccount extends Account {
         return false;
     }
 
+    /**
+     * Helper function returning the access key (if it exists) to the receiver that grants the designated permission
+     * @param receiverId The NEAR account seeking the access key for a transaction
+     * @param actions The action(s) sought to gain access to
+     * @param localKey A local public key provided to check for access
+     * @returns Promise<any>
+     */
     async accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any> {
         const accessKeys = await this.getAccessKeys();
 
