@@ -70,8 +70,8 @@ export abstract class KeyPair {
      */
     static fromRandom(curve: string): KeyPair {
         switch (curve.toUpperCase()) {
-            case 'ED25519': return KeyPairEd25519.fromRandom();
-            default: throw new Error(`Unknown curve ${curve}`);
+        case 'ED25519': return KeyPairEd25519.fromRandom();
+        default: throw new Error(`Unknown curve ${curve}`);
         }
     }
 
