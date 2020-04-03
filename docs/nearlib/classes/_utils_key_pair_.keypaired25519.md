@@ -39,8 +39,6 @@ generating key pairs, encoding key pairs, signing and verifying.
 
 \+ **new KeyPairEd25519**(`secretKey`: string): *[KeyPairEd25519](_utils_key_pair_.keypaired25519.md)*
 
-*Defined in [src.ts/utils/key_pair.ts:97](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L97)*
-
 Construct an instance of key pair given a secret key.
 It's generally assumed that these are encoded in base58.
 
@@ -58,15 +56,11 @@ Name | Type | Description |
 
 • **publicKey**: *[PublicKey](_utils_key_pair_.publickey.md)*
 
-*Defined in [src.ts/utils/key_pair.ts:96](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L96)*
-
 ___
 
 ###  secretKey
 
 • **secretKey**: *string*
-
-*Defined in [src.ts/utils/key_pair.ts:97](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L97)*
 
 ## Methods
 
@@ -75,8 +69,6 @@ ___
 ▸ **getPublicKey**(): *[PublicKey](_utils_key_pair_.publickey.md)*
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[getPublicKey](_utils_key_pair_.keypair.md#abstract-getpublickey)*
-
-*Defined in [src.ts/utils/key_pair.ts:139](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L139)*
 
 **Returns:** *[PublicKey](_utils_key_pair_.publickey.md)*
 
@@ -87,8 +79,6 @@ ___
 ▸ **sign**(`message`: Uint8Array): *[Signature](../interfaces/_utils_key_pair_.signature.md)*
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[sign](_utils_key_pair_.keypair.md#abstract-sign)*
-
-*Defined in [src.ts/utils/key_pair.ts:126](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L126)*
 
 **Parameters:**
 
@@ -106,8 +96,6 @@ ___
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[toString](_utils_key_pair_.keypair.md#abstract-tostring)*
 
-*Defined in [src.ts/utils/key_pair.ts:135](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L135)*
-
 **Returns:** *string*
 
 ___
@@ -117,8 +105,6 @@ ___
 ▸ **verify**(`message`: Uint8Array, `signature`: Uint8Array): *boolean*
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[verify](_utils_key_pair_.keypair.md#abstract-verify)*
-
-*Defined in [src.ts/utils/key_pair.ts:131](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L131)*
 
 **Parameters:**
 
@@ -136,8 +122,6 @@ ___
 ▸ **fromRandom**(): *[KeyPairEd25519](_utils_key_pair_.keypaired25519.md)‹›*
 
 *Overrides [KeyPair](_utils_key_pair_.keypair.md).[fromRandom](_utils_key_pair_.keypair.md#static-fromrandom)*
-
-*Defined in [src.ts/utils/key_pair.ts:121](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L121)*
 
 Generate a new random keypair.
 
@@ -158,8 +142,6 @@ ___
 ▸ **fromString**(`encodedKey`: string): *[KeyPair](_utils_key_pair_.keypair.md)*
 
 *Inherited from [KeyPair](_utils_key_pair_.keypair.md).[fromString](_utils_key_pair_.keypair.md#static-fromstring)*
-
-*Defined in [src.ts/utils/key_pair.ts:76](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L76)*
 
 **Parameters:**
 

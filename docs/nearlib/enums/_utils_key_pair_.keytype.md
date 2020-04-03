@@ -17,5 +17,3 @@ All supported key types
 ###  ED25519
 
 • **ED25519**: = 0
-
-*Defined in [src.ts/utils/key_pair.ts:16](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L16)*

@@ -37,8 +37,6 @@ PublicKey representation that has type and bytes of the key.
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/enums.ts#L17)*
-
 **Parameters:**
 
 Name | Type |
@@ -53,23 +51,17 @@ Name | Type |
 
 • **data**: *Uint8Array*
 
-*Defined in [src.ts/utils/key_pair.ts:38](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L38)*
-
 ___
 
 ###  keyType
 
 • **keyType**: *[KeyType](../enums/_utils_key_pair_.keytype.md)*
 
-*Defined in [src.ts/utils/key_pair.ts:37](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L37)*
-
 ## Methods
 
 ###  toString
 
 ▸ **toString**(): *string*
-
-*Defined in [src.ts/utils/key_pair.ts:58](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L58)*
 
 **Returns:** *string*
 
@@ -78,8 +70,6 @@ ___
 ### `Static` from
 
 ▸ **from**(`value`: string | [PublicKey](_utils_key_pair_.publickey.md)): *[PublicKey](_utils_key_pair_.publickey.md)*
-
-*Defined in [src.ts/utils/key_pair.ts:40](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L40)*
 
 **Parameters:**
 
@@ -94,8 +84,6 @@ ___
 ### `Static` fromString
 
 ▸ **fromString**(`encodedKey`: string): *[PublicKey](_utils_key_pair_.publickey.md)*
-
-*Defined in [src.ts/utils/key_pair.ts:47](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L47)*
 
 **Parameters:**
 

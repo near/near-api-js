@@ -28,8 +28,6 @@ sidebar_label: "Provider"
 
 ▸ **block**(`blockId`: [BlockId](../modules/_providers_provider_.md#blockid)): *Promise‹[BlockResult](../interfaces/_providers_provider_.blockresult.md)›*
 
-*Defined in [src.ts/providers/provider.ts:145](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L145)*
-
 **Parameters:**
 
 Name | Type |
@@ -43,8 +41,6 @@ ___
 ### `Abstract` chunk
 
 ▸ **chunk**(`chunkId`: [ChunkId](../modules/_providers_provider_.md#chunkid)): *Promise‹[ChunkResult](../interfaces/_providers_provider_.chunkresult.md)›*
-
-*Defined in [src.ts/providers/provider.ts:146](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L146)*
 
 **Parameters:**
 
@@ -60,8 +56,6 @@ ___
 
 ▸ **getNetwork**(): *Promise‹[Network](../interfaces/_utils_network_.network.md)›*
 
-*Defined in [src.ts/providers/provider.ts:139](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L139)*
-
 **Returns:** *Promise‹[Network](../interfaces/_utils_network_.network.md)›*
 
 ___
@@ -69,8 +63,6 @@ ___
 ### `Abstract` query
 
 ▸ **query**(`path`: string, `data`: string): *Promise‹any›*
-
-*Defined in [src.ts/providers/provider.ts:144](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L144)*
 
 **Parameters:**
 
@@ -87,8 +79,6 @@ ___
 
 ▸ **sendTransaction**(`signedTransaction`: [SignedTransaction](_transaction_.signedtransaction.md)): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/providers/provider.ts:142](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L142)*
-
 **Parameters:**
 
 Name | Type |
@@ -103,8 +93,6 @@ ___
 
 ▸ **status**(): *Promise‹[NodeStatusResult](../interfaces/_providers_provider_.nodestatusresult.md)›*
 
-*Defined in [src.ts/providers/provider.ts:140](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L140)*
-
 **Returns:** *Promise‹[NodeStatusResult](../interfaces/_providers_provider_.nodestatusresult.md)›*
 
 ___
@@ -112,8 +100,6 @@ ___
 ### `Abstract` txStatus
 
 ▸ **txStatus**(`txHash`: Uint8Array, `accountId`: string): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
-
-*Defined in [src.ts/providers/provider.ts:143](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L143)*
 
 **Parameters:**
 

@@ -28,15 +28,11 @@ sidebar_label: "utils/format"
 
 • **BN10**: *BN‹›* = new BN(10)
 
-*Defined in [src.ts/utils/format.ts:15](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L15)*
-
 ___
 
 ### `Const` NEAR_NOMINATION
 
 • **NEAR_NOMINATION**: *BN‹›* = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10))
-
-*Defined in [src.ts/utils/format.ts:11](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L11)*
 
 Number of indivisible units in one NEAR. Derived from [NEAR_NOMINATION_EXP](_utils_format_.md#const-near_nomination_exp).
 
@@ -46,25 +42,19 @@ ___
 
 • **NEAR_NOMINATION_EXP**: *24* = 24
 
-*Defined in [src.ts/utils/format.ts:6](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L6)*
-
 Exponent for calculating how many indivisible units are there in one NEAR. See [NEAR_NOMINATION](_utils_format_.md#const-near_nomination).
 
 ___
 
 ### `Const` ROUNDING_OFFSETS
 
-• **ROUNDING_OFFSETS**: *any[]* = []
-
-*Defined in [src.ts/utils/format.ts:14](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L14)*
+• **ROUNDING_OFFSETS**: *BN[]* = []
 
 ## Functions
 
 ###  cleanupAmount
 
 ▸ **cleanupAmount**(`amount`: string): *string*
-
-*Defined in [src.ts/utils/format.ts:63](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L63)*
 
 **Parameters:**
 
@@ -79,8 +69,6 @@ ___
 ###  formatNearAmount
 
 ▸ **formatNearAmount**(`balance`: string, `fracDigits`: number): *string*
-
-*Defined in [src.ts/utils/format.ts:27](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L27)*
 
 Convert account balance value from internal indivisible units to NEAR. 1 NEAR is defined by [NEAR_NOMINATION](_utils_format_.md#const-near_nomination).
 Effectively this divides given amount by [NEAR_NOMINATION](_utils_format_.md#const-near_nomination).
@@ -100,8 +88,6 @@ ___
 
 ▸ **formatWithCommas**(`value`: string): *string*
 
-*Defined in [src.ts/utils/format.ts:75](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L75)*
-
 **Parameters:**
 
 Name | Type |
@@ -115,8 +101,6 @@ ___
 ###  parseNearAmount
 
 ▸ **parseNearAmount**(`amt?`: string): *string | null*
-
-*Defined in [src.ts/utils/format.ts:51](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L51)*
 
 Convert human readable NEAR amount to internal indivisible units.
 Effectively this multiplies given amount by [NEAR_NOMINATION](_utils_format_.md#const-near_nomination).
@@ -135,8 +119,6 @@ ___
 
 ▸ **trimLeadingZeroes**(`value`: string): *string*
 
-*Defined in [src.ts/utils/format.ts:71](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L71)*
-
 **Parameters:**
 
 Name | Type |
@@ -150,8 +132,6 @@ ___
 ###  trimTrailingZeroes
 
 ▸ **trimTrailingZeroes**(`value`: string): *string*
-
-*Defined in [src.ts/utils/format.ts:67](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/format.ts#L67)*
 
 **Parameters:**
 

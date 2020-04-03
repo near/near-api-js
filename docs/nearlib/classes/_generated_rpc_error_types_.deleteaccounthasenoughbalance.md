@@ -1,36 +1,36 @@
 ---
-id: "_generated_rpc_error_types_.actornopermission"
-title: "ActorNoPermission"
-sidebar_label: "ActorNoPermission"
+id: "_generated_rpc_error_types_.deleteaccounthasenoughbalance"
+title: "DeleteAccountHasEnoughBalance"
+sidebar_label: "DeleteAccountHasEnoughBalance"
 ---
 
 ## Hierarchy
 
   ↳ [ActionError](_generated_rpc_error_types_.actionerror.md)
 
-  ↳ **ActorNoPermission**
+  ↳ **DeleteAccountHasEnoughBalance**
 
 ## Index
 
 ### Constructors
 
-* [constructor](_generated_rpc_error_types_.actornopermission.md#constructor)
+* [constructor](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md#constructor)
 
 ### Properties
 
-* [account_id](_generated_rpc_error_types_.actornopermission.md#account_id)
-* [actor_id](_generated_rpc_error_types_.actornopermission.md#actor_id)
-* [index](_generated_rpc_error_types_.actornopermission.md#index)
-* [message](_generated_rpc_error_types_.actornopermission.md#message)
-* [name](_generated_rpc_error_types_.actornopermission.md#name)
-* [stack](_generated_rpc_error_types_.actornopermission.md#optional-stack)
-* [type](_generated_rpc_error_types_.actornopermission.md#type)
+* [account_id](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md#account_id)
+* [balance](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md#balance)
+* [index](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md#index)
+* [message](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md#message)
+* [name](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md#name)
+* [stack](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md#optional-stack)
+* [type](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md#type)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new ActorNoPermission**(`message?`: string, `type?`: string): *[ActorNoPermission](_generated_rpc_error_types_.actornopermission.md)*
+\+ **new DeleteAccountHasEnoughBalance**(`message?`: string, `type?`: string): *[DeleteAccountHasEnoughBalance](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md)*
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
@@ -41,7 +41,7 @@ Name | Type |
 `message?` | string |
 `type?` | string |
 
-**Returns:** *[ActorNoPermission](_generated_rpc_error_types_.actornopermission.md)*
+**Returns:** *[DeleteAccountHasEnoughBalance](_generated_rpc_error_types_.deleteaccounthasenoughbalance.md)*
 
 ## Properties
 
@@ -51,9 +51,9 @@ Name | Type |
 
 ___
 
-###  actor_id
+###  balance
 
-• **actor_id**: *any*
+• **balance**: *any*
 
 ___
 

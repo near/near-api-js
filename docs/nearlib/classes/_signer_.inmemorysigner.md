@@ -34,8 +34,6 @@ Signs using in memory key store.
 
 \+ **new InMemorySigner**(`keyStore`: [KeyStore](_key_stores_keystore_.keystore.md)): *[InMemorySigner](_signer_.inmemorysigner.md)*
 
-*Defined in [src.ts/signer.ts:37](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L37)*
-
 **Parameters:**
 
 Name | Type |
@@ -50,8 +48,6 @@ Name | Type |
 
 • **keyStore**: *[KeyStore](_key_stores_keystore_.keystore.md)*
 
-*Defined in [src.ts/signer.ts:37](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L37)*
-
 ## Methods
 
 ###  createKey
@@ -60,14 +56,14 @@ Name | Type |
 
 *Overrides [Signer](_signer_.signer.md).[createKey](_signer_.signer.md#abstract-createkey)*
 
-*Defined in [src.ts/signer.ts:44](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L44)*
+Creates a public key for the account given
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`accountId` | string |
-`networkId` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`accountId` | string | The NEAR account to assign a public key to |
+`networkId` | string | The targeted network. (ex. default, devnet, betanet, etc…) |
 
 **Returns:** *Promise‹[PublicKey](_utils_key_pair_.publickey.md)›*
 
@@ -79,16 +75,18 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[getPublicKey](_signer_.signer.md#abstract-getpublickey)*
 
-*Defined in [src.ts/signer.ts:50](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L50)*
+Gets the existing public key for a given account
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`accountId?` | string |
-`networkId?` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`accountId?` | string | The NEAR account to assign a public key to |
+`networkId?` | string | The targeted network. (ex. default, devnet, betanet, etc…) |
 
 **Returns:** *Promise‹[PublicKey](_utils_key_pair_.publickey.md)›*
+
+Returns the public key or null if not found
 
 ___
 
@@ -98,14 +96,12 @@ ___
 
 *Overrides [Signer](_signer_.signer.md).[signMessage](_signer_.signer.md#abstract-signmessage)*
 
-*Defined in [src.ts/signer.ts:58](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/signer.ts#L58)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`message` | Uint8Array |
-`accountId?` | string |
-`networkId?` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`message` | Uint8Array | A message to be signed, typically a serialized transaction |
+`accountId?` | string | the NEAR account signing the message |
+`networkId?` | string | The targeted network. (ex. default, devnet, betanet, etc…) |
 
 **Returns:** *Promise‹[Signature](../interfaces/_utils_key_pair_.signature.md)›*

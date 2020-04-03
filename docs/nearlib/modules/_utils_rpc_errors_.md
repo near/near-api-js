@@ -26,10 +26,12 @@ sidebar_label: "utils/rpc_errors"
 * [ContractSizeExceeded](_utils_rpc_errors_.md#contractsizeexceeded)
 * [CostOverflow](_utils_rpc_errors_.md#costoverflow)
 * [CreateAccountNotAllowed](_utils_rpc_errors_.md#createaccountnotallowed)
+* [DeleteAccountHasEnoughBalance](_utils_rpc_errors_.md#deleteaccounthasenoughbalance)
 * [DeleteAccountHasRent](_utils_rpc_errors_.md#deleteaccounthasrent)
 * [DeleteAccountStaking](_utils_rpc_errors_.md#deleteaccountstaking)
 * [DeleteKeyDoesNotExist](_utils_rpc_errors_.md#deletekeydoesnotexist)
 * [DepositWithFunctionCall](_utils_rpc_errors_.md#depositwithfunctioncall)
+* [Deprecated](_utils_rpc_errors_.md#deprecated)
 * [Deserialization](_utils_rpc_errors_.md#deserialization)
 * [EmptyMethodName](_utils_rpc_errors_.md#emptymethodname)
 * [Expired](_utils_rpc_errors_.md#expired)
@@ -59,6 +61,7 @@ sidebar_label: "utils/rpc_errors"
 * [InvalidTxError](_utils_rpc_errors_.md#invalidtxerror)
 * [IteratorWasInvalidated](_utils_rpc_errors_.md#iteratorwasinvalidated)
 * [KeyLengthExceeded](_utils_rpc_errors_.md#keylengthexceeded)
+* [LackBalanceForState](_utils_rpc_errors_.md#lackbalanceforstate)
 * [LinkError](_utils_rpc_errors_.md#linkerror)
 * [Memory](_utils_rpc_errors_.md#memory)
 * [MemoryAccessViolation](_utils_rpc_errors_.md#memoryaccessviolation)
@@ -88,6 +91,7 @@ sidebar_label: "utils/rpc_errors"
 * [TriesToStake](_utils_rpc_errors_.md#triestostake)
 * [TriesToUnstake](_utils_rpc_errors_.md#triestounstake)
 * [TxExecutionError](_utils_rpc_errors_.md#txexecutionerror)
+* [UnsuitableStakingKey](_utils_rpc_errors_.md#unsuitablestakingkey)
 * [ValueLengthExceeded](_utils_rpc_errors_.md#valuelengthexceeded)
 * [WasmTrap](_utils_rpc_errors_.md#wasmtrap)
 * [WasmerCompileError](_utils_rpc_errors_.md#wasmercompileerror)
@@ -210,6 +214,12 @@ ___
 
 ___
 
+###  DeleteAccountHasEnoughBalance
+
+• **DeleteAccountHasEnoughBalance**:
+
+___
+
 ###  DeleteAccountHasRent
 
 • **DeleteAccountHasRent**:
@@ -231,6 +241,12 @@ ___
 ###  DepositWithFunctionCall
 
 • **DepositWithFunctionCall**:
+
+___
+
+###  Deprecated
+
+• **Deprecated**:
 
 ___
 
@@ -408,6 +424,12 @@ ___
 
 ___
 
+###  LackBalanceForState
+
+• **LackBalanceForState**:
+
+___
+
 ###  LinkError
 
 • **LinkError**:
@@ -582,6 +604,12 @@ ___
 
 ___
 
+###  UnsuitableStakingKey
+
+• **UnsuitableStakingKey**:
+
+___
+
 ###  ValueLengthExceeded
 
 • **ValueLengthExceeded**:
@@ -604,8 +632,6 @@ ___
 
 ▸ **formatError**(`errorClassName`: string, `errorData`: any): *string*
 
-*Defined in [src.ts/utils/rpc_errors.ts:19](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L19)*
-
 **Parameters:**
 
 Name | Type |
@@ -621,8 +647,6 @@ ___
 
 ▸ **isObject**(`n`: any): *boolean*
 
-*Defined in [src.ts/utils/rpc_errors.ts:57](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L57)*
-
 **Parameters:**
 
 Name | Type |
@@ -636,8 +660,6 @@ ___
 ###  isString
 
 ▸ **isString**(`n`: any): *boolean*
-
-*Defined in [src.ts/utils/rpc_errors.ts:61](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L61)*
 
 **Parameters:**
 
@@ -653,8 +675,6 @@ ___
 
 ▸ **parseRpcError**(`errorObj`: Record‹string, any›): *[ServerError](../classes/_generated_rpc_error_types_.servererror.md)*
 
-*Defined in [src.ts/utils/rpc_errors.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L10)*
-
 **Parameters:**
 
 Name | Type |
@@ -668,8 +688,6 @@ ___
 ###  walkSubtype
 
 ▸ **walkSubtype**(`errorObj`: any, `schema`: any, `result`: any, `typeName`: any): *any*
-
-*Defined in [src.ts/utils/rpc_errors.ts:26](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/rpc_errors.ts#L26)*
 
 **Parameters:**
 

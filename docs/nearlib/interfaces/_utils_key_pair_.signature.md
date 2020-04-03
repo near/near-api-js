@@ -21,12 +21,8 @@ sidebar_label: "Signature"
 
 • **publicKey**: *[PublicKey](../classes/_utils_key_pair_.publickey.md)*
 
-*Defined in [src.ts/utils/key_pair.ts:11](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L11)*
-
 ___
 
 ###  signature
 
 • **signature**: *Uint8Array*
-
-*Defined in [src.ts/utils/key_pair.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L10)*

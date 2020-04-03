@@ -37,15 +37,11 @@ sidebar_label: "ChunkHeader"
 
 • **balance_burnt**: *string*
 
-*Defined in [src.ts/providers/provider.ts:100](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L100)*
-
 ___
 
 ###  chunk_hash
 
 • **chunk_hash**: *[ChunkHash](../modules/_providers_provider_.md#chunkhash)*
-
-*Defined in [src.ts/providers/provider.ts:101](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L101)*
 
 ___
 
@@ -53,15 +49,11 @@ ___
 
 • **encoded_length**: *number*
 
-*Defined in [src.ts/providers/provider.ts:102](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L102)*
-
 ___
 
 ###  encoded_merkle_root
 
 • **encoded_merkle_root**: *string*
-
-*Defined in [src.ts/providers/provider.ts:103](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L103)*
 
 ___
 
@@ -69,15 +61,11 @@ ___
 
 • **gas_limit**: *number*
 
-*Defined in [src.ts/providers/provider.ts:104](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L104)*
-
 ___
 
 ###  gas_used
 
 • **gas_used**: *number*
-
-*Defined in [src.ts/providers/provider.ts:105](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L105)*
 
 ___
 
@@ -85,15 +73,11 @@ ___
 
 • **height_created**: *number*
 
-*Defined in [src.ts/providers/provider.ts:106](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L106)*
-
 ___
 
 ###  height_included
 
 • **height_included**: *number*
-
-*Defined in [src.ts/providers/provider.ts:107](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L107)*
 
 ___
 
@@ -101,15 +85,11 @@ ___
 
 • **outgoing_receipts_root**: *string*
 
-*Defined in [src.ts/providers/provider.ts:108](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L108)*
-
 ___
 
 ###  prev_block_hash
 
 • **prev_block_hash**: *string*
-
-*Defined in [src.ts/providers/provider.ts:109](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L109)*
 
 ___
 
@@ -117,15 +97,11 @@ ___
 
 • **prev_state_num_parts**: *number*
 
-*Defined in [src.ts/providers/provider.ts:110](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L110)*
-
 ___
 
 ###  prev_state_root_hash
 
 • **prev_state_root_hash**: *string*
-
-*Defined in [src.ts/providers/provider.ts:111](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L111)*
 
 ___
 
@@ -133,15 +109,11 @@ ___
 
 • **rent_paid**: *string*
 
-*Defined in [src.ts/providers/provider.ts:112](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L112)*
-
 ___
 
 ###  shard_id
 
 • **shard_id**: *number*
-
-*Defined in [src.ts/providers/provider.ts:113](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L113)*
 
 ___
 
@@ -149,15 +121,11 @@ ___
 
 • **signature**: *string*
 
-*Defined in [src.ts/providers/provider.ts:114](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L114)*
-
 ___
 
 ###  tx_root
 
 • **tx_root**: *string*
-
-*Defined in [src.ts/providers/provider.ts:115](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L115)*
 
 ___
 
@@ -165,12 +133,8 @@ ___
 
 • **validator_proposals**: *any[]*
 
-*Defined in [src.ts/providers/provider.ts:116](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L116)*
-
 ___
 
 ###  validator_reward
 
 • **validator_reward**: *string*
-
-*Defined in [src.ts/providers/provider.ts:117](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L117)*

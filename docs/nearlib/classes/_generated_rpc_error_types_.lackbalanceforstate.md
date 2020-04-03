@@ -1,36 +1,37 @@
 ---
-id: "_generated_rpc_error_types_.actornopermission"
-title: "ActorNoPermission"
-sidebar_label: "ActorNoPermission"
+id: "_generated_rpc_error_types_.lackbalanceforstate"
+title: "LackBalanceForState"
+sidebar_label: "LackBalanceForState"
 ---
 
 ## Hierarchy
 
   ↳ [ActionError](_generated_rpc_error_types_.actionerror.md)
 
-  ↳ **ActorNoPermission**
+  ↳ **LackBalanceForState**
 
 ## Index
 
 ### Constructors
 
-* [constructor](_generated_rpc_error_types_.actornopermission.md#constructor)
+* [constructor](_generated_rpc_error_types_.lackbalanceforstate.md#constructor)
 
 ### Properties
 
-* [account_id](_generated_rpc_error_types_.actornopermission.md#account_id)
-* [actor_id](_generated_rpc_error_types_.actornopermission.md#actor_id)
-* [index](_generated_rpc_error_types_.actornopermission.md#index)
-* [message](_generated_rpc_error_types_.actornopermission.md#message)
-* [name](_generated_rpc_error_types_.actornopermission.md#name)
-* [stack](_generated_rpc_error_types_.actornopermission.md#optional-stack)
-* [type](_generated_rpc_error_types_.actornopermission.md#type)
+* [account_id](_generated_rpc_error_types_.lackbalanceforstate.md#account_id)
+* [amount](_generated_rpc_error_types_.lackbalanceforstate.md#amount)
+* [index](_generated_rpc_error_types_.lackbalanceforstate.md#index)
+* [message](_generated_rpc_error_types_.lackbalanceforstate.md#message)
+* [name](_generated_rpc_error_types_.lackbalanceforstate.md#name)
+* [signer_id](_generated_rpc_error_types_.lackbalanceforstate.md#signer_id)
+* [stack](_generated_rpc_error_types_.lackbalanceforstate.md#optional-stack)
+* [type](_generated_rpc_error_types_.lackbalanceforstate.md#type)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new ActorNoPermission**(`message?`: string, `type?`: string): *[ActorNoPermission](_generated_rpc_error_types_.actornopermission.md)*
+\+ **new LackBalanceForState**(`message?`: string, `type?`: string): *[LackBalanceForState](_generated_rpc_error_types_.lackbalanceforstate.md)*
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
@@ -41,7 +42,7 @@ Name | Type |
 `message?` | string |
 `type?` | string |
 
-**Returns:** *[ActorNoPermission](_generated_rpc_error_types_.actornopermission.md)*
+**Returns:** *[LackBalanceForState](_generated_rpc_error_types_.lackbalanceforstate.md)*
 
 ## Properties
 
@@ -51,9 +52,9 @@ Name | Type |
 
 ___
 
-###  actor_id
+###  amount
 
-• **actor_id**: *any*
+• **amount**: *any*
 
 ___
 
@@ -78,6 +79,12 @@ ___
 • **name**: *string*
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[name](_utils_serialize_.borsherror.md#name)*
+
+___
+
+###  signer_id
+
+• **signer_id**: *any*
 
 ___
 

@@ -19,5 +19,3 @@ sidebar_label: "providers/json-rpc-provider"
 ### `Let` _nextId
 
 • **_nextId**: *number* = 123
-
-*Defined in [src.ts/providers/json-rpc-provider.ts:17](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/json-rpc-provider.ts#L17)*

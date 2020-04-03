@@ -4,6 +4,8 @@ title: "Connection"
 sidebar_label: "Connection"
 ---
 
+Connects an account to a given network via a given provider
+
 ## Hierarchy
 
 * **Connection**
@@ -30,8 +32,6 @@ sidebar_label: "Connection"
 
 \+ **new Connection**(`networkId`: string, `provider`: [Provider](_providers_provider_.provider.md), `signer`: [Signer](_signer_.signer.md)): *[Connection](_connection_.connection.md)*
 
-*Defined in [src.ts/connection.ts:29](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/connection.ts#L29)*
-
 **Parameters:**
 
 Name | Type |
@@ -48,15 +48,11 @@ Name | Type |
 
 • **networkId**: *string*
 
-*Defined in [src.ts/connection.ts:27](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/connection.ts#L27)*
-
 ___
 
 ###  provider
 
 • **provider**: *[Provider](_providers_provider_.provider.md)*
-
-*Defined in [src.ts/connection.ts:28](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/connection.ts#L28)*
 
 ___
 
@@ -64,20 +60,16 @@ ___
 
 • **signer**: *[Signer](_signer_.signer.md)*
 
-*Defined in [src.ts/connection.ts:29](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/connection.ts#L29)*
-
 ## Methods
 
 ### `Static` fromConfig
 
 ▸ **fromConfig**(`config`: any): *[Connection](_connection_.connection.md)*
 
-*Defined in [src.ts/connection.ts:37](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/connection.ts#L37)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`config` | any |
+Name | Type | Description |
+------ | ------ | ------ |
+`config` | any |   |
 
 **Returns:** *[Connection](_connection_.connection.md)*

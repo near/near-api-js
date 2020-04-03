@@ -31,8 +31,6 @@ sidebar_label: "FunctionCall"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/enums.ts#L17)*
-
 **Parameters:**
 
 Name | Type |
@@ -47,15 +45,11 @@ Name | Type |
 
 • **args**: *Uint8Array*
 
-*Defined in [src.ts/transaction.ts:41](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L41)*
-
 ___
 
 ###  deposit
 
 • **deposit**: *BN*
-
-*Defined in [src.ts/transaction.ts:41](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L41)*
 
 ___
 
@@ -63,12 +57,8 @@ ___
 
 • **gas**: *BN*
 
-*Defined in [src.ts/transaction.ts:41](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L41)*
-
 ___
 
 ###  methodName
 
 • **methodName**: *string*
-
-*Defined in [src.ts/transaction.ts:41](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L41)*

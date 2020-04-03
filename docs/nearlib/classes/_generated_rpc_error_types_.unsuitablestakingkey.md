@@ -1,34 +1,35 @@
 ---
-id: "_generated_rpc_error_types_.balanceexceeded"
-title: "BalanceExceeded"
-sidebar_label: "BalanceExceeded"
+id: "_generated_rpc_error_types_.unsuitablestakingkey"
+title: "UnsuitableStakingKey"
+sidebar_label: "UnsuitableStakingKey"
 ---
 
 ## Hierarchy
 
-  ↳ [HostError](_generated_rpc_error_types_.hosterror.md)
+  ↳ [ActionError](_generated_rpc_error_types_.actionerror.md)
 
-  ↳ **BalanceExceeded**
+  ↳ **UnsuitableStakingKey**
 
 ## Index
 
 ### Constructors
 
-* [constructor](_generated_rpc_error_types_.balanceexceeded.md#constructor)
+* [constructor](_generated_rpc_error_types_.unsuitablestakingkey.md#constructor)
 
 ### Properties
 
-* [index](_generated_rpc_error_types_.balanceexceeded.md#index)
-* [message](_generated_rpc_error_types_.balanceexceeded.md#message)
-* [name](_generated_rpc_error_types_.balanceexceeded.md#name)
-* [stack](_generated_rpc_error_types_.balanceexceeded.md#optional-stack)
-* [type](_generated_rpc_error_types_.balanceexceeded.md#type)
+* [index](_generated_rpc_error_types_.unsuitablestakingkey.md#index)
+* [message](_generated_rpc_error_types_.unsuitablestakingkey.md#message)
+* [name](_generated_rpc_error_types_.unsuitablestakingkey.md#name)
+* [public_key](_generated_rpc_error_types_.unsuitablestakingkey.md#public_key)
+* [stack](_generated_rpc_error_types_.unsuitablestakingkey.md#optional-stack)
+* [type](_generated_rpc_error_types_.unsuitablestakingkey.md#type)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new BalanceExceeded**(`message?`: string, `type?`: string): *[BalanceExceeded](_generated_rpc_error_types_.balanceexceeded.md)*
+\+ **new UnsuitableStakingKey**(`message?`: string, `type?`: string): *[UnsuitableStakingKey](_generated_rpc_error_types_.unsuitablestakingkey.md)*
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
@@ -39,7 +40,7 @@ Name | Type |
 `message?` | string |
 `type?` | string |
 
-**Returns:** *[BalanceExceeded](_generated_rpc_error_types_.balanceexceeded.md)*
+**Returns:** *[UnsuitableStakingKey](_generated_rpc_error_types_.unsuitablestakingkey.md)*
 
 ## Properties
 
@@ -64,6 +65,12 @@ ___
 • **name**: *string*
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[name](_utils_serialize_.borsherror.md#name)*
+
+___
+
+###  public_key
+
+• **public_key**: *any*
 
 ___
 

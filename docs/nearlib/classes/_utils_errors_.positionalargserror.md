@@ -29,8 +29,6 @@ sidebar_label: "PositionalArgsError"
 
 \+ **new PositionalArgsError**(): *[PositionalArgsError](_utils_errors_.positionalargserror.md)*
 
-*Defined in [src.ts/utils/errors.ts:1](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/errors.ts#L1)*
-
 **Returns:** *[PositionalArgsError](_utils_errors_.positionalargserror.md)*
 
 ## Properties
@@ -41,8 +39,6 @@ sidebar_label: "PositionalArgsError"
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[message](_utils_serialize_.borsherror.md#message)*
 
-Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:974
-
 ___
 
 ###  name
@@ -50,8 +46,6 @@ ___
 • **name**: *string*
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[name](_utils_serialize_.borsherror.md#name)*
-
-Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:973
 
 ___
 
@@ -61,12 +55,8 @@ ___
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[stack](_utils_serialize_.borsherror.md#optional-stack)*
 
-Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:975
-
 ___
 
 ### `Static` Error
 
 ▪ **Error**: *ErrorConstructor*
-
-Defined in node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:984

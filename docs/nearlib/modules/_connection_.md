@@ -21,13 +21,11 @@ sidebar_label: "connection"
 
 ▸ **getProvider**(`config`: any): *[Provider](../classes/_providers_provider_.provider.md)*
 
-*Defined in [src.ts/connection.ts:6](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/connection.ts#L6)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`config` | any |
+Name | Type | Description |
+------ | ------ | ------ |
+`config` | any | Contains connection info details |
 
 **Returns:** *[Provider](../classes/_providers_provider_.provider.md)*
 
@@ -37,12 +35,10 @@ ___
 
 ▸ **getSigner**(`config`: any): *[Signer](../classes/_signer_.signer.md)*
 
-*Defined in [src.ts/connection.ts:15](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/connection.ts#L15)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`config` | any |
+Name | Type | Description |
+------ | ------ | ------ |
+`config` | any | Contains connection info details |
 
 **Returns:** *[Signer](../classes/_signer_.signer.md)*

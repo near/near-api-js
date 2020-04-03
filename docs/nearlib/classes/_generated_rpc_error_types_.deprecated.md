@@ -1,34 +1,35 @@
 ---
-id: "_generated_rpc_error_types_.balanceexceeded"
-title: "BalanceExceeded"
-sidebar_label: "BalanceExceeded"
+id: "_generated_rpc_error_types_.deprecated"
+title: "Deprecated"
+sidebar_label: "Deprecated"
 ---
 
 ## Hierarchy
 
   ↳ [HostError](_generated_rpc_error_types_.hosterror.md)
 
-  ↳ **BalanceExceeded**
+  ↳ **Deprecated**
 
 ## Index
 
 ### Constructors
 
-* [constructor](_generated_rpc_error_types_.balanceexceeded.md#constructor)
+* [constructor](_generated_rpc_error_types_.deprecated.md#constructor)
 
 ### Properties
 
-* [index](_generated_rpc_error_types_.balanceexceeded.md#index)
-* [message](_generated_rpc_error_types_.balanceexceeded.md#message)
-* [name](_generated_rpc_error_types_.balanceexceeded.md#name)
-* [stack](_generated_rpc_error_types_.balanceexceeded.md#optional-stack)
-* [type](_generated_rpc_error_types_.balanceexceeded.md#type)
+* [index](_generated_rpc_error_types_.deprecated.md#index)
+* [message](_generated_rpc_error_types_.deprecated.md#message)
+* [method_name](_generated_rpc_error_types_.deprecated.md#method_name)
+* [name](_generated_rpc_error_types_.deprecated.md#name)
+* [stack](_generated_rpc_error_types_.deprecated.md#optional-stack)
+* [type](_generated_rpc_error_types_.deprecated.md#type)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new BalanceExceeded**(`message?`: string, `type?`: string): *[BalanceExceeded](_generated_rpc_error_types_.balanceexceeded.md)*
+\+ **new Deprecated**(`message?`: string, `type?`: string): *[Deprecated](_generated_rpc_error_types_.deprecated.md)*
 
 *Inherited from [TypedError](_utils_errors_.typederror.md).[constructor](_utils_errors_.typederror.md#constructor)*
 
@@ -39,7 +40,7 @@ Name | Type |
 `message?` | string |
 `type?` | string |
 
-**Returns:** *[BalanceExceeded](_generated_rpc_error_types_.balanceexceeded.md)*
+**Returns:** *[Deprecated](_generated_rpc_error_types_.deprecated.md)*
 
 ## Properties
 
@@ -56,6 +57,12 @@ ___
 • **message**: *string*
 
 *Inherited from [BorshError](_utils_serialize_.borsherror.md).[message](_utils_serialize_.borsherror.md#message)*
+
+___
+
+###  method_name
+
+• **method_name**: *any*
 
 ___
 

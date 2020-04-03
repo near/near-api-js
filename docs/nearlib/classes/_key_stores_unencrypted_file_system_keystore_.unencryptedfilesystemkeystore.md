@@ -25,7 +25,6 @@ sidebar_label: "UnencryptedFileSystemKeyStore"
 * [clear](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md#clear)
 * [getAccounts](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md#getaccounts)
 * [getKey](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md#getkey)
-* [getKeyFilePath](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md#private-getkeyfilepath)
 * [getNetworks](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md#getnetworks)
 * [removeKey](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md#removekey)
 * [setKey](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md#setkey)
@@ -35,8 +34,6 @@ sidebar_label: "UnencryptedFileSystemKeyStore"
 ###  constructor
 
 \+ **new UnencryptedFileSystemKeyStore**(`keyDir`: string): *[UnencryptedFileSystemKeyStore](_key_stores_unencrypted_file_system_keystore_.unencryptedfilesystemkeystore.md)*
-
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:57](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L57)*
 
 **Parameters:**
 
@@ -52,8 +49,6 @@ Name | Type |
 
 • **keyDir**: *string*
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:57](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L57)*
-
 ## Methods
 
 ###  clear
@@ -61,8 +56,6 @@ Name | Type |
 ▸ **clear**(): *Promise‹void›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[clear](_key_stores_keystore_.keystore.md#abstract-clear)*
-
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:85](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L85)*
 
 **Returns:** *Promise‹void›*
 
@@ -73,8 +66,6 @@ ___
 ▸ **getAccounts**(`networkId`: string): *Promise‹string[]›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getAccounts](_key_stores_keystore_.keystore.md#abstract-getaccounts)*
-
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:106](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L106)*
 
 **Parameters:**
 
@@ -92,8 +83,6 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getKey](_key_stores_keystore_.keystore.md#abstract-getkey)*
 
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:70](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L70)*
-
 **Parameters:**
 
 Name | Type |
@@ -105,30 +94,11 @@ Name | Type |
 
 ___
 
-### `Private` getKeyFilePath
-
-▸ **getKeyFilePath**(`networkId`: string, `accountId`: string): *string*
-
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:93](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L93)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`networkId` | string |
-`accountId` | string |
-
-**Returns:** *string*
-
-___
-
 ###  getNetworks
 
 ▸ **getNetworks**(): *Promise‹string[]›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getNetworks](_key_stores_keystore_.keystore.md#abstract-getnetworks)*
-
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:97](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L97)*
 
 **Returns:** *Promise‹string[]›*
 
@@ -139,8 +109,6 @@ ___
 ▸ **removeKey**(`networkId`: string, `accountId`: string): *Promise‹void›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[removeKey](_key_stores_keystore_.keystore.md#abstract-removekey)*
-
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:79](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L79)*
 
 **Parameters:**
 
@@ -158,8 +126,6 @@ ___
 ▸ **setKey**(`networkId`: string, `accountId`: string, `keyPair`: [KeyPair](_utils_key_pair_.keypair.md)): *Promise‹void›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[setKey](_key_stores_keystore_.keystore.md#abstract-setkey)*
-
-*Defined in [src.ts/key_stores/unencrypted_file_system_keystore.ts:64](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/unencrypted_file_system_keystore.ts#L64)*
 
 **Parameters:**
 

@@ -33,8 +33,6 @@ sidebar_label: "Near"
 
 \+ **new Near**(`config`: any): *[Near](_near_.near.md)*
 
-*Defined in [src.ts/near.ts:14](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L14)*
-
 **Parameters:**
 
 Name | Type |
@@ -49,15 +47,11 @@ Name | Type |
 
 • **accountCreator**: *[AccountCreator](_account_creator_.accountcreator.md)*
 
-*Defined in [src.ts/near.ts:14](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L14)*
-
 ___
 
 ###  config
 
 • **config**: *any*
-
-*Defined in [src.ts/near.ts:12](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L12)*
 
 ___
 
@@ -65,21 +59,17 @@ ___
 
 • **connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [src.ts/near.ts:13](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L13)*
-
 ## Methods
 
 ###  account
 
 ▸ **account**(`accountId`: string): *Promise‹[Account](_account_.account.md)›*
 
-*Defined in [src.ts/near.ts:35](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L35)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`accountId` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`accountId` | string | near accountId used to interact with the network.  |
 
 **Returns:** *Promise‹[Account](_account_.account.md)›*
 
@@ -89,14 +79,12 @@ ___
 
 ▸ **createAccount**(`accountId`: string, `publicKey`: [PublicKey](_utils_key_pair_.publickey.md)): *Promise‹[Account](_account_.account.md)›*
 
-*Defined in [src.ts/near.ts:41](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L41)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`accountId` | string |
-`publicKey` | [PublicKey](_utils_key_pair_.publickey.md) |
+Name | Type | Description |
+------ | ------ | ------ |
+`accountId` | string | - |
+`publicKey` | [PublicKey](_utils_key_pair_.publickey.md) |   |
 
 **Returns:** *Promise‹[Account](_account_.account.md)›*
 
@@ -106,9 +94,7 @@ ___
 
 ▸ **loadContract**(`contractId`: string, `options`: object): *Promise‹[Contract](_contract_.contract.md)›*
 
-*Defined in [src.ts/near.ts:54](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L54)*
-
-Backwards compatibility method. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
+**`deprecated`** Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
 
 **Parameters:**
 
@@ -130,9 +116,7 @@ ___
 
 ▸ **sendTokens**(`amount`: BN, `originator`: string, `receiver`: string): *Promise‹string›*
 
-*Defined in [src.ts/near.ts:65](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L65)*
-
-Backwards compatibility method. Use `yourAccount.sendMoney` instead.
+**`deprecated`** Use `yourAccount.sendMoney` instead.
 
 **Parameters:**
 

@@ -4,6 +4,8 @@ title: "Account"
 sidebar_label: "Account"
 ---
 
+More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
+
 ## Hierarchy
 
 * **Account**
@@ -18,14 +20,8 @@ sidebar_label: "Account"
 
 ### Properties
 
-* [_ready](_account_.account.md#private-_ready)
-* [_state](_account_.account.md#private-_state)
 * [accountId](_account_.account.md#accountid)
 * [connection](_account_.account.md#connection)
-
-### Accessors
-
-* [ready](_account_.account.md#protected-ready)
 
 ### Methods
 
@@ -36,17 +32,12 @@ sidebar_label: "Account"
 * [deleteKey](_account_.account.md#deletekey)
 * [deployContract](_account_.account.md#deploycontract)
 * [fetchState](_account_.account.md#fetchstate)
-* [findAccessKey](_account_.account.md#private-findaccesskey)
 * [functionCall](_account_.account.md#functioncall)
 * [getAccessKeys](_account_.account.md#getaccesskeys)
 * [getAccountDetails](_account_.account.md#getaccountdetails)
-* [printLogs](_account_.account.md#private-printlogs)
-* [retryTxResult](_account_.account.md#private-retrytxresult)
 * [sendMoney](_account_.account.md#sendmoney)
-* [signAndSendTransaction](_account_.account.md#protected-signandsendtransaction)
 * [stake](_account_.account.md#stake)
 * [state](_account_.account.md#state)
-* [validateArgs](_account_.account.md#private-validateargs)
 * [viewFunction](_account_.account.md#viewfunction)
 
 ## Constructors
@@ -54,8 +45,6 @@ sidebar_label: "Account"
 ###  constructor
 
 \+ **new Account**(`connection`: [Connection](_connection_.connection.md), `accountId`: string): *[Account](_account_.account.md)*
-
-*Defined in [src.ts/account.ts:49](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L49)*
 
 **Parameters:**
 
@@ -68,27 +57,9 @@ Name | Type |
 
 ## Properties
 
-### `Private` _ready
-
-• **_ready**: *Promise‹void›*
-
-*Defined in [src.ts/account.ts:46](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L46)*
-
-___
-
-### `Private` _state
-
-• **_state**: *[AccountState](../interfaces/_account_.accountstate.md)*
-
-*Defined in [src.ts/account.ts:44](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L44)*
-
-___
-
 ###  accountId
 
 • **accountId**: *string*
-
-*Defined in [src.ts/account.ts:43](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L43)*
 
 ___
 
@@ -96,36 +67,24 @@ ___
 
 • **connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [src.ts/account.ts:42](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L42)*
-
-## Accessors
-
-### `Protected` ready
-
-• **get ready**(): *Promise‹void›*
-
-*Defined in [src.ts/account.ts:47](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L47)*
-
-**Returns:** *Promise‹void›*
-
 ## Methods
 
 ###  addKey
 
 ▸ **addKey**(`publicKey`: string | [PublicKey](_utils_key_pair_.publickey.md), `contractId?`: string, `methodName?`: string, `amount?`: BN): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/account.ts:182](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L182)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) |
-`contractId?` | string |
-`methodName?` | string |
-`amount?` | BN |
+Name | Type | Description |
+------ | ------ | ------ |
+`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) | A public key to be associated with the contract |
+`contractId?` | string | NEAR account where the contract is deployed |
+`methodName?` | string | The method name on the contract as it is written in the contract code |
+`amount?` | BN | Payment in yoctoⓃ that is sent to the contract during this function call |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
+
+TODO: expand this API to support more options.
 
 ___
 
@@ -133,15 +92,13 @@ ___
 
 ▸ **createAccount**(`newAccountId`: string, `publicKey`: string | [PublicKey](_utils_key_pair_.publickey.md), `amount`: BN): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/account.ts:162](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L162)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`newAccountId` | string |
-`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) |
-`amount` | BN |
+Name | Type | Description |
+------ | ------ | ------ |
+`newAccountId` | string | NEAR account name to be created |
+`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) | A public key created from the masterAccount |
+`amount` | BN | - |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
@@ -151,16 +108,14 @@ ___
 
 ▸ **createAndDeployContract**(`contractId`: string, `publicKey`: string | [PublicKey](_utils_key_pair_.publickey.md), `data`: Uint8Array, `amount`: BN): *Promise‹[Account](_account_.account.md)›*
 
-*Defined in [src.ts/account.ts:151](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L151)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`contractId` | string |
-`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) |
-`data` | Uint8Array |
-`amount` | BN |
+Name | Type | Description |
+------ | ------ | ------ |
+`contractId` | string | NEAR account where the contract is deployed |
+`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) | The public key to add while signing and sending the transaction |
+`data` | Uint8Array | The compiled contract code |
+`amount` | BN | - |
 
 **Returns:** *Promise‹[Account](_account_.account.md)›*
 
@@ -170,15 +125,15 @@ ___
 
 ▸ **deleteAccount**(`beneficiaryId`: string): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/account.ts:167](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L167)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`beneficiaryId` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`beneficiaryId` | string | The NEAR account that will receive the remaining Ⓝ balance from the account being deleted |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
+
+void
 
 ___
 
@@ -186,13 +141,11 @@ ___
 
 ▸ **deleteKey**(`publicKey`: string | [PublicKey](_utils_key_pair_.publickey.md)): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/account.ts:192](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L192)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) |
+Name | Type | Description |
+------ | ------ | ------ |
+`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) | The public key to be deleted |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
@@ -202,13 +155,11 @@ ___
 
 ▸ **deployContract**(`data`: Uint8Array): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/account.ts:171](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L171)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`data` | Uint8Array |
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | Uint8Array | The compiled contract code |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
@@ -218,19 +169,11 @@ ___
 
 ▸ **fetchState**(): *Promise‹void›*
 
-*Defined in [src.ts/account.ts:56](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L56)*
+Helper function when getting the state of a NEAR account
 
 **Returns:** *Promise‹void›*
 
-___
-
-### `Private` findAccessKey
-
-▸ **findAccessKey**(): *Promise‹[AccessKey](_transaction_.accesskey.md)›*
-
-*Defined in [src.ts/account.ts:131](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L131)*
-
-**Returns:** *Promise‹[AccessKey](_transaction_.accesskey.md)›*
+Promise<void>
 
 ___
 
@@ -238,17 +181,15 @@ ___
 
 ▸ **functionCall**(`contractId`: string, `methodName`: string, `args`: any, `gas?`: BN, `amount?`: BN): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/account.ts:175](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L175)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`contractId` | string |
-`methodName` | string |
-`args` | any |
-`gas?` | BN |
-`amount?` | BN |
+Name | Type | Description |
+------ | ------ | ------ |
+`contractId` | string | NEAR account where the contract is deployed |
+`methodName` | string | The method name on the contract as it is written in the contract code |
+`args` | any | Any arguments to the contract method, wrapped in JSON |
+`gas?` | BN | An amount of yoctoⓃ attached to cover the gas cost of this function call |
+`amount?` | BN | Payment in yoctoⓃ that is sent to the contract during this function call |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
@@ -258,9 +199,9 @@ ___
 
 ▸ **getAccessKeys**(): *Promise‹any›*
 
-*Defined in [src.ts/account.ts:217](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L217)*
-
 **Returns:** *Promise‹any›*
+
+array of {access_key: AccessKey, public_key: PublicKey} items.
 
 ___
 
@@ -268,43 +209,9 @@ ___
 
 ▸ **getAccountDetails**(): *Promise‹any›*
 
-*Defined in [src.ts/account.ts:228](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L228)*
+Returns account details in terms of authorized apps and transactions
 
 **Returns:** *Promise‹any›*
-
-___
-
-### `Private` printLogs
-
-▸ **printLogs**(`contractId`: string, `logs`: string[]): *void*
-
-*Defined in [src.ts/account.ts:65](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L65)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`contractId` | string |
-`logs` | string[] |
-
-**Returns:** *void*
-
-___
-
-### `Private` retryTxResult
-
-▸ **retryTxResult**(`txHash`: Uint8Array, `accountId`: string): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
-
-*Defined in [src.ts/account.ts:71](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L71)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`txHash` | Uint8Array |
-`accountId` | string |
-
-**Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
 ___
 
@@ -312,31 +219,12 @@ ___
 
 ▸ **sendMoney**(`receiverId`: string, `amount`: BN): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/account.ts:158](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L158)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`receiverId` | string |
-`amount` | BN |
-
-**Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
-
-___
-
-### `Protected` signAndSendTransaction
-
-▸ **signAndSendTransaction**(`receiverId`: string, `actions`: [Action](_transaction_.action.md)[]): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
-
-*Defined in [src.ts/account.ts:87](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L87)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`receiverId` | string |
-`actions` | [Action](_transaction_.action.md)[] |
+Name | Type | Description |
+------ | ------ | ------ |
+`receiverId` | string | NEAR account receiving Ⓝ |
+`amount` | BN | Amount to send in yoctoⓃ |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
@@ -346,14 +234,12 @@ ___
 
 ▸ **stake**(`publicKey`: string | [PublicKey](_utils_key_pair_.publickey.md), `amount`: BN): *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
-*Defined in [src.ts/account.ts:196](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L196)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) |
-`amount` | BN |
+Name | Type | Description |
+------ | ------ | ------ |
+`publicKey` | string &#124; [PublicKey](_utils_key_pair_.publickey.md) | The public key for the account that's staking |
+`amount` | BN | The account to stake in yoctoⓃ |
 
 **Returns:** *Promise‹[FinalExecutionOutcome](../interfaces/_providers_provider_.finalexecutionoutcome.md)›*
 
@@ -363,25 +249,9 @@ ___
 
 ▸ **state**(): *Promise‹[AccountState](../interfaces/_account_.accountstate.md)›*
 
-*Defined in [src.ts/account.ts:60](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L60)*
+Returns the state of a NEAR account
 
 **Returns:** *Promise‹[AccountState](../interfaces/_account_.accountstate.md)›*
-
-___
-
-### `Private` validateArgs
-
-▸ **validateArgs**(`args`: any): *void*
-
-*Defined in [src.ts/account.ts:200](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L200)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`args` | any |
-
-**Returns:** *void*
 
 ___
 
@@ -389,14 +259,12 @@ ___
 
 ▸ **viewFunction**(`contractId`: string, `methodName`: string, `args`: any): *Promise‹any›*
 
-*Defined in [src.ts/account.ts:206](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L206)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`contractId` | string |
-`methodName` | string |
-`args` | any |
+Name | Type | Description |
+------ | ------ | ------ |
+`contractId` | string | NEAR account where the contract is deployed |
+`methodName` | string | The view-only method (no state mutations) name on the contract as it is written in the contract code |
+`args` | any | Any arguments to the view contract method, wrapped in JSON |
 
 **Returns:** *Promise‹any›*

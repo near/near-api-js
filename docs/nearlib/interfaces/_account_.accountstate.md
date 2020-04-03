@@ -23,15 +23,11 @@ sidebar_label: "AccountState"
 
 • **account_id**: *string*
 
-*Defined in [src.ts/account.ts:35](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L35)*
-
 ___
 
 ###  amount
 
 • **amount**: *string*
-
-*Defined in [src.ts/account.ts:36](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L36)*
 
 ___
 
@@ -39,12 +35,8 @@ ___
 
 • **code_hash**: *string*
 
-*Defined in [src.ts/account.ts:38](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L38)*
-
 ___
 
 ###  staked
 
 • **staked**: *string*
-
-*Defined in [src.ts/account.ts:37](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account.ts#L37)*

@@ -4,6 +4,8 @@ title: "Contract"
 sidebar_label: "Contract"
 ---
 
+Defines a smart contract on NEAR including the mutable and non-mutable methods
+
 ## Hierarchy
 
 * **Contract**
@@ -24,8 +26,6 @@ sidebar_label: "Contract"
 ###  constructor
 
 \+ **new Contract**(`account`: [Account](_account_.account.md), `contractId`: string, `options`: object): *[Contract](_contract_.contract.md)*
-
-*Defined in [src.ts/contract.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/contract.ts#L10)*
 
 **Parameters:**
 
@@ -48,12 +48,8 @@ Name | Type |
 
 • **account**: *[Account](_account_.account.md)*
 
-*Defined in [src.ts/contract.ts:9](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/contract.ts#L9)*
-
 ___
 
 ###  contractId
 
 • **contractId**: *string*
-
-*Defined in [src.ts/contract.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/contract.ts#L10)*

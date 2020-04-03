@@ -31,8 +31,6 @@ sidebar_label: "LocalAccountCreator"
 
 \+ **new LocalAccountCreator**(`masterAccount`: [Account](_account_.account.md), `initialBalance`: BN): *[LocalAccountCreator](_account_creator_.localaccountcreator.md)*
 
-*Defined in [src.ts/account_creator.ts:16](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account_creator.ts#L16)*
-
 **Parameters:**
 
 Name | Type |
@@ -48,15 +46,11 @@ Name | Type |
 
 • **initialBalance**: *BN*
 
-*Defined in [src.ts/account_creator.ts:16](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account_creator.ts#L16)*
-
 ___
 
 ###  masterAccount
 
 • **masterAccount**: *[Account](_account_.account.md)*
-
-*Defined in [src.ts/account_creator.ts:15](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account_creator.ts#L15)*
 
 ## Methods
 
@@ -66,13 +60,13 @@ ___
 
 *Overrides [AccountCreator](_account_creator_.accountcreator.md).[createAccount](_account_creator_.accountcreator.md#abstract-createaccount)*
 
-*Defined in [src.ts/account_creator.ts:24](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account_creator.ts#L24)*
+Creates an account using a masterAccount, meaning the new account is created from an existing account
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`newAccountId` | string |
-`publicKey` | [PublicKey](_utils_key_pair_.publickey.md) |
+Name | Type | Description |
+------ | ------ | ------ |
+`newAccountId` | string | The name of the NEAR account to be created |
+`publicKey` | [PublicKey](_utils_key_pair_.publickey.md) | The public key from the masterAccount used to create this account |
 
 **Returns:** *Promise‹void›*

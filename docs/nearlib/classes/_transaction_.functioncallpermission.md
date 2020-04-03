@@ -30,8 +30,6 @@ sidebar_label: "FunctionCallPermission"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/enums.ts#L17)*
-
 **Parameters:**
 
 Name | Type |
@@ -46,20 +44,14 @@ Name | Type |
 
 • **allowance**? : *BN*
 
-*Defined in [src.ts/transaction.ts:12](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L12)*
-
 ___
 
 ###  methodNames
 
 • **methodNames**: *String[]*
 
-*Defined in [src.ts/transaction.ts:14](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L14)*
-
 ___
 
 ###  receiverId
 
 • **receiverId**: *string*
-
-*Defined in [src.ts/transaction.ts:13](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L13)*

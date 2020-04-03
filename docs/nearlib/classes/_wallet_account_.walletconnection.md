@@ -41,8 +41,6 @@ sidebar_label: "WalletConnection"
 
 \+ **new WalletConnection**(`near`: [Near](_near_.near.md), `appKeyPrefix`: string | null): *[WalletConnection](_wallet_account_.walletconnection.md)*
 
-*Defined in [src.ts/wallet-account.ts:26](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L26)*
-
 **Parameters:**
 
 Name | Type |
@@ -58,15 +56,11 @@ Name | Type |
 
 • **_authData**: *any*
 
-*Defined in [src.ts/wallet-account.ts:22](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L22)*
-
 ___
 
 ###  _authDataKey
 
 • **_authDataKey**: *string*
-
-*Defined in [src.ts/wallet-account.ts:20](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L20)*
 
 ___
 
@@ -74,15 +68,11 @@ ___
 
 • **_connectedAccount**: *[ConnectedWalletAccount](_wallet_account_.connectedwalletaccount.md)*
 
-*Defined in [src.ts/wallet-account.ts:26](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L26)*
-
 ___
 
 ###  _keyStore
 
 • **_keyStore**: *[KeyStore](_key_stores_keystore_.keystore.md)*
-
-*Defined in [src.ts/wallet-account.ts:21](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L21)*
 
 ___
 
@@ -90,15 +80,11 @@ ___
 
 • **_near**: *[Near](_near_.near.md)*
 
-*Defined in [src.ts/wallet-account.ts:25](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L25)*
-
 ___
 
 ###  _networkId
 
 • **_networkId**: *string*
-
-*Defined in [src.ts/wallet-account.ts:23](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L23)*
 
 ___
 
@@ -106,15 +92,11 @@ ___
 
 • **_walletBaseUrl**: *string*
 
-*Defined in [src.ts/wallet-account.ts:19](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L19)*
-
 ## Methods
 
 ###  _completeSignInWithAccessKey
 
 ▸ **_completeSignInWithAccessKey**(): *Promise‹void›*
-
-*Defined in [src.ts/wallet-account.ts:108](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L108)*
 
 Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
 
@@ -126,14 +108,12 @@ ___
 
 ▸ **_moveKeyFromTempToPermanent**(`accountId`: string, `publicKey`: string): *Promise‹void›*
 
-*Defined in [src.ts/wallet-account.ts:128](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L128)*
-
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`accountId` | string |
-`publicKey` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`accountId` | string | The NEAR account owning the given public key |
+`publicKey` | string | The public key being set to the key store  |
 
 **Returns:** *Promise‹void›*
 
@@ -143,7 +123,7 @@ ___
 
 ▸ **account**(): *[ConnectedWalletAccount](_wallet_account_.connectedwalletaccount.md)‹›*
 
-*Defined in [src.ts/wallet-account.ts:144](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L144)*
+Returns the current connected wallet account
 
 **Returns:** *[ConnectedWalletAccount](_wallet_account_.connectedwalletaccount.md)‹›*
 
@@ -152,8 +132,6 @@ ___
 ###  getAccountId
 
 ▸ **getAccountId**(): *any*
-
-*Defined in [src.ts/wallet-account.ts:57](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L57)*
 
 Returns authorized Account ID.
 
@@ -168,8 +146,6 @@ ___
 
 ▸ **isSignedIn**(): *boolean*
 
-*Defined in [src.ts/wallet-account.ts:48](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L48)*
-
 Returns true, if this WalletAccount is authorized with the wallet.
 
 **`example`** 
@@ -182,8 +158,6 @@ ___
 ###  requestSignIn
 
 ▸ **requestSignIn**(`contractId`: string, `title`: string, `successUrl`: string, `failureUrl`: string): *Promise‹void›*
-
-*Defined in [src.ts/wallet-account.ts:74](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L74)*
 
 Redirects current page to the wallet authentication page.
 
@@ -211,14 +185,14 @@ ___
 
 ▸ **requestSignTransactions**(`transactions`: [Transaction](_transaction_.transaction.md)[], `callbackUrl?`: string): *Promise‹void›*
 
-*Defined in [src.ts/wallet-account.ts:92](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L92)*
+Requests the user to quickly sign for a transaction or batch of transactions
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`transactions` | [Transaction](_transaction_.transaction.md)[] |
-`callbackUrl?` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`transactions` | [Transaction](_transaction_.transaction.md)[] | Array of Transaction objects that will be requested to sign |
+`callbackUrl?` | string | The url to navigate to after the user is prompted to sign  |
 
 **Returns:** *Promise‹void›*
 
@@ -227,8 +201,6 @@ ___
 ###  signOut
 
 ▸ **signOut**(): *void*
-
-*Defined in [src.ts/wallet-account.ts:139](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/wallet-account.ts#L139)*
 
 Sign out from the current account
 

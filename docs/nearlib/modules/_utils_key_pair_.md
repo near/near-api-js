@@ -35,15 +35,11 @@ sidebar_label: "utils/key_pair"
 
 Ƭ **Arrayish**: *string | ArrayLike‹number›*
 
-*Defined in [src.ts/utils/key_pair.ts:7](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L7)*
-
 ## Functions
 
 ###  key_type_to_str
 
 ▸ **key_type_to_str**(`keyType`: [KeyType](../enums/_utils_key_pair_.keytype.md)): *string*
-
-*Defined in [src.ts/utils/key_pair.ts:19](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L19)*
 
 **Parameters:**
 
@@ -58,8 +54,6 @@ ___
 ###  str_to_key_type
 
 ▸ **str_to_key_type**(`keyType`: string): *[KeyType](../enums/_utils_key_pair_.keytype.md)*
-
-*Defined in [src.ts/utils/key_pair.ts:26](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/key_pair.ts#L26)*
 
 **Parameters:**
 

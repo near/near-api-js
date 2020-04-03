@@ -22,8 +22,6 @@ sidebar_label: "Network"
 
 • **_defaultProvider**? : *function*
 
-*Defined in [src.ts/utils/network.ts:6](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/network.ts#L6)*
-
 #### Type declaration:
 
 ▸ (`providers`: any): *any*
@@ -40,12 +38,8 @@ ___
 
 • **chainId**: *string*
 
-*Defined in [src.ts/utils/network.ts:5](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/network.ts#L5)*
-
 ___
 
 ###  name
 
 • **name**: *string*
-
-*Defined in [src.ts/utils/network.ts:4](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/network.ts#L4)*

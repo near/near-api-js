@@ -31,8 +31,6 @@ sidebar_label: "UrlAccountCreator"
 
 \+ **new UrlAccountCreator**(`connection`: [Connection](_connection_.connection.md), `helperUrl`: string): *[UrlAccountCreator](_account_creator_.urlaccountcreator.md)*
 
-*Defined in [src.ts/account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account_creator.ts#L31)*
-
 **Parameters:**
 
 Name | Type |
@@ -48,15 +46,11 @@ Name | Type |
 
 • **connection**: *[Connection](_connection_.connection.md)*
 
-*Defined in [src.ts/account_creator.ts:30](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account_creator.ts#L30)*
-
 ___
 
 ###  helperUrl
 
 • **helperUrl**: *string*
-
-*Defined in [src.ts/account_creator.ts:31](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account_creator.ts#L31)*
 
 ## Methods
 
@@ -66,13 +60,14 @@ ___
 
 *Overrides [AccountCreator](_account_creator_.accountcreator.md).[createAccount](_account_creator_.accountcreator.md#abstract-createaccount)*
 
-*Defined in [src.ts/account_creator.ts:39](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/account_creator.ts#L39)*
+Creates an account using a helperUrl
+This is [hosted here](https://helper.nearprotocol.com) or set up locally with the [near-contract-helper](https://github.com/nearprotocol/near-contract-helper) repository
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`newAccountId` | string |
-`publicKey` | [PublicKey](_utils_key_pair_.publickey.md) |
+Name | Type | Description |
+------ | ------ | ------ |
+`newAccountId` | string | The name of the NEAR account to be created |
+`publicKey` | [PublicKey](_utils_key_pair_.publickey.md) | The public key from the masterAccount used to create this account |
 
 **Returns:** *Promise‹void›*

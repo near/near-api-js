@@ -18,10 +18,6 @@ Simple in-memory keystore for testing purposes.
 
 * [constructor](_key_stores_in_memory_key_store_.inmemorykeystore.md#constructor)
 
-### Properties
-
-* [keys](_key_stores_in_memory_key_store_.inmemorykeystore.md#private-keys)
-
 ### Methods
 
 * [clear](_key_stores_in_memory_key_store_.inmemorykeystore.md#clear)
@@ -37,21 +33,7 @@ Simple in-memory keystore for testing purposes.
 
 \+ **new InMemoryKeyStore**(): *[InMemoryKeyStore](_key_stores_in_memory_key_store_.inmemorykeystore.md)*
 
-*Defined in [src.ts/key_stores/in_memory_key_store.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/in_memory_key_store.ts#L10)*
-
 **Returns:** *[InMemoryKeyStore](_key_stores_in_memory_key_store_.inmemorykeystore.md)*
-
-## Properties
-
-### `Private` keys
-
-• **keys**: *object*
-
-*Defined in [src.ts/key_stores/in_memory_key_store.ts:10](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/in_memory_key_store.ts#L10)*
-
-#### Type declaration:
-
-* \[ **key**: *string*\]: string
 
 ## Methods
 
@@ -60,8 +42,6 @@ Simple in-memory keystore for testing purposes.
 ▸ **clear**(): *Promise‹void›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[clear](_key_stores_keystore_.keystore.md#abstract-clear)*
-
-*Defined in [src.ts/key_stores/in_memory_key_store.ts:33](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/in_memory_key_store.ts#L33)*
 
 **Returns:** *Promise‹void›*
 
@@ -72,8 +52,6 @@ ___
 ▸ **getAccounts**(`networkId`: string): *Promise‹string[]›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getAccounts](_key_stores_keystore_.keystore.md#abstract-getaccounts)*
-
-*Defined in [src.ts/key_stores/in_memory_key_store.ts:46](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/in_memory_key_store.ts#L46)*
 
 **Parameters:**
 
@@ -90,8 +68,6 @@ ___
 ▸ **getKey**(`networkId`: string, `accountId`: string): *Promise‹[KeyPair](_utils_key_pair_.keypair.md)›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getKey](_key_stores_keystore_.keystore.md#abstract-getkey)*
-
-*Defined in [src.ts/key_stores/in_memory_key_store.ts:21](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/in_memory_key_store.ts#L21)*
 
 **Parameters:**
 
@@ -110,8 +86,6 @@ ___
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[getNetworks](_key_stores_keystore_.keystore.md#abstract-getnetworks)*
 
-*Defined in [src.ts/key_stores/in_memory_key_store.ts:37](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/in_memory_key_store.ts#L37)*
-
 **Returns:** *Promise‹string[]›*
 
 ___
@@ -121,8 +95,6 @@ ___
 ▸ **removeKey**(`networkId`: string, `accountId`: string): *Promise‹void›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[removeKey](_key_stores_keystore_.keystore.md#abstract-removekey)*
-
-*Defined in [src.ts/key_stores/in_memory_key_store.ts:29](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/in_memory_key_store.ts#L29)*
 
 **Parameters:**
 
@@ -140,8 +112,6 @@ ___
 ▸ **setKey**(`networkId`: string, `accountId`: string, `keyPair`: [KeyPair](_utils_key_pair_.keypair.md)): *Promise‹void›*
 
 *Overrides [KeyStore](_key_stores_keystore_.keystore.md).[setKey](_key_stores_keystore_.keystore.md#abstract-setkey)*
-
-*Defined in [src.ts/key_stores/in_memory_key_store.ts:17](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/key_stores/in_memory_key_store.ts#L17)*
 
 **Parameters:**
 

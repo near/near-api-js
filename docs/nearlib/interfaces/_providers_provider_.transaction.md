@@ -23,15 +23,11 @@ sidebar_label: "Transaction"
 
 • **body**: *any*
 
-*Defined in [src.ts/providers/provider.ts:130](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L130)*
-
 ___
 
 ###  hash
 
 • **hash**: *string*
-
-*Defined in [src.ts/providers/provider.ts:127](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L127)*
 
 ___
 
@@ -39,12 +35,8 @@ ___
 
 • **public_key**: *string*
 
-*Defined in [src.ts/providers/provider.ts:128](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L128)*
-
 ___
 
 ###  signature
 
 • **signature**: *string*
-
-*Defined in [src.ts/providers/provider.ts:129](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/providers/provider.ts#L129)*

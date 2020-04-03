@@ -20,12 +20,12 @@ sidebar_label: "near"
 
 ▸ **connect**(`config`: any): *Promise‹[Near](../classes/_near_.near.md)›*
 
-*Defined in [src.ts/near.ts:73](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/near.ts#L73)*
+Initialize connection to Near network.
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`config` | any |
+Name | Type | Description |
+------ | ------ | ------ |
+`config` | any |   |
 
 **Returns:** *Promise‹[Near](../classes/_near_.near.md)›*

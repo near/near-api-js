@@ -34,8 +34,6 @@ sidebar_label: "SignedTransaction"
 
 *Inherited from [Assignable](_utils_enums_.assignable.md).[constructor](_utils_enums_.assignable.md#constructor)*
 
-*Defined in [src.ts/utils/enums.ts:17](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/utils/enums.ts#L17)*
-
 **Parameters:**
 
 Name | Type |
@@ -50,23 +48,17 @@ Name | Type |
 
 • **signature**: *[Signature](_transaction_.signature.md)*
 
-*Defined in [src.ts/transaction.ts:104](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L104)*
-
 ___
 
 ###  transaction
 
 • **transaction**: *[Transaction](_transaction_.transaction.md)*
 
-*Defined in [src.ts/transaction.ts:103](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L103)*
-
 ## Methods
 
 ###  encode
 
 ▸ **encode**(): *Uint8Array*
-
-*Defined in [src.ts/transaction.ts:106](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L106)*
 
 **Returns:** *Uint8Array*
 
@@ -75,8 +67,6 @@ ___
 ### `Static` decode
 
 ▸ **decode**(`bytes`: Buffer): *[SignedTransaction](_transaction_.signedtransaction.md)*
-
-*Defined in [src.ts/transaction.ts:110](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L110)*
 
 **Parameters:**
 

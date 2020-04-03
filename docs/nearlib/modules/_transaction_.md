@@ -124,15 +124,11 @@ sidebar_label: "transaction"
     ]}],
 ])
 
-*Defined in [src.ts/transaction.ts:126](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L126)*
-
 ## Functions
 
 ###  addKey
 
 ▸ **addKey**(`publicKey`: [PublicKey](../classes/_utils_key_pair_.publickey.md), `accessKey`: [AccessKey](../classes/_transaction_.accesskey.md)): *[Action](../classes/_transaction_.action.md)*
-
-*Defined in [src.ts/transaction.ts:68](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L68)*
 
 **Parameters:**
 
@@ -149,8 +145,6 @@ ___
 
 ▸ **createAccount**(): *[Action](../classes/_transaction_.action.md)*
 
-*Defined in [src.ts/transaction.ts:48](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L48)*
-
 **Returns:** *[Action](../classes/_transaction_.action.md)*
 
 ___
@@ -158,8 +152,6 @@ ___
 ###  createTransaction
 
 ▸ **createTransaction**(`signerId`: string, `publicKey`: [PublicKey](../classes/_utils_key_pair_.publickey.md), `receiverId`: string, `nonce`: number, `actions`: [Action](../classes/_transaction_.action.md)[], `blockHash`: Uint8Array): *[Transaction](../classes/_transaction_.transaction.md)*
-
-*Defined in [src.ts/transaction.ts:200](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L200)*
 
 **Parameters:**
 
@@ -180,8 +172,6 @@ ___
 
 ▸ **deleteAccount**(`beneficiaryId`: string): *[Action](../classes/_transaction_.action.md)*
 
-*Defined in [src.ts/transaction.ts:76](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L76)*
-
 **Parameters:**
 
 Name | Type |
@@ -195,8 +185,6 @@ ___
 ###  deleteKey
 
 ▸ **deleteKey**(`publicKey`: [PublicKey](../classes/_utils_key_pair_.publickey.md)): *[Action](../classes/_transaction_.action.md)*
-
-*Defined in [src.ts/transaction.ts:72](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L72)*
 
 **Parameters:**
 
@@ -212,8 +200,6 @@ ___
 
 ▸ **deployContract**(`code`: Uint8Array): *[Action](../classes/_transaction_.action.md)*
 
-*Defined in [src.ts/transaction.ts:52](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L52)*
-
 **Parameters:**
 
 Name | Type |
@@ -228,8 +214,6 @@ ___
 
 ▸ **fullAccessKey**(): *[AccessKey](../classes/_transaction_.accesskey.md)*
 
-*Defined in [src.ts/transaction.ts:29](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L29)*
-
 **Returns:** *[AccessKey](../classes/_transaction_.accesskey.md)*
 
 ___
@@ -237,8 +221,6 @@ ___
 ###  functionCall
 
 ▸ **functionCall**(`methodName`: string, `args`: Uint8Array, `gas`: BN, `deposit`: BN): *[Action](../classes/_transaction_.action.md)*
-
-*Defined in [src.ts/transaction.ts:56](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L56)*
 
 **Parameters:**
 
@@ -257,8 +239,6 @@ ___
 
 ▸ **functionCallAccessKey**(`receiverId`: string, `methodNames`: String[], `allowance?`: BN): *[AccessKey](../classes/_transaction_.accesskey.md)*
 
-*Defined in [src.ts/transaction.ts:33](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L33)*
-
 **Parameters:**
 
 Name | Type |
@@ -275,8 +255,6 @@ ___
 
 ▸ **signTransaction**(`transaction`: [Transaction](../classes/_transaction_.transaction.md), `signer`: [Signer](../classes/_signer_.signer.md), `accountId?`: string, `networkId?`: string): *Promise‹[Uint8Array, [SignedTransaction](../classes/_transaction_.signedtransaction.md)]›*
 
-*Defined in [src.ts/transaction.ts:215](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L215)*
-
 **Parameters:**
 
 Name | Type |
@@ -289,8 +267,6 @@ Name | Type |
 **Returns:** *Promise‹[Uint8Array, [SignedTransaction](../classes/_transaction_.signedtransaction.md)]›*
 
 ▸ **signTransaction**(`receiverId`: string, `nonce`: number, `actions`: [Action](../classes/_transaction_.action.md)[], `blockHash`: Uint8Array, `signer`: [Signer](../classes/_signer_.signer.md), `accountId?`: string, `networkId?`: string): *Promise‹[Uint8Array, [SignedTransaction](../classes/_transaction_.signedtransaction.md)]›*
-
-*Defined in [src.ts/transaction.ts:216](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L216)*
 
 **Parameters:**
 
@@ -312,16 +288,16 @@ ___
 
 ▸ **signTransactionObject**(`transaction`: [Transaction](../classes/_transaction_.transaction.md), `signer`: [Signer](../classes/_signer_.signer.md), `accountId?`: string, `networkId?`: string): *Promise‹[Uint8Array, [SignedTransaction](../classes/_transaction_.signedtransaction.md)]›*
 
-*Defined in [src.ts/transaction.ts:204](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L204)*
+Signs a given transaction from an account with given keys, applied to the given network
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`transaction` | [Transaction](../classes/_transaction_.transaction.md) |
-`signer` | [Signer](../classes/_signer_.signer.md) |
-`accountId?` | string |
-`networkId?` | string |
+Name | Type | Description |
+------ | ------ | ------ |
+`transaction` | [Transaction](../classes/_transaction_.transaction.md) | The Transaction object to sign |
+`signer` | [Signer](../classes/_signer_.signer.md) | The {Signer} object that assists with signing keys |
+`accountId?` | string | The human-readable NEAR account name |
+`networkId?` | string | The targeted network. (ex. default, devnet, betanet, etc…)  |
 
 **Returns:** *Promise‹[Uint8Array, [SignedTransaction](../classes/_transaction_.signedtransaction.md)]›*
 
@@ -330,8 +306,6 @@ ___
 ###  stake
 
 ▸ **stake**(`stake`: BN, `publicKey`: [PublicKey](../classes/_utils_key_pair_.publickey.md)): *[Action](../classes/_transaction_.action.md)*
-
-*Defined in [src.ts/transaction.ts:64](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L64)*
 
 **Parameters:**
 
@@ -347,8 +321,6 @@ ___
 ###  transfer
 
 ▸ **transfer**(`deposit`: BN): *[Action](../classes/_transaction_.action.md)*
-
-*Defined in [src.ts/transaction.ts:60](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/transaction.ts#L60)*
 
 **Parameters:**
 

@@ -20,12 +20,13 @@ sidebar_label: "contract"
 
 ▸ **validateBNLike**(`argMap`: object): *void*
 
-*Defined in [src.ts/contract.ts:45](https://github.com/nearprotocol/nearlib/blob/de49029/src.ts/contract.ts#L45)*
+Validation on arguments being a big number from bn.js
+Throws if an argument is not in BN format or otherwise invalid
 
 **Parameters:**
 
-Name | Type |
------- | ------ |
-`argMap` | object |
+Name | Type | Description |
+------ | ------ | ------ |
+`argMap` | object |   |
 
 **Returns:** *void*
