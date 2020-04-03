@@ -1,5 +1,3 @@
-'use strict';
-
 import BN from 'bn.js';
 import { Account } from './account';
 import { getTransactionLastResult } from './providers';

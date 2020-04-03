@@ -1,5 +1,3 @@
-'use strict';
-
 export abstract class Enum {
   enum: string;
 

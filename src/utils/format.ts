@@ -11,7 +11,7 @@ export const NEAR_NOMINATION_EXP = 24;
 export const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
 
 // Pre-calculate offests used for rounding to different number of digits
-const ROUNDING_OFFSETS = [];
+const ROUNDING_OFFSETS: BN[] = [];
 const BN10 = new BN(10);
 for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offset.mul(BN10)) {
     ROUNDING_OFFSETS[i] = offset;
@@ -49,7 +49,7 @@ export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMI
  * @param amt decimal string (potentially fractional) denominated in NEAR.
  */
 export function parseNearAmount(amt?: string): string | null {
-    if (!amt) { return amt; }
+    if (!amt) { return null; }
     amt = cleanupAmount(amt);
     const split = amt.split('.');
     const wholePart = split[0];

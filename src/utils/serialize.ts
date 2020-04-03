@@ -1,5 +1,3 @@
-'use strict';
-
 import bs58 from 'bs58';
 import BN from 'bn.js';
 

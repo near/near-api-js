@@ -1,5 +1,3 @@
-'use strict';
-
 import nacl from 'tweetnacl';
 import { base_encode, base_decode } from './serialize';
 import { Assignable } from './enums';

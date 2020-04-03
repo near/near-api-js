@@ -1,5 +1,3 @@
-'use strict';
-
 import sha256 from 'js-sha256';
 import { Signature, KeyPair, PublicKey } from './utils/key_pair';
 import { KeyStore } from './key_stores';
