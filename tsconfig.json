@@ -27,7 +27,7 @@
         "src/index.ts",
     ],
     "typedocOptions": {
-        "out": "docs/nearlib",
+        "out": "docs/near-api-js",
         "theme": "docusaurus",
         "skipSidebar": true,
         "hideBreadcrumbs": true, 
