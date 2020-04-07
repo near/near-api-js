@@ -70,6 +70,6 @@ ___
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`config` | any |   |
+`config` | any | Contains connection info details  |
 
 **Returns:** *[Connection](_connection_.connection.md)*

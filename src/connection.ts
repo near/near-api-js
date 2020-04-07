@@ -45,7 +45,6 @@ export class Connection {
 
     /**
      * @param config Contains connection info details
-     * @param config 
      */
     static fromConfig(config: any): Connection {
         const provider = getProvider(config.provider);
