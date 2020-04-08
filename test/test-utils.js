@@ -25,12 +25,11 @@ function generateUniqueString(prefix) {
     return prefix + Date.now() + Math.round(Math.random() * 1000);
 }
 
-async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE, trials: 5 }) {
-    await masterAccount.fetchState();
+async function createAccount(near, options = { amount: INITIAL_BALANCE }) {
     const newAccountName = generateUniqueString('test');
-    const newPublicKey = await masterAccount.connection.signer.createKey(newAccountName, networkId);
-    await masterAccount.createAccount(newAccountName, newPublicKey, options.amount);
-    return new nearApi.Account(masterAccount.connection, newAccountName);
+    const newPublicKey = await near.connection.signer.createKey(newAccountName, networkId);
+    await near.createAccount(newAccountName, newPublicKey, options.amount);
+    return new nearApi.Account(near.connection, newAccountName);
 }
 
 async function deleteAccount(testAccount) {

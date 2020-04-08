@@ -15,7 +15,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
+    workingAccount = await testUtils.createAccount(nearjs, { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
     let nodeStatus = await nearjs.connection.provider.status();
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
 });
@@ -39,8 +39,8 @@ test('create account and then view account returns the created account', async (
 });
 
 test('send money', async() => {
-    const sender = await testUtils.createAccount(workingAccount);
-    const receiver = await testUtils.createAccount(workingAccount);
+    const sender = await testUtils.createAccount(nearjs);
+    const receiver = await testUtils.createAccount(nearjs);
     await sender.sendMoney(receiver.accountId, new BN(10000));
     await receiver.fetchState();
     const state = await receiver.state();
@@ -48,8 +48,8 @@ test('send money', async() => {
 });
 
 test('delete account', async() => {
-    const sender = await testUtils.createAccount(workingAccount);
-    const receiver = await testUtils.createAccount(workingAccount);
+    const sender = await testUtils.createAccount(nearjs);
+    const receiver = await testUtils.createAccount(nearjs);
     await sender.deleteAccount(receiver.accountId);
     const reloaded = new nearApi.Account(sender.connection, sender);
     await expect(reloaded.state()).rejects.toThrow();

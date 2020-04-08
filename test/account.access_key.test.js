@@ -12,12 +12,12 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    testAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
+    testAccount = await testUtils.createAccount(nearjs, { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
 });
 
 beforeEach(async () => {
     contractId = testUtils.generateUniqueString('test');
-    workingAccount = await testUtils.createAccount(testAccount);
+    workingAccount = await testUtils.createAccount(nearjs);
     contract = await testUtils.deployContract(workingAccount, contractId);
 });
 
