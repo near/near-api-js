@@ -2,7 +2,7 @@ language: node_js
 node_js: 10
 env:
   - NODE_ENV=ci
-  - NODE_ENV=ci-staging
+  - NODE_ENV=ci-betanet
 cache: yarn
 script:
   - yarn lint
