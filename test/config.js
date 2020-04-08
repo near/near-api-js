@@ -7,6 +7,20 @@ module.exports = function getConfig(env) {
             nodeUrl: 'https://rpc.nearprotocol.com',
             masterAccount: 'test.near',
         };
+    case 'devnet':
+        return {
+            networkId: 'devnet',
+            nodeUrl: 'https://rpc.devnet.nearprotocol.com',
+            walletUrl: 'https://wallet.devnet.nearprotocol.com',
+            helperUrl: 'https://helper.devnet.nearprotocol.com',
+        };
+    case 'betanet':
+        return {
+            networkId: 'betanet',
+            nodeUrl: 'https://rpc.betanet.nearprotocol.com',
+            walletUrl: 'https://wallet.betanet.nearprotocol.com',
+            helperUrl: 'https://helper.betanet.nearprotocol.com',
+        };
     case 'local':
         return {
             networkId: 'local',
@@ -14,22 +28,16 @@ module.exports = function getConfig(env) {
             keyPath: `${process.env.HOME}/.near/validator_key.json`,
         };
     case 'test':
-        return {
-            networkId: 'local',
-            nodeUrl: 'http://localhost:3030',
-            masterAccount: 'test.near',
-        };
-    case 'test-remote':
     case 'ci':
         return {
             networkId: 'shared-test',
             nodeUrl: 'http://shared-test.nearprotocol.com:3030',
             masterAccount: 'test.near',
         };
-    case 'ci-staging':
+    case 'ci-betanet':
         return {
             networkId: 'shared-test-staging',
-            nodeUrl: 'http://staging-shared-test.nearprotocol.com:3030',
+            nodeUrl: 'http://rpc.ci-betanet.nearprotocol.com',
             masterAccount: 'test.near',
         };
     default:
