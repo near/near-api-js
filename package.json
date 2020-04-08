@@ -1,6 +1,6 @@
 {
-  "name": "nearlib",
-  "description": "Javascript library to interact with NEAR blockchain",
+  "name": "near-api-js",
+  "description": "JavaScript library to interact with NEAR Protocol via RPC API",
   "version": "0.22.0",
   "repository": {
     "type": "git",
