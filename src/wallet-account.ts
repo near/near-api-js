@@ -58,18 +58,19 @@ export class WalletConnection {
 
     /**
      * Redirects current page to the wallet authentication page.
-     * @param {string} contractId contract ID of the application
-     * @param {string} title name of the application
-     * @param {string} successUrl url to redirect on success
-     * @param {string} failureUrl url to redirect on failure
+     * @param contractId The NEAR account where the contract is deployed
+     * @param title Name of the application that will appear as requesting access in Wallet
+     * @param successUrl Optional url to redirect upon success
+     * @param failureUrl Optional url to redirect upon failure
+     * 
      * @example
      *   walletAccount.requestSignIn(
-     *     myContractId,
-     *     title,
-     *     onSuccessHref,
-     *     onFailureHref);
+     *     account-with-deploy-contract,
+     *     "Guest Book",
+     *     "https://example.com/success.html",
+     *     "https://example.com/error.html");
      */
-    async requestSignIn(contractId: string, title: string, successUrl: string, failureUrl: string) {
+    async requestSignIn(contractId: string, title: string, successUrl?: string, failureUrl?: string) {
         if (this.getAccountId() || await this._keyStore.getKey(this._networkId, this.getAccountId())) {
             return Promise.resolve();
         }
