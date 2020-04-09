@@ -244,7 +244,7 @@ class UrlAccountCreator extends AccountCreator {
 exports.UrlAccountCreator = UrlAccountCreator;
 
 },{"./utils/web":30}],4:[function(require,module,exports){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const providers_1 = require("./providers");
 const signer_1 = require("./signer");
@@ -281,7 +281,7 @@ class Connection {
 exports.Connection = Connection;
 
 },{"./providers":16,"./signer":20}],5:[function(require,module,exports){
-'use strict';
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -459,7 +459,8 @@ module.exports={
                 "NumberPromisesExceeded",
                 "NumberInputDataDependenciesExceeded",
                 "ReturnedValueLengthExceeded",
-                "ContractSizeExceeded"
+                "ContractSizeExceeded",
+                "Deprecated"
             ],
             "props": {}
         },
@@ -713,10 +714,11 @@ module.exports={
                 "DeleteKeyDoesNotExist",
                 "AddKeyAlreadyExists",
                 "DeleteAccountStaking",
-                "DeleteAccountHasRent",
-                "RentUnpaid",
+                "DeleteAccountHasEnoughBalance",
+                "LackBalanceForState",
                 "TriesToUnstake",
                 "TriesToStake",
+                "UnsuitableStakingKey",
                 "FunctionCallError",
                 "NewReceiptValidationError"
             ],
@@ -859,7 +861,7 @@ module.exports={
                 "InvalidReceiverId",
                 "InvalidSignature",
                 "NotEnoughBalance",
-                "RentUnpaid",
+                "LackBalanceForState",
                 "CostOverflow",
                 "InvalidChain",
                 "Expired",
@@ -964,6 +966,37 @@ module.exports={
             "name": "Timeout",
             "subtypes": [],
             "props": {}
+        },
+        "UnsuitableStakingKey": {
+            "name": "UnsuitableStakingKey",
+            "subtypes": [],
+            "props": {
+                "public_key": ""
+            }
+        },
+        "LackBalanceForState": {
+            "name": "LackBalanceForState",
+            "subtypes": [],
+            "props": {
+                "amount": "",
+                "signer_id": "",
+                "account_id": ""
+            }
+        },
+        "DeleteAccountHasEnoughBalance": {
+            "name": "DeleteAccountHasEnoughBalance",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "balance": ""
+            }
+        },
+        "Deprecated": {
+            "name": "Deprecated",
+            "subtypes": [],
+            "props": {
+                "method_name": ""
+            }
         }
     }
 }
@@ -1158,7 +1191,7 @@ exports.CostOverflow = CostOverflow;
 class CreateAccountNotAllowed extends ActionError {
 }
 exports.CreateAccountNotAllowed = CreateAccountNotAllowed;
-class DeleteAccountHasRent extends ActionError {
+class DeleteAccountHasRent extends errors_1.TypedError {
 }
 exports.DeleteAccountHasRent = DeleteAccountHasRent;
 class DeleteAccountStaking extends ActionError {
@@ -1200,7 +1233,7 @@ exports.NotEnoughBalance = NotEnoughBalance;
 class ReceiverMismatch extends InvalidAccessKeyError {
 }
 exports.ReceiverMismatch = ReceiverMismatch;
-class RentUnpaid extends ActionError {
+class RentUnpaid extends errors_1.TypedError {
 }
 exports.RentUnpaid = RentUnpaid;
 class RequiresFullAccess extends InvalidAccessKeyError {
@@ -1221,9 +1254,21 @@ exports.Closed = Closed;
 class Timeout extends ServerError {
 }
 exports.Timeout = Timeout;
+class UnsuitableStakingKey extends ActionError {
+}
+exports.UnsuitableStakingKey = UnsuitableStakingKey;
+class LackBalanceForState extends ActionError {
+}
+exports.LackBalanceForState = LackBalanceForState;
+class DeleteAccountHasEnoughBalance extends ActionError {
+}
+exports.DeleteAccountHasEnoughBalance = DeleteAccountHasEnoughBalance;
+class Deprecated extends HostError {
+}
+exports.Deprecated = Deprecated;
 
 },{"../utils/errors":23}],8:[function(require,module,exports){
-'use strict';
+"use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -1261,7 +1306,7 @@ exports.WalletAccount = wallet_account_1.WalletAccount;
 exports.WalletConnection = wallet_account_1.WalletConnection;
 
 },{"./account":2,"./account_creator":3,"./connection":4,"./contract":5,"./key_stores":11,"./near":15,"./providers":16,"./signer":20,"./transaction":21,"./utils":25,"./utils/key_pair":26,"./wallet-account":31}],9:[function(require,module,exports){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
 const key_pair_1 = require("../utils/key_pair");
@@ -1326,7 +1371,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
 exports.BrowserLocalStorageKeyStore = BrowserLocalStorageKeyStore;
 
 },{"../utils/key_pair":26,"./keystore":12}],10:[function(require,module,exports){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
 const key_pair_1 = require("../utils/key_pair");
@@ -1390,7 +1435,7 @@ const merge_key_store_1 = require("./merge_key_store");
 exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 
 },{"./browser_local_storage_key_store":9,"./in_memory_key_store":10,"./keystore":12,"./merge_key_store":13,"./unencrypted_file_system_keystore":14}],12:[function(require,module,exports){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Key store interface for `InMemorySigner`.
@@ -1400,7 +1445,7 @@ class KeyStore {
 exports.KeyStore = KeyStore;
 
 },{}],13:[function(require,module,exports){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
 /**
@@ -1458,7 +1503,7 @@ class MergeKeyStore extends keystore_1.KeyStore {
 exports.MergeKeyStore = MergeKeyStore;
 
 },{"./keystore":12}],14:[function(require,module,exports){
-'use strict';
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -1593,11 +1638,20 @@ class Near {
             this.accountCreator = null;
         }
     }
+    /**
+     *
+     * @param accountId near accountId used to interact with the network.
+     */
     async account(accountId) {
         const account = new account_1.Account(this.connection, accountId);
         await account.state();
         return account;
     }
+    /**
+     *
+     * @param accountId
+     * @param publicKey
+     */
     async createAccount(accountId, publicKey) {
         if (!this.accountCreator) {
             throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
@@ -1606,7 +1660,7 @@ class Near {
         return new account_1.Account(this.connection, accountId);
     }
     /**
-     * Backwards compatibility method. Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
+     * @deprecated Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
      * @param contractId
      * @param options
      */
@@ -1615,7 +1669,7 @@ class Near {
         return new contract_1.Contract(account, contractId, options);
     }
     /**
-     * Backwards compatibility method. Use `yourAccount.sendMoney` instead.
+     * @deprecated Use `yourAccount.sendMoney` instead.
      * @param amount
      * @param originator
      * @param receiver
@@ -1628,6 +1682,10 @@ class Near {
     }
 }
 exports.Near = Near;
+/**
+ * Initialize connection to Near network.
+ * @param config
+ */
 async function connect(config) {
     // Try to find extra key in `KeyPath` if provided.
     if (config.keyPath && config.deps && config.deps.keyStore) {
@@ -1666,7 +1724,7 @@ exports.TypedError = json_rpc_provider_1.TypedError;
 
 },{"./json-rpc-provider":17,"./provider":18}],17:[function(require,module,exports){
 (function (Buffer){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
 const web_1 = require("../utils/web");
@@ -1746,7 +1804,7 @@ exports.JsonRpcProvider = JsonRpcProvider;
 }).call(this,require("buffer").Buffer)
 },{"../utils/errors":23,"../utils/rpc_errors":28,"../utils/serialize":29,"../utils/web":30,"./provider":18,"buffer":38}],18:[function(require,module,exports){
 (function (Buffer){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ExecutionStatusBasic;
 (function (ExecutionStatusBasic) {
@@ -1831,6 +1889,7 @@ module.exports={
     "InvalidPublicKey": "VM Logic provided an invalid public key",
     "ActorNoPermission": "Actor {{actor_id}} doesn't have permission to account {{account_id}} to complete the action",
     "RentUnpaid": "The account {{account_id}} wouldn't have enough balance to pay required rent {{amount}}",
+    "LackBalanceForState": "The account {{account_id}} wouldn't have enough balance to cover storage, required to have {{amount}}",
     "ReceiverMismatch": "Wrong AccessKey used for transaction: transaction is sent to receiver_id={{tx_receiver}}, but is signed with function call access key that restricted to only use with receiver_id={{ak_receiver}}. Either change receiver_id in your transaction or switch to use a FullAccessKey.",
     "CostOverflow": "Transaction gas or balance cost is too high",
     "InvalidSignature": "Transaction is not signed with the given public key",
@@ -1844,7 +1903,7 @@ module.exports={
     "AddKeyAlreadyExists": "The public key {{public_key}} is already used for an existing access key",
     "InvalidSigner": "Invalid signer account ID {{signer_id}} according to requirements",
     "CreateAccountNotAllowed": "The new account_id {{account_id}} can't be created by {{predecessor_id}}",
-    "RequiresFullAccess": "The used access key requires exactly one FunctionCall action",
+    "RequiresFullAccess": "The transaction contains more then one action, but it was signed with an access key which allows transaction to apply only one specific action. To apply more then one actions TX must be signed with a full access key",
     "TriesToUnstake": "Account {{account_id}} is not yet staked, but tries to unstake",
     "InvalidNonce": "Transaction nonce {{tx_nonce}} must be larger than nonce of the used access key {{ak_nonce}}",
     "AccountAlreadyExists": "Can't create a new account {{account_id}}, because it already exists",
@@ -1852,6 +1911,7 @@ module.exports={
     "AccountDoesNotExist": "Can't complete the action because account {{account_id}} doesn't exist",
     "MethodNameMismatch": "Transaction method name {{method_name}} isn't allowed by the access key",
     "DeleteAccountHasRent": "Account {{account_id}} can't be deleted. It has {balance{}}, which is enough to cover the rent",
+    "DeleteAccountHasEnoughBalance": "Account {{account_id}} can't be deleted. It has {balance{}}, which is enough to cover it's storage",
     "InvalidReceiver": "Invalid receiver account ID {{receiver_id}} according to requirements",
     "DeleteKeyDoesNotExist": "Account {{account_id}} tries to remove an access key that doesn't exist",
     "Timeout": "Timeout exceeded",
@@ -1859,7 +1919,7 @@ module.exports={
 }
 
 },{}],20:[function(require,module,exports){
-'use strict';
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -1907,7 +1967,7 @@ class InMemorySigner extends Signer {
 exports.InMemorySigner = InMemorySigner;
 
 },{"./utils/key_pair":26,"js-sha256":57}],21:[function(require,module,exports){
-'use strict';
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -2112,7 +2172,7 @@ async function signTransaction(...args) {
 exports.signTransaction = signTransaction;
 
 },{"./utils/enums":22,"./utils/key_pair":26,"./utils/serialize":29,"js-sha256":57}],22:[function(require,module,exports){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Enum {
     constructor(properties) {
@@ -2210,7 +2270,7 @@ exports.formatNearAmount = formatNearAmount;
  */
 function parseNearAmount(amt) {
     if (!amt) {
-        return amt;
+        return null;
     }
     amt = cleanupAmount(amt);
     const split = amt.split('.');
@@ -2269,7 +2329,7 @@ exports.KeyPair = key_pair_1.KeyPair;
 exports.KeyPairEd25519 = key_pair_1.KeyPairEd25519;
 
 },{"./enums":22,"./format":24,"./key_pair":26,"./network":27,"./rpc_errors":28,"./serialize":29,"./web":30}],26:[function(require,module,exports){
-'use strict';
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -2392,7 +2452,7 @@ class KeyPairEd25519 extends KeyPair {
 exports.KeyPairEd25519 = KeyPairEd25519;
 
 },{"./enums":22,"./serialize":29,"tweetnacl":70}],27:[function(require,module,exports){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 
 },{}],28:[function(require,module,exports){
@@ -2474,7 +2534,7 @@ function isString(n) {
 
 },{"../generated/rpc_error_schema.json":6,"../generated/rpc_error_types":7,"../res/error_messages.json":19,"mustache":58}],29:[function(require,module,exports){
 (function (global,Buffer){
-'use strict';
+"use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2804,7 +2864,7 @@ exports.deserialize = deserialize;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
 },{"bn.js":34,"bs58":37,"buffer":38,"text-encoding-utf-8":68}],30:[function(require,module,exports){
-'use strict';
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -2857,7 +2917,7 @@ exports.fetchJson = fetchJson;
 
 },{"http":36,"http-errors":54,"https":36,"node-fetch":36}],31:[function(require,module,exports){
 (function (Buffer){
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const account_1 = require("./account");
 const transaction_1 = require("./transaction");
@@ -3075,7 +3135,9 @@ var _Buffer = require('safe-buffer').Buffer
 function base (ALPHABET) {
   if (ALPHABET.length >= 255) { throw new TypeError('Alphabet too long') }
   var BASE_MAP = new Uint8Array(256)
-  BASE_MAP.fill(255)
+  for (var j = 0; j < BASE_MAP.length; j++) {
+    BASE_MAP[j] = 255
+  }
   for (var i = 0; i < ALPHABET.length; i++) {
     var x = ALPHABET.charAt(i)
     var xc = x.charCodeAt(0)
@@ -3087,6 +3149,7 @@ function base (ALPHABET) {
   var FACTOR = Math.log(BASE) / Math.log(256) // log(BASE) / log(256), rounded up
   var iFACTOR = Math.log(256) / Math.log(BASE) // log(256) / log(BASE), rounded up
   function encode (source) {
+    if (Array.isArray(source) || source instanceof Uint8Array) { source = _Buffer.from(source) }
     if (!_Buffer.isBuffer(source)) { throw new TypeError('Expected Buffer') }
     if (source.length === 0) { return '' }
         // Skip & count leading zeroes.
@@ -6895,10 +6958,6 @@ module.exports = basex(ALPHABET)
 
 var base64 = require('base64-js')
 var ieee754 = require('ieee754')
-var customInspectSymbol =
-  (typeof Symbol === 'function' && typeof Symbol.for === 'function')
-    ? Symbol.for('nodejs.util.inspect.custom')
-    : null
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -6935,9 +6994,7 @@ function typedArraySupport () {
   // Can typed array instances can be augmented?
   try {
     var arr = new Uint8Array(1)
-    var proto = { foo: function () { return 42 } }
-    Object.setPrototypeOf(proto, Uint8Array.prototype)
-    Object.setPrototypeOf(arr, proto)
+    arr.__proto__ = { __proto__: Uint8Array.prototype, foo: function () { return 42 } }
     return arr.foo() === 42
   } catch (e) {
     return false
@@ -6966,7 +7023,7 @@ function createBuffer (length) {
   }
   // Return an augmented `Uint8Array` instance
   var buf = new Uint8Array(length)
-  Object.setPrototypeOf(buf, Buffer.prototype)
+  buf.__proto__ = Buffer.prototype
   return buf
 }
 
@@ -7016,7 +7073,7 @@ function from (value, encodingOrOffset, length) {
   }
 
   if (value == null) {
-    throw new TypeError(
+    throw TypeError(
       'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
       'or Array-like Object. Received type ' + (typeof value)
     )
@@ -7068,8 +7125,8 @@ Buffer.from = function (value, encodingOrOffset, length) {
 
 // Note: Change prototype *after* Buffer.from is defined to workaround Chrome bug:
 // https://github.com/feross/buffer/pull/148
-Object.setPrototypeOf(Buffer.prototype, Uint8Array.prototype)
-Object.setPrototypeOf(Buffer, Uint8Array)
+Buffer.prototype.__proto__ = Uint8Array.prototype
+Buffer.__proto__ = Uint8Array
 
 function assertSize (size) {
   if (typeof size !== 'number') {
@@ -7173,8 +7230,7 @@ function fromArrayBuffer (array, byteOffset, length) {
   }
 
   // Return an augmented `Uint8Array` instance
-  Object.setPrototypeOf(buf, Buffer.prototype)
-
+  buf.__proto__ = Buffer.prototype
   return buf
 }
 
@@ -7496,9 +7552,6 @@ Buffer.prototype.inspect = function inspect () {
   if (this.length > max) str += ' ... '
   return '<Buffer ' + str + '>'
 }
-if (customInspectSymbol) {
-  Buffer.prototype[customInspectSymbol] = Buffer.prototype.inspect
-}
 
 Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
   if (isInstance(target, Uint8Array)) {
@@ -7624,7 +7677,7 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
         return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
       }
     }
-    return arrayIndexOf(buffer, [val], byteOffset, encoding, dir)
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
   }
 
   throw new TypeError('val must be string, number or Buffer')
@@ -7953,7 +8006,7 @@ function hexSlice (buf, start, end) {
 
   var out = ''
   for (var i = start; i < end; ++i) {
-    out += hexSliceLookupTable[buf[i]]
+    out += toHex(buf[i])
   }
   return out
 }
@@ -7990,8 +8043,7 @@ Buffer.prototype.slice = function slice (start, end) {
 
   var newBuf = this.subarray(start, end)
   // Return an augmented `Uint8Array` instance
-  Object.setPrototypeOf(newBuf, Buffer.prototype)
-
+  newBuf.__proto__ = Buffer.prototype
   return newBuf
 }
 
@@ -8480,8 +8532,6 @@ Buffer.prototype.fill = function fill (val, start, end, encoding) {
     }
   } else if (typeof val === 'number') {
     val = val & 255
-  } else if (typeof val === 'boolean') {
-    val = Number(val)
   }
 
   // Invalid ranges are not set to a default, so can range check early.
@@ -8537,6 +8587,11 @@ function base64clean (str) {
     str = str + '='
   }
   return str
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
 }
 
 function utf8ToBytes (string, units) {
@@ -8668,20 +8723,6 @@ function numberIsNaN (obj) {
   // For IE11 support
   return obj !== obj // eslint-disable-line no-self-compare
 }
-
-// Create lookup table for `toString('hex')`
-// See: https://github.com/feross/buffer/issues/219
-var hexSliceLookupTable = (function () {
-  var alphabet = '0123456789abcdef'
-  var table = new Array(256)
-  for (var i = 0; i < 16; ++i) {
-    var i16 = i * 16
-    for (var j = 0; j < 16; ++j) {
-      table[i16 + j] = alphabet[i] + alphabet[j]
-    }
-  }
-  return table
-})()
 
 }).call(this,require("buffer").Buffer)
 },{"base64-js":33,"buffer":38,"ieee754":55}],39:[function(require,module,exports){
@@ -10812,7 +10853,7 @@ if (typeof Object.create === 'function') {
       if (tagIndex == 0 && indentation) {
         indentedValue = this.indentPartial(value, indentation, lineHasNonSpace);
       }
-      return this.renderTokens(this.parse(indentedValue, tags), context, partials, indentedValue);
+      return this.renderTokens(this.parse(indentedValue, tags), context, partials, indentedValue, tags);
     }
   };
 
@@ -10834,7 +10875,7 @@ if (typeof Object.create === 'function') {
 
   var mustache = {
     name: 'mustache.js',
-    version: '4.0.0',
+    version: '4.0.1',
     tags: [ '{{', '}}' ],
     clearCache: undefined,
     escape: undefined,

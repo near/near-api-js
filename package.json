@@ -1,7 +1,7 @@
 {
-  "name": "nearlib",
-  "description": "Javascript library to interact with NEAR blockchain",
-  "version": "0.22.0",
+  "name": "near-api-js",
+  "description": "JavaScript library to interact with NEAR Protocol via RPC API",
+  "version": "0.23.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/near/near-api-js.git"
@@ -35,7 +35,7 @@
     "rimraf": "^3.0.0",
     "semver": "^7.1.1",
     "ts-morph": "^7.0.0",
-    "typedoc": "^0.16.5",
+    "typedoc": "^0.17.1",
     "typedoc-plugin-markdown": "^2.2.6",
     "typescript": "^3.5.1",
     "uglifyify": "^5.0.1"
