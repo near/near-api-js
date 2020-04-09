@@ -25,5 +25,17 @@
     },
     "files": [
         "src/index.ts",
-    ]
+    ],
+    "typedocOptions": {
+        "out": "docs/near-api-js",
+        "theme": "docusaurus",
+        "skipSidebar": true,
+        "hideBreadcrumbs": true, 
+        "hideSources": true, 
+        "ignoreCompilerErrors": true,
+        "excludePrivate": true,
+        "excludeProtected": true,
+        "excludeExternals": true,
+        "stripInternal": true
+    }
 }

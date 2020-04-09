@@ -3,6 +3,9 @@ import { Account } from './account';
 import { getTransactionLastResult } from './providers';
 import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
 
+/**
+ * Defines a smart contract on NEAR including the mutable and non-mutable methods
+ */
 export class Contract {
     readonly account: Account;
     readonly contractId: string;
@@ -40,6 +43,11 @@ export class Contract {
     }
 }
 
+/**
+ * Validation on arguments being a big number from bn.js
+ * Throws if an argument is not in BN format or otherwise invalid
+ * @param argMap 
+ */
 function validateBNLike(argMap: { [name: string]: any }) {
     const bnLike = 'number, decimal string or BN';
     for (const argName of Object.keys(argMap)) {

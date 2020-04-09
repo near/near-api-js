@@ -59,7 +59,7 @@
     "test": "jest test --runInBand",
     "lint": "eslint test && eslint src/**/*.ts",
     "fix": "eslint test --fix && eslint src/**/*.ts --fix",
-    "doc": "typedoc --out docs/nearlib --theme docusaurus src/ --hideBreadcrumbs",
+    "doc": "typedoc src/",
     "prefuzz": "yarn build",
     "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
   },

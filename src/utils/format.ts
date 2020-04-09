@@ -23,6 +23,7 @@ for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offse
  *
  * @param balance decimal string representing balance in smallest non-divisible NEAR units (as specified by {@link NEAR_NOMINATION})
  * @param fracDigits number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits.
+ * @returns Value in Ⓝ
  */
 export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMINATION_EXP): string {
     const balanceBN = new BN(balance, 10);
@@ -47,6 +48,7 @@ export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMI
  * Effectively this multiplies given amount by {@link NEAR_NOMINATION}.
  *
  * @param amt decimal string (potentially fractional) denominated in NEAR.
+ * @returns The parsed yoctoⓃ amount or null if no amount was passed in
  */
 export function parseNearAmount(amt?: string): string | null {
     if (!amt) { return null; }
@@ -60,18 +62,38 @@ export function parseNearAmount(amt?: string): string | null {
     return trimLeadingZeroes(wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, '0'));
 }
 
+/**
+ * Removes commas from the input
+ * @param amount A value or amount that may contain commas
+ * @returns string The cleaned value
+ */
 function cleanupAmount(amount: string): string {
     return amount.replace(/,/g, '').trim();
 }
 
+/**
+ * Removes .000… from an input
+ * @param value A value that may contain trailing zeroes in the decimals place
+ * @returns string The value without the trailing zeros
+ */
 function trimTrailingZeroes(value: string): string {
     return value.replace(/\.?0*$/, '');
 }
 
+/**
+ * Removes leading zeroes from an input
+ * @param value A value that may contain leading zeroes
+ * @returns string The value without the leading zeroes
+ */
 function trimLeadingZeroes(value: string): string {
     return value.replace(/^0+/, '');
 }
 
+/**
+ * Returns a human-readable value with commas
+ * @param value A value that may not contain commas
+ * @returns string A value with commas
+ */
 function formatWithCommas(value: string): string {
     const pattern = /(-?\d+)(\d{3})/;
     while (pattern.test(value)) {

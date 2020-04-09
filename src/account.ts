@@ -38,6 +38,9 @@ export interface AccountState {
     code_hash: string;
 }
 
+/**
+ * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
+ */
 export class Account {
     readonly connection: Connection;
     readonly accountId: string;
@@ -53,10 +56,18 @@ export class Account {
         this.accountId = accountId;
     }
 
+    /**
+     * Helper function when getting the state of a NEAR account
+     * @returns Promise<void>
+     */
     async fetchState(): Promise<void> {
         this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
     }
 
+    /**
+     * Returns the state of a NEAR account
+     * @returns {Promise<AccountState>}
+     */
     async state(): Promise<AccountState> {
         await this.ready;
         return this._state;
@@ -68,6 +79,11 @@ export class Account {
         }
     }
 
+    /**
+     * @param txHash The transaction hash to retry
+     * @param accountId The NEAR account sending the transaction
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
     private async retryTxResult(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
         let result;
         let waitTime = TX_STATUS_RETRY_WAIT;
@@ -84,6 +100,11 @@ export class Account {
         throw new TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`, 'RetriesExceeded');
     }
 
+    /**
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
 
@@ -148,6 +169,12 @@ export class Account {
         }
     }
 
+    /**
+     * @param contractId NEAR account where the contract is deployed
+     * @param publicKey The public key to add while signing and sending the transaction
+     * @param data The compiled contract code
+     * @returns {Promise<Account>}
+     */
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
         const accessKey = fullAccessKey();
         await this.signAndSendTransaction(contractId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]);
@@ -155,30 +182,64 @@ export class Account {
         return contractAccount;
     }
 
+    /**
+     * @param receiverId NEAR account receiving Ⓝ
+     * @param amount Amount to send in yoctoⓃ
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
     async sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction(receiverId, [transfer(amount)]);
     }
 
+    /**
+     * @param newAccountId NEAR account name to be created
+     * @param publicKey A public key created from the masterAccount
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]);
     }
 
+    /**
+     * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
+     * @returns void
+     */
     async deleteAccount(beneficiaryId: string) {
         return this.signAndSendTransaction(this.accountId, [deleteAccount(beneficiaryId)]);
     }
 
+    /**
+     * @param data The compiled contract code
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
     async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction(this.accountId, [deployContract(data)]);
     }
 
+    /**
+     * @param contractId NEAR account where the contract is deployed
+     * @param methodName The method name on the contract as it is written in the contract code
+     * @param args Any arguments to the contract method, wrapped in JSON
+     * @param data The compiled contract code
+     * @param gas An amount of yoctoⓃ attached to cover the gas cost of this function call
+     * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
     async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
         args = args || {};
         this.validateArgs(args);
         return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_GAS, amount)]);
     }
 
-    // TODO: expand this API to support more options.
+    /**
+     * @param publicKey A public key to be associated with the contract
+     * @param contractId NEAR account where the contract is deployed
+     * @param methodName The method name on the contract as it is written in the contract code
+     * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
+     * @returns {Promise<FinalExecutionOutcome>}
+     * TODO: expand this API to support more options.
+     */
     async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome> {
         let accessKey;
         if (contractId === null || contractId === undefined || contractId === '') {
@@ -189,10 +250,19 @@ export class Account {
         return this.signAndSendTransaction(this.accountId, [addKey(PublicKey.from(publicKey), accessKey)]);
     }
 
+    /**
+     * @param publicKey The public key to be deleted
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
     async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction(this.accountId, [deleteKey(PublicKey.from(publicKey))]);
     }
 
+    /**
+     * @param publicKey The public key for the account that's staking
+     * @param amount The account to stake in yoctoⓃ
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
     async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction(this.accountId, [stake(amount, PublicKey.from(publicKey))]);
     }
@@ -203,6 +273,12 @@ export class Account {
         }
     }
 
+    /**
+     * @param contractId NEAR account where the contract is deployed
+     * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
+     * @param args Any arguments to the view contract method, wrapped in JSON
+     * @returns {Promise<any>}
+     */
     async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
         args = args || {};
         this.validateArgs(args);
@@ -213,7 +289,9 @@ export class Account {
         return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
     }
 
-    /// Returns array of {access_key: AccessKey, public_key: PublicKey} items.
+    /**
+     * @returns array of {access_key: AccessKey, public_key: PublicKey} items.
+     */
     async getAccessKeys(): Promise<any> {
         const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
         // A breaking API change introduced extra information into the
@@ -225,6 +303,10 @@ export class Account {
         return response.keys;
     }
 
+    /**
+     * Returns account details in terms of authorized apps and transactions
+     * @returns {Promise<any>}
+     */
     async getAccountDetails(): Promise<any> {
         // TODO: update the response value to return all the different keys, not just app keys.
         // Also if we need this function, or getAccessKeys is good enough.

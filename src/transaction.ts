@@ -110,6 +110,9 @@ export class SignedTransaction extends Assignable {
     }
 }
 
+/**
+ * Contains a list of the valid transaction Actions available with this API
+ */
 export class Action extends Enum {
     createAccount: CreateAccount;
     deployContract: DeployContract;
@@ -199,6 +202,13 @@ export function createTransaction(signerId: string, publicKey: PublicKey, receiv
     return new Transaction({ signerId, publicKey, nonce, receiverId, actions, blockHash });
 }
 
+/**
+ * Signs a given transaction from an account with given keys, applied to the given network
+ * @param transaction The Transaction object to sign
+ * @param signer The {Signer} object that assists with signing keys
+ * @param accountId The human-readable NEAR account name
+ * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+ */
 async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));

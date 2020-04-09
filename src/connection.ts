@@ -1,6 +1,10 @@
 import { Provider, JsonRpcProvider } from './providers';
 import { Signer, InMemorySigner } from './signer';
 
+/**
+ * @param config Contains connection info details
+ * @returns {Provider}
+ */
 function getProvider(config: any): Provider {
     switch (config.type) {
         case undefined:
@@ -10,6 +14,10 @@ function getProvider(config: any): Provider {
     }
 }
 
+/**
+ * @param config Contains connection info details
+ * @returns {Signer}
+ */
 function getSigner(config: any): Signer {
     switch (config.type) {
         case undefined:
@@ -21,6 +29,9 @@ function getSigner(config: any): Signer {
     }
 }
 
+/**
+ * Connects an account to a given network via a given provider
+ */
 export class Connection {
     readonly networkId: string;
     readonly provider: Provider;
@@ -32,6 +43,9 @@ export class Connection {
         this.signer = signer;
     }
 
+    /**
+     * @param config Contains connection info details
+     */
     static fromConfig(config: any): Connection {
         const provider = getProvider(config.provider);
         const signer = getSigner(config.signer);
