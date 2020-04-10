@@ -23,7 +23,7 @@ beforeEach(async () => {
 
 test('make function call using access key', async() => {
     const keyPair = nearlib.utils.KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 10000000);
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '100000000000000000000');
 
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
