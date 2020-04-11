@@ -1,3 +1,3 @@
 require('error-polyfill');
-window.nearlib = require('./lib/index');
+window.nearAPIJs = require('./lib/index');
 window.Buffer = Buffer;

@@ -56,7 +56,7 @@ export class Near {
     }
 
     /**
-     * @deprecated Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
+     * @deprecated Use `new near-api-js.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
      * @param contractId
      * @param options
      */
