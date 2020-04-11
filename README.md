@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/near/near-api-js.svg?branch=master)](https://travis-ci.com/near/near-api-js)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/near/near-api-js) 
 
-nearlib is a JavaScript/TypeScript library for development of DApps on NEAR platform.
+near-api-js is a JavaScript/TypeScript library for development of DApps on NEAR platform.
 
 ## Install dependencies
 
@@ -41,7 +41,7 @@ Tests use sample contract from `near-hello` npm package, see https://github.com/
 
 Follow next steps:
 
-1. [Change hash for the commit with errors in the nearcore](https://github.com/nearprotocol/nearlib/blob/master/gen_error_types.js#L7-L9)
+1. [Change hash for the commit with errors in the nearcore](https://github.com/near/near-api-js/blob/master/gen_error_types.js#L7-L9)
 2. Generate new types for errors: `node gen_error_types.js`
 3. `yarn fix` fix any issues with linter.
 4. `yarn build` to update `lib/**.js` files
