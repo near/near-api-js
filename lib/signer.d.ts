@@ -11,14 +11,14 @@ export declare abstract class Signer {
     /**
      * Returns public key for given account / network.
      * @param accountId accountId to retrieve from.
-     * @param networkId network for this accountId.
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      */
     abstract getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey>;
     /**
      * Signs given message, by first hashing with sha256.
      * @param message message to sign.
      * @param accountId accountId to use for signing.
-     * @param networkId network for this accontId.
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      */
     abstract signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
 }
@@ -28,7 +28,25 @@ export declare abstract class Signer {
 export declare class InMemorySigner extends Signer {
     readonly keyStore: KeyStore;
     constructor(keyStore: KeyStore);
+    /**
+     * Creates a public key for the account given
+     * @param accountId The NEAR account to assign a public key to
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @returns {Promise<PublicKey>}
+     */
     createKey(accountId: string, networkId: string): Promise<PublicKey>;
+    /**
+     * Gets the existing public key for a given account
+     * @param accountId The NEAR account to assign a public key to
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @returns {Promise<PublicKey>} Returns the public key or null if not found
+     */
     getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey>;
+    /**
+     * @param message A message to be signed, typically a serialized transaction
+     * @param accountId the NEAR account signing the message
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @returns {Promise<Signature>}
+     */
     signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
 }

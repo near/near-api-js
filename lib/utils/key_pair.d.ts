@@ -23,6 +23,10 @@ export declare abstract class KeyPair {
     abstract verify(message: Uint8Array, signature: Uint8Array): boolean;
     abstract toString(): string;
     abstract getPublicKey(): PublicKey;
+    /**
+     * @param curve Name of elliptical curve, case-insensitive
+     * @returns Random KeyPair based on the curve
+     */
     static fromRandom(curve: string): KeyPair;
     static fromString(encodedKey: string): KeyPair;
 }

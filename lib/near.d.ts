@@ -21,7 +21,7 @@ export declare class Near {
      */
     createAccount(accountId: string, publicKey: PublicKey): Promise<Account>;
     /**
-     * @deprecated Use `new nearlib.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
+     * @deprecated Use `new near-api-js.Contract(yourAccount, contractId, { viewMethods, changeMethods })` instead.
      * @param contractId
      * @param options
      */
