@@ -1,9 +1,9 @@
-const nearlib = require('../../lib/index');
+const nearAPIJs = require('../../lib/index');
 
-const KeyPair = nearlib.utils.KeyPairEd25519;
+const KeyPair = nearAPIJs.utils.KeyPairEd25519;
 
-const MergeKeyStore = nearlib.keyStores.MergeKeyStore;
-const InMemoryKeyStore = nearlib.keyStores.InMemoryKeyStore;
+const MergeKeyStore = nearAPIJs.keyStores.MergeKeyStore;
+const InMemoryKeyStore = nearAPIJs.keyStores.InMemoryKeyStore;
 
 describe('Merge keystore', () => {
     let ctx = {};

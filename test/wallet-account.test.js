@@ -8,12 +8,12 @@ global.window = {
 global.document = {
     title: 'documentTitle'
 };
-const nearlib = require('../lib/index');
+const nearAPIJs = require('../lib/index');
 
 let history;
 let nearFake;
 let walletConnection;
-let keyStore = new nearlib.keyStores.InMemoryKeyStore();
+let keyStore = new nearAPIJs.keyStores.InMemoryKeyStore();
 beforeEach(() => {
     nearFake = {
         config: {
@@ -22,7 +22,7 @@ beforeEach(() => {
             walletUrl: 'http://example.com/wallet',
         },
         connection: {
-            signer: new nearlib.InMemorySigner(keyStore)
+            signer: new nearAPIJs.InMemorySigner(keyStore)
         }
     };
     newUrl = null;
@@ -38,7 +38,7 @@ beforeEach(() => {
             replaceState: (state, title, url) => history.push([state, title, url])
         }
     });
-    walletConnection = new nearlib.WalletConnection(nearFake);
+    walletConnection = new nearAPIJs.WalletConnection(nearFake);
 });
 
 it('not signed in by default', () => {
@@ -65,7 +65,7 @@ it('can request sign in', async () => {
 });
 
 it('can complete sign in', async () => {
-    const keyPair = nearlib.KeyPair.fromRandom('ed25519');
+    const keyPair = nearAPIJs.KeyPair.fromRandom('ed25519');
     global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
     await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
 
@@ -79,14 +79,14 @@ it('can complete sign in', async () => {
 });
 
 const BLOCK_HASH = '244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM';
-const blockHash = nearlib.utils.serialize.base_decode(BLOCK_HASH);
+const blockHash = nearAPIJs.utils.serialize.base_decode(BLOCK_HASH);
 function createTransferTx() {
     const actions = [
-        nearlib.transactions.transfer(1),
+        nearAPIJs.transactions.transfer(1),
     ];
-    return nearlib.transactions.createTransaction(
+    return nearAPIJs.transactions.createTransaction(
         'test.near',
-        nearlib.utils.PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
+        nearAPIJs.utils.PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
         'whatever.near',
         1,
         actions,
@@ -108,7 +108,7 @@ it('can request transaction signing', async () => {
 
 it('requests transaction signing automatically when there is no local key', async () => {
     // TODO: Refactor copy-pasted common setup code
-    let keyPair = nearlib.KeyPair.fromRandom('ed25519');
+    let keyPair = nearAPIJs.KeyPair.fromRandom('ed25519');
     walletConnection._authData = {
         allKeys: [ 'no_such_access_key', keyPair.publicKey.toString() ],
         accountId: 'signer.near'
@@ -139,7 +139,7 @@ it('requests transaction signing automatically when there is no local key', asyn
     };
 
     try {
-        await walletConnection.account().signAndSendTransaction('receiver.near', [nearlib.transactions.transfer(1)]);
+        await walletConnection.account().signAndSendTransaction('receiver.near', [nearAPIJs.transactions.transfer(1)]);
         fail('expected to throw');
     } catch (e) {
         expect(e.message).toEqual('Failed to redirect to sign transaction');
@@ -154,9 +154,9 @@ it('requests transaction signing automatically when there is no local key', asyn
         }
     });
     const transactions = parsedUrl.query.transactions.split(',')
-        .map(txBase64 => nearlib.utils.serialize.deserialize(
-            nearlib.transactions.SCHEMA,
-            nearlib.transactions.Transaction,
+        .map(txBase64 => nearAPIJs.utils.serialize.deserialize(
+            nearAPIJs.transactions.SCHEMA,
+            nearAPIJs.transactions.Transaction,
             Buffer.from(txBase64, 'base64')));
 
     expect(transactions).toHaveLength(1);

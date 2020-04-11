@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const BN = require('bn.js');
 
-const nearlib = require('../lib/index');
+const nearAPIJs = require('../lib/index');
 
 const networkId = 'unittest';
 const testAccountName = 'test.near';
@@ -10,14 +10,14 @@ const INITIAL_BALANCE = new BN('100000000000000000000000000');
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
 
 async function setUpTestConnection() {
-    const keyStore = new nearlib.keyStores.InMemoryKeyStore();
-    await keyStore.setKey(networkId, testAccountName, nearlib.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
+    const keyStore = new nearAPIJs.keyStores.InMemoryKeyStore();
+    await keyStore.setKey(networkId, testAccountName, nearAPIJs.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: networkId,
         deps: { keyStore },
     });
 
-    return nearlib.connect(config);
+    return nearAPIJs.connect(config);
 }
 
 // Generate some unique string with a given prefix using the alice nonce.
@@ -30,14 +30,14 @@ async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE,
     const newAccountName = generateUniqueString('test');
     const newPublicKey = await masterAccount.connection.signer.createKey(newAccountName, networkId);
     await masterAccount.createAccount(newAccountName, newPublicKey, options.amount);
-    return new nearlib.Account(masterAccount.connection, newAccountName);
+    return new nearAPIJs.Account(masterAccount.connection, newAccountName);
 }
 
 async function deployContract(workingAccount, contractId, options = { amount: INITIAL_BALANCE.div(new BN(10)) }) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = [...(await fs.readFile(HELLO_WASM_PATH))];
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, options.amount);
-    return new nearlib.Contract(workingAccount, contractId, {
+    return new nearAPIJs.Contract(workingAccount, contractId, {
         viewMethods: ['getValue', 'getLastResult'],
         changeMethods: ['setValue', 'callPromise']
     });

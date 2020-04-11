@@ -1,15 +1,15 @@
-const nearlib = require('../../lib/index');
+const nearAPIJs = require('../../lib/index');
 
 exports.fuzz = input => {
     try {
-        const deserialized = nearlib.utils.serialize.deserialize(nearlib.transactions.SCHEMA, nearlib.transactions.Transaction, input);
-        const serialized = nearlib.utils.serialize.serialize(nearlib.transactions.SCHEMA, deserialized);
+        const deserialized = nearAPIJs.utils.serialize.deserialize(nearAPIJs.transactions.SCHEMA, nearAPIJs.transactions.Transaction, input);
+        const serialized = nearAPIJs.utils.serialize.serialize(nearAPIJs.transactions.SCHEMA, deserialized);
         if (!serialized.equals(input)) {
             console.log(`Mismatching output:\n${serialized.toString('hex')}\nand input:\n${input.toString('hex')}`);
             throw new Error('Mismatching input and output');
         }
     } catch(e) {
-        if (e instanceof nearlib.utils.serialize.BorshError) {
+        if (e instanceof nearAPIJs.utils.serialize.BorshError) {
             // Do nothing
         } else {
             throw e;
