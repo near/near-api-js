@@ -1,6 +1,6 @@
 storage
 node_modules
 
-# Nearlib files & coverage
+# near-api-js files & coverage
 neardev/
 coverage/
