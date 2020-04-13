@@ -1,7 +1,7 @@
 
-const nearlib = require('../../lib/index');
+const nearApi = require('../../lib/index');
 
-const KeyPair = nearlib.utils.KeyPairEd25519;
+const KeyPair = nearApi.utils.KeyPairEd25519;
 
 const NETWORK_ID_SINGLE_KEY = 'singlekeynetworkid';
 const ACCOUNT_ID_SINGLE_KEY = 'singlekey_accountid';

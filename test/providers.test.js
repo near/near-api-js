@@ -1,9 +1,9 @@
 
-const nearlib = require('../lib/index');
+const nearApi = require('../lib/index');
 
 const withProvider = (fn) => {
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
-    const provider = new nearlib.providers.JsonRpcProvider(config.nodeUrl);
+    const provider = new nearApi.providers.JsonRpcProvider(config.nodeUrl);
     return () => fn(provider);
 };
 
@@ -45,7 +45,7 @@ test('final tx result', async() => {
             { id: '11113', outcome: { status: { SuccessValue: '' }, logs: [], receipt_ids: [], gas_burnt: 0 } }
         ]
     };
-    expect(nearlib.providers.getTransactionLastResult(result)).toEqual({});
+    expect(nearApi.providers.getTransactionLastResult(result)).toEqual({});
 });
 
 test('final tx result with null', async() => {
@@ -57,5 +57,5 @@ test('final tx result with null', async() => {
             { id: '11113', outcome: { status: { SuccessValue: '' }, logs: [], receipt_ids: [], gas_burnt: 0 } }
         ]
     };
-    expect(nearlib.providers.getTransactionLastResult(result)).toEqual(null);
+    expect(nearApi.providers.getTransactionLastResult(result)).toEqual(null);
 });

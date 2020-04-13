@@ -1,4 +1,4 @@
-const nearlib = require('../../lib/index');
+const nearApi = require('../../lib/index');
 const {
     parseRpcError,
     AccountAlreadyExists,
@@ -12,7 +12,7 @@ const {
     InvalidIteratorIndex,
     GasLimitExceeded,
     formatError
-} = nearlib.utils.rpc_errors;
+} = nearApi.utils.rpc_errors;
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {
         let rpc_error = {

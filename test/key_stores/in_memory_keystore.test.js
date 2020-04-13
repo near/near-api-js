@@ -1,6 +1,6 @@
-const nearlib = require('../../lib/index');
+const nearApi = require('../../lib/index');
 
-const InMemoryKeyStore = nearlib.keyStores.InMemoryKeyStore;
+const InMemoryKeyStore = nearApi.keyStores.InMemoryKeyStore;
 
 describe('In-memory keystore', () => {
     let ctx = {};

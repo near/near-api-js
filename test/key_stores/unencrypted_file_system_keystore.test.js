@@ -1,8 +1,8 @@
 
 const rimraf  = require('util').promisify(require('rimraf'));
 
-const nearlib = require('../../lib/index');
-const UnencryptedFileSystemKeyStore = nearlib.keyStores.UnencryptedFileSystemKeyStore;
+const nearApi = require('../../lib/index');
+const UnencryptedFileSystemKeyStore = nearApi.keyStores.UnencryptedFileSystemKeyStore;
 const { ensureDir } = require('../test-utils');
 
 const KEYSTORE_PATH = '../test-keys';
