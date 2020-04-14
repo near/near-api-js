@@ -14,7 +14,7 @@ import { parseRpcError } from './utils/rpc_errors';
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
 // Default value is set to equal to max_prepaid_gas as discussed here:
-// https://github.com/nearprotocol/nearlib/pull/191#discussion_r369671912
+// https://github.com/near/near-api-js/pull/191#discussion_r369671912
 const DEFAULT_FUNC_CALL_GAS = new BN('10000000000000000');
 
 // Default number of retries before giving up on a transactioin.

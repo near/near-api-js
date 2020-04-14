@@ -1,5 +1,5 @@
 
-const nearlib = require('../lib/index');
+const nearApi = require('../lib/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
@@ -29,7 +29,7 @@ test('create account and then view account returns the created account', async (
     const newAccountName = testUtils.generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
     await workingAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
-    const newAccount = new nearlib.Account(nearjs.connection, newAccountName);
+    const newAccount = new nearApi.Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
     expect(state.amount).toEqual(testUtils.INITIAL_BALANCE.toString());
 });
@@ -47,7 +47,7 @@ test('delete account', async() => {
     const sender = await testUtils.createAccount(workingAccount);
     const receiver = await testUtils.createAccount(workingAccount);
     await sender.deleteAccount(receiver.accountId);
-    const reloaded = new nearlib.Account(sender.connection, sender);
+    const reloaded = new nearApi.Account(sender.connection, sender);
     await expect(reloaded.state()).rejects.toThrow();
 });
 
@@ -89,7 +89,7 @@ describe('with deploy contract', () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await workingAccount.createAndDeployContract(contractId, newPublicKey, data, testUtils.INITIAL_BALANCE);
-        contract = new nearlib.Contract(workingAccount, contractId, {
+        contract = new nearApi.Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'getAllKeys', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']
         });
@@ -116,7 +116,7 @@ describe('with deploy contract', () => {
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
         const result2 = await workingAccount.functionCall(contractId, 'setValue', { value: setCallValue });
-        expect(nearlib.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
+        expect(nearApi.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
         expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
 
@@ -193,14 +193,14 @@ describe('with deploy contract', () => {
     });
 
     test('can have view methods only', async () => {
-        const contract = new nearlib.Contract(workingAccount, contractId, {
+        const contract = new nearApi.Contract(workingAccount, contractId, {
             viewMethods: ['hello'],
         });
         expect(await contract.hello({ name: 'world' })).toEqual('hello world');
     });
 
     test('can have change methods only', async () => {
-        const contract = new nearlib.Contract(workingAccount, contractId, {
+        const contract = new nearApi.Contract(workingAccount, contractId, {
             changeMethods: ['hello'],
         });
         expect(await contract.hello({ name: 'world' })).toEqual('hello world');

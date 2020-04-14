@@ -5,7 +5,7 @@ storage
 node_modules
 *.map
 
-# Nearlib files & coverage
+# near-api-js files & coverage
 neardev/
 coverage/
 .nyc_output
