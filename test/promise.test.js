@@ -10,7 +10,7 @@ const CONTRACT_CALL_GAS = new BN(300000000000000);
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    workingAccount = await testUtils.createAccount(nearjs, { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
+    workingAccount = await testUtils.createAccount(nearjs);
 });
 
 describe('with promises', () => {
