@@ -6,8 +6,8 @@ const nearApi = require('../lib/index');
 const networkId = 'unittest';
 const testAccountName = 'test.near';
 
-const INITIAL_BALANCE = new BN('100000000000000000000000000');
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
+const HELLO_WASM_BALANCE = new BN('10000000000000000000000000');
 
 async function setUpTestConnection() {
     const keyStore = new nearApi.keyStores.InMemoryKeyStore();
@@ -25,24 +25,26 @@ function generateUniqueString(prefix) {
     return prefix + Date.now() + Math.round(Math.random() * 1000);
 }
 
-async function createAccount(near, options = { amount: INITIAL_BALANCE }) {
+async function createAccount(near) {
     const newAccountName = generateUniqueString('test');
     const newPublicKey = await near.connection.signer.createKey(newAccountName, networkId);
-    await near.createAccount(newAccountName, newPublicKey, options.amount);
-    return new nearApi.Account(near.connection, newAccountName);
+    await near.createAccount(newAccountName, newPublicKey);
+    const account = new nearApi.Account(near.connection, newAccountName);
+    const { amount } = await account.state();
+    console.error('createAccount', account.accountId, amount);
+    return account;
 }
 
 async function deleteAccount(testAccount) {
     await testAccount.deleteAccount(testAccountName);
 }
 
-async function deployContract(workingAccount, contractId, options = { amount: INITIAL_BALANCE.div(new BN(10)) }) {
+async function deployContract(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = [...(await fs.readFile(HELLO_WASM_PATH))];
-    await workingAccount.createAndDeployContract(contractId, newPublicKey, data, options.amount);
+    await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
     return new nearApi.Contract(workingAccount, contractId, {
         viewMethods: ['getValue', 'getLastResult'],
-        changeMethods: ['setValue', 'callPromise']
     });
 }
 
@@ -60,5 +62,5 @@ async function ensureDir(dirpath) {
     }
 }
 
-module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE,
-    generateUniqueString, createAccount, deleteAccount, deployContract, sleep, ensureDir };
+module.exports = { setUpTestConnection, networkId, testAccountName,
+    generateUniqueString, createAccount, deployContract, sleep, ensureDir };

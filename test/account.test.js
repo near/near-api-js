@@ -15,7 +15,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    workingAccount = await testUtils.createAccount(nearjs, { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
+    workingAccount = await testUtils.createAccount(nearjs);
     let nodeStatus = await nearjs.connection.provider.status();
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
 });
@@ -32,19 +32,23 @@ test('view pre-defined account works and returns correct name', async () => {
 test('create account and then view account returns the created account', async () => {
     const newAccountName = testUtils.generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
-    await workingAccount.createAccount(newAccountName, newAccountPublicKey, testUtils.INITIAL_BALANCE);
+    const { amount } = await workingAccount.state();
+    const newAmount = new BN(amount).div(new BN(10));
+    await workingAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new nearApi.Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
-    expect(state.amount).toEqual(testUtils.INITIAL_BALANCE.toString());
+    expect(state.amount).toEqual(newAmount.toString());
 });
 
 test('send money', async() => {
     const sender = await testUtils.createAccount(nearjs);
     const receiver = await testUtils.createAccount(nearjs);
+    const { amount: receiverAmount } = await receiver.state();
     await sender.sendMoney(receiver.accountId, new BN(10000));
     await receiver.fetchState();
+    // TODO: Why `.state()` is not fetching state?
     const state = await receiver.state();
-    expect(state.amount).toEqual(testUtils.INITIAL_BALANCE.add(new BN(10000)).toString());
+    expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
 });
 
 test('delete account', async() => {
@@ -92,7 +96,7 @@ describe('with deploy contract', () => {
     beforeAll(async () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, testUtils.INITIAL_BALANCE);
+        await workingAccount.createAndDeployContract(contractId, newPublicKey, data);
         contract = new nearApi.Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
