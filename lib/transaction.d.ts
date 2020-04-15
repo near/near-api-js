@@ -78,6 +78,9 @@ export declare class SignedTransaction extends Assignable {
     encode(): Uint8Array;
     static decode(bytes: Buffer): SignedTransaction;
 }
+/**
+ * Contains a list of the valid transaction Actions available with this API
+ */
 export declare class Action extends Enum {
     createAccount: CreateAccount;
     deployContract: DeployContract;
