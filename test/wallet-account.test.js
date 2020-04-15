@@ -106,46 +106,8 @@ it('can request transaction signing', async () => {
     });
 });
 
-it('requests transaction signing automatically when there is no local key', async () => {
-    // TODO: Refactor copy-pasted common setup code
-    let keyPair = nearApi.KeyPair.fromRandom('ed25519');
-    walletConnection._authData = {
-        allKeys: [ 'no_such_access_key', keyPair.publicKey.toString() ],
-        accountId: 'signer.near'
-    };
-    nearFake.connection.provider = {
-        query(path, data) {
-            if (path === 'account/signer.near') {
-                return { };
-            }
-            if (path === 'access_key/signer.near') {
-                return { keys: [{
-                    access_key: {
-                        nonce: 1,
-                        permission: 'FullAccess'
-                    },
-                    public_key: keyPair.publicKey.toString()
-                }] };
-            }
-            fail(`Unexpected query: ${path} ${data}`);
-        },
-        status() {
-            return {
-                sync_info: {
-                    latest_block_hash: BLOCK_HASH
-                }
-            };
-        }
-    };
-
-    try {
-        await walletConnection.account().signAndSendTransaction('receiver.near', [nearApi.transactions.transfer(1)]);
-        fail('expected to throw');
-    } catch (e) {
-        expect(e.message).toEqual('Failed to redirect to sign transaction');
-    }
-
-    const parsedUrl = url.parse(newUrl, true);
+function parseTransactionsFromUrl(urlToParse) {
+    const parsedUrl = url.parse(urlToParse, true);
     expect(parsedUrl).toMatchObject({
         protocol: 'http:',
         host: 'example.com',
@@ -158,7 +120,56 @@ it('requests transaction signing automatically when there is no local key', asyn
             nearApi.transactions.SCHEMA,
             nearApi.transactions.Transaction,
             Buffer.from(txBase64, 'base64')));
+    return transactions;
+}
 
+function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
+    walletConnection._authData = {
+        allKeys: allKeys,
+        accountId: 'signer.near'
+    };
+    nearFake.connection.provider = {
+        query(path, data) {
+            if (path === 'account/signer.near') {
+                return { };
+            }
+            if (path === 'access_key/signer.near') {
+                return { keys: accountAccessKeys };
+            }
+            fail(`Unexpected query: ${path} ${data}`);
+        },
+        status() {
+            return {
+                sync_info: {
+                    latest_block_hash: BLOCK_HASH
+                }
+            };
+        }
+    };
+}
+
+it('requests transaction signing automatically when there is no local key', async () => {
+    // TODO: Refactor copy-pasted common setup code
+    let keyPair = nearApi.KeyPair.fromRandom('ed25519');
+    setupWalletConnectionForSigning({
+        allKeys: [ 'no_such_access_key', keyPair.publicKey.toString() ],
+        accountAccessKeys: [{
+            access_key: {
+                nonce: 1,
+                permission: 'FullAccess'
+            },
+            public_key: keyPair.publicKey.toString()
+        }]
+    });
+
+    try {
+        await walletConnection.account().signAndSendTransaction('receiver.near', [nearApi.transactions.transfer(1)]);
+        fail('expected to throw');
+    } catch (e) {
+        expect(e.message).toEqual('Failed to redirect to sign transaction');
+    }
+
+    const transactions = parseTransactionsFromUrl(newUrl);
     expect(transactions).toHaveLength(1);
     expect(transactions[0]).toMatchObject({
         signerId: 'signer.near',
