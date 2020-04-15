@@ -1,7 +1,9 @@
 const url = require('url');
 const localStorage = require('localstorage-memory');
+const BN = require('bn.js');
 
-let newUrl;
+let lastRedirectUrl;
+let lastTransaction;
 global.window = {
     localStorage
 };
@@ -22,16 +24,17 @@ beforeEach(() => {
             walletUrl: 'http://example.com/wallet',
         },
         connection: {
+            networkId: 'networkId',
             signer: new nearApi.InMemorySigner(keyStore)
         }
     };
-    newUrl = null;
+    lastRedirectUrl = null;
     history = [];
     Object.assign(global.window, {
         location: {
             href: 'http://example.com/location',
             assign(url) {
-                newUrl = url;
+                lastRedirectUrl = url;
             }
         },
         history: {
@@ -51,7 +54,7 @@ it('can request sign in', async () => {
     let accounts = await keyStore.getAccounts('networkId');
     expect(accounts).toHaveLength(1);
     expect(accounts[0]).toMatch(/^pending_key.+/);
-    expect(url.parse(newUrl, true)).toMatchObject({
+    expect(url.parse(lastRedirectUrl, true)).toMatchObject({
         protocol: 'http:',
         host: 'example.com',
         query: {
@@ -96,7 +99,7 @@ function createTransferTx() {
 it('can request transaction signing', async () => {
     await walletConnection.requestSignTransactions([createTransferTx()], 'http://example.com/callback');
 
-    expect(url.parse(newUrl, true)).toMatchObject({
+    expect(url.parse(lastRedirectUrl, true)).toMatchObject({
         protocol: 'http:',
         host: 'example.com',
         query: {
@@ -136,7 +139,22 @@ function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
             if (path === 'access_key/signer.near') {
                 return { keys: accountAccessKeys };
             }
+            if (path.startsWith('access_key/signer.near')) {
+                const [,,publicKey] = path.split('/');
+                for (let accessKey of accountAccessKeys) {
+                    if (accessKey.public_key === publicKey) {
+                        return accessKey;
+                    }
+                }
+            }
             fail(`Unexpected query: ${path} ${data}`);
+        },
+        sendTransaction(signedTransaction) {
+            lastTransaction = signedTransaction;
+            return {
+                transaction_outcome: { outcome: { logs: [] } },
+                receipts_outcome: []
+            }
         },
         status() {
             return {
@@ -149,7 +167,6 @@ function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
 }
 
 it('requests transaction signing automatically when there is no local key', async () => {
-    // TODO: Refactor copy-pasted common setup code
     let keyPair = nearApi.KeyPair.fromRandom('ed25519');
     setupWalletConnectionForSigning({
         allKeys: [ 'no_such_access_key', keyPair.publicKey.toString() ],
@@ -169,7 +186,7 @@ it('requests transaction signing automatically when there is no local key', asyn
         expect(e.message).toEqual('Failed to redirect to sign transaction');
     }
 
-    const transactions = parseTransactionsFromUrl(newUrl);
+    const transactions = parseTransactionsFromUrl(lastRedirectUrl);
     expect(transactions).toHaveLength(1);
     expect(transactions[0]).toMatchObject({
         signerId: 'signer.near',
@@ -184,4 +201,70 @@ it('requests transaction signing automatically when there is no local key', asyn
     expect(transactions[0].nonce.toString()).toEqual('2');
     expect(transactions[0].actions[0].transfer.deposit.toString()).toEqual('1');
     expect(Buffer.from(transactions[0].publicKey.data)).toEqual(Buffer.from(keyPair.publicKey.data));
+});
+
+it('requests transaction signing automatically when function call has attached deposit', async () => {
+    let localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    let walletKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    setupWalletConnectionForSigning({
+        allKeys: [ walletKeyPair.publicKey.toString() ],
+        accountAccessKeys: [{
+            access_key: {
+                nonce: 1,
+                permission: {
+                    FunctionCall: {
+                        allowance: '1000000000',
+                        receiver_id: 'receiver.near',
+                        method_names: []
+                    }
+                }
+            },
+            public_key: localKeyPair.publicKey.toString()
+        }, {
+            access_key: {
+                nonce: 1,
+                permission: 'FullAccess'
+            },
+            public_key: walletKeyPair.publicKey.toString()
+        }]
+    });
+    keyStore.setKey('networkId', 'signer.near', localKeyPair);
+
+    try {
+        await walletConnection.account().signAndSendTransaction('receiver.near', [
+            nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
+        ]);
+        fail('expected to throw');
+    } catch (e) {
+        expect(e.message).toEqual('Failed to redirect to sign transaction');
+    }
+
+    const transactions = parseTransactionsFromUrl(lastRedirectUrl);
+    expect(transactions).toHaveLength(1);
+});
+
+
+it('can sign transaction locally when function call has no attached deposit', async () => {
+    let localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    setupWalletConnectionForSigning({
+        allKeys: [ /* no keys in wallet needed */ ],
+        accountAccessKeys: [{
+            access_key: {
+                nonce: 1,
+                permission: {
+                    FunctionCall: {
+                        allowance: '1000000000',
+                        receiver_id: 'receiver.near',
+                        method_names: []
+                    }
+                }
+            },
+            public_key: localKeyPair.publicKey.toString()
+        }]
+    });
+    keyStore.setKey('networkId', 'signer.near', localKeyPair);
+
+    await walletConnection.account().signAndSendTransaction('receiver.near', [
+        nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0'))
+    ]);
 });

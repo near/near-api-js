@@ -235,7 +235,10 @@ class ConnectedWalletAccount extends Account {
                     return false;
                 }
                 const [{ functionCall }] = actions;
-                return functionCall && (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
+                return functionCall &&
+                    functionCall.deposit.toString() === "0" && // TODO: Should support charging amount smaller than allowance?
+                    (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
+                // TODO: Handle cases when allowance doesn't have enough to pay for gas
             }
         }
         // TODO: Support other permissions than FunctionCall
