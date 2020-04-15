@@ -154,7 +154,7 @@ function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
             return {
                 transaction_outcome: { outcome: { logs: [] } },
                 receipts_outcome: []
-            }
+            };
         },
         status() {
             return {
@@ -267,4 +267,16 @@ it('can sign transaction locally when function call has no attached deposit', as
     await walletConnection.account().signAndSendTransaction('receiver.near', [
         nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0'))
     ]);
+    // NOTE: Transaction gets signed without wallet in this test
+    expect(lastTransaction).toMatchObject({
+        transaction: {
+            receiverId: 'receiver.near',
+            signerId: 'signer.near',
+            actions: [{
+                functionCall: {
+                    methodName: 'someMethod',
+                }
+            }]
+        }
+    });
 });
