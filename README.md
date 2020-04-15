@@ -3,41 +3,36 @@
 [![Build Status](https://travis-ci.com/near/near-api-js.svg?branch=master)](https://travis-ci.com/near/near-api-js)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/near/near-api-js) 
 
-near-api-js is a JavaScript/TypeScript library for development of DApps on NEAR platform.
+A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
-## Install dependencies
 
-```
-yarn
-```
+# Contribute to this library
 
-## Development
+1. Install dependencies
 
-You can run continuos build with next command:
-```
-yarn build -- -w
-```
+       yarn
 
-## Publish
+2. Run continuous build with:
+
+       yarn build -- -w
+
+# Publish
 
 Prepare `dist` version by running:
 
-```
-yarn dist
-```
+    yarn dist
 
 When publishing to npm use [np](https://github.com/sindresorhus/np). 
 
-## Integration Test
+# Integration Test
 
-Start the node by following instructions from nearcore/README.md, then
-```
-yarn test
-```
+Start the node by following instructions from [nearcore](https://github.com/nearprotocol/nearcore), then
+
+    yarn test
 
 Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello
 
-## Update error messages
+# Update error messages
 
 Follow next steps:
 
@@ -46,6 +41,7 @@ Follow next steps:
 3. `yarn fix` fix any issues with linter.
 4. `yarn build` to update `lib/**.js` files
 
-## License
+# License
+
 This repository is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 See [LICENSE](LICENSE) and [LICENSE-APACHE](LICENSE-APACHE) for details.
