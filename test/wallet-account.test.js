@@ -243,8 +243,11 @@ it('requests transaction signing automatically when function call has attached d
     expect(transactions).toHaveLength(1);
 });
 
-
-it('can sign transaction locally when function call has no attached deposit', async () => {
+it.each([
+    nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0')),
+    nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1')),
+    nearApi.transactions.functionCall('someMethod', new Uint8Array())
+])('can sign transaction locally when function call has no attached deposit', async (functionCall) => {
     let localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
     setupWalletConnectionForSigning({
         allKeys: [ /* no keys in wallet needed */ ],
@@ -264,9 +267,7 @@ it('can sign transaction locally when function call has no attached deposit', as
     });
     keyStore.setKey('networkId', 'signer.near', localKeyPair);
 
-    await walletConnection.account().signAndSendTransaction('receiver.near', [
-        nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0'))
-    ]);
+    await walletConnection.account().signAndSendTransaction('receiver.near', [ functionCall ]);
     // NOTE: Transaction gets signed without wallet in this test
     expect(lastTransaction).toMatchObject({
         transaction: {
