@@ -54,6 +54,7 @@
     "prepublish": "not-in-install && (yarn build && yarn browserify) || in-install",
     "compile": "tsc -p ./tsconfig.json",
     "dev": "yarn compile -w",
+    "doc": "typedoc src && touch docs/.nojekyll",
     "build": "yarn compile",
     "pretest": "yarn build",
     "test": "jest test --runInBand",

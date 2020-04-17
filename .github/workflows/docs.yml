@@ -22,4 +22,4 @@ jobs:
       with:
         access-token: ${{ secrets.ACCESS_TOKEN }}
         source-directory: docs
-        build-command: ./node_modules/.bin/typedoc src && touch docs/.nojekyll
+        build-command: yarn doc
