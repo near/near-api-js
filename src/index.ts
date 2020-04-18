@@ -9,7 +9,7 @@ import { Connection } from './connection';
 import { Signer, InMemorySigner } from './signer';
 import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
-import { connect } from './near';
+import { connect, Near } from './near';
 
 // TODO: Deprecate and remove WalletAccount
 import { WalletAccount, WalletConnection } from './wallet-account';
@@ -29,6 +29,7 @@ export {
     KeyPair,
 
     connect,
+    Near,
 
     WalletAccount,
     WalletConnection
