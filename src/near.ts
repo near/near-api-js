@@ -6,14 +6,23 @@ import { Contract } from './contract';
 import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
-import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
+import { InMemoryKeyStore, KeyStore, MergeKeyStore } from './key_stores';
+
+type NearConfig = {
+  deps: { keyStore: KeyStore }
+  helperUrl?: string
+  initialBalance?: string
+  masterAccount?: string
+  networkId: string
+  nodeUrl: string
+}
 
 export class Near {
     readonly config: any;
     readonly connection: Connection;
     readonly accountCreator: AccountCreator;
 
-    constructor(config: any) {
+    constructor(config: NearConfig) {
         this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
@@ -33,7 +42,7 @@ export class Near {
     }
 
     /**
-     * 
+     *
      * @param accountId near accountId used to interact with the network.
      */
     async account(accountId: string): Promise<Account> {
@@ -43,9 +52,9 @@ export class Near {
     }
 
     /**
-     * 
-     * @param accountId 
-     * @param publicKey 
+     *
+     * @param accountId
+     * @param publicKey
      */
     async createAccount(accountId: string, publicKey: PublicKey): Promise<Account> {
         if (!this.accountCreator) {
@@ -78,11 +87,15 @@ export class Near {
         return result.transaction_outcome.id;
     }
 }
+
+type ConnectConfig = NearConfig & {
+  keyPath?: string
+}
+
 /**
  * Initialize connection to Near network.
- * @param config 
  */
-export async function connect(config: any): Promise<Near> {
+export async function connect(config: ConnectConfig): Promise<Near> {
     // Try to find extra key in `KeyPath` if provided.
     if (config.keyPath && config.deps && config.deps.keyStore) {
         try {
