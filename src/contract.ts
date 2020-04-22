@@ -3,6 +3,15 @@ import { Account } from './account';
 import { getTransactionLastResult } from './providers';
 import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
 
+// Makes `function.name` return given name
+function nameFunction(name, body) {
+    return {
+        [name](...args) {
+            return body(...args);
+        }
+    }[name];
+}
+
 /**
  * Defines a smart contract on NEAR including the mutable and non-mutable methods
  */
@@ -18,26 +27,26 @@ export class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
-                value: async function(args: any) {
-                    if (arguments.length > 1) {
+                value: nameFunction(methodName, async (args: object = {}, ...ignored) => {
+                    if (ignored.length || Object.prototype.toString.call(args) !== '[object Object]') {
                         throw new PositionalArgsError();
                     }
-                    return this.account.viewFunction(this.contractId, methodName, args || {});
-                }
+                    return this.account.viewFunction(this.contractId, methodName, args);
+                })
             });
         });
         changeMethods.forEach((methodName) => {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
-                value: async function(args: any, gas?: BN, amount?: BN) {
-                    if (arguments.length > 3) {
+                value: nameFunction(methodName, async (args: object = {}, gas?: BN, amount?: BN, ...ignored) => {
+                    if (ignored.length || Object.prototype.toString.call(args) !== '[object Object]') {
                         throw new PositionalArgsError();
                     }
                     validateBNLike({ gas, amount });
-                    const rawResult = await this.account.functionCall(this.contractId, methodName, args || {}, gas, amount);
+                    const rawResult = await this.account.functionCall(this.contractId, methodName, args, gas, amount);
                     return getTransactionLastResult(rawResult);
-                }
+                })
             });
         });
     }
@@ -46,7 +55,7 @@ export class Contract {
 /**
  * Validation on arguments being a big number from bn.js
  * Throws if an argument is not in BN format or otherwise invalid
- * @param argMap 
+ * @param argMap
  */
 function validateBNLike(argMap: { [name: string]: any }) {
     const bnLike = 'number, decimal string or BN';
