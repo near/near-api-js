@@ -42,12 +42,14 @@ test.each`
     ${'0.000008099099999837087887'}   | ${'8099099999837087887'}
     ${'999.998999999999837087887000'} | ${'999998999999999837087887000'}
     ${'0.000000000000001'}            | ${'1000000000'}
+    ${'0'}                            | ${'0'}
+    ${'0.000'}                        | ${'0'}
     ${'0.000001'}                     | ${'1000000000000000000'}
     ${'.000001'}                      | ${'1000000000000000000'}
     ${'000000.000001'}                | ${'1000000000000000000'}
     ${'1,000,000.1'}                  | ${'1000000100000000000000000000000'}
 `('parseNearAmount($amt) returns $expected', ({ amt, expected }) => {
-    expect(nearApi.utils.format.parseNearAmount(amt)).toEqual(expected);
+    expect(nearApi.utils.format.parseNearAmount(amt)).toStrictEqual(expected);
 });
 
 test('parseNearAmount fails when parsing values with ≥25 decimal places', () => {

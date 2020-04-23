@@ -86,7 +86,11 @@ function trimTrailingZeroes(value: string): string {
  * @returns string The value without the leading zeroes
  */
 function trimLeadingZeroes(value: string): string {
-    return value.replace(/^0+/, '');
+    value = value.replace(/^0+/, '');
+    if (value === '') {
+        return '0';
+    }
+    return value;
 }
 
 /**
