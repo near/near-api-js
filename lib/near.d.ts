@@ -4,11 +4,22 @@ import { Connection } from './connection';
 import { Contract } from './contract';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator } from './account_creator';
+import { KeyStore } from './key_stores';
+declare type NearConfig = {
+    deps: {
+        keyStore: KeyStore;
+    };
+    helperUrl?: string;
+    initialBalance?: string;
+    masterAccount?: string;
+    networkId: string;
+    nodeUrl: string;
+};
 export declare class Near {
     readonly config: any;
     readonly connection: Connection;
     readonly accountCreator: AccountCreator;
-    constructor(config: any);
+    constructor(config: NearConfig);
     /**
      *
      * @param accountId near accountId used to interact with the network.
@@ -38,8 +49,11 @@ export declare class Near {
      */
     sendTokens(amount: BN, originator: string, receiver: string): Promise<string>;
 }
+declare type ConnectConfig = NearConfig & {
+    keyPath?: string;
+};
 /**
  * Initialize connection to Near network.
- * @param config
  */
-export declare function connect(config: any): Promise<Near>;
+export declare function connect(config: ConnectConfig): Promise<Near>;
+export {};
