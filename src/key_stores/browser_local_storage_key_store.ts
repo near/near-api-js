@@ -1,7 +1,7 @@
 import { KeyStore } from './keystore';
 import { KeyPair } from '../utils/key_pair';
 
-const LOCAL_STORAGE_KEY_PREFIX = 'nearlib:keystore:';
+const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 
 export class BrowserLocalStorageKeyStore extends KeyStore {
     private localStorage: any;
@@ -94,7 +94,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
      * Helper function to retrieve a local storage key
      * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the storage keythat's sought
-     * @returns {string} An example might be: `nearlib:keystore:near-friend:default`
+     * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */
     private storageKeyForSecretKey(networkId: string, accountId: string): string {
         return `${this.prefix}${accountId}:${networkId}`;
