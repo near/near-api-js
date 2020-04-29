@@ -2,6 +2,7 @@ import * as providers from './providers';
 import * as utils from './utils';
 import * as keyStores from './key_stores';
 import * as transactions from './transaction';
+import * as validators from './validators';
 
 import { Account } from './account';
 import * as accountCreator from './account_creator';
@@ -20,6 +21,7 @@ export {
     providers,
     utils,
     transactions,
+    validators,
 
     Account,
     Connection,
