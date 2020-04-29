@@ -138,6 +138,7 @@ export interface EpochValidatorInfo {
     current_validators: CurrentEpochValidatorInfo[];
     next_fisherman: ValidatorStakeView[];
     current_fisherman: ValidatorStakeView[];
+    current_proposals: ValidatorStakeView[];
     prev_epoch_kickout: ValidatorStakeView[];
     epoch_start_height: number;
 }
