@@ -43,7 +43,7 @@ export declare class BrowserLocalStorageKeyStore extends KeyStore {
      * Helper function to retrieve a local storage key
      * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the storage keythat's sought
-     * @returns {string} An example might be: `nearlib:keystore:near-friend:default`
+     * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */
     private storageKeyForSecretKey;
     private storageKeys;

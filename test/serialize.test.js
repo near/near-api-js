@@ -2,20 +2,6 @@
 const fs = require('fs');
 const nearApi = require('../lib/index');
 
-class Test extends nearApi.utils.enums.Assignable {
-}
-
-test('serialize object', async () => {
-    const value = new Test({ x: 255, y: 20, z: '123', q: [1, 2, 3]});
-    const schema = new Map([[Test, {kind: 'struct', fields: [['x', 'u8'], ['y', 'u64'], ['z', 'string'], ['q', [3]]] }]]);
-    let buf = nearApi.utils.serialize.serialize(schema, value);
-    let new_value = nearApi.utils.serialize.deserialize(schema, Test, buf);
-    expect(new_value.x).toEqual(255);
-    expect(new_value.y.toString()).toEqual('20');
-    expect(new_value.z).toEqual('123');
-    expect(new_value.q).toEqual(new Uint8Array([1, 2, 3]));
-});
-
 test('serialize and sign multi-action tx', async() => {
     const keyStore = new nearApi.keyStores.InMemoryKeyStore();
     const keyPair = nearApi.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');

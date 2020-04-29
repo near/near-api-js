@@ -13,13 +13,13 @@
   "dependencies": {
     "@types/bn.js": "^4.11.5",
     "bn.js": "^5.0.0",
+    "borsh": "nearprotocol/borsh",
     "bs58": "^4.0.0",
     "error-polyfill": "^0.1.2",
     "http-errors": "^1.7.2",
     "js-sha256": "^0.9.0",
     "mustache": "^4.0.0",
     "node-fetch": "^2.3.0",
-    "text-encoding-utf-8": "^1.0.2",
     "tweetnacl": "^1.0.1"
   },
   "devDependencies": {
