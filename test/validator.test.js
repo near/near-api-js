@@ -14,3 +14,21 @@ test('find seat price', async () => {
     expect(() => {nearApi.validators.findSeatPrice(
         [{ stake: "1" }, { stake: "1" }, { stake: "2" }], 100)}).toThrow();
 });
+
+test('diff validators', async () => {
+    expect(nearApi.validators.diffEpochValidators(
+        [{account_id: "x", stake: "10"}],
+        [{ account_id: "x", stake: "10" }]
+    )).toEqual({newValidators: [], removedValidators: [], changedValidators: []});
+    expect(nearApi.validators.diffEpochValidators(
+        [{ account_id: "x", stake: "10" }, { account_id: "y", stake: "10" }],
+        [{ account_id: "x", stake: "11" }, { account_id: "z", stake: "11" }]
+    )).toEqual({
+        newValidators: [{ account_id: "z", stake: "11" }],
+        removedValidators: [{ account_id: "y", stake: "10" }],
+        changedValidators: [{ 
+            current: { account_id: "x", stake: "10" },
+            next: { account_id: "x", stake: "11" }
+        }]
+    });
+});
