@@ -1,6 +1,6 @@
 import {
     Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
-    BlockResult, ChunkId, ChunkResult, adaptTransactionResult
+    BlockResult, ChunkId, ChunkResult, adaptTransactionResult, EpochValidatorInfo
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -95,6 +95,15 @@ export class JsonRpcProvider extends Provider {
      */
     async chunk(chunkId: ChunkId): Promise<ChunkResult> {
         return this.sendJsonRpc('chunk', [chunkId]);
+    }
+
+    /**
+     * Query validators of the epoch defined by given block id.
+     * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#validators)
+     * @param blockId Block hash or height, or null for latest.
+     */
+    async validators(blockId: BlockId): Promise<EpochValidatorInfo> {
+        return this.sendJsonRpc('validators', [blockId]);
     }
 
     /**

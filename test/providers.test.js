@@ -31,6 +31,11 @@ test('json rpc fetch chunk info', withProvider(async (provider) => {
     expect(sameChunk.header.shard_id).toEqual(0);
 }));
 
+test('json rpc fetch validators info', withProvider(async (provider) => {
+    let validators = await provider.validators(null);
+    expect(validators.current_validators.length).toEqual(1);
+}));
+
 test('json rpc query account', withProvider(async (provider) => {
     let response = await provider.query('account/test.near', '');
     expect(response.code_hash).toEqual('11111111111111111111111111111111');
