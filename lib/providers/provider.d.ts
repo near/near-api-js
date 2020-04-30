@@ -113,6 +113,35 @@ export interface BlockResult {
     header: BlockHeader;
     transactions: Transaction[];
 }
+export interface CurrentEpochValidatorInfo {
+    account_id: string;
+    public_key: string;
+    is_slashed: boolean;
+    stake: string;
+    shards: number[];
+    num_produced_blocks: number;
+    num_expected_blocks: number;
+}
+export interface NextEpochValidatorInfo {
+    account_id: string;
+    public_key: string;
+    stake: string;
+    shards: number[];
+}
+export interface ValidatorStakeView {
+    account_id: string;
+    public_key: string;
+    stake: string;
+}
+export interface EpochValidatorInfo {
+    next_validators: NextEpochValidatorInfo[];
+    current_validators: CurrentEpochValidatorInfo[];
+    next_fisherman: ValidatorStakeView[];
+    current_fisherman: ValidatorStakeView[];
+    current_proposals: ValidatorStakeView[];
+    prev_epoch_kickout: ValidatorStakeView[];
+    epoch_start_height: number;
+}
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
@@ -121,6 +150,7 @@ export declare abstract class Provider {
     abstract query(path: string, data: string): Promise<any>;
     abstract block(blockId: BlockId): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
+    abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
 export declare function adaptTransactionResult(txResult: any): FinalExecutionOutcome;

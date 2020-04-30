@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockResult, ChunkId, ChunkResult } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError } from '../utils/errors';
@@ -53,6 +53,12 @@ export declare class JsonRpcProvider extends Provider {
      * @returns {Promise<ChunkResult>}
      */
     chunk(chunkId: ChunkId): Promise<ChunkResult>;
+    /**
+     * Query validators of the epoch defined by given block id.
+     * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#validators)
+     * @param blockId Block hash or height, or null for latest.
+     */
+    validators(blockId: BlockId): Promise<EpochValidatorInfo>;
     /**
      * Directly call the RPC specifying the method and params
      * @param method RPC method
