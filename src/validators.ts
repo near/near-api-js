@@ -13,7 +13,7 @@ export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpoch
     const num = new BN(numSeats);
     const stakesSum = stakes.reduce((a, b) => a.add(b));
     if (stakesSum.lt(num)) {
-        throw 'Stakes are below seats';
+        throw new Error('Stakes are below seats');
     }
     // assert stakesSum >= numSeats
     let left = new BN(1), right = stakesSum.add(new BN(1));
@@ -36,37 +36,30 @@ export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpoch
     return left;
 }
 
-export class ChangedValidatorInfo {
-    public current: CurrentEpochValidatorInfo;
-    public next: NextEpochValidatorInfo;
-
-    public constructor(init?: Partial<ChangedValidatorInfo>) {
-        Object.assign(this, init);
-    }
+export interface ChangedValidatorInfo {
+    current: CurrentEpochValidatorInfo;
+    next: NextEpochValidatorInfo;
 }
 
-export class EpochValidatorsDiff {
+export interface EpochValidatorsDiff {
     newValidators: NextEpochValidatorInfo[];
     removedValidators: CurrentEpochValidatorInfo[];
     changedValidators: ChangedValidatorInfo[];
-
-    public constructor(init?: Partial<EpochValidatorsDiff>) {
-        Object.assign(this, init);
-    }
 }
 
 /** Diff validators between current and next epoch.
  * Returns additions, subtractions and changes to validator set.
- * @params 
+ * @params currentValidators: list of current validators.
+ * @params nextValidators: list of next validators.
  */
 export function diffEpochValidators(currentValidators: CurrentEpochValidatorInfo[], nextValidators: NextEpochValidatorInfo[]): EpochValidatorsDiff {
     const validatorsMap = new Map<string, CurrentEpochValidatorInfo>();
-    currentValidators.forEach(v => validatorsMap[v.account_id] = v);
+    currentValidators.forEach(v => validatorsMap.set(v.account_id, v));
     const nextValidatorsSet = new Set(nextValidators.map(v => v.account_id));
-    return new EpochValidatorsDiff({ 
-        newValidators: nextValidators.filter(v => !(v.account_id in validatorsMap)),
+    return { 
+        newValidators: nextValidators.filter(v => !validatorsMap.has(v.account_id)),
         removedValidators: currentValidators.filter(v => !nextValidatorsSet.has(v.account_id)), 
-        changedValidators: nextValidators.filter(v => (v.account_id in validatorsMap && validatorsMap[v.account_id].stake != v.stake))
-            .map((v: NextEpochValidatorInfo) => new ChangedValidatorInfo({ current: validatorsMap[v.account_id], next: v }))
-    });
+        changedValidators: nextValidators.filter(v => (validatorsMap.has(v.account_id) && validatorsMap.get(v.account_id).stake != v.stake))
+            .map(v => ({ current: validatorsMap.get(v.account_id), next: v }))
+    };
 }

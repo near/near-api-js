@@ -6,19 +6,18 @@ import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from './providers/p
  * @params numSeats: number of seats.
  */
 export declare function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], numSeats: number): BN;
-export declare class ChangedValidatorInfo {
+export interface ChangedValidatorInfo {
     current: CurrentEpochValidatorInfo;
     next: NextEpochValidatorInfo;
-    constructor(init?: Partial<ChangedValidatorInfo>);
 }
-export declare class EpochValidatorsDiff {
+export interface EpochValidatorsDiff {
     newValidators: NextEpochValidatorInfo[];
     removedValidators: CurrentEpochValidatorInfo[];
     changedValidators: ChangedValidatorInfo[];
-    constructor(init?: Partial<EpochValidatorsDiff>);
 }
 /** Diff validators between current and next epoch.
  * Returns additions, subtractions and changes to validator set.
- * @params
+ * @params currentValidators: list of current validators.
+ * @params nextValidators: list of next validators.
  */
 export declare function diffEpochValidators(currentValidators: CurrentEpochValidatorInfo[], nextValidators: NextEpochValidatorInfo[]): EpochValidatorsDiff;
