@@ -30,7 +30,7 @@
     "bundlewatch": "^0.2.5",
     "eslint": "^6.5.1",
     "in-publish": "^2.0.0",
-    "jest": "^25.1.0",
+    "jest": "^26.0.0",
     "localstorage-memory": "^1.0.3",
     "near-hello": "^0.4.0-preview",
     "rimraf": "^3.0.0",
