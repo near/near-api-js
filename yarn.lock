@@ -4969,9 +4969,9 @@ tr46@^2.0.0:
     punycode "^2.1.1"
 
 ts-morph@^7.0.0:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-7.0.1.tgz#50ea7b48bf278ac8a9755038fc95de9754d66030"
-  integrity sha512-/HghaxCDqBKHWPI+n9/ueT4k5NKTxSsEfJMMUMLybTn7zvi9gcZ8ynnGYrQt5cfl2oapFe/X5VHjLcS1ugV4lg==
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-7.0.3.tgz#039d7ec583f44767bc4b88765fb1a6c14de3b97d"
+  integrity sha512-IKvg8h5yQBubv7XQ8ku5exqgQbF7YgWm5/whaR1GV9+vaHOhn0zj7+A2/t0UNfNafH0Fxxz7m7ZK+QioYc1Dfg==
   dependencies:
     "@dsherret/to-absolute-glob" "^2.0.2"
     "@ts-morph/common" "~0.4.0"
