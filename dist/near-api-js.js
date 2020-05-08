@@ -1439,7 +1439,7 @@ exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
 const key_pair_1 = require("../utils/key_pair");
-const LOCAL_STORAGE_KEY_PREFIX = 'nearlib:keystore:';
+const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     constructor(localStorage = window.localStorage, prefix = LOCAL_STORAGE_KEY_PREFIX) {
         super();
@@ -1521,7 +1521,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
      * Helper function to retrieve a local storage key
      * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the storage keythat's sought
-     * @returns {string} An example might be: `nearlib:keystore:near-friend:default`
+     * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */
     storageKeyForSecretKey(networkId, accountId) {
         return `${this.prefix}${accountId}:${networkId}`;
@@ -1878,8 +1878,8 @@ class Near {
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
-            // Hardcoded number below is roughly five times the gas cost to dev-deploy with near-shell
-            const initialBalance = config.initialBalance ? new bn_js_1.default(config.initialBalance) : new bn_js_1.default('100000000000000000');
+            // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times
+            const initialBalance = config.initialBalance ? new bn_js_1.default(config.initialBalance) : new bn_js_1.default('500000000000000000000000000');
             this.accountCreator = new account_creator_1.LocalAccountCreator(new account_1.Account(this.connection, config.masterAccount), initialBalance);
         }
         else if (config.helperUrl) {
@@ -1935,7 +1935,6 @@ class Near {
 exports.Near = Near;
 /**
  * Initialize connection to Near network.
- * @param config
  */
 async function connect(config) {
     // Try to find extra key in `KeyPath` if provided.
@@ -2057,6 +2056,14 @@ class JsonRpcProvider extends provider_1.Provider {
      */
     async chunk(chunkId) {
         return this.sendJsonRpc('chunk', [chunkId]);
+    }
+    /**
+     * Query validators of the epoch defined by given block id.
+     * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#validators)
+     * @param blockId Block hash or height, or null for latest.
+     */
+    async validators(blockId) {
+        return this.sendJsonRpc('validators', [blockId]);
     }
     /**
      * Directly call the RPC specifying the method and params
@@ -2629,7 +2636,11 @@ function trimTrailingZeroes(value) {
  * @returns string The value without the leading zeroes
  */
 function trimLeadingZeroes(value) {
-    return value.replace(/^0+/, '');
+    value = value.replace(/^0+/, '');
+    if (value === '') {
+        return '0';
+    }
+    return value;
 }
 /**
  * Returns a human-readable value with commas
