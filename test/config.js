@@ -37,7 +37,7 @@ module.exports = function getConfig(env) {
     case 'ci-betanet':
         return {
             networkId: 'shared-test-staging',
-            nodeUrl: 'http://rpc.ci-betanet.nearprotocol.com',
+            nodeUrl: 'https://rpc.ci-betanet.nearprotocol.com',
             masterAccount: 'test.near',
         };
     default:
