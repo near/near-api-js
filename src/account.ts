@@ -36,6 +36,16 @@ export interface AccountState {
     amount: string;
     staked: string;
     code_hash: string;
+    storage_usage: number;
+    locked: string;
+    balance: AccountBalance;
+}
+
+export interface AccountBalance {
+    total: string;
+    stateStaked: string;
+    staked: string;
+    available: string;
 }
 
 /**
@@ -70,6 +80,7 @@ export class Account {
      */
     async state(): Promise<AccountState> {
         await this.ready;
+        this._state.balance = await this.getAccountBalance();
         return this._state;
     }
 
@@ -323,5 +334,26 @@ export class Account {
             }
         });
         return result;
+    }
+
+    /**
+     * Returns calculated account balance
+     * @returns {Promise<AccountBalance>}
+     */
+    private async getAccountBalance(): Promise<AccountBalance> {
+        const genesisConfig = await this.connection.provider.genesisConfig();
+        
+        const costPerByte = new BN(genesisConfig.runtime_config.storage_amount_per_byte);
+        const stateStaked = new BN(this._state.storage_usage).mul(costPerByte);
+        const staked = new BN(this._state.locked);
+        const totalBalance = new BN(this._state.amount).add(staked);
+        const availableBalance = totalBalance.sub(staked).sub(stateStaked);
+
+        return {
+            total: totalBalance.toString(),
+            stateStaked: stateStaked.toString(),
+            staked: staked.toString(),
+            available: availableBalance.toString()
+        };
     }
 }
