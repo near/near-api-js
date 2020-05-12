@@ -156,6 +156,14 @@ export interface ValidatorStakeView {
     stake: string;
 }
 
+export interface GenesisConfig {
+    runtime_config: RuntimeConfig;
+}
+
+export interface RuntimeConfig {
+    storage_amount_per_byte: string;
+}
+
 export interface EpochValidatorInfo {
     // Validators for the current epoch.
     next_validators: NextEpochValidatorInfo[];
@@ -183,6 +191,7 @@ export abstract class Provider {
     abstract async block(blockId: BlockId): Promise<BlockResult>;
     abstract async chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract async validators(blockId: BlockId): Promise<EpochValidatorInfo>;
+    abstract async genesisConfig(): Promise<GenesisConfig>;
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {

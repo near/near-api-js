@@ -1,6 +1,7 @@
 import {
     Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
-    BlockResult, ChunkId, ChunkResult, adaptTransactionResult, EpochValidatorInfo
+    BlockResult, ChunkId, ChunkResult, adaptTransactionResult, EpochValidatorInfo,
+    GenesisConfig
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -104,6 +105,14 @@ export class JsonRpcProvider extends Provider {
      */
     async validators(blockId: BlockId): Promise<EpochValidatorInfo> {
         return this.sendJsonRpc('validators', [blockId]);
+    }
+
+    /**
+     * Gets EXPERIMENTAL_genesis_config from RPC
+     * @returns {Promise<GenesisConfig>}
+     */
+    async genesisConfig(): Promise<GenesisConfig> {
+        return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
     }
 
     /**
