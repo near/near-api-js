@@ -339,7 +339,7 @@ export class Account {
      * @returns {Promise<AccountBalance>}
      */
     async getAccountBalance(): Promise<AccountBalance> {
-        const genesisConfig = await this.connection.provider.genesisConfig();
+        const genesisConfig = await this.connection.provider.experimental_genesisConfig();
         const state = await this.state();
         
         const costPerByte = new BN(genesisConfig.runtime_config.storage_amount_per_byte);

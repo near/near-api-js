@@ -157,7 +157,7 @@ export declare abstract class Provider {
     abstract block(blockId: BlockId): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
-    abstract genesisConfig(): Promise<GenesisConfig>;
+    abstract experimental_genesisConfig(): Promise<GenesisConfig>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
 export declare function adaptTransactionResult(txResult: any): FinalExecutionOutcome;

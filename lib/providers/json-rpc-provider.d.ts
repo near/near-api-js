@@ -63,7 +63,7 @@ export declare class JsonRpcProvider extends Provider {
      * Gets EXPERIMENTAL_genesis_config from RPC
      * @returns {Promise<GenesisConfig>}
      */
-    genesisConfig(): Promise<GenesisConfig>;
+    experimental_genesisConfig(): Promise<GenesisConfig>;
     /**
      * Directly call the RPC specifying the method and params
      * @param method RPC method

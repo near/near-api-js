@@ -111,7 +111,7 @@ export class JsonRpcProvider extends Provider {
      * Gets EXPERIMENTAL_genesis_config from RPC
      * @returns {Promise<GenesisConfig>}
      */
-    async genesisConfig(): Promise<GenesisConfig> {
+    async experimental_genesisConfig(): Promise<GenesisConfig> {
         return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
     }
 

@@ -191,7 +191,7 @@ export abstract class Provider {
     abstract async block(blockId: BlockId): Promise<BlockResult>;
     abstract async chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract async validators(blockId: BlockId): Promise<EpochValidatorInfo>;
-    abstract async genesisConfig(): Promise<GenesisConfig>;
+    abstract async experimental_genesisConfig(): Promise<GenesisConfig>;
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
