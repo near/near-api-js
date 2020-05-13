@@ -67,7 +67,7 @@
     "files": [
       {
         "path": "dist/near-api-js.min.js",
-        "maxSize": "85kB"
+        "maxSize": "90kB"
       }
     ]
   },
