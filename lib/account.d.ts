@@ -4,10 +4,16 @@ import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
 export interface AccountState {
-    account_id: string;
     amount: string;
-    staked: string;
     code_hash: string;
+    storage_usage: number;
+    locked: string;
+}
+export interface AccountBalance {
+    total: string;
+    stateStaked: string;
+    staked: string;
+    available: string;
 }
 /**
  * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
@@ -119,4 +125,9 @@ export declare class Account {
      * @returns {Promise<any>}
      */
     getAccountDetails(): Promise<any>;
+    /**
+     * Returns calculated account balance
+     * @returns {Promise<AccountBalance>}
+     */
+    getAccountBalance(): Promise<AccountBalance>;
 }

@@ -32,10 +32,17 @@ function sleep(millis: number): Promise<any> {
 }
 
 export interface AccountState {
-    account_id: string;
     amount: string;
-    staked: string;
     code_hash: string;
+    storage_usage: number;
+    locked: string;
+}
+
+export interface AccountBalance {
+    total: string;
+    stateStaked: string;
+    staked: string;
+    available: string;
 }
 
 /**
@@ -323,5 +330,27 @@ export class Account {
             }
         });
         return result;
+    }
+
+    /**
+     * Returns calculated account balance
+     * @returns {Promise<AccountBalance>}
+     */
+    async getAccountBalance(): Promise<AccountBalance> {
+        const genesisConfig = await this.connection.provider.experimental_genesisConfig();
+        const state = await this.state();
+        
+        const costPerByte = new BN(genesisConfig.runtime_config.storage_amount_per_byte);
+        const stateStaked = new BN(state.storage_usage).mul(costPerByte);
+        const staked = new BN(state.locked);
+        const totalBalance = new BN(state.amount).add(staked);
+        const availableBalance = totalBalance.sub(staked).sub(stateStaked);
+
+        return {
+            total: totalBalance.toString(),
+            stateStaked: stateStaked.toString(),
+            staked: staked.toString(),
+            available: availableBalance.toString()
+        };
     }
 }

@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, GenesisConfig } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError } from '../utils/errors';
@@ -59,6 +59,11 @@ export declare class JsonRpcProvider extends Provider {
      * @param blockId Block hash or height, or null for latest.
      */
     validators(blockId: BlockId): Promise<EpochValidatorInfo>;
+    /**
+     * Gets EXPERIMENTAL_genesis_config from RPC
+     * @returns {Promise<GenesisConfig>}
+     */
+    experimental_genesisConfig(): Promise<GenesisConfig>;
     /**
      * Directly call the RPC specifying the method and params
      * @param method RPC method
