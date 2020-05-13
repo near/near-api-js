@@ -10,7 +10,6 @@ export interface AccountState {
     code_hash: string;
     storage_usage: number;
     locked: string;
-    balance: AccountBalance;
 }
 export interface AccountBalance {
     total: string;
@@ -132,5 +131,5 @@ export declare class Account {
      * Returns calculated account balance
      * @returns {Promise<AccountBalance>}
      */
-    private getAccountBalance;
+    getAccountBalance(): Promise<AccountBalance>;
 }
