@@ -4,9 +4,7 @@ import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
 export interface AccountState {
-    account_id: string;
     amount: string;
-    staked: string;
     code_hash: string;
     storage_usage: number;
     locked: string;

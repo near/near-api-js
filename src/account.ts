@@ -32,9 +32,7 @@ function sleep(millis: number): Promise<any> {
 }
 
 export interface AccountState {
-    account_id: string;
     amount: string;
-    staked: string;
     code_hash: string;
     storage_usage: number;
     locked: string;
