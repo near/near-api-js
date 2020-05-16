@@ -2,6 +2,7 @@
 import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
+import { Signer } from './signer';
 import { Contract } from './contract';
 import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { PublicKey } from './utils/key_pair';
@@ -9,7 +10,9 @@ import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './accoun
 import { InMemoryKeyStore, KeyStore, MergeKeyStore } from './key_stores';
 
 type NearConfig = {
-  deps: { keyStore: KeyStore }
+  keyStore?: KeyStore,
+  signer?: Signer,
+  deps?: { keyStore: KeyStore }
   helperUrl?: string
   initialBalance?: string
   masterAccount?: string
@@ -27,7 +30,7 @@ export class Near {
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl } },
-            signer: { type: 'InMemorySigner', keyStore: config.deps.keyStore }
+            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps.keyStore }
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.

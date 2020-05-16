@@ -1,12 +1,15 @@
 import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
+import { Signer } from './signer';
 import { Contract } from './contract';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator } from './account_creator';
 import { KeyStore } from './key_stores';
 declare type NearConfig = {
-    deps: {
+    keyStore?: KeyStore;
+    signer?: Signer;
+    deps?: {
         keyStore: KeyStore;
     };
     helperUrl?: string;
