@@ -140,6 +140,13 @@ export class Account {
 
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
+        // Find all failures in receipts, print out all except last which is handled later.
+        const receiptFailures = result.receipts_outcome.filter(o => typeof o.outcome.status === 'object' && typeof o.outcome.status.Failure === 'object').map(o => o.outcome.status.Failure);
+        if (receiptFailures.length > 1) {
+            for (let i = 0; i < receiptFailures.length - 1; i++) {
+                console.warn('Receipt failure: ', parseRpcError(receiptFailures[i]));
+            }
+        }
 
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
