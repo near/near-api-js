@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Account = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 const transaction_1 = require("./transaction");
 const providers_1 = require("./providers");
@@ -115,6 +114,13 @@ class Account {
         }
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
         this.printLogs(signedTx.transaction.receiverId, flatLogs);
+        // Find all failures in receipts, print out all except last which is handled later.
+        const receiptFailures = result.receipts_outcome.filter(o => typeof o.outcome.status === 'object' && typeof o.outcome.status.Failure === 'object').map(o => o.outcome.status.Failure);
+        if (receiptFailures.length > 1) {
+            for (let i = 0; i < receiptFailures.length - 1; i++) {
+                console.warn('Receipt failure: ', rpc_errors_1.parseRpcError(receiptFailures[i]));
+            }
+        }
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
@@ -315,7 +321,6 @@ exports.Account = Account;
 },{"./providers":17,"./transaction":22,"./utils/errors":24,"./utils/key_pair":27,"./utils/rpc_errors":29,"./utils/serialize":30,"bn.js":35,"buffer":39}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UrlAccountCreator = exports.LocalAccountCreator = exports.AccountCreator = void 0;
 const web_1 = require("./utils/web");
 /**
  * Account creator provides an interface for implementations to actually create accounts
@@ -361,27 +366,14 @@ exports.UrlAccountCreator = UrlAccountCreator;
 
 },{"./utils/web":31}],4:[function(require,module,exports){
 'use strict';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletConnection = exports.WalletAccount = exports.connect = exports.KeyPair = exports.Signer = exports.InMemorySigner = exports.Contract = exports.Connection = exports.Account = exports.transactions = exports.utils = exports.providers = exports.keyStores = exports.accountCreator = void 0;
 const providers = __importStar(require("./providers"));
 exports.providers = providers;
 const utils = __importStar(require("./utils"));
@@ -391,29 +383,28 @@ exports.keyStores = keyStores;
 const transactions = __importStar(require("./transaction"));
 exports.transactions = transactions;
 const account_1 = require("./account");
-Object.defineProperty(exports, "Account", { enumerable: true, get: function () { return account_1.Account; } });
+exports.Account = account_1.Account;
 const accountCreator = __importStar(require("./account_creator"));
 exports.accountCreator = accountCreator;
 const connection_1 = require("./connection");
-Object.defineProperty(exports, "Connection", { enumerable: true, get: function () { return connection_1.Connection; } });
+exports.Connection = connection_1.Connection;
 const signer_1 = require("./signer");
-Object.defineProperty(exports, "Signer", { enumerable: true, get: function () { return signer_1.Signer; } });
-Object.defineProperty(exports, "InMemorySigner", { enumerable: true, get: function () { return signer_1.InMemorySigner; } });
+exports.Signer = signer_1.Signer;
+exports.InMemorySigner = signer_1.InMemorySigner;
 const contract_1 = require("./contract");
-Object.defineProperty(exports, "Contract", { enumerable: true, get: function () { return contract_1.Contract; } });
+exports.Contract = contract_1.Contract;
 const key_pair_1 = require("./utils/key_pair");
-Object.defineProperty(exports, "KeyPair", { enumerable: true, get: function () { return key_pair_1.KeyPair; } });
+exports.KeyPair = key_pair_1.KeyPair;
 const near_1 = require("./near");
-Object.defineProperty(exports, "connect", { enumerable: true, get: function () { return near_1.connect; } });
+exports.connect = near_1.connect;
 // TODO: Deprecate and remove WalletAccount
 const wallet_account_1 = require("./wallet-account");
-Object.defineProperty(exports, "WalletAccount", { enumerable: true, get: function () { return wallet_account_1.WalletAccount; } });
-Object.defineProperty(exports, "WalletConnection", { enumerable: true, get: function () { return wallet_account_1.WalletConnection; } });
+exports.WalletAccount = wallet_account_1.WalletAccount;
+exports.WalletConnection = wallet_account_1.WalletConnection;
 
 },{"./account":2,"./account_creator":3,"./connection":5,"./contract":6,"./key_stores/browser-index":9,"./near":16,"./providers":17,"./signer":21,"./transaction":22,"./utils":26,"./utils/key_pair":27,"./wallet-account":32}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Connection = void 0;
 const providers_1 = require("./providers");
 const signer_1 = require("./signer");
 /**
@@ -468,7 +459,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Contract = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 const providers_1 = require("./providers");
 const errors_1 = require("./utils/errors");
@@ -1203,7 +1193,6 @@ module.exports={
 },{}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Deprecated = exports.DeleteAccountHasEnoughBalance = exports.LackBalanceForState = exports.UnsuitableStakingKey = exports.Timeout = exports.Closed = exports.TriesToUnstake = exports.TriesToStake = exports.SignerDoesNotExist = exports.RequiresFullAccess = exports.RentUnpaid = exports.ReceiverMismatch = exports.NotEnoughBalance = exports.NotEnoughAllowance = exports.MethodNameMismatch = exports.InvalidSignerId = exports.InvalidSignature = exports.InvalidReceiverId = exports.InvalidNonce = exports.InvalidChain = exports.Expired = exports.DepositWithFunctionCall = exports.DeleteKeyDoesNotExist = exports.DeleteAccountStaking = exports.DeleteAccountHasRent = exports.CreateAccountNotAllowed = exports.CostOverflow = exports.BalanceMismatchError = exports.AddKeyAlreadyExists = exports.ActorNoPermission = exports.AccountDoesNotExist = exports.AccountAlreadyExists = exports.AccessKeyNotFound = exports.InvalidAccessKeyError = exports.InvalidTxError = exports.WasmerCompileError = exports.WasmTrap = exports.ValueLengthExceeded = exports.TotalLogLengthExceeded = exports.StackHeightInstrumentation = exports.Serialization = exports.ReturnedValueLengthExceeded = exports.ProhibitedInView = exports.NumberPromisesExceeded = exports.NumberOfLogsExceeded = exports.NumberInputDataDependenciesExceeded = exports.MethodUTF8Error = exports.MethodNotFound = exports.MethodInvalidSignature = exports.MethodEmptyName = exports.MethodResolveError = exports.MemoryAccessViolation = exports.Memory = exports.LinkError = exports.KeyLengthExceeded = exports.IteratorWasInvalidated = exports.InvalidRegisterId = exports.InvalidReceiptIndex = exports.InvalidPublicKey = exports.InvalidPromiseResultIndex = exports.InvalidPromiseIndex = exports.InvalidMethodName = exports.InvalidIteratorIndex = exports.InvalidAccountId = exports.InternalMemoryDeclared = exports.IntegerOverflow = exports.Instantiate = exports.GuestPanic = exports.GasLimitExceeded = exports.GasInstrumentation = exports.GasExceeded = exports.EmptyMethodName = exports.Deserialization = exports.PrepareError = exports.ContractSizeExceeded = exports.CodeDoesNotExist = exports.CompilationError = exports.CannotReturnJointPromise = exports.CannotAppendActionToJointPromise = exports.BalanceExceeded = exports.BadUTF8 = exports.BadUTF16 = exports.HostError = exports.FunctionCallError = exports.ActionError = exports.TxExecutionError = exports.ServerError = void 0;
 const errors_1 = require("../utils/errors");
 class ServerError extends errors_1.TypedError {
 }
@@ -1470,20 +1459,18 @@ exports.Deprecated = Deprecated;
 },{"../utils/errors":24}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MergeKeyStore = exports.BrowserLocalStorageKeyStore = exports.InMemoryKeyStore = exports.KeyStore = void 0;
 const keystore_1 = require("./keystore");
-Object.defineProperty(exports, "KeyStore", { enumerable: true, get: function () { return keystore_1.KeyStore; } });
+exports.KeyStore = keystore_1.KeyStore;
 const in_memory_key_store_1 = require("./in_memory_key_store");
-Object.defineProperty(exports, "InMemoryKeyStore", { enumerable: true, get: function () { return in_memory_key_store_1.InMemoryKeyStore; } });
+exports.InMemoryKeyStore = in_memory_key_store_1.InMemoryKeyStore;
 const browser_local_storage_key_store_1 = require("./browser_local_storage_key_store");
-Object.defineProperty(exports, "BrowserLocalStorageKeyStore", { enumerable: true, get: function () { return browser_local_storage_key_store_1.BrowserLocalStorageKeyStore; } });
+exports.BrowserLocalStorageKeyStore = browser_local_storage_key_store_1.BrowserLocalStorageKeyStore;
 const merge_key_store_1 = require("./merge_key_store");
-Object.defineProperty(exports, "MergeKeyStore", { enumerable: true, get: function () { return merge_key_store_1.MergeKeyStore; } });
+exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 
 },{"./browser_local_storage_key_store":10,"./in_memory_key_store":11,"./keystore":13,"./merge_key_store":14}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BrowserLocalStorageKeyStore = void 0;
 const keystore_1 = require("./keystore");
 const key_pair_1 = require("../utils/key_pair");
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
@@ -1584,7 +1571,6 @@ exports.BrowserLocalStorageKeyStore = BrowserLocalStorageKeyStore;
 },{"../utils/key_pair":27,"./keystore":13}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InMemoryKeyStore = void 0;
 const keystore_1 = require("./keystore");
 const key_pair_1 = require("../utils/key_pair");
 /**
@@ -1664,22 +1650,20 @@ exports.InMemoryKeyStore = InMemoryKeyStore;
 },{"../utils/key_pair":27,"./keystore":13}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MergeKeyStore = exports.UnencryptedFileSystemKeyStore = exports.BrowserLocalStorageKeyStore = exports.InMemoryKeyStore = exports.KeyStore = void 0;
 const keystore_1 = require("./keystore");
-Object.defineProperty(exports, "KeyStore", { enumerable: true, get: function () { return keystore_1.KeyStore; } });
+exports.KeyStore = keystore_1.KeyStore;
 const in_memory_key_store_1 = require("./in_memory_key_store");
-Object.defineProperty(exports, "InMemoryKeyStore", { enumerable: true, get: function () { return in_memory_key_store_1.InMemoryKeyStore; } });
+exports.InMemoryKeyStore = in_memory_key_store_1.InMemoryKeyStore;
 const browser_local_storage_key_store_1 = require("./browser_local_storage_key_store");
-Object.defineProperty(exports, "BrowserLocalStorageKeyStore", { enumerable: true, get: function () { return browser_local_storage_key_store_1.BrowserLocalStorageKeyStore; } });
+exports.BrowserLocalStorageKeyStore = browser_local_storage_key_store_1.BrowserLocalStorageKeyStore;
 const unencrypted_file_system_keystore_1 = require("./unencrypted_file_system_keystore");
-Object.defineProperty(exports, "UnencryptedFileSystemKeyStore", { enumerable: true, get: function () { return unencrypted_file_system_keystore_1.UnencryptedFileSystemKeyStore; } });
+exports.UnencryptedFileSystemKeyStore = unencrypted_file_system_keystore_1.UnencryptedFileSystemKeyStore;
 const merge_key_store_1 = require("./merge_key_store");
-Object.defineProperty(exports, "MergeKeyStore", { enumerable: true, get: function () { return merge_key_store_1.MergeKeyStore; } });
+exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 
 },{"./browser_local_storage_key_store":10,"./in_memory_key_store":11,"./keystore":13,"./merge_key_store":14,"./unencrypted_file_system_keystore":15}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KeyStore = void 0;
 /**
  * Key store interface for `InMemorySigner`.
  */
@@ -1690,7 +1674,6 @@ exports.KeyStore = KeyStore;
 },{}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MergeKeyStore = void 0;
 const keystore_1 = require("./keystore");
 /**
  * Keystore which can be used to merge multiple key stores into one virtual key store.
@@ -1781,7 +1764,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UnencryptedFileSystemKeyStore = exports.readKeyFile = exports.loadJsonFile = void 0;
 const fs_1 = __importDefault(require("fs"));
 const util_1 = require("util");
 const key_pair_1 = require("../utils/key_pair");
@@ -1913,7 +1895,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connect = exports.Near = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 const account_1 = require("./account");
 const connection_1 = require("./connection");
@@ -2017,24 +1998,22 @@ exports.connect = connect;
 },{"./account":2,"./account_creator":3,"./connection":5,"./contract":6,"./key_stores":12,"./key_stores/unencrypted_file_system_keystore":15,"bn.js":35}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TypedError = exports.getTransactionLastResult = exports.FinalExecutionStatusBasic = exports.JsonRpcProvider = exports.Provider = void 0;
 const provider_1 = require("./provider");
-Object.defineProperty(exports, "Provider", { enumerable: true, get: function () { return provider_1.Provider; } });
-Object.defineProperty(exports, "getTransactionLastResult", { enumerable: true, get: function () { return provider_1.getTransactionLastResult; } });
-Object.defineProperty(exports, "FinalExecutionStatusBasic", { enumerable: true, get: function () { return provider_1.FinalExecutionStatusBasic; } });
+exports.Provider = provider_1.Provider;
+exports.getTransactionLastResult = provider_1.getTransactionLastResult;
+exports.FinalExecutionStatusBasic = provider_1.FinalExecutionStatusBasic;
 const json_rpc_provider_1 = require("./json-rpc-provider");
-Object.defineProperty(exports, "JsonRpcProvider", { enumerable: true, get: function () { return json_rpc_provider_1.JsonRpcProvider; } });
-Object.defineProperty(exports, "TypedError", { enumerable: true, get: function () { return json_rpc_provider_1.TypedError; } });
+exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
+exports.TypedError = json_rpc_provider_1.TypedError;
 
 },{"./json-rpc-provider":18,"./provider":19}],18:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JsonRpcProvider = exports.TypedError = void 0;
 const provider_1 = require("./provider");
 const web_1 = require("../utils/web");
 const errors_1 = require("../utils/errors");
-Object.defineProperty(exports, "TypedError", { enumerable: true, get: function () { return errors_1.TypedError; } });
+exports.TypedError = errors_1.TypedError;
 const serialize_1 = require("../utils/serialize");
 const rpc_errors_1 = require("../utils/rpc_errors");
 /// Keep ids unique across all connections.
@@ -2170,7 +2149,6 @@ exports.JsonRpcProvider = JsonRpcProvider;
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adaptTransactionResult = exports.getTransactionLastResult = exports.Provider = exports.FinalExecutionStatusBasic = exports.ExecutionStatusBasic = void 0;
 var ExecutionStatusBasic;
 (function (ExecutionStatusBasic) {
     ExecutionStatusBasic["Unknown"] = "Unknown";
@@ -2289,7 +2267,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InMemorySigner = exports.Signer = void 0;
 const js_sha256_1 = __importDefault(require("js-sha256"));
 const key_pair_1 = require("./utils/key_pair");
 /**
@@ -2356,7 +2333,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signTransaction = exports.createTransaction = exports.SCHEMA = exports.Action = exports.SignedTransaction = exports.Transaction = exports.deleteAccount = exports.deleteKey = exports.addKey = exports.stake = exports.transfer = exports.functionCall = exports.deployContract = exports.createAccount = exports.IAction = exports.functionCallAccessKey = exports.fullAccessKey = exports.AccessKey = exports.AccessKeyPermission = exports.FullAccessPermission = exports.FunctionCallPermission = void 0;
 const js_sha256_1 = __importDefault(require("js-sha256"));
 const enums_1 = require("./utils/enums");
 const serialize_1 = require("./utils/serialize");
@@ -2569,7 +2545,6 @@ exports.signTransaction = signTransaction;
 },{"./utils/enums":23,"./utils/key_pair":27,"./utils/serialize":30,"js-sha256":58}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Assignable = exports.Enum = void 0;
 class Enum {
     constructor(properties) {
         if (Object.keys(properties).length !== 1) {
@@ -2594,7 +2569,6 @@ exports.Assignable = Assignable;
 },{}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TypedError = exports.ArgumentTypeError = exports.PositionalArgsError = void 0;
 class PositionalArgsError extends Error {
     constructor() {
         super('Contract method calls expect named arguments wrapped in object, e.g. { argName1: argValue1, argName2: argValue2 }');
@@ -2621,7 +2595,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseNearAmount = exports.formatNearAmount = exports.NEAR_NOMINATION = exports.NEAR_NOMINATION_EXP = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
@@ -2725,27 +2698,14 @@ function formatWithCommas(value) {
 
 },{"bn.js":35}],26:[function(require,module,exports){
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rpc_errors = exports.KeyPairEd25519 = exports.KeyPair = exports.PublicKey = exports.format = exports.enums = exports.web = exports.serialize = exports.network = exports.key_pair = void 0;
 const key_pair = __importStar(require("./key_pair"));
 exports.key_pair = key_pair;
 const network = __importStar(require("./network"));
@@ -2761,9 +2721,9 @@ exports.format = format;
 const rpc_errors = __importStar(require("./rpc_errors"));
 exports.rpc_errors = rpc_errors;
 const key_pair_1 = require("./key_pair");
-Object.defineProperty(exports, "PublicKey", { enumerable: true, get: function () { return key_pair_1.PublicKey; } });
-Object.defineProperty(exports, "KeyPair", { enumerable: true, get: function () { return key_pair_1.KeyPair; } });
-Object.defineProperty(exports, "KeyPairEd25519", { enumerable: true, get: function () { return key_pair_1.KeyPairEd25519; } });
+exports.PublicKey = key_pair_1.PublicKey;
+exports.KeyPair = key_pair_1.KeyPair;
+exports.KeyPairEd25519 = key_pair_1.KeyPairEd25519;
 
 },{"./enums":23,"./format":25,"./key_pair":27,"./network":28,"./rpc_errors":29,"./serialize":30,"./web":31}],27:[function(require,module,exports){
 "use strict";
@@ -2771,7 +2731,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KeyPairEd25519 = exports.KeyPair = exports.PublicKey = exports.KeyType = void 0;
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const serialize_1 = require("./serialize");
 const enums_1 = require("./enums");
@@ -2899,38 +2858,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 },{}],29:[function(require,module,exports){
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatError = exports.parseRpcError = void 0;
 const mustache_1 = __importDefault(require("mustache"));
 const rpc_error_schema_json_1 = __importDefault(require("../generated/rpc_error_schema.json"));
 const error_messages_json_1 = __importDefault(require("../res/error_messages.json"));
 const CLASSMAP = __importStar(require("../generated/rpc_error_types"));
-__exportStar(require("../generated/rpc_error_types"), exports);
+__export(require("../generated/rpc_error_types"));
 function parseRpcError(errorObj) {
     const result = {};
     const errorClassName = walkSubtype(errorObj, rpc_error_schema_json_1.default.schema, result, '');
@@ -3005,36 +2951,23 @@ function isString(n) {
 },{"../generated/rpc_error_schema.json":7,"../generated/rpc_error_types":8,"../res/error_messages.json":20,"mustache":59}],30:[function(require,module,exports){
 (function (global,Buffer){
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deserialize = exports.serialize = exports.BinaryReader = exports.BinaryWriter = exports.BorshError = exports.base_decode = exports.base_encode = void 0;
 const bs58_1 = __importDefault(require("bs58"));
 const bn_js_1 = __importDefault(require("bn.js"));
 // TODO: Make sure this polyfill not included when not required
@@ -3139,84 +3072,81 @@ function handlingRangeError(target, propertyKey, propertyDescriptor) {
         }
     };
 }
-let BinaryReader = /** @class */ (() => {
-    class BinaryReader {
-        constructor(buf) {
-            this.buf = buf;
-            this.offset = 0;
+class BinaryReader {
+    constructor(buf) {
+        this.buf = buf;
+        this.offset = 0;
+    }
+    read_u8() {
+        const value = this.buf.readUInt8(this.offset);
+        this.offset += 1;
+        return value;
+    }
+    read_u32() {
+        const value = this.buf.readUInt32LE(this.offset);
+        this.offset += 4;
+        return value;
+    }
+    read_u64() {
+        const buf = this.read_buffer(8);
+        return new bn_js_1.default(buf, 'le');
+    }
+    read_u128() {
+        const buf = this.read_buffer(16);
+        return new bn_js_1.default(buf, 'le');
+    }
+    read_buffer(len) {
+        if ((this.offset + len) > this.buf.length) {
+            throw new BorshError(`Expected buffer length ${len} isn't within bounds`);
         }
-        read_u8() {
-            const value = this.buf.readUInt8(this.offset);
-            this.offset += 1;
-            return value;
+        const result = this.buf.slice(this.offset, this.offset + len);
+        this.offset += len;
+        return result;
+    }
+    read_string() {
+        const len = this.read_u32();
+        const buf = this.read_buffer(len);
+        try {
+            // NOTE: Using TextDecoder to fail on invalid UTF-8
+            return textDecoder.decode(buf);
         }
-        read_u32() {
-            const value = this.buf.readUInt32LE(this.offset);
-            this.offset += 4;
-            return value;
-        }
-        read_u64() {
-            const buf = this.read_buffer(8);
-            return new bn_js_1.default(buf, 'le');
-        }
-        read_u128() {
-            const buf = this.read_buffer(16);
-            return new bn_js_1.default(buf, 'le');
-        }
-        read_buffer(len) {
-            if ((this.offset + len) > this.buf.length) {
-                throw new BorshError(`Expected buffer length ${len} isn't within bounds`);
-            }
-            const result = this.buf.slice(this.offset, this.offset + len);
-            this.offset += len;
-            return result;
-        }
-        read_string() {
-            const len = this.read_u32();
-            const buf = this.read_buffer(len);
-            try {
-                // NOTE: Using TextDecoder to fail on invalid UTF-8
-                return textDecoder.decode(buf);
-            }
-            catch (e) {
-                throw new BorshError(`Error decoding UTF-8 string: ${e}`);
-            }
-        }
-        read_fixed_array(len) {
-            return new Uint8Array(this.read_buffer(len));
-        }
-        read_array(fn) {
-            const len = this.read_u32();
-            const result = Array();
-            for (let i = 0; i < len; ++i) {
-                result.push(fn());
-            }
-            return result;
+        catch (e) {
+            throw new BorshError(`Error decoding UTF-8 string: ${e}`);
         }
     }
-    __decorate([
-        handlingRangeError
-    ], BinaryReader.prototype, "read_u8", null);
-    __decorate([
-        handlingRangeError
-    ], BinaryReader.prototype, "read_u32", null);
-    __decorate([
-        handlingRangeError
-    ], BinaryReader.prototype, "read_u64", null);
-    __decorate([
-        handlingRangeError
-    ], BinaryReader.prototype, "read_u128", null);
-    __decorate([
-        handlingRangeError
-    ], BinaryReader.prototype, "read_string", null);
-    __decorate([
-        handlingRangeError
-    ], BinaryReader.prototype, "read_fixed_array", null);
-    __decorate([
-        handlingRangeError
-    ], BinaryReader.prototype, "read_array", null);
-    return BinaryReader;
-})();
+    read_fixed_array(len) {
+        return new Uint8Array(this.read_buffer(len));
+    }
+    read_array(fn) {
+        const len = this.read_u32();
+        const result = Array();
+        for (let i = 0; i < len; ++i) {
+            result.push(fn());
+        }
+        return result;
+    }
+}
+__decorate([
+    handlingRangeError
+], BinaryReader.prototype, "read_u8", null);
+__decorate([
+    handlingRangeError
+], BinaryReader.prototype, "read_u32", null);
+__decorate([
+    handlingRangeError
+], BinaryReader.prototype, "read_u64", null);
+__decorate([
+    handlingRangeError
+], BinaryReader.prototype, "read_u128", null);
+__decorate([
+    handlingRangeError
+], BinaryReader.prototype, "read_string", null);
+__decorate([
+    handlingRangeError
+], BinaryReader.prototype, "read_fixed_array", null);
+__decorate([
+    handlingRangeError
+], BinaryReader.prototype, "read_array", null);
 exports.BinaryReader = BinaryReader;
 function serializeField(schema, fieldName, value, fieldType, writer) {
     try {
@@ -3355,7 +3285,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchJson = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
 // TODO: Move into separate module and exclude node-fetch kludge from browser build
 let fetch;
@@ -3406,7 +3335,6 @@ exports.fetchJson = fetchJson;
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletAccount = exports.WalletConnection = void 0;
 const account_1 = require("./account");
 const transaction_1 = require("./transaction");
 const utils_1 = require("./utils");
@@ -11801,7 +11729,6 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],65:[function(require,module,exports){
-/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
