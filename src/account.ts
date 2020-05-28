@@ -97,7 +97,7 @@ export class Account {
         }
     }
 
-    private printLogs(contractId: string, logs: string[], prefix?: string) {
+    private printLogs(contractId: string, logs: string[], prefix: string = '') {
         for (const log of logs) {
             console.log(`${prefix}Log [${contractId}]: ${log}`);
         }
