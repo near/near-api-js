@@ -140,9 +140,11 @@ describe('with deploy contract', () => {
     test('can get logs from method result', async () => {
         await contract.generateLogs();
         if (startFromVersion('0.4.11')) {
-            expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
+            expect(logs.length).toEqual(3);
+            expect(logs[0].substr(0, 8)).toEqual('Receipt:');
+            expect(logs.slice(1)).toEqual([`\tLog [${contractId}]: log1`, `\tLog [${contractId}]: log2`]);
         } else {
-            expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
+            expect(logs).toEqual([`\tLog [${contractId}]: LOG: log1`, `\tLog [${contractId}]: LOG: log2`]);
         }
 
     });
@@ -151,9 +153,9 @@ describe('with deploy contract', () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
         if (startFromVersion('0.4.11')) {
-            expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
+            expect(logs).toEqual([`Log [${contractId}]: loooog1`, `Log [${contractId}]: loooog2`]);
         } else {
-            expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
+            expect(logs).toEqual([`Log [${contractId}]: LOG: loooog1`, `Log [${contractId}]: LOG: loooog2`]);
         }
     });
 
@@ -164,11 +166,11 @@ describe('with deploy contract', () => {
             await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
         }
         if (startFromVersion('0.4.11')) {
-            expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
+            expect(logs[1]).toEqual(`\tLog [${contractId}]: log before assert`);
         } else {
-            expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
+            expect(logs[1]).toEqual(`\tLog [${contractId}]: LOG: log before assert`);
         }
-        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
+        expect(logs[2]).toMatch(new RegExp(`^\\tLog \\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
     });
 
     test('test set/remove', async () => {
