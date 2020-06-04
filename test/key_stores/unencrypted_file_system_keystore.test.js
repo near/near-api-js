@@ -18,11 +18,7 @@ describe('Unencrypted file system keystore', () => {
         ctx.keyStore = new UnencryptedFileSystemKeyStore(KEYSTORE_PATH);
     });
 
-    it('test get key', async () => {
-        const key1 = KeyPair.fromRandom();
-        await ctx.keyStore.setKey('network', 'account', key1);
-        expect(await ctx.keyStore.getKey('network', 'account')).toEqual(key1);
-    });
+    require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
 
     it('test public key exists', async () => {
         const key1 = KeyPair.fromRandom();
@@ -32,6 +28,4 @@ describe('Unencrypted file system keystore', () => {
         const accountInfo = JSON.parse(content.toString());
         expect(accountInfo.public_key).toEqual(key1.getPublicKey().toString());
     });
-
-    require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
 });
