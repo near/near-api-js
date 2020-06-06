@@ -90,7 +90,7 @@ describe('with deploy contract', () => {
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await workingAccount.createAndDeployContract(contractId, newPublicKey, data, testUtils.INITIAL_BALANCE);
         contract = new nearApi.Contract(workingAccount, contractId, {
-            viewMethods: ['hello', 'getValue', 'getAllKeys', 'returnHiWithLogs'],
+            viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']
         });
     });
@@ -170,7 +170,7 @@ describe('with deploy contract', () => {
         } else {
             expect(logs[1]).toEqual(`\tLog [${contractId}]: LOG: log before assert`);
         }
-        expect(logs[2]).toMatch(new RegExp(`^\\tLog \\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
+        expect(logs[2]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly\/index\.ts" line: \\d+ col: \\d+$`));
     });
 
     test('test set/remove', async () => {
