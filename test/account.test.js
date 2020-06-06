@@ -20,6 +20,10 @@ beforeAll(async () => {
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
 });
 
+afterAll(async () => {
+    await testUtils.deleteAccount(workingAccount);
+});
+
 test('view pre-defined account works and returns correct name', async () => {
     let status = await workingAccount.state();
     expect(status.code_hash).toEqual('11111111111111111111111111111111');
@@ -91,7 +95,7 @@ describe('with deploy contract', () => {
         await workingAccount.createAndDeployContract(contractId, newPublicKey, data, testUtils.INITIAL_BALANCE);
         contract = new nearApi.Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
-            changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']
+            changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
         });
     });
 
@@ -105,6 +109,20 @@ describe('with deploy contract', () => {
 
     afterEach(async () => {
         console.log = oldLog;
+    });
+
+    test('cross-contact assertion and panic', async () => {
+        await expect(contract.crossContract()).rejects.toThrow(/Smart contract panicked: expected to fail./);
+        expect(logs.length).toEqual(7);
+        expect(logs[0]).toMatch(new RegExp('^Receipts: \\w+, \\w+, \\w+$'));
+        //	Log [test_contract1591458385248117]: test_contract1591458385248117
+        expect(logs[1]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ${contractId}$`));
+        expect(logs[2]).toMatch(new RegExp('^Receipt: \\w+$'));
+        // 	Log [test_contract1591459677449181]: log before planned panic
+        expect(logs[3]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before planned panic$`));
+        expect(logs[4]).toMatch(new RegExp('^Receipt: \\w+$'));
+        expect(logs[5]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before assert$`));
+        expect(logs[6]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly\/index\.ts" line: \\d+ col: \\d+$`));
     });
 
     test('make function calls via account', async() => {

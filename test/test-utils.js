@@ -33,6 +33,10 @@ async function createAccount(masterAccount, options = { amount: INITIAL_BALANCE,
     return new nearApi.Account(masterAccount.connection, newAccountName);
 }
 
+async function deleteAccount(testAccount) {
+    await testAccount.deleteAccount(testAccountName);
+}
+
 async function deployContract(workingAccount, contractId, options = { amount: INITIAL_BALANCE.div(new BN(10)) }) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = [...(await fs.readFile(HELLO_WASM_PATH))];
@@ -58,4 +62,4 @@ async function ensureDir(dirpath) {
 }
 
 module.exports = { setUpTestConnection, networkId, testAccountName, INITIAL_BALANCE,
-    generateUniqueString, createAccount, deployContract, sleep, ensureDir };
+    generateUniqueString, createAccount, deleteAccount, deployContract, sleep, ensureDir };
