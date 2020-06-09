@@ -1,7 +1,7 @@
 import {
     Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
     BlockResult, ChunkId, ChunkResult, adaptTransactionResult, EpochValidatorInfo,
-    GenesisConfig
+    GenesisConfig, LightClientProof, LightClientProofRequest
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -116,11 +116,19 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
+     * Gets EXPERIMENTAL_light_client_proof from RPC
+     * @returns {Promise<LightClientProof>}
+     */
+    async experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
+        return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
+    }
+
+    /**
      * Directly call the RPC specifying the method and params
      * @param method RPC method
      * @param params Parameters to the method
      */
-    async sendJsonRpc(method: string, params: any[]): Promise<any> {
+    async sendJsonRpc(method: string, params: any): Promise<any> {
         const request = {
             method,
             params,
