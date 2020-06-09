@@ -116,7 +116,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Gets EXPERIMENTAL_light_client_proof from RPC
+     * Gets EXPERIMENTAL_light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      * @returns {Promise<LightClientProof>}
      */
     async experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
