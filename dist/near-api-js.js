@@ -23,10 +23,11 @@ const rpc_errors_1 = require("./utils/rpc_errors");
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-// Default value is set to equal to max_prepaid_gas as discussed here:
-// https://github.com/near/near-api-js/pull/191#discussion_r369671912
-const DEFAULT_FUNC_CALL_GAS = new bn_js_1.default('10000000000000000');
-// Default number of retries before giving up on a transactioin.
+// Due to protocol changes that charge upfront for the maximum possible gas price inflation due to
+// full blocks, the price of max_prepaid_gas is decreased to `300 * 10**12`.
+// For discussion see https://github.com/nearprotocol/NEPs/issues/67
+const DEFAULT_FUNC_CALL_GAS = new bn_js_1.default('300000000000000');
+// Default number of retries before giving up on a transaction.
 const TX_STATUS_RETRY_NUMBER = 10;
 // Default wait until next retry in millis.
 const TX_STATUS_RETRY_WAIT = 500;
@@ -1838,7 +1839,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
      */
     async setKey(networkId, accountId, keyPair) {
         await ensureDir(`${this.keyDir}/${networkId}`);
-        const content = { account_id: accountId, private_key: keyPair.toString() };
+        const content = { account_id: accountId, public_key: keyPair.getPublicKey().toString(), private_key: keyPair.toString() };
         await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content));
     }
     /**
