@@ -5,7 +5,7 @@ window.nearApi = require('./lib/browser-index');
 window.Buffer = Buffer;
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/browser-index":4,"buffer":39,"error-polyfill":46}],2:[function(require,module,exports){
+},{"./lib/browser-index":4,"buffer":39,"error-polyfill":45}],2:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -2098,11 +2098,9 @@ class JsonRpcProvider extends provider_1.Provider {
     /**
      * Query for block info from the RPC
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#block)
-     * @param blockId Block hash or height
-     * @returns {Promise<BlockResult>}
      */
-    async block(blockId) {
-        return this.sendJsonRpc('block', [blockId]);
+    async block(blockQuery) {
+        return this.sendJsonRpc('block', provider_1.blockParamsFor(blockQuery));
     }
     /**
      * Queries for details of a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
@@ -2111,15 +2109,14 @@ class JsonRpcProvider extends provider_1.Provider {
      * @returns {Promise<ChunkResult>}
      */
     async chunk(chunkId) {
-        return this.sendJsonRpc('chunk', [chunkId]);
+        return this.sendJsonRpc('chunk', { chunk_id: chunkId });
     }
     /**
      * Query validators of the epoch defined by given block id.
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#validators)
-     * @param blockId Block hash or height, or null for latest.
      */
-    async validators(blockId) {
-        return this.sendJsonRpc('validators', [blockId]);
+    async validators(blockQuery) {
+        return this.sendJsonRpc('validators', provider_1.blockParamsFor(blockQuery));
     }
     /**
      * Gets EXPERIMENTAL_genesis_config from RPC
@@ -2171,7 +2168,18 @@ exports.JsonRpcProvider = JsonRpcProvider;
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adaptTransactionResult = exports.getTransactionLastResult = exports.Provider = exports.FinalExecutionStatusBasic = exports.ExecutionStatusBasic = void 0;
+exports.adaptTransactionResult = exports.getTransactionLastResult = exports.Provider = exports.FinalExecutionStatusBasic = exports.ExecutionStatusBasic = exports.blockParamsFor = void 0;
+function blockParamsFor(blockQuery) {
+    const finality = blockQuery.finality;
+    let block_id;
+    if (typeof blockQuery !== 'object') {
+        // deprecation warning
+        block_id = blockQuery;
+    }
+    block_id = block_id || blockQuery.blockId;
+    return { block_id, finality };
+}
+exports.blockParamsFor = blockParamsFor;
 var ExecutionStatusBasic;
 (function (ExecutionStatusBasic) {
     ExecutionStatusBasic["Unknown"] = "Unknown";
@@ -3403,7 +3411,7 @@ async function fetchJson(connection, json) {
 }
 exports.fetchJson = fetchJson;
 
-},{"http":37,"http-errors":55,"https":37,"node-fetch":37}],32:[function(require,module,exports){
+},{"http":37,"http-errors":54,"https":37,"node-fetch":37}],32:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -9367,87 +9375,8 @@ capability.test = capability;
 
 module.exports = capability;
 },{"./CapabilityDetector":42}],45:[function(require,module,exports){
-/*!
- * depd
- * Copyright(c) 2015 Douglas Christopher Wilson
- * MIT Licensed
- */
-
-'use strict'
-
-/**
- * Module exports.
- * @public
- */
-
-module.exports = depd
-
-/**
- * Create deprecate for namespace in caller.
- */
-
-function depd (namespace) {
-  if (!namespace) {
-    throw new TypeError('argument namespace is required')
-  }
-
-  function deprecate (message) {
-    // no-op in browser
-  }
-
-  deprecate._file = undefined
-  deprecate._ignored = true
-  deprecate._namespace = namespace
-  deprecate._traced = false
-  deprecate._warned = Object.create(null)
-
-  deprecate.function = wrapfunction
-  deprecate.property = wrapproperty
-
-  return deprecate
-}
-
-/**
- * Return a wrapped function in a deprecation message.
- *
- * This is a no-op version of the wrapper, which does nothing but call
- * validation.
- */
-
-function wrapfunction (fn, message) {
-  if (typeof fn !== 'function') {
-    throw new TypeError('argument fn must be a function')
-  }
-
-  return fn
-}
-
-/**
- * Wrap property in a deprecation message.
- *
- * This is a no-op version of the wrapper, which does nothing but call
- * validation.
- */
-
-function wrapproperty (obj, prop, message) {
-  if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
-    throw new TypeError('argument obj must be object')
-  }
-
-  var descriptor = Object.getOwnPropertyDescriptor(obj, prop)
-
-  if (!descriptor) {
-    throw new TypeError('must call property on owner object')
-  }
-
-  if (!descriptor.configurable) {
-    throw new TypeError('property must be configurable')
-  }
-}
-
-},{}],46:[function(require,module,exports){
 module.exports = require("./lib");
-},{"./lib":47}],47:[function(require,module,exports){
+},{"./lib":46}],46:[function(require,module,exports){
 require("capability/es5");
 
 var capability = require("capability");
@@ -9461,7 +9390,7 @@ else
     polyfill = require("./unsupported");
 
 module.exports = polyfill();
-},{"./non-v8/index":51,"./unsupported":53,"./v8":54,"capability":41,"capability/es5":40}],48:[function(require,module,exports){
+},{"./non-v8/index":50,"./unsupported":52,"./v8":53,"capability":41,"capability/es5":40}],47:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod;
 
@@ -9492,7 +9421,7 @@ var Frame = Class(Object, {
 });
 
 module.exports = Frame;
-},{"o3":60}],49:[function(require,module,exports){
+},{"o3":60}],48:[function(require,module,exports){
 var Class = require("o3").Class,
     Frame = require("./Frame"),
     cache = require("u3").cache;
@@ -9531,7 +9460,7 @@ module.exports = {
         return instance;
     })
 };
-},{"./Frame":48,"o3":60,"u3":72}],50:[function(require,module,exports){
+},{"./Frame":47,"o3":60,"u3":72}],49:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod,
     eachCombination = require("u3").eachCombination,
@@ -9665,7 +9594,7 @@ module.exports = {
         return instance;
     })
 };
-},{"capability":41,"o3":60,"u3":72}],51:[function(require,module,exports){
+},{"capability":41,"o3":60,"u3":72}],50:[function(require,module,exports){
 var FrameStringSource = require("./FrameStringSource"),
     FrameStringParser = require("./FrameStringParser"),
     cache = require("u3").cache,
@@ -9739,7 +9668,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"../prepareStackTrace":52,"./FrameStringParser":49,"./FrameStringSource":50,"u3":72}],52:[function(require,module,exports){
+},{"../prepareStackTrace":51,"./FrameStringParser":48,"./FrameStringSource":49,"u3":72}],51:[function(require,module,exports){
 var prepareStackTrace = function (throwable, frames, warnings) {
     var string = "";
     string += throwable.name || "Error";
@@ -9757,7 +9686,7 @@ var prepareStackTrace = function (throwable, frames, warnings) {
 };
 
 module.exports = prepareStackTrace;
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 var cache = require("u3").cache,
     prepareStackTrace = require("./prepareStackTrace");
 
@@ -9808,7 +9737,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":52,"u3":72}],54:[function(require,module,exports){
+},{"./prepareStackTrace":51,"u3":72}],53:[function(require,module,exports){
 var prepareStackTrace = require("./prepareStackTrace");
 
 module.exports = function () {
@@ -9820,7 +9749,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":52}],55:[function(require,module,exports){
+},{"./prepareStackTrace":51}],54:[function(require,module,exports){
 /*!
  * http-errors
  * Copyright(c) 2014 Jonathan Ong
@@ -10088,7 +10017,86 @@ function populateConstructorExports (exports, codes, HttpError) {
     '"I\'mateapot"; use "ImATeapot" instead')
 }
 
-},{"depd":45,"inherits":57,"setprototypeof":66,"statuses":68,"toidentifier":70}],56:[function(require,module,exports){
+},{"depd":55,"inherits":57,"setprototypeof":66,"statuses":68,"toidentifier":70}],55:[function(require,module,exports){
+/*!
+ * depd
+ * Copyright(c) 2015 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+
+'use strict'
+
+/**
+ * Module exports.
+ * @public
+ */
+
+module.exports = depd
+
+/**
+ * Create deprecate for namespace in caller.
+ */
+
+function depd (namespace) {
+  if (!namespace) {
+    throw new TypeError('argument namespace is required')
+  }
+
+  function deprecate (message) {
+    // no-op in browser
+  }
+
+  deprecate._file = undefined
+  deprecate._ignored = true
+  deprecate._namespace = namespace
+  deprecate._traced = false
+  deprecate._warned = Object.create(null)
+
+  deprecate.function = wrapfunction
+  deprecate.property = wrapproperty
+
+  return deprecate
+}
+
+/**
+ * Return a wrapped function in a deprecation message.
+ *
+ * This is a no-op version of the wrapper, which does nothing but call
+ * validation.
+ */
+
+function wrapfunction (fn, message) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('argument fn must be a function')
+  }
+
+  return fn
+}
+
+/**
+ * Wrap property in a deprecation message.
+ *
+ * This is a no-op version of the wrapper, which does nothing but call
+ * validation.
+ */
+
+function wrapproperty (obj, prop, message) {
+  if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
+    throw new TypeError('argument obj must be object')
+  }
+
+  var descriptor = Object.getOwnPropertyDescriptor(obj, prop)
+
+  if (!descriptor) {
+    throw new TypeError('must call property on owner object')
+  }
+
+  if (!descriptor.configurable) {
+    throw new TypeError('property must be configurable')
+  }
+}
+
+},{}],56:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -15139,8 +15147,8 @@ nacl.setPRNG = function(fn) {
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
 },{"crypto":36}],72:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"./lib":75,"dup":46}],73:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"./lib":75,"dup":45}],73:[function(require,module,exports){
 var cache = function (fn) {
     var called = false,
         store;

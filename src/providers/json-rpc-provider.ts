@@ -1,5 +1,6 @@
+import depd from 'depd';
 import {
-    Provider, FinalExecutionOutcome, NodeStatusResult, BlockId,
+    Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality,
     BlockResult, ChunkId, ChunkResult, adaptTransactionResult, EpochValidatorInfo,
     GenesisConfig
 } from './provider';
@@ -81,11 +82,18 @@ export class JsonRpcProvider extends Provider {
     /**
      * Query for block info from the RPC
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#block)
-     * @param blockId Block hash or height
-     * @returns {Promise<BlockResult>}
      */
-    async block(blockId: BlockId): Promise<BlockResult> {
-        return this.sendJsonRpc('block', [blockId]);
+    async block(blockQuery: BlockId | { blockId: BlockId } | { finality: Finality }): Promise<BlockResult> {
+        const { finality } = blockQuery as any;
+        let { blockId } = blockQuery as any;
+
+        if (typeof blockQuery !== 'object') {
+            const deprecate = depd('JsonRpcProvider.block(blockId)');
+            deprecate('use `block({ blockId })` or `block({ finality })` instead');
+            blockId = blockQuery;
+        }
+
+        return this.sendJsonRpc('block', { block_id: blockId, finality });
     }
 
     /**
@@ -103,7 +111,7 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#validators)
      * @param blockId Block hash or height, or null for latest.
      */
-    async validators(blockId: BlockId): Promise<EpochValidatorInfo> {
+    async validators(blockId: BlockId | null): Promise<EpochValidatorInfo> {
         return this.sendJsonRpc('validators', [blockId]);
     }
 
@@ -120,7 +128,7 @@ export class JsonRpcProvider extends Provider {
      * @param method RPC method
      * @param params Parameters to the method
      */
-    async sendJsonRpc(method: string, params: any[]): Promise<any> {
+    async sendJsonRpc(method: string, params: object): Promise<any> {
         const request = {
             method,
             params,

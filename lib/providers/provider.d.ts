@@ -18,9 +18,10 @@ export interface NodeStatusResult {
     validators: string[];
     version: Version;
 }
-export declare type BlockHash = string;
-export declare type BlockHeight = number;
+declare type BlockHash = string;
+declare type BlockHeight = number;
 export declare type BlockId = BlockHash | BlockHeight;
+export declare type Finality = 'optimistic' | 'near-final' | 'final';
 export declare enum ExecutionStatusBasic {
     Unknown = "Unknown",
     Pending = "Pending",
