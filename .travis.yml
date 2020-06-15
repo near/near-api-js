@@ -5,6 +5,7 @@ env:
   - NODE_ENV=ci-betanet
 cache: yarn
 script:
+  - commitlint-travis
   - yarn lint
   - yarn test
   - yarn browserify && yarn run bundlewatch

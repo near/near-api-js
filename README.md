@@ -18,11 +18,16 @@ A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
 # Publish
 
-Prepare `dist` version by running:
+If you are a maintainer of `near-api-js` and you want to publish a new version to npmjs.com, there are some **prerequisites**:
 
-    yarn dist
+1. Get write-access to [the GitHub repository](https://github.com/near/near-api-js)
+2. Get publish-access to [the NPM package](https://www.npmjs.com/package/near-api-js)
 
-When publishing to npm use [np](https://github.com/sindresorhus/np). 
+Then run one script:
+
+    yarn release
+
+Since we use `commitlint` to ensure that all commits follow [the Conventional Commit spec](https://www.conventionalcommits.org/), our `release` script is able to automatically bump version numbers and update the CHANGELOG based on commit history.
 
 # Integration Test
 

@@ -24,18 +24,23 @@
     "tweetnacl": "^1.0.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/travis-cli": "^8.3.5",
     "@types/http-errors": "^1.6.1",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
     "browserify": "^16.2.3",
     "bundlewatch": "^0.2.5",
     "eslint": "^6.5.1",
+    "husky": "^4.2.5",
     "in-publish": "^2.0.0",
     "jest": "^26.0.1",
     "localstorage-memory": "^1.0.3",
     "near-hello": "^0.4.0-preview",
     "rimraf": "^3.0.0",
     "semver": "^7.1.1",
+    "standard-version": "^8.0.0",
     "ts-morph": "^7.0.0",
     "typedoc": "^0.17.1",
     "typescript": "^3.5.1",
@@ -62,7 +67,8 @@
     "lint": "eslint test && eslint src/**/*.ts",
     "fix": "eslint test --fix && eslint src/**/*.ts --fix",
     "prefuzz": "yarn build",
-    "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
+    "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
+    "release": "yarn dist && standard-version"
   },
   "bundlewatch": {
     "files": [
@@ -72,5 +78,10 @@
       }
     ]
   },
-  "author": "NEAR Inc"
+  "author": "NEAR Inc",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  }
 }
