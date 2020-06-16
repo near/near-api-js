@@ -65,7 +65,7 @@ export declare class JsonRpcProvider extends Provider {
      */
     experimental_genesisConfig(): Promise<GenesisConfig>;
     /**
-     * Gets EXPERIMENTAL_light_client_proof from RPC
+     * Gets EXPERIMENTAL_light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      * @returns {Promise<LightClientProof>}
      */
     experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;

@@ -1,5 +1,7 @@
 
 const nearApi = require('../lib/index');
+const testUtils  = require('./test-utils');
+const BN = require('bn.js');
 
 const withProvider = (fn) => {
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
@@ -63,4 +65,25 @@ test('final tx result with null', async() => {
         ]
     };
     expect(nearApi.providers.getTransactionLastResult(result)).toEqual(null);
+});
+
+test('json rpc light client proof', async() => {
+    jest.setTimeout(30000);
+    const nearjs = await testUtils.setUpTestConnection();
+    const workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
+    const sender = await testUtils.createAccount(workingAccount);
+    const receiver = await testUtils.createAccount(workingAccount);
+    const executionOutcome = await sender.sendMoney(receiver.accountId, new BN(10000));
+    await testUtils.sleep(1000);
+    const nodeStatus = await nearjs.connection.provider.status();
+    const lightClientHead = nodeStatus.sync_info.latest_block_hash;
+    const lightClientRequest = {
+        type: 'transaction',
+        light_client_head: lightClientHead,
+        transaction_hash: executionOutcome.transaction.hash,
+        sender_id: sender.accountId,
+    };
+    // wait until light client head is final
+    await testUtils.sleep(2000);
+    await nearjs.connection.provider.experimental_lightClientProof(lightClientRequest);
 });
