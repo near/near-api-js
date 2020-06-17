@@ -75,15 +75,27 @@ test('json rpc light client proof', async() => {
     const receiver = await testUtils.createAccount(workingAccount);
     const executionOutcome = await sender.sendMoney(receiver.accountId, new BN(10000));
     await testUtils.sleep(1000);
-    const nodeStatus = await nearjs.connection.provider.status();
-    const lightClientHead = nodeStatus.sync_info.latest_block_hash;
+    //const nodeStatus = await nearjs.connection.provider.status();
+    let nodeStatus, isNewBlock = false;
+    while (!isNewBlock) {
+        await testUtils.sleep(500);
+        nodeStatus = await nearjs.connection.provider.status();
+        isNewBlock = nodeStatus.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash;
+    }
+    let status, isNewFinalBlock = false;
+    while (!isNewFinalBlock) {
+        await testUtils.sleep(500);
+        status = await nearjs.connection.provider.status();
+        // use 5 here just to be safe
+        isNewFinalBlock = status.sync_info.latest_block_height > nodeStatus.sync_info.latest_block_height + 5;
+    }
+    const block = await nearjs.connection.provider.block(status.sync_info.latest_block_hash);
+    const lightClientHead = block.header.last_final_block;
     const lightClientRequest = {
         type: 'transaction',
         light_client_head: lightClientHead,
         transaction_hash: executionOutcome.transaction.hash,
         sender_id: sender.accountId,
     };
-    // wait until light client head is final
-    await testUtils.sleep(2000);
     await nearjs.connection.provider.experimental_lightClientProof(lightClientRequest);
 });
