@@ -71,9 +71,7 @@ test('json rpc light client proof', async() => {
     jest.setTimeout(30000);
     const nearjs = await testUtils.setUpTestConnection();
     const workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
-    const sender = await testUtils.createAccount(workingAccount);
-    const receiver = await testUtils.createAccount(workingAccount);
-    const executionOutcome = await sender.sendMoney(receiver.accountId, new BN(10000));
+    const executionOutcome = await workingAccount.sendMoney(testUtils.testAccountName, new BN(10000));
     const provider = nearjs.connection.provider;
 
     async function waitForStatusMatching(isMatching) {
@@ -100,7 +98,7 @@ test('json rpc light client proof', async() => {
         type: 'transaction',
         light_client_head: lightClientHead,
         transaction_hash: executionOutcome.transaction.hash,
-        sender_id: sender.accountId,
+        sender_id: workingAccount.accountId,
     };
     await provider.experimental_lightClientProof(lightClientRequest);
 });
