@@ -80,7 +80,7 @@ test('json rpc light client proof', async() => {
             await testUtils.sleep(500);
             const nodeStatus = await provider.status();
             if (isMatching(nodeStatus)) {
-                return nodeStatus
+                return nodeStatus;
             }
         }
         throw new Error(`Exceeded ${MAX_ATTEMPTS} attempts waiting for matching node status.`);
