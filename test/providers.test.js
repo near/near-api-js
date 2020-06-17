@@ -94,11 +94,37 @@ test('json rpc light client proof', async() => {
 
     const block = await provider.block(finalizedStatus.sync_info.latest_block_hash);
     const lightClientHead = block.header.last_final_block;
-    const lightClientRequest = {
+    let lightClientRequest = {
         type: 'transaction',
         light_client_head: lightClientHead,
         transaction_hash: executionOutcome.transaction.hash,
         sender_id: workingAccount.accountId,
     };
-    await provider.experimental_lightClientProof(lightClientRequest);
+    const lightClientProof = await provider.experimental_lightClientProof(lightClientRequest);
+    expect('prev_block_hash' in lightClientProof.block_header_lite).toBe(true);
+    expect('inner_rest_hash' in lightClientProof.block_header_lite).toBe(true);
+    expect('inner_lite' in lightClientProof.block_header_lite).toBe(true);
+    expect(lightClientProof.outcome_proof.id).toEqual(executionOutcome.transaction_outcome.id);
+    expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
+    expect(lightClientProof.outcome_root_proof).toEqual([]);
+    expect(lightClientProof.block_proof.length).toBeGreaterThan(0);
+
+    // pass nonexistent hash for light client head will fail
+    lightClientRequest = {
+        type: 'transaction',
+        light_client_head: '11111111111111111111111111111111',
+        transaction_hash: executionOutcome.transaction.hash,
+        sender_id: workingAccount.accountId,
+    };
+    await expect(provider.experimental_lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
+
+    // Use old block hash as light client head should fail
+    lightClientRequest = {
+        type: 'transaction',
+        light_client_head: executionOutcome.transaction_outcome.block_hash,
+        transaction_hash: executionOutcome.transaction.hash,
+        sender_id: workingAccount.accountId,
+    };
+
+    await expect(provider.experimental_lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
 });
