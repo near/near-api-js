@@ -74,22 +74,27 @@ test('json rpc light client proof', async() => {
     const sender = await testUtils.createAccount(workingAccount);
     const receiver = await testUtils.createAccount(workingAccount);
     const executionOutcome = await sender.sendMoney(receiver.accountId, new BN(10000));
-    await testUtils.sleep(1000);
-    //const nodeStatus = await nearjs.connection.provider.status();
-    let nodeStatus, isNewBlock = false;
-    while (!isNewBlock) {
-        await testUtils.sleep(500);
-        nodeStatus = await nearjs.connection.provider.status();
-        isNewBlock = nodeStatus.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash;
+    const provider = nearjs.connection.provider;
+
+    async function waitForStatusMatching(isMatching) {
+        const MAX_ATTEMPTS = 10;
+        for (let i = 0; i < MAX_ATTEMPTS; i++) {
+            await testUtils.sleep(500);
+            const nodeStatus = await provider.status();
+            if (isMatching(nodeStatus)) {
+                return nodeStatus
+            }
+        }
+        throw new Error(`Exceeded ${MAX_ATTEMPTS} attempts waiting for matching node status.`);
     }
-    let status, isNewFinalBlock = false;
-    while (!isNewFinalBlock) {
-        await testUtils.sleep(500);
-        status = await nearjs.connection.provider.status();
-        // use 5 here just to be safe
-        isNewFinalBlock = status.sync_info.latest_block_height > nodeStatus.sync_info.latest_block_height + 5;
-    }
-    const block = await nearjs.connection.provider.block(status.sync_info.latest_block_hash);
+
+    const comittedStatus = await waitForStatusMatching(status =>
+        status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash);
+    const BLOCKS_UNTIL_FINAL = 2;
+    const finalizedStatus = await waitForStatusMatching(status =>
+        status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL);
+
+    const block = await provider.block(finalizedStatus.sync_info.latest_block_hash);
     const lightClientHead = block.header.last_final_block;
     const lightClientRequest = {
         type: 'transaction',
@@ -97,5 +102,5 @@ test('json rpc light client proof', async() => {
         transaction_hash: executionOutcome.transaction.hash,
         sender_id: sender.accountId,
     };
-    await nearjs.connection.provider.experimental_lightClientProof(lightClientRequest);
+    await provider.experimental_lightClientProof(lightClientRequest);
 });
