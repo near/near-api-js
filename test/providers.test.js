@@ -17,10 +17,23 @@ test('json rpc fetch node status', withProvider(async (provider) => {
 test('json rpc fetch block info', withProvider(async (provider) => {
     let stat = await provider.status();
     let height = stat.sync_info.latest_block_height - 1;
-    let response = await provider.block(height);
+    let response = await provider.block({ blockId: height });
     expect(response.header.height).toEqual(height);
-    let sameBlock = await provider.block(response.header.hash);
+
+    let sameBlock = await provider.block({ blockId: response.header.hash });
     expect(sameBlock.header.height).toEqual(height);
+
+    let optimisticBlock = await provider.block({ finality: 'optimistic' });
+    expect(optimisticBlock.header.height - height).toBeLessThan(5);
+
+    let nearFinalBlock = await provider.block({ finality: 'near-final' });
+    expect(nearFinalBlock.header.height - height).toBeLessThan(5);
+
+    let finalBlock = await provider.block({ finality: 'final' });
+    expect(finalBlock.header.height - height).toBeLessThan(5);
+
+    let deprecatedStyle = await provider.block(height);
+    expect(deprecatedStyle.header.height).toEqual(height);
 }));
 
 test('json rpc fetch chunk info', withProvider(async (provider) => {

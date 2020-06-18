@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, GenesisConfig, LightClientProof, LightClientProofRequest } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, GenesisConfig, LightClientProof, LightClientProofRequest } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError } from '../utils/errors';
@@ -42,10 +42,12 @@ export declare class JsonRpcProvider extends Provider {
     /**
      * Query for block info from the RPC
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#block)
-     * @param blockId Block hash or height
-     * @returns {Promise<BlockResult>}
      */
-    block(blockId: BlockId): Promise<BlockResult>;
+    block(blockQuery: BlockId | {
+        blockId: BlockId;
+    } | {
+        finality: Finality;
+    }): Promise<BlockResult>;
     /**
      * Queries for details of a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#chunk)
@@ -58,7 +60,7 @@ export declare class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#validators)
      * @param blockId Block hash or height, or null for latest.
      */
-    validators(blockId: BlockId): Promise<EpochValidatorInfo>;
+    validators(blockId: BlockId | null): Promise<EpochValidatorInfo>;
     /**
      * Gets EXPERIMENTAL_genesis_config from RPC
      * @returns {Promise<GenesisConfig>}
@@ -74,5 +76,5 @@ export declare class JsonRpcProvider extends Provider {
      * @param method RPC method
      * @param params Parameters to the method
      */
-    sendJsonRpc(method: string, params: any): Promise<any>;
+    sendJsonRpc(method: string, params: object): Promise<any>;
 }

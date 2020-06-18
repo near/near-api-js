@@ -22,9 +22,11 @@ export interface NodeStatusResult {
     version: Version;
 }
 
-export type BlockHash = string;
-export type BlockHeight = number;
+type BlockHash = string;
+type BlockHeight = number;
 export type BlockId = BlockHash | BlockHeight;
+
+export type Finality = 'optimistic' | 'near-final' | 'final'
 
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',
