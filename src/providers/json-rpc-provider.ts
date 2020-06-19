@@ -128,7 +128,7 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<LightClientProof>}
      */
     async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
-        return await this.sendJsonRpc('light_client_proof', request);
+        return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
     }
 
     /**
