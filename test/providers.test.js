@@ -1,5 +1,7 @@
 
 const nearApi = require('../lib/index');
+const testUtils  = require('./test-utils');
+const BN = require('bn.js');
 
 const withProvider = (fn) => {
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
@@ -76,4 +78,66 @@ test('final tx result with null', async() => {
         ]
     };
     expect(nearApi.providers.getTransactionLastResult(result)).toEqual(null);
+});
+
+test('json rpc light client proof', async() => {
+    jest.setTimeout(30000);
+    const nearjs = await testUtils.setUpTestConnection();
+    const workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
+    const executionOutcome = await workingAccount.sendMoney(testUtils.testAccountName, new BN(10000));
+    const provider = nearjs.connection.provider;
+
+    async function waitForStatusMatching(isMatching) {
+        const MAX_ATTEMPTS = 10;
+        for (let i = 0; i < MAX_ATTEMPTS; i++) {
+            await testUtils.sleep(500);
+            const nodeStatus = await provider.status();
+            if (isMatching(nodeStatus)) {
+                return nodeStatus;
+            }
+        }
+        throw new Error(`Exceeded ${MAX_ATTEMPTS} attempts waiting for matching node status.`);
+    }
+
+    const comittedStatus = await waitForStatusMatching(status =>
+        status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash);
+    const BLOCKS_UNTIL_FINAL = 2;
+    const finalizedStatus = await waitForStatusMatching(status =>
+        status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL);
+
+    const block = await provider.block(finalizedStatus.sync_info.latest_block_hash);
+    const lightClientHead = block.header.last_final_block;
+    let lightClientRequest = {
+        type: 'transaction',
+        light_client_head: lightClientHead,
+        transaction_hash: executionOutcome.transaction.hash,
+        sender_id: workingAccount.accountId,
+    };
+    const lightClientProof = await provider.experimental_lightClientProof(lightClientRequest);
+    expect('prev_block_hash' in lightClientProof.block_header_lite).toBe(true);
+    expect('inner_rest_hash' in lightClientProof.block_header_lite).toBe(true);
+    expect('inner_lite' in lightClientProof.block_header_lite).toBe(true);
+    expect(lightClientProof.outcome_proof.id).toEqual(executionOutcome.transaction_outcome.id);
+    expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
+    expect(lightClientProof.outcome_root_proof).toEqual([]);
+    expect(lightClientProof.block_proof.length).toBeGreaterThan(0);
+
+    // pass nonexistent hash for light client head will fail
+    lightClientRequest = {
+        type: 'transaction',
+        light_client_head: '11111111111111111111111111111111',
+        transaction_hash: executionOutcome.transaction.hash,
+        sender_id: workingAccount.accountId,
+    };
+    await expect(provider.experimental_lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
+
+    // Use old block hash as light client head should fail
+    lightClientRequest = {
+        type: 'transaction',
+        light_client_head: executionOutcome.transaction_outcome.block_hash,
+        transaction_hash: executionOutcome.transaction.hash,
+        sender_id: workingAccount.accountId,
+    };
+
+    await expect(provider.experimental_lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
 });

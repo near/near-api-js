@@ -2,7 +2,7 @@ import depd from 'depd';
 import {
     Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality,
     BlockResult, ChunkId, ChunkResult, adaptTransactionResult, EpochValidatorInfo,
-    GenesisConfig
+    GenesisConfig, LightClientProof, LightClientProofRequest
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -121,6 +121,14 @@ export class JsonRpcProvider extends Provider {
      */
     async experimental_genesisConfig(): Promise<GenesisConfig> {
         return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
+    }
+
+    /**
+     * Gets EXPERIMENTAL_light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
+     * @returns {Promise<LightClientProof>}
+     */
+    async experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
+        return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
     }
 
     /**

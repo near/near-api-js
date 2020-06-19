@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, GenesisConfig } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, GenesisConfig, LightClientProof, LightClientProofRequest } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError } from '../utils/errors';
@@ -66,6 +66,11 @@ export declare class JsonRpcProvider extends Provider {
      * @returns {Promise<GenesisConfig>}
      */
     experimental_genesisConfig(): Promise<GenesisConfig>;
+    /**
+     * Gets EXPERIMENTAL_light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
+     * @returns {Promise<LightClientProof>}
+     */
+    experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     /**
      * Directly call the RPC specifying the method and params
      * @param method RPC method
