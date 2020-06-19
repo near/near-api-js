@@ -246,7 +246,7 @@ export abstract class Provider {
     abstract async chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract async validators(blockId: BlockId): Promise<EpochValidatorInfo>;
     abstract async experimental_genesisConfig(): Promise<GenesisConfig>;
-    abstract async experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
+    abstract async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {

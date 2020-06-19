@@ -113,7 +113,7 @@ test('json rpc light client proof', async() => {
         transaction_hash: executionOutcome.transaction.hash,
         sender_id: workingAccount.accountId,
     };
-    const lightClientProof = await provider.experimental_lightClientProof(lightClientRequest);
+    const lightClientProof = await provider.lightClientProof(lightClientRequest);
     expect('prev_block_hash' in lightClientProof.block_header_lite).toBe(true);
     expect('inner_rest_hash' in lightClientProof.block_header_lite).toBe(true);
     expect('inner_lite' in lightClientProof.block_header_lite).toBe(true);
@@ -129,7 +129,7 @@ test('json rpc light client proof', async() => {
         transaction_hash: executionOutcome.transaction.hash,
         sender_id: workingAccount.accountId,
     };
-    await expect(provider.experimental_lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
+    await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
 
     // Use old block hash as light client head should fail
     lightClientRequest = {
@@ -139,5 +139,5 @@ test('json rpc light client proof', async() => {
         sender_id: workingAccount.accountId,
     };
 
-    await expect(provider.experimental_lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
+    await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
 });
