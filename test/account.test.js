@@ -112,7 +112,7 @@ describe('with deploy contract', () => {
     });
 
     test('cross-contact assertion and panic', async () => {
-        await expect(contract.crossContract()).rejects.toThrow(/Smart contract panicked: expected to fail./);
+        await expect(contract.crossContract({}, 1000000000000000)).rejects.toThrow(/Smart contract panicked: expected to fail./);
         expect(logs.length).toEqual(7);
         expect(logs[0]).toMatch(new RegExp('^Receipts: \\w+, \\w+, \\w+$'));
         //	Log [test_contract1591458385248117]: test_contract1591458385248117
