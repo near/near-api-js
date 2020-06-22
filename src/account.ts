@@ -14,11 +14,12 @@ import { ServerError } from './generated/rpc_error_types';
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
-// Default value is set to equal to max_prepaid_gas as discussed here:
-// https://github.com/near/near-api-js/pull/191#discussion_r369671912
-const DEFAULT_FUNC_CALL_GAS = new BN('10000000000000000');
+// Due to protocol changes that charge upfront for the maximum possible gas price inflation due to
+// full blocks, the price of max_prepaid_gas is decreased to `300 * 10**12`.
+// For discussion see https://github.com/nearprotocol/NEPs/issues/67
+const DEFAULT_FUNC_CALL_GAS = new BN('300000000000000');
 
-// Default number of retries before giving up on a transactioin.
+// Default number of retries before giving up on a transaction.
 const TX_STATUS_RETRY_NUMBER = 10;
 
 // Default wait until next retry in millis.
@@ -365,7 +366,7 @@ export class Account {
     async getAccountBalance(): Promise<AccountBalance> {
         const genesisConfig = await this.connection.provider.experimental_genesisConfig();
         const state = await this.state();
-        
+
         const costPerByte = new BN(genesisConfig.runtime_config.storage_amount_per_byte);
         const stateStaked = new BN(state.storage_usage).mul(costPerByte);
         const staked = new BN(state.locked);

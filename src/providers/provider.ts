@@ -22,9 +22,11 @@ export interface NodeStatusResult {
     version: Version;
 }
 
-export type BlockHash = string;
-export type BlockHeight = number;
+type BlockHash = string;
+type BlockHeight = number;
 export type BlockId = BlockHash | BlockHeight;
+
+export type Finality = 'optimistic' | 'near-final' | 'final'
 
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',
@@ -64,6 +66,13 @@ export interface ExecutionOutcome {
     receipt_ids: string[];
     gas_burnt: number;
     status: ExecutionStatus | ExecutionStatusBasic;
+}
+
+export interface ExecutionOutcomeWithIdView {
+    proof: MerklePath;
+    block_hash: string;
+    id: string;
+    outcome: ExecutionOutcome;
 }
 
 export interface FinalExecutionOutcome {
@@ -181,6 +190,51 @@ export interface EpochValidatorInfo {
     epoch_start_height: number;
 }
 
+export interface MerkleNode {
+    hash: string;
+    direction: string;
+}
+
+export type MerklePath = MerkleNode[];
+
+export interface BlockHeaderInnerLiteView {
+    height: number;
+    epoch_id: string;
+    next_epoch_id: string;
+    prev_state_root: string;
+    outcome_root: string;
+    timestamp: number;
+    next_bp_hash: string;
+    block_merkle_root: string;
+}
+
+export interface LightClientBlockLiteView {
+    prev_block_hash: string;
+    inner_rest_hash: string;
+    inner_lite: BlockHeaderInnerLiteView;
+}
+
+export interface LightClientProof {
+    outcome_proof: ExecutionOutcomeWithIdView;
+    outcome_root_proof: MerklePath;
+    block_header_lite: LightClientBlockLiteView;
+    block_proof: MerklePath;
+}
+
+export enum IdType {
+    Transaction = 'transaction',
+    Receipt = 'receipt',
+}
+
+export interface LightClientProofRequest {
+    type: IdType;
+    light_client_head: string;
+    transaction_hash?: string;
+    sender_id?: string;
+    receipt_id?: string;
+    receiver_id?: string;
+}
+
 export abstract class Provider {
     abstract async getNetwork(): Promise<Network>;
     abstract async status(): Promise<NodeStatusResult>;
@@ -192,6 +246,7 @@ export abstract class Provider {
     abstract async chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract async validators(blockId: BlockId): Promise<EpochValidatorInfo>;
     abstract async experimental_genesisConfig(): Promise<GenesisConfig>;
+    abstract async experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {

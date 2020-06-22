@@ -18,9 +18,10 @@ export interface NodeStatusResult {
     validators: string[];
     version: Version;
 }
-export declare type BlockHash = string;
-export declare type BlockHeight = number;
+declare type BlockHash = string;
+declare type BlockHeight = number;
 export declare type BlockId = BlockHash | BlockHeight;
+export declare type Finality = 'optimistic' | 'near-final' | 'final';
 export declare enum ExecutionStatusBasic {
     Unknown = "Unknown",
     Pending = "Pending",
@@ -53,6 +54,12 @@ export interface ExecutionOutcome {
     receipt_ids: string[];
     gas_burnt: number;
     status: ExecutionStatus | ExecutionStatusBasic;
+}
+export interface ExecutionOutcomeWithIdView {
+    proof: MerklePath;
+    block_hash: string;
+    id: string;
+    outcome: ExecutionOutcome;
 }
 export interface FinalExecutionOutcome {
     status: FinalExecutionStatus | FinalExecutionStatusBasic;
@@ -148,6 +155,44 @@ export interface EpochValidatorInfo {
     prev_epoch_kickout: ValidatorStakeView[];
     epoch_start_height: number;
 }
+export interface MerkleNode {
+    hash: string;
+    direction: string;
+}
+export declare type MerklePath = MerkleNode[];
+export interface BlockHeaderInnerLiteView {
+    height: number;
+    epoch_id: string;
+    next_epoch_id: string;
+    prev_state_root: string;
+    outcome_root: string;
+    timestamp: number;
+    next_bp_hash: string;
+    block_merkle_root: string;
+}
+export interface LightClientBlockLiteView {
+    prev_block_hash: string;
+    inner_rest_hash: string;
+    inner_lite: BlockHeaderInnerLiteView;
+}
+export interface LightClientProof {
+    outcome_proof: ExecutionOutcomeWithIdView;
+    outcome_root_proof: MerklePath;
+    block_header_lite: LightClientBlockLiteView;
+    block_proof: MerklePath;
+}
+export declare enum IdType {
+    Transaction = "transaction",
+    Receipt = "receipt"
+}
+export interface LightClientProofRequest {
+    type: IdType;
+    light_client_head: string;
+    transaction_hash?: string;
+    sender_id?: string;
+    receipt_id?: string;
+    receiver_id?: string;
+}
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
@@ -158,6 +203,7 @@ export declare abstract class Provider {
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
     abstract experimental_genesisConfig(): Promise<GenesisConfig>;
+    abstract experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
 export declare function adaptTransactionResult(txResult: any): FinalExecutionOutcome;
