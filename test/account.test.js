@@ -122,7 +122,7 @@ describe('with deploy contract', () => {
         expect(logs[3]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before planned panic$`));
         expect(logs[4]).toMatch(new RegExp('^Receipt: \\w+$'));
         expect(logs[5]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before assert$`));
-        expect(logs[6]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly\/index\.ts" line: \\d+ col: \\d+$`));
+        expect(logs[6]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
     test('make function calls via account', async() => {
@@ -188,7 +188,7 @@ describe('with deploy contract', () => {
         } else {
             expect(logs[1]).toEqual(`\tLog [${contractId}]: LOG: log before assert`);
         }
-        expect(logs[2]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly\/index\.ts" line: \\d+ col: \\d+$`));
+        expect(logs[2]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
     test('test set/remove', async () => {
