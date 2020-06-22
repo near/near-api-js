@@ -69,6 +69,12 @@ export declare class JsonRpcProvider extends Provider {
     /**
      * Gets light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      * @returns {Promise<LightClientProof>}
+     * @deprecated Use `lightClientProof` instead
+     */
+    experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
+    /**
+     * Gets light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
+     * @returns {Promise<LightClientProof>}
      */
     lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     /**
