@@ -837,11 +837,6 @@ asn1@~0.2.3:
   dependencies:
     safer-buffer "~2.1.0"
 
-assemblyscript-json@0.2.0, assemblyscript-json@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/assemblyscript-json/-/assemblyscript-json-0.2.0.tgz#e308c469547d26c7e9a7ef670a83b67061c7401c"
-  integrity sha512-feJLBrec5O600QytfpkFb9oUYc+rANwtEUuSfIxVmjGcup4uR42maQTWOuIv8w/YOsHDMYHTXCwPQsuCynrwKA==
-
 assert-plus@1.0.0, assert-plus@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"
@@ -992,10 +987,6 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
-
-"bignum@github:MaxGraey/bignum.wasm":
-  version "0.2.1"
-  resolved "https://codeload.github.com/MaxGraey/bignum.wasm/tar.gz/dfac45726d52c26e7c0ff255e1e0a825691ed193"
 
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.4.0:
   version "4.11.9"
@@ -3694,21 +3685,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-near-hello@^0.4.0-preview:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/near-hello/-/near-hello-0.4.0.tgz#0b3db86ecde7e931986cc236d05788eeb0cb9d26"
-  integrity sha512-pqnpVSwsNF5Z9R/4aiuXmp3c4WDhZtCV3OUbhpALx2zPNQ4SoweAubMmd11ofUoCMZ3Nh0OsTXXdoQq0qw1n9Q==
-  dependencies:
-    assemblyscript-json "^0.2.0"
-    near-runtime-ts "^0.3.1"
-
-near-runtime-ts@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/near-runtime-ts/-/near-runtime-ts-0.3.1.tgz#9c79215d0354d6e46f7a8fd61f9421a06216d8af"
-  integrity sha512-bEnjyF42jNyJAhNo8JFMKaiPznrUAQpFk5fit0EAY6rDEwl1StW4w9rYguTbXLeWFoRivBSewgw8M/cFRNb2ng==
-  dependencies:
-    assemblyscript-json "0.2.0"
-    bignum "github:MaxGraey/bignum.wasm"
+near-hello@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/near-hello/-/near-hello-0.5.0.tgz#afcd43228e5a8b5d2486dcf111cf9f21f523293a"
+  integrity sha512-eUQLugX4h8NA4zxj2ewSuwEX4vaeU/DqlskxNmivWvKfUYqnQqV8am8bKJ+u0aYlVLyk0Zs8Ug4n4UVBEbqjJw==
 
 neo-async@^2.6.0:
   version "2.6.1"
