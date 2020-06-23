@@ -35,6 +35,7 @@ export declare class Account {
      * @returns {Promise<AccountState>}
      */
     state(): Promise<AccountState>;
+    private printLogsAndFailures;
     private printLogs;
     /**
      * @param txHash The transaction hash to retry

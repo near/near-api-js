@@ -20,6 +20,10 @@ beforeAll(async () => {
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
 });
 
+afterAll(async () => {
+    await testUtils.deleteAccount(workingAccount);
+});
+
 test('view pre-defined account works and returns correct name', async () => {
     let status = await workingAccount.state();
     expect(status.code_hash).toEqual('11111111111111111111111111111111');
@@ -90,8 +94,8 @@ describe('with deploy contract', () => {
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await workingAccount.createAndDeployContract(contractId, newPublicKey, data, testUtils.INITIAL_BALANCE);
         contract = new nearApi.Contract(workingAccount, contractId, {
-            viewMethods: ['hello', 'getValue', 'getAllKeys', 'returnHiWithLogs'],
-            changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove']
+            viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
+            changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
         });
     });
 
@@ -105,6 +109,20 @@ describe('with deploy contract', () => {
 
     afterEach(async () => {
         console.log = oldLog;
+    });
+
+    test('cross-contact assertion and panic', async () => {
+        await expect(contract.crossContract({}, 1000000000000000)).rejects.toThrow(/Smart contract panicked: expected to fail./);
+        expect(logs.length).toEqual(7);
+        expect(logs[0]).toMatch(new RegExp('^Receipts: \\w+, \\w+, \\w+$'));
+        //	Log [test_contract1591458385248117]: test_contract1591458385248117
+        expect(logs[1]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ${contractId}$`));
+        expect(logs[2]).toMatch(new RegExp('^Receipt: \\w+$'));
+        // 	Log [test_contract1591459677449181]: log before planned panic
+        expect(logs[3]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before planned panic$`));
+        expect(logs[4]).toMatch(new RegExp('^Receipt: \\w+$'));
+        expect(logs[5]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before assert$`));
+        expect(logs[6]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
     test('make function calls via account', async() => {
@@ -140,9 +158,11 @@ describe('with deploy contract', () => {
     test('can get logs from method result', async () => {
         await contract.generateLogs();
         if (startFromVersion('0.4.11')) {
-            expect(logs).toEqual([`[${contractId}]: log1`, `[${contractId}]: log2`]);
+            expect(logs.length).toEqual(3);
+            expect(logs[0].substr(0, 8)).toEqual('Receipt:');
+            expect(logs.slice(1)).toEqual([`\tLog [${contractId}]: log1`, `\tLog [${contractId}]: log2`]);
         } else {
-            expect(logs).toEqual([`[${contractId}]: LOG: log1`, `[${contractId}]: LOG: log2`]);
+            expect(logs).toEqual([`\tLog [${contractId}]: LOG: log1`, `\tLog [${contractId}]: LOG: log2`]);
         }
 
     });
@@ -151,9 +171,9 @@ describe('with deploy contract', () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
         if (startFromVersion('0.4.11')) {
-            expect(logs).toEqual([`[${contractId}]: loooog1`, `[${contractId}]: loooog2`]);
+            expect(logs).toEqual([`Log [${contractId}]: loooog1`, `Log [${contractId}]: loooog2`]);
         } else {
-            expect(logs).toEqual([`[${contractId}]: LOG: loooog1`, `[${contractId}]: LOG: loooog2`]);
+            expect(logs).toEqual([`Log [${contractId}]: LOG: loooog1`, `Log [${contractId}]: LOG: loooog2`]);
         }
     });
 
@@ -164,11 +184,11 @@ describe('with deploy contract', () => {
             await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
         }
         if (startFromVersion('0.4.11')) {
-            expect(logs[0]).toEqual(`[${contractId}]: log before assert`);
+            expect(logs[1]).toEqual(`\tLog [${contractId}]: log before assert`);
         } else {
-            expect(logs[0]).toEqual(`[${contractId}]: LOG: log before assert`);
+            expect(logs[1]).toEqual(`\tLog [${contractId}]: LOG: log before assert`);
         }
-        expect(logs[1]).toMatch(new RegExp(`^\\[${contractId}\\]: ABORT: "?expected to fail"?,? filename: "assembly/main.ts" line: \\d+ col: \\d+$`));
+        expect(logs[2]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
     test('test set/remove', async () => {

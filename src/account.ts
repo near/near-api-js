@@ -9,6 +9,7 @@ import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError } from './utils/rpc_errors';
+import { ServerError } from './generated/rpc_error_types';
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -46,6 +47,12 @@ export interface AccountBalance {
     available: string;
 }
 
+interface ReceiptLogWithFailure {
+    receiptIds: [string];
+    logs: [string];
+    failure: ServerError;
+}
+
 /**
  * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
  */
@@ -81,9 +88,19 @@ export class Account {
         return this._state;
     }
 
-    private printLogs(contractId: string, logs: string[]) {
+    private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
+        for (const result of results) {
+            console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
+            this.printLogs(contractId, result.logs, '\t');
+            if (result.failure) {
+                console.warn(`\tFailure [${contractId}]: ${result.failure}`);
+            }
+        }
+    }
+
+    private printLogs(contractId: string, logs: string[], prefix: string = '') {
         for (const log of logs) {
-            console.log(`[${contractId}]: ${log}`);
+            console.log(`${prefix}Log [${contractId}]: ${log}`);
         }
     }
 
@@ -139,8 +156,17 @@ export class Account {
             }
         }
 
-        const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => acc.concat(it.outcome.logs), []);
-        this.printLogs(signedTx.transaction.receiverId, flatLogs);
+        const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => {
+            if (it.outcome.logs.length ||
+                (typeof it.outcome.status === 'object' && typeof it.outcome.status.Failure === 'object')) {
+                return acc.concat({
+                    'receiptIds': it.outcome.receipt_ids,
+                    'logs': it.outcome.logs,
+                    'failure': typeof it.outcome.status.Failure != 'undefined' ? parseRpcError(it.outcome.status.Failure) : null
+                });
+            } else return acc;
+        }, []);
+        this.printLogsAndFailures(signedTx.transaction.receiverId, flatLogs);
 
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
