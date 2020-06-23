@@ -2167,10 +2167,20 @@ class JsonRpcProvider extends provider_1.Provider {
         return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
     }
     /**
-     * Gets EXPERIMENTAL_light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
+     * Gets light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      * @returns {Promise<LightClientProof>}
+     * @deprecated Use `lightClientProof` instead
      */
     async experimental_lightClientProof(request) {
+        const deprecate = depd_1.default('JsonRpcProvider.experimental_lightClientProof(request)');
+        deprecate('use `lightClientProof` instead');
+        return await this.lightClientProof(request);
+    }
+    /**
+     * Gets light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
+     * @returns {Promise<LightClientProof>}
+     */
+    async lightClientProof(request) {
         return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
     }
     /**

@@ -203,7 +203,7 @@ export declare abstract class Provider {
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
     abstract experimental_genesisConfig(): Promise<GenesisConfig>;
-    abstract experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
+    abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
 export declare function adaptTransactionResult(txResult: any): FinalExecutionOutcome;
