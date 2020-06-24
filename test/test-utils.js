@@ -4,18 +4,20 @@ const BN = require('bn.js');
 const nearApi = require('../lib/index');
 
 const networkId = 'unittest';
-const testAccountName = 'test.near';
 
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
 const HELLO_WASM_BALANCE = new BN('10000000000000000000000000');
 
 async function setUpTestConnection() {
     const keyStore = new nearApi.keyStores.InMemoryKeyStore();
-    await keyStore.setKey(networkId, testAccountName, nearApi.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: networkId,
         deps: { keyStore },
     });
+
+    if (config.masterAccount) {
+        await keyStore.setKey(networkId, config.masterAccount, nearApi.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
+    }
 
     return nearApi.connect(config);
 }
@@ -33,10 +35,6 @@ async function createAccount(near) {
     const { amount } = await account.state();
     console.error('createAccount', account.accountId, amount);
     return account;
-}
-
-async function deleteAccount(testAccount) {
-    await testAccount.deleteAccount(testAccountName);
 }
 
 async function deployContract(workingAccount, contractId) {
@@ -62,5 +60,5 @@ async function ensureDir(dirpath) {
     }
 }
 
-module.exports = { setUpTestConnection, networkId, testAccountName,
+module.exports = { setUpTestConnection, networkId,
     generateUniqueString, createAccount, deployContract, sleep, ensureDir };
