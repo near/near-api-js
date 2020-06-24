@@ -24,7 +24,7 @@ async function setUpTestConnection() {
 
 // Generate some unique string with a given prefix using the alice nonce.
 function generateUniqueString(prefix) {
-    return prefix + Date.now() + Math.round(Math.random() * 1000);
+    return `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
 }
 
 async function createAccount(near) {
