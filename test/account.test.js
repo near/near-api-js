@@ -21,7 +21,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await testUtils.deleteAccount(workingAccount);
+    await workingAccount.deleteAccount(workingAccount.accountId);
 });
 
 test('view pre-defined account works and returns correct name', async () => {
