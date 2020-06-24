@@ -43,6 +43,7 @@ async function deployContract(workingAccount, contractId) {
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
     return new nearApi.Contract(workingAccount, contractId, {
         viewMethods: ['getValue', 'getLastResult'],
+        changeMethods: ['setValue', 'callPromise']
     });
 }
 
@@ -60,5 +61,14 @@ async function ensureDir(dirpath) {
     }
 }
 
-module.exports = { setUpTestConnection, networkId,
-    generateUniqueString, createAccount, deployContract, sleep, ensureDir };
+module.exports = {
+    setUpTestConnection,
+    networkId,
+    generateUniqueString,
+    createAccount,
+    deployContract,
+    sleep,
+    ensureDir,
+    HELLO_WASM_PATH,
+    HELLO_WASM_BALANCE,
+};

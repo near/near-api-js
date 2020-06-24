@@ -9,7 +9,7 @@ let nearjs;
 let workingAccount;
 let startFromVersion;
 
-const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
+const { HELLO_WASM_PATH, HELLO_WASM_BALANCE } = testUtils;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
@@ -65,7 +65,7 @@ describe('errors', () => {
 
     beforeEach(async () => {
         oldLog = console.log;
-        logs =[];
+        logs = [];
         console.log = function () {
             logs.push(Array.from(arguments).join(' '));
         };
@@ -96,7 +96,7 @@ describe('with deploy contract', () => {
     beforeAll(async () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        await workingAccount.createAndDeployContract(contractId, newPublicKey, data);
+        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
         contract = new nearApi.Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
