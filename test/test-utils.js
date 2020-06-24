@@ -32,7 +32,6 @@ async function createAccount(near) {
     const newPublicKey = await near.connection.signer.createKey(newAccountName, networkId);
     await near.createAccount(newAccountName, newPublicKey);
     const account = new nearApi.Account(near.connection, newAccountName);
-    const { amount } = await account.state();
     return account;
 }
 

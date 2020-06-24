@@ -1,4 +1,3 @@
-const BN = require('bn.js');
 const nearApi = require('../lib/index');
 const testUtils = require('./test-utils');
 
