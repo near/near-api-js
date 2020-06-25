@@ -110,6 +110,7 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     private async retryTxResult(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
+        console.warn(`Retrying transaction ${accountId}:${base_encode(txHash)} as it has timed out`);
         let result;
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
