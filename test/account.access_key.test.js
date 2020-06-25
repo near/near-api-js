@@ -1,9 +1,7 @@
-const BN = require('bn.js');
 const nearApi = require('../lib/index');
 const testUtils = require('./test-utils');
 
 let nearjs;
-let testAccount;
 let workingAccount;
 let contractId;
 let contract;
@@ -12,12 +10,11 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    testAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
 });
 
 beforeEach(async () => {
     contractId = testUtils.generateUniqueString('test');
-    workingAccount = await testUtils.createAccount(testAccount);
+    workingAccount = await testUtils.createAccount(nearjs);
     contract = await testUtils.deployContract(workingAccount, contractId);
 });
 

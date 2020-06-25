@@ -3,6 +3,8 @@ node_js: 10
 env:
   - NODE_ENV=ci
   - NODE_ENV=ci-betanet
+    #  - NODE_ENV=devnet
+  - NODE_ENV=betanet
 cache: yarn
 script:
   - yarn lint

@@ -3,6 +3,8 @@ const nearApi = require('../lib/index');
 const testUtils  = require('./test-utils');
 const BN = require('bn.js');
 
+jest.setTimeout(20000);
+
 const withProvider = (fn) => {
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
     const provider = new nearApi.providers.JsonRpcProvider(config.nodeUrl);
@@ -48,11 +50,13 @@ test('json rpc fetch chunk info', withProvider(async (provider) => {
 
 test('json rpc fetch validators info', withProvider(async (provider) => {
     let validators = await provider.validators(null);
-    expect(validators.current_validators.length).toEqual(1);
+    expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
 }));
 
 test('json rpc query account', withProvider(async (provider) => {
-    let response = await provider.query('account/test.near', '');
+    const near = await testUtils.setUpTestConnection();
+    const account = await testUtils.createAccount(near);
+    let response = await provider.query(`account/${account.accountId}`, '');
     expect(response.code_hash).toEqual('11111111111111111111111111111111');
 }));
 
@@ -81,11 +85,10 @@ test('final tx result with null', async() => {
 });
 
 test('json rpc light client proof', async() => {
-    jest.setTimeout(30000);
-    const nearjs = await testUtils.setUpTestConnection();
-    const workingAccount = await testUtils.createAccount(await nearjs.account(testUtils.testAccountName), { amount: testUtils.INITIAL_BALANCE.mul(new BN(100)) });
-    const executionOutcome = await workingAccount.sendMoney(testUtils.testAccountName, new BN(10000));
-    const provider = nearjs.connection.provider;
+    const near = await testUtils.setUpTestConnection();
+    const workingAccount = await testUtils.createAccount(near);
+    const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, new BN(10000));
+    const provider = near.connection.provider;
 
     async function waitForStatusMatching(isMatching) {
         const MAX_ATTEMPTS = 10;
