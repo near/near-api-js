@@ -15,9 +15,10 @@ async function setUpTestConnection() {
         deps: { keyStore },
     });
 
-    if (config.masterAccount) {
-        await keyStore.setKey(networkId, config.masterAccount, nearApi.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
+    if (!config.masterAccount) {
+        config.masterAccount = 'test.near';
     }
+    await keyStore.setKey(networkId, config.masterAccount, nearApi.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
 
     return nearApi.connect(config);
 }
