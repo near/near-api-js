@@ -52,7 +52,7 @@ declare class DeleteAccount extends IAction {
 }
 export declare function createAccount(): Action;
 export declare function deployContract(code: Uint8Array): Action;
-export declare function functionCall(methodName: string, args: Uint8Array, gas: BN, deposit: BN): Action;
+export declare function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN): Action;
 export declare function transfer(deposit: BN): Action;
 export declare function stake(stake: BN, publicKey: PublicKey): Action;
 export declare function addKey(publicKey: PublicKey, accessKey: AccessKey): Action;

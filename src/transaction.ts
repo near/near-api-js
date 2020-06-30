@@ -51,8 +51,11 @@ export function deployContract(code: Uint8Array): Action {
     return new Action({ deployContract: new DeployContract({code}) });
 }
 
-export function functionCall(methodName: string, args: Uint8Array, gas: BN, deposit: BN): Action {
-    return new Action({functionCall: new FunctionCall({methodName, args, gas, deposit }) });
+export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN): Action {
+    const anyArgs = args as any;
+    const isUint8Array = anyArgs.byteLength !== undefined && anyArgs.byteLength === anyArgs.length;
+    const serializedArgs = isUint8Array ? args : Buffer.from(JSON.stringify(args));
+    return new Action({functionCall: new FunctionCall({methodName, args: serializedArgs, gas, deposit }) });
 }
 
 export function transfer(deposit: BN): Action {

@@ -277,7 +277,7 @@ export class Account {
     async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
         args = args || {};
         this.validateArgs(args);
-        return this.signAndSendTransaction(contractId, [functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_GAS, amount)]);
+        return this.signAndSendTransaction(contractId, [functionCall(methodName, args, gas || DEFAULT_FUNC_CALL_GAS, amount)]);
     }
 
     /**
@@ -316,6 +316,11 @@ export class Account {
     }
 
     private validateArgs(args: any) {
+        const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
+        if (isUint8Array) {
+            return;
+        }
+
         if (Array.isArray(args) || typeof args !== 'object') {
             throw new PositionalArgsError();
         }
