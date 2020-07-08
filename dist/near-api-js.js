@@ -83,11 +83,19 @@ class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async retryTxResult(txHash, accountId) {
+        console.warn(`Retrying transaction ${accountId}:${serialize_1.base_encode(txHash)} as it has timed out`);
         let result;
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
-            result = await this.connection.provider.txStatus(txHash, accountId);
-            if (typeof result.status === 'object' &&
+            try {
+                result = await this.connection.provider.txStatus(txHash, accountId);
+            }
+            catch (error) {
+                if (!error.message.match(/Transaction \w+ doesn't exist/)) {
+                    throw error;
+                }
+            }
+            if (result && typeof result.status === 'object' &&
                 (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
                 return result;
             }
@@ -2228,7 +2236,9 @@ class JsonRpcProvider extends provider_1.Provider {
             }
             else {
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-                if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
+                // NOTE: All this hackery is happening because structured errors not implemented
+                // TODO: Fix when https://github.com/nearprotocol/nearcore/issues/1839 gets resolved
+                if (response.error.data === 'Timeout') {
                     throw new errors_1.TypedError('send_tx_commit has timed out.', 'TimeoutError');
                 }
                 else {
@@ -9990,6 +10000,7 @@ var toIdentifier = require('toidentifier')
 
 module.exports = createError
 module.exports.HttpError = createHttpErrorConstructor()
+module.exports.isHttpError = createIsHttpErrorFunction(module.exports.HttpError)
 
 // Populate exports for all constructors
 populateConstructorExports(module.exports, statuses.codes, module.exports.HttpError)
@@ -10095,7 +10106,7 @@ function createHttpErrorConstructor () {
  */
 
 function createClientErrorConstructor (HttpError, name, code) {
-  var className = name.match(/Error$/) ? name : name + 'Error'
+  var className = toClassName(name)
 
   function ClientError (message) {
     // create the error object
@@ -10138,12 +10149,33 @@ function createClientErrorConstructor (HttpError, name, code) {
 }
 
 /**
+ * Create function to test is a value is a HttpError.
+ * @private
+ */
+
+function createIsHttpErrorFunction (HttpError) {
+  return function isHttpError (val) {
+    if (!val || typeof val !== 'object') {
+      return false
+    }
+
+    if (val instanceof HttpError) {
+      return true
+    }
+
+    return val instanceof Error &&
+      typeof val.expose === 'boolean' &&
+      typeof val.statusCode === 'number' && val.status === val.statusCode
+  }
+}
+
+/**
  * Create a constructor for a server error.
  * @private
  */
 
 function createServerErrorConstructor (HttpError, name, code) {
-  var className = name.match(/Error$/) ? name : name + 'Error'
+  var className = toClassName(name)
 
   function ServerError (message) {
     // create the error object
@@ -10228,6 +10260,17 @@ function populateConstructorExports (exports, codes, HttpError) {
   // backwards-compatibility
   exports["I'mateapot"] = deprecate.function(exports.ImATeapot,
     '"I\'mateapot"; use "ImATeapot" instead')
+}
+
+/**
+ * Get a class name from a name identifier.
+ * @private
+ */
+
+function toClassName (name) {
+  return name.substr(-5) !== 'Error'
+    ? name + 'Error'
+    : name
 }
 
 },{"depd":58,"inherits":60,"setprototypeof":69,"statuses":71,"toidentifier":73}],58:[function(require,module,exports){
@@ -12024,7 +12067,7 @@ function setProtoOf (obj, proto) {
 
 function mixinProperties (obj, proto) {
   for (var prop in proto) {
-    if (!obj.hasOwnProperty(prop)) {
+    if (!Object.prototype.hasOwnProperty.call(obj, prop)) {
       obj[prop] = proto[prop]
     }
   }
