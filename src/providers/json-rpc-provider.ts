@@ -165,7 +165,9 @@ export class JsonRpcProvider extends Provider {
                 }
             } else {
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-                if (errorMessage === '[-32000] Server error: send_tx_commit has timed out.') {
+                // NOTE: All this hackery is happening because structured errors not implemented
+                // TODO: Fix when https://github.com/nearprotocol/nearcore/issues/1839 gets resolved
+                if (response.error.data === 'Timeout') {
                     throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
                 } else {
                     throw new TypedError(errorMessage);

@@ -110,11 +110,18 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     private async retryTxResult(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
+        console.warn(`Retrying transaction ${accountId}:${base_encode(txHash)} as it has timed out`);
         let result;
         let waitTime = TX_STATUS_RETRY_WAIT;
         for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
-            result = await this.connection.provider.txStatus(txHash, accountId);
-            if (typeof result.status === 'object' &&
+            try {
+                result = await this.connection.provider.txStatus(txHash, accountId);
+            } catch (error) {
+                if (!error.message.match(/Transaction \w+ doesn't exist/)) {
+                    throw error;
+                }
+            }
+            if (result && typeof result.status === 'object' &&
                     (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
                 return result;
             }
