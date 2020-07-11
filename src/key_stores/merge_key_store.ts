@@ -22,7 +22,7 @@ export class MergeKeyStore extends KeyStore {
      * @param keyPair The key pair to store in local storage
      */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        this.keyStores[0].setKey(networkId, accountId, keyPair);
+        await this.keyStores[0].setKey(networkId, accountId, keyPair);
     }
 
     /**
@@ -48,7 +48,7 @@ export class MergeKeyStore extends KeyStore {
      */
     async removeKey(networkId: string, accountId: string): Promise<void> {
         for (const keyStore of this.keyStores) {
-            keyStore.removeKey(networkId, accountId);
+            await keyStore.removeKey(networkId, accountId);
         }
     }
     
@@ -57,7 +57,7 @@ export class MergeKeyStore extends KeyStore {
      */
     async clear(): Promise<void> {
         for (const keyStore of this.keyStores) {
-            keyStore.clear();
+            await keyStore.clear();
         }
     }
     
