@@ -129,7 +129,7 @@ export class Account {
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        throw new TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`, 'RetriesExceeded');
+        throw new TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`, 'RetriesExceeded', base_encode(txHash));
     }
 
     /**
@@ -159,6 +159,7 @@ export class Account {
             if (error.type === 'TimeoutError') {
                 result = await this.retryTxResult(txHash, this.accountId);
             } else {
+                error.txnId = base_encode(txHash);
                 throw error;
             }
         }
