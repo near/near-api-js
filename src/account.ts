@@ -159,7 +159,7 @@ export class Account {
             if (error.type === 'TimeoutError') {
                 result = await this.retryTxResult(txHash, this.accountId);
             } else {
-                error.txnId = base_encode(txHash);
+                error.transactionHash = base_encode(txHash);
                 throw error;
             }
         }

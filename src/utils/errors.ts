@@ -12,10 +12,10 @@ export class ArgumentTypeError extends Error {
 
 export class TypedError extends Error {
     type: string;
-    txnId?: string;
-    constructor(message?: string, type?: string, txnId?: string) {
+    transactionHash?: string;
+    constructor(message?: string, type?: string, transactionHash?: string) {
         super(message);
         this.type = type || 'UntypedError';
-        this.txnId = txnId;
+        this.transactionHash = transactionHash;
     }
 }
