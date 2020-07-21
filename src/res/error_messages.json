@@ -42,7 +42,7 @@
     "CostOverflow": "Transaction gas or balance cost is too high",
     "InvalidSignature": "Transaction is not signed with the given public key",
     "AccessKeyNotFound": "Signer \"{{account_id}}\" doesn't have access key with the given public_key {{public_key}}",
-    "NotEnoughBalance": "Sender {{signer_id}} does not have enough balance {} for operation costing {}",
+    "NotEnoughBalance": "Sender {{signer_id}} does not have enough balance {{balance}} for operation costing {{cost}}",
     "NotEnoughAllowance": "Access Key {account_id}:{public_key} does not have enough balance {{allowance}} for transaction costing {{cost}}",
     "Expired": "Transaction has expired",
     "DeleteAccountStaking": "Account {{account_id}} is staking and can not be deleted",
