@@ -160,9 +160,9 @@ export class Account {
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
         } catch (error) {
-           if (error.type === 'TimeoutError') {
+            if (error.type === 'TimeoutError') {
                 result = await this.retryTxResult(txHash, this.accountId);
-           } else {
+            } else {
                 error.context = new ErrorContext(base_encode(txHash));
                 throw error;
             }
