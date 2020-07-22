@@ -52,7 +52,7 @@ export class JsonRpcProvider extends Provider {
      */
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
         const bytes = signedTransaction.encode();
-        return this.sendJsonRpc('broadcast-txn-async', [Buffer.from(bytes).toString('base64')]).then(adaptTransactionResult);
+        return this.sendJsonRpc('broadcast_tx_async', [Buffer.from(bytes).toString('base64')]).then(adaptTransactionResult);
     }
 
     /**
