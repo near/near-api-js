@@ -6,6 +6,10 @@ export declare class ArgumentTypeError extends Error {
 }
 export declare class TypedError extends Error {
     type: string;
+    context?: ErrorContext;
+    constructor(message?: string, type?: string, context?: ErrorContext);
+}
+export declare class ErrorContext {
     transactionHash?: string;
-    constructor(message?: string, type?: string, transactionHash?: string);
+    constructor(transactionHash?: string);
 }

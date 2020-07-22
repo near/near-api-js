@@ -3,7 +3,7 @@
 import BN from 'bn.js';
 import { Action, transfer, createAccount, signTransaction, deployContract,
     addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
-import { FinalExecutionOutcome, TypedError } from './providers';
+import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
@@ -118,6 +118,7 @@ export class Account {
                 result = await this.connection.provider.txStatus(txHash, accountId);
             } catch (error) {
                 if (!error.message.match(/Transaction \w+ doesn't exist/)) {
+                    error.context = new ErrorContext(base_encode(txHash));
                     throw error;
                 }
             }
@@ -129,7 +130,10 @@ export class Account {
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        throw new TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`, 'RetriesExceeded', base_encode(txHash));
+        throw new TypedError(
+            `Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`,
+            'RetriesExceeded',
+            new ErrorContext(base_encode(txHash)));
     }
 
     /**
@@ -156,10 +160,10 @@ export class Account {
         try {
             result = await this.connection.provider.sendTransaction(signedTx);
         } catch (error) {
-            if (error.type === 'TimeoutError') {
+           if (error.type === 'TimeoutError') {
                 result = await this.retryTxResult(txHash, this.accountId);
-            } else {
-                error.transactionHash = base_encode(txHash);
+           } else {
+                error.context = new ErrorContext(base_encode(txHash));
                 throw error;
             }
         }

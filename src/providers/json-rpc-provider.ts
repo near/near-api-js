@@ -6,12 +6,12 @@ import {
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
-import { TypedError } from '../utils/errors';
+import { TypedError, ErrorContext } from '../utils/errors';
 import { base_encode } from '../utils/serialize';
 import { parseRpcError } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
-export { TypedError };
+export { TypedError, ErrorContext };
 
 /// Keep ids unique across all connections.
 let _nextId = 123;

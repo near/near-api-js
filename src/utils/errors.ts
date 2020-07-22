@@ -12,10 +12,17 @@ export class ArgumentTypeError extends Error {
 
 export class TypedError extends Error {
     type: string;
-    transactionHash?: string;
-    constructor(message?: string, type?: string, transactionHash?: string) {
+    context?: ErrorContext;
+    constructor(message?: string, type?: string, context?: ErrorContext) {
         super(message);
         this.type = type || 'UntypedError';
+        this.context = context;
+    }
+}
+
+export class ErrorContext {
+    transactionHash?: string;
+    constructor(transactionHash?: string) {
         this.transactionHash = transactionHash;
     }
 }
