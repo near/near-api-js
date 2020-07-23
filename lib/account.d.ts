@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Action } from './transaction';
+import { Action, AccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
@@ -37,6 +37,7 @@ export declare class Account {
     state(): Promise<AccountState>;
     private printLogsAndFailures;
     private printLogs;
+    private exponentialBackoff;
     /**
      * @param txHash The transaction hash to retry
      * @param accountId The NEAR account sending the transaction
@@ -49,6 +50,9 @@ export declare class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    accessKeyByPublicKeyCache: {
+        [key: string]: AccessKey;
+    };
     private findAccessKey;
     /**
      * @param contractId NEAR account where the contract is deployed
