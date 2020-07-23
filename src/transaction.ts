@@ -207,7 +207,7 @@ export function createTransaction(signerId: string, publicKey: PublicKey, receiv
  * @param transaction The Transaction object to sign
  * @param signer The {Signer} object that assists with signing keys
  * @param accountId The human-readable NEAR account name
- * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+ * @param networkId The targeted network. (ex. default, betanet, etc…)
  */
 async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const message = serialize(SCHEMA, transaction);
