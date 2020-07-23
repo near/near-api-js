@@ -17,13 +17,6 @@ module.exports = function getConfig(env) {
             helperUrl: 'https://helper.testnet.near.org',
             masterAccount: 'test.near',
         };
-    case 'devnet':
-        return {
-            networkId: 'devnet',
-            nodeUrl: 'https://rpc.devnet.near.org',
-            walletUrl: 'https://wallet.devnet.near.org',
-            helperUrl: 'https://helper.devnet.near.org',
-        };
     case 'betanet':
         return {
             networkId: 'betanet',

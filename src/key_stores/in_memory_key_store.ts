@@ -14,7 +14,7 @@ export class InMemoryKeyStore extends KeyStore {
 
     /**
      * Sets an in-memory storage item
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */    
@@ -24,7 +24,7 @@ export class InMemoryKeyStore extends KeyStore {
 
     /**
      * Gets a key from in-memory storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -38,7 +38,7 @@ export class InMemoryKeyStore extends KeyStore {
 
     /**
      * Removes a key from in-memory storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId: string, accountId: string): Promise<void> {
@@ -67,7 +67,7 @@ export class InMemoryKeyStore extends KeyStore {
 
     /**
      * Gets the account(s) from in-memory storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId: string): Promise<string[]> {

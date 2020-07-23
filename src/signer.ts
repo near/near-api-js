@@ -15,7 +15,7 @@ export abstract class Signer {
     /**
      * Returns public key for given account / network.
      * @param accountId accountId to retrieve from.
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      */
     abstract async getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey>;
 
@@ -23,7 +23,7 @@ export abstract class Signer {
      * Signs given message, by first hashing with sha256.
      * @param message message to sign.
      * @param accountId accountId to use for signing.
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      */
     abstract async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
 }
@@ -42,7 +42,7 @@ export class InMemorySigner extends Signer {
     /**
      * Creates a public key for the account given
      * @param accountId The NEAR account to assign a public key to
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      * @returns {Promise<PublicKey>}
      */
     async createKey(accountId: string, networkId: string): Promise<PublicKey> {
@@ -54,7 +54,7 @@ export class InMemorySigner extends Signer {
     /**
      * Gets the existing public key for a given account
      * @param accountId The NEAR account to assign a public key to
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      * @returns {Promise<PublicKey>} Returns the public key or null if not found
      */
     async getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey> {
@@ -68,7 +68,7 @@ export class InMemorySigner extends Signer {
     /**
      * @param message A message to be signed, typically a serialized transaction
      * @param accountId the NEAR account signing the message
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
      * @returns {Promise<Signature>}
      */
     async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature> {
