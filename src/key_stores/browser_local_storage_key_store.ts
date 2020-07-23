@@ -15,7 +15,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
 
     /**
      * Sets a local storage item
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
@@ -25,7 +25,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
 
     /**
      * Gets a key from local storage
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -39,7 +39,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
 
     /**
      * Removes a key from local storage
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId: string, accountId: string): Promise<void> {
@@ -74,7 +74,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
 
     /**
      * Gets the account(s) from local storage
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId: string): Promise<string[]> {
@@ -92,7 +92,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
 
     /**
      * Helper function to retrieve a local storage key
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the storage keythat's sought
      * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */

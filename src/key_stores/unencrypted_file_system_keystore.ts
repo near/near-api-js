@@ -62,7 +62,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
 
     /**
      * Sets a storage item in a file, unencrypted
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
@@ -74,7 +74,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
 
     /**
      * Gets a key from local storage
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -89,7 +89,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
 
     /**
      * Removes a key from local storage
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId: string, accountId: string): Promise<void> {
@@ -128,7 +128,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
 
     /**
      * Gets the account(s) from local storage
-     * @param networkId The targeted network. (ex. default, testnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId: string): Promise<string[]> {
