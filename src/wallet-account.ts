@@ -107,6 +107,27 @@ export class WalletConnection {
     }
 
     /**
+     * For multisig requests (2FA enabled wallets) quickly sign actions for 1 recieverId
+     * @param actions Array of Action objects that will be requested to sign
+     * @param receiverId of the account receiving the tx actions
+     * @param callbackUrl The url to navigate to after the user is prompted to sign
+     */
+    async requestSignActions(actions: Action[], receiverId: string, callbackUrl?: string) {
+        const currentUrl = new URL(window.location.href);
+        const newUrl = new URL('sign', this._walletBaseUrl);
+
+        newUrl.searchParams.set('actions', actions
+            .map(action => JSON.stringify(action))
+            .map(serialized => Buffer.from(serialized).toString('base64'))
+            .join(','));
+        newUrl.searchParams.set('receiverId', receiverId);
+        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
+        newUrl.searchParams.set('as2fa', '1');
+
+        window.location.assign(newUrl.toString());
+    }
+
+    /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     async _completeSignInWithAccessKey() {
@@ -182,7 +203,9 @@ class ConnectedWalletAccount extends Account {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
-            throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
+            // if no proper access key is found, wallet may have 2fa enabled and only limited access keys
+            // send the user to the wallet with the actions and receiverId to create a multisig request
+            await this.walletConnection.requestSignActions(actions, receiverId, window.location.href);
         }
 
         if (localKey && localKey.toString() === accessKey.public_key) {
