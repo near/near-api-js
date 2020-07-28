@@ -20,10 +20,10 @@ import { ServerError } from './generated/rpc_error_types';
 const DEFAULT_FUNC_CALL_GAS = new BN('300000000000000');
 
 // Default number of retries with different nonce before giving up on a transaction.
-const TX_NONCE_RETRY_NUMBER = 10;
+const TX_NONCE_RETRY_NUMBER = 20;
 
 // Default number of retries before giving up on a transaction.
-const TX_STATUS_RETRY_NUMBER = 10;
+const TX_STATUS_RETRY_NUMBER = 20;
 
 // Default wait until next retry in millis.
 const TX_STATUS_RETRY_WAIT = 500;
