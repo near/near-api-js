@@ -11,6 +11,8 @@ import { PositionalArgsError } from './utils/errors';
 import { parseRpcError } from './utils/rpc_errors';
 import { ServerError } from './generated/rpc_error_types';
 
+import exponentialBackoff from './utils/exponential-backoff';
+
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
@@ -30,11 +32,6 @@ const TX_STATUS_RETRY_WAIT = 500;
 
 // Exponential back off for waiting to retry.
 const TX_STATUS_RETRY_WAIT_BACKOFF = 1.5;
-
-// Sleep given number of millis.
-function sleep(millis: number): Promise<any> {
-    return new Promise(resolve => setTimeout(resolve, millis));
-}
 
 export interface AccountState {
     amount: string;
@@ -107,54 +104,6 @@ export class Account {
         }
     }
 
-    // TODO: jitter
-    private async exponentialBackoff(startWaitTime, retryNumber, waitBackoff, getResult) {
-        let waitTime = startWaitTime;
-        for (let i = 0; i < retryNumber; i++) {
-            const result = await getResult();
-            if (result) {
-                return result;
-            }
-
-            await sleep(waitTime);
-            waitTime *= waitBackoff;
-            i++;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param txHash The transaction hash to retry
-     * @param accountId The NEAR account sending the transaction
-     * @returns {Promise<FinalExecutionOutcome>}
-     */
-    private async retryTxResult(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
-        console.warn(`Retrying transaction ${accountId}:${base_encode(txHash)} as it has timed out`);
-        const result = await this.exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
-            let result;
-            try {
-                result = await this.connection.provider.txStatus(txHash, accountId);
-            } catch (error) {
-                if (!error.message.match(/Transaction \w+ doesn't exist/)) {
-                    error.context = new ErrorContext(base_encode(txHash));
-                    throw error;
-                }
-            }
-            if (result && typeof result.status === 'object' &&
-                    (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
-                return result;
-            }
-        });
-        if (!result) {
-            throw new TypedError(
-                `Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`,
-                'RetriesExceeded',
-                new ErrorContext(base_encode(txHash)));
-        }
-        return result;
-    }
-
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
@@ -164,8 +113,8 @@ export class Account {
         await this.ready;
 
         let txHash, signedTx;
-        // TODO: TX_NONCE
-        const result = await this.exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
+        // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
+        const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
             const accessKeyInfo = await this.findAccessKey(receiverId, actions);
             if (!accessKeyInfo) {
                 throw new TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
@@ -180,19 +129,35 @@ export class Account {
             );
 
             try {
-                return await this.connection.provider.sendTransaction(signedTx);
+                const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
+                    try {
+                        return await this.connection.provider.sendTransaction(signedTx);
+                    } catch (error) {
+                        if (error.type === 'TimeoutError') {
+                            console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} as it has timed out`);
+                            return null;
+                        }
+                        // TODO: Retry on various connectivity errors including rate limiting? in fetchJson?
+
+                        throw error;
+                    }
+                });
+                if (!result) {
+                    throw new TypedError(
+                        `Exceeded ${TX_STATUS_RETRY_NUMBER} attempts for transaction ${base_encode(txHash)}.`,
+                        'RetriesExceeded',
+                        new ErrorContext(base_encode(txHash)));
+                }
+                return result;
             } catch (error) {
-                if (error.type === 'TimeoutError') {
-                    return await this.retryTxResult(txHash, this.accountId);
-                } else if (error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
-                    // repeat attempt with new nonce
+                if (error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
                     console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
-                } else {
-                    error.context = new ErrorContext(base_encode(txHash));
-                    throw error;
                 }
+
+                error.context = new ErrorContext(base_encode(txHash));
+                throw error;
             }
         });
         if (!result) {
@@ -222,7 +187,6 @@ export class Account {
             }
         }
         // TODO: if Tx is Unknown or Started.
-        // TODO: deal with timeout on node side.
         return result;
     }
 

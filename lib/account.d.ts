@@ -37,13 +37,6 @@ export declare class Account {
     state(): Promise<AccountState>;
     private printLogsAndFailures;
     private printLogs;
-    private exponentialBackoff;
-    /**
-     * @param txHash The transaction hash to retry
-     * @param accountId The NEAR account sending the transaction
-     * @returns {Promise<FinalExecutionOutcome>}
-     */
-    private retryTxResult;
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
