@@ -7,7 +7,6 @@ export default async function exponentialBackoff(startWaitTime, retryNumber, wai
         if (result) {
             return result;
         }
-        // console.log('result', result, getResult.toString());
 
         await sleep(waitTime);
         waitTime *= waitBackoff;

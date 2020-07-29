@@ -137,7 +137,6 @@ export class Account {
                             console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} as it has timed out`);
                             return null;
                         }
-                        // TODO: Retry on various connectivity errors including rate limiting? in fetchJson?
 
                         throw error;
                     }
