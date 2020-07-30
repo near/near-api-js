@@ -149,7 +149,9 @@ export class Account {
                 }
                 return result;
             } catch (error) {
-                if (error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
+                // TODO: Remove env feature flag when race condition (https://github.com/nearprotocol/nearcore/issues/3054) is fixed
+                const retryNonce = ['true', 'yes'].includes(process.env.NEAR_RETRY_NONCE);
+                if (retryNonce && error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
                     console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
