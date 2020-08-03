@@ -11,7 +11,7 @@ test('functionCall with already serialized args', () => {
             gas: new BN(1),
             deposit: new BN(2)
         }
-    })
+    });
 });
 
 test('functionCall with non-serialized args', () => {
@@ -24,5 +24,5 @@ test('functionCall with non-serialized args', () => {
             gas: new BN(1),
             deposit: new BN(2)
         }
-    })
+    });
 });
