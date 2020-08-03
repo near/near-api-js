@@ -48,13 +48,6 @@ export declare class WalletConnection {
      */
     requestSignTransactions(transactions: Transaction[], callbackUrl?: string): Promise<void>;
     /**
-     * For multisig requests (2FA enabled wallets) quickly sign actions for 1 recieverId
-     * @param actions Array of Action objects that will be requested to sign
-     * @param receiverId of the account receiving the tx actions
-     * @param callbackUrl The url to navigate to after the user is prompted to sign
-     */
-    requestSignActions(actions: Action[], receiverId: string, callbackUrl?: string): Promise<void>;
-    /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     _completeSignInWithAccessKey(): Promise<void>;

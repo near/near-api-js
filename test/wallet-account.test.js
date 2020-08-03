@@ -243,6 +243,71 @@ it('requests transaction signing automatically when function call has attached d
     expect(transactions).toHaveLength(1);
 });
 
+it('requests transaction signing with 2fa access key', async () => {
+    let localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    let walletKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    setupWalletConnectionForSigning({
+        allKeys: [ walletKeyPair.publicKey.toString() ],
+        accountAccessKeys: [{
+            access_key: {
+                nonce: 1,
+                permission: {
+                    FunctionCall: {
+                        allowance: '1000000000',
+                        receiver_id: 'signer.near',
+                        method_names: ['add_request_and_confirm']
+                    }
+                }
+            },
+            public_key: localKeyPair.publicKey.toString()
+        }]
+    });
+    keyStore.setKey('networkId', 'signer.near', localKeyPair);
+
+    let res
+    try {
+        res = await walletConnection.account().signAndSendTransaction('receiver.near', [
+            nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
+        ]);
+    } catch (e) {
+        console.log(e.message)
+    }
+
+    expect(res).toHaveProperty('transaction_outcome')
+    expect(res).toHaveProperty('receipts_outcome')
+});
+
+it('fails requests transaction signing without 2fa access key', async () => {
+    let localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    let walletKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    setupWalletConnectionForSigning({
+        allKeys: [ walletKeyPair.publicKey.toString() ],
+        accountAccessKeys: [{
+            access_key: {
+                nonce: 1,
+                permission: {
+                    FunctionCall: {
+                        allowance: '1000000000',
+                        receiver_id: 'signer.near',
+                        method_names: ['not_a_valid_2fa_method']
+                    }
+                }
+            },
+            public_key: localKeyPair.publicKey.toString()
+        }]
+    });
+    keyStore.setKey('networkId', 'signer.near', localKeyPair);
+
+    try {
+        await walletConnection.account().signAndSendTransaction('receiver.near', [
+            nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
+        ]);
+        fail('expected to throw');
+    } catch (e) {
+        expect(e.message).toEqual('Cannot find matching key for transaction sent to receiver.near');
+    }
+});
+
 it.each([
     nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0')),
     nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1')),
