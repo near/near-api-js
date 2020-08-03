@@ -1,5 +1,12 @@
 import createError from 'http-errors';
 
+import exponentialBackoff from './exponential-backoff';
+import { TypedError } from '../providers';
+
+const START_WAIT_TIME_MS = 1000;
+const BACKOFF_MULTIPLIER = 1.5;
+const RETRY_NUMBER = 10;
+
 export interface ConnectionInfo {
     url: string;
     user?: string;
@@ -43,13 +50,32 @@ export async function fetchJson(connection: string | ConnectionInfo, json?: stri
     } else {
         url = connection.url;
     }
-    const response = await fetch(url, {
-        method: json ? 'POST' : 'GET',
-        body: json ? json : undefined,
-        headers: { 'Content-type': 'application/json; charset=utf-8' }
+
+    const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
+        try {
+            const response = await fetch(url, {
+                method: json ? 'POST' : 'GET',
+                body: json ? json : undefined,
+                headers: { 'Content-type': 'application/json; charset=utf-8' }
+            });
+            if (!response.ok) {
+                if (response.status === 503) {
+                    console.warn(`Retrying HTTP request for ${url} as it's not available now`);
+                    return null;
+                }
+                throw createError(response.status, await response.text());
+            }
+            return response;
+        } catch (error) {
+            if (error.toString().includes('FetchError')) {
+                console.warn(`Retrying HTTP request for ${url} because of error: ${error}`);
+                return null;
+            }
+            throw error;
+        }
     });
-    if (!response.ok) {
-        throw createError(response.status, await response.text());
+    if (!response) {
+        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${url}.`, 'RetriesExceeded');
     }
     return await response.json();
 }

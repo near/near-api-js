@@ -11,6 +11,8 @@ import { PositionalArgsError } from './utils/errors';
 import { parseRpcError } from './utils/rpc_errors';
 import { ServerError } from './generated/rpc_error_types';
 
+import exponentialBackoff from './utils/exponential-backoff';
+
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
@@ -19,19 +21,17 @@ import { ServerError } from './generated/rpc_error_types';
 // For discussion see https://github.com/nearprotocol/NEPs/issues/67
 const DEFAULT_FUNC_CALL_GAS = new BN('300000000000000');
 
+// Default number of retries with different nonce before giving up on a transaction.
+const TX_NONCE_RETRY_NUMBER = 12;
+
 // Default number of retries before giving up on a transaction.
-const TX_STATUS_RETRY_NUMBER = 10;
+const TX_STATUS_RETRY_NUMBER = 12;
 
 // Default wait until next retry in millis.
 const TX_STATUS_RETRY_WAIT = 500;
 
 // Exponential back off for waiting to retry.
 const TX_STATUS_RETRY_WAIT_BACKOFF = 1.5;
-
-// Sleep given number of millis.
-function sleep(millis: number): Promise<any> {
-    return new Promise(resolve => setTimeout(resolve, millis));
-}
 
 export interface AccountState {
     amount: string;
@@ -105,38 +105,6 @@ export class Account {
     }
 
     /**
-     * @param txHash The transaction hash to retry
-     * @param accountId The NEAR account sending the transaction
-     * @returns {Promise<FinalExecutionOutcome>}
-     */
-    private async retryTxResult(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
-        console.warn(`Retrying transaction ${accountId}:${base_encode(txHash)} as it has timed out`);
-        let result;
-        let waitTime = TX_STATUS_RETRY_WAIT;
-        for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
-            try {
-                result = await this.connection.provider.txStatus(txHash, accountId);
-            } catch (error) {
-                if (!error.message.match(/Transaction \w+ doesn't exist/)) {
-                    error.context = new ErrorContext(base_encode(txHash));
-                    throw error;
-                }
-            }
-            if (result && typeof result.status === 'object' &&
-                    (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
-                return result;
-            }
-            await sleep(waitTime);
-            waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
-            i++;
-        }
-        throw new TypedError(
-            `Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${base_encode(txHash)}.`,
-            'RetriesExceeded',
-            new ErrorContext(base_encode(txHash)));
-    }
-
-    /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
      * @returns {Promise<FinalExecutionOutcome>}
@@ -144,28 +112,55 @@ export class Account {
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await this.ready;
 
-        // TODO: Find matching access key based on transaction
-        const accessKey = await this.findAccessKey();
-        if (!accessKey) {
-            throw new TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
-        }
+        let txHash, signedTx;
+        // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
+        const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
+            const accessKeyInfo = await this.findAccessKey(receiverId, actions);
+            if (!accessKeyInfo) {
+                throw new TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
+            }
+            const { publicKey, accessKey } = accessKeyInfo;
 
-        const status = await this.connection.provider.status();
+            const status = await this.connection.provider.status();
 
-        const [txHash, signedTx] = await signTransaction(
-            receiverId, ++accessKey.nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
-        );
+            const nonce = ++accessKey.nonce;
+            [txHash, signedTx] = await signTransaction(
+                receiverId, nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
+            );
 
-        let result;
-        try {
-            result = await this.connection.provider.sendTransaction(signedTx);
-        } catch (error) {
-            if (error.type === 'TimeoutError') {
-                result = await this.retryTxResult(txHash, this.accountId);
-            } else {
+            try {
+                const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
+                    try {
+                        return await this.connection.provider.sendTransaction(signedTx);
+                    } catch (error) {
+                        if (error.type === 'TimeoutError') {
+                            console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} as it has timed out`);
+                            return null;
+                        }
+
+                        throw error;
+                    }
+                });
+                if (!result) {
+                    throw new TypedError(
+                        `Exceeded ${TX_STATUS_RETRY_NUMBER} attempts for transaction ${base_encode(txHash)}.`,
+                        'RetriesExceeded',
+                        new ErrorContext(base_encode(txHash)));
+                }
+                return result;
+            } catch (error) {
+                if (error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
+                    console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} with new nonce.`);
+                    delete this.accessKeyByPublicKeyCache[publicKey.toString()];
+                    return null;
+                }
+
                 error.context = new ErrorContext(base_encode(txHash));
                 throw error;
             }
+        });
+        if (!result) {
+            throw new TypedError(`nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.`, 'RetriesExceeded');
         }
 
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => {
@@ -191,20 +186,27 @@ export class Account {
             }
         }
         // TODO: if Tx is Unknown or Started.
-        // TODO: deal with timeout on node side.
         return result;
     }
 
-    private async findAccessKey(): Promise<AccessKey> {
+    accessKeyByPublicKeyCache: { [key: string] : AccessKey } = {}
+
+    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey, accessKey: AccessKey}> {
+        // TODO: Find matching access key based on transaction
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
             return null;
         }
 
-        // TODO: Cache keys and handle nonce errors automatically
+        const cachedAccessKey = this.accessKeyByPublicKeyCache[publicKey.toString()];
+        if (cachedAccessKey !== undefined) {
+            return { publicKey, accessKey: cachedAccessKey };
+        }
 
         try {
-            return await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+            const accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+            this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
+            return { publicKey, accessKey };
         } catch (e) {
             // TODO: Check based on .type when nearcore starts returning query errors in structured format
             if (e.message.includes('does not exist while viewing')) {

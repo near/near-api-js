@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Action } from './transaction';
+import { Action, AccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
@@ -38,17 +38,14 @@ export declare class Account {
     private printLogsAndFailures;
     private printLogs;
     /**
-     * @param txHash The transaction hash to retry
-     * @param accountId The NEAR account sending the transaction
-     * @returns {Promise<FinalExecutionOutcome>}
-     */
-    private retryTxResult;
-    /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
      * @returns {Promise<FinalExecutionOutcome>}
      */
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    accessKeyByPublicKeyCache: {
+        [key: string]: AccessKey;
+    };
     private findAccessKey;
     /**
      * @param contractId NEAR account where the contract is deployed
