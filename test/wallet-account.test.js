@@ -264,17 +264,17 @@ it('requests transaction signing with 2fa access key', async () => {
     });
     keyStore.setKey('networkId', 'signer.near', localKeyPair);
 
-    let res
+    let res;
     try {
         res = await walletConnection.account().signAndSendTransaction('receiver.near', [
             nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
         ]);
     } catch (e) {
-        console.log(e.message)
+        console.log(e.message);
     }
 
-    expect(res).toHaveProperty('transaction_outcome')
-    expect(res).toHaveProperty('receipts_outcome')
+    expect(res).toHaveProperty('transaction_outcome');
+    expect(res).toHaveProperty('receipts_outcome');
 });
 
 it('fails requests transaction signing without 2fa access key', async () => {
