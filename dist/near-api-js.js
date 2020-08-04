@@ -5,7 +5,7 @@ window.nearApi = require('./lib/browser-index');
 window.Buffer = Buffer;
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/browser-index":4,"buffer":41,"error-polyfill":48}],2:[function(require,module,exports){
+},{"./lib/browser-index":4,"buffer":42,"error-polyfill":49}],2:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -20,28 +20,28 @@ const serialize_1 = require("./utils/serialize");
 const key_pair_1 = require("./utils/key_pair");
 const errors_1 = require("./utils/errors");
 const rpc_errors_1 = require("./utils/rpc_errors");
+const exponential_backoff_1 = __importDefault(require("./utils/exponential-backoff"));
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
 // the originator.
 // Due to protocol changes that charge upfront for the maximum possible gas price inflation due to
 // full blocks, the price of max_prepaid_gas is decreased to `300 * 10**12`.
 // For discussion see https://github.com/nearprotocol/NEPs/issues/67
-const DEFAULT_FUNC_CALL_GAS = new bn_js_1.default('300000000000000');
+const DEFAULT_FUNC_CALL_GAS = new bn_js_1.default('30000000000000');
+// Default number of retries with different nonce before giving up on a transaction.
+const TX_NONCE_RETRY_NUMBER = 12;
 // Default number of retries before giving up on a transaction.
-const TX_STATUS_RETRY_NUMBER = 10;
+const TX_STATUS_RETRY_NUMBER = 12;
 // Default wait until next retry in millis.
 const TX_STATUS_RETRY_WAIT = 500;
 // Exponential back off for waiting to retry.
 const TX_STATUS_RETRY_WAIT_BACKOFF = 1.5;
-// Sleep given number of millis.
-function sleep(millis) {
-    return new Promise(resolve => setTimeout(resolve, millis));
-}
 /**
  * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
  */
 class Account {
     constructor(connection, accountId) {
+        this.accessKeyByPublicKeyCache = {};
         this.connection = connection;
         this.accountId = accountId;
     }
@@ -78,58 +78,53 @@ class Account {
         }
     }
     /**
-     * @param txHash The transaction hash to retry
-     * @param accountId The NEAR account sending the transaction
-     * @returns {Promise<FinalExecutionOutcome>}
-     */
-    async retryTxResult(txHash, accountId) {
-        console.warn(`Retrying transaction ${accountId}:${serialize_1.base_encode(txHash)} as it has timed out`);
-        let result;
-        let waitTime = TX_STATUS_RETRY_WAIT;
-        for (let i = 0; i < TX_STATUS_RETRY_NUMBER; i++) {
-            try {
-                result = await this.connection.provider.txStatus(txHash, accountId);
-            }
-            catch (error) {
-                if (!error.message.match(/Transaction \w+ doesn't exist/)) {
-                    throw error;
-                }
-            }
-            if (result && typeof result.status === 'object' &&
-                (typeof result.status.SuccessValue === 'string' || typeof result.status.Failure === 'object')) {
-                return result;
-            }
-            await sleep(waitTime);
-            waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
-            i++;
-        }
-        throw new providers_1.TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`, 'RetriesExceeded');
-    }
-    /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async signAndSendTransaction(receiverId, actions) {
         await this.ready;
-        // TODO: Find matching access key based on transaction
-        const accessKey = await this.findAccessKey();
-        if (!accessKey) {
-            throw new providers_1.TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
-        }
-        const status = await this.connection.provider.status();
-        const [txHash, signedTx] = await transaction_1.signTransaction(receiverId, ++accessKey.nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
-        let result;
-        try {
-            result = await this.connection.provider.sendTransaction(signedTx);
-        }
-        catch (error) {
-            if (error.type === 'TimeoutError') {
-                result = await this.retryTxResult(txHash, this.accountId);
+        let txHash, signedTx;
+        // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
+        const result = await exponential_backoff_1.default(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
+            const accessKeyInfo = await this.findAccessKey(receiverId, actions);
+            if (!accessKeyInfo) {
+                throw new providers_1.TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
             }
-            else {
+            const { publicKey, accessKey } = accessKeyInfo;
+            const status = await this.connection.provider.status();
+            const nonce = ++accessKey.nonce;
+            [txHash, signedTx] = await transaction_1.signTransaction(receiverId, nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
+            try {
+                const result = await exponential_backoff_1.default(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
+                    try {
+                        return await this.connection.provider.sendTransaction(signedTx);
+                    }
+                    catch (error) {
+                        if (error.type === 'TimeoutError') {
+                            console.warn(`Retrying transaction ${receiverId}:${serialize_1.base_encode(txHash)} as it has timed out`);
+                            return null;
+                        }
+                        throw error;
+                    }
+                });
+                if (!result) {
+                    throw new providers_1.TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} attempts for transaction ${serialize_1.base_encode(txHash)}.`, 'RetriesExceeded', new providers_1.ErrorContext(serialize_1.base_encode(txHash)));
+                }
+                return result;
+            }
+            catch (error) {
+                if (error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
+                    console.warn(`Retrying transaction ${receiverId}:${serialize_1.base_encode(txHash)} with new nonce.`);
+                    delete this.accessKeyByPublicKeyCache[publicKey.toString()];
+                    return null;
+                }
+                error.context = new providers_1.ErrorContext(serialize_1.base_encode(txHash));
                 throw error;
             }
+        });
+        if (!result) {
+            throw new providers_1.TypedError(`nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.`, 'RetriesExceeded');
         }
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => {
             if (it.outcome.logs.length ||
@@ -154,17 +149,22 @@ class Account {
             }
         }
         // TODO: if Tx is Unknown or Started.
-        // TODO: deal with timeout on node side.
         return result;
     }
-    async findAccessKey() {
+    async findAccessKey(receiverId, actions) {
+        // TODO: Find matching access key based on transaction
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
             return null;
         }
-        // TODO: Cache keys and handle nonce errors automatically
+        const cachedAccessKey = this.accessKeyByPublicKeyCache[publicKey.toString()];
+        if (cachedAccessKey !== undefined) {
+            return { publicKey, accessKey: cachedAccessKey };
+        }
         try {
-            return await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+            const accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+            this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
+            return { publicKey, accessKey };
         }
         catch (e) {
             // TODO: Check based on .type when nearcore starts returning query errors in structured format
@@ -220,16 +220,16 @@ class Account {
     /**
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The method name on the contract as it is written in the contract code
-     * @param args Any arguments to the contract method, wrapped in JSON
-     * @param data The compiled contract code
-     * @param gas An amount of yoctoⓃ attached to cover the gas cost of this function call
-     * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
+     * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
+     *  or `Uint8Array` instance which represents bytes passed as is.
+     * @param gas max amount of gas that method call can use
+      * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async functionCall(contractId, methodName, args, gas, amount) {
         args = args || {};
         this.validateArgs(args);
-        return this.signAndSendTransaction(contractId, [transaction_1.functionCall(methodName, Buffer.from(JSON.stringify(args)), gas || DEFAULT_FUNC_CALL_GAS, amount)]);
+        return this.signAndSendTransaction(contractId, [transaction_1.functionCall(methodName, args, gas || DEFAULT_FUNC_CALL_GAS, amount)]);
     }
     /**
      * @param publicKey A public key to be associated with the contract
@@ -265,6 +265,10 @@ class Account {
         return this.signAndSendTransaction(this.accountId, [transaction_1.stake(amount, key_pair_1.PublicKey.from(publicKey))]);
     }
     validateArgs(args) {
+        const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
+        if (isUint8Array) {
+            return;
+        }
         if (Array.isArray(args) || typeof args !== 'object') {
             throw new errors_1.PositionalArgsError();
         }
@@ -341,7 +345,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers":18,"./transaction":23,"./utils/errors":25,"./utils/key_pair":28,"./utils/rpc_errors":30,"./utils/serialize":31,"bn.js":37,"buffer":41}],3:[function(require,module,exports){
+},{"./providers":18,"./transaction":23,"./utils/errors":25,"./utils/exponential-backoff":26,"./utils/key_pair":29,"./utils/rpc_errors":31,"./utils/serialize":32,"bn.js":38,"buffer":42}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UrlAccountCreator = exports.LocalAccountCreator = exports.AccountCreator = void 0;
@@ -388,7 +392,7 @@ class UrlAccountCreator extends AccountCreator {
 }
 exports.UrlAccountCreator = UrlAccountCreator;
 
-},{"./utils/web":32}],4:[function(require,module,exports){
+},{"./utils/web":33}],4:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -468,7 +472,7 @@ const wallet_account_1 = require("./wallet-account");
 Object.defineProperty(exports, "WalletAccount", { enumerable: true, get: function () { return wallet_account_1.WalletAccount; } });
 Object.defineProperty(exports, "WalletConnection", { enumerable: true, get: function () { return wallet_account_1.WalletConnection; } });
 
-},{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./near":17,"./providers":18,"./signer":22,"./transaction":23,"./utils":27,"./utils/key_pair":28,"./validators":33,"./wallet-account":34}],6:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./near":17,"./providers":18,"./signer":22,"./transaction":23,"./utils":28,"./utils/key_pair":29,"./validators":34,"./wallet-account":35}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Connection = void 0;
@@ -590,7 +594,7 @@ function validateBNLike(argMap) {
     }
 }
 
-},{"./providers":18,"./utils/errors":25,"bn.js":37}],8:[function(require,module,exports){
+},{"./providers":18,"./utils/errors":25,"bn.js":38}],8:[function(require,module,exports){
 module.exports={
     "schema": {
         "BadUTF16": {
@@ -1553,7 +1557,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Sets a local storage item
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
@@ -1562,7 +1566,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets a key from local storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -1575,7 +1579,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Removes a key from local storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId, accountId) {
@@ -1607,7 +1611,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets the account(s) from local storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId) {
@@ -1624,7 +1628,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Helper function to retrieve a local storage key
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the storage keythat's sought
      * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */
@@ -1639,7 +1643,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
 }
 exports.BrowserLocalStorageKeyStore = BrowserLocalStorageKeyStore;
 
-},{"../utils/key_pair":28,"./keystore":14}],12:[function(require,module,exports){
+},{"../utils/key_pair":29,"./keystore":14}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InMemoryKeyStore = void 0;
@@ -1655,7 +1659,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Sets an in-memory storage item
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
@@ -1664,7 +1668,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets a key from in-memory storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -1677,7 +1681,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Removes a key from in-memory storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId, accountId) {
@@ -1703,7 +1707,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets the account(s) from in-memory storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId) {
@@ -1719,7 +1723,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
 }
 exports.InMemoryKeyStore = InMemoryKeyStore;
 
-},{"../utils/key_pair":28,"./keystore":14}],13:[function(require,module,exports){
+},{"../utils/key_pair":29,"./keystore":14}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MergeKeyStore = exports.UnencryptedFileSystemKeyStore = exports.BrowserLocalStorageKeyStore = exports.InMemoryKeyStore = exports.KeyStore = void 0;
@@ -1763,16 +1767,16 @@ class MergeKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Sets a storage item to the first index of a key store array
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
     async setKey(networkId, accountId, keyPair) {
-        this.keyStores[0].setKey(networkId, accountId, keyPair);
+        await this.keyStores[0].setKey(networkId, accountId, keyPair);
     }
     /**
      * Gets a key from the array of key stores
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -1787,12 +1791,12 @@ class MergeKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Removes a key from the array of key stores
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId, accountId) {
         for (const keyStore of this.keyStores) {
-            keyStore.removeKey(networkId, accountId);
+            await keyStore.removeKey(networkId, accountId);
         }
     }
     /**
@@ -1800,7 +1804,7 @@ class MergeKeyStore extends keystore_1.KeyStore {
      */
     async clear() {
         for (const keyStore of this.keyStores) {
-            keyStore.clear();
+            await keyStore.clear();
         }
     }
     /**
@@ -1818,7 +1822,7 @@ class MergeKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets the account(s) from the array of key stores
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId) {
@@ -1890,7 +1894,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Sets a storage item in a file, unencrypted
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
@@ -1901,7 +1905,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets a key from local storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -1915,7 +1919,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Removes a key from local storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId, accountId) {
@@ -1950,7 +1954,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets the account(s) from local storage
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId) {
@@ -1965,7 +1969,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
 }
 exports.UnencryptedFileSystemKeyStore = UnencryptedFileSystemKeyStore;
 
-},{"../utils/key_pair":28,"./keystore":14,"fs":39,"util":81}],17:[function(require,module,exports){
+},{"../utils/key_pair":29,"./keystore":14,"fs":40,"util":82}],17:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2072,10 +2076,10 @@ async function connect(config) {
 }
 exports.connect = connect;
 
-},{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./key_stores":13,"./key_stores/unencrypted_file_system_keystore":16,"bn.js":37}],18:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./key_stores":13,"./key_stores/unencrypted_file_system_keystore":16,"bn.js":38}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TypedError = exports.getTransactionLastResult = exports.FinalExecutionStatusBasic = exports.JsonRpcProvider = exports.Provider = void 0;
+exports.ErrorContext = exports.TypedError = exports.getTransactionLastResult = exports.FinalExecutionStatusBasic = exports.JsonRpcProvider = exports.Provider = void 0;
 const provider_1 = require("./provider");
 Object.defineProperty(exports, "Provider", { enumerable: true, get: function () { return provider_1.Provider; } });
 Object.defineProperty(exports, "getTransactionLastResult", { enumerable: true, get: function () { return provider_1.getTransactionLastResult; } });
@@ -2083,6 +2087,7 @@ Object.defineProperty(exports, "FinalExecutionStatusBasic", { enumerable: true, 
 const json_rpc_provider_1 = require("./json-rpc-provider");
 Object.defineProperty(exports, "JsonRpcProvider", { enumerable: true, get: function () { return json_rpc_provider_1.JsonRpcProvider; } });
 Object.defineProperty(exports, "TypedError", { enumerable: true, get: function () { return json_rpc_provider_1.TypedError; } });
+Object.defineProperty(exports, "ErrorContext", { enumerable: true, get: function () { return json_rpc_provider_1.ErrorContext; } });
 
 },{"./json-rpc-provider":19,"./provider":20}],19:[function(require,module,exports){
 (function (Buffer){
@@ -2091,12 +2096,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JsonRpcProvider = exports.TypedError = void 0;
+exports.JsonRpcProvider = exports.ErrorContext = exports.TypedError = void 0;
 const depd_1 = __importDefault(require("depd"));
 const provider_1 = require("./provider");
 const web_1 = require("../utils/web");
 const errors_1 = require("../utils/errors");
 Object.defineProperty(exports, "TypedError", { enumerable: true, get: function () { return errors_1.TypedError; } });
+Object.defineProperty(exports, "ErrorContext", { enumerable: true, get: function () { return errors_1.ErrorContext; } });
 const serialize_1 = require("../utils/serialize");
 const rpc_errors_1 = require("../utils/rpc_errors");
 /// Keep ids unique across all connections.
@@ -2252,7 +2258,7 @@ class JsonRpcProvider extends provider_1.Provider {
 exports.JsonRpcProvider = JsonRpcProvider;
 
 }).call(this,require("buffer").Buffer)
-},{"../utils/errors":25,"../utils/rpc_errors":30,"../utils/serialize":31,"../utils/web":32,"./provider":20,"buffer":41,"depd":47}],20:[function(require,module,exports){
+},{"../utils/errors":25,"../utils/rpc_errors":31,"../utils/serialize":32,"../utils/web":33,"./provider":20,"buffer":42,"depd":48}],20:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2305,7 +2311,7 @@ function adaptTransactionResult(txResult) {
 exports.adaptTransactionResult = adaptTransactionResult;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":41}],21:[function(require,module,exports){
+},{"buffer":42}],21:[function(require,module,exports){
 module.exports={
     "GasLimitExceeded": "Exceeded the maximum amount of gas allowed to burn per contract",
     "MethodEmptyName": "Method name is empty",
@@ -2350,7 +2356,7 @@ module.exports={
     "CostOverflow": "Transaction gas or balance cost is too high",
     "InvalidSignature": "Transaction is not signed with the given public key",
     "AccessKeyNotFound": "Signer \"{{account_id}}\" doesn't have access key with the given public_key {{public_key}}",
-    "NotEnoughBalance": "Sender {{signer_id}} does not have enough balance {} for operation costing {}",
+    "NotEnoughBalance": "Sender {{signer_id}} does not have enough balance {{balance}} for operation costing {{cost}}",
     "NotEnoughAllowance": "Access Key {account_id}:{public_key} does not have enough balance {{allowance}} for transaction costing {{cost}}",
     "Expired": "Transaction has expired",
     "DeleteAccountStaking": "Account {{account_id}} is staking and can not be deleted",
@@ -2366,8 +2372,8 @@ module.exports={
     "InvalidChain": "Transaction parent block hash doesn't belong to the current chain",
     "AccountDoesNotExist": "Can't complete the action because account {{account_id}} doesn't exist",
     "MethodNameMismatch": "Transaction method name {{method_name}} isn't allowed by the access key",
-    "DeleteAccountHasRent": "Account {{account_id}} can't be deleted. It has {balance{}}, which is enough to cover the rent",
-    "DeleteAccountHasEnoughBalance": "Account {{account_id}} can't be deleted. It has {balance{}}, which is enough to cover it's storage",
+    "DeleteAccountHasRent": "Account {{account_id}} can't be deleted. It has {{balance}}, which is enough to cover the rent",
+    "DeleteAccountHasEnoughBalance": "Account {{account_id}} can't be deleted. It has {{balance}}, which is enough to cover it's storage",
     "InvalidReceiver": "Invalid receiver account ID {{receiver_id}} according to requirements",
     "DeleteKeyDoesNotExist": "Account {{account_id}} tries to remove an access key that doesn't exist",
     "Timeout": "Timeout exceeded",
@@ -2400,7 +2406,7 @@ class InMemorySigner extends Signer {
     /**
      * Creates a public key for the account given
      * @param accountId The NEAR account to assign a public key to
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns {Promise<PublicKey>}
      */
     async createKey(accountId, networkId) {
@@ -2411,7 +2417,7 @@ class InMemorySigner extends Signer {
     /**
      * Gets the existing public key for a given account
      * @param accountId The NEAR account to assign a public key to
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns {Promise<PublicKey>} Returns the public key or null if not found
      */
     async getPublicKey(accountId, networkId) {
@@ -2424,7 +2430,7 @@ class InMemorySigner extends Signer {
     /**
      * @param message A message to be signed, typically a serialized transaction
      * @param accountId the NEAR account signing the message
-     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns {Promise<Signature>}
      */
     async signMessage(message, accountId, networkId) {
@@ -2441,7 +2447,8 @@ class InMemorySigner extends Signer {
 }
 exports.InMemorySigner = InMemorySigner;
 
-},{"./utils/key_pair":28,"js-sha256":61}],23:[function(require,module,exports){
+},{"./utils/key_pair":29,"js-sha256":62}],23:[function(require,module,exports){
+(function (Buffer){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2499,8 +2506,20 @@ function deployContract(code) {
     return new Action({ deployContract: new DeployContract({ code }) });
 }
 exports.deployContract = deployContract;
+/**
+ * Constructs {@link Action} instance representing contract method call.
+ *
+ * @param methodName the name of the method to call
+ * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
+ *  or `Uint8Array` instance which represents bytes passed as is.
+ * @param gas max amount of gas that method call can use
+ * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+ */
 function functionCall(methodName, args, gas, deposit) {
-    return new Action({ functionCall: new FunctionCall({ methodName, args, gas, deposit }) });
+    const anyArgs = args;
+    const isUint8Array = anyArgs.byteLength !== undefined && anyArgs.byteLength === anyArgs.length;
+    const serializedArgs = isUint8Array ? args : Buffer.from(JSON.stringify(args));
+    return new Action({ functionCall: new FunctionCall({ methodName, args: serializedArgs, gas, deposit }) });
 }
 exports.functionCall = functionCall;
 function transfer(deposit) {
@@ -2631,7 +2650,7 @@ exports.createTransaction = createTransaction;
  * @param transaction The Transaction object to sign
  * @param signer The {Signer} object that assists with signing keys
  * @param accountId The human-readable NEAR account name
- * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
+ * @param networkId The targeted network. (ex. default, betanet, etc…)
  */
 async function signTransactionObject(transaction, signer, accountId, networkId) {
     const message = serialize_1.serialize(exports.SCHEMA, transaction);
@@ -2657,7 +2676,8 @@ async function signTransaction(...args) {
 }
 exports.signTransaction = signTransaction;
 
-},{"./utils/enums":24,"./utils/key_pair":28,"./utils/serialize":31,"js-sha256":61}],24:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"./utils/enums":24,"./utils/key_pair":29,"./utils/serialize":32,"buffer":42,"js-sha256":62}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Assignable = exports.Enum = void 0;
@@ -2685,7 +2705,7 @@ exports.Assignable = Assignable;
 },{}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TypedError = exports.ArgumentTypeError = exports.PositionalArgsError = void 0;
+exports.ErrorContext = exports.TypedError = exports.ArgumentTypeError = exports.PositionalArgsError = void 0;
 class PositionalArgsError extends Error {
     constructor() {
         super('Contract method calls expect named arguments wrapped in object, e.g. { argName1: argValue1, argName2: argValue2 }');
@@ -2699,14 +2719,44 @@ class ArgumentTypeError extends Error {
 }
 exports.ArgumentTypeError = ArgumentTypeError;
 class TypedError extends Error {
-    constructor(message, type) {
+    constructor(message, type, context) {
         super(message);
         this.type = type || 'UntypedError';
+        this.context = context;
     }
 }
 exports.TypedError = TypedError;
+class ErrorContext {
+    constructor(transactionHash) {
+        this.transactionHash = transactionHash;
+    }
+}
+exports.ErrorContext = ErrorContext;
 
 },{}],26:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+async function exponentialBackoff(startWaitTime, retryNumber, waitBackoff, getResult) {
+    // TODO: jitter?
+    let waitTime = startWaitTime;
+    for (let i = 0; i < retryNumber; i++) {
+        const result = await getResult();
+        if (result) {
+            return result;
+        }
+        await sleep(waitTime);
+        waitTime *= waitBackoff;
+        i++;
+    }
+    return null;
+}
+exports.default = exponentialBackoff;
+// Sleep given number of millis.
+function sleep(millis) {
+    return new Promise(resolve => setTimeout(resolve, millis));
+}
+
+},{}],27:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2814,7 +2864,7 @@ function formatWithCommas(value) {
     return value;
 }
 
-},{"bn.js":37}],27:[function(require,module,exports){
+},{"bn.js":38}],28:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -2856,7 +2906,7 @@ Object.defineProperty(exports, "PublicKey", { enumerable: true, get: function ()
 Object.defineProperty(exports, "KeyPair", { enumerable: true, get: function () { return key_pair_1.KeyPair; } });
 Object.defineProperty(exports, "KeyPairEd25519", { enumerable: true, get: function () { return key_pair_1.KeyPairEd25519; } });
 
-},{"./enums":24,"./format":26,"./key_pair":28,"./network":29,"./rpc_errors":30,"./serialize":31,"./web":32}],28:[function(require,module,exports){
+},{"./enums":24,"./format":27,"./key_pair":29,"./network":30,"./rpc_errors":31,"./serialize":32,"./web":33}],29:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2984,11 +3034,11 @@ class KeyPairEd25519 extends KeyPair {
 }
 exports.KeyPairEd25519 = KeyPairEd25519;
 
-},{"./enums":24,"./serialize":31,"tweetnacl":74}],29:[function(require,module,exports){
+},{"./enums":24,"./serialize":32,"tweetnacl":75}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3093,7 +3143,7 @@ function isString(n) {
     return Object.prototype.toString.call(n) === '[object String]';
 }
 
-},{"../generated/rpc_error_schema.json":8,"../generated/rpc_error_types":9,"../res/error_messages.json":21,"mustache":62}],31:[function(require,module,exports){
+},{"../generated/rpc_error_schema.json":8,"../generated/rpc_error_types":9,"../res/error_messages.json":21,"mustache":63}],32:[function(require,module,exports){
 (function (global,Buffer){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -3437,7 +3487,7 @@ function deserialize(schema, classType, buffer) {
 exports.deserialize = deserialize;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bn.js":37,"bs58":40,"buffer":41,"text-encoding-utf-8":72}],32:[function(require,module,exports){
+},{"bn.js":38,"bs58":41,"buffer":42,"text-encoding-utf-8":73}],33:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -3445,6 +3495,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchJson = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
+const exponential_backoff_1 = __importDefault(require("./exponential-backoff"));
+const providers_1 = require("../providers");
+const START_WAIT_TIME_MS = 1000;
+const BACKOFF_MULTIPLIER = 1.5;
+const RETRY_NUMBER = 10;
 // TODO: Move into separate module and exclude node-fetch kludge from browser build
 let fetch;
 if (typeof window === 'undefined' || window.name === 'nodejs') {
@@ -3478,19 +3533,38 @@ async function fetchJson(connection, json) {
     else {
         url = connection.url;
     }
-    const response = await fetch(url, {
-        method: json ? 'POST' : 'GET',
-        body: json ? json : undefined,
-        headers: { 'Content-type': 'application/json; charset=utf-8' }
+    const response = await exponential_backoff_1.default(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
+        try {
+            const response = await fetch(url, {
+                method: json ? 'POST' : 'GET',
+                body: json ? json : undefined,
+                headers: { 'Content-type': 'application/json; charset=utf-8' }
+            });
+            if (!response.ok) {
+                if (response.status === 503) {
+                    console.warn(`Retrying HTTP request for ${url} as it's not available now`);
+                    return null;
+                }
+                throw http_errors_1.default(response.status, await response.text());
+            }
+            return response;
+        }
+        catch (error) {
+            if (error.toString().includes('FetchError')) {
+                console.warn(`Retrying HTTP request for ${url} because of error: ${error}`);
+                return null;
+            }
+            throw error;
+        }
     });
-    if (!response.ok) {
-        throw http_errors_1.default(response.status, await response.text());
+    if (!response) {
+        throw new providers_1.TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${url}.`, 'RetriesExceeded');
     }
     return await response.json();
 }
 exports.fetchJson = fetchJson;
 
-},{"http":39,"http-errors":57,"https":39,"node-fetch":39}],33:[function(require,module,exports){
+},{"../providers":18,"./exponential-backoff":26,"http":40,"http-errors":58,"https":40,"node-fetch":40}],34:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -3549,7 +3623,7 @@ function diffEpochValidators(currentValidators, nextValidators) {
 }
 exports.diffEpochValidators = diffEpochValidators;
 
-},{"bn.js":37}],34:[function(require,module,exports){
+},{"bn.js":38}],35:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -3788,7 +3862,7 @@ class ConnectedWalletAccount extends account_1.Account {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./account":2,"./transaction":23,"./utils":27,"./utils/serialize":31,"buffer":41}],35:[function(require,module,exports){
+},{"./account":2,"./transaction":23,"./utils":28,"./utils/serialize":32,"buffer":42}],36:[function(require,module,exports){
 'use strict'
 // base-x encoding / decoding
 // Copyright (c) 2018 base-x contributors
@@ -3913,7 +3987,7 @@ function base (ALPHABET) {
 }
 module.exports = base
 
-},{"safe-buffer":68}],36:[function(require,module,exports){
+},{"safe-buffer":69}],37:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -4067,7 +4141,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -7605,17 +7679,17 @@ function fromByteArray (uint8) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":38}],38:[function(require,module,exports){
+},{"buffer":39}],39:[function(require,module,exports){
 
-},{}],39:[function(require,module,exports){
-arguments[4][38][0].apply(exports,arguments)
-},{"dup":38}],40:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
+arguments[4][39][0].apply(exports,arguments)
+},{"dup":39}],41:[function(require,module,exports){
 var basex = require('base-x')
 var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 module.exports = basex(ALPHABET)
 
-},{"base-x":35}],41:[function(require,module,exports){
+},{"base-x":36}],42:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -9396,13 +9470,13 @@ function numberIsNaN (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":36,"buffer":41,"ieee754":59}],42:[function(require,module,exports){
+},{"base64-js":37,"buffer":42,"ieee754":60}],43:[function(require,module,exports){
 require(".").check("es5");
-},{".":43}],43:[function(require,module,exports){
+},{".":44}],44:[function(require,module,exports){
 require("./lib/definitions");
 module.exports = require("./lib");
 
-},{"./lib":46,"./lib/definitions":45}],44:[function(require,module,exports){
+},{"./lib":47,"./lib/definitions":46}],45:[function(require,module,exports){
 var CapabilityDetector = function () {
     this.tests = {};
     this.cache = {};
@@ -9432,7 +9506,7 @@ CapabilityDetector.prototype = {
 };
 
 module.exports = CapabilityDetector;
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var capability = require("."),
     define = capability.define,
     test = capability.test;
@@ -9501,7 +9575,7 @@ define("Error.prototype.stack", function () {
         return e.stack || e.stacktrace;
     }
 });
-},{".":46}],46:[function(require,module,exports){
+},{".":47}],47:[function(require,module,exports){
 var CapabilityDetector = require("./CapabilityDetector");
 
 var detector = new CapabilityDetector();
@@ -9518,7 +9592,7 @@ capability.check = function (name) {
 capability.test = capability;
 
 module.exports = capability;
-},{"./CapabilityDetector":44}],47:[function(require,module,exports){
+},{"./CapabilityDetector":45}],48:[function(require,module,exports){
 /*!
  * depd
  * Copyright(c) 2015 Douglas Christopher Wilson
@@ -9597,9 +9671,9 @@ function wrapproperty (obj, prop, message) {
   }
 }
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = require("./lib");
-},{"./lib":49}],49:[function(require,module,exports){
+},{"./lib":50}],50:[function(require,module,exports){
 require("capability/es5");
 
 var capability = require("capability");
@@ -9613,7 +9687,7 @@ else
     polyfill = require("./unsupported");
 
 module.exports = polyfill();
-},{"./non-v8/index":53,"./unsupported":55,"./v8":56,"capability":43,"capability/es5":42}],50:[function(require,module,exports){
+},{"./non-v8/index":54,"./unsupported":56,"./v8":57,"capability":44,"capability/es5":43}],51:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod;
 
@@ -9644,7 +9718,7 @@ var Frame = Class(Object, {
 });
 
 module.exports = Frame;
-},{"o3":63}],51:[function(require,module,exports){
+},{"o3":64}],52:[function(require,module,exports){
 var Class = require("o3").Class,
     Frame = require("./Frame"),
     cache = require("u3").cache;
@@ -9683,7 +9757,7 @@ module.exports = {
         return instance;
     })
 };
-},{"./Frame":50,"o3":63,"u3":75}],52:[function(require,module,exports){
+},{"./Frame":51,"o3":64,"u3":76}],53:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod,
     eachCombination = require("u3").eachCombination,
@@ -9817,7 +9891,7 @@ module.exports = {
         return instance;
     })
 };
-},{"capability":43,"o3":63,"u3":75}],53:[function(require,module,exports){
+},{"capability":44,"o3":64,"u3":76}],54:[function(require,module,exports){
 var FrameStringSource = require("./FrameStringSource"),
     FrameStringParser = require("./FrameStringParser"),
     cache = require("u3").cache,
@@ -9891,7 +9965,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"../prepareStackTrace":54,"./FrameStringParser":51,"./FrameStringSource":52,"u3":75}],54:[function(require,module,exports){
+},{"../prepareStackTrace":55,"./FrameStringParser":52,"./FrameStringSource":53,"u3":76}],55:[function(require,module,exports){
 var prepareStackTrace = function (throwable, frames, warnings) {
     var string = "";
     string += throwable.name || "Error";
@@ -9909,7 +9983,7 @@ var prepareStackTrace = function (throwable, frames, warnings) {
 };
 
 module.exports = prepareStackTrace;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 var cache = require("u3").cache,
     prepareStackTrace = require("./prepareStackTrace");
 
@@ -9960,7 +10034,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":54,"u3":75}],56:[function(require,module,exports){
+},{"./prepareStackTrace":55,"u3":76}],57:[function(require,module,exports){
 var prepareStackTrace = require("./prepareStackTrace");
 
 module.exports = function () {
@@ -9972,7 +10046,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":54}],57:[function(require,module,exports){
+},{"./prepareStackTrace":55}],58:[function(require,module,exports){
 /*!
  * http-errors
  * Copyright(c) 2014 Jonathan Ong
@@ -10273,9 +10347,9 @@ function toClassName (name) {
     : name
 }
 
-},{"depd":58,"inherits":60,"setprototypeof":69,"statuses":71,"toidentifier":73}],58:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],59:[function(require,module,exports){
+},{"depd":59,"inherits":61,"setprototypeof":70,"statuses":72,"toidentifier":74}],59:[function(require,module,exports){
+arguments[4][48][0].apply(exports,arguments)
+},{"dup":48}],60:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -10361,7 +10435,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -10390,7 +10464,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 (function (process,global){
 /**
  * [js-sha256]{@link https://github.com/emn178/js-sha256}
@@ -10912,7 +10986,7 @@ if (typeof Object.create === 'function') {
 })();
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":67}],62:[function(require,module,exports){
+},{"_process":68}],63:[function(require,module,exports){
 // This file has been generated from mustache.mjs
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -11654,11 +11728,11 @@ if (typeof Object.create === 'function') {
 
 })));
 
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 require("capability/es5");
 
 module.exports = require("./lib");
-},{"./lib":66,"capability/es5":42}],64:[function(require,module,exports){
+},{"./lib":67,"capability/es5":43}],65:[function(require,module,exports){
 var Class = function () {
     var options = Object.create({
         Source: Object,
@@ -11793,16 +11867,16 @@ Class.newInstance = function () {
 };
 
 module.exports = Class;
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function () {
     throw new Error("Not implemented.");
 };
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = {
     Class: require("./Class"),
     abstractMethod: require("./abstractMethod")
 };
-},{"./Class":64,"./abstractMethod":65}],67:[function(require,module,exports){
+},{"./Class":65,"./abstractMethod":66}],68:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -11988,7 +12062,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -12055,7 +12129,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":41}],69:[function(require,module,exports){
+},{"buffer":42}],70:[function(require,module,exports){
 'use strict'
 /* eslint no-proto: 0 */
 module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
@@ -12074,7 +12148,7 @@ function mixinProperties (obj, proto) {
   return obj
 }
 
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports={
   "100": "Continue",
   "101": "Switching Protocols",
@@ -12142,7 +12216,7 @@ module.exports={
   "511": "Network Authentication Required"
 }
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 /*!
  * statuses
  * Copyright(c) 2014 Jonathan Ong
@@ -12257,7 +12331,7 @@ function status (code) {
   return n
 }
 
-},{"./codes.json":70}],72:[function(require,module,exports){
+},{"./codes.json":71}],73:[function(require,module,exports){
 'use strict';
 
 // This is free and unencumbered software released into the public domain.
@@ -12900,7 +12974,7 @@ function UTF8Encoder(options) {
 
 exports.TextEncoder = TextEncoder;
 exports.TextDecoder = TextDecoder;
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 /*!
  * toidentifier
  * Copyright(c) 2016 Douglas Christopher Wilson
@@ -12932,7 +13006,7 @@ function toIdentifier (str) {
     .replace(/[^ _0-9a-z]/gi, '')
 }
 
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -15325,9 +15399,9 @@ nacl.setPRNG = function(fn) {
 
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-},{"crypto":38}],75:[function(require,module,exports){
-arguments[4][48][0].apply(exports,arguments)
-},{"./lib":78,"dup":48}],76:[function(require,module,exports){
+},{"crypto":39}],76:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"./lib":79,"dup":49}],77:[function(require,module,exports){
 var cache = function (fn) {
     var called = false,
         store;
@@ -15349,7 +15423,7 @@ var cache = function (fn) {
 };
 
 module.exports = cache;
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function eachCombination(alternativesByDimension, callback, combination) {
     if (!combination)
         combination = [];
@@ -15364,12 +15438,12 @@ module.exports = function eachCombination(alternativesByDimension, callback, com
     else
         callback.apply(null, combination);
 };
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = {
     cache: require("./cache"),
     eachCombination: require("./eachCombination")
 };
-},{"./cache":76,"./eachCombination":77}],79:[function(require,module,exports){
+},{"./cache":77,"./eachCombination":78}],80:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -15394,14 +15468,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -15991,4 +16065,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":80,"_process":67,"inherits":79}]},{},[1]);
+},{"./support/isBuffer":81,"_process":68,"inherits":80}]},{},[1]);
