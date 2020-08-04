@@ -2,6 +2,8 @@ const url = require('url');
 const localStorage = require('localstorage-memory');
 const BN = require('bn.js');
 
+const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
+
 let lastRedirectUrl;
 let lastTransaction;
 global.window = {
@@ -228,7 +230,7 @@ it('requests transaction signing automatically when function call has attached d
             public_key: walletKeyPair.publicKey.toString()
         }]
     });
-    keyStore.setKey('networkId', 'signer.near', localKeyPair);
+    await keyStore.setKey('networkId', 'signer.near', localKeyPair);
 
     try {
         await walletConnection.account().signAndSendTransaction('receiver.near', [
@@ -255,14 +257,14 @@ it('requests transaction signing with 2fa access key', async () => {
                     FunctionCall: {
                         allowance: '1000000000',
                         receiver_id: 'signer.near',
-                        method_names: ['add_request_and_confirm']
+                        method_names: [MULTISIG_HAS_METHOD]
                     }
                 }
             },
             public_key: localKeyPair.publicKey.toString()
         }]
     });
-    keyStore.setKey('networkId', 'signer.near', localKeyPair);
+    await keyStore.setKey('networkId', 'signer.near', localKeyPair);
 
     let res;
     try {
@@ -270,9 +272,9 @@ it('requests transaction signing with 2fa access key', async () => {
             nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
         ]);
     } catch (e) {
-        console.log(e.message);
+        fail('expected transaction outcome');
     }
-
+    // multisig access key is accepted res is object representing transaction, populated upon wallet redirect to app
     expect(res).toHaveProperty('transaction_outcome');
     expect(res).toHaveProperty('receipts_outcome');
 });
@@ -296,7 +298,7 @@ it('fails requests transaction signing without 2fa access key', async () => {
             public_key: localKeyPair.publicKey.toString()
         }]
     });
-    keyStore.setKey('networkId', 'signer.near', localKeyPair);
+    await keyStore.setKey('networkId', 'signer.near', localKeyPair);
 
     try {
         await walletConnection.account().signAndSendTransaction('receiver.near', [
