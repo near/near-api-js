@@ -79,10 +79,10 @@ export declare class Account {
     /**
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The method name on the contract as it is written in the contract code
-     * @param args Any arguments to the contract method, wrapped in JSON
-     * @param data The compiled contract code
-     * @param gas An amount of yoctoⓃ attached to cover the gas cost of this function call
-     * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
+     * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
+     *  or `Uint8Array` instance which represents bytes passed as is.
+     * @param gas max amount of gas that method call can use
+      * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
      * @returns {Promise<FinalExecutionOutcome>}
      */
     functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>;
