@@ -19,7 +19,7 @@ import exponentialBackoff from './utils/exponential-backoff';
 // Due to protocol changes that charge upfront for the maximum possible gas price inflation due to
 // full blocks, the price of max_prepaid_gas is decreased to `300 * 10**12`.
 // For discussion see https://github.com/nearprotocol/NEPs/issues/67
-const DEFAULT_FUNC_CALL_GAS = new BN('300000000000000');
+const DEFAULT_FUNC_CALL_GAS = new BN('30000000000000');
 
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
