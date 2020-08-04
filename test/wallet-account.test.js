@@ -2,6 +2,7 @@ const url = require('url');
 const localStorage = require('localstorage-memory');
 const BN = require('bn.js');
 
+// If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 
 let lastRedirectUrl;
