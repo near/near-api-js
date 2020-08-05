@@ -2,6 +2,9 @@ const url = require('url');
 const localStorage = require('localstorage-memory');
 const BN = require('bn.js');
 
+// If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
+const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
+
 let lastRedirectUrl;
 let lastTransaction;
 global.window = {
@@ -228,7 +231,7 @@ it('requests transaction signing automatically when function call has attached d
             public_key: walletKeyPair.publicKey.toString()
         }]
     });
-    keyStore.setKey('networkId', 'signer.near', localKeyPair);
+    await keyStore.setKey('networkId', 'signer.near', localKeyPair);
 
     try {
         await walletConnection.account().signAndSendTransaction('receiver.near', [
@@ -241,6 +244,71 @@ it('requests transaction signing automatically when function call has attached d
 
     const transactions = parseTransactionsFromUrl(lastRedirectUrl);
     expect(transactions).toHaveLength(1);
+});
+
+it('requests transaction signing with 2fa access key', async () => {
+    let localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    let walletKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    setupWalletConnectionForSigning({
+        allKeys: [ walletKeyPair.publicKey.toString() ],
+        accountAccessKeys: [{
+            access_key: {
+                nonce: 1,
+                permission: {
+                    FunctionCall: {
+                        allowance: '1000000000',
+                        receiver_id: 'signer.near',
+                        method_names: [MULTISIG_HAS_METHOD]
+                    }
+                }
+            },
+            public_key: localKeyPair.publicKey.toString()
+        }]
+    });
+    await keyStore.setKey('networkId', 'signer.near', localKeyPair);
+
+    let res;
+    try {
+        res = await walletConnection.account().signAndSendTransaction('receiver.near', [
+            nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
+        ]);
+    } catch (e) {
+        fail('expected transaction outcome');
+    }
+    // multisig access key is accepted res is object representing transaction, populated upon wallet redirect to app
+    expect(res).toHaveProperty('transaction_outcome');
+    expect(res).toHaveProperty('receipts_outcome');
+});
+
+it('fails requests transaction signing without 2fa access key', async () => {
+    let localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    let walletKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+    setupWalletConnectionForSigning({
+        allKeys: [ walletKeyPair.publicKey.toString() ],
+        accountAccessKeys: [{
+            access_key: {
+                nonce: 1,
+                permission: {
+                    FunctionCall: {
+                        allowance: '1000000000',
+                        receiver_id: 'signer.near',
+                        method_names: ['not_a_valid_2fa_method']
+                    }
+                }
+            },
+            public_key: localKeyPair.publicKey.toString()
+        }]
+    });
+    await keyStore.setKey('networkId', 'signer.near', localKeyPair);
+
+    try {
+        await walletConnection.account().signAndSendTransaction('receiver.near', [
+            nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
+        ]);
+        fail('expected to throw');
+    } catch (e) {
+        expect(e.message).toEqual('Cannot find matching key for transaction sent to receiver.near');
+    }
 });
 
 it.each([
