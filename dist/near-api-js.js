@@ -92,7 +92,6 @@ class Account {
             }
             catch (error) {
                 if (!error.message.match(/Transaction \w+ doesn't exist/)) {
-                    error.context = new providers_1.ErrorContext(serialize_1.base_encode(txHash));
                     throw error;
                 }
             }
@@ -104,7 +103,7 @@ class Account {
             waitTime *= TX_STATUS_RETRY_WAIT_BACKOFF;
             i++;
         }
-        throw new providers_1.TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`, 'RetriesExceeded', new providers_1.ErrorContext(serialize_1.base_encode(txHash)));
+        throw new providers_1.TypedError(`Exceeded ${TX_STATUS_RETRY_NUMBER} status check attempts for transaction ${serialize_1.base_encode(txHash)}.`, 'RetriesExceeded');
     }
     /**
      * @param receiverId NEAR account receiving the transaction
@@ -129,7 +128,6 @@ class Account {
                 result = await this.retryTxResult(txHash, this.accountId);
             }
             else {
-                error.context = new providers_1.ErrorContext(serialize_1.base_encode(txHash));
                 throw error;
             }
         }
@@ -1555,7 +1553,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Sets a local storage item
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
@@ -1564,7 +1562,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets a key from local storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -1577,7 +1575,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Removes a key from local storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId, accountId) {
@@ -1609,7 +1607,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets the account(s) from local storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId) {
@@ -1626,7 +1624,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Helper function to retrieve a local storage key
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the storage keythat's sought
      * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */
@@ -1657,7 +1655,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Sets an in-memory storage item
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
@@ -1666,7 +1664,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets a key from in-memory storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -1679,7 +1677,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Removes a key from in-memory storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId, accountId) {
@@ -1705,7 +1703,7 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets the account(s) from in-memory storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId) {
@@ -1765,16 +1763,16 @@ class MergeKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Sets a storage item to the first index of a key store array
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
     async setKey(networkId, accountId, keyPair) {
-        await this.keyStores[0].setKey(networkId, accountId, keyPair);
+        this.keyStores[0].setKey(networkId, accountId, keyPair);
     }
     /**
      * Gets a key from the array of key stores
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -1789,12 +1787,12 @@ class MergeKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Removes a key from the array of key stores
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId, accountId) {
         for (const keyStore of this.keyStores) {
-            await keyStore.removeKey(networkId, accountId);
+            keyStore.removeKey(networkId, accountId);
         }
     }
     /**
@@ -1802,7 +1800,7 @@ class MergeKeyStore extends keystore_1.KeyStore {
      */
     async clear() {
         for (const keyStore of this.keyStores) {
-            await keyStore.clear();
+            keyStore.clear();
         }
     }
     /**
@@ -1820,7 +1818,7 @@ class MergeKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets the account(s) from the array of key stores
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId) {
@@ -1892,7 +1890,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Sets a storage item in a file, unencrypted
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
@@ -1903,7 +1901,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets a key from local storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
      */
@@ -1917,7 +1915,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Removes a key from local storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId, accountId) {
@@ -1952,7 +1950,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     }
     /**
      * Gets the account(s) from local storage
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @returns{Promise<string[]>}
      */
     async getAccounts(networkId) {
@@ -2077,7 +2075,7 @@ exports.connect = connect;
 },{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./key_stores":13,"./key_stores/unencrypted_file_system_keystore":16,"bn.js":37}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorContext = exports.TypedError = exports.getTransactionLastResult = exports.FinalExecutionStatusBasic = exports.JsonRpcProvider = exports.Provider = void 0;
+exports.TypedError = exports.getTransactionLastResult = exports.FinalExecutionStatusBasic = exports.JsonRpcProvider = exports.Provider = void 0;
 const provider_1 = require("./provider");
 Object.defineProperty(exports, "Provider", { enumerable: true, get: function () { return provider_1.Provider; } });
 Object.defineProperty(exports, "getTransactionLastResult", { enumerable: true, get: function () { return provider_1.getTransactionLastResult; } });
@@ -2085,7 +2083,6 @@ Object.defineProperty(exports, "FinalExecutionStatusBasic", { enumerable: true, 
 const json_rpc_provider_1 = require("./json-rpc-provider");
 Object.defineProperty(exports, "JsonRpcProvider", { enumerable: true, get: function () { return json_rpc_provider_1.JsonRpcProvider; } });
 Object.defineProperty(exports, "TypedError", { enumerable: true, get: function () { return json_rpc_provider_1.TypedError; } });
-Object.defineProperty(exports, "ErrorContext", { enumerable: true, get: function () { return json_rpc_provider_1.ErrorContext; } });
 
 },{"./json-rpc-provider":19,"./provider":20}],19:[function(require,module,exports){
 (function (Buffer){
@@ -2094,13 +2091,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JsonRpcProvider = exports.ErrorContext = exports.TypedError = void 0;
+exports.JsonRpcProvider = exports.TypedError = void 0;
 const depd_1 = __importDefault(require("depd"));
 const provider_1 = require("./provider");
 const web_1 = require("../utils/web");
 const errors_1 = require("../utils/errors");
 Object.defineProperty(exports, "TypedError", { enumerable: true, get: function () { return errors_1.TypedError; } });
-Object.defineProperty(exports, "ErrorContext", { enumerable: true, get: function () { return errors_1.ErrorContext; } });
 const serialize_1 = require("../utils/serialize");
 const rpc_errors_1 = require("../utils/rpc_errors");
 /// Keep ids unique across all connections.
@@ -2354,7 +2350,7 @@ module.exports={
     "CostOverflow": "Transaction gas or balance cost is too high",
     "InvalidSignature": "Transaction is not signed with the given public key",
     "AccessKeyNotFound": "Signer \"{{account_id}}\" doesn't have access key with the given public_key {{public_key}}",
-    "NotEnoughBalance": "Sender {{signer_id}} does not have enough balance {{balance}} for operation costing {{cost}}",
+    "NotEnoughBalance": "Sender {{signer_id}} does not have enough balance {} for operation costing {}",
     "NotEnoughAllowance": "Access Key {account_id}:{public_key} does not have enough balance {{allowance}} for transaction costing {{cost}}",
     "Expired": "Transaction has expired",
     "DeleteAccountStaking": "Account {{account_id}} is staking and can not be deleted",
@@ -2370,8 +2366,8 @@ module.exports={
     "InvalidChain": "Transaction parent block hash doesn't belong to the current chain",
     "AccountDoesNotExist": "Can't complete the action because account {{account_id}} doesn't exist",
     "MethodNameMismatch": "Transaction method name {{method_name}} isn't allowed by the access key",
-    "DeleteAccountHasRent": "Account {{account_id}} can't be deleted. It has {{balance}}, which is enough to cover the rent",
-    "DeleteAccountHasEnoughBalance": "Account {{account_id}} can't be deleted. It has {{balance}}, which is enough to cover it's storage",
+    "DeleteAccountHasRent": "Account {{account_id}} can't be deleted. It has {balance{}}, which is enough to cover the rent",
+    "DeleteAccountHasEnoughBalance": "Account {{account_id}} can't be deleted. It has {balance{}}, which is enough to cover it's storage",
     "InvalidReceiver": "Invalid receiver account ID {{receiver_id}} according to requirements",
     "DeleteKeyDoesNotExist": "Account {{account_id}} tries to remove an access key that doesn't exist",
     "Timeout": "Timeout exceeded",
@@ -2404,7 +2400,7 @@ class InMemorySigner extends Signer {
     /**
      * Creates a public key for the account given
      * @param accountId The NEAR account to assign a public key to
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @returns {Promise<PublicKey>}
      */
     async createKey(accountId, networkId) {
@@ -2415,7 +2411,7 @@ class InMemorySigner extends Signer {
     /**
      * Gets the existing public key for a given account
      * @param accountId The NEAR account to assign a public key to
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @returns {Promise<PublicKey>} Returns the public key or null if not found
      */
     async getPublicKey(accountId, networkId) {
@@ -2428,7 +2424,7 @@ class InMemorySigner extends Signer {
     /**
      * @param message A message to be signed, typically a serialized transaction
      * @param accountId the NEAR account signing the message
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
      * @returns {Promise<Signature>}
      */
     async signMessage(message, accountId, networkId) {
@@ -2635,7 +2631,7 @@ exports.createTransaction = createTransaction;
  * @param transaction The Transaction object to sign
  * @param signer The {Signer} object that assists with signing keys
  * @param accountId The human-readable NEAR account name
- * @param networkId The targeted network. (ex. default, betanet, etc…)
+ * @param networkId The targeted network. (ex. default, devnet, betanet, etc…)
  */
 async function signTransactionObject(transaction, signer, accountId, networkId) {
     const message = serialize_1.serialize(exports.SCHEMA, transaction);
@@ -2689,7 +2685,7 @@ exports.Assignable = Assignable;
 },{}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorContext = exports.TypedError = exports.ArgumentTypeError = exports.PositionalArgsError = void 0;
+exports.TypedError = exports.ArgumentTypeError = exports.PositionalArgsError = void 0;
 class PositionalArgsError extends Error {
     constructor() {
         super('Contract method calls expect named arguments wrapped in object, e.g. { argName1: argValue1, argName2: argValue2 }');
@@ -2703,19 +2699,12 @@ class ArgumentTypeError extends Error {
 }
 exports.ArgumentTypeError = ArgumentTypeError;
 class TypedError extends Error {
-    constructor(message, type, context) {
+    constructor(message, type) {
         super(message);
         this.type = type || 'UntypedError';
-        this.context = context;
     }
 }
 exports.TypedError = TypedError;
-class ErrorContext {
-    constructor(transactionHash) {
-        this.transactionHash = transactionHash;
-    }
-}
-exports.ErrorContext = ErrorContext;
 
 },{}],26:[function(require,module,exports){
 "use strict";
@@ -3759,10 +3748,6 @@ class ConnectedWalletAccount extends account_1.Account {
         }
         if (permission.FunctionCall) {
             const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
-            // check if access_key has 2fa method
-            if (allowedReceiverId === this.accountId && allowedMethods.includes('add_request_and_confirm')) {
-                return true;
-            }
             if (allowedReceiverId === receiverId) {
                 if (actions.length !== 1) {
                     return false;
