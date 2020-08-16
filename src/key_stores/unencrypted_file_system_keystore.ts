@@ -57,7 +57,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
 
     constructor(keyDir: string) {
         super();
-        this.keyDir = keyDir;
+        this.keyDir = path.join(process.cwd(), keyDir);
     }
 
     /**
