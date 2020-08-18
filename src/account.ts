@@ -8,7 +8,7 @@ import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
-import { parseRpcError } from './utils/rpc_errors';
+import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './generated/rpc_error_types';
 
 import exponentialBackoff from './utils/exponential-backoff';
@@ -182,7 +182,7 @@ export class Account {
                     `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
                     result.status.Failure.error_type);
             } else {
-                throw parseRpcError(result.status.Failure);
+                throw parseResultError(result);
             }
         }
         // TODO: if Tx is Unknown or Started.
