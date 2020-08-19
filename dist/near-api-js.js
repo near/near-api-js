@@ -2454,7 +2454,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signTransaction = exports.createTransaction = exports.SCHEMA = exports.Action = exports.SignedTransaction = exports.Transaction = exports.deleteAccount = exports.deleteKey = exports.addKey = exports.stake = exports.transfer = exports.functionCall = exports.deployContract = exports.createAccount = exports.IAction = exports.functionCallAccessKey = exports.fullAccessKey = exports.AccessKey = exports.AccessKeyPermission = exports.FullAccessPermission = exports.FunctionCallPermission = void 0;
+exports.signTransaction = exports.createTransaction = exports.SCHEMA = exports.Action = exports.SignedTransaction = exports.Transaction = exports.Signature = exports.deleteAccount = exports.deleteKey = exports.addKey = exports.stake = exports.transfer = exports.functionCall = exports.deployContract = exports.createAccount = exports.IAction = exports.functionCallAccessKey = exports.fullAccessKey = exports.AccessKey = exports.AccessKeyPermission = exports.FullAccessPermission = exports.FunctionCallPermission = void 0;
 const js_sha256_1 = __importDefault(require("js-sha256"));
 const enums_1 = require("./utils/enums");
 const serialize_1 = require("./utils/serialize");
@@ -2544,6 +2544,7 @@ function deleteAccount(beneficiaryId) {
 exports.deleteAccount = deleteAccount;
 class Signature extends enums_1.Assignable {
 }
+exports.Signature = Signature;
 class Transaction extends enums_1.Assignable {
     encode() {
         return serialize_1.serialize(exports.SCHEMA, this);
@@ -3633,6 +3634,7 @@ const transaction_1 = require("./transaction");
 const utils_1 = require("./utils");
 const serialize_1 = require("./utils/serialize");
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
+const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 class WalletConnection {
@@ -3822,6 +3824,13 @@ class ConnectedWalletAccount extends account_1.Account {
         }
         if (permission.FunctionCall) {
             const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
+            /********************************
+            Accept multisig access keys and let wallets attempt to signAndSendTransaction
+            If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
+            ********************************/
+            if (allowedReceiverId === this.accountId && allowedMethods.includes(MULTISIG_HAS_METHOD)) {
+                return true;
+            }
             if (allowedReceiverId === receiverId) {
                 if (actions.length !== 1) {
                     return false;
