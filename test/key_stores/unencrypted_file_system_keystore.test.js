@@ -6,6 +6,7 @@ const UnencryptedFileSystemKeyStore = nearApi.keyStores.UnencryptedFileSystemKey
 const KeyPair = nearApi.utils.KeyPairEd25519;
 const { ensureDir } = require('../test-utils');
 const fs = require('fs');
+const path = require('path');
 
 const KEYSTORE_PATH = '../test-keys';
 
@@ -19,6 +20,10 @@ describe('Unencrypted file system keystore', () => {
     });
 
     require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
+
+    it('test path resolve', async() => {
+        expect(ctx.keyStore.keyDir).toEqual(path.join(process.cwd(), KEYSTORE_PATH));
+    });
 
     it('test public key exists', async () => {
         const key1 = KeyPair.fromRandom();

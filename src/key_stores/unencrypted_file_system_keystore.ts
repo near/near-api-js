@@ -58,12 +58,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
 
     constructor(keyDir: string) {
         super();
-        // Check if path is absolute by resolving it and comparing to normailzed path.
-        if (path.resolve(keyDir) !== path.normalize(keyDir)) {
-            // If path is not absolute, add current working directory.
-            keyDir = path.join(process.cwd(), keyDir);
-        }
-        this.keyDir = keyDir;
+        this.keyDir = path.resolve(keyDir);
     }
 
     /**
