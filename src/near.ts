@@ -10,14 +10,15 @@ import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './accoun
 import { InMemoryKeyStore, KeyStore, MergeKeyStore } from './key_stores';
 
 type NearConfig = {
-  keyStore?: KeyStore,
-  signer?: Signer,
-  deps?: { keyStore: KeyStore }
-  helperUrl?: string
-  initialBalance?: string
-  masterAccount?: string
-  networkId: string
-  nodeUrl: string
+  keyStore?: KeyStore;
+  signer?: Signer;
+  deps?: { keyStore: KeyStore };
+  helperUrl?: string;
+  initialBalance?: string;
+  masterAccount?: string;
+  networkId: string;
+  nodeUrl: string;
+  walletUrl: string;
 }
 
 export class Near {
@@ -72,7 +73,7 @@ export class Near {
      * @param contractId
      * @param options
      */
-    async loadContract(contractId: string, options: { viewMethods: string[], changeMethods: string[], sender: string }): Promise<Contract> {
+    async loadContract(contractId: string, options: { viewMethods: string[]; changeMethods: string[]; sender: string }): Promise<Contract> {
         const account = new Account(this.connection, options.sender);
         return new Contract(account, contractId, options);
     }
@@ -92,7 +93,7 @@ export class Near {
 }
 
 type ConnectConfig = NearConfig & {
-  keyPath?: string
+  keyPath?: string;
 }
 
 /**
