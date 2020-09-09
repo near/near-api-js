@@ -1215,10 +1215,10 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-bundlewatch@^0.2.5:
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/bundlewatch/-/bundlewatch-0.2.7.tgz#978b63c0dafbbef0e3c4a4a26e471fcda6dd5791"
-  integrity sha512-tTf6TZHowf2kqHMv9nk7ORDdyU8d4OCF5qjkm8jeZfY9hsOdoyvDq3xtPSw+I8eQJJhkdUvcIMp4Cd3GkUAsrA==
+bundlewatch@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/bundlewatch/-/bundlewatch-0.3.0.tgz#9097674349c8d9d4c7c76da4bda16668d19b3d6d"
+  integrity sha512-+WtpJk6zVXSP91nRDsBz3pMHR3N8s0TMtPH9vHhcFwI+NfeozGpDJYOXsScHYTLiodfzuZhHfJobN+uDg3Fn1Q==
   dependencies:
     axios "^0.19.0"
     bytes "^3.0.0"
