@@ -1,0 +1,4 @@
+yarn dist
+rm -rf ../near-wallet/node_modules/near-api-js/dist
+mkdir ../near-wallet/node_modules/near-api-js/dist
+cp dist/* ../near-wallet/node_modules/near-api-js/dist/
