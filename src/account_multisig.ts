@@ -114,7 +114,7 @@ export class AccountMultisig extends Account {
     }
 
     isDeleteAction(actions): Boolean {
-        return actions[0]?.functionCall?.methodName === 'delete_request'
+        return actions && actions[0] && actions[0].functionCall && actions[0].functionCall.methodName === 'delete_request'
     }
 
     getRequest() {
