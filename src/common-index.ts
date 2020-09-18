@@ -4,7 +4,7 @@ import * as transactions from './transaction';
 import * as validators from './validators';
 
 import { Account } from './account';
-import { AccountMultisig } from './account_multisig';
+import * as multisig from './account_multisig';
 import * as accountCreator from './account_creator';
 import { Connection } from './connection';
 import { Signer, InMemorySigner } from './signer';
@@ -22,7 +22,7 @@ export {
     transactions,
     validators,
 
-    AccountMultisig,
+    multisig,
     Account,
     Connection,
     Contract,

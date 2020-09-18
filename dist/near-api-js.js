@@ -399,21 +399,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MultisigContract = exports.AccountMultisig = void 0;
+exports.AccountMultisig = exports.MULTISIG_VIEW_METHODS = exports.MULTISIG_CHANGE_METHODS = exports.MULTISIG_GAS = exports.MULTISIG_ALLOWANCE = exports.MULTISIG_DEPOSIT = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 const account_1 = require("./account");
 const contract_1 = require("./contract");
 const format_1 = require("./utils/format");
 const transaction_1 = require("./transaction");
-const MULTISIG_DEPOSIT = new bn_js_1.default('0');
-const MULTISIG_ALLOWANCE = process.env.WALLET_2FA_ALLOWANCE || format_1.parseNearAmount('1');
-const MULTISIG_GAS = new bn_js_1.default(process.env.WALLET_2FA_ALLOWANCE || '100000000000000');
-const METHOD_NAMES_LAK = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
-const VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
+exports.MULTISIG_DEPOSIT = new bn_js_1.default('0');
+exports.MULTISIG_ALLOWANCE = process.env.WALLET_2FA_ALLOWANCE || format_1.parseNearAmount('1');
+exports.MULTISIG_GAS = new bn_js_1.default(process.env.WALLET_2FA_ALLOWANCE || '100000000000000');
+exports.MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
+exports.MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
+;
 class AccountMultisig extends account_1.Account {
     constructor(connection, accountId) {
         super(connection, accountId);
         this.contract = getContract(this);
+    }
+    async getRequestNonce() {
+        return this.contract.get_request_nonce();
+    }
+    async getRequestIds() {
+        return this.contract.list_request_ids();
     }
     async signAndSendTransaction(receiverId, actions) {
         const { accountId } = this;
@@ -424,34 +431,19 @@ class AccountMultisig extends account_1.Account {
             }
         })));
         return super.signAndSendTransaction(accountId, [
-            transaction_1.functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
+            transaction_1.functionCall('add_request_and_confirm', args, exports.MULTISIG_GAS, exports.MULTISIG_DEPOSIT)
         ]);
     }
 }
 exports.AccountMultisig = AccountMultisig;
-// define function multisig contract functions for TypeScript
-class MultisigContract extends contract_1.Contract {
-    get_request_nonce() {
-        return this.get_request_nonce();
-    }
-    list_request_ids() {
-        return this.list_request_ids();
-    }
-}
-exports.MultisigContract = MultisigContract;
 // helpers
 const getContract = (account) => {
-    return new MultisigContract(account, account.accountId, {
-        viewMethods: VIEW_METHODS,
-        changeMethods: METHOD_NAMES_LAK,
+    return new contract_1.Contract(account, account.accountId, {
+        viewMethods: exports.MULTISIG_VIEW_METHODS,
+        changeMethods: exports.MULTISIG_CHANGE_METHODS,
     });
 };
-const convertPKForContract = (pk) => {
-    if (typeof pk !== 'string') {
-        pk = pk.toString();
-    }
-    return pk.replace('ed25519:', '');
-};
+const convertPKForContract = (pk) => pk.toString().replace('ed25519:', '');
 const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
     const type = a.enum;
     const { gas, publicKey, methodName, args, deposit, accessKey, code } = a[type];
@@ -470,8 +462,8 @@ const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
         if (receiverId === accountId && accessKey.permission.enum !== 'fullAccess') {
             action.permission = {
                 receiver_id: accountId,
-                allowance: MULTISIG_ALLOWANCE,
-                method_names: METHOD_NAMES_LAK,
+                allowance: exports.MULTISIG_ALLOWANCE,
+                method_names: exports.MULTISIG_CHANGE_METHODS,
             };
         }
         if (accessKey.permission.enum === 'functionCall') {
@@ -533,7 +525,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletConnection = exports.WalletAccount = exports.Near = exports.connect = exports.KeyPair = exports.Signer = exports.InMemorySigner = exports.Contract = exports.Connection = exports.Account = exports.AccountMultisig = exports.validators = exports.transactions = exports.utils = exports.providers = exports.accountCreator = void 0;
+exports.WalletConnection = exports.WalletAccount = exports.Near = exports.connect = exports.KeyPair = exports.Signer = exports.InMemorySigner = exports.Contract = exports.Connection = exports.Account = exports.multisig = exports.validators = exports.transactions = exports.utils = exports.providers = exports.accountCreator = void 0;
 const providers = __importStar(require("./providers"));
 exports.providers = providers;
 const utils = __importStar(require("./utils"));
@@ -544,8 +536,8 @@ const validators = __importStar(require("./validators"));
 exports.validators = validators;
 const account_1 = require("./account");
 Object.defineProperty(exports, "Account", { enumerable: true, get: function () { return account_1.Account; } });
-const account_multisig_1 = require("./account_multisig");
-Object.defineProperty(exports, "AccountMultisig", { enumerable: true, get: function () { return account_multisig_1.AccountMultisig; } });
+const multisig = __importStar(require("./account_multisig"));
+exports.multisig = multisig;
 const accountCreator = __importStar(require("./account_creator"));
 exports.accountCreator = accountCreator;
 const connection_1 = require("./connection");
