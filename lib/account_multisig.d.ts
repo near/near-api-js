@@ -1,6 +1,7 @@
 import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
+import { PublicKey } from './utils/key_pair';
 import { Action } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 export declare const MULTISIG_ALLOWANCE: BN;
@@ -12,17 +13,26 @@ export declare const MULTISIG_CONFIRM_METHODS: string[];
 interface MultisigContract {
     get_request_nonce(): any;
     list_request_ids(): any;
+    delete_request({ request_id: Number }: {
+        request_id: any;
+    }): any;
 }
 export declare class AccountMultisig extends Account {
     contract: MultisigContract;
     pendingRequest: any;
     constructor(connection: Connection, accountId: string);
-    getRequestNonce(): Promise<String>;
-    getRequestIds(): Promise<String>;
+    addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    signAndSendTransactions(transactions: any): Promise<void>;
     deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
-    sendRequest(requestId?: number): Promise<void>;
-    verifyRequest(securityCode: String): Promise<void>;
+    deleteUnconfirmedRequests(): Promise<void>;
+    getRequestNonce(): Promise<Number>;
+    getRequestIds(): Promise<string>;
+    isDeleteAction(actions: any): Boolean;
+    getRequest(): any;
+    setRequest(data: any): void;
+    sendRequestCode(): Promise<any>;
+    verifyRequestCode(securityCode: string): Promise<any>;
     getRecoveryMethods(): Promise<{
         accountId: string;
         data: any;

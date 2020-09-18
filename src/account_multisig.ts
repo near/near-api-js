@@ -22,7 +22,9 @@ export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 interface MultisigContract {
     get_request_nonce(): any,
     list_request_ids(): any,
+    delete_request({ request_id: Number }): any,
 };
+
 export class AccountMultisig extends Account {
     public contract: MultisigContract;
     public pendingRequest: any;
@@ -32,16 +34,23 @@ export class AccountMultisig extends Account {
         this.contract = <MultisigContract>getContract(this);
     }
 
-    async getRequestNonce(): Promise<String> {
-        return this.contract.get_request_nonce();
-    }
-
-    async getRequestIds(): Promise<String> {
-        return this.contract.list_request_ids();
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome> {
+        if (contractId) {
+            return super.addKey(publicKey, contractId, MULTISIG_CHANGE_METHODS.join(), MULTISIG_ALLOWANCE)
+        }
+        return super.addKey(publicKey)
     }
 
     async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
+
+        if (this.isDeleteAction(actions)) {
+            return await super.signAndSendTransaction(accountId, actions)
+        }
+        await this.deleteUnconfirmedRequests()
+
+        const requestId = await this.getRequestNonce()
+        this.setRequest({ accountId, requestId, actions });
 
         const args = new Uint8Array(new TextEncoder().encode(JSON.stringify({
             request: {
@@ -49,10 +58,16 @@ export class AccountMultisig extends Account {
                 actions: convertActions(actions, accountId, receiverId)
             }
         })));
-        
-        return super.signAndSendTransaction(accountId, [
+
+        return await super.signAndSendTransaction(accountId, [
             functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
         ]);
+    }
+
+    async signAndSendTransactions(transactions) {
+        for (let { receiverId, actions } of transactions) {
+            await this.signAndSendTransaction(receiverId, actions)
+        }
     }
 
     async deployMultisig(contractBytes: Uint8Array) {
@@ -65,11 +80,6 @@ export class AccountMultisig extends Account {
         const fak2lak = accountKeys.filter((k) => !seedPhraseKeys.includes(k)).map(toPK)
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey)
         const newArgs = new Uint8Array(new TextEncoder().encode(JSON.stringify({ 'num_confirmations': 2 })));
-
-        console.log(fak2lak, confirmOnlyKey, contractBytes.buffer.byteLength)
-
-        console.log(MULTISIG_GAS.toArray('le', 8))
-
         const actions = [
             ...fak2lak.map((pk) => deleteKey(pk)),
             ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
@@ -77,33 +87,69 @@ export class AccountMultisig extends Account {
             deployContract(contractBytes),
             functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),
         ]
-
-        console.log(actions)
-        
         console.log('deploying multisig contract for', accountId)
         return await super.signAndSendTransaction(accountId, actions);
     }
 
-    // helpers for CH
+    async deleteUnconfirmedRequests () {
+        const { contract } = this
+        const request_ids = await this.getRequestIds()
+        for (const request_id of request_ids) {
+            try {
+                await contract.delete_request({ request_id })
+            } catch(e) {
+                console.warn(e)
+            }
+        }
+    }
 
-    async sendRequest(requestId = -1) {
+    // helpers
+
+    async getRequestNonce(): Promise<Number> {
+        return this.contract.get_request_nonce();
+    }
+
+    async getRequestIds(): Promise<string> {
+        return this.contract.list_request_ids();
+    }
+
+    isDeleteAction(actions): Boolean {
+        return actions[0]?.functionCall?.methodName === 'delete_request'
+    }
+
+    getRequest() {
+        return JSON.parse(localStorage.getItem(`__multisigRequest`) || `{}`)
+    }
+    
+    setRequest(data) {
+        localStorage.setItem(`__multisigRequest`, JSON.stringify(data))
+    }
+
+    // default helpers for CH
+
+    async sendRequestCode() {
         const { accountId } = this;
+        const { requestId, actions } = this.getRequest();
+        if (this.isDeleteAction(actions)) {
+            return
+        }
         const method = await this.get2faMethod();
-        this.pendingRequest = { accountId, requestId };
         await this.postSignedJson('/2fa/send', {
             accountId,
             method,
             requestId,
         });
+        return requestId
     }
 
-    async verifyRequest(securityCode: String) {
+    async verifyRequestCode(securityCode: string) {
         const { accountId } = this;
-        if (!this.pendingRequest) {
+        const request = this.getRequest();
+        if (!request) {
             throw new Error('no request pending')
         }
-        const { requestId } = this.pendingRequest
-        await this.postSignedJson('/2fa/verify', {
+        const { requestId } = request
+        return await this.postSignedJson('/2fa/verify', {
             accountId,
             securityCode,
             requestId
@@ -119,22 +165,19 @@ export class AccountMultisig extends Account {
     }
 
     async get2faMethod() {
-        const { accountId } = this;
-        let res = await this.postSignedJson('/account/recoveryMethods', { accountId });
-        if (res && res.length) {
-            res = res.find((m) => m.kind.indexOf('2fa-') === 0);
-        } else {
-            throw new Error('Not a 2FA account');
+        let { data } = await this.getRecoveryMethods()
+        if (data && data.length) {
+            data = data.find((m) => m.kind.indexOf('2fa-') === 0);
         }
-        const { kind, detail } = res;
+        if (!data) return null
+        const { kind, detail } = data;
         return { kind, detail };
     }
 
     async signatureFor() {
         const { accountId } = this;
         const blockNumber = String((await this.connection.provider.status()).sync_info.latest_block_height);
-        const signer = this.connection.signer;
-        const signed = await signer.signMessage(Buffer.from(blockNumber), accountId, NETWORK_ID);
+        const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, NETWORK_ID);
         const blockNumberSignature = Buffer.from(signed.signature).toString('base64');
         return { blockNumber, blockNumberSignature };
     }
@@ -148,7 +191,6 @@ export class AccountMultisig extends Account {
             }),
             headers: { 'Content-type': 'application/json; charset=utf-8' }
         });
-
         if (!response.ok) {
             throw new Error(response.status + ': ' + await response.text());
         }
@@ -181,21 +223,24 @@ const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
         args: (args && Buffer.from(args).toString('base64')) || undefined,
         code: (code && Buffer.from(code).toString('base64')) || undefined,
         amount: (deposit && deposit.toString()) || undefined,
-        permission: null,
-        accessKey: null,
+        deposit: (deposit && deposit.toString()) || undefined,
+        permission: undefined,
     };
     if (accessKey) {
         if (receiverId === accountId && accessKey.permission.enum !== 'fullAccess') {
             action.permission = {
                 receiver_id: accountId,
-                allowance: MULTISIG_ALLOWANCE,
+                allowance: MULTISIG_ALLOWANCE.toString(),
                 method_names: MULTISIG_CHANGE_METHODS,
             };
         }
         if (accessKey.permission.enum === 'functionCall') {
-            console.log(accessKey)
             const { receiverId: receiver_id, methodNames: method_names, allowance } = accessKey.permission.functionCall;
-            action.permission = { receiver_id, allowance, method_names };
+            action.permission = {
+                receiver_id,
+                allowance: (allowance && allowance.toString()) || undefined,
+                method_names
+            };
         }
     }
     return action;
