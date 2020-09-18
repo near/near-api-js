@@ -87,7 +87,7 @@ export function deleteAccount(beneficiaryId: string): Action {
     return new Action({deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
 
-class Signature extends Assignable {
+export class Signature extends Assignable {
     keyType: KeyType;
     data: Uint8Array;
 }

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { promisify as _promisify } from 'util';
 
 import { KeyPair } from '../utils/key_pair';
@@ -29,21 +30,21 @@ interface AccountInfo {
     private_key: string;
 }
 
-export async function loadJsonFile(path: string): Promise<any> {
-    const content = await readFile(path);
+export async function loadJsonFile(filename: string): Promise<any> {
+    const content = await readFile(filename);
     return JSON.parse(content.toString());
 }
 
-async function ensureDir(path: string): Promise<void> {
+async function ensureDir(dir: string): Promise<void> {
     try {
-        await mkdir(path, { recursive: true });
+        await mkdir(dir, { recursive: true });
     } catch (err) {
         if (err.code !== 'EEXIST') { throw err; }
     }
 }
 
-export async function readKeyFile(path: string): Promise<[string, KeyPair]> {
-    const accountInfo = await loadJsonFile(path);
+export async function readKeyFile(filename: string): Promise<[string, KeyPair]> {
+    const accountInfo = await loadJsonFile(filename);
     // The private key might be in private_key or secret_key field.
     let privateKey = accountInfo.private_key;
     if (!privateKey && accountInfo.secret_key) {
@@ -57,7 +58,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
 
     constructor(keyDir: string) {
         super();
-        this.keyDir = keyDir;
+        this.keyDir = path.resolve(keyDir);
     }
 
     /**

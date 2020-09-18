@@ -1845,6 +1845,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnencryptedFileSystemKeyStore = exports.readKeyFile = exports.loadJsonFile = void 0;
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const util_1 = require("util");
 const key_pair_1 = require("../utils/key_pair");
 const keystore_1 = require("./keystore");
@@ -1862,14 +1863,14 @@ const writeFile = promisify(fs_1.default.writeFile);
 const unlink = promisify(fs_1.default.unlink);
 const readdir = promisify(fs_1.default.readdir);
 const mkdir = promisify(fs_1.default.mkdir);
-async function loadJsonFile(path) {
-    const content = await readFile(path);
+async function loadJsonFile(filename) {
+    const content = await readFile(filename);
     return JSON.parse(content.toString());
 }
 exports.loadJsonFile = loadJsonFile;
-async function ensureDir(path) {
+async function ensureDir(dir) {
     try {
-        await mkdir(path, { recursive: true });
+        await mkdir(dir, { recursive: true });
     }
     catch (err) {
         if (err.code !== 'EEXIST') {
@@ -1877,8 +1878,8 @@ async function ensureDir(path) {
         }
     }
 }
-async function readKeyFile(path) {
-    const accountInfo = await loadJsonFile(path);
+async function readKeyFile(filename) {
+    const accountInfo = await loadJsonFile(filename);
     // The private key might be in private_key or secret_key field.
     let privateKey = accountInfo.private_key;
     if (!privateKey && accountInfo.secret_key) {
@@ -1890,7 +1891,7 @@ exports.readKeyFile = readKeyFile;
 class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
     constructor(keyDir) {
         super();
-        this.keyDir = keyDir;
+        this.keyDir = path_1.default.resolve(keyDir);
     }
     /**
      * Sets a storage item in a file, unencrypted
@@ -1969,7 +1970,7 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
 }
 exports.UnencryptedFileSystemKeyStore = UnencryptedFileSystemKeyStore;
 
-},{"../utils/key_pair":29,"./keystore":14,"fs":40,"util":82}],17:[function(require,module,exports){
+},{"../utils/key_pair":29,"./keystore":14,"fs":40,"path":68,"util":83}],17:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2244,7 +2245,7 @@ class JsonRpcProvider extends provider_1.Provider {
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
                 // NOTE: All this hackery is happening because structured errors not implemented
                 // TODO: Fix when https://github.com/nearprotocol/nearcore/issues/1839 gets resolved
-                if (response.error.data === 'Timeout') {
+                if (response.error.data === 'Timeout' || errorMessage.includes('Timeout error')) {
                     throw new errors_1.TypedError('send_tx_commit has timed out.', 'TimeoutError');
                 }
                 else {
@@ -2454,7 +2455,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signTransaction = exports.createTransaction = exports.SCHEMA = exports.Action = exports.SignedTransaction = exports.Transaction = exports.deleteAccount = exports.deleteKey = exports.addKey = exports.stake = exports.transfer = exports.functionCall = exports.deployContract = exports.createAccount = exports.IAction = exports.functionCallAccessKey = exports.fullAccessKey = exports.AccessKey = exports.AccessKeyPermission = exports.FullAccessPermission = exports.FunctionCallPermission = void 0;
+exports.signTransaction = exports.createTransaction = exports.SCHEMA = exports.Action = exports.SignedTransaction = exports.Transaction = exports.Signature = exports.deleteAccount = exports.deleteKey = exports.addKey = exports.stake = exports.transfer = exports.functionCall = exports.deployContract = exports.createAccount = exports.IAction = exports.functionCallAccessKey = exports.fullAccessKey = exports.AccessKey = exports.AccessKeyPermission = exports.FullAccessPermission = exports.FunctionCallPermission = void 0;
 const js_sha256_1 = __importDefault(require("js-sha256"));
 const enums_1 = require("./utils/enums");
 const serialize_1 = require("./utils/serialize");
@@ -2544,6 +2545,7 @@ function deleteAccount(beneficiaryId) {
 exports.deleteAccount = deleteAccount;
 class Signature extends enums_1.Assignable {
 }
+exports.Signature = Signature;
 class Transaction extends enums_1.Assignable {
     encode() {
         return serialize_1.serialize(exports.SCHEMA, this);
@@ -3034,7 +3036,7 @@ class KeyPairEd25519 extends KeyPair {
 }
 exports.KeyPairEd25519 = KeyPairEd25519;
 
-},{"./enums":24,"./serialize":32,"tweetnacl":75}],30:[function(require,module,exports){
+},{"./enums":24,"./serialize":32,"tweetnacl":76}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 
@@ -3487,7 +3489,7 @@ function deserialize(schema, classType, buffer) {
 exports.deserialize = deserialize;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bn.js":38,"bs58":41,"buffer":42,"text-encoding-utf-8":73}],33:[function(require,module,exports){
+},{"bn.js":38,"bs58":41,"buffer":42,"text-encoding-utf-8":74}],33:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -3633,6 +3635,7 @@ const transaction_1 = require("./transaction");
 const utils_1 = require("./utils");
 const serialize_1 = require("./utils/serialize");
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
+const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 class WalletConnection {
@@ -3822,6 +3825,13 @@ class ConnectedWalletAccount extends account_1.Account {
         }
         if (permission.FunctionCall) {
             const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
+            /********************************
+            Accept multisig access keys and let wallets attempt to signAndSendTransaction
+            If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
+            ********************************/
+            if (allowedReceiverId === this.accountId && allowedMethods.includes(MULTISIG_HAS_METHOD)) {
+                return true;
+            }
             if (allowedReceiverId === receiverId) {
                 if (actions.length !== 1) {
                     return false;
@@ -3987,7 +3997,7 @@ function base (ALPHABET) {
 }
 module.exports = base
 
-},{"safe-buffer":69}],37:[function(require,module,exports){
+},{"safe-buffer":70}],37:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -9757,7 +9767,7 @@ module.exports = {
         return instance;
     })
 };
-},{"./Frame":51,"o3":64,"u3":76}],53:[function(require,module,exports){
+},{"./Frame":51,"o3":64,"u3":77}],53:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod,
     eachCombination = require("u3").eachCombination,
@@ -9891,7 +9901,7 @@ module.exports = {
         return instance;
     })
 };
-},{"capability":44,"o3":64,"u3":76}],54:[function(require,module,exports){
+},{"capability":44,"o3":64,"u3":77}],54:[function(require,module,exports){
 var FrameStringSource = require("./FrameStringSource"),
     FrameStringParser = require("./FrameStringParser"),
     cache = require("u3").cache,
@@ -9965,7 +9975,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"../prepareStackTrace":55,"./FrameStringParser":52,"./FrameStringSource":53,"u3":76}],55:[function(require,module,exports){
+},{"../prepareStackTrace":55,"./FrameStringParser":52,"./FrameStringSource":53,"u3":77}],55:[function(require,module,exports){
 var prepareStackTrace = function (throwable, frames, warnings) {
     var string = "";
     string += throwable.name || "Error";
@@ -10034,7 +10044,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":55,"u3":76}],57:[function(require,module,exports){
+},{"./prepareStackTrace":55,"u3":77}],57:[function(require,module,exports){
 var prepareStackTrace = require("./prepareStackTrace");
 
 module.exports = function () {
@@ -10347,7 +10357,7 @@ function toClassName (name) {
     : name
 }
 
-},{"depd":59,"inherits":61,"setprototypeof":70,"statuses":72,"toidentifier":74}],59:[function(require,module,exports){
+},{"depd":59,"inherits":61,"setprototypeof":71,"statuses":73,"toidentifier":75}],59:[function(require,module,exports){
 arguments[4][48][0].apply(exports,arguments)
 },{"dup":48}],60:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -10986,7 +10996,7 @@ if (typeof Object.create === 'function') {
 })();
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":68}],63:[function(require,module,exports){
+},{"_process":69}],63:[function(require,module,exports){
 // This file has been generated from mustache.mjs
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -11877,6 +11887,312 @@ module.exports = {
     abstractMethod: require("./abstractMethod")
 };
 },{"./Class":65,"./abstractMethod":66}],68:[function(require,module,exports){
+(function (process){
+// .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
+// backported and transplited with Babel, with backwards-compat fixes
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function (path) {
+  if (typeof path !== 'string') path = path + '';
+  if (path.length === 0) return '.';
+  var code = path.charCodeAt(0);
+  var hasRoot = code === 47 /*/*/;
+  var end = -1;
+  var matchedSlash = true;
+  for (var i = path.length - 1; i >= 1; --i) {
+    code = path.charCodeAt(i);
+    if (code === 47 /*/*/) {
+        if (!matchedSlash) {
+          end = i;
+          break;
+        }
+      } else {
+      // We saw the first non-path separator
+      matchedSlash = false;
+    }
+  }
+
+  if (end === -1) return hasRoot ? '/' : '.';
+  if (hasRoot && end === 1) {
+    // return '//';
+    // Backwards-compat fix:
+    return '/';
+  }
+  return path.slice(0, end);
+};
+
+function basename(path) {
+  if (typeof path !== 'string') path = path + '';
+
+  var start = 0;
+  var end = -1;
+  var matchedSlash = true;
+  var i;
+
+  for (i = path.length - 1; i >= 0; --i) {
+    if (path.charCodeAt(i) === 47 /*/*/) {
+        // If we reached a path separator that was not part of a set of path
+        // separators at the end of the string, stop now
+        if (!matchedSlash) {
+          start = i + 1;
+          break;
+        }
+      } else if (end === -1) {
+      // We saw the first non-path separator, mark this as the end of our
+      // path component
+      matchedSlash = false;
+      end = i + 1;
+    }
+  }
+
+  if (end === -1) return '';
+  return path.slice(start, end);
+}
+
+// Uses a mixed approach for backwards-compatibility, as ext behavior changed
+// in new Node.js versions, so only basename() above is backported here
+exports.basename = function (path, ext) {
+  var f = basename(path);
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+exports.extname = function (path) {
+  if (typeof path !== 'string') path = path + '';
+  var startDot = -1;
+  var startPart = 0;
+  var end = -1;
+  var matchedSlash = true;
+  // Track the state of characters (if any) we see before our first dot and
+  // after any path separator we find
+  var preDotState = 0;
+  for (var i = path.length - 1; i >= 0; --i) {
+    var code = path.charCodeAt(i);
+    if (code === 47 /*/*/) {
+        // If we reached a path separator that was not part of a set of path
+        // separators at the end of the string, stop now
+        if (!matchedSlash) {
+          startPart = i + 1;
+          break;
+        }
+        continue;
+      }
+    if (end === -1) {
+      // We saw the first non-path separator, mark this as the end of our
+      // extension
+      matchedSlash = false;
+      end = i + 1;
+    }
+    if (code === 46 /*.*/) {
+        // If this is our first dot, mark it as the start of our extension
+        if (startDot === -1)
+          startDot = i;
+        else if (preDotState !== 1)
+          preDotState = 1;
+    } else if (startDot !== -1) {
+      // We saw a non-dot and non-path separator before our dot, so we should
+      // have a good chance at having a non-empty extension
+      preDotState = -1;
+    }
+  }
+
+  if (startDot === -1 || end === -1 ||
+      // We saw a non-dot character immediately before the dot
+      preDotState === 0 ||
+      // The (right-most) trimmed path component is exactly '..'
+      preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+    return '';
+  }
+  return path.slice(startDot, end);
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+}).call(this,require('_process'))
+},{"_process":69}],69:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -12062,7 +12378,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -12129,7 +12445,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":42}],70:[function(require,module,exports){
+},{"buffer":42}],71:[function(require,module,exports){
 'use strict'
 /* eslint no-proto: 0 */
 module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
@@ -12148,7 +12464,7 @@ function mixinProperties (obj, proto) {
   return obj
 }
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports={
   "100": "Continue",
   "101": "Switching Protocols",
@@ -12216,7 +12532,7 @@ module.exports={
   "511": "Network Authentication Required"
 }
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 /*!
  * statuses
  * Copyright(c) 2014 Jonathan Ong
@@ -12331,7 +12647,7 @@ function status (code) {
   return n
 }
 
-},{"./codes.json":71}],73:[function(require,module,exports){
+},{"./codes.json":72}],74:[function(require,module,exports){
 'use strict';
 
 // This is free and unencumbered software released into the public domain.
@@ -12974,7 +13290,7 @@ function UTF8Encoder(options) {
 
 exports.TextEncoder = TextEncoder;
 exports.TextDecoder = TextDecoder;
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /*!
  * toidentifier
  * Copyright(c) 2016 Douglas Christopher Wilson
@@ -13006,7 +13322,7 @@ function toIdentifier (str) {
     .replace(/[^ _0-9a-z]/gi, '')
 }
 
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -15399,9 +15715,9 @@ nacl.setPRNG = function(fn) {
 
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-},{"crypto":39}],76:[function(require,module,exports){
+},{"crypto":39}],77:[function(require,module,exports){
 arguments[4][49][0].apply(exports,arguments)
-},{"./lib":79,"dup":49}],77:[function(require,module,exports){
+},{"./lib":80,"dup":49}],78:[function(require,module,exports){
 var cache = function (fn) {
     var called = false,
         store;
@@ -15423,7 +15739,7 @@ var cache = function (fn) {
 };
 
 module.exports = cache;
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = function eachCombination(alternativesByDimension, callback, combination) {
     if (!combination)
         combination = [];
@@ -15438,12 +15754,12 @@ module.exports = function eachCombination(alternativesByDimension, callback, com
     else
         callback.apply(null, combination);
 };
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports = {
     cache: require("./cache"),
     eachCombination: require("./eachCombination")
 };
-},{"./cache":77,"./eachCombination":78}],80:[function(require,module,exports){
+},{"./cache":78,"./eachCombination":79}],81:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -15468,14 +15784,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -16065,4 +16381,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":81,"_process":68,"inherits":80}]},{},[1]);
+},{"./support/isBuffer":82,"_process":69,"inherits":81}]},{},[1]);

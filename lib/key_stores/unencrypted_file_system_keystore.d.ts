@@ -1,7 +1,7 @@
 import { KeyPair } from '../utils/key_pair';
 import { KeyStore } from './keystore';
-export declare function loadJsonFile(path: string): Promise<any>;
-export declare function readKeyFile(path: string): Promise<[string, KeyPair]>;
+export declare function loadJsonFile(filename: string): Promise<any>;
+export declare function readKeyFile(filename: string): Promise<[string, KeyPair]>;
 export declare class UnencryptedFileSystemKeyStore extends KeyStore {
     readonly keyDir: string;
     constructor(keyDir: string);
