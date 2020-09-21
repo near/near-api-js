@@ -41,4 +41,5 @@ export declare class UnencryptedFileSystemKeyStore extends KeyStore {
      * @returns{Promise<string[]>}
      */
     getAccounts(networkId: string): Promise<string[]>;
+    toString(): string;
 }

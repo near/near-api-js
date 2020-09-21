@@ -117,7 +117,7 @@ export class Account {
         const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
             const accessKeyInfo = await this.findAccessKey(receiverId, actions);
             if (!accessKeyInfo) {
-                throw new TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
+                throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
             }
             const { publicKey, accessKey } = accessKeyInfo;
 

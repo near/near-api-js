@@ -141,4 +141,8 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
             .filter(file => file.endsWith('.json'))
             .map(file => file.replace(/.json$/, ''));
     }
+
+    toString(): string {
+        return `UnencryptedFileSystemKeyStore(${this.keyDir})`;
+    }
 }
