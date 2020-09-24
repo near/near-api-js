@@ -89,4 +89,8 @@ export class MergeKeyStore extends KeyStore {
         }
         return Array.from(result);
     }
+
+    toString(): string {
+        return `MergeKeyStore(${this.keyStores.join(', ')})`;
+    }
 }

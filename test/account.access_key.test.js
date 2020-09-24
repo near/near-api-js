@@ -40,7 +40,7 @@ test('remove access key no longer works', async() => {
         await contract.setValue({value: 'test'});
         fail('should throw an error');
     } catch (e) {
-        expect(e.message).toEqual(`Can not sign transactions for account ${workingAccount.accountId}, no matching key pair found in Signer.`);
+        expect(e.message).toEqual(`Can not sign transactions for account ${workingAccount.accountId} on network unittest, no matching key pair found in InMemorySigner(InMemoryKeyStore).`);
         expect(e.type).toEqual('KeyNotFound');
     }
 });

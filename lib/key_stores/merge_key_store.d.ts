@@ -44,4 +44,5 @@ export declare class MergeKeyStore extends KeyStore {
      * @returns{Promise<string[]>}
      */
     getAccounts(networkId: string): Promise<string[]>;
+    toString(): string;
 }
