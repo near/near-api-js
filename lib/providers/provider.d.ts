@@ -206,5 +206,4 @@ export declare abstract class Provider {
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
-export declare function adaptTransactionResult(txResult: any): FinalExecutionOutcome;
 export {};

@@ -260,16 +260,3 @@ export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
     }
     return null;
 }
-
-export function adaptTransactionResult(txResult: any): FinalExecutionOutcome {
-    if ('receipts' in txResult) {
-        txResult = {
-            status: txResult.status,
-            // not available
-            transaction: null,
-            transaction_outcome: txResult.transaction,
-            receipts_outcome: txResult.receipts
-        };
-    }
-    return txResult;
-}
