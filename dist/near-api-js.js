@@ -414,12 +414,25 @@ exports.MULTISIG_DEPOSIT = new bn_js_1.default('0');
 exports.MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 exports.MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 exports.MULTISIG_CONFIRM_METHODS = ['confirm'];
+const IS_BROWSER = typeof window !== 'undefined';
 ;
+// in memory request cache for node w/o localStorage
+let __multisigRequest = null;
 class AccountMultisig extends account_1.Account {
     constructor(connection, accountId) {
         super(connection, accountId);
         this.contract = getContract(this);
     }
+    // overrides
+    // async findAccessKey(receiverId, actions) {
+    //     const accessKeys = await this.getAccessKeys()
+    //     const accessKey = accessKeys.find((k) => 
+    //         k.access_key.permission && 
+    //         k.access_key.permission.FunctionCall &&
+    //         k.access_key.permission.FunctionCall.method_names.some((mn) => MULTISIG_CHANGE_METHODS.includes(mn))
+    //     );
+    //     return { publicKey: accessKey.public_key, accessKey: accessKey.access_key}
+    // }
     async addKey(publicKey, contractId, methodName, amount) {
         if (contractId) {
             return super.addKey(publicKey, contractId, exports.MULTISIG_CHANGE_METHODS.join(), exports.MULTISIG_ALLOWANCE);
@@ -492,10 +505,16 @@ class AccountMultisig extends account_1.Account {
         return actions && actions[0] && actions[0].functionCall && actions[0].functionCall.methodName === 'delete_request';
     }
     getRequest() {
-        return JSON.parse(localStorage.getItem(`__multisigRequest`) || `{}`);
+        if (IS_BROWSER) {
+            return JSON.parse(localStorage.getItem(`__multisigRequest`) || `{}`);
+        }
+        return __multisigRequest;
     }
     setRequest(data) {
-        localStorage.setItem(`__multisigRequest`, JSON.stringify(data));
+        if (IS_BROWSER) {
+            return localStorage.setItem(`__multisigRequest`, JSON.stringify(data));
+        }
+        __multisigRequest = data;
     }
     // default helpers for CH
     async sendRequestCode() {
@@ -588,7 +607,7 @@ const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
         args: (args && Buffer.from(args).toString('base64')) || undefined,
         code: (code && Buffer.from(code).toString('base64')) || undefined,
         amount: (deposit && deposit.toString()) || undefined,
-        deposit: (deposit && deposit.toString()) || undefined,
+        deposit: (deposit && deposit.toString()) || '0',
         permission: undefined,
     };
     if (accessKey) {
@@ -2370,7 +2389,7 @@ class JsonRpcProvider extends provider_1.Provider {
      */
     async sendTransaction(signedTransaction) {
         const bytes = signedTransaction.encode();
-        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]).then(provider_1.adaptTransactionResult);
+        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
     }
     /**
      * Gets a transaction's status from the RPC
@@ -2380,7 +2399,7 @@ class JsonRpcProvider extends provider_1.Provider {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async txStatus(txHash, accountId) {
-        return this.sendJsonRpc('tx', [serialize_1.base_encode(txHash), accountId]).then(provider_1.adaptTransactionResult);
+        return this.sendJsonRpc('tx', [serialize_1.base_encode(txHash), accountId]);
     }
     /**
      * Query the RPC as [shown in the docs](https://docs.nearprotocol.com/docs/interaction/rpc#query)
@@ -2494,7 +2513,7 @@ exports.JsonRpcProvider = JsonRpcProvider;
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adaptTransactionResult = exports.getTransactionLastResult = exports.Provider = exports.IdType = exports.FinalExecutionStatusBasic = exports.ExecutionStatusBasic = void 0;
+exports.getTransactionLastResult = exports.Provider = exports.IdType = exports.FinalExecutionStatusBasic = exports.ExecutionStatusBasic = void 0;
 var ExecutionStatusBasic;
 (function (ExecutionStatusBasic) {
     ExecutionStatusBasic["Unknown"] = "Unknown";
@@ -2528,19 +2547,6 @@ function getTransactionLastResult(txResult) {
     return null;
 }
 exports.getTransactionLastResult = getTransactionLastResult;
-function adaptTransactionResult(txResult) {
-    if ('receipts' in txResult) {
-        txResult = {
-            status: txResult.status,
-            // not available
-            transaction: null,
-            transaction_outcome: txResult.transaction,
-            receipts_outcome: txResult.receipts
-        };
-    }
-    return txResult;
-}
-exports.adaptTransactionResult = adaptTransactionResult;
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":43}],22:[function(require,module,exports){

@@ -124,6 +124,7 @@ export class Account {
             const status = await this.connection.provider.status();
 
             const nonce = ++accessKey.nonce;
+            
             [txHash, signedTx] = await signTransaction(
                 receiverId, nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
             );

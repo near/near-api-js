@@ -9,6 +9,13 @@ import { PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 
+const IS_BROWSER = typeof window !== 'undefined'
+
+let fetch = IS_BROWSER && window.fetch
+if (!IS_BROWSER) {
+    fetch = require('node-fetch');
+}
+
 const NETWORK_ID = process.env.REACT_APP_NETWORK_ID || 'default'
 const CONTRACT_HELPER_URL = process.env.CONTRACT_HELPER_URL || 'https://helper.testnet.near.org';
 
@@ -19,11 +26,15 @@ export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm'
 export const MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 
+
 interface MultisigContract {
     get_request_nonce(): any,
     list_request_ids(): any,
     delete_request({ request_id: Number }): any,
 };
+
+// in memory request cache for node w/o localStorage
+let __multisigRequest = null
 
 export class AccountMultisig extends Account {
     public contract: MultisigContract;
@@ -118,11 +129,17 @@ export class AccountMultisig extends Account {
     }
 
     getRequest() {
-        return JSON.parse(localStorage.getItem(`__multisigRequest`) || `{}`)
+        if (IS_BROWSER) {
+            return JSON.parse(localStorage.getItem(`__multisigRequest`) || `{}`)
+        }
+        return __multisigRequest
     }
     
     setRequest(data) {
-        localStorage.setItem(`__multisigRequest`, JSON.stringify(data))
+        if (IS_BROWSER) {
+            return localStorage.setItem(`__multisigRequest`, JSON.stringify(data))
+        }
+        __multisigRequest = data
     }
 
     // default helpers for CH
@@ -223,7 +240,7 @@ const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
         args: (args && Buffer.from(args).toString('base64')) || undefined,
         code: (code && Buffer.from(code).toString('base64')) || undefined,
         amount: (deposit && deposit.toString()) || undefined,
-        deposit: (deposit && deposit.toString()) || undefined,
+        deposit: (deposit && deposit.toString()) || '0',
         permission: undefined,
     };
     if (accessKey) {
