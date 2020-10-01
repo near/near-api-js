@@ -8,17 +8,12 @@ import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
-
-const IS_BROWSER = typeof window !== 'undefined'
-
-let fetch = IS_BROWSER && window.fetch
-if (!IS_BROWSER) {
-    fetch = require('node-fetch');
-}
+import { fetchJson } from './utils/web';
 
 const NETWORK_ID = process.env.REACT_APP_NETWORK_ID || 'default'
 const CONTRACT_HELPER_URL = process.env.CONTRACT_HELPER_URL || 'https://helper.testnet.near.org';
 
+export const MULTISIG_STORAGE_KEY = '__multisigRequest'
 export const MULTISIG_ALLOWANCE = new BN(process.env.MULTISIG_ALLOWANCE || parseNearAmount('1'));
 export const MULTISIG_GAS = new BN(process.env.MULTISIG_GAS || '100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
@@ -34,14 +29,17 @@ interface MultisigContract {
 };
 
 // in memory request cache for node w/o localStorage
-let __multisigRequest = null
+let storageFallback = {
+    [MULTISIG_STORAGE_KEY]: null
+}
 
 export class AccountMultisig extends Account {
     public contract: MultisigContract;
-    public pendingRequest: any;
+    public storage: any;
 
-    constructor(connection: Connection, accountId: string) {
+    constructor(connection: Connection, accountId: string, storage: any) {
         super(connection, accountId);
+        this.storage = storage;
         this.contract = <MultisigContract>getContract(this);
     }
 
@@ -129,17 +127,17 @@ export class AccountMultisig extends Account {
     }
 
     getRequest() {
-        if (IS_BROWSER) {
-            return JSON.parse(localStorage.getItem(`__multisigRequest`) || `{}`)
+        if (this.storage) {
+            return JSON.parse(this.storage.getItem(MULTISIG_STORAGE_KEY) || `{}`)
         }
-        return __multisigRequest
+        return storageFallback[MULTISIG_STORAGE_KEY]
     }
     
     setRequest(data) {
-        if (IS_BROWSER) {
-            return localStorage.setItem(`__multisigRequest`, JSON.stringify(data))
+        if (this.storage) {
+            return this.storage.setItem(MULTISIG_STORAGE_KEY, JSON.stringify(data))
         }
-        __multisigRequest = data
+        storageFallback[MULTISIG_STORAGE_KEY] = data
     }
 
     // default helpers for CH
@@ -200,21 +198,10 @@ export class AccountMultisig extends Account {
     }
 
     async postSignedJson(path, body) {
-        const response = await fetch(CONTRACT_HELPER_URL + path, {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                ...(await this.signatureFor())
-            }),
-            headers: { 'Content-type': 'application/json; charset=utf-8' }
-        });
-        if (!response.ok) {
-            throw new Error(response.status + ': ' + await response.text());
-        }
-        if (response.status === 204) {
-            return null;
-        }
-        return await response.json();
+        return await fetchJson(CONTRACT_HELPER_URL + path, JSON.stringify({
+            ...body,
+            ...(await this.signatureFor())
+        }));
     }
 }
 
