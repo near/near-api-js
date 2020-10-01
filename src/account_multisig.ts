@@ -107,7 +107,7 @@ export class AccountMultisig extends Account {
             try {
                 await contract.delete_request({ request_id })
             } catch(e) {
-                console.warn(e)
+                console.warn("Attempt to delete an earlier request before 15 minutes failed. Will try again.")
             }
         }
     }
