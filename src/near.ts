@@ -18,7 +18,7 @@ type NearConfig = {
   masterAccount?: string;
   networkId: string;
   nodeUrl: string;
-  walletUrl: string;
+  walletUrl?: string;
 }
 
 export class Near {
