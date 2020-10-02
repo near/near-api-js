@@ -8,10 +8,12 @@ import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
+import { fetchJson } from './utils/web';
 
 const NETWORK_ID = process.env.REACT_APP_NETWORK_ID || 'default'
 const CONTRACT_HELPER_URL = process.env.CONTRACT_HELPER_URL || 'https://helper.testnet.near.org';
 
+export const MULTISIG_STORAGE_KEY = '__multisigRequest'
 export const MULTISIG_ALLOWANCE = new BN(process.env.MULTISIG_ALLOWANCE || parseNearAmount('1'));
 export const MULTISIG_GAS = new BN(process.env.MULTISIG_GAS || '100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
@@ -19,18 +21,25 @@ export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm'
 export const MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 
+
 interface MultisigContract {
     get_request_nonce(): any,
     list_request_ids(): any,
     delete_request({ request_id: Number }): any,
 };
 
+// in memory request cache for node w/o localStorage
+let storageFallback = {
+    [MULTISIG_STORAGE_KEY]: null
+}
+
 export class AccountMultisig extends Account {
     public contract: MultisigContract;
-    public pendingRequest: any;
+    public storage: any;
 
-    constructor(connection: Connection, accountId: string) {
+    constructor(connection: Connection, accountId: string, storage: any) {
         super(connection, accountId);
+        this.storage = storage;
         this.contract = <MultisigContract>getContract(this);
     }
 
@@ -98,7 +107,7 @@ export class AccountMultisig extends Account {
             try {
                 await contract.delete_request({ request_id })
             } catch(e) {
-                console.warn(e)
+                console.warn("Attempt to delete an earlier request before 15 minutes failed. Will try again.")
             }
         }
     }
@@ -118,11 +127,17 @@ export class AccountMultisig extends Account {
     }
 
     getRequest() {
-        return JSON.parse(localStorage.getItem(`__multisigRequest`) || `{}`)
+        if (this.storage) {
+            return JSON.parse(this.storage.getItem(MULTISIG_STORAGE_KEY) || `{}`)
+        }
+        return storageFallback[MULTISIG_STORAGE_KEY]
     }
     
     setRequest(data) {
-        localStorage.setItem(`__multisigRequest`, JSON.stringify(data))
+        if (this.storage) {
+            return this.storage.setItem(MULTISIG_STORAGE_KEY, JSON.stringify(data))
+        }
+        storageFallback[MULTISIG_STORAGE_KEY] = data
     }
 
     // default helpers for CH
@@ -183,21 +198,10 @@ export class AccountMultisig extends Account {
     }
 
     async postSignedJson(path, body) {
-        const response = await fetch(CONTRACT_HELPER_URL + path, {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                ...(await this.signatureFor())
-            }),
-            headers: { 'Content-type': 'application/json; charset=utf-8' }
-        });
-        if (!response.ok) {
-            throw new Error(response.status + ': ' + await response.text());
-        }
-        if (response.status === 204) {
-            return null;
-        }
-        return await response.json();
+        return await fetchJson(CONTRACT_HELPER_URL + path, JSON.stringify({
+            ...body,
+            ...(await this.signatureFor())
+        }));
     }
 }
 
@@ -223,7 +227,7 @@ const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
         args: (args && Buffer.from(args).toString('base64')) || undefined,
         code: (code && Buffer.from(code).toString('base64')) || undefined,
         amount: (deposit && deposit.toString()) || undefined,
-        deposit: (deposit && deposit.toString()) || undefined,
+        deposit: (deposit && deposit.toString()) || '0',
         permission: undefined,
     };
     if (accessKey) {

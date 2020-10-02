@@ -4,6 +4,7 @@ import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
 import { Action } from './transaction';
 import { FinalExecutionOutcome } from './providers';
+export declare const MULTISIG_STORAGE_KEY = "__multisigRequest";
 export declare const MULTISIG_ALLOWANCE: BN;
 export declare const MULTISIG_GAS: BN;
 export declare const MULTISIG_DEPOSIT: BN;
@@ -19,8 +20,8 @@ interface MultisigContract {
 }
 export declare class AccountMultisig extends Account {
     contract: MultisigContract;
-    pendingRequest: any;
-    constructor(connection: Connection, accountId: string);
+    storage: any;
+    constructor(connection: Connection, accountId: string, storage: any);
     addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     signAndSendTransactions(transactions: any): Promise<void>;
@@ -30,7 +31,7 @@ export declare class AccountMultisig extends Account {
     getRequestIds(): Promise<string>;
     isDeleteAction(actions: any): Boolean;
     getRequest(): any;
-    setRequest(data: any): void;
+    setRequest(data: any): any;
     sendRequestCode(): Promise<any>;
     verifyRequestCode(securityCode: string): Promise<any>;
     getRecoveryMethods(): Promise<{
