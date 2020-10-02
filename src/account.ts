@@ -1,8 +1,22 @@
 'use strict';
 
 import BN from 'bn.js';
-import { Action, transfer, createAccount, signTransaction, deployContract,
-    addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
+import {
+    transfer,
+    createAccount,
+    signTransaction,
+    deployContract,
+    addKey,
+    functionCall,
+    fullAccessKey,
+    functionCallAccessKey,
+    deleteKey,
+    stake,
+    deleteAccount,
+    AccessKey,
+    Action,
+    SignedTransaction
+} from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
@@ -104,6 +118,24 @@ export class Account {
         }
     }
 
+    protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
+        await this.ready;
+
+        const accessKeyInfo = await this.findAccessKey(receiverId, actions);
+        if (!accessKeyInfo) {
+            throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
+        }
+        const { accessKey } = accessKeyInfo;
+
+        const status = await this.connection.provider.status();
+
+        const nonce = ++accessKey.nonce;
+        // TODO: get latest_block_hash from block query using `final` finality
+        return await signTransaction(
+            receiverId, nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
+        );
+    }
+
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
@@ -115,19 +147,8 @@ export class Account {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
-            const accessKeyInfo = await this.findAccessKey(receiverId, actions);
-            if (!accessKeyInfo) {
-                throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
-            }
-            const { publicKey, accessKey } = accessKeyInfo;
-
-            const status = await this.connection.provider.status();
-
-            const nonce = ++accessKey.nonce;
-            
-            [txHash, signedTx] = await signTransaction(
-                receiverId, nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
-            );
+            [txHash, signedTx] = await this.signTransaction(receiverId, actions);
+            const publicKey = signedTx.transaction.publicKey;
 
             try {
                 const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {

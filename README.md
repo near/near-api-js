@@ -5,6 +5,9 @@
 
 A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
+# Documentation
+
+[Read the TypeDoc API ocumentation](https://near.github.io/near-api-js/)
 
 # Contribute to this library
 
