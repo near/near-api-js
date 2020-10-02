@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Action, AccessKey } from './transaction';
+import { AccessKey, Action, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
@@ -37,6 +37,7 @@ export declare class Account {
     state(): Promise<AccountState>;
     private printLogsAndFailures;
     private printLogs;
+    protected signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]>;
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
