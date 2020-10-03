@@ -22,7 +22,11 @@ export declare class AccountMultisig extends Account {
     contract: MultisigContract;
     storage: any;
     constructor(connection: Connection, accountId: string, storage: any);
-    addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
+    /**
+     * If contractId matches given accountId, mutlisig only address another multisig access key.
+     * E.g. generally, one should not be adding full access keys to the multisig contract.
+     */
+    addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string[], amount?: BN): Promise<FinalExecutionOutcome>;
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     signAndSendTransactions(transactions: any): Promise<void>;
     deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;

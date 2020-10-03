@@ -43,11 +43,16 @@ export class AccountMultisig extends Account {
         this.contract = <MultisigContract>getContract(this);
     }
 
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome> {
-        if (contractId) {
-            return super.addKey(publicKey, contractId, MULTISIG_CHANGE_METHODS.join(), MULTISIG_ALLOWANCE)
+    /** 
+     * If contractId matches given accountId, mutlisig only address another multisig access key.
+     * E.g. generally, one should not be adding full access keys to the multisig contract.
+     */
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string[], amount?: BN): Promise<FinalExecutionOutcome> {
+        if (contractId == this.accountId) {
+            return super.addKey(publicKey, this.accountId, MULTISIG_CHANGE_METHODS, MULTISIG_ALLOWANCE)
+        } else {
+            throw new Error(`Multisig contract can not add keys for other accounts`)
         }
-        return super.addKey(publicKey)
     }
 
     async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
