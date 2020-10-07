@@ -49,6 +49,10 @@ const contract = new Contract(account, null, {
         test('throws PositionalArgsError if given too many arguments', () => {
             return expect(contract[method]({}, 1, 0, 'oops')).rejects.toBeInstanceOf(PositionalArgsError);
         });
+
+        test('allows args encoded as Uint8Array (for borsh)', async () => {
+            expect(await contract[method](new Uint8Array()));
+        });
     });
 });
 
