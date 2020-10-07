@@ -18,10 +18,15 @@ interface MultisigContract {
         request_id: any;
     }): any;
 }
+declare type sendCodeFunction = () => Promise<any>;
+declare type getCodeFunction = (method: any) => Promise<string>;
 export declare class AccountMultisig extends Account {
     contract: MultisigContract;
     storage: any;
-    constructor(connection: Connection, accountId: string, storage: any);
+    sendCode: sendCodeFunction;
+    getCode: getCodeFunction;
+    onResult: Function;
+    constructor(connection: Connection, accountId: string, options: any);
     addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     signAndSendTransactions(transactions: any): Promise<void>;
@@ -32,8 +37,10 @@ export declare class AccountMultisig extends Account {
     isDeleteAction(actions: any): Boolean;
     getRequest(): any;
     setRequest(data: any): any;
-    sendRequestCode(): Promise<any>;
-    verifyRequestCode(securityCode: string): Promise<any>;
+    sendCodeDefault(): Promise<any>;
+    getCodeDefault(): Promise<string>;
+    promptAndVerify(): any;
+    verifyCode(securityCode: string): Promise<any>;
     getRecoveryMethods(): Promise<{
         accountId: string;
         data: any;

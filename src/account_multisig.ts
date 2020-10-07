@@ -21,12 +21,14 @@ export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm'
 export const MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 
-
 interface MultisigContract {
     get_request_nonce(): any,
     list_request_ids(): any,
     delete_request({ request_id: Number }): any,
 };
+
+type sendCodeFunction = () => Promise<any>;
+type getCodeFunction = (method: any) => Promise<string>;
 
 // in memory request cache for node w/o localStorage
 let storageFallback = {
@@ -36,10 +38,16 @@ let storageFallback = {
 export class AccountMultisig extends Account {
     public contract: MultisigContract;
     public storage: any;
+    public sendCode: sendCodeFunction;
+    public getCode: getCodeFunction;
+    public onResult: Function;
 
-    constructor(connection: Connection, accountId: string, storage: any) {
+    constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId);
-        this.storage = storage;
+        this.storage = options.storage;
+        this.sendCode = options.sendCode || this.sendCodeDefault;
+        this.getCode = options.getCode || this.getCodeDefault;
+        this.onResult = options.onResult;
         this.contract = <MultisigContract>getContract(this);
     }
 
@@ -68,9 +76,17 @@ export class AccountMultisig extends Account {
             }
         })));
 
-        return await super.signAndSendTransaction(accountId, [
+        await super.signAndSendTransaction(accountId, [
             functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
         ]);
+
+        await this.sendCode();
+
+        const result = await this.promptAndVerify();
+        if (this.onResult) {
+            this.onResult(result);
+        }
+        return result
     }
 
     async signAndSendTransactions(transactions) {
@@ -142,7 +158,7 @@ export class AccountMultisig extends Account {
 
     // default helpers for CH
 
-    async sendRequestCode() {
+    async sendCodeDefault() {
         const { accountId } = this;
         const { requestId, actions } = this.getRequest();
         if (this.isDeleteAction(actions)) {
@@ -157,7 +173,34 @@ export class AccountMultisig extends Account {
         return requestId
     }
 
-    async verifyRequestCode(securityCode: string) {
+    async getCodeDefault(): Promise<string> {
+        if (typeof window === 'undefined') {
+            throw new Error('There is no getCodeFallback for Node env. Please provide your own in AccountMultisig constructor options argument.');
+        }
+        const method = await this.get2faMethod();
+        if (!method || !method.kind) {
+            throw new Error('no active 2fa method found');
+        }
+        const code = window.prompt(`Enter security code sent to ${ method.kind.split('2fa-')[1] }`)
+        return code
+    }
+
+    async promptAndVerify() {
+        const method = await this.get2faMethod();
+        const securityCode = await this.getCode(method)
+        try {
+            const { success, res: result } = await this.verifyCode(securityCode);
+            if (!success || result === false) {
+                throw new Error('Request failed with error: ' + JSON.stringify(result));
+            }
+            return typeof result === 'string' && result.length === 0 ? 'true' : result;
+        } catch (e) {
+            console.warn('Invalid security code. Please try again.\n');
+            return await this.promptAndVerify();
+        }
+    }
+
+    async verifyCode(securityCode: string) {
         const { accountId } = this;
         const request = this.getRequest();
         if (!request) {
