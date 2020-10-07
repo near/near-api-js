@@ -11,6 +11,14 @@ export declare const MULTISIG_DEPOSIT: BN;
 export declare const MULTISIG_CHANGE_METHODS: string[];
 export declare const MULTISIG_VIEW_METHODS: string[];
 export declare const MULTISIG_CONFIRM_METHODS: string[];
+/********************************
+This method can be used to mod a near instance .account helper to return AccountMultisig if the account has multisig deployed
+It takes an options object where you can provide callbacks for:
+- sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
+- getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
+- onResult: the tx result after it's been confirmed by NEAR Contract Helper
+********************************/
+export declare const modIfMultisig: (near: any, options: any) => any;
 interface MultisigContract {
     get_request_nonce(): any;
     list_request_ids(): any;

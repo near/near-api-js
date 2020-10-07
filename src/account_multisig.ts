@@ -21,6 +21,46 @@ export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm'
 export const MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 
+/********************************
+This method can be used to mod a near instance .account helper to return AccountMultisig if the account has multisig deployed
+It takes an options object where you can provide callbacks for:
+- sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
+- getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
+- onResult: the tx result after it's been confirmed by NEAR Contract Helper
+********************************/
+export const modIfMultisig = (near, options) => {
+    near.account = async (accountId) => {
+        const account = new Account(near.connection, accountId);
+        await account.state();
+        const localKey = (await near.connection.signer.getPublicKey(account.accountId, near.connection.networkId)).toString();
+        const accessKeys = await account.getAccessKeys();
+
+        const hasFAK = accessKeys.find((k) => 
+            k.public_key === localKey &&
+            k.access_key.permission &&
+            k.access_key.permission === 'FullAccess'
+        );
+        
+        if (hasFAK) {
+            return account;
+        }
+        
+        const use2fa = accessKeys.find((k) => 
+            k.public_key === localKey &&
+            k.access_key.permission && 
+            k.access_key.permission.FunctionCall &&
+            k.access_key.permission.FunctionCall.method_names.some((mn) => MULTISIG_CHANGE_METHODS.includes(mn))
+        );
+
+        if (use2fa) {
+            return new AccountMultisig(near.connection, accountId, options);
+        }
+
+        throw new Error(`Account ${accountId} doesn't have full access keys or multisig enabled`);
+    };
+    return near;
+}
+
 interface MultisigContract {
     get_request_nonce(): any,
     list_request_ids(): any,
