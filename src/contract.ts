@@ -4,9 +4,9 @@ import { getTransactionLastResult } from './providers';
 import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
 
 // Makes `function.name` return given name
-function nameFunction(name, body) {
+function nameFunction(name: string, body: (args?: any[]) => {}) {
     return {
-        [name](...args) {
+        [name](...args: any[]) {
             return body(...args);
         }
     }[name];
