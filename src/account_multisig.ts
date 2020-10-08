@@ -69,6 +69,7 @@ interface MultisigContract {
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
+type verifyCodeFunction = (securityCode: any) => Promise<any>;
 
 // in memory request cache for node w/o localStorage
 let storageFallback = {
@@ -80,6 +81,7 @@ export class AccountMultisig extends Account {
     public storage: any;
     public sendCode: sendCodeFunction;
     public getCode: getCodeFunction;
+    public verifyCode: verifyCodeFunction;
     public onResult: Function;
 
     constructor(connection: Connection, accountId: string, options: any) {
@@ -87,6 +89,7 @@ export class AccountMultisig extends Account {
         this.storage = options.storage;
         this.sendCode = options.sendCode || this.sendCodeDefault;
         this.getCode = options.getCode || this.getCodeDefault;
+        this.verifyCode = options.verifyCode || this.verifyCodeDefault;
         this.onResult = options.onResult;
         this.contract = <MultisigContract>getContract(this);
     }
@@ -240,7 +243,7 @@ export class AccountMultisig extends Account {
         }
     }
 
-    async verifyCode(securityCode: string) {
+    async verifyCodeDefault(securityCode: string) {
         const { accountId } = this;
         const request = this.getRequest();
         if (!request) {

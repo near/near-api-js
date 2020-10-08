@@ -28,11 +28,13 @@ interface MultisigContract {
 }
 declare type sendCodeFunction = () => Promise<any>;
 declare type getCodeFunction = (method: any) => Promise<string>;
+declare type verifyCodeFunction = (securityCode: any) => Promise<any>;
 export declare class AccountMultisig extends Account {
     contract: MultisigContract;
     storage: any;
     sendCode: sendCodeFunction;
     getCode: getCodeFunction;
+    verifyCode: verifyCodeFunction;
     onResult: Function;
     constructor(connection: Connection, accountId: string, options: any);
     addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
@@ -48,7 +50,7 @@ export declare class AccountMultisig extends Account {
     sendCodeDefault(): Promise<any>;
     getCodeDefault(): Promise<string>;
     promptAndVerify(): any;
-    verifyCode(securityCode: string): Promise<any>;
+    verifyCodeDefault(securityCode: string): Promise<any>;
     getRecoveryMethods(): Promise<{
         accountId: string;
         data: any;
