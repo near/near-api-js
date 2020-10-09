@@ -2,8 +2,8 @@ const { Contract } = require('../lib/contract');
 const { PositionalArgsError } = require('../lib/utils/errors');
 
 const account = {
-    viewFunction() {
-        return this;
+    viewFunction(contractId, methodName, args, options) {
+        return { this: this, contractId, methodName, args, options };
     },
     functionCall() {
         return this;
@@ -53,6 +53,32 @@ const contract = new Contract(account, null, {
         test('allows args encoded as Uint8Array (for borsh)', async () => {
             expect(await contract[method](new Uint8Array()));
         });
+    });
+});
+
+describe('viewMethod', () => {
+    test('passes options through to account viewFunction', async () => {
+        function customParser () {}
+        const stubbedReturnValue = await contract.viewMethod({}, { parse: customParser });
+        expect(stubbedReturnValue.options.parse).toBe(customParser);
+    });
+
+    test('throws PositionalArgsError if second argument is not an object', () => {
+        return Promise.all([
+            1,
+            'lol',
+            [],
+            new Date(),
+            null,
+            new Set(),
+        ].map(async badArgs => {
+            try {
+                await contract.viewMethod({ a: 1 }, badArgs);
+                throw new Error(`Calling \`contract.viewMethod({ a: 1 }, ${badArgs})\` worked. It shouldn't have worked.`);
+            } catch (e) {
+                if (!(e instanceof PositionalArgsError)) throw e;
+            }
+        }));
     });
 });
 

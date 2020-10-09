@@ -67,6 +67,10 @@ interface ReceiptLogWithFailure {
     failure: ServerError;
 }
 
+function parseJsonFromRawResponse (response: Uint8Array): any {
+    return JSON.parse(response.toString());
+}
+
 /**
  * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
  */
@@ -112,7 +116,7 @@ export class Account {
         }
     }
 
-    private printLogs(contractId: string, logs: string[], prefix: string = '') {
+    private printLogs(contractId: string, logs: string[], prefix = '') {
         for (const log of logs) {
             console.log(`${prefix}Log [${contractId}]: ${log}`);
         }
@@ -182,7 +186,7 @@ export class Account {
             }
         });
         if (!result) {
-            throw new TypedError(`nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.`, 'RetriesExceeded');
+            throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
         }
 
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => {
@@ -211,9 +215,9 @@ export class Account {
         return result;
     }
 
-    accessKeyByPublicKeyCache: { [key: string] : AccessKey } = {}
+    accessKeyByPublicKeyCache: { [key: string]: AccessKey } = {}
 
-    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey, accessKey: AccessKey}> {
+    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
         // TODO: Find matching access key based on transaction
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
@@ -354,14 +358,19 @@ export class Account {
      * @param args Any arguments to the view contract method, wrapped in JSON
      * @returns {Promise<any>}
      */
-    async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
+    async viewFunction(
+        contractId: string,
+        methodName: string,
+        args: any,
+        { parse = parseJsonFromRawResponse } = {}
+    ): Promise<any> {
         args = args || {};
         this.validateArgs(args);
         const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, base_encode(JSON.stringify(args)));
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
-        return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
+        return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
     }
 
     /**
