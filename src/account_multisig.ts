@@ -216,16 +216,8 @@ export class AccountMultisig extends Account {
         return requestId
     }
 
-    async getCodeDefault(): Promise<string> {
-        if (typeof window === 'undefined') {
-            throw new Error('There is no getCodeFallback for Node env. Please provide your own in AccountMultisig constructor options argument.');
-        }
-        const method = await this.get2faMethod();
-        if (!method || !method.kind) {
-            throw new Error('no active 2fa method found');
-        }
-        const code = window.prompt(`Enter security code sent to ${ method.kind.split('2fa-')[1] }`)
-        return code
+    async getCodeDefault(method: any): Promise<string> {
+        throw new Error('There is no getCode callback provided. Please provide your own in AccountMultisig constructor options. It has a parameter method where method.kind is "email" or "phone".');
     }
 
     async promptAndVerify() {
