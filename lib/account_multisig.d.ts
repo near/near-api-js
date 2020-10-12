@@ -48,7 +48,7 @@ export declare class AccountMultisig extends Account {
     getRequest(): any;
     setRequest(data: any): any;
     sendCodeDefault(): Promise<any>;
-    getCodeDefault(): Promise<string>;
+    getCodeDefault(method: any): Promise<string>;
     promptAndVerify(): any;
     verifyCodeDefault(securityCode: string): Promise<any>;
     getRecoveryMethods(): Promise<{
