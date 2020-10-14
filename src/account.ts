@@ -310,12 +310,18 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      * TODO: expand this API to support more options.
      */
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome> {
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string|string[], amount?: BN): Promise<FinalExecutionOutcome> {
+        if (!methodNames) {
+            methodNames = []
+        }
+        if (!Array.isArray(methodNames)) {
+            methodNames = [methodNames]
+        }
         let accessKey;
         if (contractId === null || contractId === undefined || contractId === '') {
             accessKey = fullAccessKey();
         } else {
-            accessKey = functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
+            accessKey = functionCallAccessKey(contractId, methodNames, amount);
         }
         return this.signAndSendTransaction(this.accountId, [addKey(PublicKey.from(publicKey), accessKey)]);
     }

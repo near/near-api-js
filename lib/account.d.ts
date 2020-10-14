@@ -95,7 +95,7 @@ export declare class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      * TODO: expand this API to support more options.
      */
-    addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
+    addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome>;
     /**
      * @param publicKey The public key to be deleted
      * @returns {Promise<FinalExecutionOutcome>}
