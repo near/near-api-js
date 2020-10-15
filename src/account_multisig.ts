@@ -59,8 +59,6 @@ export class AccountMultisig extends Account {
 
         const requestId = await this.getRequestNonce()
 
-        console.log('getRequestNonce', requestId)
-
         this.setRequest({ accountId, requestId, actions });
 
         const args = new Uint8Array(new TextEncoder().encode(JSON.stringify({
