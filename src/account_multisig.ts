@@ -114,12 +114,12 @@ export class AccountMultisig extends Account {
 
     // helpers
 
-    async getRequestNonce(): Promise<Number> {
-        return await this.contract.get_request_nonce();
+    getRequestNonce(): Promise<Number> {
+        return this.contract.get_request_nonce();
     }
 
-    async getRequestIds(): Promise<string> {
-        return await this.contract.list_request_ids();
+    getRequestIds(): Promise<string> {
+        return this.contract.list_request_ids();
     }
 
     isDeleteAction(actions): Boolean {
