@@ -21,7 +21,6 @@ export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm'
 export const MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 
-
 interface MultisigContract {
     get_request_nonce(): any,
     list_request_ids(): any,
@@ -59,6 +58,9 @@ export class AccountMultisig extends Account {
         await this.deleteUnconfirmedRequests()
 
         const requestId = await this.getRequestNonce()
+
+        console.log('getRequestNonce', requestId)
+
         this.setRequest({ accountId, requestId, actions });
 
         const args = new Uint8Array(new TextEncoder().encode(JSON.stringify({
@@ -115,11 +117,11 @@ export class AccountMultisig extends Account {
     // helpers
 
     async getRequestNonce(): Promise<Number> {
-        return this.contract.get_request_nonce();
+        return await this.contract.get_request_nonce();
     }
 
     async getRequestIds(): Promise<string> {
-        return this.contract.list_request_ids();
+        return await this.contract.list_request_ids();
     }
 
     isDeleteAction(actions): Boolean {
