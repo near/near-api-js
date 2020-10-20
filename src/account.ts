@@ -412,7 +412,7 @@ export class Account {
         const stateStaked = new BN(state.storage_usage).mul(costPerByte);
         const staked = new BN(state.locked);
         const totalBalance = new BN(state.amount).add(staked);
-        const availableBalance = totalBalance.sub(staked).sub(stateStaked);
+        const availableBalance = totalBalance.sub(BN.max(staked, stateStaked));
 
         return {
             total: totalBalance.toString(),
