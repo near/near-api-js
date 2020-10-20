@@ -63,22 +63,22 @@ describe('viewMethod', () => {
         expect(stubbedReturnValue.options.parse).toBe(customParser);
     });
 
-    test('throws PositionalArgsError if second argument is not an object', () => {
-        return Promise.all([
-            1,
-            'lol',
-            [],
-            new Date(),
-            null,
-            new Set(),
-        ].map(async badArgs => {
+    describe.each([
+        1,
+        'lol',
+        [],
+        new Date(),
+        null,
+        new Set(),
+    ])('throws PositionalArgsError if 2nd arg is not an object', badArg => {
+        test(String(badArg), async () => {
             try {
-                await contract.viewMethod({ a: 1 }, badArgs);
-                throw new Error(`Calling \`contract.viewMethod({ a: 1 }, ${badArgs})\` worked. It shouldn't have worked.`);
+                await contract.viewMethod({ a: 1 }, badArg);
+                throw new Error(`Calling \`contract.viewMethod({ a: 1 }, ${badArg})\` worked. It shouldn't have worked.`);
             } catch (e) {
                 if (!(e instanceof PositionalArgsError)) throw e;
             }
-        }));
+        });
     });
 });
 
