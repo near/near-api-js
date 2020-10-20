@@ -68,7 +68,7 @@ interface ReceiptLogWithFailure {
 }
 
 function parseJsonFromRawResponse (response: Uint8Array): any {
-    return JSON.parse(response.toString());
+    return JSON.parse(Buffer.from(response).toString());
 }
 
 /**
