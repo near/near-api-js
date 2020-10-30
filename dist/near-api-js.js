@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Account = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 const transaction_1 = require("./transaction");
 const providers_1 = require("./providers");
@@ -145,7 +144,8 @@ class Account {
                 throw new providers_1.TypedError(`Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
             }
             else {
-                throw rpc_errors_1.parseRpcError(result.status.Failure);
+                // throw parseRpcError(result.status.Failure);
+                throw rpc_errors_1.parseResultError(result);
             }
         }
         // TODO: if Tx is Unknown or Started.
@@ -348,7 +348,6 @@ exports.Account = Account;
 },{"./providers":18,"./transaction":23,"./utils/errors":25,"./utils/exponential-backoff":26,"./utils/key_pair":29,"./utils/rpc_errors":31,"./utils/serialize":32,"bn.js":38,"buffer":42}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UrlAccountCreator = exports.LocalAccountCreator = exports.AccountCreator = void 0;
 const web_1 = require("./utils/web");
 /**
  * Account creator provides an interface for implementations to actually create accounts
@@ -394,55 +393,30 @@ exports.UrlAccountCreator = UrlAccountCreator;
 
 },{"./utils/web":33}],4:[function(require,module,exports){
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
-};
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.keyStores = __importStar(require("./key_stores/browser-index"));
-__exportStar(require("./common-index"), exports);
+__export(require("./common-index"));
 
 },{"./common-index":5,"./key_stores/browser-index":10}],5:[function(require,module,exports){
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletConnection = exports.WalletAccount = exports.Near = exports.connect = exports.KeyPair = exports.Signer = exports.InMemorySigner = exports.Contract = exports.Connection = exports.Account = exports.validators = exports.transactions = exports.utils = exports.providers = exports.accountCreator = void 0;
 const providers = __importStar(require("./providers"));
 exports.providers = providers;
 const utils = __importStar(require("./utils"));
@@ -452,30 +426,29 @@ exports.transactions = transactions;
 const validators = __importStar(require("./validators"));
 exports.validators = validators;
 const account_1 = require("./account");
-Object.defineProperty(exports, "Account", { enumerable: true, get: function () { return account_1.Account; } });
+exports.Account = account_1.Account;
 const accountCreator = __importStar(require("./account_creator"));
 exports.accountCreator = accountCreator;
 const connection_1 = require("./connection");
-Object.defineProperty(exports, "Connection", { enumerable: true, get: function () { return connection_1.Connection; } });
+exports.Connection = connection_1.Connection;
 const signer_1 = require("./signer");
-Object.defineProperty(exports, "Signer", { enumerable: true, get: function () { return signer_1.Signer; } });
-Object.defineProperty(exports, "InMemorySigner", { enumerable: true, get: function () { return signer_1.InMemorySigner; } });
+exports.Signer = signer_1.Signer;
+exports.InMemorySigner = signer_1.InMemorySigner;
 const contract_1 = require("./contract");
-Object.defineProperty(exports, "Contract", { enumerable: true, get: function () { return contract_1.Contract; } });
+exports.Contract = contract_1.Contract;
 const key_pair_1 = require("./utils/key_pair");
-Object.defineProperty(exports, "KeyPair", { enumerable: true, get: function () { return key_pair_1.KeyPair; } });
+exports.KeyPair = key_pair_1.KeyPair;
 const near_1 = require("./near");
-Object.defineProperty(exports, "connect", { enumerable: true, get: function () { return near_1.connect; } });
-Object.defineProperty(exports, "Near", { enumerable: true, get: function () { return near_1.Near; } });
+exports.connect = near_1.connect;
+exports.Near = near_1.Near;
 // TODO: Deprecate and remove WalletAccount
 const wallet_account_1 = require("./wallet-account");
-Object.defineProperty(exports, "WalletAccount", { enumerable: true, get: function () { return wallet_account_1.WalletAccount; } });
-Object.defineProperty(exports, "WalletConnection", { enumerable: true, get: function () { return wallet_account_1.WalletConnection; } });
+exports.WalletAccount = wallet_account_1.WalletAccount;
+exports.WalletConnection = wallet_account_1.WalletConnection;
 
 },{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./near":17,"./providers":18,"./signer":22,"./transaction":23,"./utils":28,"./utils/key_pair":29,"./validators":34,"./wallet-account":35}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Connection = void 0;
 const providers_1 = require("./providers");
 const signer_1 = require("./signer");
 /**
@@ -530,7 +503,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Contract = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 const providers_1 = require("./providers");
 const errors_1 = require("./utils/errors");
@@ -1265,7 +1237,6 @@ module.exports={
 },{}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Deprecated = exports.DeleteAccountHasEnoughBalance = exports.LackBalanceForState = exports.UnsuitableStakingKey = exports.Timeout = exports.Closed = exports.TriesToUnstake = exports.TriesToStake = exports.SignerDoesNotExist = exports.RequiresFullAccess = exports.RentUnpaid = exports.ReceiverMismatch = exports.NotEnoughBalance = exports.NotEnoughAllowance = exports.MethodNameMismatch = exports.InvalidSignerId = exports.InvalidSignature = exports.InvalidReceiverId = exports.InvalidNonce = exports.InvalidChain = exports.Expired = exports.DepositWithFunctionCall = exports.DeleteKeyDoesNotExist = exports.DeleteAccountStaking = exports.DeleteAccountHasRent = exports.CreateAccountNotAllowed = exports.CostOverflow = exports.BalanceMismatchError = exports.AddKeyAlreadyExists = exports.ActorNoPermission = exports.AccountDoesNotExist = exports.AccountAlreadyExists = exports.AccessKeyNotFound = exports.InvalidAccessKeyError = exports.InvalidTxError = exports.WasmerCompileError = exports.WasmTrap = exports.ValueLengthExceeded = exports.TotalLogLengthExceeded = exports.StackHeightInstrumentation = exports.Serialization = exports.ReturnedValueLengthExceeded = exports.ProhibitedInView = exports.NumberPromisesExceeded = exports.NumberOfLogsExceeded = exports.NumberInputDataDependenciesExceeded = exports.MethodUTF8Error = exports.MethodNotFound = exports.MethodInvalidSignature = exports.MethodEmptyName = exports.MethodResolveError = exports.MemoryAccessViolation = exports.Memory = exports.LinkError = exports.KeyLengthExceeded = exports.IteratorWasInvalidated = exports.InvalidRegisterId = exports.InvalidReceiptIndex = exports.InvalidPublicKey = exports.InvalidPromiseResultIndex = exports.InvalidPromiseIndex = exports.InvalidMethodName = exports.InvalidIteratorIndex = exports.InvalidAccountId = exports.InternalMemoryDeclared = exports.IntegerOverflow = exports.Instantiate = exports.GuestPanic = exports.GasLimitExceeded = exports.GasInstrumentation = exports.GasExceeded = exports.EmptyMethodName = exports.Deserialization = exports.PrepareError = exports.ContractSizeExceeded = exports.CodeDoesNotExist = exports.CompilationError = exports.CannotReturnJointPromise = exports.CannotAppendActionToJointPromise = exports.BalanceExceeded = exports.BadUTF8 = exports.BadUTF16 = exports.HostError = exports.FunctionCallError = exports.ActionError = exports.TxExecutionError = exports.ServerError = void 0;
 const errors_1 = require("../utils/errors");
 class ServerError extends errors_1.TypedError {
 }
@@ -1532,20 +1503,18 @@ exports.Deprecated = Deprecated;
 },{"../utils/errors":25}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MergeKeyStore = exports.BrowserLocalStorageKeyStore = exports.InMemoryKeyStore = exports.KeyStore = void 0;
 const keystore_1 = require("./keystore");
-Object.defineProperty(exports, "KeyStore", { enumerable: true, get: function () { return keystore_1.KeyStore; } });
+exports.KeyStore = keystore_1.KeyStore;
 const in_memory_key_store_1 = require("./in_memory_key_store");
-Object.defineProperty(exports, "InMemoryKeyStore", { enumerable: true, get: function () { return in_memory_key_store_1.InMemoryKeyStore; } });
+exports.InMemoryKeyStore = in_memory_key_store_1.InMemoryKeyStore;
 const browser_local_storage_key_store_1 = require("./browser_local_storage_key_store");
-Object.defineProperty(exports, "BrowserLocalStorageKeyStore", { enumerable: true, get: function () { return browser_local_storage_key_store_1.BrowserLocalStorageKeyStore; } });
+exports.BrowserLocalStorageKeyStore = browser_local_storage_key_store_1.BrowserLocalStorageKeyStore;
 const merge_key_store_1 = require("./merge_key_store");
-Object.defineProperty(exports, "MergeKeyStore", { enumerable: true, get: function () { return merge_key_store_1.MergeKeyStore; } });
+exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 
 },{"./browser_local_storage_key_store":11,"./in_memory_key_store":12,"./keystore":14,"./merge_key_store":15}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BrowserLocalStorageKeyStore = void 0;
 const keystore_1 = require("./keystore");
 const key_pair_1 = require("../utils/key_pair");
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
@@ -1646,7 +1615,6 @@ exports.BrowserLocalStorageKeyStore = BrowserLocalStorageKeyStore;
 },{"../utils/key_pair":29,"./keystore":14}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InMemoryKeyStore = void 0;
 const keystore_1 = require("./keystore");
 const key_pair_1 = require("../utils/key_pair");
 /**
@@ -1726,22 +1694,20 @@ exports.InMemoryKeyStore = InMemoryKeyStore;
 },{"../utils/key_pair":29,"./keystore":14}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MergeKeyStore = exports.UnencryptedFileSystemKeyStore = exports.BrowserLocalStorageKeyStore = exports.InMemoryKeyStore = exports.KeyStore = void 0;
 const keystore_1 = require("./keystore");
-Object.defineProperty(exports, "KeyStore", { enumerable: true, get: function () { return keystore_1.KeyStore; } });
+exports.KeyStore = keystore_1.KeyStore;
 const in_memory_key_store_1 = require("./in_memory_key_store");
-Object.defineProperty(exports, "InMemoryKeyStore", { enumerable: true, get: function () { return in_memory_key_store_1.InMemoryKeyStore; } });
+exports.InMemoryKeyStore = in_memory_key_store_1.InMemoryKeyStore;
 const browser_local_storage_key_store_1 = require("./browser_local_storage_key_store");
-Object.defineProperty(exports, "BrowserLocalStorageKeyStore", { enumerable: true, get: function () { return browser_local_storage_key_store_1.BrowserLocalStorageKeyStore; } });
+exports.BrowserLocalStorageKeyStore = browser_local_storage_key_store_1.BrowserLocalStorageKeyStore;
 const unencrypted_file_system_keystore_1 = require("./unencrypted_file_system_keystore");
-Object.defineProperty(exports, "UnencryptedFileSystemKeyStore", { enumerable: true, get: function () { return unencrypted_file_system_keystore_1.UnencryptedFileSystemKeyStore; } });
+exports.UnencryptedFileSystemKeyStore = unencrypted_file_system_keystore_1.UnencryptedFileSystemKeyStore;
 const merge_key_store_1 = require("./merge_key_store");
-Object.defineProperty(exports, "MergeKeyStore", { enumerable: true, get: function () { return merge_key_store_1.MergeKeyStore; } });
+exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 
 },{"./browser_local_storage_key_store":11,"./in_memory_key_store":12,"./keystore":14,"./merge_key_store":15,"./unencrypted_file_system_keystore":16}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KeyStore = void 0;
 /**
  * Key store interface for `InMemorySigner`.
  */
@@ -1752,7 +1718,6 @@ exports.KeyStore = KeyStore;
 },{}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MergeKeyStore = void 0;
 const keystore_1 = require("./keystore");
 /**
  * Keystore which can be used to merge multiple key stores into one virtual key store.
@@ -1843,7 +1808,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UnencryptedFileSystemKeyStore = exports.readKeyFile = exports.loadJsonFile = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const util_1 = require("util");
@@ -1976,7 +1940,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connect = exports.Near = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 const account_1 = require("./account");
 const connection_1 = require("./connection");
@@ -2080,15 +2043,14 @@ exports.connect = connect;
 },{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./key_stores":13,"./key_stores/unencrypted_file_system_keystore":16,"bn.js":38}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorContext = exports.TypedError = exports.getTransactionLastResult = exports.FinalExecutionStatusBasic = exports.JsonRpcProvider = exports.Provider = void 0;
 const provider_1 = require("./provider");
-Object.defineProperty(exports, "Provider", { enumerable: true, get: function () { return provider_1.Provider; } });
-Object.defineProperty(exports, "getTransactionLastResult", { enumerable: true, get: function () { return provider_1.getTransactionLastResult; } });
-Object.defineProperty(exports, "FinalExecutionStatusBasic", { enumerable: true, get: function () { return provider_1.FinalExecutionStatusBasic; } });
+exports.Provider = provider_1.Provider;
+exports.getTransactionLastResult = provider_1.getTransactionLastResult;
+exports.FinalExecutionStatusBasic = provider_1.FinalExecutionStatusBasic;
 const json_rpc_provider_1 = require("./json-rpc-provider");
-Object.defineProperty(exports, "JsonRpcProvider", { enumerable: true, get: function () { return json_rpc_provider_1.JsonRpcProvider; } });
-Object.defineProperty(exports, "TypedError", { enumerable: true, get: function () { return json_rpc_provider_1.TypedError; } });
-Object.defineProperty(exports, "ErrorContext", { enumerable: true, get: function () { return json_rpc_provider_1.ErrorContext; } });
+exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
+exports.TypedError = json_rpc_provider_1.TypedError;
+exports.ErrorContext = json_rpc_provider_1.ErrorContext;
 
 },{"./json-rpc-provider":19,"./provider":20}],19:[function(require,module,exports){
 (function (Buffer){
@@ -2097,13 +2059,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JsonRpcProvider = exports.ErrorContext = exports.TypedError = void 0;
 const depd_1 = __importDefault(require("depd"));
 const provider_1 = require("./provider");
 const web_1 = require("../utils/web");
 const errors_1 = require("../utils/errors");
-Object.defineProperty(exports, "TypedError", { enumerable: true, get: function () { return errors_1.TypedError; } });
-Object.defineProperty(exports, "ErrorContext", { enumerable: true, get: function () { return errors_1.ErrorContext; } });
+exports.TypedError = errors_1.TypedError;
+exports.ErrorContext = errors_1.ErrorContext;
 const serialize_1 = require("../utils/serialize");
 const rpc_errors_1 = require("../utils/rpc_errors");
 /// Keep ids unique across all connections.
@@ -2263,7 +2224,6 @@ exports.JsonRpcProvider = JsonRpcProvider;
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adaptTransactionResult = exports.getTransactionLastResult = exports.Provider = exports.IdType = exports.FinalExecutionStatusBasic = exports.ExecutionStatusBasic = void 0;
 var ExecutionStatusBasic;
 (function (ExecutionStatusBasic) {
     ExecutionStatusBasic["Unknown"] = "Unknown";
@@ -2387,7 +2347,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InMemorySigner = exports.Signer = void 0;
 const js_sha256_1 = __importDefault(require("js-sha256"));
 const key_pair_1 = require("./utils/key_pair");
 /**
@@ -2455,7 +2414,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signTransaction = exports.createTransaction = exports.SCHEMA = exports.Action = exports.SignedTransaction = exports.Transaction = exports.Signature = exports.deleteAccount = exports.deleteKey = exports.addKey = exports.stake = exports.transfer = exports.functionCall = exports.deployContract = exports.createAccount = exports.IAction = exports.functionCallAccessKey = exports.fullAccessKey = exports.AccessKey = exports.AccessKeyPermission = exports.FullAccessPermission = exports.FunctionCallPermission = void 0;
 const js_sha256_1 = __importDefault(require("js-sha256"));
 const enums_1 = require("./utils/enums");
 const serialize_1 = require("./utils/serialize");
@@ -2485,20 +2443,28 @@ class IAction extends enums_1.Assignable {
 exports.IAction = IAction;
 class CreateAccount extends IAction {
 }
+exports.CreateAccount = CreateAccount;
 class DeployContract extends IAction {
 }
+exports.DeployContract = DeployContract;
 class FunctionCall extends IAction {
 }
+exports.FunctionCall = FunctionCall;
 class Transfer extends IAction {
 }
+exports.Transfer = Transfer;
 class Stake extends IAction {
 }
+exports.Stake = Stake;
 class AddKey extends IAction {
 }
+exports.AddKey = AddKey;
 class DeleteKey extends IAction {
 }
+exports.DeleteKey = DeleteKey;
 class DeleteAccount extends IAction {
 }
+exports.DeleteAccount = DeleteAccount;
 function createAccount() {
     return new Action({ createAccount: new CreateAccount({}) });
 }
@@ -2682,7 +2648,6 @@ exports.signTransaction = signTransaction;
 },{"./utils/enums":24,"./utils/key_pair":29,"./utils/serialize":32,"buffer":42,"js-sha256":62}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Assignable = exports.Enum = void 0;
 class Enum {
     constructor(properties) {
         if (Object.keys(properties).length !== 1) {
@@ -2707,7 +2672,6 @@ exports.Assignable = Assignable;
 },{}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorContext = exports.TypedError = exports.ArgumentTypeError = exports.PositionalArgsError = void 0;
 class PositionalArgsError extends Error {
     constructor() {
         super('Contract method calls expect named arguments wrapped in object, e.g. { argName1: argValue1, argName2: argValue2 }');
@@ -2764,7 +2728,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseNearAmount = exports.formatNearAmount = exports.NEAR_NOMINATION = exports.NEAR_NOMINATION_EXP = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
@@ -2868,27 +2831,14 @@ function formatWithCommas(value) {
 
 },{"bn.js":38}],28:[function(require,module,exports){
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rpc_errors = exports.KeyPairEd25519 = exports.KeyPair = exports.PublicKey = exports.format = exports.enums = exports.web = exports.serialize = exports.network = exports.key_pair = void 0;
 const key_pair = __importStar(require("./key_pair"));
 exports.key_pair = key_pair;
 const network = __importStar(require("./network"));
@@ -2904,9 +2854,9 @@ exports.format = format;
 const rpc_errors = __importStar(require("./rpc_errors"));
 exports.rpc_errors = rpc_errors;
 const key_pair_1 = require("./key_pair");
-Object.defineProperty(exports, "PublicKey", { enumerable: true, get: function () { return key_pair_1.PublicKey; } });
-Object.defineProperty(exports, "KeyPair", { enumerable: true, get: function () { return key_pair_1.KeyPair; } });
-Object.defineProperty(exports, "KeyPairEd25519", { enumerable: true, get: function () { return key_pair_1.KeyPairEd25519; } });
+exports.PublicKey = key_pair_1.PublicKey;
+exports.KeyPair = key_pair_1.KeyPair;
+exports.KeyPairEd25519 = key_pair_1.KeyPairEd25519;
 
 },{"./enums":24,"./format":27,"./key_pair":29,"./network":30,"./rpc_errors":31,"./serialize":32,"./web":33}],29:[function(require,module,exports){
 "use strict";
@@ -2914,7 +2864,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KeyPairEd25519 = exports.KeyPair = exports.PublicKey = exports.KeyType = void 0;
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const serialize_1 = require("./serialize");
 const enums_1 = require("./enums");
@@ -3042,38 +2991,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 },{}],31:[function(require,module,exports){
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
-};
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatError = exports.parseRpcError = void 0;
 const mustache_1 = __importDefault(require("mustache"));
 const rpc_error_schema_json_1 = __importDefault(require("../generated/rpc_error_schema.json"));
 const error_messages_json_1 = __importDefault(require("../res/error_messages.json"));
 const CLASSMAP = __importStar(require("../generated/rpc_error_types"));
-__exportStar(require("../generated/rpc_error_types"), exports);
+const rpc_error_types_1 = require("../generated/rpc_error_types");
+__export(require("../generated/rpc_error_types"));
+class ServerTransactionError extends rpc_error_types_1.ServerError {
+}
 function parseRpcError(errorObj) {
     const result = {};
     const errorClassName = walkSubtype(errorObj, rpc_error_schema_json_1.default.schema, result, '');
@@ -3083,6 +3022,16 @@ function parseRpcError(errorObj) {
     return error;
 }
 exports.parseRpcError = parseRpcError;
+function parseResultError(result) {
+    const server_error = parseRpcError(result.status.Failure);
+    const server_tx_error = new ServerTransactionError();
+    server_tx_error.type = server_error.type;
+    server_tx_error.message = server_error.message;
+    // Object.assign(server_tx_error, server_error);
+    server_tx_error.transaction_outcome = result.transaction_outcome;
+    return server_tx_error;
+}
+exports.parseResultError = parseResultError;
 function formatError(errorClassName, errorData) {
     if (typeof error_messages_json_1.default[errorClassName] === 'string') {
         return mustache_1.default.render(error_messages_json_1.default[errorClassName], errorData);
@@ -3127,6 +3076,8 @@ function walkSubtype(errorObj, schema, result, typeName) {
         return walkSubtype(error, schema, result, errorTypeName);
     }
     else {
+        // TODO: is this the right thing to do?
+        result.kind = errorObj;
         return typeName;
     }
 }
@@ -3148,36 +3099,23 @@ function isString(n) {
 },{"../generated/rpc_error_schema.json":8,"../generated/rpc_error_types":9,"../res/error_messages.json":21,"mustache":63}],32:[function(require,module,exports){
 (function (global,Buffer){
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deserialize = exports.serialize = exports.BinaryReader = exports.BinaryWriter = exports.BorshError = exports.base_decode = exports.base_encode = void 0;
 const bs58_1 = __importDefault(require("bs58"));
 const bn_js_1 = __importDefault(require("bn.js"));
 // TODO: Make sure this polyfill not included when not required
@@ -3495,7 +3433,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchJson = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
 const exponential_backoff_1 = __importDefault(require("./exponential-backoff"));
 const providers_1 = require("../providers");
@@ -3572,7 +3509,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.diffEpochValidators = exports.findSeatPrice = void 0;
 const bn_js_1 = __importDefault(require("bn.js"));
 /** Finds seat price given validators stakes and number of seats.
  *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection
@@ -3629,7 +3565,6 @@ exports.diffEpochValidators = diffEpochValidators;
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletAccount = exports.WalletConnection = void 0;
 const account_1 = require("./account");
 const transaction_1 = require("./transaction");
 const utils_1 = require("./utils");
@@ -7227,13 +7162,7 @@ function fromByteArray (uint8) {
     } else if (cmp > 0) {
       r.isub(this.p);
     } else {
-      if (r.strip !== undefined) {
-        // r is a BN v4 instance
-        r.strip();
-      } else {
-        // r is a BN v5 instance
-        r._strip();
-      }
+      r._strip();
     }
 
     return r;
@@ -7713,6 +7642,10 @@ module.exports = basex(ALPHABET)
 
 var base64 = require('base64-js')
 var ieee754 = require('ieee754')
+var customInspectSymbol =
+  (typeof Symbol === 'function' && typeof Symbol.for === 'function')
+    ? Symbol.for('nodejs.util.inspect.custom')
+    : null
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -7749,7 +7682,9 @@ function typedArraySupport () {
   // Can typed array instances can be augmented?
   try {
     var arr = new Uint8Array(1)
-    arr.__proto__ = { __proto__: Uint8Array.prototype, foo: function () { return 42 } }
+    var proto = { foo: function () { return 42 } }
+    Object.setPrototypeOf(proto, Uint8Array.prototype)
+    Object.setPrototypeOf(arr, proto)
     return arr.foo() === 42
   } catch (e) {
     return false
@@ -7778,7 +7713,7 @@ function createBuffer (length) {
   }
   // Return an augmented `Uint8Array` instance
   var buf = new Uint8Array(length)
-  buf.__proto__ = Buffer.prototype
+  Object.setPrototypeOf(buf, Buffer.prototype)
   return buf
 }
 
@@ -7828,7 +7763,7 @@ function from (value, encodingOrOffset, length) {
   }
 
   if (value == null) {
-    throw TypeError(
+    throw new TypeError(
       'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
       'or Array-like Object. Received type ' + (typeof value)
     )
@@ -7836,6 +7771,12 @@ function from (value, encodingOrOffset, length) {
 
   if (isInstance(value, ArrayBuffer) ||
       (value && isInstance(value.buffer, ArrayBuffer))) {
+    return fromArrayBuffer(value, encodingOrOffset, length)
+  }
+
+  if (typeof SharedArrayBuffer !== 'undefined' &&
+      (isInstance(value, SharedArrayBuffer) ||
+      (value && isInstance(value.buffer, SharedArrayBuffer)))) {
     return fromArrayBuffer(value, encodingOrOffset, length)
   }
 
@@ -7880,8 +7821,8 @@ Buffer.from = function (value, encodingOrOffset, length) {
 
 // Note: Change prototype *after* Buffer.from is defined to workaround Chrome bug:
 // https://github.com/feross/buffer/pull/148
-Buffer.prototype.__proto__ = Uint8Array.prototype
-Buffer.__proto__ = Uint8Array
+Object.setPrototypeOf(Buffer.prototype, Uint8Array.prototype)
+Object.setPrototypeOf(Buffer, Uint8Array)
 
 function assertSize (size) {
   if (typeof size !== 'number') {
@@ -7985,7 +7926,8 @@ function fromArrayBuffer (array, byteOffset, length) {
   }
 
   // Return an augmented `Uint8Array` instance
-  buf.__proto__ = Buffer.prototype
+  Object.setPrototypeOf(buf, Buffer.prototype)
+
   return buf
 }
 
@@ -8307,6 +8249,9 @@ Buffer.prototype.inspect = function inspect () {
   if (this.length > max) str += ' ... '
   return '<Buffer ' + str + '>'
 }
+if (customInspectSymbol) {
+  Buffer.prototype[customInspectSymbol] = Buffer.prototype.inspect
+}
 
 Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
   if (isInstance(target, Uint8Array)) {
@@ -8432,7 +8377,7 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
         return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
       }
     }
-    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+    return arrayIndexOf(buffer, [val], byteOffset, encoding, dir)
   }
 
   throw new TypeError('val must be string, number or Buffer')
@@ -8761,7 +8706,7 @@ function hexSlice (buf, start, end) {
 
   var out = ''
   for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
+    out += hexSliceLookupTable[buf[i]]
   }
   return out
 }
@@ -8798,7 +8743,8 @@ Buffer.prototype.slice = function slice (start, end) {
 
   var newBuf = this.subarray(start, end)
   // Return an augmented `Uint8Array` instance
-  newBuf.__proto__ = Buffer.prototype
+  Object.setPrototypeOf(newBuf, Buffer.prototype)
+
   return newBuf
 }
 
@@ -9287,6 +9233,8 @@ Buffer.prototype.fill = function fill (val, start, end, encoding) {
     }
   } else if (typeof val === 'number') {
     val = val & 255
+  } else if (typeof val === 'boolean') {
+    val = Number(val)
   }
 
   // Invalid ranges are not set to a default, so can range check early.
@@ -9342,11 +9290,6 @@ function base64clean (str) {
     str = str + '='
   }
   return str
-}
-
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
 }
 
 function utf8ToBytes (string, units) {
@@ -9478,6 +9421,20 @@ function numberIsNaN (obj) {
   // For IE11 support
   return obj !== obj // eslint-disable-line no-self-compare
 }
+
+// Create lookup table for `toString('hex')`
+// See: https://github.com/feross/buffer/issues/219
+var hexSliceLookupTable = (function () {
+  var alphabet = '0123456789abcdef'
+  var table = new Array(256)
+  for (var i = 0; i < 16; ++i) {
+    var i16 = i * 16
+    for (var j = 0; j < 16; ++j) {
+      table[i16 + j] = alphabet[i] + alphabet[j]
+    }
+  }
+  return table
+})()
 
 }).call(this,require("buffer").Buffer)
 },{"base64-js":37,"buffer":42,"ieee754":60}],43:[function(require,module,exports){
@@ -10084,7 +10041,6 @@ var toIdentifier = require('toidentifier')
 
 module.exports = createError
 module.exports.HttpError = createHttpErrorConstructor()
-module.exports.isHttpError = createIsHttpErrorFunction(module.exports.HttpError)
 
 // Populate exports for all constructors
 populateConstructorExports(module.exports, statuses.codes, module.exports.HttpError)
@@ -10190,7 +10146,7 @@ function createHttpErrorConstructor () {
  */
 
 function createClientErrorConstructor (HttpError, name, code) {
-  var className = toClassName(name)
+  var className = name.match(/Error$/) ? name : name + 'Error'
 
   function ClientError (message) {
     // create the error object
@@ -10233,33 +10189,12 @@ function createClientErrorConstructor (HttpError, name, code) {
 }
 
 /**
- * Create function to test is a value is a HttpError.
- * @private
- */
-
-function createIsHttpErrorFunction (HttpError) {
-  return function isHttpError (val) {
-    if (!val || typeof val !== 'object') {
-      return false
-    }
-
-    if (val instanceof HttpError) {
-      return true
-    }
-
-    return val instanceof Error &&
-      typeof val.expose === 'boolean' &&
-      typeof val.statusCode === 'number' && val.status === val.statusCode
-  }
-}
-
-/**
  * Create a constructor for a server error.
  * @private
  */
 
 function createServerErrorConstructor (HttpError, name, code) {
-  var className = toClassName(name)
+  var className = name.match(/Error$/) ? name : name + 'Error'
 
   function ServerError (message) {
     // create the error object
@@ -10344,17 +10279,6 @@ function populateConstructorExports (exports, codes, HttpError) {
   // backwards-compatibility
   exports["I'mateapot"] = deprecate.function(exports.ImATeapot,
     '"I\'mateapot"; use "ImATeapot" instead')
-}
-
-/**
- * Get a class name from a name identifier.
- * @private
- */
-
-function toClassName (name) {
-  return name.substr(-5) !== 'Error'
-    ? name + 'Error'
-    : name
 }
 
 },{"depd":59,"inherits":61,"setprototypeof":71,"statuses":73,"toidentifier":75}],59:[function(require,module,exports){
@@ -11643,7 +11567,7 @@ if (typeof Object.create === 'function') {
       if (tagIndex == 0 && indentation) {
         indentedValue = this.indentPartial(value, indentation, lineHasNonSpace);
       }
-      return this.renderTokens(this.parse(indentedValue, tags), context, partials, indentedValue, tags);
+      return this.renderTokens(this.parse(indentedValue, tags), context, partials, indentedValue);
     }
   };
 
@@ -11665,7 +11589,7 @@ if (typeof Object.create === 'function') {
 
   var mustache = {
     name: 'mustache.js',
-    version: '4.0.1',
+    version: '4.0.0',
     tags: [ '{{', '}}' ],
     clearCache: undefined,
     escape: undefined,
@@ -12379,7 +12303,6 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],70:[function(require,module,exports){
-/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -12457,7 +12380,7 @@ function setProtoOf (obj, proto) {
 
 function mixinProperties (obj, proto) {
   for (var prop in proto) {
-    if (!Object.prototype.hasOwnProperty.call(obj, prop)) {
+    if (!obj.hasOwnProperty(prop)) {
       obj[prop] = proto[prop]
     }
   }
