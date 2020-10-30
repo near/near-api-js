@@ -80,4 +80,8 @@ export class InMemoryKeyStore extends KeyStore {
         });
         return result;
     }
+
+    toString(): string {
+        return 'InMemoryKeyStore';
+    }
 }

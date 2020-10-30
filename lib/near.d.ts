@@ -17,6 +17,7 @@ declare type NearConfig = {
     masterAccount?: string;
     networkId: string;
     nodeUrl: string;
+    walletUrl?: string;
 };
 export declare class Near {
     readonly config: any;

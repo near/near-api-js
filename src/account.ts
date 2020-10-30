@@ -1,8 +1,22 @@
 'use strict';
 
 import BN from 'bn.js';
-import { Action, transfer, createAccount, signTransaction, deployContract,
-    addKey, functionCall, fullAccessKey, functionCallAccessKey, deleteKey, stake, AccessKey, deleteAccount } from './transaction';
+import {
+    transfer,
+    createAccount,
+    signTransaction,
+    deployContract,
+    addKey,
+    functionCall,
+    fullAccessKey,
+    functionCallAccessKey,
+    deleteKey,
+    stake,
+    deleteAccount,
+    AccessKey,
+    Action,
+    SignedTransaction
+} from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
@@ -53,6 +67,10 @@ interface ReceiptLogWithFailure {
     failure: ServerError;
 }
 
+function parseJsonFromRawResponse (response: Uint8Array): any {
+    return JSON.parse(Buffer.from(response).toString());
+}
+
 /**
  * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
  */
@@ -98,10 +116,28 @@ export class Account {
         }
     }
 
-    private printLogs(contractId: string, logs: string[], prefix: string = '') {
+    private printLogs(contractId: string, logs: string[], prefix = '') {
         for (const log of logs) {
             console.log(`${prefix}Log [${contractId}]: ${log}`);
         }
+    }
+
+    protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
+        await this.ready;
+
+        const accessKeyInfo = await this.findAccessKey(receiverId, actions);
+        if (!accessKeyInfo) {
+            throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
+        }
+        const { accessKey } = accessKeyInfo;
+
+        const status = await this.connection.provider.status();
+
+        const nonce = ++accessKey.nonce;
+        // TODO: get latest_block_hash from block query using `final` finality
+        return await signTransaction(
+            receiverId, nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
+        );
     }
 
     /**
@@ -115,18 +151,8 @@ export class Account {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
-            const accessKeyInfo = await this.findAccessKey(receiverId, actions);
-            if (!accessKeyInfo) {
-                throw new TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
-            }
-            const { publicKey, accessKey } = accessKeyInfo;
-
-            const status = await this.connection.provider.status();
-
-            const nonce = ++accessKey.nonce;
-            [txHash, signedTx] = await signTransaction(
-                receiverId, nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
-            );
+            [txHash, signedTx] = await this.signTransaction(receiverId, actions);
+            const publicKey = signedTx.transaction.publicKey;
 
             try {
                 const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
@@ -160,7 +186,7 @@ export class Account {
             }
         });
         if (!result) {
-            throw new TypedError(`nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.`, 'RetriesExceeded');
+            throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
         }
 
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => {
@@ -189,9 +215,9 @@ export class Account {
         return result;
     }
 
-    accessKeyByPublicKeyCache: { [key: string] : AccessKey } = {}
+    accessKeyByPublicKeyCache: { [key: string]: AccessKey } = {}
 
-    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey, accessKey: AccessKey}> {
+    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
         // TODO: Find matching access key based on transaction
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
@@ -332,14 +358,19 @@ export class Account {
      * @param args Any arguments to the view contract method, wrapped in JSON
      * @returns {Promise<any>}
      */
-    async viewFunction(contractId: string, methodName: string, args: any): Promise<any> {
+    async viewFunction(
+        contractId: string,
+        methodName: string,
+        args: any,
+        { parse = parseJsonFromRawResponse } = {}
+    ): Promise<any> {
         args = args || {};
         this.validateArgs(args);
         const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, base_encode(JSON.stringify(args)));
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
-        return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
+        return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
     }
 
     /**
@@ -390,7 +421,7 @@ export class Account {
         const stateStaked = new BN(state.storage_usage).mul(costPerByte);
         const staked = new BN(state.locked);
         const totalBalance = new BN(state.amount).add(staked);
-        const availableBalance = totalBalance.sub(staked).sub(stateStaked);
+        const availableBalance = totalBalance.sub(BN.max(staked, stateStaked));
 
         return {
             total: totalBalance.toString(),

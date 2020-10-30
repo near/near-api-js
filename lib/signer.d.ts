@@ -49,4 +49,5 @@ export declare class InMemorySigner extends Signer {
      * @returns {Promise<Signature>}
      */
     signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
+    toString(): string;
 }

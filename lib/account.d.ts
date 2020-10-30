@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Action, AccessKey } from './transaction';
+import { AccessKey, Action, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
@@ -15,6 +15,7 @@ export interface AccountBalance {
     staked: string;
     available: string;
 }
+declare function parseJsonFromRawResponse(response: Uint8Array): any;
 /**
  * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
  */
@@ -37,6 +38,7 @@ export declare class Account {
     state(): Promise<AccountState>;
     private printLogsAndFailures;
     private printLogs;
+    protected signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]>;
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
@@ -113,7 +115,9 @@ export declare class Account {
      * @param args Any arguments to the view contract method, wrapped in JSON
      * @returns {Promise<any>}
      */
-    viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
+    viewFunction(contractId: string, methodName: string, args: any, { parse }?: {
+        parse?: typeof parseJsonFromRawResponse;
+    }): Promise<any>;
     /**
      * @returns array of {access_key: AccessKey, public_key: PublicKey} items.
      */
@@ -129,3 +133,4 @@ export declare class Account {
      */
     getAccountBalance(): Promise<AccountBalance>;
 }
+export {};

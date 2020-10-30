@@ -5,7 +5,7 @@ window.nearApi = require('./lib/browser-index');
 window.Buffer = Buffer;
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/browser-index":4,"buffer":42,"error-polyfill":49}],2:[function(require,module,exports){
+},{"./lib/browser-index":5,"buffer":43,"error-polyfill":50}],2:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -35,6 +35,9 @@ const TX_STATUS_RETRY_NUMBER = 12;
 const TX_STATUS_RETRY_WAIT = 500;
 // Exponential back off for waiting to retry.
 const TX_STATUS_RETRY_WAIT_BACKOFF = 1.5;
+function parseJsonFromRawResponse(response) {
+    return JSON.parse(Buffer.from(response).toString());
+}
 /**
  * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
  */
@@ -76,6 +79,18 @@ class Account {
             console.log(`${prefix}Log [${contractId}]: ${log}`);
         }
     }
+    async signTransaction(receiverId, actions) {
+        await this.ready;
+        const accessKeyInfo = await this.findAccessKey(receiverId, actions);
+        if (!accessKeyInfo) {
+            throw new providers_1.TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
+        }
+        const { accessKey } = accessKeyInfo;
+        const status = await this.connection.provider.status();
+        const nonce = ++accessKey.nonce;
+        // TODO: get latest_block_hash from block query using `final` finality
+        return await transaction_1.signTransaction(receiverId, nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
+    }
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
@@ -86,14 +101,8 @@ class Account {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponential_backoff_1.default(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
-            const accessKeyInfo = await this.findAccessKey(receiverId, actions);
-            if (!accessKeyInfo) {
-                throw new providers_1.TypedError(`Can not sign transactions for account ${this.accountId}, no matching key pair found in Signer.`, 'KeyNotFound');
-            }
-            const { publicKey, accessKey } = accessKeyInfo;
-            const status = await this.connection.provider.status();
-            const nonce = ++accessKey.nonce;
-            [txHash, signedTx] = await transaction_1.signTransaction(receiverId, nonce, actions, serialize_1.base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId);
+            [txHash, signedTx] = await this.signTransaction(receiverId, actions);
+            const publicKey = signedTx.transaction.publicKey;
             try {
                 const result = await exponential_backoff_1.default(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
                     try {
@@ -123,7 +132,7 @@ class Account {
             }
         });
         if (!result) {
-            throw new providers_1.TypedError(`nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.`, 'RetriesExceeded');
+            throw new providers_1.TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
         }
         const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => {
             if (it.outcome.logs.length ||
@@ -144,7 +153,6 @@ class Account {
                 throw new providers_1.TypedError(`Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
             }
             else {
-                // throw parseRpcError(result.status.Failure);
                 throw rpc_errors_1.parseResultError(result);
             }
         }
@@ -279,14 +287,14 @@ class Account {
      * @param args Any arguments to the view contract method, wrapped in JSON
      * @returns {Promise<any>}
      */
-    async viewFunction(contractId, methodName, args) {
+    async viewFunction(contractId, methodName, args, { parse = parseJsonFromRawResponse } = {}) {
         args = args || {};
         this.validateArgs(args);
         const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, serialize_1.base_encode(JSON.stringify(args)));
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
-        return result.result && result.result.length > 0 && JSON.parse(Buffer.from(result.result).toString());
+        return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
     }
     /**
      * @returns array of {access_key: AccessKey, public_key: PublicKey} items.
@@ -333,7 +341,7 @@ class Account {
         const stateStaked = new bn_js_1.default(state.storage_usage).mul(costPerByte);
         const staked = new bn_js_1.default(state.locked);
         const totalBalance = new bn_js_1.default(state.amount).add(staked);
-        const availableBalance = totalBalance.sub(staked).sub(stateStaked);
+        const availableBalance = totalBalance.sub(bn_js_1.default.max(staked, stateStaked));
         return {
             total: totalBalance.toString(),
             stateStaked: stateStaked.toString(),
@@ -345,7 +353,7 @@ class Account {
 exports.Account = Account;
 
 }).call(this,require("buffer").Buffer)
-},{"./providers":18,"./transaction":23,"./utils/errors":25,"./utils/exponential-backoff":26,"./utils/key_pair":29,"./utils/rpc_errors":31,"./utils/serialize":32,"bn.js":38,"buffer":42}],3:[function(require,module,exports){
+},{"./providers":19,"./transaction":24,"./utils/errors":26,"./utils/exponential-backoff":27,"./utils/key_pair":30,"./utils/rpc_errors":32,"./utils/serialize":33,"bn.js":39,"buffer":43}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const web_1 = require("./utils/web");
@@ -391,7 +399,228 @@ class UrlAccountCreator extends AccountCreator {
 }
 exports.UrlAccountCreator = UrlAccountCreator;
 
-},{"./utils/web":33}],4:[function(require,module,exports){
+},{"./utils/web":34}],4:[function(require,module,exports){
+(function (process,Buffer){
+'use strict';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const bn_js_1 = __importDefault(require("bn.js"));
+const account_1 = require("./account");
+const contract_1 = require("./contract");
+const format_1 = require("./utils/format");
+const key_pair_1 = require("./utils/key_pair");
+const transaction_1 = require("./transaction");
+const web_1 = require("./utils/web");
+const NETWORK_ID = process.env.REACT_APP_NETWORK_ID || 'default';
+const CONTRACT_HELPER_URL = process.env.CONTRACT_HELPER_URL || 'https://helper.testnet.near.org';
+exports.MULTISIG_STORAGE_KEY = '__multisigRequest';
+exports.MULTISIG_ALLOWANCE = new bn_js_1.default(process.env.MULTISIG_ALLOWANCE || format_1.parseNearAmount('1'));
+exports.MULTISIG_GAS = new bn_js_1.default(process.env.MULTISIG_GAS || '100000000000000');
+exports.MULTISIG_DEPOSIT = new bn_js_1.default('0');
+exports.MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
+exports.MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
+exports.MULTISIG_CONFIRM_METHODS = ['confirm'];
+;
+// in memory request cache for node w/o localStorage
+let storageFallback = {
+    [exports.MULTISIG_STORAGE_KEY]: null
+};
+class AccountMultisig extends account_1.Account {
+    constructor(connection, accountId, storage) {
+        super(connection, accountId);
+        this.storage = storage;
+        this.contract = getContract(this);
+    }
+    async addKey(publicKey, contractId, methodName, amount) {
+        if (contractId) {
+            return super.addKey(publicKey, contractId, exports.MULTISIG_CHANGE_METHODS.join(), exports.MULTISIG_ALLOWANCE);
+        }
+        return super.addKey(publicKey);
+    }
+    async signAndSendTransaction(receiverId, actions) {
+        const { accountId } = this;
+        if (this.isDeleteAction(actions)) {
+            return await super.signAndSendTransaction(accountId, actions);
+        }
+        await this.deleteUnconfirmedRequests();
+        const requestId = await this.getRequestNonce();
+        this.setRequest({ accountId, requestId, actions });
+        const args = new Uint8Array(new TextEncoder().encode(JSON.stringify({
+            request: {
+                receiver_id: receiverId,
+                actions: convertActions(actions, accountId, receiverId)
+            }
+        })));
+        return await super.signAndSendTransaction(accountId, [
+            transaction_1.functionCall('add_request_and_confirm', args, exports.MULTISIG_GAS, exports.MULTISIG_DEPOSIT)
+        ]);
+    }
+    async signAndSendTransactions(transactions) {
+        for (let { receiverId, actions } of transactions) {
+            await this.signAndSendTransaction(receiverId, actions);
+        }
+    }
+    async deployMultisig(contractBytes) {
+        const { accountId } = this;
+        // replace account keys & recovery keys with limited access keys; DO NOT replace seed phrase keys
+        const accountKeys = (await this.getAccessKeys()).map((ak) => ak.public_key);
+        const seedPhraseKeys = (await this.getRecoveryMethods()).data
+            .filter(({ kind, publicKey }) => kind === 'phrase' && publicKey !== null && accountKeys.includes(publicKey))
+            .map((rm) => rm.publicKey);
+        const fak2lak = accountKeys.filter((k) => !seedPhraseKeys.includes(k)).map(toPK);
+        const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+        const newArgs = new Uint8Array(new TextEncoder().encode(JSON.stringify({ 'num_confirmations': 2 })));
+        const actions = [
+            ...fak2lak.map((pk) => transaction_1.deleteKey(pk)),
+            ...fak2lak.map((pk) => transaction_1.addKey(pk, transaction_1.functionCallAccessKey(accountId, exports.MULTISIG_CHANGE_METHODS, null))),
+            transaction_1.addKey(confirmOnlyKey, transaction_1.functionCallAccessKey(accountId, exports.MULTISIG_CONFIRM_METHODS, null)),
+            transaction_1.deployContract(contractBytes),
+            transaction_1.functionCall('new', newArgs, exports.MULTISIG_GAS, exports.MULTISIG_DEPOSIT),
+        ];
+        console.log('deploying multisig contract for', accountId);
+        return await super.signAndSendTransaction(accountId, actions);
+    }
+    async deleteUnconfirmedRequests() {
+        const { contract } = this;
+        const request_ids = await this.getRequestIds();
+        for (const request_id of request_ids) {
+            try {
+                await contract.delete_request({ request_id });
+            }
+            catch (e) {
+                console.warn("Attempt to delete an earlier request before 15 minutes failed. Will try again.");
+            }
+        }
+    }
+    // helpers
+    async getRequestNonce() {
+        return this.contract.get_request_nonce();
+    }
+    async getRequestIds() {
+        return this.contract.list_request_ids();
+    }
+    isDeleteAction(actions) {
+        return actions && actions[0] && actions[0].functionCall && actions[0].functionCall.methodName === 'delete_request';
+    }
+    getRequest() {
+        if (this.storage) {
+            return JSON.parse(this.storage.getItem(exports.MULTISIG_STORAGE_KEY) || `{}`);
+        }
+        return storageFallback[exports.MULTISIG_STORAGE_KEY];
+    }
+    setRequest(data) {
+        if (this.storage) {
+            return this.storage.setItem(exports.MULTISIG_STORAGE_KEY, JSON.stringify(data));
+        }
+        storageFallback[exports.MULTISIG_STORAGE_KEY] = data;
+    }
+    // default helpers for CH
+    async sendRequestCode() {
+        const { accountId } = this;
+        const { requestId, actions } = this.getRequest();
+        if (this.isDeleteAction(actions)) {
+            return;
+        }
+        const method = await this.get2faMethod();
+        await this.postSignedJson('/2fa/send', {
+            accountId,
+            method,
+            requestId,
+        });
+        return requestId;
+    }
+    async verifyRequestCode(securityCode) {
+        const { accountId } = this;
+        const request = this.getRequest();
+        if (!request) {
+            throw new Error('no request pending');
+        }
+        const { requestId } = request;
+        return await this.postSignedJson('/2fa/verify', {
+            accountId,
+            securityCode,
+            requestId
+        });
+    }
+    async getRecoveryMethods() {
+        const { accountId } = this;
+        return {
+            accountId,
+            data: await this.postSignedJson('/account/recoveryMethods', { accountId })
+        };
+    }
+    async get2faMethod() {
+        let { data } = await this.getRecoveryMethods();
+        if (data && data.length) {
+            data = data.find((m) => m.kind.indexOf('2fa-') === 0);
+        }
+        if (!data)
+            return null;
+        const { kind, detail } = data;
+        return { kind, detail };
+    }
+    async signatureFor() {
+        const { accountId } = this;
+        const blockNumber = String((await this.connection.provider.status()).sync_info.latest_block_height);
+        const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, NETWORK_ID);
+        const blockNumberSignature = Buffer.from(signed.signature).toString('base64');
+        return { blockNumber, blockNumberSignature };
+    }
+    async postSignedJson(path, body) {
+        return await web_1.fetchJson(CONTRACT_HELPER_URL + path, JSON.stringify({
+            ...body,
+            ...(await this.signatureFor())
+        }));
+    }
+}
+exports.AccountMultisig = AccountMultisig;
+// helpers
+const toPK = (pk) => key_pair_1.PublicKey.from(pk);
+const convertPKForContract = (pk) => pk.toString().replace('ed25519:', '');
+const getContract = (account) => {
+    return new contract_1.Contract(account, account.accountId, {
+        viewMethods: exports.MULTISIG_VIEW_METHODS,
+        changeMethods: exports.MULTISIG_CHANGE_METHODS,
+    });
+};
+const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
+    const type = a.enum;
+    const { gas, publicKey, methodName, args, deposit, accessKey, code } = a[type];
+    const action = {
+        type: type[0].toUpperCase() + type.substr(1),
+        gas: (gas && gas.toString()) || undefined,
+        public_key: (publicKey && convertPKForContract(publicKey)) || undefined,
+        method_name: methodName,
+        args: (args && Buffer.from(args).toString('base64')) || undefined,
+        code: (code && Buffer.from(code).toString('base64')) || undefined,
+        amount: (deposit && deposit.toString()) || undefined,
+        deposit: (deposit && deposit.toString()) || '0',
+        permission: undefined,
+    };
+    if (accessKey) {
+        if (receiverId === accountId && accessKey.permission.enum !== 'fullAccess') {
+            action.permission = {
+                receiver_id: accountId,
+                allowance: exports.MULTISIG_ALLOWANCE.toString(),
+                method_names: exports.MULTISIG_CHANGE_METHODS,
+            };
+        }
+        if (accessKey.permission.enum === 'functionCall') {
+            const { receiverId: receiver_id, methodNames: method_names, allowance } = accessKey.permission.functionCall;
+            action.permission = {
+                receiver_id,
+                allowance: (allowance && allowance.toString()) || undefined,
+                method_names
+            };
+        }
+    }
+    return action;
+});
+
+}).call(this,require('_process'),require("buffer").Buffer)
+},{"./account":2,"./contract":8,"./transaction":24,"./utils/format":28,"./utils/key_pair":30,"./utils/web":34,"_process":70,"bn.js":39,"buffer":43}],5:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -407,7 +636,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.keyStores = __importStar(require("./key_stores/browser-index"));
 __export(require("./common-index"));
 
-},{"./common-index":5,"./key_stores/browser-index":10}],5:[function(require,module,exports){
+},{"./common-index":6,"./key_stores/browser-index":11}],6:[function(require,module,exports){
 "use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -427,6 +656,8 @@ const validators = __importStar(require("./validators"));
 exports.validators = validators;
 const account_1 = require("./account");
 exports.Account = account_1.Account;
+const multisig = __importStar(require("./account_multisig"));
+exports.multisig = multisig;
 const accountCreator = __importStar(require("./account_creator"));
 exports.accountCreator = accountCreator;
 const connection_1 = require("./connection");
@@ -446,7 +677,7 @@ const wallet_account_1 = require("./wallet-account");
 exports.WalletAccount = wallet_account_1.WalletAccount;
 exports.WalletConnection = wallet_account_1.WalletConnection;
 
-},{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./near":17,"./providers":18,"./signer":22,"./transaction":23,"./utils":28,"./utils/key_pair":29,"./validators":34,"./wallet-account":35}],6:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./account_multisig":4,"./connection":7,"./contract":8,"./near":18,"./providers":19,"./signer":23,"./transaction":24,"./utils":29,"./utils/key_pair":30,"./validators":35,"./wallet-account":36}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const providers_1 = require("./providers");
@@ -497,7 +728,7 @@ class Connection {
 }
 exports.Connection = Connection;
 
-},{"./providers":18,"./signer":22}],7:[function(require,module,exports){
+},{"./providers":19,"./signer":23}],8:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -514,6 +745,8 @@ function nameFunction(name, body) {
         }
     }[name];
 }
+const isUint8Array = (x) => x && x.byteLength !== undefined && x.byteLength === x.length;
+const isObject = (x) => Object.prototype.toString.call(x) === '[object Object]';
 /**
  * Defines a smart contract on NEAR including the mutable and non-mutable methods
  */
@@ -526,11 +759,11 @@ class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(methodName, async (args = {}, ...ignored) => {
-                    if (ignored.length || Object.prototype.toString.call(args) !== '[object Object]') {
+                value: nameFunction(methodName, async (args = {}, options = {}, ...ignored) => {
+                    if (ignored.length || !(isObject(args) || isUint8Array(args)) || !isObject(options)) {
                         throw new errors_1.PositionalArgsError();
                     }
-                    return this.account.viewFunction(this.contractId, methodName, args);
+                    return this.account.viewFunction(this.contractId, methodName, args, options);
                 })
             });
         });
@@ -539,7 +772,7 @@ class Contract {
                 writable: false,
                 enumerable: true,
                 value: nameFunction(methodName, async (args = {}, gas, amount, ...ignored) => {
-                    if (ignored.length || Object.prototype.toString.call(args) !== '[object Object]') {
+                    if (ignored.length || !(isObject(args) || isUint8Array(args))) {
                         throw new errors_1.PositionalArgsError();
                     }
                     validateBNLike({ gas, amount });
@@ -566,7 +799,7 @@ function validateBNLike(argMap) {
     }
 }
 
-},{"./providers":18,"./utils/errors":25,"bn.js":38}],8:[function(require,module,exports){
+},{"./providers":19,"./utils/errors":26,"bn.js":39}],9:[function(require,module,exports){
 module.exports={
     "schema": {
         "BadUTF16": {
@@ -1234,7 +1467,7 @@ module.exports={
     }
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const errors_1 = require("../utils/errors");
@@ -1500,7 +1733,7 @@ class Deprecated extends HostError {
 }
 exports.Deprecated = Deprecated;
 
-},{"../utils/errors":25}],10:[function(require,module,exports){
+},{"../utils/errors":26}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -1512,7 +1745,7 @@ exports.BrowserLocalStorageKeyStore = browser_local_storage_key_store_1.BrowserL
 const merge_key_store_1 = require("./merge_key_store");
 exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 
-},{"./browser_local_storage_key_store":11,"./in_memory_key_store":12,"./keystore":14,"./merge_key_store":15}],11:[function(require,module,exports){
+},{"./browser_local_storage_key_store":12,"./in_memory_key_store":13,"./keystore":15,"./merge_key_store":16}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -1612,7 +1845,7 @@ class BrowserLocalStorageKeyStore extends keystore_1.KeyStore {
 }
 exports.BrowserLocalStorageKeyStore = BrowserLocalStorageKeyStore;
 
-},{"../utils/key_pair":29,"./keystore":14}],12:[function(require,module,exports){
+},{"../utils/key_pair":30,"./keystore":15}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -1688,10 +1921,13 @@ class InMemoryKeyStore extends keystore_1.KeyStore {
         });
         return result;
     }
+    toString() {
+        return 'InMemoryKeyStore';
+    }
 }
 exports.InMemoryKeyStore = InMemoryKeyStore;
 
-},{"../utils/key_pair":29,"./keystore":14}],13:[function(require,module,exports){
+},{"../utils/key_pair":30,"./keystore":15}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -1705,7 +1941,7 @@ exports.UnencryptedFileSystemKeyStore = unencrypted_file_system_keystore_1.Unenc
 const merge_key_store_1 = require("./merge_key_store");
 exports.MergeKeyStore = merge_key_store_1.MergeKeyStore;
 
-},{"./browser_local_storage_key_store":11,"./in_memory_key_store":12,"./keystore":14,"./merge_key_store":15,"./unencrypted_file_system_keystore":16}],14:[function(require,module,exports){
+},{"./browser_local_storage_key_store":12,"./in_memory_key_store":13,"./keystore":15,"./merge_key_store":16,"./unencrypted_file_system_keystore":17}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -1715,7 +1951,7 @@ class KeyStore {
 }
 exports.KeyStore = KeyStore;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const keystore_1 = require("./keystore");
@@ -1799,10 +2035,13 @@ class MergeKeyStore extends keystore_1.KeyStore {
         }
         return Array.from(result);
     }
+    toString() {
+        return `MergeKeyStore(${this.keyStores.join(', ')})`;
+    }
 }
 exports.MergeKeyStore = MergeKeyStore;
 
-},{"./keystore":14}],16:[function(require,module,exports){
+},{"./keystore":15}],17:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -1931,10 +2170,13 @@ class UnencryptedFileSystemKeyStore extends keystore_1.KeyStore {
             .filter(file => file.endsWith('.json'))
             .map(file => file.replace(/.json$/, ''));
     }
+    toString() {
+        return `UnencryptedFileSystemKeyStore(${this.keyDir})`;
+    }
 }
 exports.UnencryptedFileSystemKeyStore = UnencryptedFileSystemKeyStore;
 
-},{"../utils/key_pair":29,"./keystore":14,"fs":40,"path":68,"util":83}],17:[function(require,module,exports){
+},{"../utils/key_pair":30,"./keystore":15,"fs":41,"path":69,"util":84}],18:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2040,7 +2282,7 @@ async function connect(config) {
 }
 exports.connect = connect;
 
-},{"./account":2,"./account_creator":3,"./connection":6,"./contract":7,"./key_stores":13,"./key_stores/unencrypted_file_system_keystore":16,"bn.js":38}],18:[function(require,module,exports){
+},{"./account":2,"./account_creator":3,"./connection":7,"./contract":8,"./key_stores":14,"./key_stores/unencrypted_file_system_keystore":17,"bn.js":39}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("./provider");
@@ -2052,7 +2294,7 @@ exports.JsonRpcProvider = json_rpc_provider_1.JsonRpcProvider;
 exports.TypedError = json_rpc_provider_1.TypedError;
 exports.ErrorContext = json_rpc_provider_1.ErrorContext;
 
-},{"./json-rpc-provider":19,"./provider":20}],19:[function(require,module,exports){
+},{"./json-rpc-provider":20,"./provider":21}],20:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -2100,7 +2342,7 @@ class JsonRpcProvider extends provider_1.Provider {
      */
     async sendTransaction(signedTransaction) {
         const bytes = signedTransaction.encode();
-        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]).then(provider_1.adaptTransactionResult);
+        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
     }
     /**
      * Gets a transaction's status from the RPC
@@ -2110,7 +2352,7 @@ class JsonRpcProvider extends provider_1.Provider {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async txStatus(txHash, accountId) {
-        return this.sendJsonRpc('tx', [serialize_1.base_encode(txHash), accountId]).then(provider_1.adaptTransactionResult);
+        return this.sendJsonRpc('tx', [serialize_1.base_encode(txHash), accountId]);
     }
     /**
      * Query the RPC as [shown in the docs](https://docs.nearprotocol.com/docs/interaction/rpc#query)
@@ -2220,7 +2462,7 @@ class JsonRpcProvider extends provider_1.Provider {
 exports.JsonRpcProvider = JsonRpcProvider;
 
 }).call(this,require("buffer").Buffer)
-},{"../utils/errors":25,"../utils/rpc_errors":31,"../utils/serialize":32,"../utils/web":33,"./provider":20,"buffer":42,"depd":48}],20:[function(require,module,exports){
+},{"../utils/errors":26,"../utils/rpc_errors":32,"../utils/serialize":33,"../utils/web":34,"./provider":21,"buffer":43,"depd":49}],21:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2257,22 +2499,9 @@ function getTransactionLastResult(txResult) {
     return null;
 }
 exports.getTransactionLastResult = getTransactionLastResult;
-function adaptTransactionResult(txResult) {
-    if ('receipts' in txResult) {
-        txResult = {
-            status: txResult.status,
-            // not available
-            transaction: null,
-            transaction_outcome: txResult.transaction,
-            receipts_outcome: txResult.receipts
-        };
-    }
-    return txResult;
-}
-exports.adaptTransactionResult = adaptTransactionResult;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":42}],21:[function(require,module,exports){
+},{"buffer":43}],22:[function(require,module,exports){
 module.exports={
     "GasLimitExceeded": "Exceeded the maximum amount of gas allowed to burn per contract",
     "MethodEmptyName": "Method name is empty",
@@ -2341,7 +2570,7 @@ module.exports={
     "Closed": "Connection closed"
 }
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2404,10 +2633,13 @@ class InMemorySigner extends Signer {
         }
         return keyPair.sign(hash);
     }
+    toString() {
+        return `InMemorySigner(${this.keyStore})`;
+    }
 }
 exports.InMemorySigner = InMemorySigner;
 
-},{"./utils/key_pair":29,"js-sha256":62}],23:[function(require,module,exports){
+},{"./utils/key_pair":30,"js-sha256":63}],24:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -2645,7 +2877,7 @@ async function signTransaction(...args) {
 exports.signTransaction = signTransaction;
 
 }).call(this,require("buffer").Buffer)
-},{"./utils/enums":24,"./utils/key_pair":29,"./utils/serialize":32,"buffer":42,"js-sha256":62}],24:[function(require,module,exports){
+},{"./utils/enums":25,"./utils/key_pair":30,"./utils/serialize":33,"buffer":43,"js-sha256":63}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Enum {
@@ -2669,7 +2901,7 @@ class Assignable {
 }
 exports.Assignable = Assignable;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class PositionalArgsError extends Error {
@@ -2699,7 +2931,7 @@ class ErrorContext {
 }
 exports.ErrorContext = ErrorContext;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 async function exponentialBackoff(startWaitTime, retryNumber, waitBackoff, getResult) {
@@ -2722,7 +2954,7 @@ function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2829,7 +3061,7 @@ function formatWithCommas(value) {
     return value;
 }
 
-},{"bn.js":38}],28:[function(require,module,exports){
+},{"bn.js":39}],29:[function(require,module,exports){
 "use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -2858,7 +3090,7 @@ exports.PublicKey = key_pair_1.PublicKey;
 exports.KeyPair = key_pair_1.KeyPair;
 exports.KeyPairEd25519 = key_pair_1.KeyPairEd25519;
 
-},{"./enums":24,"./format":27,"./key_pair":29,"./network":30,"./rpc_errors":31,"./serialize":32,"./web":33}],29:[function(require,module,exports){
+},{"./enums":25,"./format":28,"./key_pair":30,"./network":31,"./rpc_errors":32,"./serialize":33,"./web":34}],30:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2985,11 +3217,11 @@ class KeyPairEd25519 extends KeyPair {
 }
 exports.KeyPairEd25519 = KeyPairEd25519;
 
-},{"./enums":24,"./serialize":32,"tweetnacl":76}],30:[function(require,module,exports){
+},{"./enums":25,"./serialize":33,"tweetnacl":77}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -3025,9 +3257,9 @@ exports.parseRpcError = parseRpcError;
 function parseResultError(result) {
     const server_error = parseRpcError(result.status.Failure);
     const server_tx_error = new ServerTransactionError();
+    Object.assign(server_tx_error, server_error);
     server_tx_error.type = server_error.type;
     server_tx_error.message = server_error.message;
-    // Object.assign(server_tx_error, server_error);
     server_tx_error.transaction_outcome = result.transaction_outcome;
     return server_tx_error;
 }
@@ -3096,7 +3328,7 @@ function isString(n) {
     return Object.prototype.toString.call(n) === '[object String]';
 }
 
-},{"../generated/rpc_error_schema.json":8,"../generated/rpc_error_types":9,"../res/error_messages.json":21,"mustache":63}],32:[function(require,module,exports){
+},{"../generated/rpc_error_schema.json":9,"../generated/rpc_error_types":10,"../res/error_messages.json":22,"mustache":64}],33:[function(require,module,exports){
 (function (global,Buffer){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -3427,7 +3659,7 @@ function deserialize(schema, classType, buffer) {
 exports.deserialize = deserialize;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bn.js":38,"bs58":41,"buffer":42,"text-encoding-utf-8":74}],33:[function(require,module,exports){
+},{"bn.js":39,"bs58":42,"buffer":43,"text-encoding-utf-8":75}],34:[function(require,module,exports){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -3503,7 +3735,7 @@ async function fetchJson(connection, json) {
 }
 exports.fetchJson = fetchJson;
 
-},{"../providers":18,"./exponential-backoff":26,"http":40,"http-errors":58,"https":40,"node-fetch":40}],34:[function(require,module,exports){
+},{"../providers":19,"./exponential-backoff":27,"http":41,"http-errors":59,"https":41,"node-fetch":41}],35:[function(require,module,exports){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -3561,7 +3793,7 @@ function diffEpochValidators(currentValidators, nextValidators) {
 }
 exports.diffEpochValidators = diffEpochValidators;
 
-},{"bn.js":38}],35:[function(require,module,exports){
+},{"bn.js":39}],36:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -3807,7 +4039,7 @@ class ConnectedWalletAccount extends account_1.Account {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./account":2,"./transaction":23,"./utils":28,"./utils/serialize":32,"buffer":42}],36:[function(require,module,exports){
+},{"./account":2,"./transaction":24,"./utils":29,"./utils/serialize":33,"buffer":43}],37:[function(require,module,exports){
 'use strict'
 // base-x encoding / decoding
 // Copyright (c) 2018 base-x contributors
@@ -3932,7 +4164,7 @@ function base (ALPHABET) {
 }
 module.exports = base
 
-},{"safe-buffer":70}],37:[function(require,module,exports){
+},{"safe-buffer":71}],38:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -4086,7 +4318,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -7618,17 +7850,17 @@ function fromByteArray (uint8) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":39}],39:[function(require,module,exports){
+},{"buffer":40}],40:[function(require,module,exports){
 
-},{}],40:[function(require,module,exports){
-arguments[4][39][0].apply(exports,arguments)
-},{"dup":39}],41:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"dup":40}],42:[function(require,module,exports){
 var basex = require('base-x')
 var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 module.exports = basex(ALPHABET)
 
-},{"base-x":36}],42:[function(require,module,exports){
+},{"base-x":37}],43:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -9437,13 +9669,13 @@ var hexSliceLookupTable = (function () {
 })()
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":37,"buffer":42,"ieee754":60}],43:[function(require,module,exports){
+},{"base64-js":38,"buffer":43,"ieee754":61}],44:[function(require,module,exports){
 require(".").check("es5");
-},{".":44}],44:[function(require,module,exports){
+},{".":45}],45:[function(require,module,exports){
 require("./lib/definitions");
 module.exports = require("./lib");
 
-},{"./lib":47,"./lib/definitions":46}],45:[function(require,module,exports){
+},{"./lib":48,"./lib/definitions":47}],46:[function(require,module,exports){
 var CapabilityDetector = function () {
     this.tests = {};
     this.cache = {};
@@ -9473,7 +9705,7 @@ CapabilityDetector.prototype = {
 };
 
 module.exports = CapabilityDetector;
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var capability = require("."),
     define = capability.define,
     test = capability.test;
@@ -9542,7 +9774,7 @@ define("Error.prototype.stack", function () {
         return e.stack || e.stacktrace;
     }
 });
-},{".":47}],47:[function(require,module,exports){
+},{".":48}],48:[function(require,module,exports){
 var CapabilityDetector = require("./CapabilityDetector");
 
 var detector = new CapabilityDetector();
@@ -9559,7 +9791,7 @@ capability.check = function (name) {
 capability.test = capability;
 
 module.exports = capability;
-},{"./CapabilityDetector":45}],48:[function(require,module,exports){
+},{"./CapabilityDetector":46}],49:[function(require,module,exports){
 /*!
  * depd
  * Copyright(c) 2015 Douglas Christopher Wilson
@@ -9638,9 +9870,9 @@ function wrapproperty (obj, prop, message) {
   }
 }
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = require("./lib");
-},{"./lib":50}],50:[function(require,module,exports){
+},{"./lib":51}],51:[function(require,module,exports){
 require("capability/es5");
 
 var capability = require("capability");
@@ -9654,7 +9886,7 @@ else
     polyfill = require("./unsupported");
 
 module.exports = polyfill();
-},{"./non-v8/index":54,"./unsupported":56,"./v8":57,"capability":44,"capability/es5":43}],51:[function(require,module,exports){
+},{"./non-v8/index":55,"./unsupported":57,"./v8":58,"capability":45,"capability/es5":44}],52:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod;
 
@@ -9685,7 +9917,7 @@ var Frame = Class(Object, {
 });
 
 module.exports = Frame;
-},{"o3":64}],52:[function(require,module,exports){
+},{"o3":65}],53:[function(require,module,exports){
 var Class = require("o3").Class,
     Frame = require("./Frame"),
     cache = require("u3").cache;
@@ -9724,7 +9956,7 @@ module.exports = {
         return instance;
     })
 };
-},{"./Frame":51,"o3":64,"u3":77}],53:[function(require,module,exports){
+},{"./Frame":52,"o3":65,"u3":78}],54:[function(require,module,exports){
 var Class = require("o3").Class,
     abstractMethod = require("o3").abstractMethod,
     eachCombination = require("u3").eachCombination,
@@ -9858,7 +10090,7 @@ module.exports = {
         return instance;
     })
 };
-},{"capability":44,"o3":64,"u3":77}],54:[function(require,module,exports){
+},{"capability":45,"o3":65,"u3":78}],55:[function(require,module,exports){
 var FrameStringSource = require("./FrameStringSource"),
     FrameStringParser = require("./FrameStringParser"),
     cache = require("u3").cache,
@@ -9932,7 +10164,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"../prepareStackTrace":55,"./FrameStringParser":52,"./FrameStringSource":53,"u3":77}],55:[function(require,module,exports){
+},{"../prepareStackTrace":56,"./FrameStringParser":53,"./FrameStringSource":54,"u3":78}],56:[function(require,module,exports){
 var prepareStackTrace = function (throwable, frames, warnings) {
     var string = "";
     string += throwable.name || "Error";
@@ -9950,7 +10182,7 @@ var prepareStackTrace = function (throwable, frames, warnings) {
 };
 
 module.exports = prepareStackTrace;
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 var cache = require("u3").cache,
     prepareStackTrace = require("./prepareStackTrace");
 
@@ -10001,7 +10233,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":55,"u3":77}],57:[function(require,module,exports){
+},{"./prepareStackTrace":56,"u3":78}],58:[function(require,module,exports){
 var prepareStackTrace = require("./prepareStackTrace");
 
 module.exports = function () {
@@ -10013,7 +10245,7 @@ module.exports = function () {
         prepareStackTrace: prepareStackTrace
     };
 };
-},{"./prepareStackTrace":55}],58:[function(require,module,exports){
+},{"./prepareStackTrace":56}],59:[function(require,module,exports){
 /*!
  * http-errors
  * Copyright(c) 2014 Jonathan Ong
@@ -10281,9 +10513,9 @@ function populateConstructorExports (exports, codes, HttpError) {
     '"I\'mateapot"; use "ImATeapot" instead')
 }
 
-},{"depd":59,"inherits":61,"setprototypeof":71,"statuses":73,"toidentifier":75}],59:[function(require,module,exports){
-arguments[4][48][0].apply(exports,arguments)
-},{"dup":48}],60:[function(require,module,exports){
+},{"depd":60,"inherits":62,"setprototypeof":72,"statuses":74,"toidentifier":76}],60:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"dup":49}],61:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -10369,7 +10601,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -10398,7 +10630,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 (function (process,global){
 /**
  * [js-sha256]{@link https://github.com/emn178/js-sha256}
@@ -10920,7 +11152,7 @@ if (typeof Object.create === 'function') {
 })();
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":69}],63:[function(require,module,exports){
+},{"_process":70}],64:[function(require,module,exports){
 // This file has been generated from mustache.mjs
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -11662,11 +11894,11 @@ if (typeof Object.create === 'function') {
 
 })));
 
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 require("capability/es5");
 
 module.exports = require("./lib");
-},{"./lib":67,"capability/es5":43}],65:[function(require,module,exports){
+},{"./lib":68,"capability/es5":44}],66:[function(require,module,exports){
 var Class = function () {
     var options = Object.create({
         Source: Object,
@@ -11801,16 +12033,16 @@ Class.newInstance = function () {
 };
 
 module.exports = Class;
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function () {
     throw new Error("Not implemented.");
 };
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = {
     Class: require("./Class"),
     abstractMethod: require("./abstractMethod")
 };
-},{"./Class":65,"./abstractMethod":66}],68:[function(require,module,exports){
+},{"./Class":66,"./abstractMethod":67}],69:[function(require,module,exports){
 (function (process){
 // .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
 // backported and transplited with Babel, with backwards-compat fixes
@@ -12116,7 +12348,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":69}],69:[function(require,module,exports){
+},{"_process":70}],70:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -12302,7 +12534,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -12368,7 +12600,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":42}],71:[function(require,module,exports){
+},{"buffer":43}],72:[function(require,module,exports){
 'use strict'
 /* eslint no-proto: 0 */
 module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
@@ -12387,7 +12619,7 @@ function mixinProperties (obj, proto) {
   return obj
 }
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports={
   "100": "Continue",
   "101": "Switching Protocols",
@@ -12455,7 +12687,7 @@ module.exports={
   "511": "Network Authentication Required"
 }
 
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 /*!
  * statuses
  * Copyright(c) 2014 Jonathan Ong
@@ -12570,7 +12802,7 @@ function status (code) {
   return n
 }
 
-},{"./codes.json":72}],74:[function(require,module,exports){
+},{"./codes.json":73}],75:[function(require,module,exports){
 'use strict';
 
 // This is free and unencumbered software released into the public domain.
@@ -13213,7 +13445,7 @@ function UTF8Encoder(options) {
 
 exports.TextEncoder = TextEncoder;
 exports.TextDecoder = TextDecoder;
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /*!
  * toidentifier
  * Copyright(c) 2016 Douglas Christopher Wilson
@@ -13245,7 +13477,7 @@ function toIdentifier (str) {
     .replace(/[^ _0-9a-z]/gi, '')
 }
 
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -15638,9 +15870,9 @@ nacl.setPRNG = function(fn) {
 
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-},{"crypto":39}],77:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"./lib":80,"dup":49}],78:[function(require,module,exports){
+},{"crypto":40}],78:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"./lib":81,"dup":50}],79:[function(require,module,exports){
 var cache = function (fn) {
     var called = false,
         store;
@@ -15662,7 +15894,7 @@ var cache = function (fn) {
 };
 
 module.exports = cache;
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports = function eachCombination(alternativesByDimension, callback, combination) {
     if (!combination)
         combination = [];
@@ -15677,12 +15909,12 @@ module.exports = function eachCombination(alternativesByDimension, callback, com
     else
         callback.apply(null, combination);
 };
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports = {
     cache: require("./cache"),
     eachCombination: require("./eachCombination")
 };
-},{"./cache":78,"./eachCombination":79}],81:[function(require,module,exports){
+},{"./cache":79,"./eachCombination":80}],82:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -15707,14 +15939,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -16304,4 +16536,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":82,"_process":69,"inherits":81}]},{},[1]);
+},{"./support/isBuffer":83,"_process":70,"inherits":82}]},{},[1]);

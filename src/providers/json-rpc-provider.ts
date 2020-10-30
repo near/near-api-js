@@ -1,7 +1,7 @@
 import depd from 'depd';
 import {
     Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality,
-    BlockResult, ChunkId, ChunkResult, adaptTransactionResult, EpochValidatorInfo,
+    BlockResult, ChunkId, ChunkResult, EpochValidatorInfo,
     GenesisConfig, LightClientProof, LightClientProofRequest
 } from './provider';
 import { Network } from '../utils/network';
@@ -52,7 +52,7 @@ export class JsonRpcProvider extends Provider {
      */
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
         const bytes = signedTransaction.encode();
-        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]).then(adaptTransactionResult);
+        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
     }
 
     /**
@@ -63,7 +63,7 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', [base_encode(txHash), accountId]).then(adaptTransactionResult);
+        return this.sendJsonRpc('tx', [base_encode(txHash), accountId]);
     }
 
     /**

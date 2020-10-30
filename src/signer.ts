@@ -82,4 +82,8 @@ export class InMemorySigner extends Signer {
         }
         return keyPair.sign(hash);
     }
+
+    toString(): string {
+        return `InMemorySigner(${this.keyStore})`;
+    }
 }
