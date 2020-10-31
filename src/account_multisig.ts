@@ -83,10 +83,10 @@ export class AccountMultisig extends Account {
         const { accountId } = this
         // replace account keys & recovery keys with limited access keys; DO NOT replace seed phrase keys
         const accountKeys = (await this.getAccessKeys()).map((ak) => ak.public_key)
-        const seedPhraseKeys = (await this.getRecoveryMethods()).data
-            .filter(({ kind, publicKey }) => kind === 'phrase' && publicKey !== null && accountKeys.includes(publicKey))
+        const seedOrLedgerKeys = (await this.getRecoveryMethods()).data
+            .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null && accountKeys.includes(publicKey))
             .map((rm) => rm.publicKey)
-        const fak2lak = accountKeys.filter((k) => !seedPhraseKeys.includes(k)).map(toPK)
+        const fak2lak = accountKeys.filter((k) => !seedOrLedgerKeys.includes(k)).map(toPK)
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey)
         const newArgs = new Uint8Array(new TextEncoder().encode(JSON.stringify({ 'num_confirmations': 2 })));
         const actions = [
