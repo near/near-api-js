@@ -140,10 +140,6 @@ export class AccountMultisig extends Account {
 
     async deployMultisig(contractBytes: Uint8Array) {
         const { accountId } = this
-
-        console.log(await this.state(), (await this.state()).code_hash)
-
-        const initialize = (await this.state()).code_hash === "11111111111111111111111111111111"
         // replace account keys & recovery keys with limited access keys; DO NOT replace seed phrase keys
         const accountKeys = (await this.getAccessKeys()).map((ak) => ak.public_key)
         const seedOrLedgerKeys = (await this.getRecoveryMethods()).data
@@ -158,7 +154,7 @@ export class AccountMultisig extends Account {
             addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
             deployContract(contractBytes),
         ]
-        if (initialize) {
+        if ((await this.state()).code_hash === '11111111111111111111111111111111') {
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),)
         }
         console.log('deploying multisig contract for', accountId)
@@ -185,25 +181,6 @@ export class AccountMultisig extends Account {
         console.log('disabling 2fa for', accountId)
         return await this.signAndSendTransaction(accountId, actions)
     }
-
-    // async enable(contractBytes: Uint8Array) {
-    //     const { accountId } = this
-    //     const accountKeys = (await this.getAccessKeys()).map((ak) => ak.public_key)
-    //     const seedPhraseKeys = (await this.getRecoveryMethods()).data
-    //         .filter(({ kind, publicKey }) => kind === 'phrase' && publicKey !== null && accountKeys.includes(publicKey))
-    //         .map((rm) => rm.publicKey)
-    //     const confirmOnlyKey = (await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey
-    //     const fak2lak = accountKeys.filter((k) => !seedPhraseKeys.includes(k) && !confirmOnlyKey.includes(k))
-    //         .map((k) => PublicKey.from(k))
-    //     const actions = [
-    //         addKey(PublicKey.from(confirmOnlyKey), functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
-    //         ...fak2lak.map((k) => deleteKey(k)),
-    //         ...fak2lak.map((k) => addKey(k, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
-    //         deployContract(contractBytes),
-    //     ]
-    //     console.log('enabling 2fa for', accountId, actions)
-    //     return await super.signAndSendTransaction(accountId, actions);
-    // }
 
     async deleteUnconfirmedRequests () {
         const { contract } = this
