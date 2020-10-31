@@ -10,7 +10,7 @@ const HELLO_WASM_BALANCE = new BN('10000000000000000000000000');
 const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
     changeMethods: ['setValue', 'callPromise']
-}
+};
 const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multisig.wasm';
 
 async function setUpTestConnection() {
@@ -47,25 +47,25 @@ async function createAccountMultisig(near, options) {
     // add a confirm key for multisig (contract helper sim)
     
     try {
-        const confirmKeyPair = nearApi.utils.KeyPair.fromRandom('ed25519')
-        const { publicKey } = confirmKeyPair
+        const confirmKeyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
+        const { publicKey } = confirmKeyPair;
         // const account = new nearApi.Account(near.connection, newAccountName);
         // await account.addKey(publicKey, account.accountId, nearApi.multisig.MULTISIG_CONFIRM_METHODS, '0')
         // create multisig account instance and deploy contract
         const accountMultisig = new nearApi.multisig.AccountMultisig(near.connection, newAccountName, options);
         accountMultisig.useConfirmKey = async () => {
-            await near.connection.signer.setKey(networkId, config.masterAccount, confirmKeyPair)
-        }
-        accountMultisig.getRecoveryMethods = () => ({ data: [] })
+            await near.connection.signer.setKey(networkId, config.masterAccount, confirmKeyPair);
+        };
+        accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
             switch (path) {
-                case '/2fa/getAccessKey': return { publicKey }
+            case '/2fa/getAccessKey': return { publicKey };
             }
-        }
-        await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]))
+        };
+        await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
         return accountMultisig;
     } catch(e) {
-        console.log(e)
+        console.log(e);
     }
 }
 
