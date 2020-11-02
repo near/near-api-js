@@ -142,6 +142,16 @@ describe('with deploy contract', () => {
         expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
 
+    test('make function calls via account with custom parser', async() => {
+        const result = await workingAccount.viewFunction(
+            contractId,
+            'hello', // this is the function defined in hello.wasm file that we are calling
+            {name: 'trex'},
+            { parse: x => JSON.parse(x.toString()).replace('trex', 'friend') }
+        );
+        expect(result).toEqual('hello friend');
+    });
+
     test('make function calls via contract', async() => {
         const result = await contract.hello({ name: 'trex' });
         expect(result).toEqual('hello trex');
