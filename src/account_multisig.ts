@@ -216,11 +216,6 @@ export class AccountMultisig extends Account {
             return
         }
         const method = await this.get2faMethod();
-        console.log('this.postSignedJson', {
-            accountId,
-            method,
-            requestId,
-        })
         await this.postSignedJson('/2fa/send', {
             accountId,
             method,
