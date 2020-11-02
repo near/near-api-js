@@ -11,14 +11,11 @@ export declare const MULTISIG_DEPOSIT: BN;
 export declare const MULTISIG_CHANGE_METHODS: string[];
 export declare const MULTISIG_VIEW_METHODS: string[];
 export declare const MULTISIG_CONFIRM_METHODS: string[];
+export declare const MULTISIG_CONTRACT_HASHES: string | string[];
 /********************************
-This method can be used to mod a near instance .account helper to return AccountMultisig if the account has multisig deployed
-It takes an options object where you can provide callbacks for:
-- sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
-- getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
-- onResult: the tx result after it's been confirmed by NEAR Contract Helper
+This method can be used to detect if an account on a particular network (connection) is a multisig account
 ********************************/
-export declare const modIfMultisig: (near: any, options: any) => any;
+export declare const isAccountMultisig: (connection: Connection, accountId: string) => Promise<boolean>;
 interface MultisigContract {
     get_request_nonce(): any;
     list_request_ids(): any;
@@ -36,6 +33,12 @@ export declare class AccountMultisig extends Account {
     getCode: getCodeFunction;
     verifyCode: verifyCodeFunction;
     onResult: Function;
+    /********************************
+    AccountMultisig has options object where you can provide callbacks for:
+    - sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
+    - getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
+    - onResult: the tx result after it's been confirmed by NEAR Contract Helper
+    ********************************/
     constructor(connection: Connection, accountId: string, options: any);
     addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;

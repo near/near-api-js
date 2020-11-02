@@ -20,45 +20,24 @@ export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
+export const MULTISIG_CONTRACT_HASHES = process.env.MULTISIG_CONTRACT_HASHES || [
+    // https://github.com/near/core-contracts/blob/fa3e2c6819ef790fdb1ec9eed6b4104cd13eb4b7/multisig/src/lib.rs
+    '7GQStUCd8bmCK43bzD8PRh7sD2uyyeMJU5h8Rj3kXXJk',
+    // https://github.com/near/core-contracts/blob/fb595e6ec09014d392e9874c2c5d6bbc910362c7/multisig/src/lib.rs
+    'AEE3vt6S3pS2s7K6HXnZc46VyMyJcjygSMsaafFh67DF',
+    // https://github.com/near/core-contracts/blob/636e7e43f1205f4d81431fad0be39c5cb65455f1/multisig/src/lib.rs
+    '8DKTSceSbxVgh4ANXwqmRqGyPWCuZAR1fCqGPXUjD5nZ',
+    // https://github.com/near/core-contracts/blob/f93c146d87a779a2063a30d2c1567701306fcae4/multisig/res/multisig.wasm
+    '55E7imniT2uuYrECn17qJAk9fLcwQW4ftNSwmCJL5Di',
+];
 
 /********************************
-This method can be used to mod a near instance .account helper to return AccountMultisig if the account has multisig deployed
-It takes an options object where you can provide callbacks for:
-- sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
-- getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
-- onResult: the tx result after it's been confirmed by NEAR Contract Helper
+This method can be used to detect if an account on a particular network (connection) is a multisig account
 ********************************/
-export const modIfMultisig = (near, options) => {
-    near.account = async (accountId) => {
-        const account = new Account(near.connection, accountId);
-        await account.state();
-        const localKey = (await near.connection.signer.getPublicKey(account.accountId, near.connection.networkId)).toString();
-        const accessKeys = await account.getAccessKeys();
-
-        const hasFAK = accessKeys.find((k) => 
-            k.public_key === localKey &&
-            k.access_key.permission &&
-            k.access_key.permission === 'FullAccess'
-        );
-        
-        if (hasFAK) {
-            return account;
-        }
-        
-        const use2fa = accessKeys.find((k) => 
-            k.public_key === localKey &&
-            k.access_key.permission && 
-            k.access_key.permission.FunctionCall &&
-            k.access_key.permission.FunctionCall.method_names.some((mn) => MULTISIG_CHANGE_METHODS.includes(mn))
-        );
-
-        if (use2fa) {
-            return new AccountMultisig(near.connection, accountId, options);
-        }
-
-        throw new Error(`Account ${accountId} doesn't have full access keys or multisig enabled`);
-    };
-    return near;
+export const isAccountMultisig = async (connection: Connection, accountId: string): Promise<boolean> => {
+    const account = new Account(connection, accountId);
+    const state = await account.state();
+    return MULTISIG_CONTRACT_HASHES.includes(state.code_hash)
 }
 
 interface MultisigContract {
@@ -84,6 +63,12 @@ export class AccountMultisig extends Account {
     public verifyCode: verifyCodeFunction;
     public onResult: Function;
 
+    /********************************
+    AccountMultisig has options object where you can provide callbacks for:
+    - sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
+    - getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
+    - onResult: the tx result after it's been confirmed by NEAR Contract Helper
+    ********************************/   
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId);
         this.storage = options.storage;
