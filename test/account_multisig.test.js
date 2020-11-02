@@ -15,6 +15,7 @@ beforeAll(async () => {
     });
     let nodeStatus = await nearjs.connection.provider.status();
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
+    console.log(startFromVersion);
 });
 
 test('view pre-defined account works and returns correct name', async () => {
