@@ -4,6 +4,7 @@ const semver = require('semver');
 
 let nearjs;
 let workingAccount;
+let startFromVersion;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
