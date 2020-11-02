@@ -54,7 +54,7 @@ async function createAccountMultisig(near, options) {
         // create multisig account instance and deploy contract
         const accountMultisig = new nearApi.multisig.AccountMultisig(near.connection, newAccountName, options);
         accountMultisig.useConfirmKey = async () => {
-            await near.connection.signer.setKey(networkId, config.masterAccount, confirmKeyPair);
+            await near.connection.signer.setKey(networkId, options.masterAccount, confirmKeyPair);
         };
         accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
