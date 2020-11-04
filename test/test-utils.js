@@ -27,8 +27,8 @@ function generateUniqueString(prefix) {
     return `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
 }
 
-async function createAccount(near) {
-    const newAccountName = generateUniqueString('test');
+async function createAccount(near, str = 'test') {
+    const newAccountName = generateUniqueString(str);
     const newPublicKey = await near.connection.signer.createKey(newAccountName, networkId);
     await near.createAccount(newAccountName, newPublicKey);
     const account = new nearApi.Account(near.connection, newAccountName);

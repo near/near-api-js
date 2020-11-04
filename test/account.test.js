@@ -228,7 +228,7 @@ describe('with deploy contract', () => {
 describe('deployMultisig key rotations', () => {
 
     test('skip access key if recovery method is "ledger"', async () => {
-        const account = await testUtils.createAccount(nearjs);
+        const account = await testUtils.createAccount(nearjs, 'multisig');
         await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey());
         const originalKeys = await account.getAccessKeys();
         const { multisig: { AccountMultisig } } = nearApi;
