@@ -240,7 +240,13 @@ describe('deployMultisig key rotations', () => {
         accountMultisig.postSignedJson = () => ({
             publicKey: KeyPair.fromRandom('ed25519').getPublicKey()
         })
-        accountMultisig.deployMultisig([...fs.readFileSync('./test/data/main.wasm')])
+        try {
+            await accountMultisig.deployMultisig([...fs.readFileSync('./test/data/main.wasm')])
+        } catch (e) {
+            if (e.message.indexOf('Contract method is not found') === -1) {
+                throw(e)
+            }
+        }
         const currentKeys = await accountMultisig.getAccessKeys();
         expect(currentKeys[0].access_key.permission).toEqual('FullAccess');
         expect(currentKeys[1].access_key.permission).toEqual('FullAccess');
