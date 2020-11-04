@@ -4,6 +4,7 @@ const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
 const semver = require('semver');
+const { KeyPair } = require('../lib/index');
 
 let nearjs;
 let workingAccount;
@@ -222,4 +223,27 @@ describe('with deploy contract', () => {
         });
         expect(await contract.hello({ name: 'world' })).toEqual('hello world');
     });
+});
+
+describe('deployMultisig key rotations', () => {
+
+    test('skip access key if recovery method is "ledger"', async () => {
+        const account = await testUtils.createAccount(nearjs);
+        await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey())
+        const originalKeys = await account.getAccessKeys();
+        const { multisig: { AccountMultisig } } = nearApi
+        const accountMultisig = new AccountMultisig(nearjs.connection, account.accountId, {})
+        // modifiers to return the key material we want to test against
+        accountMultisig.getRecoveryMethods = () => ({
+            data: originalKeys.map(({ public_key: publicKey }, i) => ({ publicKey, kind: i > 0 ? 'ledger' : 'phrase' }))
+        })
+        accountMultisig.postSignedJson = () => ({
+            publicKey: KeyPair.fromRandom('ed25519').getPublicKey()
+        })
+        accountMultisig.deployMultisig([...fs.readFileSync('./test/data/main.wasm')])
+        const currentKeys = await accountMultisig.getAccessKeys();
+        expect(currentKeys[0].access_key.permission).toEqual('FullAccess');
+        expect(currentKeys[1].access_key.permission).toEqual('FullAccess');
+    });
+    
 });
