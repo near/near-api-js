@@ -100,7 +100,7 @@ describe('roundtrip test', () => {
     const dataDir = './test/data';
     const testFiles = fs.readdirSync(dataDir);
     for (const testFile of testFiles) {
-        if (/.+\.json$/.exec(testFiles)) {
+        if (/.+\.json$/.test(testFile)) {
             const testDefinition = JSON.parse(fs.readFileSync(dataDir + '/'  + testFile));
             test(testFile, () => {
                 const data = Buffer.from(testDefinition.data, 'hex');
