@@ -61,12 +61,12 @@ export class AccountMultisig extends Account {
         const requestId = await this.getRequestNonce()
         this.setRequest({ accountId, requestId, actions });
 
-        const args = new Uint8Array(new TextEncoder().encode(JSON.stringify({
+        const args = Buffer.from(JSON.stringify({
             request: {
                 receiver_id: receiverId,
                 actions: convertActions(actions, accountId, receiverId)
             }
-        })));
+        }));
 
         return await super.signAndSendTransaction(accountId, [
             functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
@@ -88,7 +88,7 @@ export class AccountMultisig extends Account {
             .map((rm) => rm.publicKey)
         const fak2lak = accountKeys.filter((k) => !seedOrLedgerKeys.includes(k)).map(toPK)
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey)
-        const newArgs = new Uint8Array(new TextEncoder().encode(JSON.stringify({ 'num_confirmations': 2 })));
+        const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
         const actions = [
             ...fak2lak.map((pk) => deleteKey(pk)),
             ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
