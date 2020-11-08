@@ -1,7 +1,6 @@
 import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
-import { PublicKey } from './utils/key_pair';
 import { Action } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 export declare const MULTISIG_STORAGE_KEY = "__multisigRequest";
@@ -40,7 +39,6 @@ export declare class AccountMultisig extends Account {
     - onResult: the tx result after it's been confirmed by NEAR Contract Helper
     ********************************/
     constructor(connection: Connection, accountId: string, options: any);
-    addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     signAndSendTransactions(transactions: any): Promise<void>;
     deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;

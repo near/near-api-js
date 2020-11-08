@@ -79,13 +79,6 @@ export class AccountMultisig extends Account {
         this.contract = <MultisigContract>getContract(this);
     }
 
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome> {
-        if (contractId) {
-            return super.addKey(publicKey, contractId, MULTISIG_CHANGE_METHODS.join(), MULTISIG_ALLOWANCE)
-        }
-        return super.addKey(publicKey)
-    }
-
     async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
@@ -112,7 +105,7 @@ export class AccountMultisig extends Account {
 
         const result = await this.promptAndVerify();
         if (this.onResult) {
-            this.onResult(result);
+            await this.onResult(result);
         }
         return result
     }
