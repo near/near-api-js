@@ -10,11 +10,6 @@ export declare const MULTISIG_DEPOSIT: BN;
 export declare const MULTISIG_CHANGE_METHODS: string[];
 export declare const MULTISIG_VIEW_METHODS: string[];
 export declare const MULTISIG_CONFIRM_METHODS: string[];
-export declare const MULTISIG_CONTRACT_HASHES: string | string[];
-/********************************
-This method can be used to detect if an account on a particular network (connection) is a multisig account
-********************************/
-export declare const isAccountMultisig: (connection: Connection, accountId: string) => Promise<boolean>;
 interface MultisigContract {
     get_request_nonce(): any;
     list_request_ids(): any;
@@ -27,6 +22,7 @@ declare type getCodeFunction = (method: any) => Promise<string>;
 declare type verifyCodeFunction = (securityCode: any) => Promise<any>;
 export declare class AccountMultisig extends Account {
     contract: MultisigContract;
+    helperUrl: string;
     storage: any;
     sendCode: sendCodeFunction;
     getCode: getCodeFunction;

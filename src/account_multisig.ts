@@ -10,35 +10,13 @@ import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAc
 import { FinalExecutionOutcome } from './providers';
 import { fetchJson } from './utils/web';
 
-const NETWORK_ID = process.env.REACT_APP_NETWORK_ID || 'default'
-const CONTRACT_HELPER_URL = process.env.CONTRACT_HELPER_URL || 'https://helper.testnet.near.org';
-
 export const MULTISIG_STORAGE_KEY = '__multisigRequest'
-export const MULTISIG_ALLOWANCE = new BN(process.env.MULTISIG_ALLOWANCE || parseNearAmount('1'));
-export const MULTISIG_GAS = new BN(process.env.MULTISIG_GAS || '100000000000000');
+export const MULTISIG_ALLOWANCE = new BN(parseNearAmount('1'));
+export const MULTISIG_GAS = new BN('100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
-export const MULTISIG_CONTRACT_HASHES = process.env.MULTISIG_CONTRACT_HASHES || [
-    // https://github.com/near/core-contracts/blob/fa3e2c6819ef790fdb1ec9eed6b4104cd13eb4b7/multisig/src/lib.rs
-    '7GQStUCd8bmCK43bzD8PRh7sD2uyyeMJU5h8Rj3kXXJk',
-    // https://github.com/near/core-contracts/blob/fb595e6ec09014d392e9874c2c5d6bbc910362c7/multisig/src/lib.rs
-    'AEE3vt6S3pS2s7K6HXnZc46VyMyJcjygSMsaafFh67DF',
-    // https://github.com/near/core-contracts/blob/636e7e43f1205f4d81431fad0be39c5cb65455f1/multisig/src/lib.rs
-    '8DKTSceSbxVgh4ANXwqmRqGyPWCuZAR1fCqGPXUjD5nZ',
-    // https://github.com/near/core-contracts/blob/f93c146d87a779a2063a30d2c1567701306fcae4/multisig/res/multisig.wasm
-    '55E7imniT2uuYrECn17qJAk9fLcwQW4ftNSwmCJL5Di',
-];
-
-/********************************
-This method can be used to detect if an account on a particular network (connection) is a multisig account
-********************************/
-export const isAccountMultisig = async (connection: Connection, accountId: string): Promise<boolean> => {
-    const account = new Account(connection, accountId);
-    const state = await account.state();
-    return MULTISIG_CONTRACT_HASHES.includes(state.code_hash)
-}
 
 interface MultisigContract {
     get_request_nonce(): any,
@@ -57,6 +35,7 @@ let storageFallback = {
 
 export class AccountMultisig extends Account {
     public contract: MultisigContract;
+    public helperUrl: string = 'https://helper.testnet.near.org';
     public storage: any;
     public sendCode: sendCodeFunction;
     public getCode: getCodeFunction;
@@ -71,6 +50,7 @@ export class AccountMultisig extends Account {
     ********************************/   
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId);
+        this.helperUrl = options.helperUrl || this.helperUrl;
         this.storage = options.storage;
         this.sendCode = options.sendCode || this.sendCodeDefault;
         this.getCode = options.getCode || this.getCodeDefault;
@@ -226,7 +206,6 @@ export class AccountMultisig extends Account {
         const securityCode = await this.getCode(method)
         try {
             const { success, res: result } = await this.verifyCode(securityCode);
-            console.log(success, result)
             if (!success || result === false) {
                 throw new Error('Request failed with error: ' + JSON.stringify(result));
             }
@@ -272,7 +251,7 @@ export class AccountMultisig extends Account {
     async signatureFor() {
         const { accountId } = this;
         const blockNumber = String((await this.connection.provider.status()).sync_info.latest_block_height);
-        const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, NETWORK_ID);
+        const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, this.connection.networkId);
         const blockNumberSignature = Buffer.from(signed.signature).toString('base64');
         return { blockNumber, blockNumberSignature };
     }

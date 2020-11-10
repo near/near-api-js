@@ -31,7 +31,6 @@ const AccountMultisigInstance = async (account, keyMapping = ({ public_key: publ
         verifyCode: () => ({ success: true, res: '' }),
         onResult: async () => {
             const { requestId } = accountMultisig.getRequest();
-            console.log('requestId', requestId);
             // set confirmKey as signer
             const originalSigner = nearjs.connection.signer;
             const tempKeyStore = new InMemoryKeyStore();
@@ -49,14 +48,7 @@ const AccountMultisigInstance = async (account, keyMapping = ({ public_key: publ
     accountMultisig.getRecoveryMethods = () => ({
         data: keys.map(keyMapping)
     });
-    try {
-        await accountMultisig.deployMultisig([...fs.readFileSync('./test/data/multisig.wasm')]);
-    } catch (e) {
-        console.log(e);
-        if (e.message.indexOf('Contract method is not found') === -1) {
-            throw(e);
-        }
-    }
+    await accountMultisig.deployMultisig([...fs.readFileSync('./test/data/multisig.wasm')]);
     return accountMultisig;
 };
 
@@ -72,22 +64,17 @@ describe('deployMultisig key rotations', () => {
     test('full access key if recovery method is "ledger" or "phrase"', async () => {
         const account = await testUtils.createAccount(nearjs);
         await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey());
+        await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey());
         const keys = await account.getAccessKeys();
+        const kinds = ['ledger', 'phrase', 'phone'];
         const accountMultisig = await AccountMultisigInstance(
             account,
-            ({ public_key: publicKey }, i) => ({ publicKey, kind: i > 0 ? 'ledger' : 'phrase' })
+            ({ public_key: publicKey }, i) => ({ publicKey, kind: kinds[i] })
         );
         const currentKeys = await accountMultisig.getAccessKeys();
         expect(currentKeys.find(({ public_key }) => keys[0].public_key === public_key).access_key.permission).toEqual('FullAccess');
         expect(currentKeys.find(({ public_key }) => keys[1].public_key === public_key).access_key.permission).toEqual('FullAccess');
-    });
-
-    test('access key if method is "phone"', async () => {
-        const account = await testUtils.createAccount(nearjs);
-        const keys = await account.getAccessKeys();
-        const accountMultisig = await AccountMultisigInstance(account);
-        const currentKeys = await accountMultisig.getAccessKeys();
-        expect(currentKeys.find(({ public_key }) => keys[0].public_key === public_key).access_key.permission).not.toEqual('FullAccess');
+        expect(currentKeys.find(({ public_key }) => keys[2].public_key === public_key).access_key.permission).not.toEqual('FullAccess');
     });
     
 });
@@ -101,12 +88,6 @@ describe('accountMultisig transactions', () => {
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
         await account.addKey(appPublicKey, 'foobar', appMethodNames.join(), new BN(parseNearAmount('0.25')));
         const keys = await account.getAccessKeys();
-        // console.log(keys.map((k) => ({
-        //     publicKey: k.public_key,
-        //     permission: k.access_key.permission,
-        //     method_names: k.access_key.permission.FunctionCall.method_names
-        // })))
-        // console.log('appPublicKey', appPublicKey.toString())
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
             .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
     });
