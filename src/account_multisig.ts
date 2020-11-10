@@ -257,7 +257,7 @@ export class AccountMultisig extends Account {
     }
 
     async postSignedJson(path, body) {
-        return await fetchJson(CONTRACT_HELPER_URL + path, JSON.stringify({
+        return await fetchJson(this.helperUrl + path, JSON.stringify({
             ...body,
             ...(await this.signatureFor())
         }));
