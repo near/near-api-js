@@ -35,9 +35,9 @@ export declare class AccountMultisig extends Account {
     getRequest(): any;
     setRequest(data: any): any;
 }
-export declare class Account2fa extends AccountMultisig {
+export declare class Account2FA extends AccountMultisig {
     /********************************
-    Account2fa has options object where you can provide callbacks for:
+    Account2FA has options object where you can provide callbacks for:
     - sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
     - getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
     - onResult: the tx result after it's been confirmed by NEAR Contract Helper
