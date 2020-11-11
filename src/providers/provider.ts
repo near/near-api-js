@@ -26,6 +26,7 @@ type BlockHash = string;
 type BlockHeight = number;
 export type BlockId = BlockHash | BlockHeight;
 
+// TODO: Remove near-final?
 export type Finality = 'optimistic' | 'near-final' | 'final'
 
 export enum ExecutionStatusBasic {
@@ -241,6 +242,7 @@ export abstract class Provider {
 
     abstract async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract async txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
+    abstract async query(params: object): Promise<any>;
     abstract async query(path: string, data: string): Promise<any>;
     abstract async block(blockId: BlockId): Promise<BlockResult>;
     abstract async chunk(chunkId: ChunkId): Promise<ChunkResult>;

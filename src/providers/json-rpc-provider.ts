@@ -68,13 +68,17 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Query the RPC as [shown in the docs](https://docs.nearprotocol.com/docs/interaction/rpc#query)
-     * @param path Path parameter for the RPC (ex. "contract/my_token")
-     * @param data Data parameter (ex. "", "AQ4", or whatever is needed)
      */
-    async query(path: string, data: string): Promise<any> {
-        const result = await this.sendJsonRpc('query', [path, data]);
+    async query(...args: any[]): Promise<any> {
+        let result
+        if (args.length === 1) {
+            result = await this.sendJsonRpc('query', args[0]);
+        } else {
+            const [path, data] = args;
+            result = await this.sendJsonRpc('query', [path, data]);
+        }
         if (result && result.error) {
-            throw new Error(`Querying ${path} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
+            throw new Error(`Querying ${args} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
         }
         return result;
     }

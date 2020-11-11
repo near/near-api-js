@@ -3,6 +3,7 @@ import { AccessKey, Action, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
+import { Finality } from './providers/provider';
 export interface AccountState {
     amount: string;
     code_hash: string;
@@ -118,6 +119,7 @@ export declare class Account {
     viewFunction(contractId: string, methodName: string, args: any, { parse }?: {
         parse?: typeof parseJsonFromRawResponse;
     }): Promise<any>;
+    viewState(prefix: string | Uint8Array, finality?: Finality): Promise<any>;
     /**
      * @returns array of {access_key: AccessKey, public_key: PublicKey} items.
      */

@@ -35,10 +35,8 @@ export declare class JsonRpcProvider extends Provider {
     txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     /**
      * Query the RPC as [shown in the docs](https://docs.nearprotocol.com/docs/interaction/rpc#query)
-     * @param path Path parameter for the RPC (ex. "contract/my_token")
-     * @param data Data parameter (ex. "", "AQ4", or whatever is needed)
      */
-    query(path: string, data: string): Promise<any>;
+    query(...args: any[]): Promise<any>;
     /**
      * Query for block info from the RPC
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#block)

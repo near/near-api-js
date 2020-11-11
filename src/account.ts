@@ -26,6 +26,7 @@ import { parseRpcError } from './utils/rpc_errors';
 import { ServerError } from './generated/rpc_error_types';
 
 import exponentialBackoff from './utils/exponential-backoff';
+import { Finality } from './providers/provider';
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -371,6 +372,17 @@ export class Account {
             this.printLogs(contractId, result.logs);
         }
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
+    }
+
+    async viewState(prefix: string | Uint8Array, finality: Finality = 'optimistic') {
+        const { values } = await this.connection.provider.query({
+            request_type: 'view_state', 
+            finality,
+            account_id: this.accountId,
+            prefix_base64: Buffer.from(prefix,).toString('base64')
+        });
+
+        return values.map(({key, value}) => ({ key: Buffer.from(key, 'base64'), value: Buffer.from(value, 'base64')}))
     }
 
     /**
