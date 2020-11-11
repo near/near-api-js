@@ -13,6 +13,14 @@ export abstract class Signer {
     abstract async createKey(accountId: string, networkId?: string): Promise<PublicKey>;
 
     /**
+     * Creates a public key for the account, network and keyPair provided
+     * @param accountId accountId to retrieve from.
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param keyPair The keyPair to use for signing
+     */
+    abstract async fromKeyPair(accountId: string, networkId: string, keyPair: KeyPair): Promise<PublicKey>;
+
+    /**
      * Returns public key for given account / network.
      * @param accountId accountId to retrieve from.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
@@ -47,6 +55,18 @@ export class InMemorySigner extends Signer {
      */
     async createKey(accountId: string, networkId: string): Promise<PublicKey> {
         const keyPair = KeyPair.fromRandom('ed25519');
+        await this.keyStore.setKey(networkId, accountId, keyPair);
+        return keyPair.getPublicKey();
+    }
+    
+    /**
+     * Creates a public key for the account, network and keyPair provided
+     * @param accountId The NEAR account to assign a public key to
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param keyPair The keyPair to use for signing
+     * @returns {Promise<PublicKey>}
+     */
+    async fromKeyPair(accountId: string, networkId: string, keyPair: KeyPair): Promise<PublicKey> {
         await this.keyStore.setKey(networkId, accountId, keyPair);
         return keyPair.getPublicKey();
     }
