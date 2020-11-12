@@ -4,7 +4,6 @@ const fs = require('fs');
 const BN = require('bn.js');
 const testUtils  = require('./test-utils');
 const semver = require('semver');
-const { InMemorySigner } = require('../lib/index');
 
 let nearjs;
 let startFromVersion;
