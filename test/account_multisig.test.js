@@ -12,17 +12,18 @@ let startFromVersion;
 const {
     KeyPair,
     transactions: { functionCall },
-    multisig: { Account2fa, MULTISIG_GAS, MULTISIG_DEPOSIT },
+    InMemorySigner,
+    multisig: { Account2FA, MULTISIG_GAS, MULTISIG_DEPOSIT },
     utils: { format: { parseNearAmount } }
 } = nearApi;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
-const getAccount2fa = async (account, keyMapping = ({ public_key: publicKey }) => ({ publicKey, kind: 'phone' })) => {
+const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) => ({ publicKey, kind: 'phone' })) => {
     // modifiers to functions replaces contract helper (CH)
     const { accountId } = account;
     const keys = await account.getAccessKeys();
-    const account2fa = new Account2fa(nearjs.connection, accountId, {
+    const account2fa = new Account2FA(nearjs.connection, accountId, {
         // skip this (not using CH)
         // skip this (not using CH)
         getCode: () => {},
@@ -65,7 +66,7 @@ describe('deployMultisig key rotations', () => {
         await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey());
         const keys = await account.getAccessKeys();
         const kinds = ['ledger', 'phrase', 'phone'];
-        const account2fa = await getAccount2fa(
+        const account2fa = await getAccount2FA(
             account,
             ({ public_key: publicKey }, i) => ({ publicKey, kind: kinds[i] })
         );
@@ -81,7 +82,7 @@ describe('account2fa transactions', () => {
 
     test('add app key', async() => {
         let account = await testUtils.createAccount(nearjs);
-        account = await getAccount2fa(account);
+        account = await getAccount2FA(account);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
         await account.addKey(appPublicKey.toString(), 'foobar', appMethodNames.join(), new BN(parseNearAmount('0.25')));
@@ -93,8 +94,8 @@ describe('account2fa transactions', () => {
     test('send money', async() => {
         let sender = await testUtils.createAccount(nearjs);
         let receiver = await testUtils.createAccount(nearjs);
-        sender = await getAccount2fa(sender);
-        receiver = await getAccount2fa(receiver);
+        sender = await getAccount2FA(sender);
+        receiver = await getAccount2FA(receiver);
         const { amount: receiverAmount } = await receiver.state();
         await sender.sendMoney(receiver.accountId, new BN(parseNearAmount('1')));
         await receiver.fetchState();
