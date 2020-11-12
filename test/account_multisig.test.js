@@ -82,6 +82,17 @@ describe('deployMultisig key rotations', () => {
 
 describe('account2fa transactions', () => {
 
+    test('add app key before deployMultisig', async() => {
+        let account = await testUtils.createAccount(nearjs);
+        const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+        const appMethodNames = ['some_app_stuff','some_more_app_stuff'];
+        await account.addKey(appPublicKey.toString(), 'foobar', appMethodNames.join(), new BN(parseNearAmount('0.25')));
+        account = await getAccount2FA(account);
+        const keys = await account.getAccessKeys();
+        expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
+            .access_key.permission.FunctionCall.method_names.toString()).toEqual(appMethodNames.toString());
+    });
+
     test('add app key', async() => {
         let account = await testUtils.createAccount(nearjs);
         account = await getAccount2FA(account);
