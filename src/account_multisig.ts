@@ -165,17 +165,16 @@ export class Account2FA extends AccountMultisig {
         const seedOrLedgerKey = (await this.getRecoveryMethods()).data
             .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
             .map((rm) => rm.publicKey)
-        console.log('seedOrLedgerKey', seedOrLedgerKey)
 
         const fak2lak = (await this.getAccessKeys())
             .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
             .map((ak) => ak.public_key)
-            // .map(toPK)
-        console.log('fak2lak', fak2lak)
+            .map(toPK)
 
-        
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey)
+
         const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
+        
         const actions = [
             ...fak2lak.map((pk) => deleteKey(pk)),
             ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
