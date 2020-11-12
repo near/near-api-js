@@ -49,7 +49,7 @@ export declare class Account2FA extends AccountMultisig {
     helperUrl: string;
     constructor(connection: Connection, accountId: string, options: any);
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
-    deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
+    deployMultisig(contractBytes: Uint8Array): Promise<void>;
     disable(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
     sendCodeDefault(): Promise<any>;
     getCodeDefault(method: any): Promise<string>;

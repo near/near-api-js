@@ -161,12 +161,19 @@ export class Account2FA extends AccountMultisig {
 
     async deployMultisig(contractBytes: Uint8Array) {
         const { accountId } = this
-        // replace account keys & recovery keys with limited access keys; DO NOT replace seed phrase keys
-        const accountKeys = (await this.getAccessKeys()).map((ak) => ak.public_key)
-        const seedOrLedgerKeys = (await this.getRecoveryMethods()).data
-            .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null && accountKeys.includes(publicKey))
+
+        const seedOrLedgerKey = (await this.getRecoveryMethods()).data
+            .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
             .map((rm) => rm.publicKey)
-        const fak2lak = accountKeys.filter((k) => !seedOrLedgerKeys.includes(k)).map(toPK)
+        console.log('seedOrLedgerKey', seedOrLedgerKey)
+
+        const fak2lak = (await this.getAccessKeys())
+            .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
+            .map((ak) => ak.public_key)
+            // .map(toPK)
+        console.log('fak2lak', fak2lak)
+
+        
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey)
         const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
         const actions = [
@@ -179,7 +186,7 @@ export class Account2FA extends AccountMultisig {
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),)
         }
         console.log('deploying multisig contract for', accountId)
-        return await super.signAndSendTransactionWithAccount(accountId, actions);
+        // return await super.signAndSendTransactionWithAccount(accountId, actions);
     }
 
     async disable(contractBytes: Uint8Array) {
