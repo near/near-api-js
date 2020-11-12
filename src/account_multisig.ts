@@ -174,7 +174,7 @@ export class Account2FA extends AccountMultisig {
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey)
 
         const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
-        
+
         const actions = [
             ...fak2lak.map((pk) => deleteKey(pk)),
             ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
@@ -185,7 +185,7 @@ export class Account2FA extends AccountMultisig {
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),)
         }
         console.log('deploying multisig contract for', accountId)
-        // return await super.signAndSendTransactionWithAccount(accountId, actions);
+        return await super.signAndSendTransactionWithAccount(accountId, actions);
     }
 
     async disable(contractBytes: Uint8Array) {
