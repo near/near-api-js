@@ -9,13 +9,6 @@ export declare abstract class Signer {
      */
     abstract createKey(accountId: string, networkId?: string): Promise<PublicKey>;
     /**
-     * Creates a public key for the account, network and keyPair provided
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
-     * @param accountId accountId to retrieve from.
-     * @param keyPair The keyPair to use for signing
-     */
-    abstract fromKeyPair(networkId: string, accountId: string, keyPair: KeyPair): Promise<PublicKey>;
-    /**
      * Returns public key for given account / network.
      * @param accountId accountId to retrieve from.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
@@ -36,20 +29,20 @@ export declare class InMemorySigner extends Signer {
     readonly keyStore: KeyStore;
     constructor(keyStore: KeyStore);
     /**
+     * Creates a tempSigner (intended to be one time use) with account, network and keyPair provided
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param accountId The NEAR account to assign a public key to
+     * @param keyPair The keyPair to use for signing
+     * @returns {Promise<PublicKey>}
+     */
+    static fromKeyPair(networkId: string, accountId: string, keyPair: KeyPair): Promise<Signer>;
+    /**
      * Creates a public key for the account given
      * @param accountId The NEAR account to assign a public key to
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns {Promise<PublicKey>}
      */
     createKey(accountId: string, networkId: string): Promise<PublicKey>;
-    /**
-     * Creates a public key for the account, network and keyPair provided
-     * @param networkId The targeted network. (ex. default, betanet, etc…)
-     * @param accountId The NEAR account to assign a public key to
-     * @param keyPair The keyPair to use for signing
-     * @returns {Promise<PublicKey>}
-     */
-    fromKeyPair(networkId: string, accountId: string, keyPair: KeyPair): Promise<PublicKey>;
     /**
      * Gets the existing public key for a given account
      * @param accountId The NEAR account to assign a public key to

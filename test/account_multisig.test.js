@@ -4,6 +4,7 @@ const fs = require('fs');
 const BN = require('bn.js');
 const testUtils  = require('./test-utils');
 const semver = require('semver');
+const { InMemorySigner } = require('../lib/index');
 
 let nearjs;
 let startFromVersion;
@@ -31,11 +32,13 @@ const getAccount2fa = async (account, keyMapping = ({ public_key: publicKey }) =
         onAddRequestResult: async () => {
             const { requestId } = account2fa.getRequest();
             // set confirmKey as signer
-            nearjs.connection.signer.fromKeyPair(nearjs.connection.networkId, accountId, account2fa.confirmKey);
+            const originalSigner = nearjs.connection.signer
+            nearjs.connection.signer = await InMemorySigner.fromKeyPair(nearjs.connection.networkId, accountId, account2fa.confirmKey);
             // 2nd confirmation signing with confirmKey from Account instance
             await account.signAndSendTransaction(accountId, [
                 functionCall('confirm', { request_id: requestId }, MULTISIG_GAS, MULTISIG_DEPOSIT)
             ]);
+            nearjs.connection.signer = originalSigner
         }
     });
     account2fa.confirmKey = KeyPair.fromRandom('ed25519');
