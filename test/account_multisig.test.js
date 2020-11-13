@@ -85,23 +85,29 @@ describe('account2fa transactions', () => {
     test('add app key before deployMultisig', async() => {
         let account = await testUtils.createAccount(nearjs);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+        const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff','some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), 'foobar', appMethodNames.join(), new BN(parseNearAmount('0.25')));
+        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames.join(), new BN(parseNearAmount('0.25')));
         account = await getAccount2FA(account);
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
-            .access_key.permission.FunctionCall.method_names.toString()).toEqual(appMethodNames.toString());
+            .access_key.permission.FunctionCall.method_names.join()).toEqual(appMethodNames.join());
+        expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
+            .access_key.permission.FunctionCall.receiver_id).toEqual(appAccountId);
     });
 
     test('add app key', async() => {
         let account = await testUtils.createAccount(nearjs);
         account = await getAccount2FA(account);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+        const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), 'foobar', appMethodNames.join(), new BN(parseNearAmount('0.25')));
+        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames.join(), new BN(parseNearAmount('0.25')));
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
-            .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
+            .access_key.permission.FunctionCall.method_names.join()).toEqual(appMethodNames.join());
+        expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
+            .access_key.permission.FunctionCall.receiver_id).toEqual(appAccountId);
     });
 
     test('send money', async() => {
