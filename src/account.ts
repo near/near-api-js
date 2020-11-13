@@ -18,6 +18,7 @@ import {
     SignedTransaction
 } from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
+import { Finality, BlockId } from './providers/provider';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
@@ -26,7 +27,6 @@ import { parseRpcError } from './utils/rpc_errors';
 import { ServerError } from './generated/rpc_error_types';
 
 import exponentialBackoff from './utils/exponential-backoff';
-import { Finality } from './providers/provider';
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -374,10 +374,12 @@ export class Account {
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
     }
 
-    async viewState(prefix: string | Uint8Array, finality: Finality = 'optimistic') {
+    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ) {
+        const { blockId, finality } = blockQuery as any || {};
         const { values } = await this.connection.provider.query({
             request_type: 'view_state', 
-            finality,
+            block_id: blockId,
+            finality: blockId ? undefined : finality || 'optimistic',
             account_id: this.accountId,
             prefix_base64: Buffer.from(prefix,).toString('base64')
         });
