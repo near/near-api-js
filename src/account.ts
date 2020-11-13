@@ -312,13 +312,13 @@ export class Account {
      */
     async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string|string[], amount?: BN): Promise<FinalExecutionOutcome> {
         if (methodNames === '') {
-            methodNames = []
+            methodNames = [];
         }
         if (!methodNames) {
-            methodNames = ['']
+            methodNames = [''];
         }
         if (!Array.isArray(methodNames)) {
-            methodNames = [methodNames]
+            methodNames = [methodNames];
         }
         let accessKey;
         if (contractId === null || contractId === undefined || contractId === '') {
