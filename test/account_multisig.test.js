@@ -81,7 +81,7 @@ describe('account2fa transactions', () => {
     test('add app key before deployMultisig', async() => {
         let account = await testUtils.createAccount(nearjs);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
-        const appAccountId = 'foobar'
+        const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff','some_more_app_stuff'];
         await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, new BN(parseNearAmount('0.25')));
         account = await getAccount2FA(account);
@@ -96,7 +96,7 @@ describe('account2fa transactions', () => {
         let account = await testUtils.createAccount(nearjs);
         account = await getAccount2FA(account);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
-        const appAccountId = 'foobar'
+        const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
         await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, new BN(parseNearAmount('0.25')));
         const keys = await account.getAccessKeys();
