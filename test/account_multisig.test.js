@@ -12,7 +12,6 @@ const {
     KeyPair,
     transactions: { functionCall },
     InMemorySigner,
-    keyStores: { InMemoryKeyStore },
     multisig: { Account2FA, MULTISIG_GAS, MULTISIG_DEPOSIT },
     utils: { format: { parseNearAmount } }
 } = nearApi;
@@ -25,7 +24,6 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     const keys = await account.getAccessKeys();
     const account2fa = new Account2FA(nearjs.connection, accountId, {
         // skip this (not using CH)
-        // skip this (not using CH)
         getCode: () => {},
         sendCode: () => {},
         // auto accept "code"
@@ -34,9 +32,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
             const { requestId } = account2fa.getRequest();
             // set confirmKey as signer
             const originalSigner = nearjs.connection.signer;
-            const tempKeyStore = new InMemoryKeyStore();
-            await tempKeyStore.setKey(nearjs.connection.networkId, accountId, account2fa.confirmKey);
-            nearjs.connection.signer = new InMemorySigner(tempKeyStore);
+            nearjs.connection.signer = await InMemorySigner.fromKeyPair(nearjs.connection.networkId, accountId, account2fa.confirmKey);
             // 2nd confirmation signing with confirmKey from Account instance
             await account.signAndSendTransaction(accountId, [
                 functionCall('confirm', { request_id: requestId }, MULTISIG_GAS, MULTISIG_DEPOSIT)
@@ -82,15 +78,32 @@ describe('deployMultisig key rotations', () => {
 
 describe('account2fa transactions', () => {
 
+    test('add app key before deployMultisig', async() => {
+        let account = await testUtils.createAccount(nearjs);
+        const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+        const appAccountId = 'foobar';
+        const appMethodNames = ['some_app_stuff','some_more_app_stuff'];
+        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, new BN(parseNearAmount('0.25')));
+        account = await getAccount2FA(account);
+        const keys = await account.getAccessKeys();
+        expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
+            .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
+        expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
+            .access_key.permission.FunctionCall.receiver_id).toEqual(appAccountId);
+    });
+
     test('add app key', async() => {
         let account = await testUtils.createAccount(nearjs);
         account = await getAccount2FA(account);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+        const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), 'foobar', appMethodNames.join(), new BN(parseNearAmount('0.25')));
+        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, new BN(parseNearAmount('0.25')));
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
             .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
+        expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
+            .access_key.permission.FunctionCall.receiver_id).toEqual(appAccountId);
     });
 
     test('send money', async() => {

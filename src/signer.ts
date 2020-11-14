@@ -1,6 +1,6 @@
 import sha256 from 'js-sha256';
 import { Signature, KeyPair, PublicKey } from './utils/key_pair';
-import { KeyStore } from './key_stores';
+import { KeyStore, InMemoryKeyStore } from './key_stores';
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
@@ -37,6 +37,21 @@ export class InMemorySigner extends Signer {
     constructor(keyStore: KeyStore) {
         super();
         this.keyStore = keyStore;
+    }
+
+    /**
+     * Creates a single account Signer instance with account, network and keyPair provided.
+     *
+     * Intended to be useful for temporary keys (e.g. claiming a Linkdrop).
+     *
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param accountId The NEAR account to assign the key pair to
+     * @param keyPair The keyPair to use for signing
+     */
+    static async fromKeyPair(networkId: string, accountId: string, keyPair: KeyPair): Promise<Signer> {
+        const keyStore = new InMemoryKeyStore()
+        await keyStore.setKey(networkId, accountId, keyPair);
+        return new InMemorySigner(keyStore);
     }
 
     /**
