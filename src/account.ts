@@ -309,17 +309,26 @@ export class Account {
     /**
      * @param publicKey A public key to be associated with the contract
      * @param contractId NEAR account where the contract is deployed
-     * @param methodName The method name on the contract as it is written in the contract code
+     * @param methodNames The method names on the contract that should be allowed to be called. Pass null for no method names and '' or [] for any method names.
      * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
      * @returns {Promise<FinalExecutionOutcome>}
      * TODO: expand this API to support more options.
      */
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome> {
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string|string[], amount?: BN): Promise<FinalExecutionOutcome> {
+        if (methodNames === '') {
+            methodNames = [];
+        }
+        if (!methodNames) {
+            methodNames = [''];
+        }
+        if (!Array.isArray(methodNames)) {
+            methodNames = [methodNames];
+        }
         let accessKey;
         if (contractId === null || contractId === undefined || contractId === '') {
             accessKey = fullAccessKey();
         } else {
-            accessKey = functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
+            accessKey = functionCallAccessKey(contractId, methodNames, amount);
         }
         return this.signAndSendTransaction(this.accountId, [addKey(PublicKey.from(publicKey), accessKey)]);
     }
