@@ -25,7 +25,6 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     const keys = await account.getAccessKeys();
     const account2fa = new Account2FA(nearjs.connection, accountId, {
         // skip this (not using CH)
-        // skip this (not using CH)
         getCode: () => {},
         sendCode: () => {},
         // auto accept "code"
@@ -85,13 +84,13 @@ describe('account2fa transactions', () => {
     test('add app key before deployMultisig', async() => {
         let account = await testUtils.createAccount(nearjs);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
-        const appAccountId = 'foobar';
+        const appAccountId = 'foobar'
         const appMethodNames = ['some_app_stuff','some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames.join(), new BN(parseNearAmount('0.25')));
+        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, new BN(parseNearAmount('0.25')));
         account = await getAccount2FA(account);
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
-            .access_key.permission.FunctionCall.method_names.join()).toEqual(appMethodNames.join());
+            .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
             .access_key.permission.FunctionCall.receiver_id).toEqual(appAccountId);
     });
@@ -100,12 +99,12 @@ describe('account2fa transactions', () => {
         let account = await testUtils.createAccount(nearjs);
         account = await getAccount2FA(account);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
-        const appAccountId = 'foobar';
+        const appAccountId = 'foobar'
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames.join(), new BN(parseNearAmount('0.25')));
+        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, new BN(parseNearAmount('0.25')));
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
-            .access_key.permission.FunctionCall.method_names.join()).toEqual(appMethodNames.join());
+            .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
             .access_key.permission.FunctionCall.receiver_id).toEqual(appAccountId);
     });
