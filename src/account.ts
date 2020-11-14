@@ -315,17 +315,14 @@ export class Account {
      * TODO: expand this API to support more options.
      */
     async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string|string[], amount?: BN): Promise<FinalExecutionOutcome> {
-        if (methodNames === '') {
-            methodNames = [];
-        }
         if (!methodNames) {
-            methodNames = [''];
+            methodNames = [];
         }
         if (!Array.isArray(methodNames)) {
             methodNames = [methodNames];
         }
         let accessKey;
-        if (contractId === null || contractId === undefined || contractId === '') {
+        if (!contractId) {
             accessKey = fullAccessKey();
         } else {
             accessKey = functionCallAccessKey(contractId, methodNames, amount);

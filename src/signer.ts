@@ -38,13 +38,15 @@ export class InMemorySigner extends Signer {
         super();
         this.keyStore = keyStore;
     }
-    
+
     /**
-     * Creates a tempSigner (intended to be one time use) with account, network and keyPair provided
+     * Creates a single account Signer instance with account, network and keyPair provided.
+     *
+     * Intended to be useful for temporary keys (e.g. claiming a Linkdrop).
+     *
      * @param networkId The targeted network. (ex. default, betanet, etc…)
-     * @param accountId The NEAR account to assign a public key to
+     * @param accountId The NEAR account to assign the key pair to
      * @param keyPair The keyPair to use for signing
-     * @returns {Promise<PublicKey>}
      */
     static async fromKeyPair(networkId: string, accountId: string, keyPair: KeyPair): Promise<Signer> {
         const keyStore = new InMemoryKeyStore()
