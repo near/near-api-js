@@ -1,7 +1,6 @@
 import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
-import { PublicKey } from './utils/key_pair';
 import { Action } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 export declare const MULTISIG_STORAGE_KEY = "__multisigRequest";
@@ -18,22 +17,44 @@ interface MultisigContract {
         request_id: any;
     }): any;
 }
+declare type sendCodeFunction = () => Promise<any>;
+declare type getCodeFunction = (method: any) => Promise<string>;
+declare type verifyCodeFunction = (securityCode: any) => Promise<any>;
 export declare class AccountMultisig extends Account {
     contract: MultisigContract;
     storage: any;
-    constructor(connection: Connection, accountId: string, storage: any);
-    addKey(publicKey: string | PublicKey, contractId?: string, methodName?: string, amount?: BN): Promise<FinalExecutionOutcome>;
+    onAddRequestResult: Function;
+    constructor(connection: Connection, accountId: string, options: any);
+    signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     signAndSendTransactions(transactions: any): Promise<void>;
-    deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
     deleteUnconfirmedRequests(): Promise<void>;
     getRequestNonce(): Promise<Number>;
     getRequestIds(): Promise<string>;
     isDeleteAction(actions: any): Boolean;
     getRequest(): any;
     setRequest(data: any): any;
-    sendRequestCode(): Promise<any>;
-    verifyRequestCode(securityCode: string): Promise<any>;
+}
+export declare class Account2FA extends AccountMultisig {
+    /********************************
+    Account2FA has options object where you can provide callbacks for:
+    - sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
+    - getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
+    - onResult: the tx result after it's been confirmed by NEAR Contract Helper
+    ********************************/
+    sendCode: sendCodeFunction;
+    getCode: getCodeFunction;
+    verifyCode: verifyCodeFunction;
+    onConfirmResult: Function;
+    helperUrl: string;
+    constructor(connection: Connection, accountId: string, options: any);
+    signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
+    disable(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
+    sendCodeDefault(): Promise<any>;
+    getCodeDefault(method: any): Promise<string>;
+    promptAndVerify(): any;
+    verifyCodeDefault(securityCode: string): Promise<any>;
     getRecoveryMethods(): Promise<{
         accountId: string;
         data: any;
