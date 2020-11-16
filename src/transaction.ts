@@ -34,14 +34,14 @@ export function functionCallAccessKey(receiverId: string, methodNames: String[],
 
 export class IAction extends Assignable {}
 
-class CreateAccount extends IAction {}
-class DeployContract extends IAction { code: Uint8Array; }
-class FunctionCall extends IAction { methodName: string; args: Uint8Array; gas: BN; deposit: BN; }
-class Transfer extends IAction { deposit: BN; }
-class Stake extends IAction { stake: BN; publicKey: PublicKey; }
-class AddKey extends IAction { publicKey: PublicKey; accessKey: AccessKey; }
-class DeleteKey extends IAction { publicKey: PublicKey; }
-class DeleteAccount extends IAction { beneficiaryId: string; }
+export class CreateAccount extends IAction {}
+export class DeployContract extends IAction { code: Uint8Array; }
+export class FunctionCall extends IAction { methodName: string; args: Uint8Array; gas: BN; deposit: BN; }
+export class Transfer extends IAction { deposit: BN; }
+export class Stake extends IAction { stake: BN; publicKey: PublicKey; }
+export class AddKey extends IAction { publicKey: PublicKey; accessKey: AccessKey; }
+export class DeleteKey extends IAction { publicKey: PublicKey; }
+export class DeleteAccount extends IAction { beneficiaryId: string; }
 
 export function createAccount(): Action {
     return new Action({createAccount: new CreateAccount({}) });

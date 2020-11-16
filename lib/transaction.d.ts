@@ -22,32 +22,32 @@ export declare function fullAccessKey(): AccessKey;
 export declare function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey;
 export declare class IAction extends Assignable {
 }
-declare class CreateAccount extends IAction {
+export declare class CreateAccount extends IAction {
 }
-declare class DeployContract extends IAction {
+export declare class DeployContract extends IAction {
     code: Uint8Array;
 }
-declare class FunctionCall extends IAction {
+export declare class FunctionCall extends IAction {
     methodName: string;
     args: Uint8Array;
     gas: BN;
     deposit: BN;
 }
-declare class Transfer extends IAction {
+export declare class Transfer extends IAction {
     deposit: BN;
 }
-declare class Stake extends IAction {
+export declare class Stake extends IAction {
     stake: BN;
     publicKey: PublicKey;
 }
-declare class AddKey extends IAction {
+export declare class AddKey extends IAction {
     publicKey: PublicKey;
     accessKey: AccessKey;
 }
-declare class DeleteKey extends IAction {
+export declare class DeleteKey extends IAction {
     publicKey: PublicKey;
 }
-declare class DeleteAccount extends IAction {
+export declare class DeleteAccount extends IAction {
     beneficiaryId: string;
 }
 export declare function createAccount(): Action;
@@ -104,4 +104,3 @@ export declare const SCHEMA: Map<Function, any>;
 export declare function createTransaction(signerId: string, publicKey: PublicKey, receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array): Transaction;
 export declare function signTransaction(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
-export {};

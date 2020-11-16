@@ -7,6 +7,10 @@ import { ServerError } from '../generated/rpc_error_types';
 
 export * from '../generated/rpc_error_types';
 
+class ServerTransactionError extends ServerError {
+    public transaction_outcome: any;
+}
+
 export function parseRpcError(errorObj: Record<string, any>): ServerError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
@@ -14,6 +18,16 @@ export function parseRpcError(errorObj: Record<string, any>): ServerError {
     const error = new CLASSMAP[errorClassName](formatError(errorClassName, result), errorClassName);
     Object.assign(error, result);
     return error;
+}
+
+export function parseResultError(result: any): ServerTransactionError {
+    const server_error = parseRpcError(result.status.Failure);
+    const server_tx_error = new ServerTransactionError();
+    Object.assign(server_tx_error, server_error);
+    server_tx_error.type = server_error.type;
+    server_tx_error.message = server_error.message;
+    server_tx_error.transaction_outcome = result.transaction_outcome;
+    return server_tx_error;
 }
 
 export function formatError(errorClassName: string, errorData): string {
@@ -57,6 +71,8 @@ function walkSubtype(errorObj, schema, result, typeName) {
         }
         return walkSubtype(error, schema, result, errorTypeName);
     } else {
+        // TODO: is this the right thing to do?
+        result.kind = errorObj;
         return typeName;
     }
 }
