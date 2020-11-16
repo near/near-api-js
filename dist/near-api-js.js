@@ -242,18 +242,24 @@ class Account {
     /**
      * @param publicKey A public key to be associated with the contract
      * @param contractId NEAR account where the contract is deployed
-     * @param methodName The method name on the contract as it is written in the contract code
+     * @param methodNames The method names on the contract that should be allowed to be called. Pass null for no method names and '' or [] for any method names.
      * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
      * @returns {Promise<FinalExecutionOutcome>}
      * TODO: expand this API to support more options.
      */
-    async addKey(publicKey, contractId, methodName, amount) {
+    async addKey(publicKey, contractId, methodNames, amount) {
+        if (!methodNames) {
+            methodNames = [];
+        }
+        if (!Array.isArray(methodNames)) {
+            methodNames = [methodNames];
+        }
         let accessKey;
-        if (contractId === null || contractId === undefined || contractId === '') {
+        if (!contractId) {
             accessKey = transaction_1.fullAccessKey();
         }
         else {
-            accessKey = transaction_1.functionCallAccessKey(contractId, !methodName ? [] : [methodName], amount);
+            accessKey = transaction_1.functionCallAccessKey(contractId, methodNames, amount);
         }
         return this.signAndSendTransaction(this.accountId, [transaction_1.addKey(key_pair_1.PublicKey.from(publicKey), accessKey)]);
     }
@@ -400,7 +406,7 @@ class UrlAccountCreator extends AccountCreator {
 exports.UrlAccountCreator = UrlAccountCreator;
 
 },{"./utils/web":34}],4:[function(require,module,exports){
-(function (process,Buffer){
+(function (Buffer){
 'use strict';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -413,11 +419,9 @@ const format_1 = require("./utils/format");
 const key_pair_1 = require("./utils/key_pair");
 const transaction_1 = require("./transaction");
 const web_1 = require("./utils/web");
-const NETWORK_ID = process.env.REACT_APP_NETWORK_ID || 'default';
-const CONTRACT_HELPER_URL = process.env.CONTRACT_HELPER_URL || 'https://helper.testnet.near.org';
 exports.MULTISIG_STORAGE_KEY = '__multisigRequest';
-exports.MULTISIG_ALLOWANCE = new bn_js_1.default(process.env.MULTISIG_ALLOWANCE || format_1.parseNearAmount('1'));
-exports.MULTISIG_GAS = new bn_js_1.default(process.env.MULTISIG_GAS || '100000000000000');
+exports.MULTISIG_ALLOWANCE = new bn_js_1.default(format_1.parseNearAmount('1'));
+exports.MULTISIG_GAS = new bn_js_1.default('100000000000000');
 exports.MULTISIG_DEPOSIT = new bn_js_1.default('0');
 exports.MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 exports.MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
@@ -428,16 +432,14 @@ let storageFallback = {
     [exports.MULTISIG_STORAGE_KEY]: null
 };
 class AccountMultisig extends account_1.Account {
-    constructor(connection, accountId, storage) {
+    constructor(connection, accountId, options) {
         super(connection, accountId);
-        this.storage = storage;
+        this.storage = options.storage;
+        this.onAddRequestResult = options.onAddRequestResult;
         this.contract = getContract(this);
     }
-    async addKey(publicKey, contractId, methodName, amount) {
-        if (contractId) {
-            return super.addKey(publicKey, contractId, exports.MULTISIG_CHANGE_METHODS.join(), exports.MULTISIG_ALLOWANCE);
-        }
-        return super.addKey(publicKey);
+    async signAndSendTransactionWithAccount(receiverId, actions) {
+        return super.signAndSendTransaction(receiverId, actions);
     }
     async signAndSendTransaction(receiverId, actions) {
         const { accountId } = this;
@@ -447,40 +449,24 @@ class AccountMultisig extends account_1.Account {
         await this.deleteUnconfirmedRequests();
         const requestId = await this.getRequestNonce();
         this.setRequest({ accountId, requestId, actions });
-        const args = new Uint8Array(new TextEncoder().encode(JSON.stringify({
+        const args = Buffer.from(JSON.stringify({
             request: {
                 receiver_id: receiverId,
                 actions: convertActions(actions, accountId, receiverId)
             }
-        })));
-        return await super.signAndSendTransaction(accountId, [
+        }));
+        const result = await super.signAndSendTransaction(accountId, [
             transaction_1.functionCall('add_request_and_confirm', args, exports.MULTISIG_GAS, exports.MULTISIG_DEPOSIT)
         ]);
+        if (this.onAddRequestResult) {
+            await this.onAddRequestResult(result);
+        }
+        return result;
     }
     async signAndSendTransactions(transactions) {
         for (let { receiverId, actions } of transactions) {
             await this.signAndSendTransaction(receiverId, actions);
         }
-    }
-    async deployMultisig(contractBytes) {
-        const { accountId } = this;
-        // replace account keys & recovery keys with limited access keys; DO NOT replace seed phrase keys
-        const accountKeys = (await this.getAccessKeys()).map((ak) => ak.public_key);
-        const seedPhraseKeys = (await this.getRecoveryMethods()).data
-            .filter(({ kind, publicKey }) => kind === 'phrase' && publicKey !== null && accountKeys.includes(publicKey))
-            .map((rm) => rm.publicKey);
-        const fak2lak = accountKeys.filter((k) => !seedPhraseKeys.includes(k)).map(toPK);
-        const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
-        const newArgs = new Uint8Array(new TextEncoder().encode(JSON.stringify({ 'num_confirmations': 2 })));
-        const actions = [
-            ...fak2lak.map((pk) => transaction_1.deleteKey(pk)),
-            ...fak2lak.map((pk) => transaction_1.addKey(pk, transaction_1.functionCallAccessKey(accountId, exports.MULTISIG_CHANGE_METHODS, null))),
-            transaction_1.addKey(confirmOnlyKey, transaction_1.functionCallAccessKey(accountId, exports.MULTISIG_CONFIRM_METHODS, null)),
-            transaction_1.deployContract(contractBytes),
-            transaction_1.functionCall('new', newArgs, exports.MULTISIG_GAS, exports.MULTISIG_DEPOSIT),
-        ];
-        console.log('deploying multisig contract for', accountId);
-        return await super.signAndSendTransaction(accountId, actions);
     }
     async deleteUnconfirmedRequests() {
         const { contract } = this;
@@ -516,8 +502,72 @@ class AccountMultisig extends account_1.Account {
         }
         storageFallback[exports.MULTISIG_STORAGE_KEY] = data;
     }
-    // default helpers for CH
-    async sendRequestCode() {
+}
+exports.AccountMultisig = AccountMultisig;
+class Account2FA extends AccountMultisig {
+    constructor(connection, accountId, options) {
+        super(connection, accountId, options);
+        this.helperUrl = 'https://helper.testnet.near.org';
+        this.helperUrl = options.helperUrl || this.helperUrl;
+        this.storage = options.storage;
+        this.sendCode = options.sendCode || this.sendCodeDefault;
+        this.getCode = options.getCode || this.getCodeDefault;
+        this.verifyCode = options.verifyCode || this.verifyCodeDefault;
+        this.onConfirmResult = options.onConfirmResult;
+        this.contract = getContract(this);
+    }
+    async signAndSendTransaction(receiverId, actions) {
+        await super.signAndSendTransaction(receiverId, actions);
+        await this.sendCode();
+        const result = await this.promptAndVerify();
+        if (this.onConfirmResult) {
+            await this.onConfirmResult(result);
+        }
+        return result;
+    }
+    // default helpers for CH deployments of multisig
+    async deployMultisig(contractBytes) {
+        const { accountId } = this;
+        const seedOrLedgerKey = (await this.getRecoveryMethods()).data
+            .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
+            .map((rm) => rm.publicKey);
+        const fak2lak = (await this.getAccessKeys())
+            .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
+            .map((ak) => ak.public_key)
+            .map(toPK);
+        const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+        const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
+        const actions = [
+            ...fak2lak.map((pk) => transaction_1.deleteKey(pk)),
+            ...fak2lak.map((pk) => transaction_1.addKey(pk, transaction_1.functionCallAccessKey(accountId, exports.MULTISIG_CHANGE_METHODS, null))),
+            transaction_1.addKey(confirmOnlyKey, transaction_1.functionCallAccessKey(accountId, exports.MULTISIG_CONFIRM_METHODS, null)),
+            transaction_1.deployContract(contractBytes),
+        ];
+        if ((await this.state()).code_hash === '11111111111111111111111111111111') {
+            actions.push(transaction_1.functionCall('new', newArgs, exports.MULTISIG_GAS, exports.MULTISIG_DEPOSIT));
+        }
+        console.log('deploying multisig contract for', accountId);
+        return await super.signAndSendTransactionWithAccount(accountId, actions);
+    }
+    async disable(contractBytes) {
+        const { accountId } = this;
+        const accessKeys = await this.getAccessKeys();
+        const lak2fak = accessKeys.filter(({ access_key }) => access_key && access_key.permission && access_key.permission.FunctionCall &&
+            access_key.permission.FunctionCall.receiver_id === accountId &&
+            access_key.permission.FunctionCall.method_names &&
+            access_key.permission.FunctionCall.method_names.length === 4 &&
+            access_key.permission.FunctionCall.method_names.includes('add_request_and_confirm'));
+        const confirmOnlyKey = key_pair_1.PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+        const actions = [
+            transaction_1.deleteKey(confirmOnlyKey),
+            ...lak2fak.map(({ public_key }) => transaction_1.deleteKey(public_key)),
+            ...lak2fak.map(({ public_key }) => transaction_1.addKey(public_key, null)),
+            transaction_1.deployContract(contractBytes),
+        ];
+        console.log('disabling 2fa for', accountId);
+        return await this.signAndSendTransaction(accountId, actions);
+    }
+    async sendCodeDefault() {
         const { accountId } = this;
         const { requestId, actions } = this.getRequest();
         if (this.isDeleteAction(actions)) {
@@ -531,7 +581,25 @@ class AccountMultisig extends account_1.Account {
         });
         return requestId;
     }
-    async verifyRequestCode(securityCode) {
+    async getCodeDefault(method) {
+        throw new Error('There is no getCode callback provided. Please provide your own in AccountMultisig constructor options. It has a parameter method where method.kind is "email" or "phone".');
+    }
+    async promptAndVerify() {
+        const method = await this.get2faMethod();
+        const securityCode = await this.getCode(method);
+        try {
+            const { success, res: result } = await this.verifyCode(securityCode);
+            if (!success || result === false) {
+                throw new Error('Request failed with error: ' + JSON.stringify(result));
+            }
+            return typeof result === 'string' && result.length === 0 ? 'true' : result;
+        }
+        catch (e) {
+            console.warn('Invalid security code. Please try again.\n');
+            return await this.promptAndVerify();
+        }
+    }
+    async verifyCodeDefault(securityCode) {
         const { accountId } = this;
         const request = this.getRequest();
         if (!request) {
@@ -564,18 +632,18 @@ class AccountMultisig extends account_1.Account {
     async signatureFor() {
         const { accountId } = this;
         const blockNumber = String((await this.connection.provider.status()).sync_info.latest_block_height);
-        const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, NETWORK_ID);
+        const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, this.connection.networkId);
         const blockNumberSignature = Buffer.from(signed.signature).toString('base64');
         return { blockNumber, blockNumberSignature };
     }
     async postSignedJson(path, body) {
-        return await web_1.fetchJson(CONTRACT_HELPER_URL + path, JSON.stringify({
+        return await web_1.fetchJson(this.helperUrl + path, JSON.stringify({
             ...body,
             ...(await this.signatureFor())
         }));
     }
 }
-exports.AccountMultisig = AccountMultisig;
+exports.Account2FA = Account2FA;
 // helpers
 const toPK = (pk) => key_pair_1.PublicKey.from(pk);
 const convertPKForContract = (pk) => pk.toString().replace('ed25519:', '');
@@ -619,8 +687,8 @@ const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
     return action;
 });
 
-}).call(this,require('_process'),require("buffer").Buffer)
-},{"./account":2,"./contract":8,"./transaction":24,"./utils/format":28,"./utils/key_pair":30,"./utils/web":34,"_process":70,"bn.js":39,"buffer":43}],5:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"./account":2,"./contract":8,"./transaction":24,"./utils/format":28,"./utils/key_pair":30,"./utils/web":34,"bn.js":39,"buffer":43}],5:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -2578,6 +2646,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const js_sha256_1 = __importDefault(require("js-sha256"));
 const key_pair_1 = require("./utils/key_pair");
+const key_stores_1 = require("./key_stores");
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
  */
@@ -2591,6 +2660,20 @@ class InMemorySigner extends Signer {
     constructor(keyStore) {
         super();
         this.keyStore = keyStore;
+    }
+    /**
+     * Creates a single account Signer instance with account, network and keyPair provided.
+     *
+     * Intended to be useful for temporary keys (e.g. claiming a Linkdrop).
+     *
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param accountId The NEAR account to assign the key pair to
+     * @param keyPair The keyPair to use for signing
+     */
+    static async fromKeyPair(networkId, accountId, keyPair) {
+        const keyStore = new key_stores_1.InMemoryKeyStore();
+        await keyStore.setKey(networkId, accountId, keyPair);
+        return new InMemorySigner(keyStore);
     }
     /**
      * Creates a public key for the account given
@@ -2639,7 +2722,7 @@ class InMemorySigner extends Signer {
 }
 exports.InMemorySigner = InMemorySigner;
 
-},{"./utils/key_pair":30,"js-sha256":63}],24:[function(require,module,exports){
+},{"./key_stores":14,"./utils/key_pair":30,"js-sha256":63}],24:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
