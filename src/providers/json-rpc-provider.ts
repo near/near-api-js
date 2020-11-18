@@ -70,7 +70,7 @@ export class JsonRpcProvider extends Provider {
      * Query the RPC as [shown in the docs](https://docs.nearprotocol.com/docs/interaction/rpc#query)
      */
     async query(...args: any[]): Promise<any> {
-        let result
+        let result;
         if (args.length === 1) {
             result = await this.sendJsonRpc('query', args[0]);
         } else {
