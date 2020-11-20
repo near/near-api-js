@@ -381,10 +381,13 @@ export class Account {
             block_id: blockId,
             finality: blockId ? undefined : finality || 'optimistic',
             account_id: this.accountId,
-            prefix_base64: Buffer.from(prefix,).toString('base64')
+            prefix_base64: Buffer.from(prefix).toString('base64')
         });
 
-        return values.map(({key, value}) => ({ key: Buffer.from(key, 'base64'), value: Buffer.from(value, 'base64')}))
+        return values.map(({key, value}) => ({
+            key: Buffer.from(key, 'base64'),
+            value: Buffer.from(value, 'base64')
+        }))
     }
 
     /**
