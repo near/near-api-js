@@ -142,6 +142,15 @@ describe('with deploy contract', () => {
         expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
 
+    test('view contract state', async() => {
+        const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+        await workingAccount.functionCall(contractId, 'setValue', { value: setCallValue });
+
+        const contractAccount = await nearjs.account(contractId);
+        const state = (await contractAccount.viewState('')).map(({ key, value }) => [key.toString('utf-8'), value.toString('utf-8')]);
+        expect(state).toEqual([['name', setCallValue]]);
+    });
+
     test('make function calls via account with custom parser', async() => {
         const result = await workingAccount.viewFunction(
             contractId,
