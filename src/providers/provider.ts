@@ -26,7 +26,6 @@ type BlockHash = string;
 type BlockHeight = number;
 export type BlockId = BlockHash | BlockHeight;
 
-// TODO: Remove near-final?
 export type Finality = 'optimistic' | 'near-final' | 'final'
 
 export enum ExecutionStatusBasic {
