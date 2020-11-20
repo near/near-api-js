@@ -1,6 +1,8 @@
+/// <reference types="node" />
 import BN from 'bn.js';
 import { AccessKey, Action, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
+import { Finality, BlockId } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
 export interface AccountState {
@@ -118,6 +120,23 @@ export declare class Account {
     viewFunction(contractId: string, methodName: string, args: any, { parse }?: {
         parse?: typeof parseJsonFromRawResponse;
     }): Promise<any>;
+    /**
+     * See https://docs.near.org/docs/api/rpc#view-contract-state
+     *
+     * Returns the state (key value pairs) of this account's contract based on the key prefix.
+     * Pass an empty string for prefix if you would like to return the entire state.
+     *
+     * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
+     * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     */
+    viewState(prefix: string | Uint8Array, blockQuery: {
+        blockId: BlockId;
+    } | {
+        finality: Finality;
+    }): Promise<Array<{
+        key: Buffer;
+        value: Buffer;
+    }>>;
     /**
      * @returns array of {access_key: AccessKey, public_key: PublicKey} items.
      */

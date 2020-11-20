@@ -18,6 +18,7 @@ import {
     SignedTransaction
 } from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
+import { Finality, BlockId } from './providers/provider';
 import { Connection } from './connection';
 import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
@@ -377,6 +378,31 @@ export class Account {
             this.printLogs(contractId, result.logs);
         }
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
+    }
+
+    /**
+     * See https://docs.near.org/docs/api/rpc#view-contract-state
+     *
+     * Returns the state (key value pairs) of this account's contract based on the key prefix.
+     * Pass an empty string for prefix if you would like to return the entire state.
+     *
+     * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
+     * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     */
+    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer, value: Buffer}>> {
+        const { blockId, finality } = blockQuery as any || {};
+        const { values } = await this.connection.provider.query({
+            request_type: 'view_state',
+            block_id: blockId,
+            finality: blockId ? undefined : finality || 'optimistic',
+            account_id: this.accountId,
+            prefix_base64: Buffer.from(prefix).toString('base64')
+        });
+
+        return values.map(({key, value}) => ({
+            key: Buffer.from(key, 'base64'),
+            value: Buffer.from(value, 'base64')
+        }))
     }
 
     /**

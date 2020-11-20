@@ -198,6 +198,7 @@ export declare abstract class Provider {
     abstract status(): Promise<NodeStatusResult>;
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
+    abstract query(params: object): Promise<any>;
     abstract query(path: string, data: string): Promise<any>;
     abstract block(blockId: BlockId): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
