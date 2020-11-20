@@ -374,10 +374,20 @@ export class Account {
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
     }
 
+    /**
+     * See https://docs.near.org/docs/api/rpc#view-contract-state
+     *
+     * Returns the state (key value pairs) of this account's contract based on the key prefix.
+     * Pass an empty string for prefix if you would like to return the entire state.
+     *
+     * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
+     * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     *
+     */
     async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ) {
         const { blockId, finality } = blockQuery as any || {};
         const { values } = await this.connection.provider.query({
-            request_type: 'view_state', 
+            request_type: 'view_state',
             block_id: blockId,
             finality: blockId ? undefined : finality || 'optimistic',
             account_id: this.accountId,
