@@ -382,9 +382,8 @@ export class Account {
      *
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
-     *
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ) {
+    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer, value: Buffer}>> {
         const { blockId, finality } = blockQuery as any || {};
         const { values } = await this.connection.provider.query({
             request_type: 'view_state',
