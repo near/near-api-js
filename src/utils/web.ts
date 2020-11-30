@@ -56,7 +56,7 @@ export async function fetchJson(connection: string | ConnectionInfo, json?: stri
             const response = await fetch(url, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
-                headers: { 'Content-type': 'application/json; charset=utf-8' }
+                headers: { 'Content-Type': 'application/json; charset=utf-8' }
             });
             if (!response.ok) {
                 if (response.status === 503) {
