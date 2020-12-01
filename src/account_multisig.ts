@@ -5,7 +5,7 @@ import { Account } from './account';
 import { Contract } from './contract';
 import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
-import { PublicKey } from './utils/key_pair';
+import { KeyPair, PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { fetchJson } from './utils/web';
@@ -188,19 +188,32 @@ export class Account2FA extends AccountMultisig {
         return await super.signAndSendTransactionWithAccount(accountId, actions);
     }
 
-    async disable(contractBytes: Uint8Array) {
+    async disable(contractBytes: Uint8Array, newLocalPublicKey: PublicKey) {
         const { accountId } = this
-        const accessKeys = await this.getAccessKeys()
-        const lak2fak = accessKeys.filter(({ access_key }) => 
+        let [
+            confirmOnlyKey,
+            localPublicKey,
+            accessKeys
+        ] = await Promise.all([
+            this.postSignedJson('/2fa/getAccessKey', { accountId }),
+            this.connection.signer.getPublicKey(accountId, this.connection.networkId),
+            this.getAccessKeys()
+        ])
+        confirmOnlyKey = PublicKey.from(confirmOnlyKey.publicKey)
+        const localPublicKeyStr = localPublicKey.toString()
+        const lak2fak = accessKeys.filter(({ public_key, access_key }) => 
+            public_key !== localPublicKeyStr &&
             access_key && access_key.permission && access_key.permission.FunctionCall &&
             access_key.permission.FunctionCall.receiver_id === accountId &&
             access_key.permission.FunctionCall.method_names &&
             access_key.permission.FunctionCall.method_names.length === 4 &&
             access_key.permission.FunctionCall.method_names.includes('add_request_and_confirm')    
         )
-        const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey)
+        // newLocalPublicKey and lak2fak -> full access keys, existing localStorageKey is deleted
         const actions = [
             deleteKey(confirmOnlyKey),
+            deleteKey(localPublicKey),
+            addKey(newLocalPublicKey, null),
             ...lak2fak.map(({ public_key }) => deleteKey(public_key)),
             ...lak2fak.map(({ public_key }) => addKey(public_key, null)),
             deployContract(contractBytes),
