@@ -5,7 +5,7 @@ import { Account } from './account';
 import { Contract } from './contract';
 import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
-import { KeyPair, PublicKey } from './utils/key_pair';
+import { PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { fetchJson } from './utils/web';
