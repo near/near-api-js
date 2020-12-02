@@ -319,7 +319,6 @@ export class Account2FA extends AccountMultisig {
 }
 
 // helpers
-const toPK = (pk) => PublicKey.from(pk)
 const convertPKForContract = (pk) => pk.toString().replace('ed25519:', '');
 
 const getContract = (account): unknown => {
