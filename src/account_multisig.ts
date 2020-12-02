@@ -176,6 +176,7 @@ export class Account2FA extends AccountMultisig {
         const seedOrLedgerKey = recoveryMethods.data
             .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
             .map((rm) => rm.publicKey)
+
         const localPublicKeyStr = localPublicKey.toString()
         const fak2lak = accessKeys
             .filter(({ public_key, access_key: { permission } }) => 

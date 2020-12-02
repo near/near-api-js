@@ -21,8 +21,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) => ({ publicKey, kind: 'phone' })) => {
     // modifiers to functions replaces contract helper (CH)
     const { accountId } = account;
-    const keys = await account.getAccessKeys();
-    const account2fa = new Account2FA(nearjs.connection, accountId, {
+    const account2fa = new Account2FA(account.connection, accountId, {
         // skip this (not using CH)
         getCode: () => {},
         sendCode: () => {},
@@ -40,16 +39,20 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
             nearjs.connection.signer = originalSigner;
         }
     });
+    account2fa.newKeyPair = KeyPair.fromRandom('ed25519');
+    const newLocalPublicKey = account2fa.newKeyPair.publicKey;
+    account2fa.newLocalPublicKey = newLocalPublicKey;
     account2fa.confirmKey = KeyPair.fromRandom('ed25519');
     account2fa.postSignedJson = () => ({ publicKey: account2fa.confirmKey.getPublicKey() });
-    account2fa.getRecoveryMethods = () => ({
-        data: keys.map(keyMapping)
+    account2fa.getRecoveryMethods = async () => ({
+        data: (await account.getAccessKeys()).map(keyMapping)
     });
-    await account2fa.deployMultisig([...fs.readFileSync('./test/data/multisig.wasm')]);
+    await account2fa.deployMultisig([...fs.readFileSync('./test/data/multisig.wasm')], newLocalPublicKey);
+    account2fa.connection.signer = await InMemorySigner.fromKeyPair(nearjs.connection.networkId, accountId, account2fa.newKeyPair);
     return account2fa;
 };
 
-beforeAll(async () => {
+beforeEach(async () => {
     nearjs = await testUtils.setUpTestConnection();
     let nodeStatus = await nearjs.connection.provider.status();
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
@@ -60,18 +63,24 @@ describe('deployMultisig key rotations', () => {
 
     test('full access key if recovery method is "ledger" or "phrase", limited access key if "phone"', async () => {
         const account = await testUtils.createAccount(nearjs);
-        await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey());
-        await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey());
-        const keys = await account.getAccessKeys();
-        const kinds = ['ledger', 'phrase', 'phone'];
+        const ledgerKey = KeyPair.fromRandom('ed25519').getPublicKey()
+        await account.addKey(ledgerKey);
+        const seedKey = KeyPair.fromRandom('ed25519').getPublicKey()
+        await account.addKey(seedKey);
         const account2fa = await getAccount2FA(
             account,
-            ({ public_key: publicKey }, i) => ({ publicKey, kind: kinds[i] })
+            ({ public_key: publicKey }) => {
+                const recoveryMethod = { publicKey }
+                if (publicKey === ledgerKey.toString()) recoveryMethod.kind = 'ledger'
+                else if (publicKey === seedKey.toString()) recoveryMethod.kind = 'phrase'
+                else recoveryMethod.kind = 'phone'
+                return recoveryMethod
+            }
         );
         const currentKeys = await account2fa.getAccessKeys();
-        expect(currentKeys.find(({ public_key }) => keys[0].public_key === public_key).access_key.permission).toEqual('FullAccess');
-        expect(currentKeys.find(({ public_key }) => keys[1].public_key === public_key).access_key.permission).toEqual('FullAccess');
-        expect(currentKeys.find(({ public_key }) => keys[2].public_key === public_key).access_key.permission).not.toEqual('FullAccess');
+        expect(currentKeys.find(({ public_key }) => public_key === ledgerKey.toString()).access_key.permission).toEqual('FullAccess');
+        expect(currentKeys.find(({ public_key }) => public_key === seedKey.toString()).access_key.permission).toEqual('FullAccess');
+        expect(currentKeys.find(({ public_key }) => public_key === account2fa.newLocalPublicKey.toString()).access_key.permission).not.toEqual('FullAccess');
     });
     
 });
@@ -108,7 +117,8 @@ describe('account2fa transactions', () => {
 
     test('send money', async() => {
         let sender = await testUtils.createAccount(nearjs);
-        let receiver = await testUtils.createAccount(nearjs);
+        const nearjs2 = await testUtils.setUpTestConnection();
+        let receiver = await testUtils.createAccount(nearjs2);
         sender = await getAccount2FA(sender);
         receiver = await getAccount2FA(receiver);
         const { amount: receiverAmount } = await receiver.state();
