@@ -63,18 +63,18 @@ describe('deployMultisig key rotations', () => {
 
     test('full access key if recovery method is "ledger" or "phrase", limited access key if "phone"', async () => {
         const account = await testUtils.createAccount(nearjs);
-        const ledgerKey = KeyPair.fromRandom('ed25519').getPublicKey()
+        const ledgerKey = KeyPair.fromRandom('ed25519').getPublicKey();
         await account.addKey(ledgerKey);
-        const seedKey = KeyPair.fromRandom('ed25519').getPublicKey()
+        const seedKey = KeyPair.fromRandom('ed25519').getPublicKey();
         await account.addKey(seedKey);
         const account2fa = await getAccount2FA(
             account,
             ({ public_key: publicKey }) => {
-                const recoveryMethod = { publicKey }
-                if (publicKey === ledgerKey.toString()) recoveryMethod.kind = 'ledger'
-                else if (publicKey === seedKey.toString()) recoveryMethod.kind = 'phrase'
-                else recoveryMethod.kind = 'phone'
-                return recoveryMethod
+                const recoveryMethod = { publicKey };
+                if (publicKey === ledgerKey.toString()) recoveryMethod.kind = 'ledger';
+                else if (publicKey === seedKey.toString()) recoveryMethod.kind = 'phrase';
+                else recoveryMethod.kind = 'phone';
+                return recoveryMethod;
             }
         );
         const currentKeys = await account2fa.getAccessKeys();
