@@ -159,29 +159,43 @@ export class Account2FA extends AccountMultisig {
 
     // default helpers for CH deployments of multisig
 
-    async deployMultisig(contractBytes: Uint8Array) {
+    async deployMultisig(contractBytes: Uint8Array, newLocalPublicKey: PublicKey) {
         const { accountId } = this
-
-        const seedOrLedgerKey = (await this.getRecoveryMethods()).data
+        let [
+            confirmOnlyKey,
+            localPublicKey,
+            recoveryMethods,
+            accessKeys,
+        ] = await Promise.all([
+            this.postSignedJson('/2fa/getAccessKey', { accountId }),
+            this.connection.signer.getPublicKey(accountId, this.connection.networkId),
+            this.getRecoveryMethods(),
+            this.getAccessKeys()
+        ])
+        confirmOnlyKey = PublicKey.from(confirmOnlyKey.publicKey)
+        const seedOrLedgerKey = recoveryMethods.data
             .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
             .map((rm) => rm.publicKey)
-
-        const fak2lak = (await this.getAccessKeys())
-            .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
-            .map((ak) => ak.public_key)
-            .map(toPK)
-
-        const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey)
-
-        const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
+        const localPublicKeyStr = localPublicKey.toString()
+        const fak2lak = accessKeys
+            .filter(({ public_key, access_key: { permission } }) => 
+                public_key !== localPublicKeyStr &&
+                permission === 'FullAccess' &&
+                !seedOrLedgerKey.includes(public_key)
+            )
+            .map((ak) => PublicKey.from(ak.public_key))
+        const lak = functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null)
 
         const actions = [
-            ...fak2lak.map((pk) => deleteKey(pk)),
-            ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
             addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
+            deleteKey(localPublicKey),
+            addKey(newLocalPublicKey, lak),
+            ...fak2lak.map((pk) => deleteKey(pk)),
+            ...fak2lak.map((pk) => addKey(pk, lak)),
             deployContract(contractBytes),
         ]
         if ((await this.state()).code_hash === '11111111111111111111111111111111') {
+            const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),)
         }
         console.log('deploying multisig contract for', accountId)
