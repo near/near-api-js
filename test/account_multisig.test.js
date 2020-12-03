@@ -138,23 +138,23 @@ describe('account2fa disable / re-enable key rotations', () => {
         account = await getAccount2FA(account);
         const keys = (await account.getAccessKeys()).map(({ public_key }) => public_key);
         const newLocalPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
-        await account.disable([...fs.readFileSync('./test/data/main.wasm')], newLocalPublicKey)
+        await account.disable([...fs.readFileSync('./test/data/main.wasm')], newLocalPublicKey);
         const keys2 = await account.getAccessKeys();
-        expect(keys2[0].public_key).toEqual(newLocalPublicKey.toString())
-        expect(keys.find((public_key) => keys2[0].public_key === public_key)).toEqual(undefined)
+        expect(keys2[0].public_key).toEqual(newLocalPublicKey.toString());
+        expect(keys.find((public_key) => keys2[0].public_key === public_key)).toEqual(undefined);
     });
 
     test('test disable and re-enable', async() => {
         let account = await testUtils.createAccount(nearjs);
         account = await getAccount2FA(account);
         const keys = (await account.getAccessKeys()).map(({ public_key }) => public_key);
-        const newKeyPair = KeyPair.fromRandom('ed25519')
-        await account.disable([...fs.readFileSync('./test/data/main.wasm')], newKeyPair.getPublicKey())
+        const newKeyPair = KeyPair.fromRandom('ed25519');
+        await account.disable([...fs.readFileSync('./test/data/main.wasm')], newKeyPair.getPublicKey());
         account.connection.signer = await InMemorySigner.fromKeyPair(nearjs.connection.networkId, account.accountId, newKeyPair);
         account = await getAccount2FA(account);
         const keys2 = await account.getAccessKeys();
-        expect(keys2.find(({public_key}) => public_key === account.newLocalPublicKey.toString())).not.toEqual(undefined)
-        expect(keys.find((public_key) => keys2[0].public_key === public_key)).toEqual(undefined)
+        expect(keys2.find(({public_key}) => public_key === account.newLocalPublicKey.toString())).not.toEqual(undefined);
+        expect(keys.find((public_key) => keys2[0].public_key === public_key)).toEqual(undefined);
     });
     
 });
