@@ -200,7 +200,14 @@ export class Account2FA extends AccountMultisig {
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),)
         }
         console.log('deploying multisig contract for', accountId)
-        return await super.signAndSendTransactionWithAccount(accountId, actions);
+        const result = await super.signAndSendTransactionWithAccount(accountId, actions);
+        // check if newLocalPublicKey was added to account, if not whole tx failed
+        const newLocalPublicKeyStr = newLocalPublicKey.toString()
+        accessKeys = await this.getAccessKeys()
+        if (!accessKeys.find(({ public_key }) => public_key === newLocalPublicKeyStr)) {
+            throw new Error('Error deploying multisig contract')
+        }
+        return result
     }
 
     async disable(contractBytes: Uint8Array, newLocalPublicKey: PublicKey) {
@@ -234,7 +241,14 @@ export class Account2FA extends AccountMultisig {
             deployContract(contractBytes),
         ]
         console.log('disabling 2fa for', accountId)
-        return await this.signAndSendTransaction(accountId, actions)
+        const result = await this.signAndSendTransaction(accountId, actions)
+        // check if newLocalPublicKey was added to account, if not whole tx failed
+        const newLocalPublicKeyStr = newLocalPublicKey.toString()
+        accessKeys = await this.getAccessKeys()
+        if (!accessKeys.find(({ public_key }) => public_key === newLocalPublicKeyStr)) {
+            throw new Error('Error disabling multisig contract')
+        }
+        return result
     }
 
     async sendCodeDefault() {
