@@ -2,7 +2,7 @@ import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
 import { Enum, Assignable } from './utils/enums';
-import { serialize, deserialize } from './utils/serialize';
+import { serialize, deserialize } from 'borsh';
 import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
 
