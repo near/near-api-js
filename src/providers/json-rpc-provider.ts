@@ -7,7 +7,7 @@ import {
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
-import { base_encode } from '../utils/serialize';
+import { baseEncode } from 'borsh';
 import { parseRpcError } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
@@ -63,7 +63,7 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', [base_encode(txHash), accountId]);
+        return this.sendJsonRpc('tx', [baseEncode(txHash), accountId]);
     }
 
     /**

@@ -20,7 +20,7 @@ import {
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
 import { Finality, BlockId } from './providers/provider';
 import { Connection } from './connection';
-import {base_decode, base_encode} from './utils/serialize';
+import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
@@ -137,7 +137,7 @@ export class Account {
         const nonce = ++accessKey.nonce;
         // TODO: get latest_block_hash from block query using `final` finality
         return await signTransaction(
-            receiverId, nonce, actions, base_decode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
+            receiverId, nonce, actions, baseDecode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
         );
     }
 
@@ -161,7 +161,7 @@ export class Account {
                         return await this.connection.provider.sendTransaction(signedTx);
                     } catch (error) {
                         if (error.type === 'TimeoutError') {
-                            console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} as it has timed out`);
+                            console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} as it has timed out`);
                             return null;
                         }
 
@@ -170,19 +170,19 @@ export class Account {
                 });
                 if (!result) {
                     throw new TypedError(
-                        `Exceeded ${TX_STATUS_RETRY_NUMBER} attempts for transaction ${base_encode(txHash)}.`,
+                        `Exceeded ${TX_STATUS_RETRY_NUMBER} attempts for transaction ${baseEncode(txHash)}.`,
                         'RetriesExceeded',
-                        new ErrorContext(base_encode(txHash)));
+                        new ErrorContext(baseEncode(txHash)));
                 }
                 return result;
             } catch (error) {
                 if (error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
-                    console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} with new nonce.`);
+                    console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
 
-                error.context = new ErrorContext(base_encode(txHash));
+                error.context = new ErrorContext(baseEncode(txHash));
                 throw error;
             }
         });
@@ -373,7 +373,7 @@ export class Account {
     ): Promise<any> {
         args = args || {};
         this.validateArgs(args);
-        const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, base_encode(JSON.stringify(args)));
+        const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, baseEncode(JSON.stringify(args)));
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }

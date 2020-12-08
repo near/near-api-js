@@ -4,9 +4,10 @@ import { KeyStore } from './key_stores';
 import { FinalExecutionOutcome } from './providers';
 import { InMemorySigner } from './signer';
 import { Transaction, Action, SCHEMA, createTransaction } from './transaction';
-import { KeyPair, serialize, PublicKey } from './utils';
-import { base_decode } from './utils/serialize';
+import { KeyPair, PublicKey } from './utils';
+import { baseDecode } from 'borsh';
 import { Connection } from './connection';
+import { serialize } from 'borsh';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -98,7 +99,7 @@ export class WalletConnection {
         const newUrl = new URL('sign', this._walletBaseUrl);
 
         newUrl.searchParams.set('transactions', transactions
-            .map(transaction => serialize.serialize(SCHEMA, transaction))
+            .map(transaction => serialize(SCHEMA, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
@@ -202,7 +203,7 @@ class ConnectedWalletAccount extends Account {
         // TODO: Cache & listen for nonce updates for given access key
         const nonce = accessKey.access_key.nonce + 1;
         const status = await this.connection.provider.status();
-        const blockHash = base_decode(status.sync_info.latest_block_hash);
+        const blockHash = baseDecode(status.sync_info.latest_block_hash);
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
         await this.walletConnection.requestSignTransactions([transaction], window.location.href);
 
