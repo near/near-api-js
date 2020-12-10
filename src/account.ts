@@ -1,6 +1,5 @@
-'use strict';
-
 import BN from 'bn.js';
+import depd from 'depd';
 import {
     transfer,
     createAccount,
@@ -25,8 +24,17 @@ import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './generated/rpc_error_types';
+import { cacheTransaction, markTransactionFailed, markTransactionSucceeded } from './cached-transactions';
 
 import exponentialBackoff from './utils/exponential-backoff';
+
+type TxMetadata = { [key: string]: string | number };
+
+export type ChangeMethodOptions = {
+    gas?: BN;
+    deposit?: BN;
+    meta?: TxMetadata;
+}
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -144,20 +152,38 @@ export class Account {
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
+     * @param meta Free-form {@link TxMetadata}. If provided, whether it
+     *   requires a redirect through NEAR Wallet or not, the transaction's
+     *   outcome will be available in the {@link WalletAccount.completedTransactions} collection.
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    protected async signAndSendTransaction(
+        receiverId: string,
+        actions: Action[],
+        meta: TxMetadata = null
+    ): Promise<FinalExecutionOutcome> {
         await this.ready;
 
-        let txHash, signedTx;
+        let txHash: Uint8Array, signedTx: SignedTransaction;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
             [txHash, signedTx] = await this.signTransaction(receiverId, actions);
             const publicKey = signedTx.transaction.publicKey;
 
+            if (meta) {
+                cacheTransaction({
+                    hash: Buffer.from(txHash).toString('hex'),
+                    meta,
+                    publicKey: publicKey.toString(),
+                    receiverId,
+                    signedTx: Buffer.from(signedTx.encode()).toString('hex'),
+                });
+            }
+
             try {
                 const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
                     try {
+                        // TODO: Where does redirect to NEAR Wallet happen?
                         return await this.connection.provider.sendTransaction(signedTx);
                     } catch (error) {
                         // TODO: Somehow getting still:
@@ -206,15 +232,19 @@ export class Account {
         this.printLogsAndFailures(signedTx.transaction.receiverId, flatLogs);
 
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
+            let error: Error;
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
-                throw new TypedError(
+                error = new TypedError(
                     `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
                     result.status.Failure.error_type);
             } else {
-                throw parseResultError(result);
+                error = parseResultError(result);
             }
+            if (meta) markTransactionFailed(txHash.toString(), result, error.message);
+            throw error;
         }
+        if (meta) markTransactionSucceeded(txHash.toString(), result);
         // TODO: if Tx is Unknown or Started.
         return result;
     }
@@ -299,15 +329,48 @@ export class Account {
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The method name on the contract as it is written in the contract code
      * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
-     *  or `Uint8Array` instance which represents bytes passed as is.
-     * @param gas max amount of gas that method call can use
-      * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+     *   or `Uint8Array` instance which represents bytes passed as is.
+     * @param options object containing options for this function call. Available options:
+     *   gas: max amount of gas (in gas units) that method call can use
+     *   deposit: amount of NEAR (in yoctoNEAR) to attach to the call
+     *   meta: a user-specified shallow object (string keys with string or number values). If provided,
+     *         the outcome of this transaction, along with provided `meta` data, will be available in
+     *         {@link WalletAccount.completedTransactions}
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
+    async functionCall(
+        contractId: string,
+        methodName: string,
+        args: any,
+        optionsOrGas?: ChangeMethodOptions | BN,
+        deposit?: BN
+    ): Promise<FinalExecutionOutcome> {
+        let options = optionsOrGas as ChangeMethodOptions | undefined;
+
+        if (!options && !deposit) {
+            options = {} as ChangeMethodOptions;
+        } else if (!options || !(options.gas || options.deposit || options.meta)) {
+            // passed positional gas or deposit
+            const deprecate = depd('positional gas & deposit amount');
+            deprecate('pass { gas: inUnits, deposit: inYoctoNEAR } instead');
+            options = {
+                gas: optionsOrGas as BN,
+                deposit
+            } as ChangeMethodOptions;
+        }
+
         args = args || {};
         this.validateArgs(args);
-        return this.signAndSendTransaction(contractId, [functionCall(methodName, args, gas || DEFAULT_FUNC_CALL_GAS, amount)]);
+        return this.signAndSendTransaction(
+            contractId,
+            [functionCall(
+                methodName,
+                args,
+                options.gas || DEFAULT_FUNC_CALL_GAS,
+                options.deposit
+            )],
+            options.meta
+        );
     }
 
     /**
@@ -392,7 +455,7 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer, value: Buffer}>> {
+    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
         const { blockId, finality } = blockQuery as any || {};
         const { values } = await this.connection.provider.query({
             request_type: 'view_state',
@@ -405,7 +468,7 @@ export class Account {
         return values.map(({key, value}) => ({
             key: Buffer.from(key, 'base64'),
             value: Buffer.from(value, 'base64')
-        }))
+        }));
     }
 
     /**

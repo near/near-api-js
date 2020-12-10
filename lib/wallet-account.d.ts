@@ -5,7 +5,9 @@ import { FinalExecutionOutcome } from './providers';
 import { Transaction, Action } from './transaction';
 import { PublicKey } from './utils';
 import { Connection } from './connection';
+import { CompletedTransactions } from './cached-transactions';
 export declare class WalletConnection {
+    _completedTransactions: CompletedTransactions;
     _walletBaseUrl: string;
     _authDataKey: string;
     _keyStore: KeyStore;
@@ -14,6 +16,38 @@ export declare class WalletConnection {
     _near: Near;
     _connectedAccount: ConnectedWalletAccount;
     constructor(near: Near, appKeyPrefix: string | null);
+    /**
+     * A wrapper for the collection of completed, cached transactions which
+     * provides safe interfaces for inspecting and removing them from the
+     * underlying cache.
+     *
+     * If you pass `meta` data to a `changeMethod` on a {@link Contract} or to
+     * {@link Account.functionCall}, the transaction will be automatically
+     * added to a cache. Whether or not the function call results in a redirect
+     * to NEAR Wallet, your app can then use this `completedTransactions`
+     * interface to determine the outcome of the transaction and update your
+     * app's state.
+     *
+     * Example:
+     *
+     * ```js
+     * const id = 1; // this is specific to and tracked by your app
+     * const completedTx = walletConnection.completedTransactions.remove(tx => tx.meta.id === id)
+     * if (completedTx) {
+     *   // do app stuff, dealing with completed transaction
+     * } else {
+     *   const contract = new Contract(someAccount, 'some-address', { changeMethods: ['doThing'] })
+     *   contract.doThing(
+     *     // arguments passed to contract's `doThing` method:
+     *     { arg1: 'whatever' },
+     *
+     *     // options for near-api-js:
+     *     { meta: { id: id } }
+     *   )
+     * }
+     * ```
+     */
+    completedTransactions(): CompletedTransactions;
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
      * @example

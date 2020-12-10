@@ -8,6 +8,7 @@ import { KeyPair, PublicKey } from './utils';
 import { baseDecode } from 'borsh';
 import { Connection } from './connection';
 import { serialize } from 'borsh';
+import { CompletedTransactions } from './cached-transactions';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -15,6 +16,7 @@ const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
 export class WalletConnection {
+    _completedTransactions: CompletedTransactions;
     _walletBaseUrl: string;
     _authDataKey: string;
     _keyStore: KeyStore;
@@ -28,6 +30,7 @@ export class WalletConnection {
         this._near = near;
         const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
+        this._completedTransactions = new CompletedTransactions();
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
@@ -37,6 +40,41 @@ export class WalletConnection {
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
         }
+    }
+
+    /**
+     * A wrapper for the collection of completed, cached transactions which
+     * provides safe interfaces for inspecting and removing them from the
+     * underlying cache.
+     *
+     * If you pass `meta` data to a `changeMethod` on a {@link Contract} or to
+     * {@link Account.functionCall}, the transaction will be automatically
+     * added to a cache. Whether or not the function call results in a redirect
+     * to NEAR Wallet, your app can then use this `completedTransactions`
+     * interface to determine the outcome of the transaction and update your
+     * app's state.
+     *
+     * Example:
+     *
+     * ```js
+     * const id = 1; // this is specific to and tracked by your app
+     * const completedTx = walletConnection.completedTransactions.remove(tx => tx.meta.id === id)
+     * if (completedTx) {
+     *   // do app stuff, dealing with completed transaction
+     * } else {
+     *   const contract = new Contract(someAccount, 'some-address', { changeMethods: ['doThing'] })
+     *   contract.doThing(
+     *     // arguments passed to contract's `doThing` method:
+     *     { arg1: 'whatever' },
+     *
+     *     // options for near-api-js:
+     *     { meta: { id: id } }
+     *   )
+     * }
+     * ```
+     */
+    completedTransactions() {
+        return this._completedTransactions;
     }
 
     /**
@@ -244,7 +282,7 @@ class ConnectedWalletAccount extends Account {
                 }
                 const [{ functionCall }] = actions;
                 return functionCall &&
-                    (!functionCall.deposit || functionCall.deposit.toString() === "0") && // TODO: Should support charging amount smaller than allowance?
+                    (!functionCall.deposit || functionCall.deposit.toString() === '0') && // TODO: Should support charging amount smaller than allowance?
                     (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
                 // TODO: Handle cases when allowance doesn't have enough to pay for gas
             }

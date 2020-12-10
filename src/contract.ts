@@ -1,5 +1,6 @@
 import BN from 'bn.js';
-import { Account } from './account';
+import depd from 'depd';
+import { Account, ChangeMethodOptions } from './account';
 import { getTransactionLastResult } from './providers';
 import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
 
@@ -17,7 +18,6 @@ const isUint8Array = (x: any) =>
 
 const isObject = (x: any) =>
     Object.prototype.toString.call(x) === '[object Object]';
-
 /**
  * Defines a smart contract on NEAR including the mutable and non-mutable methods
  */
@@ -45,14 +45,41 @@ export class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(methodName, async (args: object = {}, gas?: BN, amount?: BN, ...ignored) => {
-                    if (ignored.length || !(isObject(args) || isUint8Array(args))) {
-                        throw new PositionalArgsError();
+                value: nameFunction(
+                    methodName,
+                    async (
+                        args: object = {},
+                        optionsOrGas?: ChangeMethodOptions | BN,
+                        deposit?: BN,
+                        ...ignored
+                    ) => {
+                        let options = optionsOrGas as ChangeMethodOptions | undefined;
+                        if (!options && !deposit) {
+                            options = {} as ChangeMethodOptions;
+                        } else if (!options || !(options.gas || options.deposit || options.meta)) {
+                            // passed positional gas or deposit
+                            const deprecate = depd('positional gas & deposit amount');
+                            deprecate('pass { gas: inUnits, deposit: inYoctoNEAR } instead');
+                            options = {
+                                gas: optionsOrGas as BN,
+                                deposit
+                            } as ChangeMethodOptions;
+                        }
+
+                        if (ignored.length || !(isObject(args) || isUint8Array(args))) {
+                            throw new PositionalArgsError();
+                        }
+                        validateBNLike({ gas: options.gas, deposit: options.deposit });
+
+                        const rawResult = await this.account.functionCall(
+                            this.contractId,
+                            methodName,
+                            args,
+                            options
+                        );
+                        return getTransactionLastResult(rawResult);
                     }
-                    validateBNLike({ gas, amount });
-                    const rawResult = await this.account.functionCall(this.contractId, methodName, args, gas, amount);
-                    return getTransactionLastResult(rawResult);
-                })
+                )
             });
         });
     }

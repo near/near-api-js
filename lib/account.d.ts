@@ -5,6 +5,14 @@ import { FinalExecutionOutcome } from './providers';
 import { Finality, BlockId } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
+declare type TxMetadata = {
+    [key: string]: string | number;
+};
+export declare type ChangeMethodOptions = {
+    gas?: BN;
+    deposit?: BN;
+    meta?: TxMetadata;
+};
 export interface AccountState {
     amount: string;
     code_hash: string;
@@ -44,9 +52,12 @@ export declare class Account {
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
+     * @param meta Free-form {@link TxMetadata}. If provided, whether it
+     *   requires a redirect through NEAR Wallet or not, the transaction's
+     *   outcome will be available in the {@link WalletAccount.completedTransactions} collection.
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    protected signAndSendTransaction(receiverId: string, actions: Action[], meta?: TxMetadata): Promise<FinalExecutionOutcome>;
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKey;
     };
@@ -84,12 +95,16 @@ export declare class Account {
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The method name on the contract as it is written in the contract code
      * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
-     *  or `Uint8Array` instance which represents bytes passed as is.
-     * @param gas max amount of gas that method call can use
-      * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+     *   or `Uint8Array` instance which represents bytes passed as is.
+     * @param options object containing options for this function call. Available options:
+     *   gas: max amount of gas (in gas units) that method call can use
+     *   deposit: amount of NEAR (in yoctoNEAR) to attach to the call
+     *   meta: a user-specified shallow object (string keys with string or number values). If provided,
+     *         the outcome of this transaction, along with provided `meta` data, will be available in
+     *         {@link WalletAccount.completedTransactions}
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>;
+    functionCall(contractId: string, methodName: string, args: any, optionsOrGas?: ChangeMethodOptions | BN, deposit?: BN): Promise<FinalExecutionOutcome>;
     /**
      * @param publicKey A public key to be associated with the contract
      * @param contractId NEAR account where the contract is deployed

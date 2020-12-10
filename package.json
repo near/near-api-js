@@ -21,10 +21,12 @@
     "js-sha256": "^0.9.0",
     "mustache": "^4.0.0",
     "node-fetch": "^2.6.1",
+    "node-localstorage": "^2.1.6",
     "text-encoding-utf-8": "^1.0.2",
     "tweetnacl": "^1.0.1"
   },
   "devDependencies": {
+    "@types/depd": "^1.1.32",
     "@types/http-errors": "^1.6.1",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
