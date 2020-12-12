@@ -160,6 +160,8 @@ export class Account {
                     try {
                         return await this.connection.provider.sendTransaction(signedTx);
                     } catch (error) {
+                        // TODO: Somehow getting still:
+                        // Error: send_tx_commit has timed out.
                         if (error.type === 'TimeoutError') {
                             console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} as it has timed out`);
                             return null;
@@ -187,6 +189,7 @@ export class Account {
             }
         });
         if (!result) {
+            // TODO: This should have different code actually, as means "transaction not submitted for sure"
             throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
         }
 
