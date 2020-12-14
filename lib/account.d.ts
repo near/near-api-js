@@ -5,14 +5,8 @@ import { FinalExecutionOutcome } from './providers';
 import { Finality, BlockId } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
-declare type TxMetadata = {
-    [key: string]: string | number;
-};
-export declare type ChangeMethodOptions = {
-    gas?: BN;
-    deposit?: BN;
-    meta?: TxMetadata;
-};
+import { ChangeMethodOptions } from './wallet-account';
+import { BasicCachedTransaction, TxMetadata } from './cached-transactions';
 export interface AccountState {
     amount: string;
     code_hash: string;
@@ -52,12 +46,15 @@ export declare class Account {
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
-     * @param meta Free-form {@link TxMetadata}. If provided, whether it
-     *   requires a redirect through NEAR Wallet or not, the transaction's
-     *   outcome will be available in the {@link WalletAccount.completedTransactions} collection.
+     * @param meta do not provide; interface only available for ConnectedWalletAccount subclass
+     * @param onInit for internal library use from ConnectedWalletAccount
+     * @param onSuccess for internal library use from ConnectedWalletAccount
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    protected signAndSendTransaction(receiverId: string, actions: Action[], meta?: TxMetadata): Promise<FinalExecutionOutcome>;
+    protected signAndSendTransaction(receiverId: string, actions: Action[], meta?: TxMetadata, { onInit, onSuccess }?: {
+        onInit?: (tx: BasicCachedTransaction) => void;
+        onSuccess?: (txHash: string, result: FinalExecutionOutcome) => void;
+    }): Promise<FinalExecutionOutcome>;
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKey;
     };

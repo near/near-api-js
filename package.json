@@ -26,6 +26,7 @@
     "tweetnacl": "^1.0.1"
   },
   "devDependencies": {
+    "@types/bs58": "^4.0.1",
     "@types/depd": "^1.1.32",
     "@types/http-errors": "^1.6.1",
     "@typescript-eslint/eslint-plugin": "^2.18.0",

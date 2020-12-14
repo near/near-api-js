@@ -1,13 +1,18 @@
 import { FinalExecutionOutcome } from './providers';
-declare type TxMetadata = {
+export declare type TxMetadata = {
     [key: string]: string | number;
 };
-declare type Tx = {
+export declare type BasicCachedTransaction = {
     hash: string;
-    meta: TxMetadata;
     publicKey: string;
     receiverId: string;
     signedTx: string;
+};
+declare type Tx = BasicCachedTransaction & {
+    meta: TxMetadata;
+};
+declare type InitiatedTransaction = Tx & {
+    complete: false;
 };
 declare type SuccessfulTransaction = Tx & FinalExecutionOutcome & {
     complete: true;
@@ -19,6 +24,7 @@ declare type FailedTransaction = Tx & FinalExecutionOutcome & {
     error: string;
 };
 declare type CompletedTransaction = FailedTransaction | SuccessfulTransaction;
+declare type CachedTransaction = InitiatedTransaction | CompletedTransaction;
 /**
  * Add a transaction to the underlying cache. This is a low-level API called
  * internally when transactions are initiated via a changeMethod on a {@link Contract}
@@ -46,6 +52,13 @@ export declare function markTransactionFailed(hash: string, result: FinalExecuti
  * @param result FinalExecutionOutcome from RPC call
  */
 export declare function markTransactionSucceeded(hash: string, result: FinalExecutionOutcome): void;
+/**
+ * Transactions are stored as an object for easy updates & removal,
+ * but returned as an array for easier filtering. WARNING: this function
+ * returns raw data from the cache; it is up to the consumer to ensure that the
+ * cache stays accurate after operating on this data.
+ */
+export declare function getCachedTransactions(filter?: (tx: CachedTransaction) => boolean): CachedTransaction[];
 /**
  * A wrapper for the collection of completed, cached transactions which
  * provides safe interfaces for inspecting and removing them from the

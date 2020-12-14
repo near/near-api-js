@@ -1,20 +1,34 @@
+import BN from 'bn.js';
+import bs58 from 'bs58';
 import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
-import { FinalExecutionOutcome } from './providers';
+import { FinalExecutionOutcome, FinalExecutionStatus } from './providers';
 import { InMemorySigner } from './signer';
 import { Transaction, Action, SCHEMA, createTransaction } from './transaction';
 import { KeyPair, PublicKey } from './utils';
 import { baseDecode } from 'borsh';
 import { Connection } from './connection';
 import { serialize } from 'borsh';
-import { CompletedTransactions } from './cached-transactions';
+import {
+    getCachedTransactions,
+    TxMetadata,
+    CompletedTransactions,
+    cacheTransaction,
+    markTransactionFailed,
+    markTransactionSucceeded
+} from './cached-transactions';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
+export type ChangeMethodOptions = {
+    gas?: BN;
+    deposit?: BN;
+    meta?: TxMetadata;
+}
 export class WalletConnection {
     _completedTransactions: CompletedTransactions;
     _walletBaseUrl: string;
@@ -205,17 +219,50 @@ export const WalletAccount = WalletConnection;
 /**
  * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
  */
-class ConnectedWalletAccount extends Account {
+export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
 
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
         super(connection, accountId);
         this.walletConnection = walletConnection;
+
+        // Check if a redirect to NEAR Wallet for tx signing was just completed.
+        // If so, check tx outcome, call markTransactionSucceeded or markTransactionFailed.
+        //
+        // NOTE: a constructor cannot be `async`, so this will process in the
+        // background after caller already receives an initialized
+        // `ConnectedWalletAccount`. It uses `Promise.all` to check all in parallel.
+        Promise.all(getCachedTransactions(tx => !tx.complete).map(({ hash }) => (
+            connection.provider.txStatus(bs58.decode(hash), accountId).then(result => {
+                console.log('in ConnectedWalletAccount#constructor, checking status of cached transaction: ', { hash, result });
+                const status = result.status as FinalExecutionStatus;
+                if (status.SuccessValue) {
+                    markTransactionSucceeded(hash, result);
+                } else if (status.Failure) {
+                    markTransactionFailed(
+                        hash,
+                        result,
+                        status.Failure.error_message || 'Something went wrong'
+                    );
+                }
+            })
+        )));
     }
 
-    // Overriding Account methods
-
-    protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    /**
+     * Overrides Account.signAndSendTransaction, adds caching ability with `meta` param
+     *
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
+     * @param meta Free-form {@link TxMetadata}. If provided, whether it
+     *   requires a redirect through NEAR Wallet or not, the transaction's
+     *   outcome will be available in the {@link WalletAccount.completedTransactions} collection.
+     */
+    protected async signAndSendTransaction(
+        receiverId: string,
+        actions: Action[],
+        meta?: TxMetadata
+    ): Promise<FinalExecutionOutcome> {
         await this.ready;
 
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
@@ -226,12 +273,30 @@ class ConnectedWalletAccount extends Account {
 
         if (localKey && localKey.toString() === accessKey.public_key) {
             try {
-                return await super.signAndSendTransaction(receiverId, actions);
+                // this call will cache and mark cached as successful in happy case, will not mark as failed if error thrown
+                return await super.signAndSendTransaction(
+                    receiverId,
+                    actions,
+                    null,
+                    {
+                        onInit: (tx) => {
+                            console.log('in ConnectedWalletAccount#signAndSendTransaction, caching tx: ', { ...tx, meta });
+                            if (meta) cacheTransaction({ ...tx, meta });
+                        },
+                        onSuccess: (txHash, result) => {
+                            console.log('in ConnectedWalletAccount#signAndSendTransaction, marking successful tx: ', { txHash, result });
+                            if (meta) markTransactionSucceeded(txHash, result);
+                        }
+                    }
+                );
             } catch (e) {
                 // TODO: Use TypedError when available
                 if (e.message.includes('does not have enough balance')) {
                     accessKey = await this.accessKeyForTransaction(receiverId, actions);
                 } else {
+                    // error includes txHash & result for some reason??
+                    // what's a better way to get this info here?? 😩
+                    markTransactionFailed(e.txHash, e.result, e.message);
                     throw e;
                 }
             }

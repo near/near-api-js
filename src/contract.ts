@@ -1,8 +1,9 @@
 import BN from 'bn.js';
 import depd from 'depd';
-import { Account, ChangeMethodOptions } from './account';
+import { Account } from './account';
 import { getTransactionLastResult } from './providers';
 import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
+import { ChangeMethodOptions, ConnectedWalletAccount } from './wallet-account';
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => {}) {
@@ -22,7 +23,7 @@ const isObject = (x: any) =>
  * Defines a smart contract on NEAR including the mutable and non-mutable methods
  */
 export class Contract {
-    readonly account: Account;
+    readonly account: Account | ConnectedWalletAccount;
     readonly contractId: string;
 
     constructor(account: Account, contractId: string, options: { viewMethods: string[]; changeMethods: string[] }) {

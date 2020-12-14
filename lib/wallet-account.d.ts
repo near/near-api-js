@@ -1,3 +1,4 @@
+import BN from 'bn.js';
 import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
@@ -5,7 +6,12 @@ import { FinalExecutionOutcome } from './providers';
 import { Transaction, Action } from './transaction';
 import { PublicKey } from './utils';
 import { Connection } from './connection';
-import { CompletedTransactions } from './cached-transactions';
+import { TxMetadata, CompletedTransactions } from './cached-transactions';
+export declare type ChangeMethodOptions = {
+    gas?: BN;
+    deposit?: BN;
+    meta?: TxMetadata;
+};
 export declare class WalletConnection {
     _completedTransactions: CompletedTransactions;
     _walletBaseUrl: string;
@@ -106,10 +112,19 @@ export declare const WalletAccount: typeof WalletConnection;
 /**
  * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
  */
-declare class ConnectedWalletAccount extends Account {
+export declare class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    /**
+     * Overrides Account.signAndSendTransaction, adds caching ability with `meta` param
+     *
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
+     * @param meta Free-form {@link TxMetadata}. If provided, whether it
+     *   requires a redirect through NEAR Wallet or not, the transaction's
+     *   outcome will be available in the {@link WalletAccount.completedTransactions} collection.
+     */
+    protected signAndSendTransaction(receiverId: string, actions: Action[], meta?: TxMetadata): Promise<FinalExecutionOutcome>;
     /**
      * Check if given access key allows the function call or method attempted in transaction
      * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
@@ -126,4 +141,3 @@ declare class ConnectedWalletAccount extends Account {
      */
     accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any>;
 }
-export {};

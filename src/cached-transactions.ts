@@ -1,14 +1,17 @@
 import { FinalExecutionOutcome } from './providers';
 import * as storage from './storage';
 
-type TxMetadata = { [key: string]: string | number };
+export type TxMetadata = { [key: string]: string | number };
 
-type Tx = {
+export type BasicCachedTransaction = {
     hash: string;
-    meta: TxMetadata;
     publicKey: string;
     receiverId: string;
     signedTx: string;
+};
+
+type Tx = BasicCachedTransaction & {
+    meta: TxMetadata;
 };
 
 type InitiatedTransaction = Tx & {
@@ -114,20 +117,26 @@ function removeCachedTransaction (hash: string) {
 
 /**
  * Transactions are stored as an object for easy updates & removal,
- * but returned as an array for easier filtering. This function is not exported
- * to prevent people from acting on completed transactions but forgetting to
- * remove them from the cache, causing bugs in their app when they try to act
- * on the same transactions again
+ * but returned as an array for easier filtering. WARNING: this function
+ * returns raw data from the cache; it is up to the consumer to ensure that the
+ * cache stays accurate after operating on this data.
  */
-function getCachedTransactions (): CachedTransaction[] {
+export function getCachedTransactions (
+    filter?: (tx: CachedTransaction) => boolean
+): CachedTransaction[] {
     const txs = storage.get(STORAGE_KEY);
-    return Object.keys(txs).reduce(
+
+    let arr = Object.keys(txs).reduce(
         (arr: CachedTransaction[], hash: string) => {
             arr.push(txs[hash]);
             return arr;
         },
         []
     );
+
+    if (filter) arr = arr.filter(filter);
+
+    return arr;
 }
 
 /**

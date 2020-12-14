@@ -24,17 +24,10 @@ import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './generated/rpc_error_types';
-import { cacheTransaction, markTransactionFailed, markTransactionSucceeded } from './cached-transactions';
+import { ChangeMethodOptions } from './wallet-account';
+import { BasicCachedTransaction, TxMetadata } from './cached-transactions';
 
 import exponentialBackoff from './utils/exponential-backoff';
-
-type TxMetadata = { [key: string]: string | number };
-
-export type ChangeMethodOptions = {
-    gas?: BN;
-    deposit?: BN;
-    meta?: TxMetadata;
-}
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -152,28 +145,38 @@ export class Account {
     /**
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
-     * @param meta Free-form {@link TxMetadata}. If provided, whether it
-     *   requires a redirect through NEAR Wallet or not, the transaction's
-     *   outcome will be available in the {@link WalletAccount.completedTransactions} collection.
+     * @param meta do not provide; interface only available for ConnectedWalletAccount subclass
+     * @param onInit for internal library use from ConnectedWalletAccount
+     * @param onSuccess for internal library use from ConnectedWalletAccount
      * @returns {Promise<FinalExecutionOutcome>}
      */
     protected async signAndSendTransaction(
         receiverId: string,
         actions: Action[],
-        meta: TxMetadata = null
+        meta?: TxMetadata,
+        {
+            onInit, onSuccess
+        }: {
+            onInit?: (tx: BasicCachedTransaction) => void;
+            onSuccess?: (txHash: string, result: FinalExecutionOutcome) => void;
+        } = {}
     ): Promise<FinalExecutionOutcome> {
+        if (meta) {
+            throw new Error('to cache transactions by passing `meta`, you must initialize a connection to NEAR with WalletConnection');
+        }
+
         await this.ready;
 
-        let txHash: Uint8Array, signedTx: SignedTransaction;
+        let txHash: Uint8Array, txHashString: string, signedTx: SignedTransaction;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
             [txHash, signedTx] = await this.signTransaction(receiverId, actions);
             const publicKey = signedTx.transaction.publicKey;
+            const txHashString = Buffer.from(txHash).toString('hex');
 
-            if (meta) {
-                cacheTransaction({
-                    hash: Buffer.from(txHash).toString('hex'),
-                    meta,
+            if (onInit) {
+                onInit({
+                    hash: txHashString,
                     publicKey: publicKey.toString(),
                     receiverId,
                     signedTx: Buffer.from(signedTx.encode()).toString('hex'),
@@ -183,7 +186,6 @@ export class Account {
             try {
                 const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
                     try {
-                        // TODO: Where does redirect to NEAR Wallet happen?
                         return await this.connection.provider.sendTransaction(signedTx);
                     } catch (error) {
                         // TODO: Somehow getting still:
@@ -232,7 +234,7 @@ export class Account {
         this.printLogsAndFailures(signedTx.transaction.receiverId, flatLogs);
 
         if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
-            let error: Error;
+            let error: Error & { txHash?: string; result?: FinalExecutionOutcome };
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
                 error = new TypedError(
@@ -241,10 +243,12 @@ export class Account {
             } else {
                 error = parseResultError(result);
             }
-            if (meta) markTransactionFailed(txHash.toString(), result, error.message);
+            // attaching extra info to the error OMG 😳
+            error.txHash = txHashString;
+            error.result = result;
             throw error;
         }
-        if (meta) markTransactionSucceeded(txHash.toString(), result);
+        if (onSuccess) onSuccess(txHash.toString(), result);
         // TODO: if Tx is Unknown or Started.
         return result;
     }
