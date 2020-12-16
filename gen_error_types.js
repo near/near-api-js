@@ -6,8 +6,8 @@ const {
 } = require('ts-morph');
 
 const ERROR_SCHEMA_URL =
-    'https://raw.githubusercontent.com/nearprotocol/nearcore/84a805e0fe4d507d03d6525f68fec99b7d1d6048/chain/jsonrpc/res/rpc_errors_schema.json';
-const TARGET_DIR = process.argv[2] ||  process.cwd() + '/src.ts/generated';
+    'https://raw.githubusercontent.com/nearprotocol/nearcore/4c1149974ccf899dbcb2253a3e27cbab86dc47be/chain/jsonrpc/res/rpc_errors_schema.json';
+const TARGET_DIR = process.argv[2] ||  process.cwd() + '/src/generated';
 const TARGET_TS_FILE_PATH = TARGET_DIR + '/rpc_error_types.ts';
 const TARGET_SCHEMA_FILE_PATH = TARGET_DIR + '/rpc_error_schema.json';
 

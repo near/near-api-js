@@ -15,6 +15,26 @@
             "subtypes": [],
             "props": {}
         },
+        "BreakpointTrap": {
+            "name": "BreakpointTrap",
+            "subtypes": [],
+            "props": {}
+        },
+        "CacheError": {
+            "name": "CacheError",
+            "subtypes": [
+                "ReadError",
+                "WriteError",
+                "DeserializationError",
+                "SerializationError"
+            ],
+            "props": {}
+        },
+        "CallIndirectOOB": {
+            "name": "CallIndirectOOB",
+            "subtypes": [],
+            "props": {}
+        },
         "CannotAppendActionToJointPromise": {
             "name": "CannotAppendActionToJointPromise",
             "subtypes": [],
@@ -49,8 +69,20 @@
                 "size": ""
             }
         },
+        "Deprecated": {
+            "name": "Deprecated",
+            "subtypes": [],
+            "props": {
+                "method_name": ""
+            }
+        },
         "Deserialization": {
             "name": "Deserialization",
+            "subtypes": [],
+            "props": {}
+        },
+        "DeserializationError": {
+            "name": "DeserializationError",
             "subtypes": [],
             "props": {}
         },
@@ -66,7 +98,9 @@
                 "LinkError",
                 "MethodResolveError",
                 "WasmTrap",
-                "HostError"
+                "WasmUnknownError",
+                "HostError",
+                "EvmError"
             ],
             "props": {}
         },
@@ -82,6 +116,11 @@
         },
         "GasLimitExceeded": {
             "name": "GasLimitExceeded",
+            "subtypes": [],
+            "props": {}
+        },
+        "GenericTrap": {
+            "name": "GenericTrap",
             "subtypes": [],
             "props": {}
         },
@@ -128,6 +167,16 @@
             ],
             "props": {}
         },
+        "IllegalArithmetic": {
+            "name": "IllegalArithmetic",
+            "subtypes": [],
+            "props": {}
+        },
+        "IncorrectCallIndirectSignature": {
+            "name": "IncorrectCallIndirectSignature",
+            "subtypes": [],
+            "props": {}
+        },
         "Instantiate": {
             "name": "Instantiate",
             "subtypes": [],
@@ -146,7 +195,9 @@
         "InvalidAccountId": {
             "name": "InvalidAccountId",
             "subtypes": [],
-            "props": {}
+            "props": {
+                "account_id": ""
+            }
         },
         "InvalidIteratorIndex": {
             "name": "InvalidIteratorIndex",
@@ -225,6 +276,11 @@
             "subtypes": [],
             "props": {}
         },
+        "MemoryOutOfBounds": {
+            "name": "MemoryOutOfBounds",
+            "subtypes": [],
+            "props": {}
+        },
         "MethodEmptyName": {
             "name": "MethodEmptyName",
             "subtypes": [],
@@ -252,6 +308,11 @@
         },
         "MethodUTF8Error": {
             "name": "MethodUTF8Error",
+            "subtypes": [],
+            "props": {}
+        },
+        "MisalignedAtomicAccess": {
+            "name": "MisalignedAtomicAccess",
             "subtypes": [],
             "props": {}
         },
@@ -298,6 +359,11 @@
                 "method_name": ""
             }
         },
+        "ReadError": {
+            "name": "ReadError",
+            "subtypes": [],
+            "props": {}
+        },
         "ReturnedValueLengthExceeded": {
             "name": "ReturnedValueLengthExceeded",
             "subtypes": [],
@@ -311,8 +377,20 @@
             "subtypes": [],
             "props": {}
         },
+        "SerializationError": {
+            "name": "SerializationError",
+            "subtypes": [],
+            "props": {
+                "hash": ""
+            }
+        },
         "StackHeightInstrumentation": {
             "name": "StackHeightInstrumentation",
+            "subtypes": [],
+            "props": {}
+        },
+        "StackOverflow": {
+            "name": "StackOverflow",
             "subtypes": [],
             "props": {}
         },
@@ -324,6 +402,11 @@
                 "limit": ""
             }
         },
+        "Unreachable": {
+            "name": "Unreachable",
+            "subtypes": [],
+            "props": {}
+        },
         "ValueLengthExceeded": {
             "name": "ValueLengthExceeded",
             "subtypes": [],
@@ -334,10 +417,23 @@
         },
         "WasmTrap": {
             "name": "WasmTrap",
+            "subtypes": [
+                "Unreachable",
+                "IncorrectCallIndirectSignature",
+                "MemoryOutOfBounds",
+                "CallIndirectOOB",
+                "IllegalArithmetic",
+                "MisalignedAtomicAccess",
+                "BreakpointTrap",
+                "StackOverflow",
+                "GenericTrap"
+            ],
+            "props": {}
+        },
+        "WasmUnknownError": {
+            "name": "WasmUnknownError",
             "subtypes": [],
-            "props": {
-                "msg": ""
-            }
+            "props": {}
         },
         "WasmerCompileError": {
             "name": "WasmerCompileError",
@@ -345,6 +441,11 @@
             "props": {
                 "msg": ""
             }
+        },
+        "WriteError": {
+            "name": "WriteError",
+            "subtypes": [],
+            "props": {}
         },
         "AccessKeyNotFound": {
             "name": "AccessKeyNotFound",
@@ -373,22 +474,41 @@
             "subtypes": [
                 "AccountAlreadyExists",
                 "AccountDoesNotExist",
+                "CreateAccountOnlyByRegistrar",
                 "CreateAccountNotAllowed",
                 "ActorNoPermission",
                 "DeleteKeyDoesNotExist",
                 "AddKeyAlreadyExists",
                 "DeleteAccountStaking",
-                "DeleteAccountHasEnoughBalance",
                 "LackBalanceForState",
                 "TriesToUnstake",
                 "TriesToStake",
-                "UnsuitableStakingKey",
+                "InsufficientStake",
                 "FunctionCallError",
-                "NewReceiptValidationError"
+                "NewReceiptValidationError",
+                "OnlyImplicitAccountCreationAllowed"
             ],
             "props": {
                 "index": ""
             }
+        },
+        "ActionsValidationError": {
+            "name": "ActionsValidationError",
+            "subtypes": [
+                "DeleteActionMustBeFinal",
+                "TotalPrepaidGasExceeded",
+                "TotalNumberOfActionsExceeded",
+                "AddKeyMethodNamesNumberOfBytesExceeded",
+                "AddKeyMethodNameLengthExceeded",
+                "IntegerOverflow",
+                "InvalidAccountId",
+                "ContractSizeExceeded",
+                "FunctionCallMethodNameLengthExceeded",
+                "FunctionCallArgumentsLengthExceeded",
+                "UnsuitableStakingKey",
+                "FunctionCallZeroAttachedGas"
+            ],
+            "props": {}
         },
         "ActorNoPermission": {
             "name": "ActorNoPermission",
@@ -406,6 +526,22 @@
                 "public_key": ""
             }
         },
+        "AddKeyMethodNameLengthExceeded": {
+            "name": "AddKeyMethodNameLengthExceeded",
+            "subtypes": [],
+            "props": {
+                "length": "",
+                "limit": ""
+            }
+        },
+        "AddKeyMethodNamesNumberOfBytesExceeded": {
+            "name": "AddKeyMethodNamesNumberOfBytesExceeded",
+            "subtypes": [],
+            "props": {
+                "limit": "",
+                "total_number_of_bytes": ""
+            }
+        },
         "BalanceMismatchError": {
             "name": "BalanceMismatchError",
             "subtypes": [],
@@ -417,12 +553,11 @@
                 "initial_accounts_balance": "",
                 "initial_postponed_receipts_balance": "",
                 "new_delayed_receipts_balance": "",
+                "other_burnt_amount": "",
                 "outgoing_receipts_balance": "",
                 "processed_delayed_receipts_balance": "",
-                "total_balance_burnt": "",
-                "total_balance_slashed": "",
-                "total_rent_paid": "",
-                "total_validator_reward": ""
+                "slashed_burnt_amount": "",
+                "tx_burnt_amount": ""
             }
         },
         "CostOverflow": {
@@ -438,12 +573,13 @@
                 "predecessor_id": ""
             }
         },
-        "DeleteAccountHasRent": {
-            "name": "DeleteAccountHasRent",
+        "CreateAccountOnlyByRegistrar": {
+            "name": "CreateAccountOnlyByRegistrar",
             "subtypes": [],
             "props": {
                 "account_id": "",
-                "balance": ""
+                "predecessor_id": "",
+                "registrar_account_id": ""
             }
         },
         "DeleteAccountStaking": {
@@ -452,6 +588,11 @@
             "props": {
                 "account_id": ""
             }
+        },
+        "DeleteActionMustBeFinal": {
+            "name": "DeleteActionMustBeFinal",
+            "subtypes": [],
+            "props": {}
         },
         "DeleteKeyDoesNotExist": {
             "name": "DeleteKeyDoesNotExist",
@@ -471,6 +612,36 @@
             "subtypes": [],
             "props": {}
         },
+        "FunctionCallArgumentsLengthExceeded": {
+            "name": "FunctionCallArgumentsLengthExceeded",
+            "subtypes": [],
+            "props": {
+                "length": "",
+                "limit": ""
+            }
+        },
+        "FunctionCallMethodNameLengthExceeded": {
+            "name": "FunctionCallMethodNameLengthExceeded",
+            "subtypes": [],
+            "props": {
+                "length": "",
+                "limit": ""
+            }
+        },
+        "FunctionCallZeroAttachedGas": {
+            "name": "FunctionCallZeroAttachedGas",
+            "subtypes": [],
+            "props": {}
+        },
+        "InsufficientStake": {
+            "name": "InsufficientStake",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "minimum_stake": "",
+                "stake": ""
+            }
+        },
         "InvalidAccessKeyError": {
             "name": "InvalidAccessKeyError",
             "subtypes": [
@@ -488,6 +659,13 @@
             "subtypes": [],
             "props": {}
         },
+        "InvalidDataReceiverId": {
+            "name": "InvalidDataReceiverId",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
+            }
+        },
         "InvalidNonce": {
             "name": "InvalidNonce",
             "subtypes": [],
@@ -496,11 +674,18 @@
                 "tx_nonce": ""
             }
         },
+        "InvalidPredecessorId": {
+            "name": "InvalidPredecessorId",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
+            }
+        },
         "InvalidReceiverId": {
             "name": "InvalidReceiverId",
             "subtypes": [],
             "props": {
-                "receiver_id": ""
+                "account_id": ""
             }
         },
         "InvalidSignature": {
@@ -512,7 +697,7 @@
             "name": "InvalidSignerId",
             "subtypes": [],
             "props": {
-                "signer_id": ""
+                "account_id": ""
             }
         },
         "InvalidTxError": {
@@ -532,6 +717,14 @@
                 "ActionsValidation"
             ],
             "props": {}
+        },
+        "LackBalanceForState": {
+            "name": "LackBalanceForState",
+            "subtypes": [],
+            "props": {
+                "account_id": "",
+                "amount": ""
+            }
         },
         "MethodNameMismatch": {
             "name": "MethodNameMismatch",
@@ -559,20 +752,32 @@
                 "signer_id": ""
             }
         },
+        "OnlyImplicitAccountCreationAllowed": {
+            "name": "OnlyImplicitAccountCreationAllowed",
+            "subtypes": [],
+            "props": {
+                "account_id": ""
+            }
+        },
+        "ReceiptValidationError": {
+            "name": "ReceiptValidationError",
+            "subtypes": [
+                "InvalidPredecessorId",
+                "InvalidReceiverId",
+                "InvalidSignerId",
+                "InvalidDataReceiverId",
+                "ReturnedValueLengthExceeded",
+                "NumberInputDataDependenciesExceeded",
+                "ActionsValidation"
+            ],
+            "props": {}
+        },
         "ReceiverMismatch": {
             "name": "ReceiverMismatch",
             "subtypes": [],
             "props": {
                 "ak_receiver": "",
                 "tx_receiver": ""
-            }
-        },
-        "RentUnpaid": {
-            "name": "RentUnpaid",
-            "subtypes": [],
-            "props": {
-                "account_id": "",
-                "amount": ""
             }
         },
         "RequiresFullAccess": {
@@ -585,6 +790,22 @@
             "subtypes": [],
             "props": {
                 "signer_id": ""
+            }
+        },
+        "TotalNumberOfActionsExceeded": {
+            "name": "TotalNumberOfActionsExceeded",
+            "subtypes": [],
+            "props": {
+                "limit": "",
+                "total_number_of_actions": ""
+            }
+        },
+        "TotalPrepaidGasExceeded": {
+            "name": "TotalPrepaidGasExceeded",
+            "subtypes": [],
+            "props": {
+                "limit": "",
+                "total_prepaid_gas": ""
             }
         },
         "TriesToStake": {
@@ -612,8 +833,20 @@
             ],
             "props": {}
         },
+        "UnsuitableStakingKey": {
+            "name": "UnsuitableStakingKey",
+            "subtypes": [],
+            "props": {
+                "public_key": ""
+            }
+        },
         "Closed": {
             "name": "Closed",
+            "subtypes": [],
+            "props": {}
+        },
+        "InternalError": {
+            "name": "InternalError",
             "subtypes": [],
             "props": {}
         },
@@ -622,7 +855,8 @@
             "subtypes": [
                 "TxExecutionError",
                 "Timeout",
-                "Closed"
+                "Closed",
+                "InternalError"
             ],
             "props": {}
         },
@@ -630,37 +864,6 @@
             "name": "Timeout",
             "subtypes": [],
             "props": {}
-        },
-        "UnsuitableStakingKey": {
-            "name": "UnsuitableStakingKey",
-            "subtypes": [],
-            "props": {
-                "public_key": ""
-            }
-        },
-        "LackBalanceForState": {
-            "name": "LackBalanceForState",
-            "subtypes": [],
-            "props": {
-                "amount": "",
-                "signer_id": "",
-                "account_id": ""
-            }
-        },
-        "DeleteAccountHasEnoughBalance": {
-            "name": "DeleteAccountHasEnoughBalance",
-            "subtypes": [],
-            "props": {
-                "account_id": "",
-                "balance": ""
-            }
-        },
-        "Deprecated": {
-            "name": "Deprecated",
-            "subtypes": [],
-            "props": {
-                "method_name": ""
-            }
         }
     }
 }
