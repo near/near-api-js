@@ -112,7 +112,7 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                 if (!config.masterAccount) {
                     config.masterAccount = accountKeyFile[0];
                 }
-                config.deps.keyStore = new MergeKeyStore([config.deps.keyStore, keyPathStore]);
+                config.deps.keyStore = new MergeKeyStore([keyPathStore, config.deps.keyStore]);
                 console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {
