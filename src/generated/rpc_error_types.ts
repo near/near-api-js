@@ -25,6 +25,18 @@ export class BadUTF8 extends HostError {
 export class BalanceExceeded extends HostError {
 }
 
+export class WasmTrap extends FunctionCallError {
+}
+
+export class BreakpointTrap extends WasmTrap {
+}
+
+export class CacheError extends TypedError {
+}
+
+export class CallIndirectOOB extends WasmTrap {
+}
+
 export class CannotAppendActionToJointPromise extends HostError {
 }
 
@@ -43,10 +55,17 @@ export class ContractSizeExceeded extends HostError {
     public size;
 }
 
+export class Deprecated extends HostError {
+    public method_name;
+}
+
 export class PrepareError extends CompilationError {
 }
 
 export class Deserialization extends PrepareError {
+}
+
+export class DeserializationError extends CacheError {
 }
 
 export class EmptyMethodName extends HostError {
@@ -61,8 +80,17 @@ export class GasInstrumentation extends PrepareError {
 export class GasLimitExceeded extends HostError {
 }
 
+export class GenericTrap extends WasmTrap {
+}
+
 export class GuestPanic extends HostError {
     public panic_msg;
+}
+
+export class IllegalArithmetic extends WasmTrap {
+}
+
+export class IncorrectCallIndirectSignature extends WasmTrap {
 }
 
 export class Instantiate extends PrepareError {
@@ -75,6 +103,7 @@ export class InternalMemoryDeclared extends PrepareError {
 }
 
 export class InvalidAccountId extends HostError {
+    public account_id;
 }
 
 export class InvalidIteratorIndex extends HostError {
@@ -122,6 +151,9 @@ export class Memory extends PrepareError {
 export class MemoryAccessViolation extends HostError {
 }
 
+export class MemoryOutOfBounds extends WasmTrap {
+}
+
 export class MethodResolveError extends FunctionCallError {
 }
 
@@ -135,6 +167,9 @@ export class MethodNotFound extends MethodResolveError {
 }
 
 export class MethodUTF8Error extends MethodResolveError {
+}
+
+export class MisalignedAtomicAccess extends WasmTrap {
 }
 
 export class NumberInputDataDependenciesExceeded extends HostError {
@@ -155,6 +190,9 @@ export class ProhibitedInView extends HostError {
     public method_name;
 }
 
+export class ReadError extends CacheError {
+}
+
 export class ReturnedValueLengthExceeded extends HostError {
     public length;
     public limit;
@@ -163,7 +201,14 @@ export class ReturnedValueLengthExceeded extends HostError {
 export class Serialization extends PrepareError {
 }
 
+export class SerializationError extends CacheError {
+    public hash;
+}
+
 export class StackHeightInstrumentation extends PrepareError {
+}
+
+export class StackOverflow extends WasmTrap {
 }
 
 export class TotalLogLengthExceeded extends HostError {
@@ -171,17 +216,22 @@ export class TotalLogLengthExceeded extends HostError {
     public limit;
 }
 
+export class Unreachable extends WasmTrap {
+}
+
 export class ValueLengthExceeded extends HostError {
     public length;
     public limit;
 }
 
-export class WasmTrap extends FunctionCallError {
-    public msg;
+export class WasmUnknownError extends FunctionCallError {
 }
 
 export class WasmerCompileError extends CompilationError {
     public msg;
+}
+
+export class WriteError extends CacheError {
 }
 
 export class InvalidTxError extends TxExecutionError {
@@ -203,6 +253,9 @@ export class AccountDoesNotExist extends ActionError {
     public account_id;
 }
 
+export class ActionsValidationError extends TypedError {
+}
+
 export class ActorNoPermission extends ActionError {
     public account_id;
     public actor_id;
@@ -213,6 +266,16 @@ export class AddKeyAlreadyExists extends ActionError {
     public public_key;
 }
 
+export class AddKeyMethodNameLengthExceeded extends ActionsValidationError {
+    public length;
+    public limit;
+}
+
+export class AddKeyMethodNamesNumberOfBytesExceeded extends ActionsValidationError {
+    public limit;
+    public total_number_of_bytes;
+}
+
 export class BalanceMismatchError extends TypedError {
     public final_accounts_balance;
     public final_postponed_receipts_balance;
@@ -221,12 +284,11 @@ export class BalanceMismatchError extends TypedError {
     public initial_accounts_balance;
     public initial_postponed_receipts_balance;
     public new_delayed_receipts_balance;
+    public other_burnt_amount;
     public outgoing_receipts_balance;
     public processed_delayed_receipts_balance;
-    public total_balance_burnt;
-    public total_balance_slashed;
-    public total_rent_paid;
-    public total_validator_reward;
+    public slashed_burnt_amount;
+    public tx_burnt_amount;
 }
 
 export class CostOverflow extends InvalidTxError {
@@ -237,13 +299,17 @@ export class CreateAccountNotAllowed extends ActionError {
     public predecessor_id;
 }
 
-export class DeleteAccountHasRent extends TypedError {
+export class CreateAccountOnlyByRegistrar extends ActionError {
     public account_id;
-    public balance;
+    public predecessor_id;
+    public registrar_account_id;
 }
 
 export class DeleteAccountStaking extends ActionError {
     public account_id;
+}
+
+export class DeleteActionMustBeFinal extends ActionsValidationError {
 }
 
 export class DeleteKeyDoesNotExist extends ActionError {
@@ -257,7 +323,33 @@ export class DepositWithFunctionCall extends InvalidAccessKeyError {
 export class Expired extends InvalidTxError {
 }
 
+export class FunctionCallArgumentsLengthExceeded extends ActionsValidationError {
+    public length;
+    public limit;
+}
+
+export class FunctionCallMethodNameLengthExceeded extends ActionsValidationError {
+    public length;
+    public limit;
+}
+
+export class FunctionCallZeroAttachedGas extends ActionsValidationError {
+}
+
+export class InsufficientStake extends ActionError {
+    public account_id;
+    public minimum_stake;
+    public stake;
+}
+
 export class InvalidChain extends InvalidTxError {
+}
+
+export class ReceiptValidationError extends TypedError {
+}
+
+export class InvalidDataReceiverId extends ReceiptValidationError {
+    public account_id;
 }
 
 export class InvalidNonce extends InvalidTxError {
@@ -265,15 +357,24 @@ export class InvalidNonce extends InvalidTxError {
     public tx_nonce;
 }
 
+export class InvalidPredecessorId extends ReceiptValidationError {
+    public account_id;
+}
+
 export class InvalidReceiverId extends InvalidTxError {
-    public receiver_id;
+    public account_id;
 }
 
 export class InvalidSignature extends InvalidTxError {
 }
 
 export class InvalidSignerId extends InvalidTxError {
-    public signer_id;
+    public account_id;
+}
+
+export class LackBalanceForState extends ActionError {
+    public account_id;
+    public amount;
 }
 
 export class MethodNameMismatch extends InvalidAccessKeyError {
@@ -293,14 +394,13 @@ export class NotEnoughBalance extends InvalidTxError {
     public signer_id;
 }
 
+export class OnlyImplicitAccountCreationAllowed extends ActionError {
+    public account_id;
+}
+
 export class ReceiverMismatch extends InvalidAccessKeyError {
     public ak_receiver;
     public tx_receiver;
-}
-
-export class RentUnpaid extends TypedError {
-    public account_id;
-    public amount;
 }
 
 export class RequiresFullAccess extends InvalidAccessKeyError {
@@ -308,6 +408,16 @@ export class RequiresFullAccess extends InvalidAccessKeyError {
 
 export class SignerDoesNotExist extends InvalidTxError {
     public signer_id;
+}
+
+export class TotalNumberOfActionsExceeded extends ActionsValidationError {
+    public limit;
+    public total_number_of_actions;
+}
+
+export class TotalPrepaidGasExceeded extends ActionsValidationError {
+    public limit;
+    public total_prepaid_gas;
 }
 
 export class TriesToStake extends ActionError {
@@ -321,27 +431,15 @@ export class TriesToUnstake extends ActionError {
     public account_id;
 }
 
-export class Closed extends ServerError {
-}
-
-export class Timeout extends ServerError {
-}
-
-export class UnsuitableStakingKey extends ActionError {
+export class UnsuitableStakingKey extends ActionsValidationError {
     public public_key;
 }
 
-export class LackBalanceForState extends ActionError {
-    public amount;
-    public signer_id;
-    public account_id;
+export class Closed extends ServerError {
 }
 
-export class DeleteAccountHasEnoughBalance extends ActionError {
-    public account_id;
-    public balance;
+export class InternalError extends ServerError {
 }
 
-export class Deprecated extends HostError {
-    public method_name;
+export class Timeout extends ServerError {
 }
