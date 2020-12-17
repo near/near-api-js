@@ -179,7 +179,7 @@ export class Account {
                     hash: txHashString,
                     publicKey: publicKey.toString(),
                     receiverId,
-                    signedTx: Buffer.from(signedTx.encode()).toString('hex'),
+                    senderId: this.accountId
                 });
             }
 

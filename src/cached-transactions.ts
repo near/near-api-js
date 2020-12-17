@@ -7,7 +7,7 @@ export type BasicCachedTransaction = {
     hash: string;
     publicKey: string;
     receiverId: string;
-    signedTx: string;
+    senderId: string;
 };
 
 type Tx = BasicCachedTransaction & {
@@ -126,6 +126,8 @@ export function getCachedTransactions (
 ): CachedTransaction[] {
     const txs = storage.get(STORAGE_KEY);
 
+    if (!txs) return [];
+
     let arr = Object.keys(txs).reduce(
         (arr: CachedTransaction[], hash: string) => {
             arr.push(txs[hash]);
@@ -146,8 +148,7 @@ export function getCachedTransactions (
  * completed transactions again
  */
 function getCompletedTransactions(): CompletedTransaction[] {
-    return getCachedTransactions()
-        .filter(t => t.complete === true) as CompletedTransaction[];
+    return getCachedTransactions(t => t.complete === true) as CompletedTransaction[];
 }
 
 /**

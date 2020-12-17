@@ -87,7 +87,7 @@ export class WalletConnection {
      * }
      * ```
      */
-    completedTransactions() {
+    get completedTransactions() {
         return this._completedTransactions;
     }
 
@@ -226,13 +226,16 @@ export class ConnectedWalletAccount extends Account {
         super(connection, accountId);
         this.walletConnection = walletConnection;
 
+        const initializedTransactions = getCachedTransactions(tx => !tx.complete);
+        console.log('in ConnectedWalletAccount#constructor, checking initialized transactions: ', { initializedTransactions });
+
         // Check if a redirect to NEAR Wallet for tx signing was just completed.
         // If so, check tx outcome, call markTransactionSucceeded or markTransactionFailed.
         //
         // NOTE: a constructor cannot be `async`, so this will process in the
         // background after caller already receives an initialized
         // `ConnectedWalletAccount`. It uses `Promise.all` to check all in parallel.
-        Promise.all(getCachedTransactions(tx => !tx.complete).map(({ hash }) => (
+        Promise.all(initializedTransactions.map(({ hash }) => (
             connection.provider.txStatus(bs58.decode(hash), accountId).then(result => {
                 console.log('in ConnectedWalletAccount#constructor, checking status of cached transaction: ', { hash, result });
                 const status = result.status as FinalExecutionStatus;
@@ -271,6 +274,8 @@ export class ConnectedWalletAccount extends Account {
             throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
         }
 
+        let initializedCache = false;
+
         if (localKey && localKey.toString() === accessKey.public_key) {
             try {
                 // this call will cache and mark cached as successful in happy case, will not mark as failed if error thrown
@@ -281,7 +286,10 @@ export class ConnectedWalletAccount extends Account {
                     {
                         onInit: (tx) => {
                             console.log('in ConnectedWalletAccount#signAndSendTransaction, caching tx: ', { ...tx, meta });
-                            if (meta) cacheTransaction({ ...tx, meta });
+                            if (meta) {
+                                cacheTransaction({ ...tx, meta });
+                                initializedCache = true;
+                            }
                         },
                         onSuccess: (txHash, result) => {
                             console.log('in ConnectedWalletAccount#signAndSendTransaction, marking successful tx: ', { txHash, result });
@@ -301,13 +309,23 @@ export class ConnectedWalletAccount extends Account {
                 }
             }
         }
-
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
         const nonce = accessKey.access_key.nonce + 1;
         const status = await this.connection.provider.status();
         const blockHash = baseDecode(status.sync_info.latest_block_hash);
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+        if (!initializedCache && meta) {
+            const tx = {
+                hash: Buffer.from(transaction.getHash()).toString('hex'),
+                meta,
+                publicKey: transaction.publicKey.toString(),
+                receiverId: transaction.receiverId,
+                senderId: this.accountId
+            };
+            console.log('in ConnectedWalletAccount#signAndSendTransaction, caching tx:', { tx });
+            cacheTransaction(tx);
+        }
         await this.walletConnection.requestSignTransactions([transaction], window.location.href);
 
         return new Promise((resolve, reject) => {

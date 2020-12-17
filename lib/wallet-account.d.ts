@@ -53,7 +53,7 @@ export declare class WalletConnection {
      * }
      * ```
      */
-    completedTransactions(): CompletedTransactions;
+    get completedTransactions(): CompletedTransactions;
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
      * @example

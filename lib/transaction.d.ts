@@ -6,7 +6,7 @@ import { Signer } from './signer';
 export declare class FunctionCallPermission extends Assignable {
     allowance?: BN;
     receiverId: string;
-    methodNames: String[];
+    methodNames: string[];
 }
 export declare class FullAccessPermission extends Assignable {
 }
@@ -19,7 +19,7 @@ export declare class AccessKey extends Assignable {
     permission: AccessKeyPermission;
 }
 export declare function fullAccessKey(): AccessKey;
-export declare function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey;
+export declare function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey;
 export declare class IAction extends Assignable {
 }
 export declare class CreateAccount extends IAction {
@@ -78,6 +78,10 @@ export declare class Transaction extends Assignable {
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
+    _hash: Uint8Array;
+    _message: Uint8Array;
+    getMessage(): Uint8Array;
+    getHash(): Uint8Array;
     encode(): Uint8Array;
     static decode(bytes: Buffer): Transaction;
 }

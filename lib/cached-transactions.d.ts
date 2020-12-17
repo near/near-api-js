@@ -6,7 +6,7 @@ export declare type BasicCachedTransaction = {
     hash: string;
     publicKey: string;
     receiverId: string;
-    signedTx: string;
+    senderId: string;
 };
 declare type Tx = BasicCachedTransaction & {
     meta: TxMetadata;

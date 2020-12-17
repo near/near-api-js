@@ -9,7 +9,7 @@ import { Signer } from './signer';
 export class FunctionCallPermission extends Assignable {
     allowance?: BN;
     receiverId: string;
-    methodNames: String[];
+    methodNames: string[];
 }
 
 export class FullAccessPermission extends Assignable {}
@@ -28,7 +28,7 @@ export function fullAccessKey(): AccessKey {
     return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({fullAccess: new FullAccessPermission({})}) });
 }
 
-export function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey {
+export function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
     return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({functionCall: new FunctionCallPermission({receiverId, allowance, methodNames})})});
 }
 
@@ -99,6 +99,19 @@ export class Transaction extends Assignable {
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
+
+    _hash: Uint8Array;
+    _message: Uint8Array;
+
+    getMessage(): Uint8Array {
+        this._message = this._message || serialize(SCHEMA, this);
+        return this._message;
+    }
+
+    getHash(): Uint8Array {
+        this._hash = this._hash || new Uint8Array(sha256.sha256.array(this.getMessage()));
+        return this._hash;
+    }
 
     encode(): Uint8Array {
         return serialize(SCHEMA, this);
@@ -222,14 +235,12 @@ export function createTransaction(signerId: string, publicKey: PublicKey, receiv
  * @param networkId The targeted network. (ex. default, betanet, etc…)
  */
 async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
-    const message = serialize(SCHEMA, transaction);
-    const hash = new Uint8Array(sha256.sha256.array(message));
-    const signature = await signer.signMessage(message, accountId, networkId);
+    const signature = await signer.signMessage(transaction.getMessage(), accountId, networkId);
     const signedTx = new SignedTransaction({
         transaction,
         signature: new Signature({ keyType: transaction.publicKey.keyType, data: signature.signature })
     });
-    return [hash, signedTx];
+    return [transaction.getHash(), signedTx];
 }
 
 export async function signTransaction(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
