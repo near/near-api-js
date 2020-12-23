@@ -200,7 +200,11 @@ export declare abstract class Provider {
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract query(params: object): Promise<any>;
     abstract query(path: string, data: string): Promise<any>;
-    abstract block(blockId: BlockId): Promise<BlockResult>;
+    abstract block(blockQuery: BlockId | {
+        blockId: BlockId;
+    } | {
+        finality: Finality;
+    }): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
     abstract experimental_genesisConfig(): Promise<GenesisConfig>;
