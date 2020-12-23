@@ -281,7 +281,8 @@ export class Account2FA extends AccountMultisig {
 
     async signatureFor() {
         const { accountId } = this;
-        const blockNumber = String((await this.connection.provider.status()).sync_info.latest_block_height);
+        const block = await this.connection.provider.block({ finality: 'final' })
+        const blockNumber = block.header.height.toString()
         const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, this.connection.networkId);
         const blockNumberSignature = Buffer.from(signed.signature).toString('base64');
         return { blockNumber, blockNumberSignature };

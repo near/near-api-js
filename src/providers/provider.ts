@@ -236,18 +236,20 @@ export interface LightClientProofRequest {
 }
 
 export abstract class Provider {
-    abstract async getNetwork(): Promise<Network>;
-    abstract async status(): Promise<NodeStatusResult>;
+    abstract getNetwork(): Promise<Network>;
+    abstract status(): Promise<NodeStatusResult>;
 
-    abstract async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
-    abstract async txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
-    abstract async query(params: object): Promise<any>;
-    abstract async query(path: string, data: string): Promise<any>;
-    abstract async block(blockId: BlockId): Promise<BlockResult>;
-    abstract async chunk(chunkId: ChunkId): Promise<ChunkResult>;
-    abstract async validators(blockId: BlockId): Promise<EpochValidatorInfo>;
-    abstract async experimental_genesisConfig(): Promise<GenesisConfig>;
-    abstract async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
+    abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
+    abstract query(params: object): Promise<any>;
+    abstract query(path: string, data: string): Promise<any>;
+    // TODO: BlockQuery type?
+    abstract block(blockQuery: BlockId | { blockId: BlockId } | { finality: Finality }): Promise<BlockResult>;
+    abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
+    // TODO: Use BlockQuery?
+    abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
+    abstract experimental_genesisConfig(): Promise<GenesisConfig>;
+    abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
