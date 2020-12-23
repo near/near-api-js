@@ -238,7 +238,11 @@ export class Account2FA extends AccountMultisig {
             }
             return typeof result === 'string' && result.length === 0 ? 'true' : result;
         } catch (e) {
-            console.warn('Invalid security code. Please try again.\n');
+            console.warn('Error validating security code:', e);
+            // TODO: Check if any other errors should be handled as non-recoverable
+            if (e.toString().includes('2fa code expired')) {
+                throw e;
+            }
             return await this.promptAndVerify();
         }
     }
