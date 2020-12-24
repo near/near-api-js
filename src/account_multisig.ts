@@ -200,14 +200,16 @@ export class Account2FA extends AccountMultisig {
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),)
         }
         console.log('deploying multisig contract for', accountId)
-        const result = await super.signAndSendTransactionWithAccount(accountId, actions);
-        // check if newLocalPublicKey was added to account, if not whole tx failed
-        const newLocalPublicKeyStr = newLocalPublicKey.toString()
-        accessKeys = await this.getAccessKeys()
-        if (!accessKeys.find(({ public_key }) => public_key === newLocalPublicKeyStr)) {
-            throw new Error('Error deploying multisig contract')
+        let result
+        try {
+            result = await this.signAndSendTransactionWithAccount(accountId, actions)
+        } catch (e) {
+            if (!/RetriesExceeded/.test(e.toString())) {
+                throw e
+            }
+            console.warn(e)
         }
-        return result
+        return await this.hasPublicKey(newLocalPublicKey) && result
     }
 
     async disable(contractBytes: Uint8Array, newLocalPublicKey: PublicKey) {
@@ -241,14 +243,24 @@ export class Account2FA extends AccountMultisig {
             deployContract(contractBytes),
         ]
         console.log('disabling 2fa for', accountId)
-        const result = await this.signAndSendTransaction(accountId, actions)
-        // check if newLocalPublicKey was added to account, if not whole tx failed
-        const newLocalPublicKeyStr = newLocalPublicKey.toString()
-        accessKeys = await this.getAccessKeys()
-        if (!accessKeys.find(({ public_key }) => public_key === newLocalPublicKeyStr)) {
+        let result
+        try {
+            result = await this.signAndSendTransaction(accountId, actions)
+        } catch (e) {
+            if (!/RetriesExceeded/.test(e.toString())) {
+                throw e
+            }
+        }
+        return await this.hasPublicKey(newLocalPublicKey) && result
+    }
+
+    async hasPublicKey(publicKey: PublicKey) {
+        const publicKeyStr = publicKey.toString()
+        const accessKeys = await this.getAccessKeys()
+        if (!accessKeys.find(({ public_key }) => public_key === publicKeyStr)) {
             throw new Error('Error disabling multisig contract')
         }
-        return result
+        return true
     }
 
     async sendCodeDefault() {

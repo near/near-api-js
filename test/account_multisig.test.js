@@ -158,3 +158,87 @@ describe('account2fa disable / re-enable key rotations', () => {
     });
     
 });
+
+describe('RetriesExceeded error with account2fa disable / re-enable key rotations', () => {
+
+    test('test disable', async() => {
+        let account = await testUtils.createAccount(nearjs);
+        account = await getAccount2FA(account);
+        const keys = (await account.getAccessKeys()).map(({ public_key }) => public_key);
+        const newLocalPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+        // sim error
+        account.signAndSendTransactionTemp = account.signAndSendTransaction;
+        account.signAndSendTransaction = async (...args) => {
+            await account.signAndSendTransactionTemp(...args);
+            throw new Error('RetriesExceeded');
+        };
+        await account.disable([...fs.readFileSync('./test/data/main.wasm')], newLocalPublicKey);
+        const keys2 = await account.getAccessKeys();
+        expect(keys2[0].public_key).toEqual(newLocalPublicKey.toString());
+        expect(keys.find((public_key) => keys2[0].public_key === public_key)).toEqual(undefined);
+    });
+
+    test('test disable and re-enable', async() => {
+        let account = await testUtils.createAccount(nearjs);
+        account = await getAccount2FA(account);
+        const keys = (await account.getAccessKeys()).map(({ public_key }) => public_key);
+        const newKeyPair = KeyPair.fromRandom('ed25519');
+        await account.disable([...fs.readFileSync('./test/data/main.wasm')], newKeyPair.getPublicKey());
+        account.connection.signer = await InMemorySigner.fromKeyPair(nearjs.connection.networkId, account.accountId, newKeyPair);
+        // sim error
+        account.signAndSendTransactionWithAccountTemp = account.signAndSendTransactionWithAccount;
+        account.signAndSendTransactionWithAccount = async (...args) => {
+            await account.signAndSendTransactionWithAccountTemp(...args);
+            throw new Error('RetriesExceeded');
+        };
+        account = await getAccount2FA(account);
+        const keys2 = await account.getAccessKeys();
+        expect(keys2.find(({public_key}) => public_key === account.newLocalPublicKey.toString())).not.toEqual(undefined);
+        expect(keys.find((public_key) => keys2[0].public_key === public_key)).toEqual(undefined);
+    });
+    
+});
+
+const someError = 'SomeError';
+
+describe('error with account2fa disable / re-enable key rotations', () => {
+
+    test('test disable', async() => {
+        let account = await testUtils.createAccount(nearjs);
+        account = await getAccount2FA(account);
+        const newLocalPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+        // sim error
+        account.signAndSendTransactionTemp = account.signAndSendTransaction;
+        account.signAndSendTransaction = async (...args) => {
+            console.log('signAndSendTransactionTemp');
+            await account.signAndSendTransactionTemp(...args);
+            throw new Error(someError);
+        };
+        try {
+            await account.disable([...fs.readFileSync('./test/data/main.wasm')], newLocalPublicKey);
+        } catch (e) {
+            expect(e.message).toEqual(someError);
+        }
+    });
+
+    test('test disable and re-enable', async() => {
+        let account = await testUtils.createAccount(nearjs);
+        account = await getAccount2FA(account);
+        const newKeyPair = KeyPair.fromRandom('ed25519');
+        await account.disable([...fs.readFileSync('./test/data/main.wasm')], newKeyPair.getPublicKey());
+        account.connection.signer = await InMemorySigner.fromKeyPair(nearjs.connection.networkId, account.accountId, newKeyPair);
+        // sim error
+        account.signAndSendTransactionWithAccountTemp = account.signAndSendTransactionWithAccount;
+        account.signAndSendTransactionWithAccount = async (...args) => {
+            await account.signAndSendTransactionWithAccountTemp(...args);
+            throw new Error(someError);
+        };
+        try {
+            await getAccount2FA(account);
+        } catch (e) {
+            expect(e.message).toEqual(someError);
+        }
+    });
+    
+});
+
