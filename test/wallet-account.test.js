@@ -1,8 +1,6 @@
 const url = require('url');
 const localStorage = require('localstorage-memory');
 const BN = require('bn.js');
-const nearApi = require('../lib/index');
-const borsh = require('borsh');
 
 // If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -15,6 +13,7 @@ global.window = {
 global.document = {
     title: 'documentTitle'
 };
+const nearApi = require('../lib/index');
 
 let history;
 let nearFake;
@@ -86,7 +85,7 @@ it('can complete sign in', async () => {
 });
 
 const BLOCK_HASH = '244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM';
-const blockHash = borsh.baseDecode(BLOCK_HASH);
+const blockHash = nearApi.utils.serialize.base_decode(BLOCK_HASH);
 function createTransferTx() {
     const actions = [
         nearApi.transactions.transfer(1),
@@ -123,7 +122,7 @@ function parseTransactionsFromUrl(urlToParse) {
         }
     });
     const transactions = parsedUrl.query.transactions.split(',')
-        .map(txBase64 => borsh.deserialize(
+        .map(txBase64 => nearApi.utils.serialize.deserialize(
             nearApi.transactions.SCHEMA,
             nearApi.transactions.Transaction,
             Buffer.from(txBase64, 'base64')));

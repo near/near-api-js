@@ -1,6 +1,5 @@
 
 const nearApi = require('../lib/index');
-const borsh = require('borsh');
 const { sha256 } = require('js-sha256');
 
 test('test sign and verify', async () => {
@@ -8,7 +7,7 @@ test('test sign and verify', async () => {
     expect(keyPair.publicKey.toString()).toEqual('ed25519:AYWv9RAN1hpSQA4p1DLhCNnpnNXwxhfH9qeHN8B4nJ59');
     const message = new Uint8Array(sha256.array('message'));
     const signature = keyPair.sign(message);
-    expect(borsh.baseEncode(signature.signature)).toEqual('26gFr4xth7W9K7HPWAxq3BLsua8oTy378mC1MYFiEXHBBpeBjP8WmJEJo8XTBowetvqbRshcQEtBUdwQcAqDyP8T');
+    expect(nearApi.utils.serialize.base_encode(signature.signature)).toEqual('26gFr4xth7W9K7HPWAxq3BLsua8oTy378mC1MYFiEXHBBpeBjP8WmJEJo8XTBowetvqbRshcQEtBUdwQcAqDyP8T');
 });
 
 test('test sign and verify with random', async () => {
