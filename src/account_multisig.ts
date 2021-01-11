@@ -199,7 +199,7 @@ export class Account2FA extends AccountMultisig {
             const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),)
         }
-        console.log('deploying multisig contract for', accountId)
+        console.log('deploying multisig contract for', accountId, newLocalPublicKey.toString())
         return await this.signAndSendTransactionWithAccount(accountId, actions)
     }
 
