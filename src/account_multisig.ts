@@ -237,16 +237,6 @@ export class Account2FA extends AccountMultisig {
         return await this.signAndSendTransaction(accountId, actions)
     }
 
-    // used in wallet to check if new key is added for enable/disable
-    async hasPublicKey(publicKey: PublicKey) {
-        const publicKeyStr = publicKey.toString()
-        const accessKeys = await this.getAccessKeys()
-        if (!accessKeys.find(({ public_key }) => public_key === publicKeyStr)) {
-            throw new Error('Error: key does not exist on account')
-        }
-        return true
-    }
-
     async sendCodeDefault() {
         const { accountId } = this;
         const { requestId, actions } = this.getRequest();
