@@ -53,12 +53,10 @@ export class AccountMultisig extends Account {
         const { accountId } = this;
 
         if (this.isDeleteAction(actions)) {
-            return await super.signAndSendTransaction(accountId, actions)
+            return await super.signAndSendTransaction(accountId, actions);
         }
-        await this.deleteUnconfirmedRequests()
+        await this.deleteUnconfirmedRequests();
 
-        const requestId = await this.getRequestNonce()
-        this.setRequest({ accountId, requestId, actions });
         const args = Buffer.from(JSON.stringify({
             request: {
                 receiver_id: receiverId,
@@ -69,6 +67,21 @@ export class AccountMultisig extends Account {
         const result = await super.signAndSendTransaction(accountId, [
             functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
         ]);
+
+        if (!result.status) {
+            throw new Error('Request failed');
+        }
+        const status: any = Object.assign({}, result.status);
+        if (!status.SuccessValue || typeof status.SuccessValue !== 'string') {
+            throw new Error('Request failed');
+        }
+
+        this.setRequest({
+            accountId,
+            actions,
+            requestId: parseInt(Buffer.from(status.SuccessValue, 'base64').toString('ascii'), 10)
+        });
+
         if (this.onAddRequestResult) {
             await this.onAddRequestResult(result)
         }
@@ -95,10 +108,6 @@ export class AccountMultisig extends Account {
     }
 
     // helpers
-
-    async getRequestNonce(): Promise<Number> {
-        return this.contract.get_request_nonce();
-    }
 
     async getRequestIds(): Promise<string> {
         return this.contract.list_request_ids();
