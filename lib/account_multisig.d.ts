@@ -50,8 +50,9 @@ export declare class Account2FA extends AccountMultisig {
     helperUrl: string;
     constructor(connection: Connection, accountId: string, options: any);
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
-    deployMultisig(contractBytes: Uint8Array, newLocalPublicKey: PublicKey): Promise<FinalExecutionOutcome>;
-    disable(contractBytes: Uint8Array, newLocalPublicKey: PublicKey): Promise<FinalExecutionOutcome>;
+    deployMultisig(contractBytes: Uint8Array, newLocalPublicKey: PublicKey): Promise<any>;
+    disable(contractBytes: Uint8Array, newLocalPublicKey: PublicKey): Promise<any>;
+    hasPublicKey(publicKey: PublicKey): Promise<boolean>;
     sendCodeDefault(): Promise<any>;
     getCodeDefault(method: any): Promise<string>;
     promptAndVerify(): any;

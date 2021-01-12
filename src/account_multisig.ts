@@ -200,7 +200,16 @@ export class Account2FA extends AccountMultisig {
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),)
         }
         console.log('deploying multisig contract for', accountId)
-        return await this.signAndSendTransactionWithAccount(accountId, actions)
+        let result
+        try {
+            result = await this.signAndSendTransactionWithAccount(accountId, actions)
+        } catch (e) {
+            if (!/RetriesExceeded/.test(e.toString())) {
+                throw e
+            }
+            console.warn(e)
+        }
+        return result
     }
 
     async disable(contractBytes: Uint8Array, newLocalPublicKey: PublicKey) {
@@ -234,7 +243,24 @@ export class Account2FA extends AccountMultisig {
             deployContract(contractBytes),
         ]
         console.log('disabling 2fa for', accountId)
-        return await this.signAndSendTransaction(accountId, actions)
+        let result
+        try {
+            result = await this.signAndSendTransaction(accountId, actions)
+        } catch (e) {
+            if (!/RetriesExceeded/.test(e.toString())) {
+                throw e
+            }
+        }
+        return result
+    }
+
+    async hasPublicKey(publicKey: PublicKey) {
+        const publicKeyStr = publicKey.toString()
+        const accessKeys = await this.getAccessKeys()
+        if (!accessKeys.find(({ public_key }) => public_key === publicKeyStr)) {
+            throw new Error('Error: key does not exist on account')
+        }
+        return true
     }
 
     async sendCodeDefault() {
