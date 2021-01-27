@@ -132,12 +132,12 @@ export class Account {
         }
         const { accessKey } = accessKeyInfo;
 
-        const status = await this.connection.provider.status();
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = block.header.hash;
 
         const nonce = ++accessKey.nonce;
-        // TODO: get latest_block_hash from block query using `final` finality
         return await signTransaction(
-            receiverId, nonce, actions, baseDecode(status.sync_info.latest_block_hash), this.connection.signer, this.accountId, this.connection.networkId
+            receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
         );
     }
 

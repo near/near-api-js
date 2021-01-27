@@ -199,11 +199,12 @@ class ConnectedWalletAccount extends Account {
             }
         }
 
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = baseDecode(block.header.hash);
+
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
         const nonce = accessKey.access_key.nonce + 1;
-        const status = await this.connection.provider.status();
-        const blockHash = baseDecode(status.sync_info.latest_block_hash);
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
         await this.walletConnection.requestSignTransactions([transaction], window.location.href);
 

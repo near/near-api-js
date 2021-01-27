@@ -159,10 +159,10 @@ function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
                 receipts_outcome: []
             };
         },
-        status() {
+        block() {
             return {
-                sync_info: {
-                    latest_block_hash: BLOCK_HASH
+                header: {
+                    hash: BLOCK_HASH
                 }
             };
         }
