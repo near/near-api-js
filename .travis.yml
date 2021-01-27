@@ -1,12 +1,27 @@
 language: node_js
+
 node_js: 10
+
 env:
   - NODE_ENV=ci
   - NODE_ENV=ci-betanet
     #  - NODE_ENV=betanet
-cache: yarn
-script:
-  - yarn lint
-  - yarn test
-  - yarn browserify && yarn run bundlewatch
 
+cache: yarn
+
+
+jobs:
+  include:
+    - name: yarn
+      script:
+      - yarn lint
+      - yarn test
+      - yarn browserify && yarn run bundlewatch
+
+    - name: fossa     
+      before_script:
+        - "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/fc60c6631a5d372d5a45fea35e31665b338f260d/install.sh | sudo bash"
+      script:
+        - fossa init
+        - fossa analyze --server-scan
+        - fossa test
