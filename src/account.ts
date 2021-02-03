@@ -75,12 +75,6 @@ function parseJsonFromRawResponse (response: Uint8Array): any {
 export class Account {
     readonly connection: Connection;
     readonly accountId: string;
-    private _state: AccountState;
-
-    private _ready: Promise<void>;
-    protected get ready(): Promise<void> {
-        return this._ready || (this._ready = Promise.resolve(this.fetchState()));
-    }
 
     constructor(connection: Connection, accountId: string) {
         this.connection = connection;
@@ -88,20 +82,11 @@ export class Account {
     }
 
     /**
-     * Helper function when getting the state of a NEAR account
-     * @returns Promise<void>
-     */
-    async fetchState(): Promise<void> {
-        this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
-    }
-
-    /**
      * Returns the state of a NEAR account
      * @returns {Promise<AccountState>}
      */
     async state(): Promise<AccountState> {
-        await this.ready;
-        return this._state;
+        return await this.connection.provider.query(`account/${this.accountId}`, '');
     }
 
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
@@ -121,8 +106,6 @@ export class Account {
     }
 
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
-        await this.ready;
-
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
         if (!accessKeyInfo) {
             throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
@@ -144,8 +127,6 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        await this.ready;
-
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
