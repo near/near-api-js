@@ -384,7 +384,7 @@ export class Account {
     }
 
     /**
-     * See https://docs.near.org/docs/api/rpc#view-contract-state
+     * See https://docs.near.org/docs/develop/front-end/rpc#view-contract-state
      *
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
      * Pass an empty string for prefix if you would like to return the entire state.
