@@ -8,7 +8,7 @@ import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
 import { baseEncode } from 'borsh';
-import { parseRpcError } from '../utils/rpc_errors';
+import { parseRpcError, getErrorTypeFromErrorMessage } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
 export { TypedError, ErrorContext };
@@ -78,7 +78,9 @@ export class JsonRpcProvider extends Provider {
             result = await this.sendJsonRpc('query', [path, data]);
         }
         if (result && result.error) {
-            throw new Error(`Querying ${args} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
+            throw new TypedError(
+                `Querying ${args} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`,
+                getErrorTypeFromErrorMessage(result.error));
         }
         return result;
     }
@@ -174,7 +176,7 @@ export class JsonRpcProvider extends Provider {
                 if (response.error.data === 'Timeout' || errorMessage.includes('Timeout error')) {
                     throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
                 } else {
-                    throw new TypedError(errorMessage);
+                    throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data));
                 }
             }
         }

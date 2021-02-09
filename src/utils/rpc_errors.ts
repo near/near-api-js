@@ -77,6 +77,21 @@ function walkSubtype(errorObj, schema, result, typeName) {
     }
 }
 
+export function getErrorTypeFromErrorMessage(errorMessage) {
+    switch (true) {
+        case /^account .*? does not exist while viewing$/.test(errorMessage):
+            return 'AccountDoesNotExist';
+        case /^Account .*? doesn't exist$/.test(errorMessage):
+            return 'AccountDoesNotExist';
+        case /^access key .*? does not exist while viewing$/.test(errorMessage):
+            return 'AccessKeyDoesNotExist';
+        case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(errorMessage):
+            return 'CodeDoesNotExist';
+        default:
+            return 'UntypedError';
+    }
+}
+
 /**
  * Helper function determining if the argument is an object
  * @param n Value to check
