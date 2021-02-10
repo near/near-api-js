@@ -6,7 +6,7 @@ import { Contract } from './contract';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator } from './account_creator';
 import { KeyStore } from './key_stores';
-declare type NearConfig = {
+export declare type NearConfig = {
     keyStore?: KeyStore;
     signer?: Signer;
     deps?: {
@@ -53,11 +53,3 @@ export declare class Near {
      */
     sendTokens(amount: BN, originator: string, receiver: string): Promise<string>;
 }
-declare type ConnectConfig = NearConfig & {
-    keyPath?: string;
-};
-/**
- * Initialize connection to Near network.
- */
-export declare function connect(config: ConnectConfig): Promise<Near>;
-export {};

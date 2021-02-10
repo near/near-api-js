@@ -1,5 +1,5 @@
 import { Signature, KeyPair, PublicKey } from './utils/key_pair';
-import { KeyStore } from './key_stores';
+import { KeyStore } from './key_stores/keystore';
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
  */
