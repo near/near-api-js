@@ -5104,15 +5104,10 @@ typedoc@^0.19.2:
     shelljs "^0.8.4"
     typedoc-default-themes "^0.11.4"
 
-typescript@^3.5.1:
-  version "3.9.7"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
-  integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
-
-typescript@~4.0.2:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.5.tgz#ae9dddfd1069f1cb5beb3ef3b2170dd7c1332389"
-  integrity sha512-ywmr/VrTVCmNTJ6iV2LwIrfG1P+lv6luD8sUJs+2eI9NLGigaN+nUQc13iHqisq7bra9lnmUSYqbJvegraBOPQ==
+typescript@^4.0.6, typescript@~4.0.2:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.6.tgz#314886f72a8e224d48e6ca760a9f314fecf7adcc"
+  integrity sha512-+eGgIo8Fl3l2B9Red9Q3VIkjMlUmaqELTJlsMqnHRe8V85DxJtr1q6Omjs0xBzXl0foNfCWu0fTf4jZ2LyWKPw==
 
 u3@^0.1.0:
   version "0.1.0"
