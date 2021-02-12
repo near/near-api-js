@@ -78,6 +78,7 @@ function walkSubtype(errorObj, schema, result, typeName) {
 }
 
 export function getErrorTypeFromErrorMessage(errorMessage) {
+    // This function should be removed when JSON RPC starts returning typed errors.
     switch (true) {
         case /^account .*? does not exist while viewing$/.test(errorMessage):
             return 'AccountDoesNotExist';
