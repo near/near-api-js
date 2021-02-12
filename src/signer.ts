@@ -1,6 +1,7 @@
 import sha256 from 'js-sha256';
 import { Signature, KeyPair, PublicKey } from './utils/key_pair';
-import { KeyStore, InMemoryKeyStore } from './key_stores';
+import { KeyStore } from './key_stores/keystore';
+import { InMemoryKeyStore } from './key_stores/in_memory_key_store';
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
