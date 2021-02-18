@@ -1,3 +1,4 @@
+import depd from 'depd';
 import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
@@ -60,28 +61,36 @@ export class WalletConnection {
     /**
      * Redirects current page to the wallet authentication page.
      * @param contractId The NEAR account where the contract is deployed
-     * @param title Name of the application that will appear as requesting access in Wallet
-     * @param successUrl Optional url to redirect upon success
-     * @param failureUrl Optional url to redirect upon failure
-     * 
+     * @param options An optional options object
+     * @param options.successUrl URL to redirect upon success. Default: current url
+     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     *
      * @example
-     *   walletAccount.requestSignIn(
-     *     account-with-deploy-contract,
-     *     "Guest Book",
-     *     "https://example.com/success.html",
-     *     "https://example.com/error.html");
+     *   walletAccount.requestSignIn(account-with-deploy-contract, {
+     *     successUrl: "https://example.com/success.html",
+     *     failureUrl: "https://example.com/error.html"
+     *   });
      */
-    async requestSignIn(contractId: string, title: string, successUrl?: string, failureUrl?: string) {
-        if (this.getAccountId() || await this._keyStore.getKey(this._networkId, this.getAccountId())) {
-            return Promise.resolve();
+    async requestSignIn(
+        contractId: string,
+        titleOrOptions?: string | { successUrl?: string; failureUrl?: string },
+        successUrl?: string,
+        failureUrl?: string
+    ) {
+        let options: string | { successUrl?: string; failureUrl?: string };
+        if (typeof titleOrOptions === 'string') {
+            const deprecate = depd('requestSignIn(_, title)');
+            deprecate('`title` ignored; use `requestSignIn(_, { successUrl, failureUrl })` instead');
+            options = { successUrl, failureUrl };
+        } else {
+            options = (titleOrOptions || {}) as { successUrl?: string; failureUrl?: string };
         }
 
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
-        newUrl.searchParams.set('title', title);
         newUrl.searchParams.set('contract_id', contractId);
-        newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
-        newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
+        newUrl.searchParams.set('success_url', options.successUrl || currentUrl.href);
+        newUrl.searchParams.set('failure_url', options.failureUrl || currentUrl.href);
         newUrl.searchParams.set('app_url', currentUrl.origin);
         const accessKey = KeyPair.fromRandom('ed25519');
         newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
@@ -167,7 +176,7 @@ export const WalletAccount = WalletConnection;
 /**
  * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
  */
-class ConnectedWalletAccount extends Account {
+export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
 
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
@@ -245,7 +254,7 @@ class ConnectedWalletAccount extends Account {
                 }
                 const [{ functionCall }] = actions;
                 return functionCall &&
-                    (!functionCall.deposit || functionCall.deposit.toString() === "0") && // TODO: Should support charging amount smaller than allowance?
+                    (!functionCall.deposit || functionCall.deposit.toString() === '0') && // TODO: Should support charging amount smaller than allowance?
                     (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
                 // TODO: Handle cases when allowance doesn't have enough to pay for gas
             }

@@ -29,18 +29,20 @@ export declare class WalletConnection {
     /**
      * Redirects current page to the wallet authentication page.
      * @param contractId The NEAR account where the contract is deployed
-     * @param title Name of the application that will appear as requesting access in Wallet
-     * @param successUrl Optional url to redirect upon success
-     * @param failureUrl Optional url to redirect upon failure
+     * @param options An optional options object
+     * @param options.successUrl URL to redirect upon success. Default: current url
+     * @param options.failureUrl URL to redirect upon failure. Default: current url
      *
      * @example
-     *   walletAccount.requestSignIn(
-     *     account-with-deploy-contract,
-     *     "Guest Book",
-     *     "https://example.com/success.html",
-     *     "https://example.com/error.html");
+     *   walletAccount.requestSignIn(account-with-deploy-contract, {
+     *     successUrl: "https://example.com/success.html",
+     *     failureUrl: "https://example.com/error.html"
+     *   });
      */
-    requestSignIn(contractId: string, title: string, successUrl?: string, failureUrl?: string): Promise<void>;
+    requestSignIn(contractId: string, titleOrOptions?: string | {
+        successUrl?: string;
+        failureUrl?: string;
+    }, successUrl?: string, failureUrl?: string): Promise<void>;
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions
      * @param transactions Array of Transaction objects that will be requested to sign
@@ -72,7 +74,7 @@ export declare const WalletAccount: typeof WalletConnection;
 /**
  * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
  */
-declare class ConnectedWalletAccount extends Account {
+export declare class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
@@ -92,4 +94,3 @@ declare class ConnectedWalletAccount extends Account {
      */
     accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any>;
 }
-export {};

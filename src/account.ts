@@ -126,7 +126,7 @@ export class Account {
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         await this.ready;
 
-        const accessKeyInfo = await this.findAccessKey(receiverId, actions);
+        const accessKeyInfo = await this.findAccessKey();
         if (!accessKeyInfo) {
             throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
         }
@@ -221,7 +221,7 @@ export class Account {
 
     accessKeyByPublicKeyCache: { [key: string]: AccessKey } = {}
 
-    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
+    async findAccessKey(): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
         // TODO: Find matching access key based on transaction
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
@@ -392,7 +392,7 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer, value: Buffer}>> {
+    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
         const { blockId, finality } = blockQuery as any || {};
         const { values } = await this.connection.provider.query({
             request_type: 'view_state',
@@ -405,7 +405,7 @@ export class Account {
         return values.map(({key, value}) => ({
             key: Buffer.from(key, 'base64'),
             value: Buffer.from(value, 'base64')
-        }))
+        }));
     }
 
     /**
