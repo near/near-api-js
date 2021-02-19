@@ -28,6 +28,8 @@ export type BlockId = BlockHash | BlockHeight;
 
 export type Finality = 'optimistic' | 'near-final' | 'final'
 
+export type BlockReference = { blockId: BlockId } | { finality: Finality } | { sync_checkpoint: "genesis" | "earliest_available" }
+
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',
     Pending = 'Pending',
@@ -104,30 +106,30 @@ export type BlockShardId = [BlockId, ShardId];
 export type ChunkId = ChunkHash | BlockShardId;
 
 export interface ChunkHeader {
-  balance_burnt: string;
-  chunk_hash: ChunkHash;
-  encoded_length: number;
-  encoded_merkle_root: string;
-  gas_limit: number;
-  gas_used: number;
-  height_created: number;
-  height_included: number;
-  outgoing_receipts_root: string;
-  prev_block_hash: string;
-  prev_state_num_parts: number;
-  prev_state_root_hash: string;
-  rent_paid: string;
-  shard_id: number;
-  signature: string;
-  tx_root: string;
-  validator_proposals: any[];
-  validator_reward: string;
+    balance_burnt: string;
+    chunk_hash: ChunkHash;
+    encoded_length: number;
+    encoded_merkle_root: string;
+    gas_limit: number;
+    gas_used: number;
+    height_created: number;
+    height_included: number;
+    outgoing_receipts_root: string;
+    prev_block_hash: string;
+    prev_state_num_parts: number;
+    prev_state_root_hash: string;
+    rent_paid: string;
+    shard_id: number;
+    signature: string;
+    tx_root: string;
+    validator_proposals: any[];
+    validator_reward: string;
 }
 
 export interface ChunkResult {
-  header: ChunkHeader;
-  receipts: any[];
-  transactions: Transaction[];
+    header: ChunkHeader;
+    receipts: any[];
+    transactions: Transaction[];
 }
 
 export interface Transaction {
@@ -165,11 +167,11 @@ export interface ValidatorStakeView {
     stake: string;
 }
 
-export interface GenesisConfig {
-    runtime_config: RuntimeConfig;
+export interface NearProtocolConfig {
+    runtime_config: NearProtocolRuntimeConfig;
 }
 
-export interface RuntimeConfig {
+export interface NearProtocolRuntimeConfig {
     storage_amount_per_byte: string;
 }
 
@@ -244,11 +246,12 @@ export abstract class Provider {
     abstract query(params: object): Promise<any>;
     abstract query(path: string, data: string): Promise<any>;
     // TODO: BlockQuery type?
-    abstract block(blockQuery: BlockId | { blockId: BlockId } | { finality: Finality }): Promise<BlockResult>;
+    abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     // TODO: Use BlockQuery?
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
-    abstract experimental_genesisConfig(): Promise<GenesisConfig>;
+    abstract experimental_genesisConfig(): Promise<NearProtocolConfig>;
+    abstract experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
 }
 

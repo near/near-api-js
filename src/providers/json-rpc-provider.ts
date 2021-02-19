@@ -1,8 +1,8 @@
 import depd from 'depd';
 import {
-    Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality,
+    Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference,
     BlockResult, ChunkId, ChunkResult, EpochValidatorInfo,
-    GenesisConfig, LightClientProof, LightClientProofRequest
+    NearProtocolConfig, LightClientProof, LightClientProofRequest
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -87,7 +87,7 @@ export class JsonRpcProvider extends Provider {
      * Query for block info from the RPC
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#block)
      */
-    async block(blockQuery: BlockId | { blockId: BlockId } | { finality: Finality }): Promise<BlockResult> {
+    async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
         const { finality } = blockQuery as any;
         let { blockId } = blockQuery as any;
 
@@ -123,7 +123,28 @@ export class JsonRpcProvider extends Provider {
      * Gets EXPERIMENTAL_genesis_config from RPC
      * @returns {Promise<GenesisConfig>}
      */
-    async experimental_genesisConfig(): Promise<GenesisConfig> {
+    async experimental_genesisConfig(): Promise<NearProtocolConfig> {
+        // TODO: Once EXPERIMENTAL_protocol_config (https://github.com/near/nearcore/pull/3919)
+        // is released to mainnet, the following line should be used:
+        //
+        //return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', { sync_checkpoint: 'genesis' });
+        //
+        const deprecate = depd('JsonRpcProvider.experimental_protocolConfig({ sync_checkpoint: \'genesis\' })');
+        deprecate('use `experimental_protocolConfig` to fetch the up-to-date or genesis protocol config explicitly');
+        return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
+    }
+
+    /**
+     * Gets EXPERIMENTAL_protocol_config from RPC
+     * @returns {Promise<ProtocolConfig>}
+     */
+    async experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig> {
+        // TODO: Once EXPERIMENTAL_protocol_config (https://github.com/near/nearcore/pull/3919)
+        // is released to mainnet, the following line should be used:
+        //
+        //return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', blockReference);
+        //
+        // Meanwhile, we use the old genesis config method in order to initiate migration
         return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
     }
 

@@ -449,10 +449,10 @@ export class Account {
      * @returns {Promise<AccountBalance>}
      */
     async getAccountBalance(): Promise<AccountBalance> {
-        const genesisConfig = await this.connection.provider.experimental_genesisConfig();
+        const protocolConfig = await this.connection.provider.experimental_protocolConfig({ finality: 'final' });
         const state = await this.state();
 
-        const costPerByte = new BN(genesisConfig.runtime_config.storage_amount_per_byte);
+        const costPerByte = new BN(protocolConfig.runtime_config.storage_amount_per_byte);
         const stateStaked = new BN(state.storage_usage).mul(costPerByte);
         const staked = new BN(state.locked);
         const totalBalance = new BN(state.amount).add(staked);

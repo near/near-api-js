@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, GenesisConfig, LightClientProof, LightClientProofRequest } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
@@ -41,11 +41,7 @@ export declare class JsonRpcProvider extends Provider {
      * Query for block info from the RPC
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#block)
      */
-    block(blockQuery: BlockId | {
-        blockId: BlockId;
-    } | {
-        finality: Finality;
-    }): Promise<BlockResult>;
+    block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
     /**
      * Queries for details of a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#chunk)
@@ -63,7 +59,12 @@ export declare class JsonRpcProvider extends Provider {
      * Gets EXPERIMENTAL_genesis_config from RPC
      * @returns {Promise<GenesisConfig>}
      */
-    experimental_genesisConfig(): Promise<GenesisConfig>;
+    experimental_genesisConfig(): Promise<NearProtocolConfig>;
+    /**
+     * Gets EXPERIMENTAL_protocol_config from RPC
+     * @returns {Promise<ProtocolConfig>}
+     */
+    experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     /**
      * Gets light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      * @returns {Promise<LightClientProof>}

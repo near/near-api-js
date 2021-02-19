@@ -22,6 +22,13 @@ declare type BlockHash = string;
 declare type BlockHeight = number;
 export declare type BlockId = BlockHash | BlockHeight;
 export declare type Finality = 'optimistic' | 'near-final' | 'final';
+export declare type BlockReference = {
+    blockId: BlockId;
+} | {
+    finality: Finality;
+} | {
+    sync_checkpoint: "genesis" | "earliest_available";
+};
 export declare enum ExecutionStatusBasic {
     Unknown = "Unknown",
     Pending = "Pending",
@@ -140,10 +147,10 @@ export interface ValidatorStakeView {
     public_key: string;
     stake: string;
 }
-export interface GenesisConfig {
-    runtime_config: RuntimeConfig;
+export interface NearProtocolConfig {
+    runtime_config: NearProtocolRuntimeConfig;
 }
-export interface RuntimeConfig {
+export interface NearProtocolRuntimeConfig {
     storage_amount_per_byte: string;
 }
 export interface EpochValidatorInfo {
@@ -200,14 +207,11 @@ export declare abstract class Provider {
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract query(params: object): Promise<any>;
     abstract query(path: string, data: string): Promise<any>;
-    abstract block(blockQuery: BlockId | {
-        blockId: BlockId;
-    } | {
-        finality: Finality;
-    }): Promise<BlockResult>;
+    abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
-    abstract experimental_genesisConfig(): Promise<GenesisConfig>;
+    abstract experimental_genesisConfig(): Promise<NearProtocolConfig>;
+    abstract experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
