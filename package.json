@@ -38,7 +38,7 @@
     "rimraf": "^3.0.0",
     "semver": "^7.1.1",
     "ts-morph": "^8.1.0",
-    "typedoc": "^0.19.2",
+    "typedoc": "^0.20.27",
     "typescript": "^3.5.1",
     "uglifyify": "^5.0.1"
   },
