@@ -34,7 +34,9 @@ export class NewTypedError extends Error {
     Can be sent from JSON RPC or generated on near-api-js side
     Each error path will end with the origin of the error itself
     (like JsonRpc, Ledger, NearApiJs etc.).
-    Not sure if this field should be mandatory*/
+    Not sure if this field should be mandatory
+    Another option is to have struuctured errorPath like this:
+    {"TxExecutionError":{"InvalidTxError":{"InvalidNonce":{"tx_nonce":2,"ak_nonce":28}}}}}*/
     errorPath?: string;
     shouldRetry: boolean;; // should the app try again with the same data?
     context?: NewErrorContext; // context is optional, not all the errors have it
