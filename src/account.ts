@@ -39,14 +39,11 @@ const DEFAULT_FUNC_CALL_GAS = new BN('30000000000000');
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
 
-// Default number of retries before giving up on a transaction.
-const TX_STATUS_RETRY_NUMBER = 12;
-
 // Default wait until next retry in millis.
-const TX_STATUS_RETRY_WAIT = 500;
+const TX_NONCE_RETRY_WAIT = 500;
 
 // Exponential back off for waiting to retry.
-const TX_STATUS_RETRY_WAIT_BACKOFF = 1.5;
+const TX_NONCE_RETRY_WAIT_BACKOFF = 1.5;
 
 export interface AccountState {
     amount: string;
@@ -151,32 +148,12 @@ export class Account {
 
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
-        const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
+        const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
             [txHash, signedTx] = await this.signTransaction(receiverId, actions);
             const publicKey = signedTx.transaction.publicKey;
 
             try {
-                const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
-                    try {
-                        return await this.connection.provider.sendTransaction(signedTx);
-                    } catch (error) {
-                        // TODO: Somehow getting still:
-                        // Error: send_tx_commit has timed out.
-                        if (error.type === 'TimeoutError') {
-                            console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} as it has timed out`);
-                            return null;
-                        }
-
-                        throw error;
-                    }
-                });
-                if (!result) {
-                    throw new TypedError(
-                        `Exceeded ${TX_STATUS_RETRY_NUMBER} attempts for transaction ${baseEncode(txHash)}.`,
-                        'RetriesExceeded',
-                        new ErrorContext(baseEncode(txHash)));
-                }
-                return result;
+                return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
                 if (error.type === 'InvalidNonce') {
                     console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
