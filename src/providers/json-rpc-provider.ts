@@ -193,9 +193,6 @@ export class JsonRpcProvider extends Provider {
                 }
                 return response.result;
             } catch (error) {
-                // TODO: Somehow getting still:
-                // Error: send_tx_commit has timed out.
-                // TODO: Check if nearcore still sends this or some other messages for timeout
                 if (error.type === 'TimeoutError') {
                     console.warn(`Retrying request to ${method} as it has timed out`, params);
                     return null;
