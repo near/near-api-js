@@ -28,7 +28,7 @@ export type BlockId = BlockHash | BlockHeight;
 
 export type Finality = 'optimistic' | 'near-final' | 'final'
 
-export type BlockReference = { blockId: BlockId } | { finality: Finality } | { sync_checkpoint: "genesis" | "earliest_available" }
+export type BlockReference = { blockId: BlockId } | { finality: Finality } | { sync_checkpoint: 'genesis' | 'earliest_available' }
 
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',
