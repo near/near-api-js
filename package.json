@@ -39,7 +39,7 @@
     "semver": "^7.1.1",
     "ts-morph": "^10.0.0",
     "typedoc": "^0.19.2",
-    "typescript": "^3.5.1",
+    "typescript": "^4.0.7",
     "uglifyify": "^5.0.1"
   },
   "jest": {
