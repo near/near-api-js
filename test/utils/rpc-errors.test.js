@@ -11,7 +11,8 @@ const {
     HostError,
     InvalidIteratorIndex,
     GasLimitExceeded,
-    formatError
+    formatError,
+    getErrorTypeFromErrorMessage,
 } = nearApi.utils.rpc_errors;
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {
@@ -107,4 +108,17 @@ describe('rpc-errors', () => {
         expect(error).toEqual(new FunctionCallError('{"index":0,"kind":{"EvmError":"ArgumentParseError"}}'));
     });
 
+    test('test getErrorTypeFromErrorMessage', () => {
+        const err1 = 'account random.near does not exist while viewing';
+        const err2 = 'Account random2.testnet doesn\'t exist';
+        const err3 = 'access key ed25519:DvXowCpBHKdbD2qutgfhG6jvBMaXyUh7DxrDSjkLxMHp does not exist while viewing';
+        const err4 = 'wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: "random.testnet" }))';
+        expect(getErrorTypeFromErrorMessage(err1)).toEqual('AccountDoesNotExist');
+        expect(getErrorTypeFromErrorMessage(err2)).toEqual('AccountDoesNotExist');
+        expect(getErrorTypeFromErrorMessage(err3)).toEqual('AccessKeyDoesNotExist');
+        expect(getErrorTypeFromErrorMessage(err4)).toEqual('CodeDoesNotExist');
+        expect(getErrorTypeFromErrorMessage('random string')).toEqual('UntypedError');
+        expect(getErrorTypeFromErrorMessage(undefined)).toEqual('UntypedError');
+        expect(getErrorTypeFromErrorMessage('')).toEqual('UntypedError');
+    });
 });

@@ -190,8 +190,7 @@ class ConnectedWalletAccount extends Account {
             try {
                 return await super.signAndSendTransaction(receiverId, actions);
             } catch (e) {
-                // TODO: Use TypedError when available
-                if (e.message.includes('does not have enough balance')) {
+                if (e.type === 'NotEnoughBalance') {
                     accessKey = await this.accessKeyForTransaction(receiverId, actions);
                 } else {
                     throw e;

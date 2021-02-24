@@ -155,7 +155,7 @@ export class Account {
             try {
                 return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
-                if (error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
+                if (error.type === 'InvalidNonce') {
                     console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
