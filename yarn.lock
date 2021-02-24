@@ -509,17 +509,16 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@ts-morph/common@~0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@ts-morph/common/-/common-0.6.0.tgz#cbd4ee57c5ef971511b9c5778e0bb8eb27de4783"
-  integrity sha512-pI35nZz5bs3tL3btSVX2cWkAE8rc80F+Fn4TwSC6bQvn7fgn9IyLXVcAfpG6X6NBY5wN9TkSWXn/QYUkBvR/Fw==
+"@ts-morph/common@~0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@ts-morph/common/-/common-0.8.0.tgz#ae7b292df8258040465c50b378108ec8f09a9516"
+  integrity sha512-YbjWiMXLMKxWxcMqP47nwZVWVBwoF5B65dtRz0lya2LetjldAPxTxRbRo1n4Iszr2tSvzXeaa+f1AbULmfc5uA==
   dependencies:
     "@dsherret/to-absolute-glob" "^2.0.2"
-    fast-glob "^3.2.4"
-    fs-extra "^9.0.1"
+    fast-glob "^3.2.5"
     is-negated-glob "^1.0.0"
-    multimatch "^4.0.0"
-    typescript "~4.0.2"
+    mkdirp "^1.0.4"
+    multimatch "^5.0.0"
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
@@ -1387,7 +1386,7 @@ co@^4.6.0:
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha1-bqa989hTrlTMuOR7+gvz+QMfsYQ=
 
-code-block-writer@^10.1.0:
+code-block-writer@^10.1.1:
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/code-block-writer/-/code-block-writer-10.1.1.tgz#ad5684ed4bfb2b0783c8b131281ae84ee640a42f"
   integrity sha512-67ueh2IRGst/51p0n6FvPrnRjAGHY5F8xdjkgrYE7DDzpJe6qA07RYQ9VcoUeo5ATOjSOiWpSL3SWBRRbempMw==
@@ -2107,10 +2106,10 @@ fast-deep-equal@^3.1.1:
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
 
-fast-glob@^3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.2.4.tgz#d20aefbf99579383e7f3cc66529158c9b98554d3"
-  integrity sha512-kr/Oo6PX51265qeuCYsyGypiO5uJFgBS0jksyG7FUeCyQzNwYnzrNIMR1NXfkZXsMYXYLRAHgISHBz8gQcxKHQ==
+fast-glob@^3.2.5:
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.2.5.tgz#7939af2a656de79a4f1901903ee8adcaa7cb9661"
+  integrity sha512-2DtFcgT68wiTTiwZ2hNdJfcHNke9XOfnwmBRWXhmeKM8rF0TGwmC/Qto3S7RoZKp5cilZbxzO5iTNTQsJ+EeDg==
   dependencies:
     "@nodelib/fs.stat" "^2.0.2"
     "@nodelib/fs.walk" "^1.2.3"
@@ -3642,6 +3641,11 @@ mkdirp@^0.5.1:
   dependencies:
     minimist "^1.2.5"
 
+mkdirp@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
+  integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
 module-deps@^6.2.3:
   version "6.2.3"
   resolved "https://registry.yarnpkg.com/module-deps/-/module-deps-6.2.3.tgz#15490bc02af4b56cf62299c7c17cba32d71a96ee"
@@ -3673,10 +3677,10 @@ ms@2.1.2:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-multimatch@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/multimatch/-/multimatch-4.0.0.tgz#8c3c0f6e3e8449ada0af3dd29efb491a375191b3"
-  integrity sha512-lDmx79y1z6i7RNx0ZGCPq1bzJ6ZoDDKbvh7jxr9SJcWLkShMzXrHbYVpTdnhNM5MXpDUxCQ4DgqVttVXlBgiBQ==
+multimatch@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/multimatch/-/multimatch-5.0.0.tgz#932b800963cea7a31a033328fa1e0c3a1874dbe6"
+  integrity sha512-ypMKuglUrZUD99Tk2bUQ+xNQj43lPEfAeX2o9cTteAmShXy2VHDJpuwu1o0xqoKCt9jLVAvwyFKdLTPXKAfJyA==
   dependencies:
     "@types/minimatch" "^3.0.3"
     array-differ "^3.0.0"
@@ -5000,14 +5004,14 @@ tr46@^2.0.2:
   dependencies:
     punycode "^2.1.1"
 
-ts-morph@^8.1.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-8.2.0.tgz#41d83cd501cbd897eb029ac489d6d5b927555c57"
-  integrity sha512-NHHWu+7I2/AOZiTni5w3f+xCfIxrkzPCcQbTGa81Yk3pr23a4h9xLLEE6tIGuYIubWjkjr9QVC3ITqgmA5touQ==
+ts-morph@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-10.0.0.tgz#a85ae031ccca101505a1793a9250ac88ff0069d5"
+  integrity sha512-FWEvc2gO4JkEvw5fJKF6Pm8/6kNPGPxQ5yceGWHzybte+bEcai4Ghswl9vbl/K/AyzHD4S7pcUtIzkl+qS9PtQ==
   dependencies:
     "@dsherret/to-absolute-glob" "^2.0.2"
-    "@ts-morph/common" "~0.6.0"
-    code-block-writer "^10.1.0"
+    "@ts-morph/common" "~0.8.0"
+    code-block-writer "^10.1.1"
 
 tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"
@@ -5108,11 +5112,6 @@ typescript@^3.5.1:
   version "3.9.7"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
   integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
-
-typescript@~4.0.2:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.5.tgz#ae9dddfd1069f1cb5beb3ef3b2170dd7c1332389"
-  integrity sha512-ywmr/VrTVCmNTJ6iV2LwIrfG1P+lv6luD8sUJs+2eI9NLGigaN+nUQc13iHqisq7bra9lnmUSYqbJvegraBOPQ==
 
 u3@^0.1.0:
   version "0.1.0"
