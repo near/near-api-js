@@ -24,14 +24,8 @@ declare function parseJsonFromRawResponse(response: Uint8Array): any;
 export declare class Account {
     readonly connection: Connection;
     readonly accountId: string;
-    private _state;
-    private _ready;
     protected get ready(): Promise<void>;
     constructor(connection: Connection, accountId: string);
-    /**
-     * Helper function when getting the state of a NEAR account
-     * @returns Promise<void>
-     */
     fetchState(): Promise<void>;
     /**
      * Returns the state of a NEAR account
