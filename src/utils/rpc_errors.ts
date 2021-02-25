@@ -88,6 +88,8 @@ export function getErrorTypeFromErrorMessage(errorMessage) {
         return 'AccessKeyDoesNotExist';
     case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(errorMessage):
         return 'CodeDoesNotExist';
+    case /Transaction nonce \d+ must be larger than nonce of the used access key \d+/.test(errorMessage):
+        return 'InvalidNonce';
     default:
         return 'UntypedError';
     }
