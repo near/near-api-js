@@ -132,7 +132,7 @@ export class Account {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
 
-        const nonce = ++accessKey.nonce;
+        const nonce = ++accessKey.nonce - 1;
         return await signTransaction(
             receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
         );
@@ -155,6 +155,7 @@ export class Account {
             try {
                 return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
+                console.log("Error in signAndSendTransaction:", error);
                 if (error.type === 'InvalidNonce') {
                     console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];

@@ -173,6 +173,12 @@ export class JsonRpcProvider extends Provider {
                     jsonrpc: '2.0'
                 };
                 const response = await fetchJson(this.connection, JSON.stringify(request));
+                console.log("Method:", method);
+                console.log("Params:", params);
+                console.log("Response:", response);
+                if (response && response.error && response.error.data) {
+                    console.log("error.data:", response.error.data);
+                }
                 if (response.error) {
                     if (typeof response.error.data === 'object') {
                         if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
