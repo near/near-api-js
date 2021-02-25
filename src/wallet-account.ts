@@ -178,8 +178,6 @@ class ConnectedWalletAccount extends Account {
     // Overriding Account methods
 
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        await this.ready;
-
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {

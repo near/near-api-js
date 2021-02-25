@@ -45,8 +45,6 @@ test('send money', async() => {
     const receiver = await testUtils.createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
     await sender.sendMoney(receiver.accountId, new BN(10000));
-    await receiver.fetchState();
-    // TODO: Why `.state()` is not fetching state?
     const state = await receiver.state();
     expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
 });
