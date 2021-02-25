@@ -62,10 +62,10 @@ test('delete account', async() => {
 test('multiple parallel transactions', async () => {
     const PARALLEL_NUMBER = 5;
     await Promise.all([...Array(PARALLEL_NUMBER).keys()].map(async (_, i) => {
-         const account = new Account(workingAccount.connection, workingAccount.accountId);
-         // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
-         // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
-         await account.sendMoney(account.accountId, new BN(i));
+        const account = new Account(workingAccount.connection, workingAccount.accountId);
+        // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
+        // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
+        await account.sendMoney(account.accountId, new BN(i));
     }));
 });
 
