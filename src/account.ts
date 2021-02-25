@@ -215,8 +215,7 @@ export class Account {
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
-            // TODO: Check based on .type when nearcore starts returning query errors in structured format
-            if (e.message.includes('does not exist while viewing')) {
+            if (e.type == 'AccessKeyDoesNotExist') {
                 return null;
             }
 
