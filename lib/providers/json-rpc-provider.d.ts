@@ -57,12 +57,12 @@ export declare class JsonRpcProvider extends Provider {
     validators(blockId: BlockId | null): Promise<EpochValidatorInfo>;
     /**
      * Gets EXPERIMENTAL_genesis_config from RPC
-     * @returns {Promise<GenesisConfig>}
+     * @returns {Promise<NearProtocolConfig>}
      */
     experimental_genesisConfig(): Promise<NearProtocolConfig>;
     /**
      * Gets EXPERIMENTAL_protocol_config from RPC
-     * @returns {Promise<ProtocolConfig>}
+     * @returns {Promise<NearProtocolConfig>}
      */
     experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     /**

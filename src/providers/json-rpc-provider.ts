@@ -121,7 +121,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets EXPERIMENTAL_genesis_config from RPC
-     * @returns {Promise<GenesisConfig>}
+     * @returns {Promise<NearProtocolConfig>}
      */
     async experimental_genesisConfig(): Promise<NearProtocolConfig> {
         const deprecate = depd('JsonRpcProvider.experimental_protocolConfig({ sync_checkpoint: \'genesis\' })');
@@ -136,7 +136,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets EXPERIMENTAL_protocol_config from RPC
-     * @returns {Promise<ProtocolConfig>}
+     * @returns {Promise<NearProtocolConfig>}
      */
     async experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig> {
         try {
