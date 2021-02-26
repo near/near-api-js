@@ -124,13 +124,13 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<GenesisConfig>}
      */
     async experimental_genesisConfig(): Promise<NearProtocolConfig> {
+        const deprecate = depd('JsonRpcProvider.experimental_protocolConfig({ sync_checkpoint: \'genesis\' })');
+        deprecate('use `experimental_protocolConfig` to fetch the up-to-date or genesis protocol config explicitly');
         // TODO: Once EXPERIMENTAL_protocol_config (https://github.com/near/nearcore/pull/3919)
         // is released to mainnet, the following line should be used:
         //
         //return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', { sync_checkpoint: 'genesis' });
         //
-        const deprecate = depd('JsonRpcProvider.experimental_protocolConfig({ sync_checkpoint: \'genesis\' })');
-        deprecate('use `experimental_protocolConfig` to fetch the up-to-date or genesis protocol config explicitly');
         return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
     }
 
@@ -139,13 +139,16 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<ProtocolConfig>}
      */
     async experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig> {
-        // TODO: Once EXPERIMENTAL_protocol_config (https://github.com/near/nearcore/pull/3919)
-        // is released to mainnet, the following line should be used:
-        //
-        //return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', blockReference);
-        //
-        // Meanwhile, we use the old genesis config method in order to initiate migration
-        return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
+        try {
+            return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', blockReference);
+        } catch (error) {
+            // TODO: Once EXPERIMENTAL_protocol_config (https://github.com/near/nearcore/pull/3919)
+            // is released to mainnet, remove this fallback, and the wrapping try/catch
+            if (error.message === 'Method not found') {
+                return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
+            }
+            throw error;
+        }
     }
 
     /**
