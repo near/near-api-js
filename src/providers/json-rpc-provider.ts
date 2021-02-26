@@ -144,7 +144,7 @@ export class JsonRpcProvider extends Provider {
         } catch (error) {
             // TODO: Once EXPERIMENTAL_protocol_config (https://github.com/near/nearcore/pull/3919)
             // is released to mainnet, remove this fallback, and the wrapping try/catch
-            if (error.message === 'Method not found') {
+            if (error.message.includes('Method not found')) {
                 return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
             }
             throw error;
