@@ -27,7 +27,7 @@ export declare type BlockReference = {
 } | {
     finality: Finality;
 } | {
-    sync_checkpoint: "genesis" | "earliest_available";
+    sync_checkpoint: 'genesis' | 'earliest_available';
 };
 export declare enum ExecutionStatusBasic {
     Unknown = "Unknown",
