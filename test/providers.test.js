@@ -147,10 +147,10 @@ test('json rpc light client proof', async() => {
 
 test('json rpc gas price', withProvider(async (provider) => {
     let response1 = await provider.gasPrice(100);
-    expect(response1.gas_price).toEqual("1000000000");
+    expect(response1.gas_price).toEqual('1000000000');
 
-    let response2 = await provider.gasPrice("EFDxds6KAeJ81XrQFSskP6mpybzkGqvGRiHEbtr1ACKB");
-    expect(response2.gas_price).toEqual("1000000000");
+    let response2 = await provider.gasPrice('EFDxds6KAeJ81XrQFSskP6mpybzkGqvGRiHEbtr1ACKB');
+    expect(response2.gas_price).toEqual('1000000000');
 
     let response3 = await provider.gasPrice();
     let positiveIntegerRegex = /^[+]?\d+([.]\d+)?$/;
