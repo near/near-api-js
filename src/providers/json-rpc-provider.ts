@@ -2,7 +2,7 @@ import depd from 'depd';
 import {
     Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality,
     BlockResult, ChunkId, ChunkResult, EpochValidatorInfo,
-    GenesisConfig, LightClientProof, LightClientProofRequest
+    GenesisConfig, LightClientProof, LightClientProofRequest, GasPrice
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -208,5 +208,14 @@ export class JsonRpcProvider extends Provider {
                 `Exceeded ${REQUEST_RETRY_NUMBER} attempts for request to ${method}.`, 'RetriesExceeded');
         }
         return result;
+    }
+
+    /**
+     * Returns gas price for a specific block_height or block_hash.
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#gas-price)
+     * @param blockId Block hash or height, or null for latest.
+     */
+    async gasPrice(blockId: BlockId | null): Promise<GasPrice> {
+        return await this.sendJsonRpc('gas_price', [blockId]);
     }
 }

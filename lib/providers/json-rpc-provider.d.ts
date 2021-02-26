@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, GenesisConfig, LightClientProof, LightClientProofRequest } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, GenesisConfig, LightClientProof, LightClientProofRequest, GasPrice } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
@@ -81,4 +81,10 @@ export declare class JsonRpcProvider extends Provider {
      * @param params Parameters to the method
      */
     sendJsonRpc(method: string, params: object): Promise<any>;
+    /**
+     * Returns gas price for a specific block_height or block_hash.
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#gas-price)
+     * @param blockId Block hash or height, or null for latest.
+     */
+    gasPrice(blockId: BlockId | null): Promise<GasPrice>;
 }
