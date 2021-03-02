@@ -193,6 +193,9 @@ export interface LightClientProofRequest {
     receipt_id?: string;
     receiver_id?: string;
 }
+export interface GasPrice {
+    gas_price: string;
+}
 export declare abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
@@ -209,6 +212,7 @@ export declare abstract class Provider {
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
     abstract experimental_genesisConfig(): Promise<GenesisConfig>;
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
+    abstract gasPrice(blockId: BlockId): Promise<GasPrice>;
 }
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
 export {};
