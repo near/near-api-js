@@ -73,17 +73,17 @@ export class WalletConnection {
      */
     async requestSignIn(
         contractId: string,
-        titleOrOptions?: string | { successUrl?: string; failureUrl?: string },
+        titleOrOptions: string | { successUrl?: string; failureUrl?: string } = {},
         successUrl?: string,
         failureUrl?: string
     ) {
-        let options: string | { successUrl?: string; failureUrl?: string };
+        let options: { successUrl?: string; failureUrl?: string };
         if (typeof titleOrOptions === 'string') {
             const deprecate = depd('requestSignIn(_, title)');
             deprecate('`title` ignored; use `requestSignIn(_, { successUrl, failureUrl })` instead');
             options = { successUrl, failureUrl };
         } else {
-            options = (titleOrOptions || {}) as { successUrl?: string; failureUrl?: string };
+            options = titleOrOptions as { successUrl?: string; failureUrl?: string };
         }
 
         const currentUrl = new URL(window.location.href);
