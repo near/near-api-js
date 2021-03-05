@@ -178,8 +178,6 @@ class ConnectedWalletAccount extends Account {
     // Overriding Account methods
 
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        await this.ready;
-
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
@@ -190,8 +188,7 @@ class ConnectedWalletAccount extends Account {
             try {
                 return await super.signAndSendTransaction(receiverId, actions);
             } catch (e) {
-                // TODO: Use TypedError when available
-                if (e.message.includes('does not have enough balance')) {
+                if (e.type === 'NotEnoughBalance') {
                     accessKey = await this.accessKeyForTransaction(receiverId, actions);
                 } else {
                     throw e;

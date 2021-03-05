@@ -1,17 +1,37 @@
 import depd from 'depd';
 import {
-    Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference,
-    BlockResult, ChunkId, ChunkResult, EpochValidatorInfo,
-    NearProtocolConfig, LightClientProof, LightClientProofRequest
+    Provider,
+    FinalExecutionOutcome,
+    NodeStatusResult,
+    BlockId,
+    BlockReference,
+    BlockResult,
+    ChunkId,
+    ChunkResult,
+    EpochValidatorInfo,
+    NearProtocolConfig,
+    LightClientProof,
+    LightClientProofRequest,
+    GasPrice
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
 import { baseEncode } from 'borsh';
-import { parseRpcError } from '../utils/rpc_errors';
+import exponentialBackoff from '../utils/exponential-backoff';
+import { parseRpcError, getErrorTypeFromErrorMessage } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
 export { TypedError, ErrorContext };
+
+// Default number of retries before giving up on a request.
+const REQUEST_RETRY_NUMBER = 12;
+
+// Default wait until next retry in millis.
+const REQUEST_RETRY_WAIT = 500;
+
+// Exponential back off for waiting to retry.
+const REQUEST_RETRY_WAIT_BACKOFF = 1.5;
 
 /// Keep ids unique across all connections.
 let _nextId = 123;
@@ -78,7 +98,9 @@ export class JsonRpcProvider extends Provider {
             result = await this.sendJsonRpc('query', [path, data]);
         }
         if (result && result.error) {
-            throw new Error(`Querying ${args} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`);
+            throw new TypedError(
+                `Querying ${args} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`,
+                getErrorTypeFromErrorMessage(result.error));
         }
         return result;
     }
@@ -162,32 +184,58 @@ export class JsonRpcProvider extends Provider {
      * @param params Parameters to the method
      */
     async sendJsonRpc(method: string, params: object): Promise<any> {
-        const request = {
-            method,
-            params,
-            id: (_nextId++),
-            jsonrpc: '2.0'
-        };
-        const response = await fetchJson(this.connection, JSON.stringify(request));
-        if (response.error) {
-            if (typeof response.error.data === 'object') {
-                if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
-                    // if error data has error_message and error_type properties, we consider that node returned an error in the old format
-                    throw new TypedError(response.error.data.error_message, response.error.data.error_type);
-                } else {
-                    throw parseRpcError(response.error.data);
+        const result = await exponentialBackoff(REQUEST_RETRY_WAIT, REQUEST_RETRY_NUMBER, REQUEST_RETRY_WAIT_BACKOFF, async () => {
+            try {
+                const request = {
+                    method,
+                    params,
+                    id: (_nextId++),
+                    jsonrpc: '2.0'
+                };
+                const response = await fetchJson(this.connection, JSON.stringify(request));
+                if (response.error) {
+                    if (typeof response.error.data === 'object') {
+                        if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
+                            // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+                            throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+                        }
+                        
+                        throw parseRpcError(response.error.data);
+                    } else {
+                        const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
+                        // NOTE: All this hackery is happening because structured errors not implemented
+                        // TODO: Fix when https://github.com/nearprotocol/nearcore/issues/1839 gets resolved
+                        if (response.error.data === 'Timeout' || errorMessage.includes('Timeout error')
+                                || errorMessage.includes('query has timed out')) {
+                            throw new TypedError(errorMessage, 'TimeoutError');
+                        }
+
+                        throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data));
+                    }
                 }
-            } else {
-                const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-                // NOTE: All this hackery is happening because structured errors not implemented
-                // TODO: Fix when https://github.com/nearprotocol/nearcore/issues/1839 gets resolved
-                if (response.error.data === 'Timeout' || errorMessage.includes('Timeout error')) {
-                    throw new TypedError('send_tx_commit has timed out.', 'TimeoutError');
-                } else {
-                    throw new TypedError(errorMessage);
+                return response.result;
+            } catch (error) {
+                if (error.type === 'TimeoutError') {
+                    console.warn(`Retrying request to ${method} as it has timed out`, params);
+                    return null;
                 }
+
+                throw error;
             }
+        });
+        if (!result) {
+            throw new TypedError(
+                `Exceeded ${REQUEST_RETRY_NUMBER} attempts for request to ${method}.`, 'RetriesExceeded');
         }
-        return response.result;
+        return result;
+    }
+
+    /**
+     * Returns gas price for a specific block_height or block_hash.
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#gas-price)
+     * @param blockId Block hash or height, or null for latest.
+     */
+    async gasPrice(blockId: BlockId | null): Promise<GasPrice> {
+        return await this.sendJsonRpc('gas_price', [blockId]);
     }
 }

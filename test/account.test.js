@@ -1,5 +1,5 @@
 
-const nearApi = require('../lib/index');
+const { Account, Contract, providers } = require('../lib/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
@@ -35,7 +35,7 @@ test('create account and then view account returns the created account', async (
     const { amount } = await workingAccount.state();
     const newAmount = new BN(amount).div(new BN(10));
     await workingAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
-    const newAccount = new nearApi.Account(nearjs.connection, newAccountName);
+    const newAccount = new Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
     expect(state.amount).toEqual(newAmount.toString());
 });
@@ -45,8 +45,6 @@ test('send money', async() => {
     const receiver = await testUtils.createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
     await sender.sendMoney(receiver.accountId, new BN(10000));
-    await receiver.fetchState();
-    // TODO: Why `.state()` is not fetching state?
     const state = await receiver.state();
     expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
 });
@@ -55,8 +53,18 @@ test('delete account', async() => {
     const sender = await testUtils.createAccount(nearjs);
     const receiver = await testUtils.createAccount(nearjs);
     await sender.deleteAccount(receiver.accountId);
-    const reloaded = new nearApi.Account(sender.connection, sender);
+    const reloaded = new Account(sender.connection, sender);
     await expect(reloaded.state()).rejects.toThrow();
+});
+
+test('multiple parallel transactions', async () => {
+    const PARALLEL_NUMBER = 5;
+    await Promise.all([...Array(PARALLEL_NUMBER).keys()].map(async (_, i) => {
+        const account = new Account(workingAccount.connection, workingAccount.accountId);
+        // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
+        // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
+        await account.sendMoney(account.accountId, new BN(i));
+    }));
 });
 
 describe('errors', () => {
@@ -97,7 +105,7 @@ describe('with deploy contract', () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-        contract = new nearApi.Contract(workingAccount, contractId, {
+        contract = new Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
         });
@@ -138,7 +146,7 @@ describe('with deploy contract', () => {
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
         const result2 = await workingAccount.functionCall(contractId, 'setValue', { value: setCallValue });
-        expect(nearApi.providers.getTransactionLastResult(result2)).toEqual(setCallValue);
+        expect(providers.getTransactionLastResult(result2)).toEqual(setCallValue);
         expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
 
@@ -219,14 +227,14 @@ describe('with deploy contract', () => {
     });
 
     test('can have view methods only', async () => {
-        const contract = new nearApi.Contract(workingAccount, contractId, {
+        const contract = new Contract(workingAccount, contractId, {
             viewMethods: ['hello'],
         });
         expect(await contract.hello({ name: 'world' })).toEqual('hello world');
     });
 
     test('can have change methods only', async () => {
-        const contract = new nearApi.Contract(workingAccount, contractId, {
+        const contract = new Contract(workingAccount, contractId, {
             changeMethods: ['hello'],
         });
         expect(await contract.hello({ name: 'world' })).toEqual('hello world');
