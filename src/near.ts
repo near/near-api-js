@@ -49,7 +49,6 @@ export class Near {
      */
     async account(accountId: string): Promise<Account> {
         const account = new Account(this.connection, accountId);
-        await account.state();
         return account;
     }
 

@@ -24,14 +24,8 @@ declare function parseJsonFromRawResponse(response: Uint8Array): any;
 export declare class Account {
     readonly connection: Connection;
     readonly accountId: string;
-    private _state;
-    private _ready;
     protected get ready(): Promise<void>;
     constructor(connection: Connection, accountId: string);
-    /**
-     * Helper function when getting the state of a NEAR account
-     * @returns Promise<void>
-     */
     fetchState(): Promise<void>;
     /**
      * Returns the state of a NEAR account
@@ -50,7 +44,7 @@ export declare class Account {
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKey;
     };
-    findAccessKey(): Promise<{
+    findAccessKey(receiverId: string, actions: Action[]): Promise<{
         publicKey: PublicKey;
         accessKey: AccessKey;
     }>;
@@ -124,7 +118,7 @@ export declare class Account {
         parse?: typeof parseJsonFromRawResponse;
     }): Promise<any>;
     /**
-     * See https://docs.near.org/docs/api/rpc#view-contract-state
+     * See https://docs.near.org/docs/develop/front-end/rpc#view-contract-state
      *
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
      * Pass an empty string for prefix if you would like to return the entire state.

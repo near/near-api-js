@@ -1,6 +1,7 @@
 'use strict';
 
 import BN from 'bn.js';
+import depd from 'depd';
 import {
     transfer,
     createAccount,
@@ -39,14 +40,11 @@ const DEFAULT_FUNC_CALL_GAS = new BN('30000000000000');
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
 
-// Default number of retries before giving up on a transaction.
-const TX_STATUS_RETRY_NUMBER = 12;
-
 // Default wait until next retry in millis.
-const TX_STATUS_RETRY_WAIT = 500;
+const TX_NONCE_RETRY_WAIT = 500;
 
 // Exponential back off for waiting to retry.
-const TX_STATUS_RETRY_WAIT_BACKOFF = 1.5;
+const TX_NONCE_RETRY_WAIT_BACKOFF = 1.5;
 
 export interface AccountState {
     amount: string;
@@ -78,11 +76,11 @@ function parseJsonFromRawResponse (response: Uint8Array): any {
 export class Account {
     readonly connection: Connection;
     readonly accountId: string;
-    private _state: AccountState;
 
-    private _ready: Promise<void>;
     protected get ready(): Promise<void> {
-        return this._ready || (this._ready = Promise.resolve(this.fetchState()));
+        const deprecate = depd('Account.ready()');
+        deprecate('not needed anymore, always ready');
+        return Promise.resolve();
     }
 
     constructor(connection: Connection, accountId: string) {
@@ -90,12 +88,9 @@ export class Account {
         this.accountId = accountId;
     }
 
-    /**
-     * Helper function when getting the state of a NEAR account
-     * @returns Promise<void>
-     */
     async fetchState(): Promise<void> {
-        this._state = await this.connection.provider.query(`account/${this.accountId}`, '');
+        const deprecate = depd('Account.fetchState()');
+        deprecate('use `Account.state()` instead');
     }
 
     /**
@@ -103,8 +98,7 @@ export class Account {
      * @returns {Promise<AccountState>}
      */
     async state(): Promise<AccountState> {
-        await this.ready;
-        return this._state;
+        return await this.connection.provider.query(`account/${this.accountId}`, '');
     }
 
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
@@ -124,9 +118,7 @@ export class Account {
     }
 
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
-        await this.ready;
-
-        const accessKeyInfo = await this.findAccessKey();
+        const accessKeyInfo = await this.findAccessKey(receiverId, actions);
         if (!accessKeyInfo) {
             throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
         }
@@ -147,38 +139,16 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        await this.ready;
-
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
-        const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
+        const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
             [txHash, signedTx] = await this.signTransaction(receiverId, actions);
             const publicKey = signedTx.transaction.publicKey;
 
             try {
-                const result = await exponentialBackoff(TX_STATUS_RETRY_WAIT, TX_STATUS_RETRY_NUMBER, TX_STATUS_RETRY_WAIT_BACKOFF, async () => {
-                    try {
-                        return await this.connection.provider.sendTransaction(signedTx);
-                    } catch (error) {
-                        // TODO: Somehow getting still:
-                        // Error: send_tx_commit has timed out.
-                        if (error.type === 'TimeoutError') {
-                            console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} as it has timed out`);
-                            return null;
-                        }
-
-                        throw error;
-                    }
-                });
-                if (!result) {
-                    throw new TypedError(
-                        `Exceeded ${TX_STATUS_RETRY_NUMBER} attempts for transaction ${baseEncode(txHash)}.`,
-                        'RetriesExceeded',
-                        new ErrorContext(baseEncode(txHash)));
-                }
-                return result;
+                return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
-                if (error.message.match(/Transaction nonce \d+ must be larger than nonce of the used access key \d+/)) {
+                if (error.type === 'InvalidNonce') {
                     console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
@@ -221,8 +191,8 @@ export class Account {
 
     accessKeyByPublicKeyCache: { [key: string]: AccessKey } = {}
 
-    async findAccessKey(): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
-        // TODO: Find matching access key based on transaction
+    async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
+        // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
             return null;
@@ -238,8 +208,7 @@ export class Account {
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
-            // TODO: Check based on .type when nearcore starts returning query errors in structured format
-            if (e.message.includes('does not exist while viewing')) {
+            if (e.type == 'AccessKeyDoesNotExist') {
                 return null;
             }
 
@@ -384,7 +353,7 @@ export class Account {
     }
 
     /**
-     * See https://docs.near.org/docs/api/rpc#view-contract-state
+     * See https://docs.near.org/docs/develop/front-end/rpc#view-contract-state
      *
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
      * Pass an empty string for prefix if you would like to return the entire state.
@@ -449,10 +418,10 @@ export class Account {
      * @returns {Promise<AccountBalance>}
      */
     async getAccountBalance(): Promise<AccountBalance> {
-        const genesisConfig = await this.connection.provider.experimental_genesisConfig();
+        const protocolConfig = await this.connection.provider.experimental_protocolConfig({ finality: 'final' });
         const state = await this.state();
 
-        const costPerByte = new BN(genesisConfig.runtime_config.storage_amount_per_byte);
+        const costPerByte = new BN(protocolConfig.runtime_config.storage_amount_per_byte);
         const stateStaked = new BN(state.storage_usage).mul(costPerByte);
         const staked = new BN(state.locked);
         const totalBalance = new BN(state.amount).add(staked);
