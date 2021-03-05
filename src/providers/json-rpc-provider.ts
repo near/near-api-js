@@ -1,8 +1,18 @@
 import depd from 'depd';
 import {
-    Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, Finality,
-    BlockResult, ChunkId, ChunkResult, EpochValidatorInfo,
-    GenesisConfig, LightClientProof, LightClientProofRequest, GasPrice
+    Provider,
+    FinalExecutionOutcome,
+    NodeStatusResult,
+    BlockId,
+    BlockReference,
+    BlockResult,
+    ChunkId,
+    ChunkResult,
+    EpochValidatorInfo,
+    NearProtocolConfig,
+    LightClientProof,
+    LightClientProofRequest,
+    GasPrice
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -99,7 +109,7 @@ export class JsonRpcProvider extends Provider {
      * Query for block info from the RPC
      * See [docs for more info](https://docs.nearprotocol.com/docs/interaction/rpc#block)
      */
-    async block(blockQuery: BlockId | { blockId: BlockId } | { finality: Finality }): Promise<BlockResult> {
+    async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
         const { finality } = blockQuery as any;
         let { blockId } = blockQuery as any;
 
@@ -133,10 +143,20 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets EXPERIMENTAL_genesis_config from RPC
-     * @returns {Promise<GenesisConfig>}
+     * @returns {Promise<NearProtocolConfig>}
      */
-    async experimental_genesisConfig(): Promise<GenesisConfig> {
-        return await this.sendJsonRpc('EXPERIMENTAL_genesis_config', []);
+    async experimental_genesisConfig(): Promise<NearProtocolConfig> {
+        const deprecate = depd('JsonRpcProvider.experimental_protocolConfig({ sync_checkpoint: \'genesis\' })');
+        deprecate('use `experimental_protocolConfig` to fetch the up-to-date or genesis protocol config explicitly');
+        return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', { sync_checkpoint: 'genesis' });
+    }
+
+    /**
+     * Gets EXPERIMENTAL_protocol_config from RPC
+     * @returns {Promise<NearProtocolConfig>}
+     */
+    async experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig> {
+        return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', blockReference);
     }
 
     /**
