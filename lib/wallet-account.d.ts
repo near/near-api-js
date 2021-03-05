@@ -5,6 +5,11 @@ import { FinalExecutionOutcome } from './providers';
 import { Transaction, Action } from './transaction';
 import { PublicKey } from './utils';
 import { Connection } from './connection';
+interface SignInOptions {
+    contractId?: string;
+    successUrl?: string;
+    failureUrl?: string;
+}
 export declare class WalletConnection {
     _walletBaseUrl: string;
     _authDataKey: string;
@@ -28,21 +33,18 @@ export declare class WalletConnection {
     getAccountId(): any;
     /**
      * Redirects current page to the wallet authentication page.
-     * @param contractId The NEAR account where the contract is deployed
      * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
      * @param options.successUrl URL to redirect upon success. Default: current url
      * @param options.failureUrl URL to redirect upon failure. Default: current url
      *
      * @example
-     *   walletAccount.requestSignIn(account-with-deploy-contract, {
+     *   walletAccount.requestSignIn('account-with-deploy-contract.near', {
      *     successUrl: "https://example.com/success.html",
      *     failureUrl: "https://example.com/error.html"
      *   });
      */
-    requestSignIn(contractId: string, titleOrOptions?: string | {
-        successUrl?: string;
-        failureUrl?: string;
-    }, successUrl?: string, failureUrl?: string): Promise<void>;
+    requestSignIn(contractIdOrOptions?: string | SignInOptions, title?: string, successUrl?: string, failureUrl?: string): Promise<void>;
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions
      * @param transactions Array of Transaction objects that will be requested to sign
@@ -94,3 +96,4 @@ export declare class ConnectedWalletAccount extends Account {
      */
     accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any>;
 }
+export {};
