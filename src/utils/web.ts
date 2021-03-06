@@ -67,7 +67,7 @@ export async function fetchJson(connection: string | ConnectionInfo, json?: stri
             }
             return response;
         } catch (error) {
-            if (error.toString().includes('FetchError')) {
+            if (error.toString().includes('FetchError') || error.toString().includes('Failed to fetch')) {
                 console.warn(`Retrying HTTP request for ${url} because of error: ${error}`);
                 return null;
             }
