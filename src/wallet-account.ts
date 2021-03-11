@@ -72,6 +72,10 @@ export class WalletConnection {
      *     "https://example.com/error.html");
      */
     async requestSignIn(contractId: string, title: string, successUrl?: string, failureUrl?: string) {
+        // Throws exception if account does not exist
+        const contractAccount = await this._near.account(contractId);
+        await contractAccount.state();
+
         if (this.getAccountId() || await this._keyStore.getKey(this._networkId, this.getAccountId())) {
             return Promise.resolve();
         }
