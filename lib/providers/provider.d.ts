@@ -1,4 +1,3 @@
-import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
 export interface SyncInfo {
     latest_block_hash: string;
@@ -204,7 +203,6 @@ export interface GasPrice {
     gas_price: string;
 }
 export declare abstract class Provider {
-    abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;

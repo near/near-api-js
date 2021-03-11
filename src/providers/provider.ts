@@ -1,4 +1,3 @@
-import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
 
 export interface SyncInfo {
@@ -242,7 +241,6 @@ export interface GasPrice {
 }
 
 export abstract class Provider {
-    abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
 
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
