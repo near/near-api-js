@@ -144,3 +144,38 @@ test('json rpc light client proof', async() => {
 
     await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
 });
+
+test('json rpc fetch genesis protocol config', withProvider(async (provider) => {
+    const response = await provider.experimental_genesisConfig();
+    expect('chain_id' in response).toBe(true);
+    expect('genesis_height' in response).toBe(true);
+    expect('runtime_config' in response).toBe(true);
+    expect('storage_amount_per_byte' in response.runtime_config).toBe(true);
+}));
+
+test('json rpc fetch protocol config', withProvider(async (provider) => {
+    const status = await provider.status();
+    const blockHeight = status.sync_info.latest_block_height;
+    const blockHash = status.sync_info.latest_block_hash;
+    for (const blockReference of [{ sync_checkpoint: 'genesis' }, { block_id: blockHeight }, { block_id: blockHash }, { finality: 'final' }, { finality: 'optimistic' }]) {
+        const response = await provider.experimental_protocolConfig(blockReference);
+        expect('chain_id' in response).toBe(true);
+        expect('genesis_height' in response).toBe(true);
+        expect('runtime_config' in response).toBe(true);
+        expect('storage_amount_per_byte' in response.runtime_config).toBe(true);
+    }
+}));
+
+test('json rpc gas price', withProvider(async (provider) => {
+    let status = await provider.status();
+    let positiveIntegerRegex = /^[+]?\d+([.]\d+)?$/;
+
+    let response1 = await provider.gasPrice(status.sync_info.latest_block_height);
+    expect(response1.gas_price).toMatch(positiveIntegerRegex);
+
+    let response2 = await provider.gasPrice(status.sync_info.latest_block_hash);
+    expect(response2.gas_price).toMatch(positiveIntegerRegex);
+
+    let response3 = await provider.gasPrice();
+    expect(response3.gas_price).toMatch(positiveIntegerRegex);
+}));
