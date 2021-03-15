@@ -56,7 +56,6 @@ it('not signed in by default', () => {
     expect(walletConnection.isSignedIn()).not.toBeTruthy();
 });
 
-
 it('can request sign in', async () => {
     await walletConnection.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail');
 
