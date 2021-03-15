@@ -8,6 +8,7 @@ export declare class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
     constructor(url?: string);
     /**
+     * @deprecated this function will be deleted from Provider interface in Q3 2020
      * Get the current network (ex. test, beta, etc…)
      * @returns {Promise<Network>}
      */

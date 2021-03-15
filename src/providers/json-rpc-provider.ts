@@ -45,6 +45,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
+     * @deprecated this function will be deleted from Provider interface in Q3 2020
      * Get the current network (ex. test, beta, etc…)
      * @returns {Promise<Network>}
      */
