@@ -33,7 +33,7 @@ beforeEach(() => {
         account() {
             return {
                 state() {}
-            }
+            };
         }
     };
     lastRedirectUrl = null;
