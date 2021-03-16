@@ -76,6 +76,17 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
+     * Sends a signed transaction to the RPC
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#send-transaction-async)
+     * @param signedTransaction The signed transaction being sent
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
+    async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
+        const bytes = signedTransaction.encode();
+        return this.sendJsonRpc('broadcast_tx_async', [Buffer.from(bytes).toString('base64')]);
+    }
+
+    /**
      * Gets a transaction's status from the RPC
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status)
      * @param txHash The hash of the transaction

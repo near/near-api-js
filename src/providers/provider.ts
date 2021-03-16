@@ -246,6 +246,7 @@ export abstract class Provider {
     abstract status(): Promise<NodeStatusResult>;
 
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    abstract sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract txStatusReceipts(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract query(params: object): Promise<any>;
