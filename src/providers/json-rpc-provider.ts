@@ -87,6 +87,17 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
+     * Gets a transaction's status from the RPC with receipts
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status-with-receipts)
+     * @param txHash The hash of the transaction
+     * @param accountId The NEAR account that signed the transaction
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
+    async txStatusReceipts(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
+        return this.sendJsonRpc('EXPERIMENTAL_tx_status', [baseEncode(txHash), accountId]);
+    }  
+
+    /**
      * Query the RPC as [shown in the docs](https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts)
      */
     async query(...args: any[]): Promise<any> {
