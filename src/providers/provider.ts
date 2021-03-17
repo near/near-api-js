@@ -181,8 +181,9 @@ export interface Transaction {
 }
 
 export interface BlockResult {
+    author: string;
     header: BlockHeader;
-    transactions: Transaction[];
+    chunks: Chunk[];
 }
 
 export interface CurrentEpochValidatorInfo {
