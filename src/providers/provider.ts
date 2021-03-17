@@ -302,6 +302,11 @@ export interface GasPrice {
     gas_price: string;
 }
 
+export interface AccessKey {
+    account_id: string;
+    public_key: string;
+}
+
 export abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
@@ -321,8 +326,9 @@ export abstract class Provider {
     abstract experimental_genesisConfig(): Promise<NearProtocolConfig>;
     abstract experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
-    abstract gasPrice(blockId: BlockId): Promise<GasPrice>
-    abstract accessKeyResults(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>
+    abstract gasPrice(blockId: BlockId): Promise<GasPrice>;
+    abstract accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    abstract singleAccessKeyChanges(accessKeyArray: AccessKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
