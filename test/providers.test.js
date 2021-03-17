@@ -38,6 +38,17 @@ test('json rpc fetch block info', withProvider(async (provider) => {
     expect(deprecatedStyle.header.height).toEqual(height);
 }));
 
+test('json rpc fetch block changes', withProvider(async (provider) => {
+    let stat = await provider.status();
+    let height = stat.sync_info.latest_block_height - 1;
+    let response = await provider.blockChanges({ blockId: height });
+    console.log(response);
+    expect(response).toMatchObject({ 
+        block_hash: expect.any(String),
+        changes: expect.any(Array)
+    });
+}));
+
 test('json rpc fetch chunk info', withProvider(async (provider) => {
     let stat = await provider.status();
     let height = stat.sync_info.latest_block_height - 1;
