@@ -331,6 +331,7 @@ export abstract class Provider {
     abstract singleAccessKeyChanges(accessKeyArray: AccessKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     abstract accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     abstract contractStateChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference, keyPrefix: string): Promise<ChangeResult>;
+    abstract contractCodeChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {

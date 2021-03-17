@@ -280,6 +280,23 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
+     * Query contract code changes for a given array of accountIds
+     * Note change is returned in a base64 encoded WASM file
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-code-changes)
+     * @returns {Promise<ChangeResult>}
+     */
+    async contractCodeChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
+        const { finality } = blockQuery as any;
+        const { blockId } = blockQuery as any;
+        return this.sendJsonRpc('EXPERIMENTAL_changes', { 
+            changes_type: 'contract_code_changes', 
+            account_ids: accountIdArray,
+            block_id: blockId, 
+            finality
+        });
+    }
+
+    /**
      * Directly call the RPC specifying the method and params
      * @param method RPC method
      * @param params Parameters to the method
