@@ -347,24 +347,23 @@ export class Account {
     async viewFunction(
         contractId: string,
         methodName: string,
-        args: any,
+        args: any = {},
         { parse = parseJsonFromRawResponse } = {}
     ): Promise<any> {
-        args = args || {};
         this.validateArgs(args);
         
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
             account_id: contractId,
             method_name: methodName,
-            args_base64: baseEncode(JSON.stringify(args)),
+            args_base64: Buffer.from(JSON.stringify(args)).toString('base64'),
             finality: 'optimistic'
         });
 
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
-        
+
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
     }
 

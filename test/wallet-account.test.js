@@ -135,22 +135,21 @@ function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
         accountId: 'signer.near'
     };
     nearFake.connection.provider = {
-        query(path, data) {
-            if (path === 'account/signer.near') {
+        query(params) {
+            if (params.request_type === 'view_account' && params.account_id === 'signer.near') {
                 return { };
             }
-            if (path === 'access_key/signer.near') {
+            if (params.request_type === 'view_access_key_list' && params.account_id === 'signer.near') {
                 return { keys: accountAccessKeys };
             }
-            if (path.startsWith('access_key/signer.near')) {
-                const [,,publicKey] = path.split('/');
+            if (params.request_type === 'view_access_key' && params.account_id === 'signer.near') {
                 for (let accessKey of accountAccessKeys) {
-                    if (accessKey.public_key === publicKey) {
+                    if (accessKey.public_key === params.public_key) {
                         return accessKey;
                     }
                 }
             }
-            fail(`Unexpected query: ${path} ${data}`);
+            fail(`Unexpected query: ${JSON.stringify(params)}`);
         },
         sendTransaction(signedTransaction) {
             lastTransaction = signedTransaction;

@@ -110,7 +110,7 @@ export declare class Account {
      * @param args Any arguments to the view contract method, wrapped in JSON
      * @returns {Promise<any>}
      */
-    viewFunction(contractId: string, methodName: string, args: any, { parse }?: {
+    viewFunction(contractId: string, methodName: string, args?: any, { parse }?: {
         parse?: typeof parseJsonFromRawResponse;
     }): Promise<any>;
     /**
