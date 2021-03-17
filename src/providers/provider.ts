@@ -88,6 +88,10 @@ export interface TotalWeight {
     num: number;
 }
 
+export interface AccessKeyChangesResponse {
+
+}
+
 export interface BlockHeader {
     height: number;
     epoch_id: string;
@@ -194,6 +198,11 @@ export interface BlockChange {
 export interface BlockChangeResult {
     block_hash: string;
     changes: BlockChange[];
+}
+
+export interface ChangeResult {
+    block_hash: string;
+    changes: any[];
 }
 
 export interface CurrentEpochValidatorInfo {
@@ -313,6 +322,7 @@ export abstract class Provider {
     abstract experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     abstract gasPrice(blockId: BlockId): Promise<GasPrice>
+    abstract accessKeyResults(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {

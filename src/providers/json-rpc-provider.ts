@@ -7,13 +7,14 @@ import {
     BlockReference,
     BlockResult,
     BlockChangeResult,
+    ChangeResult,
     ChunkId,
     ChunkResult,
     EpochValidatorInfo,
     NearProtocolConfig,
     LightClientProof,
     LightClientProofRequest,
-    GasPrice
+    GasPrice,
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -209,6 +210,22 @@ export class JsonRpcProvider extends Provider {
      */
     async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
         return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
+    }
+
+    /**
+     * Query access key changes for a given array of accountIds
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-all)
+     * @returns {Promise<ChangeResult>}
+     */
+    async accessKeyChanges(accountIdArray: string[], blockQuery: BlockId | BlockReference): Promise<ChangeResult> {
+        const { finality } = blockQuery as any;
+        const { blockId } = blockQuery as any;
+        return this.sendJsonRpc('EXPERIMENTAL_changes', { 
+            changes_type: 'all_access_key_changes', 
+            account_ids: accountIdArray,
+            block_id: blockId, 
+            finality
+        });
     }
 
     /**
