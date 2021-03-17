@@ -152,6 +152,27 @@ export interface ChunkResult {
     transactions: Transaction[];
 }
 
+export interface Chunk {
+    chunk_hash: string;
+    prev_block_hash: string;
+    outcome_root: string;
+    prev_state_root: string;
+    encoded_merkle_root: string;
+    encoded_length: number;
+    height_created: number;
+    height_included: number;
+    shard_id: number;
+    gas_used: number;
+    gas_limit: number;
+    rent_paid: string;
+    validator_reward: string;
+    balance_burnt: string;
+    outgoing_receipts_root: string;
+    tx_root: string;
+    validator_proposals: any[];
+    signature: string;
+}
+
 export interface Transaction {
     hash: string;
     public_key: string;
