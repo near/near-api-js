@@ -149,7 +149,7 @@ export class JsonRpcProvider extends Provider {
      * Query changes in block from the RPC
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#block-details)
      */
-    async blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult> {
+    async blockChanges(blockQuery: BlockReference): Promise<BlockChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes_in_block', { block_id: blockId, finality });
