@@ -68,7 +68,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Sends a signed transaction to the RPC
+     * Sends a signed transaction to the RPC and waits until transaction is fully complete
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await)
      * @param signedTransaction The signed transaction being sent
      * @returns {Promise<FinalExecutionOutcome>}
@@ -79,7 +79,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Sends a signed transaction to the RPC
+     * Sends a signed transaction to the RPC and immediately returns transaction hash
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#send-transaction-async)
      * @param signedTransaction The signed transaction being sent
      * @returns {Promise<FinalExecutionOutcome>}
@@ -88,7 +88,7 @@ export class JsonRpcProvider extends Provider {
         const bytes = signedTransaction.encode();
         return this.sendJsonRpc('broadcast_tx_async', [Buffer.from(bytes).toString('base64')]);
     }
-    
+
     /**
      * Gets a transaction's status from the RPC
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status)
@@ -132,7 +132,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Query for block info from the RPC
-     * use block_id OR finality as arguments
+     * pass block_id OR finality as blockQuery, not both
      * See [docs for more info](https://docs.near.org/docs/interaction/rpc#block)
      */
     async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
@@ -149,6 +149,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Query changes in block from the RPC
+     * pass block_id OR finality as blockQuery, not both
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#block-details)
      */
     async blockChanges(blockQuery: BlockReference): Promise<BlockChangeResult> {
@@ -214,7 +215,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query access key changes for a given array of accountIds
+     * Gets access key changes for a given array of accountIds
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-all)
      * @returns {Promise<ChangeResult>}
      */
@@ -230,11 +231,12 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query single access key changes for a given array of access keys
+     * Gets single access key changes for a given array of access keys
+     * pass block_id OR finality as blockQuery, not both
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-single)
      * @returns {Promise<ChangeResult>}
      */
-    async singleAccessKeyChanges(accessKeyArray: AccessKey[], blockQuery: BlockId | BlockReference): Promise<ChangeResult> {
+    async singleAccessKeyChanges(accessKeyArray: AccessKey[], blockQuery: BlockReference): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', { 
@@ -246,7 +248,8 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query account changes for a given array of accountIds
+     * Gets account changes for a given array of accountIds
+     * pass block_id OR finality as blockQuery, not both
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-account-changes)
      * @returns {Promise<ChangeResult>}
      */
@@ -262,8 +265,9 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query contract state changes for a given array of accountIds
-     * Note if you pass a keyPrefix it must be base64 encoded
+     * Gets contract state changes for a given array of accountIds
+     * pass block_id OR finality as blockQuery, not both
+     * Note: If you pass a keyPrefix it must be base64 encoded
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-state-changes)
      * @returns {Promise<ChangeResult>}
      */
@@ -280,8 +284,9 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query contract code changes for a given array of accountIds
-     * Note change is returned in a base64 encoded WASM file
+     * Gets contract code changes for a given array of accountIds
+     * pass block_id OR finality as blockQuery, not both
+     * Note: Change is returned in a base64 encoded WASM file
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-code-changes)
      * @returns {Promise<ChangeResult>}
      */
