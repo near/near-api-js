@@ -122,7 +122,7 @@ export declare class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    viewState(prefix: string | Uint8Array, blockQuery: {
+    viewState(prefix: string | Uint8Array, blockQuery?: {
         blockId: BlockId;
     } | {
         finality: Finality;

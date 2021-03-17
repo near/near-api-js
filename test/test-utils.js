@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const BN = require('bn.js');
 
-const nearApi = require('../src/index');
+const nearApi = require('../lib/index');
 
 const networkId = 'unittest';
 

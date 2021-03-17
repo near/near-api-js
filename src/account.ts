@@ -96,7 +96,11 @@ export class Account {
      * @returns {Promise<AccountView>}
      */
     async state(): Promise<AccountView> {
-        return await this.connection.provider.query<AccountView>(`account/${this.accountId}`, '');
+        return this.connection.provider.query<AccountView>({
+            request_type: 'view_account',
+            account_id: this.accountId,
+            finality: 'optimistic'
+        });
     }
 
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
@@ -202,7 +206,12 @@ export class Account {
         }
 
         try {
-            const accessKey = await this.connection.provider.query<AccessKeyView>(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+            const accessKey = await this.connection.provider.query<AccessKeyView>({
+                request_type: 'view_access_key',
+                account_id: this.accountId,
+                public_key: publicKey.toString(),
+                finality: 'optimistic'
+            });
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
@@ -343,10 +352,19 @@ export class Account {
     ): Promise<any> {
         args = args || {};
         this.validateArgs(args);
-        const result = await this.connection.provider.query<CodeResult>(`call/${contractId}/${methodName}`, baseEncode(JSON.stringify(args)));
+        
+        const result = await this.connection.provider.query<CodeResult>({
+            request_type: 'call_function',
+            account_id: contractId,
+            method_name: methodName,
+            args_base64: baseEncode(JSON.stringify(args)),
+            finality: 'optimistic'
+        });
+
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
+        
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
     }
 
@@ -359,12 +377,10 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
-        const { blockId, finality } = blockQuery as any || {};
+    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } = { finality: 'optimistic' } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
         const { values } = await this.connection.provider.query<ViewStateResult>({
             request_type: 'view_state',
-            block_id: blockId,
-            finality: blockId ? undefined : finality || 'optimistic',
+            ...blockQuery,
             account_id: this.accountId,
             prefix_base64: Buffer.from(prefix).toString('base64')
         });
@@ -379,7 +395,11 @@ export class Account {
      * @returns AccessKeyInfoView[].
      */
     async getAccessKeys(): Promise<AccessKeyInfoView[]> {
-        const response = await this.connection.provider.query<AccessKeyList>(`access_key/${this.accountId}`, '');
+        const response = await this.connection.provider.query<AccessKeyList>({
+            request_type: 'view_access_key_list',
+            account_id: this.accountId,
+            finality: 'optimistic'
+        });
         // A breaking API change introduced extra information into the
         // response, so it now returns an object with a `keys` field instead
         // of an array: https://github.com/nearprotocol/nearcore/pull/1789

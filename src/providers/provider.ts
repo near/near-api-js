@@ -297,13 +297,55 @@ export interface AccessKeyList extends QueryResponseKind {
     keys: AccessKeyInfoView[];
 }
 
+export interface ViewAccountRequest {
+    request_type: 'view_account';
+    account_id: string;
+}
+
+export interface ViewCodeRequest {
+    request_type: 'view_code';
+    account_id: string;
+}
+
+export interface ViewStateRequest {
+    request_type: 'view_state';
+    account_id: string;
+    prefix_base64: string;
+}
+
+export interface ViewAccessKeyRequest {
+    request_type: 'view_access_key';
+    account_id: string;
+    public_key: string;
+}
+
+export interface ViewAccessKeyListRequest {
+    request_type: 'view_access_key_list';
+    account_id: string;
+}
+
+export interface CallFunctionRequest {
+    request_type: 'call_function';
+    account_id: string;
+    method_name: string;
+    args_base64: string;
+}
+
+export type RpcQueryRequest = (ViewAccountRequest |
+    ViewCodeRequest |
+    ViewStateRequest |
+    ViewAccountRequest |
+    ViewAccessKeyRequest |
+    ViewAccessKeyListRequest |
+    CallFunctionRequest) & BlockReference
+
 export abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
 
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
-    abstract query<T extends QueryResponseKind>(params: object): Promise<T>;
+    abstract query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
     abstract query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
     // TODO: BlockQuery type?
     abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
