@@ -186,6 +186,16 @@ export interface BlockResult {
     chunks: Chunk[];
 }
 
+export interface BlockChange {
+    type: string;
+    account_id: string;
+}
+
+export interface BlockChangeResult {
+    block_hash: string;
+    changes: BlockChange[];
+}
+
 export interface CurrentEpochValidatorInfo {
     account_id: string;
     public_key: string;
@@ -295,6 +305,7 @@ export abstract class Provider {
     abstract query(path: string, data: string): Promise<any>;
     // TODO: BlockQuery type?
     abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
+    abstract blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     // TODO: Use BlockQuery?
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;

@@ -26,6 +26,13 @@ export declare class JsonRpcProvider extends Provider {
      */
     sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     /**
+     * Sends a signed transaction to the RPC
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#send-transaction-async)
+     * @param signedTransaction The signed transaction being sent
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
+    sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    /**
      * Gets a transaction's status from the RPC
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status)
      * @param txHash The hash of the transaction
@@ -33,6 +40,14 @@ export declare class JsonRpcProvider extends Provider {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
+    /**
+     * Gets a transaction's status from the RPC with receipts
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status-with-receipts)
+     * @param txHash The hash of the transaction
+     * @param accountId The NEAR account that signed the transaction
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
+    txStatusReceipts(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     /**
      * Query the RPC as [shown in the docs](https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts)
      */
@@ -42,6 +57,11 @@ export declare class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/interaction/rpc#block)
      */
     block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
+    /**
+     * Query changes in block from the RPC
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#block-details)
+     */
+    blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
     /**
      * Queries for details of a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
      * See [docs for more info](https://docs.near.org/docs/interaction/rpc#chunk)

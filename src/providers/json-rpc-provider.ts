@@ -6,6 +6,7 @@ import {
     BlockId,
     BlockReference,
     BlockResult,
+    BlockChangeResult,
     ChunkId,
     ChunkResult,
     EpochValidatorInfo,
@@ -129,6 +130,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Query for block info from the RPC
+     * use block_id OR finality as arguments
      * See [docs for more info](https://docs.near.org/docs/interaction/rpc#block)
      */
     async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
@@ -147,10 +149,10 @@ export class JsonRpcProvider extends Provider {
      * Query changes in block from the RPC
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#block-details)
      */
-    async blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
+    async blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult> {
         const { finality } = blockQuery as any;
-        let { blockId } = blockQuery as any;
-        return this.sendJsonRpc('EXPERIMENTAL_changes_in_block', { block_id: blockId, finality })
+        const { blockId } = blockQuery as any;
+        return this.sendJsonRpc('EXPERIMENTAL_changes_in_block', { block_id: blockId, finality });
     }
 
     /**
