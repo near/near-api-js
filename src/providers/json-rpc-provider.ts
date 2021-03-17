@@ -230,10 +230,26 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
- * Query single access key changes for a given array of access keys
- * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-single)
- * @returns {Promise<ChangeResult>}
- */
+     * Query account changes for a given array of accountIds
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-account-changes)
+     * @returns {Promise<ChangeResult>}
+     */
+    async accountChanges(accountIdArray: string[], blockQuery: BlockId | BlockReference): Promise<ChangeResult> {
+        const { finality } = blockQuery as any;
+        const { blockId } = blockQuery as any;
+        return this.sendJsonRpc('EXPERIMENTAL_changes', { 
+            changes_type: 'account_changes', 
+            account_ids: accountIdArray,
+            block_id: blockId, 
+            finality
+        });
+    }
+
+    /**
+     * Query single access key changes for a given array of access keys
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-single)
+     * @returns {Promise<ChangeResult>}
+     */
     async singleAccessKeyChanges(accessKeyArray: AccessKey[], blockQuery: BlockId | BlockReference): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
@@ -244,6 +260,7 @@ export class JsonRpcProvider extends Provider {
             finality
         });
     }
+
 
     /**
      * Directly call the RPC specifying the method and params

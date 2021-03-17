@@ -329,6 +329,8 @@ export abstract class Provider {
     abstract gasPrice(blockId: BlockId): Promise<GasPrice>;
     abstract accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     abstract singleAccessKeyChanges(accessKeyArray: AccessKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    abstract accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    
 }
 
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
