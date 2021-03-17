@@ -218,27 +218,11 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-all)
      * @returns {Promise<ChangeResult>}
      */
-    async accessKeyChanges(accountIdArray: string[], blockQuery: BlockId | BlockReference): Promise<ChangeResult> {
+    async accessKeyChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', { 
             changes_type: 'all_access_key_changes', 
-            account_ids: accountIdArray,
-            block_id: blockId, 
-            finality
-        });
-    }
-
-    /**
-     * Query account changes for a given array of accountIds
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-account-changes)
-     * @returns {Promise<ChangeResult>}
-     */
-    async accountChanges(accountIdArray: string[], blockQuery: BlockId | BlockReference): Promise<ChangeResult> {
-        const { finality } = blockQuery as any;
-        const { blockId } = blockQuery as any;
-        return this.sendJsonRpc('EXPERIMENTAL_changes', { 
-            changes_type: 'account_changes', 
             account_ids: accountIdArray,
             block_id: blockId, 
             finality
@@ -261,6 +245,39 @@ export class JsonRpcProvider extends Provider {
         });
     }
 
+    /**
+     * Query account changes for a given array of accountIds
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-account-changes)
+     * @returns {Promise<ChangeResult>}
+     */
+    async accountChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
+        const { finality } = blockQuery as any;
+        const { blockId } = blockQuery as any;
+        return this.sendJsonRpc('EXPERIMENTAL_changes', { 
+            changes_type: 'account_changes', 
+            account_ids: accountIdArray,
+            block_id: blockId, 
+            finality
+        });
+    }
+
+    /**
+     * Query contract state changes for a given array of accountIds
+     * Note if you pass a keyPrefix it must be base64 encoded
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-state-changes)
+     * @returns {Promise<ChangeResult>}
+     */
+    async contractStateChanges(accountIdArray: string[], blockQuery: BlockReference, keyPrefix = ''): Promise<ChangeResult> {
+        const { finality } = blockQuery as any;
+        const { blockId } = blockQuery as any;
+        return this.sendJsonRpc('EXPERIMENTAL_changes', { 
+            changes_type: 'data_changes', 
+            account_ids: accountIdArray,
+            key_prefix_base64: keyPrefix,
+            block_id: blockId, 
+            finality
+        });
+    }
 
     /**
      * Directly call the RPC specifying the method and params
