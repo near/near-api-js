@@ -15,7 +15,7 @@ import {
     NearProtocolConfig,
     LightClientProof,
     LightClientProofRequest,
-    GasPrice,
+    GasPrice
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
