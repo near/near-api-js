@@ -88,7 +88,7 @@ export class JsonRpcProvider extends Provider {
         const bytes = signedTransaction.encode();
         return this.sendJsonRpc('broadcast_tx_async', [Buffer.from(bytes).toString('base64')]);
     }
-
+    
     /**
      * Gets a transaction's status from the RPC
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status)

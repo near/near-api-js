@@ -88,10 +88,6 @@ export interface TotalWeight {
     num: number;
 }
 
-export interface AccessKeyChangesResponse {
-
-}
-
 export interface BlockHeader {
     height: number;
     epoch_id: string;
@@ -119,7 +115,7 @@ export interface BlockHeader {
     last_ds_final_block: string;
     next_bp_hash: string;
     block_merkle_root: string;
-    approvals: string[]
+    approvals: string[];
     signature: string;
     latest_protocol_version: number;
 }
