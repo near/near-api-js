@@ -14,12 +14,11 @@ import {
     deleteKey,
     stake,
     deleteAccount,
-    AccessKey,
     Action,
     SignedTransaction
 } from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
-import { Finality, BlockId } from './providers/provider';
+import { Finality, BlockId, ViewStateResult, AccountView, AccessKeyView, CodeResult, AccessKeyList, AccessKeyInfoView, FunctionCallPermissionView } from './providers/provider';
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
@@ -46,18 +45,17 @@ const TX_NONCE_RETRY_WAIT = 500;
 // Exponential back off for waiting to retry.
 const TX_NONCE_RETRY_WAIT_BACKOFF = 1.5;
 
-export interface AccountState {
-    amount: string;
-    code_hash: string;
-    storage_usage: number;
-    locked: string;
-}
-
 export interface AccountBalance {
     total: string;
     stateStaked: string;
     staked: string;
     available: string;
+}
+
+export interface AccountAuthorizedApp {
+    contractId: string;
+    amount: string;
+    publicKey: PublicKey;
 }
 
 interface ReceiptLogWithFailure {
@@ -95,10 +93,10 @@ export class Account {
 
     /**
      * Returns the state of a NEAR account
-     * @returns {Promise<AccountState>}
+     * @returns {Promise<AccountView>}
      */
-    async state(): Promise<AccountState> {
-        return await this.connection.provider.query(`account/${this.accountId}`, '');
+    async state(): Promise<AccountView> {
+        return await this.connection.provider.query<AccountView>(`account/${this.accountId}`, '');
     }
 
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
@@ -189,9 +187,9 @@ export class Account {
         return result;
     }
 
-    accessKeyByPublicKeyCache: { [key: string]: AccessKey } = {}
+    accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {}
 
-    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
+    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKeyView}> {
         // TODO: Find matching access key based on transaction
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
@@ -204,7 +202,7 @@ export class Account {
         }
 
         try {
-            const accessKey = await this.connection.provider.query(`access_key/${this.accountId}/${publicKey.toString()}`, '');
+            const accessKey = await this.connection.provider.query<AccessKeyView>(`access_key/${this.accountId}/${publicKey.toString()}`, '');
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
@@ -345,7 +343,7 @@ export class Account {
     ): Promise<any> {
         args = args || {};
         this.validateArgs(args);
-        const result = await this.connection.provider.query(`call/${contractId}/${methodName}`, baseEncode(JSON.stringify(args)));
+        const result = await this.connection.provider.query<CodeResult>(`call/${contractId}/${methodName}`, baseEncode(JSON.stringify(args)));
         if (result.logs) {
             this.printLogs(contractId, result.logs);
         }
@@ -361,9 +359,9 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer, value: Buffer}>> {
+    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
         const { blockId, finality } = blockQuery as any || {};
-        const { values } = await this.connection.provider.query({
+        const { values } = await this.connection.provider.query<ViewStateResult>({
             request_type: 'view_state',
             block_id: blockId,
             finality: blockId ? undefined : finality || 'optimistic',
@@ -374,14 +372,14 @@ export class Account {
         return values.map(({key, value}) => ({
             key: Buffer.from(key, 'base64'),
             value: Buffer.from(value, 'base64')
-        }))
+        }));
     }
 
     /**
-     * @returns array of {access_key: AccessKey, public_key: PublicKey} items.
+     * @returns AccessKeyInfoView[].
      */
-    async getAccessKeys(): Promise<any> {
-        const response = await this.connection.provider.query(`access_key/${this.accountId}`, '');
+    async getAccessKeys(): Promise<AccessKeyInfoView[]> {
+        const response = await this.connection.provider.query<AccessKeyList>(`access_key/${this.accountId}`, '');
         // A breaking API change introduced extra information into the
         // response, so it now returns an object with a `keys` field instead
         // of an array: https://github.com/nearprotocol/nearcore/pull/1789
@@ -393,24 +391,23 @@ export class Account {
 
     /**
      * Returns account details in terms of authorized apps and transactions
-     * @returns {Promise<any>}
+     * @returns {Promise<{ authorizedApps: AccountAuthorizedApp[] }>}
      */
-    async getAccountDetails(): Promise<any> {
+    async getAccountDetails(): Promise<{ authorizedApps: AccountAuthorizedApp[] }> {
         // TODO: update the response value to return all the different keys, not just app keys.
         // Also if we need this function, or getAccessKeys is good enough.
         const accessKeys = await this.getAccessKeys();
-        const result: any = { authorizedApps: [], transactions: [] };
-        accessKeys.map((item) => {
-            if (item.access_key.permission.FunctionCall !== undefined) {
-                const perm = item.access_key.permission.FunctionCall;
-                result.authorizedApps.push({
-                    contractId: perm.receiver_id,
-                    amount: perm.allowance,
+        const authorizedApps = accessKeys
+            .filter(item => item.access_key.permission['FunctionCall'] !== undefined)
+            .map(item => {
+                const perm = (item.access_key.permission as FunctionCallPermissionView);
+                return {
+                    contractId: perm.FunctionCall.receiver_id,
+                    amount: perm.FunctionCall.allowance,
                     publicKey: item.public_key,
-                });
-            }
-        });
-        return result;
+                };
+            });
+        return { authorizedApps };
     }
 
     /**

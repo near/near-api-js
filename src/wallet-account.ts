@@ -263,7 +263,7 @@ class ConnectedWalletAccount extends Account {
         const accessKeys = await this.getAccessKeys();
 
         if (localKey) {
-            const accessKey = accessKeys.find(key => key.public_key === localKey.toString());
+            const accessKey = accessKeys.find(key => key.public_key.toString() === localKey.toString());
             if (accessKey && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
                 return accessKey;
             }

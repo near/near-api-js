@@ -1,21 +1,20 @@
 /// <reference types="node" />
 import BN from 'bn.js';
-import { AccessKey, Action, SignedTransaction } from './transaction';
+import { Action, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
-import { Finality, BlockId } from './providers/provider';
+import { Finality, BlockId, AccountView, AccessKeyView, AccessKeyInfoView } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
-export interface AccountState {
-    amount: string;
-    code_hash: string;
-    storage_usage: number;
-    locked: string;
-}
 export interface AccountBalance {
     total: string;
     stateStaked: string;
     staked: string;
     available: string;
+}
+export interface AccountAuthorizedApp {
+    contractId: string;
+    amount: string;
+    publicKey: PublicKey;
 }
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
 /**
@@ -29,9 +28,9 @@ export declare class Account {
     fetchState(): Promise<void>;
     /**
      * Returns the state of a NEAR account
-     * @returns {Promise<AccountState>}
+     * @returns {Promise<AccountView>}
      */
-    state(): Promise<AccountState>;
+    state(): Promise<AccountView>;
     private printLogsAndFailures;
     private printLogs;
     protected signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]>;
@@ -42,7 +41,7 @@ export declare class Account {
      */
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     accessKeyByPublicKeyCache: {
-        [key: string]: AccessKey;
+        [key: string]: AccessKeyView;
     };
     private findAccessKey;
     /**
@@ -132,14 +131,16 @@ export declare class Account {
         value: Buffer;
     }>>;
     /**
-     * @returns array of {access_key: AccessKey, public_key: PublicKey} items.
+     * @returns AccessKeyInfoView[].
      */
-    getAccessKeys(): Promise<any>;
+    getAccessKeys(): Promise<AccessKeyInfoView[]>;
     /**
      * Returns account details in terms of authorized apps and transactions
-     * @returns {Promise<any>}
+     * @returns {Promise<{ authorizedApps: AccountAuthorizedApp[] }>}
      */
-    getAccountDetails(): Promise<any>;
+    getAccountDetails(): Promise<{
+        authorizedApps: AccountAuthorizedApp[];
+    }>;
     /**
      * Returns calculated account balance
      * @returns {Promise<AccountBalance>}

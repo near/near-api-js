@@ -9,7 +9,7 @@ import { Signer } from './signer';
 export class FunctionCallPermission extends Assignable {
     allowance?: BN;
     receiverId: string;
-    methodNames: String[];
+    methodNames: string[];
 }
 
 export class FullAccessPermission extends Assignable {}
@@ -28,7 +28,7 @@ export function fullAccessKey(): AccessKey {
     return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({fullAccess: new FullAccessPermission({})}) });
 }
 
-export function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey {
+export function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
     return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({functionCall: new FunctionCallPermission({receiverId, allowance, methodNames})})});
 }
 

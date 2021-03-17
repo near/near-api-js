@@ -12,7 +12,8 @@ import {
     NearProtocolConfig,
     LightClientProof,
     LightClientProofRequest,
-    GasPrice
+    GasPrice,
+    QueryResponseKind
 } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
@@ -89,13 +90,13 @@ export class JsonRpcProvider extends Provider {
     /**
      * Query the RPC as [shown in the docs](https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts)
      */
-    async query(...args: any[]): Promise<any> {
+    async query<T extends QueryResponseKind>(...args: any[]): Promise<T> {
         let result;
         if (args.length === 1) {
-            result = await this.sendJsonRpc('query', args[0]);
+            result = await this.sendJsonRpc<T>('query', args[0]);
         } else {
             const [path, data] = args;
-            result = await this.sendJsonRpc('query', [path, data]);
+            result = await this.sendJsonRpc<T>('query', [path, data]);
         }
         if (result && result.error) {
             throw new TypedError(
@@ -183,7 +184,7 @@ export class JsonRpcProvider extends Provider {
      * @param method RPC method
      * @param params Parameters to the method
      */
-    async sendJsonRpc(method: string, params: object): Promise<any> {
+    async sendJsonRpc<T>(method: string, params: object): Promise<T> {
         const result = await exponentialBackoff(REQUEST_RETRY_WAIT, REQUEST_RETRY_NUMBER, REQUEST_RETRY_WAIT_BACKOFF, async () => {
             try {
                 const request = {

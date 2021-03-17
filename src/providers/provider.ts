@@ -1,5 +1,6 @@
 import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
+import { PublicKey } from '../utils/key_pair';
 
 export interface SyncInfo {
     latest_block_hash: string;
@@ -241,14 +242,69 @@ export interface GasPrice {
     gas_price: string;
 }
 
+export interface QueryResponseKind {
+    block_height: BlockHeight;
+    block_hash: BlockHash;
+}
+
+export interface AccountView extends QueryResponseKind {
+    amount: string;
+    locked: string;
+    code_hash: string;
+    storage_usage: number;
+    storage_paid_at: BlockHeight;
+}
+
+interface StateItem {
+    key: string;
+    value: string;
+    proof: string[];
+}
+
+export interface ViewStateResult extends QueryResponseKind {
+    values: StateItem[];
+    proof: string[];
+}
+
+export interface CodeResult extends QueryResponseKind {
+    result: number[];
+    logs: string[];
+}
+
+export interface ContractCodeView extends QueryResponseKind {
+    code_base64: string;
+    hash: string;
+}
+
+export interface FunctionCallPermissionView {
+    FunctionCall: {
+        allowance: string;
+        receiver_id: string;
+        method_names: string[];
+    };
+}
+export interface AccessKeyView extends QueryResponseKind {
+    nonce: number;
+    permission: 'FullAccess' | FunctionCallPermissionView;
+}
+
+export interface AccessKeyInfoView {
+    public_key: PublicKey;
+    access_key: AccessKeyView;
+}
+
+export interface AccessKeyList extends QueryResponseKind {
+    keys: AccessKeyInfoView[];
+}
+
 export abstract class Provider {
     abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
 
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
-    abstract query(params: object): Promise<any>;
-    abstract query(path: string, data: string): Promise<any>;
+    abstract query<T extends QueryResponseKind>(params: object): Promise<T>;
+    abstract query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
     // TODO: BlockQuery type?
     abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;

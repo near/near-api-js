@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice } from './provider';
+import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice, QueryResponseKind } from './provider';
 import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
@@ -36,7 +36,7 @@ export declare class JsonRpcProvider extends Provider {
     /**
      * Query the RPC as [shown in the docs](https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts)
      */
-    query(...args: any[]): Promise<any>;
+    query<T extends QueryResponseKind>(...args: any[]): Promise<T>;
     /**
      * Query for block info from the RPC
      * See [docs for more info](https://docs.near.org/docs/interaction/rpc#block)
@@ -81,7 +81,7 @@ export declare class JsonRpcProvider extends Provider {
      * @param method RPC method
      * @param params Parameters to the method
      */
-    sendJsonRpc(method: string, params: object): Promise<any>;
+    sendJsonRpc<T>(method: string, params: object): Promise<T>;
     /**
      * Returns gas price for a specific block_height or block_hash.
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#gas-price)

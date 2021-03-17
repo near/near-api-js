@@ -1,5 +1,4 @@
-
-const nearApi = require('../lib/index');
+const nearApi = require('../src/index');
 const testUtils  = require('./test-utils');
 const BN = require('bn.js');
 
@@ -58,6 +57,102 @@ test('json rpc query account', withProvider(async (provider) => {
     const account = await testUtils.createAccount(near);
     let response = await provider.query(`account/${account.accountId}`, '');
     expect(response.code_hash).toEqual('11111111111111111111111111111111');
+}));
+
+test('json rpc query view_state', withProvider(async (provider) => {
+    const near = await testUtils.setUpTestConnection();
+    const account = await testUtils.createAccount(near);
+    const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
+
+    await contract.setValue({ value: 'hello' });
+
+    return testUtils.waitFor(async() => {
+        const response = await provider.query({
+            request_type: 'view_state',
+            finality: 'final',
+            account_id: contract.contractId,
+            prefix_base64: ''
+        });
+        expect(response).toEqual({
+            block_height: expect.any(Number),
+            block_hash: expect.any(String),
+            values: [
+                { key: 'bmFtZQ==', value: 'aGVsbG8=', proof: [] }
+            ],
+            proof: []
+        });
+    });
+}));
+
+test('json rpc query view_account', withProvider(async (provider) => {
+    const response = await provider.query({
+        request_type: 'view_account',
+        finality: 'final',
+        account_id: 'test.near'
+    });
+
+    expect(response).toEqual({
+        block_height: expect.any(Number),
+        block_hash: expect.any(String),
+        amount: expect.any(String),
+        locked: expect.any(String),
+        code_hash: '11111111111111111111111111111111',
+        storage_usage: 182,
+        storage_paid_at: 0,
+    });
+}));
+
+test('json rpc query view_code', withProvider(async (provider) => {
+    const near = await testUtils.setUpTestConnection();
+    const account = await testUtils.createAccount(near);
+    const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
+
+    return testUtils.waitFor(async() => {
+        const response = await provider.query({
+            request_type: 'view_code',
+            finality: 'final',
+            account_id: contract.contractId
+        });
+    
+        expect(response).toEqual({
+            block_height: expect.any(Number),
+            block_hash: expect.any(String),
+            code_base64: expect.any(String),
+            hash: expect.any(String)
+        });
+    });
+}));
+
+test('json rpc query call_function', withProvider(async (provider) => {
+    const near = await testUtils.setUpTestConnection();
+    const account = await testUtils.createAccount(near);
+    const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
+
+    await contract.setValue({ value: 'hello' });
+
+    return testUtils.waitFor(async() => {
+        const response = await provider.query({
+            request_type: 'call_function',
+            finality: 'final',
+            account_id: contract.contractId,
+            method_name: 'getValue',
+            args_base64: ''
+        });
+        expect(response).toEqual({
+            block_height: expect.any(Number),
+            block_hash: expect.any(String),
+            logs: [],
+            result: [
+                34,
+                104,
+                101,
+                108,
+                108,
+                111,
+                34
+            ]
+        });
+    });
 }));
 
 test('final tx result', async() => {
