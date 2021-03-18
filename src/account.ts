@@ -193,8 +193,8 @@ export class Account {
 
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {}
 
-    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKeyView}> {
-        // TODO: Find matching access key based on transaction
+    async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKeyView}> {
+        // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
             return null;

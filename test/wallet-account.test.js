@@ -61,7 +61,6 @@ it('can request sign in', async () => {
         protocol: 'http:',
         host: 'example.com',
         query: {
-            title: 'signInTitle',
             contract_id: 'signInContract',
             success_url: 'http://example.com/success',
             failure_url: 'http://example.com/fail',
