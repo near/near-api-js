@@ -191,8 +191,8 @@ export class Account {
 
     accessKeyByPublicKeyCache: { [key: string]: AccessKey } = {}
 
-    private async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
-        // TODO: Find matching access key based on transaction
+    async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKey}> {
+        // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
             return null;
@@ -361,7 +361,7 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer, value: Buffer}>> {
+    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
         const { blockId, finality } = blockQuery as any || {};
         const { values } = await this.connection.provider.query({
             request_type: 'view_state',
@@ -374,7 +374,7 @@ export class Account {
         return values.map(({key, value}) => ({
             key: Buffer.from(key, 'base64'),
             value: Buffer.from(value, 'base64')
-        }))
+        }));
     }
 
     /**
