@@ -1,6 +1,6 @@
 import depd from 'depd';
 import {
-    AccessKey,
+    AccessKeyWithPublicKey,
     Provider,
     FinalExecutionOutcome,
     NodeStatusResult,
@@ -236,7 +236,7 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-single)
      * @returns {Promise<ChangeResult>}
      */
-    async singleAccessKeyChanges(accessKeyArray: AccessKey[], blockQuery: BlockReference): Promise<ChangeResult> {
+    async singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], blockQuery: BlockReference): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', { 

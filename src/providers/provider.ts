@@ -298,7 +298,7 @@ export interface GasPrice {
     gas_price: string;
 }
 
-export interface AccessKey {
+export interface AccessKeyWithPublicKey {
     account_id: string;
     public_key: string;
 }
