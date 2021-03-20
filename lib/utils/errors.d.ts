@@ -11,5 +11,6 @@ export declare class TypedError extends Error {
 }
 export declare class ErrorContext {
     transactionHash?: string;
-    constructor(transactionHash?: string);
+    errorPath?: Record<string, any>;
+    constructor(transactionHash?: string, errorPath?: Record<string, any>);
 }

@@ -138,6 +138,30 @@ describe('rpc-errors', () => {
         );
     });
 
+    test('test JSON RPC TypedError should have errorPath in context', async () => {
+        let errorPath = {
+            TxExecutionError: {
+                InvalidTxError: {
+                    InvalidAccessKeyError: {
+                        ReceiverMismatch: {
+                            ak_receiver: 'test.near',
+                            tx_receiver: 'bob.near'
+                        }
+                    }
+                }
+            }
+        };
+        let result =
+        {
+            status: {
+                Failure: errorPath,
+            },
+        };
+
+        let error = parseResultError(result);
+        expect(error.context.errorPath).toBe(errorPath);
+    });
+
     test('test getErrorTypeFromErrorMessage', () => {
         const err1 = 'account random.near does not exist while viewing';
         const err2 = 'Account random2.testnet doesn\'t exist';

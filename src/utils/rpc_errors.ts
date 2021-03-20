@@ -4,6 +4,7 @@ import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
 import * as CLASSMAP from '../generated/rpc_error_types';
 import { ServerError } from '../generated/rpc_error_types';
+import { ErrorContext } from './errors';
 
 export * from '../generated/rpc_error_types';
 
@@ -15,7 +16,10 @@ export function parseRpcError(errorObj: Record<string, any>): ServerError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
     // NOTE: This assumes that all errors extend TypedError
-    const error = new CLASSMAP[errorClassName](formatError(errorClassName, result), errorClassName);
+    const error = new CLASSMAP[errorClassName](
+        formatError(errorClassName, result),
+        errorClassName,
+        new ErrorContext(undefined, errorObj));
     Object.assign(error, result);
     return error;
 }

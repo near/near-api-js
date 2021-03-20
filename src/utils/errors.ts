@@ -22,7 +22,9 @@ export class TypedError extends Error {
 
 export class ErrorContext {
     transactionHash?: string;
-    constructor(transactionHash?: string) {
+    errorPath?: Record<string, any>;
+    constructor(transactionHash?: string, errorPath?: Record<string, any>) {
         this.transactionHash = transactionHash;
+        this.errorPath = errorPath;
     }
 }
