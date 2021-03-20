@@ -146,6 +146,9 @@ export class WalletConnection {
         currentUrl.searchParams.delete('public_key');
         currentUrl.searchParams.delete('all_keys');
         currentUrl.searchParams.delete('account_id');
+        currentUrl.searchParams.delete('meta');
+        currentUrl.searchParams.delete('transactionHashes');
+
         window.history.replaceState({}, document.title, currentUrl.toString());
     }
 
