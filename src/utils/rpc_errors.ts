@@ -22,11 +22,11 @@ export function parseRpcError(errorObj: Record<string, any>): ServerError {
 
 export function parseResultError(result: any): ServerTransactionError {
     const server_error = parseRpcError(result.status.Failure);
-    const server_tx_error = new ServerTransactionError();
-    Object.assign(server_tx_error, server_error);
-    server_tx_error.type = server_error.type;
-    server_tx_error.message = server_error.message;
+    const server_tx_error = new ServerTransactionError(
+        server_error.message,
+        server_error.type);
     server_tx_error.transaction_outcome = result.transaction_outcome;
+    Object.assign(server_tx_error, server_error);
     return server_tx_error;
 }
 

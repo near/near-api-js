@@ -130,7 +130,6 @@ describe('rpc-errors', () => {
         };
 
         let error = parseResultError(result);
-        console.log("err:", error);
         expect(error.type).toBe('ReceiverMismatch');
         expect(error.ak_receiver).toBe('test.near');
         expect(error.tx_receiver).toBe('bob.near');
