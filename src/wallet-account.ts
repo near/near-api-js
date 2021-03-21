@@ -85,11 +85,6 @@ export class WalletConnection {
         successUrl?: string,
         failureUrl?: string
     ) {
-        /* Throws exception if account does not exist */
-        let contractId = typeof contractIdOrOptions == 'string' ? contractIdOrOptions : contractIdOrOptions.contractId;
-        const contractAccount = await this._near.account(contractId);
-        await contractAccount.state();
-
         let options: SignInOptions;
         if (typeof contractIdOrOptions === 'string') {
             const deprecate = depd('requestSignIn(contractId, title)');
@@ -98,6 +93,10 @@ export class WalletConnection {
         } else {
             options = contractIdOrOptions as SignInOptions;
         }
+
+        /* Throws exception if account does not exist */
+        const contractAccount = await this._near.account(options.contractId);
+        await contractAccount.state();
 
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
