@@ -44,7 +44,10 @@ export declare class Account {
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKey;
     };
-    private findAccessKey;
+    findAccessKey(receiverId: string, actions: Action[]): Promise<{
+        publicKey: PublicKey;
+        accessKey: AccessKey;
+    }>;
     /**
      * @param contractId NEAR account where the contract is deployed
      * @param publicKey The public key to add while signing and sending the transaction
