@@ -1,3 +1,4 @@
+import depd from 'depd';
 import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
@@ -13,6 +14,13 @@ const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
+
+interface SignInOptions {
+    contractId?: string;
+    // TODO: Replace following with single callbackUrl
+    successUrl?: string;
+    failureUrl?: string;
+}
 
 export class WalletConnection {
     _walletBaseUrl: string;
@@ -59,37 +67,48 @@ export class WalletConnection {
 
     /**
      * Redirects current page to the wallet authentication page.
-     * @param contractId The NEAR account where the contract is deployed
-     * @param title Name of the application that will appear as requesting access in Wallet
-     * @param successUrl Optional url to redirect upon success
-     * @param failureUrl Optional url to redirect upon failure
-     * 
+     * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
+     * @param options.successUrl URL to redirect upon success. Default: current url
+     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     *
      * @example
-     *   walletAccount.requestSignIn(
-     *     account-with-deploy-contract,
-     *     "Guest Book",
-     *     "https://example.com/success.html",
-     *     "https://example.com/error.html");
+     *   walletAccount.requestSignIn('account-with-deploy-contract.near', {
+     *     successUrl: "https://example.com/success.html",
+     *     failureUrl: "https://example.com/error.html"
+     *   });
      */
-    async requestSignIn(contractId: string, title: string, successUrl?: string, failureUrl?: string) {
-        // Throws exception if account does not exist
+
+    async requestSignIn(
+        contractIdOrOptions: string | SignInOptions = {},
+        title?: string,
+        successUrl?: string,
+        failureUrl?: string
+    ) {
+        /* Throws exception if account does not exist */
+        let contractId = typeof contractIdOrOptions == 'string' ? contractIdOrOptions : contractIdOrOptions.contractId;
         const contractAccount = await this._near.account(contractId);
         await contractAccount.state();
 
-        if (this.getAccountId() || await this._keyStore.getKey(this._networkId, this.getAccountId())) {
-            return Promise.resolve();
+        let options: SignInOptions;
+        if (typeof contractIdOrOptions === 'string') {
+            const deprecate = depd('requestSignIn(contractId, title)');
+            deprecate('`title` ignored; use `requestSignIn({ contractId, successUrl, failureUrl })` instead');
+            options = { contractId: contractIdOrOptions, successUrl, failureUrl };
+        } else {
+            options = contractIdOrOptions as SignInOptions;
         }
 
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
-        newUrl.searchParams.set('title', title);
-        newUrl.searchParams.set('contract_id', contractId);
-        newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
-        newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
-        newUrl.searchParams.set('app_url', currentUrl.origin);
-        const accessKey = KeyPair.fromRandom('ed25519');
-        newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
-        await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+        newUrl.searchParams.set('success_url', options.successUrl || currentUrl.href);
+        newUrl.searchParams.set('failure_url', options.failureUrl || currentUrl.href);
+        if (options.contractId) {
+            newUrl.searchParams.set('contract_id', options.contractId);
+            const accessKey = KeyPair.fromRandom('ed25519');
+            newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
+            await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+        }
         window.location.assign(newUrl.toString());
     }
 
@@ -119,14 +138,16 @@ export class WalletConnection {
         const publicKey = currentUrl.searchParams.get('public_key') || '';
         const allKeys = (currentUrl.searchParams.get('all_keys') || '').split(',');
         const accountId = currentUrl.searchParams.get('account_id') || '';
-        // TODO: Handle situation when access key is not added
-        if (accountId && publicKey) {
+        // TODO: Handle errors during login
+        if (accountId) {
             this._authData = {
                 accountId,
                 allKeys
             };
             window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
-            await this._moveKeyFromTempToPermanent(accountId, publicKey);
+            if (publicKey) {
+                await this._moveKeyFromTempToPermanent(accountId, publicKey);
+            }
         }
         currentUrl.searchParams.delete('public_key');
         currentUrl.searchParams.delete('all_keys');
@@ -171,7 +192,7 @@ export const WalletAccount = WalletConnection;
 /**
  * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
  */
-class ConnectedWalletAccount extends Account {
+export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
 
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
@@ -246,7 +267,7 @@ class ConnectedWalletAccount extends Account {
                 }
                 const [{ functionCall }] = actions;
                 return functionCall &&
-                    (!functionCall.deposit || functionCall.deposit.toString() === "0") && // TODO: Should support charging amount smaller than allowance?
+                    (!functionCall.deposit || functionCall.deposit.toString() === '0') && // TODO: Should support charging amount smaller than allowance?
                     (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
                 // TODO: Handle cases when allowance doesn't have enough to pay for gas
             }
