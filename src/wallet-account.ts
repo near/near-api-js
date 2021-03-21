@@ -78,7 +78,6 @@ export class WalletConnection {
      *     failureUrl: "https://example.com/error.html"
      *   });
      */
-
     async requestSignIn(
         contractIdOrOptions: string | SignInOptions = {},
         title?: string,
