@@ -76,12 +76,6 @@ export class AccountMultisig extends Account {
         return result
     }
 
-    async signAndSendTransactions(transactions) {
-        for (let { receiverId, actions } of transactions) {
-            await this.signAndSendTransaction(receiverId, actions)
-        }
-    }
-
     async deleteUnconfirmedRequests () {
         const { contract } = this
         const request_ids = await this.getRequestIds()
@@ -149,6 +143,7 @@ export class Account2FA extends AccountMultisig {
 
     async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         await super.signAndSendTransaction(receiverId, actions);
+        // TODO: Should following override onRequestResult in superclass instead of doing custom signAndSendTransaction?
         await this.sendCode()
         const result = await this.promptAndVerify();
         if (this.onConfirmResult) {
@@ -232,18 +227,17 @@ export class Account2FA extends AccountMultisig {
         const method = await this.get2faMethod();
         const securityCode = await this.getCode(method)
         try {
-            const { success, res: result } = await this.verifyCode(securityCode);
-            if (!success || result === false) {
-                throw new Error('Request failed with error: ' + JSON.stringify(result));
-            }
-            return typeof result === 'string' && result.length === 0 ? 'true' : result;
+            const result = await this.verifyCode(securityCode);
+
+            // TODO: Parse error from result for real (like in normal account.signAndSendTransaction)
+            return result;
         } catch (e) {
             console.warn('Error validating security code:', e);
-            // TODO: Check if any other errors should be handled as non-recoverable
-            if (e.toString().includes('2fa code expired')) {
-                throw e;
+            if (e.toString().includes('invalid 2fa code provided') || e.toString().includes('2fa code not valid')) {
+                return await this.promptAndVerify();
             }
-            return await this.promptAndVerify();
+
+            throw e;
         }
     }
 

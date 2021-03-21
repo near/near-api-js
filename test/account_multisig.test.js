@@ -27,7 +27,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
         getCode: () => {},
         sendCode: () => {},
         // auto accept "code"
-        verifyCode: () => ({ success: true, res: '' }),
+        verifyCode: () => ({  }), // TODO: Is there any content needed in result?
         onAddRequestResult: async () => {
             const { requestId } = account2fa.getRequest();
             // set confirmKey as signer
