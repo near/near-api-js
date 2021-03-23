@@ -29,6 +29,11 @@ beforeEach(() => {
         connection: {
             networkId: 'networkId',
             signer: new nearApi.InMemorySigner(keyStore)
+        },
+        account() {
+            return {
+                state() {}
+            };
         }
     };
     lastRedirectUrl = null;

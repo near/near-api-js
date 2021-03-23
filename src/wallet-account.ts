@@ -93,6 +93,10 @@ export class WalletConnection {
             options = contractIdOrOptions as SignInOptions;
         }
 
+        /* Throws exception if account does not exist */
+        const contractAccount = await this._near.account(options.contractId);
+        await contractAccount.state();
+
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('success_url', options.successUrl || currentUrl.href);

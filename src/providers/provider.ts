@@ -1,4 +1,3 @@
-import { Network } from '../utils/network';
 import { SignedTransaction } from '../transaction';
 import { PublicKey } from '../utils/key_pair';
 
@@ -340,7 +339,6 @@ export type RpcQueryRequest = (ViewAccountRequest |
     CallFunctionRequest) & BlockReference
 
 export abstract class Provider {
-    abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
 
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;

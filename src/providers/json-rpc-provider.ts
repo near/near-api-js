@@ -15,7 +15,6 @@ import {
     GasPrice,
     QueryResponseKind
 } from './provider';
-import { Network } from '../utils/network';
 import { ConnectionInfo, fetchJson } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
 import { baseEncode } from 'borsh';
@@ -43,17 +42,6 @@ export class JsonRpcProvider extends Provider {
     constructor(url?: string) {
         super();
         this.connection = { url };
-    }
-
-    /**
-     * Get the current network (ex. test, beta, etc…)
-     * @returns {Promise<Network>}
-     */
-    async getNetwork(): Promise<Network> {
-        return {
-            name: 'test',
-            chainId: 'test'
-        };
     }
 
     /**
