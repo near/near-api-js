@@ -1,5 +1,4 @@
 import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice } from './provider';
-import { Network } from '../utils/network';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
 import { SignedTransaction } from '../transaction';
@@ -7,11 +6,6 @@ export { TypedError, ErrorContext };
 export declare class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
     constructor(url?: string);
-    /**
-     * Get the current network (ex. test, beta, etc…)
-     * @returns {Promise<Network>}
-     */
-    getNetwork(): Promise<Network>;
     /**
      * Gets the RPC's status
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
