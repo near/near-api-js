@@ -417,7 +417,7 @@ export class Account {
         // Also if we need this function, or getAccessKeys is good enough.
         const accessKeys = await this.getAccessKeys();
         const authorizedApps = accessKeys
-            .filter(item => item.access_key.permission['FunctionCall'] !== undefined)
+            .filter(item => item.access_key.permission !== 'FullAccess')
             .map(item => {
                 const perm = (item.access_key.permission as FunctionCallPermissionView);
                 return {
