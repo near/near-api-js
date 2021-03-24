@@ -1,3 +1,4 @@
+import { ExecutionOutcomeWithIdView } from '../providers/provider';
 export declare class PositionalArgsError extends Error {
     constructor();
 }
@@ -14,5 +15,5 @@ export declare class ErrorContext {
     transactionHash?: string;
     errorPath?: Record<string, any>;
     transactionOutcome?: any;
-    constructor(transactionHash?: string, errorPath?: Record<string, any>, transactionOutcome?: any);
+    constructor(transactionHash?: string, errorPath?: Record<string, any>, transactionOutcome?: ExecutionOutcomeWithIdView);
 }
