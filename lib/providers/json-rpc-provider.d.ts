@@ -1,8 +1,9 @@
 import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice, QueryResponseKind } from './provider';
 import { ConnectionInfo } from '../utils/web';
-import { TypedError, ErrorContext } from '../utils/errors';
+import { TypedError } from '../utils/errors';
+import { ServerError, ServerErrorContext, ServerTransactionError } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
-export { TypedError, ErrorContext };
+export { TypedError, ServerError, ServerErrorContext, ServerTransactionError, };
 export declare class JsonRpcProvider extends Provider {
     readonly connection: ConnectionInfo;
     constructor(url?: string);

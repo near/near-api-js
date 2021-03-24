@@ -17,13 +17,13 @@ import {
     Action,
     SignedTransaction
 } from './transaction';
-import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
+import { FinalExecutionOutcome, TypedError, ServerErrorContext } from './providers';
 import { Finality, BlockId, ViewStateResult, AccountView, AccessKeyView, CodeResult, AccessKeyList, AccessKeyInfoView, FunctionCallPermissionView } from './providers/provider';
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
-import { parseRpcError, parseRpcResultError } from './utils/rpc_errors';
+import { parseRpcError, parseRpcResultError, ServerError } from './utils/rpc_errors';
 
 import exponentialBackoff from './utils/exponential-backoff';
 
@@ -60,7 +60,7 @@ export interface AccountAuthorizedApp {
 interface ReceiptLogWithFailure {
     receiptIds: [string];
     logs: [string];
-    failure: TypedError;
+    failure: ServerError;
 }
 
 function parseJsonFromRawResponse (response: Uint8Array): any {
@@ -155,7 +155,7 @@ export class Account {
                     return null;
                 }
 
-                error.context = new ErrorContext(baseEncode(txHash));
+                error.context = new ServerErrorContext(baseEncode(txHash));
                 throw error;
             }
         });

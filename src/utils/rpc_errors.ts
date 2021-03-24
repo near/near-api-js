@@ -2,13 +2,33 @@
 import Mustache from 'mustache';
 import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
-import { ErrorContext, TypedError } from './errors';
+import { TypedError } from './errors';
 import { ExecutionOutcomeWithIdView } from '../providers/provider';
 
-class ServerError extends TypedError {
+export class ServerError extends TypedError {
+    context?: ServerErrorContext;
+    constructor(message: string, type: string, context?: ServerErrorContext) {
+        super(message, type);
+        this.context = context;
+    }
+
+    isSubtypeOf(errorType: string) {
+        return this.context && this.context.errorPath &&
+            JSON.stringify(this.context.errorPath).includes(errorType);
+    }
 }
-class ServerTransactionError extends ServerError {
-    public transaction_outcome: ExecutionOutcomeWithIdView;
+
+export class ServerErrorContext {
+    transactionHash?: string;
+    errorPath?: Record<string, any>;
+    constructor(transactionHash?: string, errorPath?: Record<string, any>) {
+        this.transactionHash = transactionHash;
+        this.errorPath = errorPath;
+    }
+}
+
+export class ServerTransactionError extends ServerError {
+    public transaction_outcome: ExecutionOutcomeWithIdView; //TODO: should it be a part of context?
 }
 
 export function parseRpcError(errorObj: Record<string, any>): ServerError {
@@ -17,7 +37,7 @@ export function parseRpcError(errorObj: Record<string, any>): ServerError {
     const error = new ServerError(
         formatError(errorClassName, result),
         errorClassName,
-        new ErrorContext(undefined, errorObj));
+        new ServerErrorContext(undefined, errorObj));
     Object.assign(error, result);
     return error;
 }

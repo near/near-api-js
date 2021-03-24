@@ -1,6 +1,12 @@
 
 import { Provider, FinalExecutionOutcome, ExecutionOutcomeWithId, getTransactionLastResult, FinalExecutionStatusBasic } from './provider';
-import { JsonRpcProvider, TypedError, ErrorContext } from './json-rpc-provider';
+import {
+    JsonRpcProvider,
+    TypedError,
+    ServerError,
+    ServerErrorContext,
+    ServerTransactionError,
+} from './json-rpc-provider';
 
 export {
     Provider,
@@ -10,5 +16,7 @@ export {
     FinalExecutionStatusBasic,
     getTransactionLastResult,
     TypedError,
-    ErrorContext
+    ServerError,
+    ServerErrorContext,
+    ServerTransactionError,
 };

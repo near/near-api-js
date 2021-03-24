@@ -16,13 +16,24 @@ import {
     QueryResponseKind
 } from './provider';
 import { ConnectionInfo, fetchJson } from '../utils/web';
-import { TypedError, ErrorContext } from '../utils/errors';
+import { TypedError } from '../utils/errors';
 import { baseEncode } from 'borsh';
 import exponentialBackoff from '../utils/exponential-backoff';
-import { parseRpcError, getErrorTypeFromErrorMessage } from '../utils/rpc_errors';
+import {
+    parseRpcError,
+    getErrorTypeFromErrorMessage,
+    ServerError,
+    ServerErrorContext,
+    ServerTransactionError,
+} from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
-export { TypedError, ErrorContext };
+export {
+    TypedError,
+    ServerError,
+    ServerErrorContext,
+    ServerTransactionError,
+};
 
 // Default number of retries before giving up on a request.
 const REQUEST_RETRY_NUMBER = 12;

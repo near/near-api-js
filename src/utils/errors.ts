@@ -12,24 +12,8 @@ export class ArgumentTypeError extends Error {
 
 export class TypedError extends Error {
     type: string;
-    context?: ErrorContext;
-    constructor(message: string, type: string, context?: ErrorContext) {
+    constructor(message: string, type: string) {
         super(message);
         this.type = type;
-        this.context = context;
-    }
-
-    isSubtypeOf(errorType: string) {
-        return this.context && this.context.errorPath &&
-            JSON.stringify(this.context.errorPath).includes(errorType);
-    }
-}
-
-export class ErrorContext {
-    transactionHash?: string;
-    errorPath?: Record<string, any>;
-    constructor(transactionHash?: string, errorPath?: Record<string, any>) {
-        this.transactionHash = transactionHash;
-        this.errorPath = errorPath;
     }
 }
