@@ -18,13 +18,20 @@ export class TypedError extends Error {
         this.type = type;
         this.context = context;
     }
+
+    isSubtypeOf(errorType: string) {
+        return this.context && this.context.errorPath &&
+            JSON.stringify(this.context.errorPath).includes(errorType);
+    }
 }
 
 export class ErrorContext {
     transactionHash?: string;
     errorPath?: Record<string, any>;
-    constructor(transactionHash?: string, errorPath?: Record<string, any>) {
+    transactionOutcome?: any;
+    constructor(transactionHash?: string, errorPath?: Record<string, any>, transactionOutcome?: any) {
         this.transactionHash = transactionHash;
         this.errorPath = errorPath;
+        this.transactionOutcome = transactionOutcome;
     }
 }

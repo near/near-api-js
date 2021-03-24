@@ -1,9 +1,5 @@
-import { ServerError } from '../generated/rpc_error_types';
-export * from '../generated/rpc_error_types';
-declare class ServerTransactionError extends ServerError {
-    transaction_outcome: any;
-}
-export declare function parseRpcError(errorObj: Record<string, any>): ServerError;
-export declare function parseResultError(result: any): ServerTransactionError;
+import { TypedError } from './errors';
+export declare function parseRpcError(errorObj: Record<string, any>): TypedError;
+export declare function parseResultError(result: any): TypedError;
 export declare function formatError(errorClassName: string, errorData: any): string;
 export declare function getErrorTypeFromErrorMessage(errorMessage: any): "CodeDoesNotExist" | "AccountDoesNotExist" | "InvalidNonce" | "AccessKeyDoesNotExist" | "UntypedError";

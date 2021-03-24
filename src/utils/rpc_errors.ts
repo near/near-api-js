@@ -2,21 +2,12 @@
 import Mustache from 'mustache';
 import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
-import * as CLASSMAP from '../generated/rpc_error_types';
-import { ServerError } from '../generated/rpc_error_types';
-import { ErrorContext } from './errors';
+import { ErrorContext, TypedError } from './errors';
 
-export * from '../generated/rpc_error_types';
-
-class ServerTransactionError extends ServerError {
-    public transaction_outcome: any;
-}
-
-export function parseRpcError(errorObj: Record<string, any>): ServerError {
+export function parseRpcError(errorObj: Record<string, any>): TypedError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
-    // NOTE: This assumes that all errors extend TypedError
-    const error = new CLASSMAP[errorClassName](
+    const error = new TypedError(
         formatError(errorClassName, result),
         errorClassName,
         new ErrorContext(undefined, errorObj));
@@ -24,14 +15,11 @@ export function parseRpcError(errorObj: Record<string, any>): ServerError {
     return error;
 }
 
-export function parseResultError(result: any): ServerTransactionError {
+//TODO: parseRpcError and parseResultError should be one function
+export function parseResultError(result: any): TypedError {
     const server_error = parseRpcError(result.status.Failure);
-    const server_tx_error = new ServerTransactionError(
-        server_error.message,
-        server_error.type);
-    server_tx_error.transaction_outcome = result.transaction_outcome;
-    Object.assign(server_tx_error, server_error);
-    return server_tx_error;
+    server_error.context.transactionOutcome = result.transaction_outcome;
+    return server_error;
 }
 
 export function formatError(errorClassName: string, errorData): string {

@@ -25,7 +25,6 @@ import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
-import { ServerError } from './generated/rpc_error_types';
 
 import exponentialBackoff from './utils/exponential-backoff';
 
@@ -63,7 +62,7 @@ export interface AccountBalance {
 interface ReceiptLogWithFailure {
     receiptIds: [string];
     logs: [string];
-    failure: ServerError;
+    failure: TypedError;
 }
 
 function parseJsonFromRawResponse (response: Uint8Array): any {
