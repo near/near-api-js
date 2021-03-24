@@ -3,11 +3,18 @@ import Mustache from 'mustache';
 import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
 import { ErrorContext, TypedError } from './errors';
+import { ExecutionOutcomeWithIdView } from '../providers/provider';
 
-export function parseRpcError(errorObj: Record<string, any>): TypedError {
+class ServerError extends TypedError {
+}
+class ServerTransactionError extends ServerError {
+    public transaction_outcome: ExecutionOutcomeWithIdView;
+}
+
+export function parseRpcError(errorObj: Record<string, any>): ServerError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
-    const error = new TypedError(
+    const error = new ServerError(
         formatError(errorClassName, result),
         errorClassName,
         new ErrorContext(undefined, errorObj));
@@ -15,11 +22,12 @@ export function parseRpcError(errorObj: Record<string, any>): TypedError {
     return error;
 }
 
-//TODO: parseRpcError and parseResultError should be one function
-export function parseResultError(result: any): TypedError {
+export function parseRpcResultError(result: any): ServerTransactionError {
     const server_error = parseRpcError(result.status.Failure);
-    server_error.context.transactionOutcome = result.transaction_outcome;
-    return server_error;
+    const server_tx_error = new ServerTransactionError(server_error.message, server_error.type);
+    Object.assign(server_tx_error, server_error);
+    server_tx_error.transaction_outcome = result.transaction_outcome;
+    return server_tx_error;
 }
 
 export function formatError(errorClassName: string, errorData): string {

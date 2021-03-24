@@ -23,7 +23,7 @@ import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
-import { parseRpcError, parseResultError } from './utils/rpc_errors';
+import { parseRpcError, parseRpcResultError } from './utils/rpc_errors';
 
 import exponentialBackoff from './utils/exponential-backoff';
 
@@ -183,7 +183,7 @@ export class Account {
                     `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
                     result.status.Failure.error_type);
             } else {
-                throw parseResultError(result);
+                throw parseRpcResultError(result);
             }
         }
         // TODO: if Tx is Unknown or Started.

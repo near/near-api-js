@@ -1,7 +1,7 @@
 const nearApi = require('../../lib/index');
 const {
     parseRpcError,
-    parseResultError,
+    parseRpcResultError,
     formatError,
     getErrorTypeFromErrorMessage,
 } = nearApi.utils.rpc_errors;
@@ -103,7 +103,7 @@ describe('rpc-errors', () => {
     //     expect(error).toEqual(new FunctionCallError('{"index":0,"kind":{"EvmError":"ArgumentParseError"}}'));
     // });
 
-    test('test parseResultError', async () => {
+    test('test parseRpcResultError', async () => {
         let result =
         {
             status: {
@@ -122,7 +122,7 @@ describe('rpc-errors', () => {
             },
         };
 
-        let error = parseResultError(result);
+        let error = parseRpcResultError(result);
         expect(error.type).toBe('ReceiverMismatch');
         expect(error.ak_receiver).toBe('test.near');
         expect(error.tx_receiver).toBe('bob.near');
@@ -151,7 +151,7 @@ describe('rpc-errors', () => {
             },
         };
 
-        let error = parseResultError(result);
+        let error = parseRpcResultError(result);
         expect(error.context.errorPath).toBe(errorPath);
     });
 

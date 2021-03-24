@@ -1,5 +1,3 @@
-import { ExecutionOutcomeWithIdView } from '../providers/provider';
-
 export class PositionalArgsError extends Error {
     constructor() {
         super('Contract method calls expect named arguments wrapped in object, e.g. { argName1: argValue1, argName2: argValue2 }');
@@ -30,10 +28,8 @@ export class TypedError extends Error {
 export class ErrorContext {
     transactionHash?: string;
     errorPath?: Record<string, any>;
-    transactionOutcome?: any;
-    constructor(transactionHash?: string, errorPath?: Record<string, any>, transactionOutcome?: ExecutionOutcomeWithIdView) {
+    constructor(transactionHash?: string, errorPath?: Record<string, any>) {
         this.transactionHash = transactionHash;
         this.errorPath = errorPath;
-        this.transactionOutcome = transactionOutcome;
     }
 }
