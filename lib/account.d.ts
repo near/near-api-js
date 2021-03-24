@@ -1,21 +1,20 @@
 /// <reference types="node" />
 import BN from 'bn.js';
-import { AccessKey, Action, SignedTransaction } from './transaction';
+import { Action, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
-import { Finality, BlockId } from './providers/provider';
+import { Finality, BlockId, AccountView, AccessKeyView, AccessKeyInfoView } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
-export interface AccountState {
-    amount: string;
-    code_hash: string;
-    storage_usage: number;
-    locked: string;
-}
 export interface AccountBalance {
     total: string;
     stateStaked: string;
     staked: string;
     available: string;
+}
+export interface AccountAuthorizedApp {
+    contractId: string;
+    amount: string;
+    publicKey: PublicKey;
 }
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
 /**
@@ -29,9 +28,9 @@ export declare class Account {
     fetchState(): Promise<void>;
     /**
      * Returns the state of a NEAR account
-     * @returns {Promise<AccountState>}
+     * @returns {Promise<AccountView>}
      */
-    state(): Promise<AccountState>;
+    state(): Promise<AccountView>;
     private printLogsAndFailures;
     private printLogs;
     protected signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]>;
@@ -42,11 +41,11 @@ export declare class Account {
      */
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     accessKeyByPublicKeyCache: {
-        [key: string]: AccessKey;
+        [key: string]: AccessKeyView;
     };
     findAccessKey(receiverId: string, actions: Action[]): Promise<{
         publicKey: PublicKey;
-        accessKey: AccessKey;
+        accessKey: AccessKeyView;
     }>;
     /**
      * @param contractId NEAR account where the contract is deployed
@@ -114,7 +113,7 @@ export declare class Account {
      * @param args Any arguments to the view contract method, wrapped in JSON
      * @returns {Promise<any>}
      */
-    viewFunction(contractId: string, methodName: string, args: any, { parse }?: {
+    viewFunction(contractId: string, methodName: string, args?: any, { parse }?: {
         parse?: typeof parseJsonFromRawResponse;
     }): Promise<any>;
     /**
@@ -126,7 +125,7 @@ export declare class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    viewState(prefix: string | Uint8Array, blockQuery: {
+    viewState(prefix: string | Uint8Array, blockQuery?: {
         blockId: BlockId;
     } | {
         finality: Finality;
@@ -135,14 +134,16 @@ export declare class Account {
         value: Buffer;
     }>>;
     /**
-     * @returns array of {access_key: AccessKey, public_key: PublicKey} items.
+     * @returns AccessKeyInfoView[].
      */
-    getAccessKeys(): Promise<any>;
+    getAccessKeys(): Promise<AccessKeyInfoView[]>;
     /**
      * Returns account details in terms of authorized apps and transactions
-     * @returns {Promise<any>}
+     * @returns {Promise<{ authorizedApps: AccountAuthorizedApp[] }>}
      */
-    getAccountDetails(): Promise<any>;
+    getAccountDetails(): Promise<{
+        authorizedApps: AccountAuthorizedApp[];
+    }>;
     /**
      * Returns calculated account balance
      * @returns {Promise<AccountBalance>}

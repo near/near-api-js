@@ -1,4 +1,5 @@
 import { SignedTransaction } from '../transaction';
+import { PublicKey } from '../utils/key_pair';
 export interface SyncInfo {
     latest_block_hash: string;
     latest_block_height: number;
@@ -202,12 +203,87 @@ export interface LightClientProofRequest {
 export interface GasPrice {
     gas_price: string;
 }
+export interface QueryResponseKind {
+    block_height: BlockHeight;
+    block_hash: BlockHash;
+}
+export interface AccountView extends QueryResponseKind {
+    amount: string;
+    locked: string;
+    code_hash: string;
+    storage_usage: number;
+    storage_paid_at: BlockHeight;
+}
+interface StateItem {
+    key: string;
+    value: string;
+    proof: string[];
+}
+export interface ViewStateResult extends QueryResponseKind {
+    values: StateItem[];
+    proof: string[];
+}
+export interface CodeResult extends QueryResponseKind {
+    result: number[];
+    logs: string[];
+}
+export interface ContractCodeView extends QueryResponseKind {
+    code_base64: string;
+    hash: string;
+}
+export interface FunctionCallPermissionView {
+    FunctionCall: {
+        allowance: string;
+        receiver_id: string;
+        method_names: string[];
+    };
+}
+export interface AccessKeyView extends QueryResponseKind {
+    nonce: number;
+    permission: 'FullAccess' | FunctionCallPermissionView;
+}
+export interface AccessKeyInfoView {
+    public_key: PublicKey;
+    access_key: AccessKeyView;
+}
+export interface AccessKeyList extends QueryResponseKind {
+    keys: AccessKeyInfoView[];
+}
+export interface ViewAccountRequest {
+    request_type: 'view_account';
+    account_id: string;
+}
+export interface ViewCodeRequest {
+    request_type: 'view_code';
+    account_id: string;
+}
+export interface ViewStateRequest {
+    request_type: 'view_state';
+    account_id: string;
+    prefix_base64: string;
+}
+export interface ViewAccessKeyRequest {
+    request_type: 'view_access_key';
+    account_id: string;
+    public_key: string;
+}
+export interface ViewAccessKeyListRequest {
+    request_type: 'view_access_key_list';
+    account_id: string;
+}
+export interface CallFunctionRequest {
+    request_type: 'call_function';
+    account_id: string;
+    method_name: string;
+    args_base64: string;
+}
+export declare type RpcQueryRequest = (ViewAccountRequest | ViewCodeRequest | ViewStateRequest | ViewAccountRequest | ViewAccessKeyRequest | ViewAccessKeyListRequest | CallFunctionRequest) & BlockReference;
 export declare abstract class Provider {
     abstract status(): Promise<NodeStatusResult>;
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
-    abstract query(params: object): Promise<any>;
-    abstract query(path: string, data: string): Promise<any>;
+    abstract query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
+    abstract query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
     abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
