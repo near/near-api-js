@@ -62,8 +62,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        //TODO: fix or delete
-        // expect(error.isSubtypeOf('TxExecutionError')).toBe(true);
+        expect(error.isSubtypeOf('TxExecutionError')).toBe(true);
         expect(error.isSubtypeOf('AccountAlreadyExists')).toBe(false);
         expect(error.isSubtypeOf('ActionError')).toBe(true);
         expect(error.isSubtypeOf('FunctionCallError')).toBe(true);
