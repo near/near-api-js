@@ -74,19 +74,20 @@ describe('rpc-errors', () => {
 
     test('test ActionError::FunctionCallError::GasLimitExceeded error', async () => {
         let rpc_error = {
-            ActionError: {
-                'index': 0,
-                'kind': {
-                    FunctionCallError: {
-                        'HostError': 'GasLimitExceeded'
+            TxExecutionError: {
+                ActionError: {
+                    'index': 0,
+                    'kind': {
+                        FunctionCallError: {
+                            'HostError': 'GasLimitExceeded'
+                        }
                     }
                 }
             }
         };
         let error = parseRpcError(rpc_error);
-        //TODO: fix or delete
-        // expect(error.isSubtypeOf('TxExecutionError')).toBe(true);
-
+        
+        expect(error.isSubtypeOf('TxExecutionError')).toBe(true);
         expect(error.isSubtypeOf('ActionError')).toBe(true);
         expect(error.isSubtypeOf('FunctionCallError')).toBe(true);
         expect(error.isSubtypeOf('HostError')).toBe(true);
