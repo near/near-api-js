@@ -17,7 +17,7 @@ import {
     Action,
     SignedTransaction
 } from './transaction';
-import { FinalExecutionOutcome, TypedError, ServerErrorContext } from './providers';
+import { FinalExecutionOutcome, TypedError } from './providers';
 import { Finality, BlockId, ViewStateResult, AccountView, AccessKeyView, CodeResult, AccessKeyList, AccessKeyInfoView, FunctionCallPermissionView } from './providers/provider';
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
@@ -154,8 +154,7 @@ export class Account {
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
-
-                error.context = new ServerErrorContext(baseEncode(txHash));
+                error.context.transactionHash = baseEncode(txHash);
                 throw error;
             }
         });

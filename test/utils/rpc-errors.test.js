@@ -131,7 +131,7 @@ describe('rpc-errors', () => {
         );
     });
 
-    test('test JSON RPC TypedError should have errorPath in context', async () => {
+    test('test ServerError should have errorPath in context', async () => {
         let errorPath = {
             TxExecutionError: {
                 InvalidTxError: {
@@ -151,8 +151,12 @@ describe('rpc-errors', () => {
             },
         };
 
-        let error = parseRpcResultError(result);
-        expect(error.context.errorPath).toBe(errorPath);
+        let error1 = parseRpcResultError(result);
+        expect(error1.context.errorPath).toBe(errorPath);
+
+        let error2 = parseRpcError(result.status.Failure);
+        expect(error2.context.errorPath).toBe(errorPath);
+
     });
 
     test('test getErrorTypeFromErrorMessage', () => {
