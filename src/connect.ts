@@ -1,8 +1,37 @@
+/**
+ * Connect to NEAR using the provided configuration.
+ * 
+ * {@link ConnectConfig.networkId} and {@link ConnectConfig.nodeUrl} are required.
+ * 
+ * To sign transactions you can also pass:
+ * 1. {@link ConnectConfig.keyStore}
+ * 2. {@link ConnectConfig.deps | ConnectConfig.deps.keyStore}
+ * 3. {@link ConnectConfig.keyPath}
+ * 
+ * If all three are passed they are prioritize in that order.
+ * 
+ * @see {@link ConnectConfig}
+ * @example
+ * ```js
+ * async function initNear() {
+ *   const near = await connect({
+ *      networkId: 'testnet',
+ *      nodeUrl: 'https://rpc.testnet.near.org'
+ *   })
+ * }
+ * ```
+ * @module connect
+ */
 import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 import { Near, NearConfig } from './near';
 
-export type ConnectConfig = NearConfig & {
+export interface ConnectConfig extends NearConfig {
+    /**
+     * Initialize an {@link InMemoryKeyStore} by reading the file at keyPath.
+     * 
+     * @important {@link ConnectConfig.keyStore | keyStore} and {@link ConnectConfig.deps | deps.keyStore} take priority over keyPath.
+     */
     keyPath?: string;
 }
 
