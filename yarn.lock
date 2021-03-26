@@ -5267,13 +5267,6 @@
   "resolved" "https://registry.npmjs.org/typedoc-default-themes/-/typedoc-default-themes-0.12.9.tgz"
   "version" "0.12.9"
 
-"typedoc-neo-theme@file:../play/typedoc-neo-theme":
-  "resolved" "file:../play/typedoc-neo-theme"
-  "version" "1.1.0"
-  dependencies:
-    "lunr" "^2.3.8"
-    "typedoc" "~0.20.13"
-
 "typedoc@^0.20.34":
   "integrity" "sha512-es+N/KyGPcHl9cAuYh1Z5m7HzwcmfNLghkmb2pzGz7HRDS5GS2uA3hu/c2cv4gCxDsw8pPUPCOvww+Hzf48Kug=="
   "resolved" "https://registry.npmjs.org/typedoc/-/typedoc-0.20.34.tgz"
