@@ -2,7 +2,6 @@
  * This module contains the {@link JsonRpcProvider} client class
  * which can be used to interact with the NEAR RPC API.
  * @see {@link providers/provider} for a list of request and response types
- * @module jsonRpc
  */
 import depd from 'depd';
 import {

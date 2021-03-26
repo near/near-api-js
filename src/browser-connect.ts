@@ -19,6 +19,7 @@
  *   })
  * }
  * ```
+ * 
  * @module browserConnect
  */
 import { Near, NearConfig } from './near';
