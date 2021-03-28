@@ -91,4 +91,14 @@ describe('changeMethod', () => {
         return expect(contract.changeMethod({ a: 1}, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
     });
 
+    test('makes a functionCall and passes along walletCallbackUrl and walletMeta', async() => {
+        account.functionCall = jest.fn(() => Promise.resolve());
+        await contract.changeMethod({
+            args: {},
+            walletMeta: 'someMeta',
+            walletCallbackUrl: 'http://neartest.test/somepath?and=query'
+        });
+
+        expect(account.functionCall).toHaveBeenCalledWith({});
+    });
 });

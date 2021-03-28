@@ -1,7 +1,7 @@
 'use strict';
 
 import BN from 'bn.js';
-import { Account } from './account';
+import { Account, SignAndSendTransactionOptions } from './account';
 import { Contract } from './contract';
 import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
@@ -50,7 +50,15 @@ export class AccountMultisig extends Account {
         return super.signAndSendTransaction(receiverId, actions);
     }
 
-    async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome> {
+        if(typeof args[0] === 'string') {
+            return this._signAndSendTransaction({ receiverId: args[0], actions: args[1] });
+        }
+
+        return this._signAndSendTransaction(args[0]);
+    }
+
+    private async _signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
         if (this.isDeleteAction(actions)) {

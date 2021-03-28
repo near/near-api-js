@@ -50,7 +50,7 @@ export declare class WalletConnection {
      * @param transactions Array of Transaction objects that will be requested to sign
      * @param callbackUrl The url to navigate to after the user is prompted to sign
      */
-    requestSignTransactions(transactions: Transaction[], callbackUrl?: string): Promise<void>;
+    requestSignTransactions(transactions: Transaction[], callbackUrl?: string, meta?: string): Promise<void>;
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
@@ -79,7 +79,8 @@ export declare const WalletAccount: typeof WalletConnection;
 export declare class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
+    private _signAndSendTransaction;
     /**
      * Check if given access key allows the function call or method attempted in transaction
      * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items

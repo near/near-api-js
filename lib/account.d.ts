@@ -16,6 +16,21 @@ export interface AccountAuthorizedApp {
     amount: string;
     publicKey: PublicKey;
 }
+export interface SignAndSendTransactionOptions {
+    receiverId: string;
+    actions: Action[];
+    walletMeta?: string;
+    walletCallbackUrl?: string;
+}
+export interface FunctionCallOptions {
+    contractId: string;
+    methodName: string;
+    args: object;
+    gas?: BN;
+    attachedDeposit?: BN;
+    walletMeta?: string;
+    walletCallbackUrl?: string;
+}
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
 /**
  * More information on [the Account spec](https://nomicon.io/DataStructures/Account.html)
@@ -34,12 +49,17 @@ export declare class Account {
     private printLogsAndFailures;
     private printLogs;
     protected signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]>;
+    protected signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     /**
+     * @deprecated
+     *
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
      * @returns {Promise<FinalExecutionOutcome>}
      */
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    private signAndSendTransactionV1;
+    private signAndSendTransactionV2;
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKeyView;
     };
@@ -76,16 +96,21 @@ export declare class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
+    functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
+     * @deprecated
+     *
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The method name on the contract as it is written in the contract code
      * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
      *  or `Uint8Array` instance which represents bytes passed as is.
      * @param gas max amount of gas that method call can use
-      * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+     * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
      * @returns {Promise<FinalExecutionOutcome>}
      */
     functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>;
+    private functionCallV1;
+    private functionCallV2;
     /**
      * @param publicKey A public key to be associated with the contract
      * @param contractId NEAR account where the contract is deployed

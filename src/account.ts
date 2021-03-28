@@ -58,6 +58,23 @@ export interface AccountAuthorizedApp {
     publicKey: PublicKey;
 }
 
+export interface SignAndSendTransactionOptions {
+    receiverId: string;
+    actions: Action[];
+    walletMeta?: string;
+    walletCallbackUrl?: string;
+}
+
+export interface FunctionCallOptions {
+    contractId: string;
+    methodName: string;
+    args: object;
+    gas?: BN;
+    attachedDeposit?: BN;
+    walletMeta?: string;
+    walletCallbackUrl?: string;
+}
+
 interface ReceiptLogWithFailure {
     receiptIds: [string];
     logs: [string];
@@ -135,12 +152,28 @@ export class Account {
         );
     }
 
+    protected signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>
     /**
+     * @deprecated
+     * 
      * @param receiverId NEAR account receiving the transaction
      * @param actions The transaction [Action as described in the spec](https://nomicon.io/RuntimeSpec/Actions.html).
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>
+    protected signAndSendTransaction(...args: any): Promise<FinalExecutionOutcome> {
+        if(typeof args[0] === 'string') {
+            return this.signAndSendTransactionV1(args[0], args[1]);
+        } else {
+            return this.signAndSendTransactionV2(args[1]);
+        }
+    }
+
+    private signAndSendTransactionV1(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransactionV2({ receiverId, actions });
+    }
+
+    private async signAndSendTransactionV2({ receiverId, actions }: { receiverId: string; actions: Action[] }): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -271,19 +304,44 @@ export class Account {
         return this.signAndSendTransaction(this.accountId, [deployContract(data)]);
     }
 
+    async functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
+     * @deprecated
+     * 
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The method name on the contract as it is written in the contract code
      * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
      *  or `Uint8Array` instance which represents bytes passed as is.
      * @param gas max amount of gas that method call can use
-      * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+     * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
+    async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> 
+    async functionCall(...args: any[]): Promise<FinalExecutionOutcome> {
+        if(typeof args[0] === 'string') {
+            return this.functionCallV1(args[0], args[1], args[2], args[3], args[4]);
+        } else {
+            return this.functionCallV2(args[0]);
+        }
+    }
+
+    private functionCallV1(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
         args = args || {};
         this.validateArgs(args);
-        return this.signAndSendTransaction(contractId, [functionCall(methodName, args, gas || DEFAULT_FUNC_CALL_GAS, amount)]);
+        return this.signAndSendTransaction({
+            receiverId: contractId,
+            actions: [functionCall(methodName, args, gas || DEFAULT_FUNC_CALL_GAS, amount)]
+        });
+    }
+
+    private functionCallV2({ contractId, methodName, args, gas = DEFAULT_FUNC_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+        this.validateArgs(args);
+        return this.signAndSendTransaction({
+            receiverId: contractId,
+            actions: [functionCall(methodName, args, gas, attachedDeposit)],
+            walletMeta,
+            walletCallbackUrl
+        });
     }
 
     /**

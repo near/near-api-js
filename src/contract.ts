@@ -18,6 +18,15 @@ const isUint8Array = (x: any) =>
 const isObject = (x: any) =>
     Object.prototype.toString.call(x) === '[object Object]';
 
+export interface ChangeMethodOptions {
+    args: object;
+    methodName: string;
+    gas?: BN;
+    attachedDeposit?: BN;
+    meta?: string;
+    callbackUrl?: string;
+}
+
 /**
  * Defines a smart contract on NEAR including the mutable and non-mutable methods
  */
@@ -45,16 +54,40 @@ export class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(methodName, async (args: object = {}, gas?: BN, amount?: BN, ...ignored) => {
-                    if (ignored.length || !(isObject(args) || isUint8Array(args))) {
+                value: nameFunction(methodName, async (...args: any[]) => {
+                    if (args.length > 4 || !(isObject(args[0]) || isUint8Array(args[0]))) {
                         throw new PositionalArgsError();
                     }
-                    validateBNLike({ gas, amount });
-                    const rawResult = await this.account.functionCall(this.contractId, methodName, args, gas, amount);
-                    return getTransactionLastResult(rawResult);
+
+                    if(args.length > 1 || !args[0].args) {
+                        return this.changeMethod({
+                            methodName,
+                            args: args[0],
+                            gas: args[3],
+                            attachedDeposit: args[4]
+                        });
+                    }
+
+                    return this.changeMethod({ methodName, ...args[0] });
                 })
             });
         });
+    }
+
+    private async changeMethod({ args, methodName, gas, attachedDeposit, meta, callbackUrl }: ChangeMethodOptions) {
+        validateBNLike({ gas, attachedDeposit });
+
+        const rawResult = await this.account.functionCall({
+            contractId: this.contractId,
+            methodName,
+            args,
+            gas,
+            attachedDeposit,
+            walletMeta: meta,
+            walletCallbackUrl: callbackUrl
+        });
+
+        return getTransactionLastResult(rawResult);
     }
 }
 
