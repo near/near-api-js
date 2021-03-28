@@ -60,7 +60,7 @@ export class Contract {
                         throw new PositionalArgsError();
                     }
 
-                    if(args.length > 1 || !args[0]?.args) {
+                    if(args.length > 1 || !(args[0] && args[0].args)) {
                         const deprecate = depd('contract.methodName(args, gas, amount)');
                         deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
                         return this._changeMethod({
