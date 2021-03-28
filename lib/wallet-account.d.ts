@@ -10,6 +10,17 @@ interface SignInOptions {
     successUrl?: string;
     failureUrl?: string;
 }
+/**
+ * Information to send NEAR wallet for signing transactions and redirecting the browser back to the calling application
+ */
+interface RequestSignTransactionsOptions {
+    /** list of transactions to sign */
+    transactions: Transaction[];
+    /** url NEAR Wallet will redirect to after transaction signing is complete */
+    callbackUrl?: string;
+    /** meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
+    meta?: string;
+}
 export declare class WalletConnection {
     _walletBaseUrl: string;
     _authDataKey: string;
@@ -47,10 +58,16 @@ export declare class WalletConnection {
     requestSignIn(contractIdOrOptions?: string | SignInOptions, title?: string, successUrl?: string, failureUrl?: string): Promise<void>;
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions
+     */
+    requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void>;
+    /**
+     * @deprecated
+     * Requests the user to quickly sign for a transaction or batch of transactions
      * @param transactions Array of Transaction objects that will be requested to sign
      * @param callbackUrl The url to navigate to after the user is prompted to sign
      */
     requestSignTransactions(transactions: Transaction[], callbackUrl?: string, meta?: string): Promise<void>;
+    private _requestSignTransactions;
     /**
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */

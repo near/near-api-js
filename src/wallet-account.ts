@@ -22,9 +22,15 @@ interface SignInOptions {
     failureUrl?: string;
 }
 
+/**
+ * Information to send NEAR wallet for signing transactions and redirecting the browser back to the calling application
+ */
 interface RequestSignTransactionsOptions {
+    /** list of transactions to sign */
     transactions: Transaction[];
+    /** url NEAR Wallet will redirect to after transaction signing is complete */
     callbackUrl?: string;
+    /** meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
     meta?: string;
 }
 
@@ -130,6 +136,8 @@ export class WalletConnection {
 
     async requestSignTransactions(...args: any[]) {
         if(Array.isArray(args[0])) {
+            const deprecate = depd('WalletConnection.requestSignTransactions(transactions, callbackUrl, meta)');
+            deprecate('use `WalletConnection.requestSignTransactions(RequestSignTransactionsOptions)` instead');
             return this._requestSignTransactions({
                 transactions: args[0],
                 callbackUrl: args[1],

@@ -58,20 +58,50 @@ export interface AccountAuthorizedApp {
     publicKey: PublicKey;
 }
 
+/**
+ * Options used to initiate sining and sending transactions
+ */
 export interface SignAndSendTransactionOptions {
     receiverId: string;
     actions: Action[];
+    /**
+     * Metadata to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
     walletMeta?: string;
+    /**
+     * Callback url to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
     walletCallbackUrl?: string;
 }
 
+/**
+ * Options used to initiate a function call (especially a change function call)
+ * @see {@link viewFunction} to initiate a view function call
+ */
 export interface FunctionCallOptions {
+    /** The NEAR account id where the contract is deployed */
     contractId: string;
+    /** The name of the method to invoke */
     methodName: string;
+    /**
+     * named arguments to pass the method `{ messageText: 'my message' }`
+     */
     args: object;
+    /** max amount of gas that method call can use */
     gas?: BN;
+    /** amount of NEAR (in yoctoNEAR) to send together with the call */
     attachedDeposit?: BN;
+    /**
+     * Metadata to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
     walletMeta?: string;
+    /**
+     * Callback url to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
     walletCallbackUrl?: string;
 }
 
@@ -165,15 +195,17 @@ export class Account {
         if(typeof args[0] === 'string') {
             return this.signAndSendTransactionV1(args[0], args[1]);
         } else {
-            return this.signAndSendTransactionV2(args[1]);
+            return this.signAndSendTransactionV2(args[0]);
         }
     }
 
     private signAndSendTransactionV1(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+        const deprecate = depd('Account.signAndSendTransaction(receiverId, actions');
+        deprecate('use `Account.signAndSendTransaction(SignAndSendTransactionOptions)` instead');
         return this.signAndSendTransactionV2({ receiverId, actions });
     }
 
-    private async signAndSendTransactionV2({ receiverId, actions }: { receiverId: string; actions: Action[] }): Promise<FinalExecutionOutcome> {
+    private async signAndSendTransactionV2({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -264,7 +296,10 @@ export class Account {
      */
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
         const accessKey = fullAccessKey();
-        await this.signAndSendTransaction(contractId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]);
+        await this.signAndSendTransaction({
+            receiverId: contractId,
+            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]
+        });
         const contractAccount = new Account(this.connection, contractId);
         return contractAccount;
     }
@@ -275,7 +310,10 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction(receiverId, [transfer(amount)]);
+        return this.signAndSendTransaction({
+            receiverId,
+            actions: [transfer(amount)]
+        });
     }
 
     /**
@@ -285,7 +323,10 @@ export class Account {
      */
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         const accessKey = fullAccessKey();
-        return this.signAndSendTransaction(newAccountId, [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]);
+        return this.signAndSendTransaction({
+            receiverId: newAccountId,
+            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]
+        });
     }
 
     /**
@@ -293,7 +334,10 @@ export class Account {
      * @returns void
      */
     async deleteAccount(beneficiaryId: string) {
-        return this.signAndSendTransaction(this.accountId, [deleteAccount(beneficiaryId)]);
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [deleteAccount(beneficiaryId)]
+        });
     }
 
     /**
@@ -301,7 +345,10 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction(this.accountId, [deployContract(data)]);
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [deployContract(data)]
+        });
     }
 
     async functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
@@ -313,7 +360,7 @@ export class Account {
      * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
      *  or `Uint8Array` instance which represents bytes passed as is.
      * @param gas max amount of gas that method call can use
-     * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+     * @param amount amount of NEAR (in yoctoNEAR) to send together with the call
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> 
@@ -326,6 +373,9 @@ export class Account {
     }
 
     private functionCallV1(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
+        const deprecate = depd('Account.functionCall(contractId, methodName, args, gas, amount)');
+        deprecate('use `Account.functionCall(FunctionCallOptions)` instead');
+
         args = args || {};
         this.validateArgs(args);
         return this.signAndSendTransaction({
@@ -334,7 +384,7 @@ export class Account {
         });
     }
 
-    private functionCallV2({ contractId, methodName, args, gas = DEFAULT_FUNC_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNC_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         return this.signAndSendTransaction({
             receiverId: contractId,
@@ -365,7 +415,10 @@ export class Account {
         } else {
             accessKey = functionCallAccessKey(contractId, methodNames, amount);
         }
-        return this.signAndSendTransaction(this.accountId, [addKey(PublicKey.from(publicKey), accessKey)]);
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [addKey(PublicKey.from(publicKey), accessKey)]
+        });
     }
 
     /**
@@ -373,7 +426,10 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction(this.accountId, [deleteKey(PublicKey.from(publicKey))]);
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [deleteKey(PublicKey.from(publicKey))]
+        });
     }
 
     /**
@@ -382,7 +438,10 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction(this.accountId, [stake(amount, PublicKey.from(publicKey))]);
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [stake(amount, PublicKey.from(publicKey))]
+        });
     }
 
     private validateArgs(args: any) {

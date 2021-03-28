@@ -16,19 +16,49 @@ export interface AccountAuthorizedApp {
     amount: string;
     publicKey: PublicKey;
 }
+/**
+ * Options used to initiate sining and sending transactions
+ */
 export interface SignAndSendTransactionOptions {
     receiverId: string;
     actions: Action[];
+    /**
+     * Metadata to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
     walletMeta?: string;
+    /**
+     * Callback url to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
     walletCallbackUrl?: string;
 }
+/**
+ * Options used to initiate a function call (especially a change function call)
+ * @see {@link viewFunction} to initiate a view function call
+ */
 export interface FunctionCallOptions {
+    /** The NEAR account id where the contract is deployed */
     contractId: string;
+    /** The name of the method to invoke */
     methodName: string;
+    /**
+     * named arguments to pass the method `{ messageText: 'my message' }`
+     */
     args: object;
+    /** max amount of gas that method call can use */
     gas?: BN;
+    /** amount of NEAR (in yoctoNEAR) to send together with the call */
     attachedDeposit?: BN;
+    /**
+     * Metadata to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
     walletMeta?: string;
+    /**
+     * Callback url to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
     walletCallbackUrl?: string;
 }
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
@@ -105,7 +135,7 @@ export declare class Account {
      * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
      *  or `Uint8Array` instance which represents bytes passed as is.
      * @param gas max amount of gas that method call can use
-     * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+     * @param amount amount of NEAR (in yoctoNEAR) to send together with the call
      * @returns {Promise<FinalExecutionOutcome>}
      */
     functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>;
