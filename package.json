@@ -22,7 +22,8 @@
     "mustache": "^4.0.0",
     "node-fetch": "^2.6.1",
     "text-encoding-utf-8": "^1.0.2",
-    "tweetnacl": "^1.0.1"
+    "tweetnacl": "^1.0.1",
+    "typedoc-neo-theme": "^1.1.0"
   },
   "devDependencies": {
     "@types/http-errors": "^1.6.1",
