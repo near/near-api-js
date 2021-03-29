@@ -1,11 +1,3 @@
-/**
- * This module provides the {@link Account} class for dealing with common account related RPC calls. Including signing transactions with a {@link KeyPair}.
- * 
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#account}
- * @hint Use {@link WalletConnection} in the browser to redirect to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for Account/key management using the {@link BrowserLocalStorageKeyStore}.
- * @see {@link https://nomicon.io/DataStructures/Account.html}
- * @module
- */
 import BN from 'bn.js';
 import depd from 'depd';
 import {
@@ -75,7 +67,10 @@ function parseJsonFromRawResponse (response: Uint8Array): any {
 }
 
 /**
+ * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
+ * 
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#account}
+ * @hint Use {@link WalletConnection} in the browser to redirect to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for Account/key management using the {@link BrowserLocalStorageKeyStore}.
  * @see {@link https://nomicon.io/DataStructures/Account.html | Account Spec}
  */
 export class Account {
