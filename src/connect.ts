@@ -21,9 +21,9 @@
  * ```
  * @module connect
  */
-import { readKeyFile } from "./key_stores/unencrypted_file_system_keystore";
-import { InMemoryKeyStore, MergeKeyStore } from "./key_stores";
-import { Near, NearConfig } from "./near";
+import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
+import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
+import { Near, NearConfig } from './near';
 
 export interface ConnectConfig extends NearConfig {
     /**
@@ -46,28 +46,15 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                 // TODO: Only load key if network ID matches
                 const keyPair = accountKeyFile[1];
                 const keyPathStore = new InMemoryKeyStore();
-                await keyPathStore.setKey(
-                    config.networkId,
-                    accountKeyFile[0],
-                    keyPair
-                );
+                await keyPathStore.setKey(config.networkId, accountKeyFile[0], keyPair);
                 if (!config.masterAccount) {
                     config.masterAccount = accountKeyFile[0];
                 }
-                config.deps.keyStore = new MergeKeyStore([
-                    config.deps.keyStore,
-                    keyPathStore,
-                ]);
-                console.log(
-                    `Loaded master account ${accountKeyFile[0]} key from ${
-                        config.keyPath
-                    } with public key = ${keyPair.getPublicKey()}`
-                );
+                config.deps.keyStore = new MergeKeyStore([config.deps.keyStore, keyPathStore]);
+                console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {
-            console.warn(
-                `Failed to load master account key from ${config.keyPath}: ${error}`
-            );
+            console.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
         }
     }
     return new Near(config);
