@@ -1,7 +1,32 @@
+/**
+ * Connect to NEAR using the provided configuration.
+ *
+ * {@link ConnectConfig.networkId} and {@link ConnectConfig.nodeUrl} are required.
+ *
+ * To sign transactions you can also pass:
+ * 1. {@link ConnectConfig.keyStore}
+ * 2. {@link ConnectConfig.deps | ConnectConfig.deps.keyStore}
+ *
+ * Both are passed they are prioritize in that order.
+ *
+ * @see {@link ConnectConfig}
+ * @example
+ * ```js
+ * async function initNear() {
+ *   const near = await connect({
+ *      networkId: 'testnet',
+ *      nodeUrl: 'https://rpc.testnet.near.org'
+ *   })
+ * }
+ * ```
+ *
+ * @module browserConnect
+ */
 import { Near, NearConfig } from './near';
-export declare type ConnectConfig = NearConfig & {
+export interface ConnectConfig extends NearConfig {
+    /** @hidden */
     keyPath?: string;
-};
+}
 /**
  * Initialize connection to Near network.
  */

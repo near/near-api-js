@@ -1,3 +1,4 @@
+/** @hidden @module */
 export abstract class Enum {
   enum: string;
 
