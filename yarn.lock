@@ -1022,6 +1022,11 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
+bn.js@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.1.0.tgz#7ef3e4af5d85a8d70d7077cb7d44bfc5cd6e6039"
+  integrity sha512-NiyuqJjtPhXcJDc8I+YeyZceSMViT39AvuFJCH3ieMcOsRvZsp2luMrGSnQaqN6HVJMvSgydLnkvw5N4xvuIoQ==
+
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.9:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.0.tgz#775b3f278efbb9718eec7361f483fb36fbbfea88"
