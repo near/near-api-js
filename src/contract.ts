@@ -18,14 +18,61 @@ const isUint8Array = (x: any) =>
 const isObject = (x: any) =>
     Object.prototype.toString.call(x) === '[object Object]';
 
+export interface ContractMethods {
+    /**
+     * Methods that change state. These methods cost gas and require a signed transaction.
+     * 
+     * @see {@link Account.functionCall}
+     */
+    changeMethods: string[];
+
+    /**
+     * View methods do not require a signed transaction.
+     * 
+     * @@see {@link Account.viewFunction}
+     */
+    viewMethods: string[];
+}
+
 /**
- * Defines a smart contract on NEAR including the mutable and non-mutable methods
+ * Defines a smart contract on NEAR including the change (mutable) and view (non-mutable) methods
+ * 
+ * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#contract}
+ * @example
+ * ```js
+ * import { Contract } from 'near-api-js';
+ * 
+ * async function contractExample() {
+ *   const methodOptions = {
+ *     viewMethods: ['getMessageByAccountId'],
+ *     changeMethods: ['addMessage']
+ *   };
+ *   const contract = new Contract(
+ *     wallet.account(),
+ *     'contract-id.testnet',
+ *     methodOptions
+ *   );
+ * 
+ *   // use a contract view method
+ *   const messages = await contract.getMessages({
+ *     accountId: 'example-account.testnet'
+ *   });
+ * 
+ *   // use a contract change method
+ *   await contract.addMessage({ text: 'My new message' })
+ * }
+ * ```
  */
 export class Contract {
     readonly account: Account;
     readonly contractId: string;
 
-    constructor(account: Account, contractId: string, options: { viewMethods: string[]; changeMethods: string[] }) {
+    /**
+     * @param account NEAR account to sign change method transactions
+     * @param contractId NEAR account id where the contract is deployed
+     * @param options NEAR smart contract methods that your application will use. These will be available as `contract.methodName`
+     */
+    constructor(account: Account, contractId: string, options: ContractMethods) {
         this.account = account;
         this.contractId = contractId;
         const { viewMethods = [], changeMethods = [] } = options;

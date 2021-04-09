@@ -3,10 +3,38 @@ import { KeyPair } from '../utils/key_pair';
 
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 
+/**
+ * This class is used to store keys in the browsers local storage.
+ * 
+ * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store}
+ * @example
+ * ```js
+ * import { connect, keyStores } from 'near-api-js';
+ * 
+ * const keyStore = new keyStores.BrowserLocalStorageKeyStore();
+ * const config = { 
+ *   keyStore, // instance of BrowserLocalStorageKeyStore
+ *   networkId: 'testnet',
+ *   nodeUrl: 'https://rpc.testnet.near.org',
+ *   walletUrl: 'https://wallet.testnet.near.org',
+ *   helperUrl: 'https://helper.testnet.near.org',
+ *   explorerUrl: 'https://explorer.testnet.near.org'
+ * };
+ * 
+ * // inside an async function
+ * const near = await connect(config)
+ * ```
+ */
 export class BrowserLocalStorageKeyStore extends KeyStore {
+    /** @hidden */
     private localStorage: any;
+    /** @hidden */
     private prefix: string;
 
+    /**
+     * @param localStorage defaults to window.localStorage
+     * @param prefix defaults to `near-api-js:keystore:`
+     */
     constructor(localStorage: any = window.localStorage, prefix = LOCAL_STORAGE_KEY_PREFIX) {
         super();
         this.localStorage = localStorage;
@@ -14,7 +42,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Sets a local storage item
+     * Stores a {@link KeyPair} in local storage.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -24,7 +52,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a key from local storage
+     * Gets a {@link KeyPair} from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -38,7 +66,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Removes a key from local storage
+     * Removes a {@link KeyPair} from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -47,7 +75,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Removes all items from local storage
+     * Removes all items that start with `prefix` from local storage
      */
     async clear(): Promise<void> {
         for (const key of this.storageKeys()) {
@@ -91,6 +119,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
+     * @hidden
      * Helper function to retrieve a local storage key
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the storage keythat's sought
@@ -100,6 +129,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
         return `${this.prefix}${accountId}:${networkId}`;
     }
 
+    /** @hidden */
     private *storageKeys(): IterableIterator<string> {
         for (let i = 0; i < this.localStorage.length; i++) {
             yield this.localStorage.key(i);

@@ -124,6 +124,7 @@ export class SignedTransaction extends Assignable {
 
 /**
  * Contains a list of the valid transaction Actions available with this API
+ * @see {@link https://nomicon.io/RuntimeSpec/Actions.html | Actions Spec}
  */
 export class Action extends Enum {
     createAccount: CreateAccount;

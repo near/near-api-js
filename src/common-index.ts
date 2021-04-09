@@ -1,3 +1,4 @@
+/** @hidden @module */
 import * as providers from './providers';
 import * as utils from './utils';
 import * as transactions from './transaction';

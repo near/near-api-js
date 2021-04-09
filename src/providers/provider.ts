@@ -1,3 +1,8 @@
+/**
+ * NEAR RPC API request types and responses
+ * @module
+ */
+
 import { SignedTransaction } from '../transaction';
 import { PublicKey } from '../utils/key_pair';
 
@@ -338,6 +343,8 @@ export type RpcQueryRequest = (ViewAccountRequest |
     ViewAccessKeyListRequest |
     CallFunctionRequest) & BlockReference
 
+
+/** @hidden */
 export abstract class Provider {
     abstract status(): Promise<NodeStatusResult>;
 
@@ -356,6 +363,7 @@ export abstract class Provider {
     abstract gasPrice(blockId: BlockId): Promise<GasPrice>
 }
 
+/** @hidden */
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
     if (typeof txResult.status === 'object' && typeof txResult.status.SuccessValue === 'string') {
         const value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();

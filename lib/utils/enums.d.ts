@@ -1,3 +1,4 @@
+/** @hidden @module */
 export declare abstract class Enum {
     enum: string;
     constructor(properties: any);
