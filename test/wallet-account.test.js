@@ -171,7 +171,7 @@ it('can send a batch of transactions with only one redirect', async () => {
                 functionCall(
                     'contractMethod',
                     { arg: 'value' },
-                    new BN('30000000000000'),
+                    new BN('300000000000000'),
                     new BN(nearApi.utils.format.parseNearAmount('1'))
                 ),
             ],
