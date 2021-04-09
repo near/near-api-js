@@ -60,7 +60,7 @@
         "doc": "typedoc src && touch docs/.nojekyll",
         "build": "yarn compile",
         "pretest": "yarn build",
-        "test": "jest --runInBand",
+        "test": "jest test --runInBand",
         "lint": "eslint test && eslint src/**/*.ts",
         "fix": "eslint test --fix && eslint src/**/*.ts --fix",
         "prefuzz": "yarn build",
