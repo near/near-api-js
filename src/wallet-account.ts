@@ -22,10 +22,16 @@ const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
+
+/**
+ * used to create batched transactions 
+ * @see {@link WalletConnection.batchSendTransactions}
+ */
 interface TransactionOptions {
     receiverId: string;
     actions: Action[];
 }
+
 interface SignInOptions {
     contractId?: string;
     // TODO: Replace following with single callbackUrl
@@ -173,6 +179,29 @@ export class WalletConnection {
         window.location.assign(newUrl.toString());
     }
 
+    /**
+     * Allows the user to send a batch of transactions to one or multiple recievers with only one redirect to the NEAR wallet.
+     * @param transactionOptions Array of Transaction options that will be requested to sign
+     * @param callbackUrl The url to navigate to after the user is prompted to sign
+     * 
+     * @example
+     * ```js
+     * async function run() {
+     *      const near = await connect({
+     *          keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+     *          networkId: "testnet",
+     *          walletUrl: 'https://wallet.testnet.near.org',
+     *          nodeUrl: "https://rpc.testnet.near.org",
+     *      })
+     *      
+     *      const wallet = new WalletConnection(near);
+     *      wallet.batchSendTransactions([
+     *          { receiverId: 'contract-1.testnet', actions: [functionCall('contractMethod', { arg: 'value' }, new BN('30000000000000'), new BN(utils.format.parseNearAmount('1')))] },
+     *          { receiverId: 'user-account-1.testnet', actions: [transfer(new BN(utils.format.parseNearAmount('1'))), transfer(new BN(utils.format.parseNearAmount('4')))] }
+     *      ]);
+     * }
+     * ```
+     */
     async batchSendTransactions(transactionOptions: TransactionOptions[], callbackUrl?: string) {
         const accountId = this.getAccountId();
         const localKey = await this._near.connection.signer.getPublicKey(accountId, this._near.connection.networkId);

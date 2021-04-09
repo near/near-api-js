@@ -5,6 +5,14 @@ import { FinalExecutionOutcome } from './providers';
 import { Transaction, Action } from './transaction';
 import { PublicKey } from './utils';
 import { Connection } from './connection';
+/**
+ * used to create batched transactions
+ * @see {@link WalletConnection.batchSendTransactions}
+ */
+interface TransactionOptions {
+    receiverId: string;
+    actions: Action[];
+}
 interface SignInOptions {
     contractId?: string;
     successUrl?: string;
@@ -80,6 +88,30 @@ export declare class WalletConnection {
      * @param callbackUrl The url to navigate to after the user is prompted to sign
      */
     requestSignTransactions(transactions: Transaction[], callbackUrl?: string): Promise<void>;
+    /**
+     * Allows the user to send a batch of transactions to one or multiple recievers with only one redirect to the NEAR wallet.
+     * @param transactionOptions Array of Transaction options that will be requested to sign
+     * @param callbackUrl The url to navigate to after the user is prompted to sign
+     *
+     * @example
+     * ```js
+     * async function run() {
+     *      const near = await connect({
+     *          keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+     *          networkId: "testnet",
+     *          walletUrl: 'https://wallet.testnet.near.org',
+     *          nodeUrl: "https://rpc.testnet.near.org",
+     *      })
+     *
+     *      const wallet = new WalletConnection(near);
+     *      wallet.batchSendTransactions([
+     *          { receiverId: 'contract-1.testnet', actions: [functionCall('contractMethod', { arg: 'value' }, new BN('30000000000000'), new BN(utils.format.parseNearAmount('1')))] },
+     *          { receiverId: 'user-account-1.testnet', actions: [transfer(new BN(utils.format.parseNearAmount('1'))), transfer(new BN(utils.format.parseNearAmount('4')))] }
+     *      ]);
+     * }
+     * ```
+     */
+    batchSendTransactions(transactionOptions: TransactionOptions[], callbackUrl?: string): Promise<void>;
     /**
      * @hidden
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
