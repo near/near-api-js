@@ -22,6 +22,10 @@ const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
+interface TransactionOptions {
+    receiverId: string;
+    actions: Action[];
+}
 interface SignInOptions {
     contractId?: string;
     // TODO: Replace following with single callbackUrl
@@ -167,6 +171,28 @@ export class WalletConnection {
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
 
         window.location.assign(newUrl.toString());
+    }
+
+    async batchSendTransactions(transactionOptions: TransactionOptions[], callbackUrl?: string) {
+        const accountId = this.getAccountId();
+        const localKey = await this._near.connection.signer.getPublicKey(accountId, this._near.connection.networkId);
+        
+        const block = await this._near.connection.provider.block({ finality: 'final' });
+        const blockHash = baseDecode(block.header.hash);
+                            
+        const transactions: Transaction[] = await Promise.all(transactionOptions.map(async({ receiverId, actions }, index) => {
+            // TODO: Cache & listen for nonce updates for given access key
+            const accessKey = await this.account().accessKeyForTransaction(receiverId, actions, localKey);
+            if (!accessKey) {
+                throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
+            }
+            const publicKey = PublicKey.from(accessKey.public_key);
+        
+            const nonce = accessKey.access_key.nonce + index + 1;
+            return createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
+        }));
+        
+        return this.requestSignTransactions(transactions, callbackUrl);
     }
 
     /**
