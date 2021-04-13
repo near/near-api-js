@@ -1,3 +1,8 @@
+/**
+ * This module contains the {@link JsonRpcProvider} client class
+ * which can be used to interact with the NEAR RPC API.
+ * @see {@link providers/provider} for a list of request and response types
+ */
 import depd from 'depd';
 import {
     Provider,
@@ -28,6 +33,7 @@ import {
 } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
+/** @hidden */
 export {
     TypedError,
     ServerError,
@@ -47,9 +53,17 @@ const REQUEST_RETRY_WAIT_BACKOFF = 1.5;
 /// Keep ids unique across all connections.
 let _nextId = 123;
 
+/**
+ * Client class to interact with the NEAR RPC API. 
+ * @see {@link https://github.com/near/nearcore/tree/master/chain/jsonrpc}
+ */
 export class JsonRpcProvider extends Provider {
+    /** @hidden */
     readonly connection: ConnectionInfo;
 
+    /**
+     * @param url RPC API endpoint URL
+     */
     constructor(url?: string) {
         super();
         this.connection = { url };
@@ -57,8 +71,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets the RPC's status
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
-     * @returns {Promise<NodeStatusResult>}
+     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#general-validator-status}
      */
     async status(): Promise<NodeStatusResult> {
         return this.sendJsonRpc('status', []);
@@ -66,9 +79,9 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Sends a signed transaction to the RPC
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await)
+     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await}
+     * 
      * @param signedTransaction The signed transaction being sent
-     * @returns {Promise<FinalExecutionOutcome>}
      */
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
         const bytes = signedTransaction.encode();
@@ -77,17 +90,20 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets a transaction's status from the RPC
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status)
+     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#transaction-status}
+     * 
      * @param txHash The hash of the transaction
      * @param accountId The NEAR account that signed the transaction
-     * @returns {Promise<FinalExecutionOutcome>}
      */
     async txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
         return this.sendJsonRpc('tx', [baseEncode(txHash), accountId]);
     }
 
     /**
-     * Query the RPC as [shown in the docs](https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts)
+     * Query the RPC by passing an {@link RpcQueryRequest}
+     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts}
+     * 
+     * @typeParam T the shape of the returned query response
      */
     async query<T extends QueryResponseKind>(...args: any[]): Promise<T> {
         let result;
@@ -107,7 +123,9 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Query for block info from the RPC
-     * See [docs for more info](https://docs.near.org/docs/interaction/rpc#block)
+     * @see {@link https://docs.near.org/docs/interaction/rpc#block}
+     * 
+     * @param blockQuery {@link BlockReference} (passing a {@link BlockId} is deprecated)
      */
     async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
         const { finality } = blockQuery as any;
@@ -123,18 +141,19 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Queries for details of a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
-     * See [docs for more info](https://docs.near.org/docs/interaction/rpc#chunk)
+     * Queries for details about a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
+     * @see {@link https://docs.near.org/docs/interaction/rpc#chunk}
+     * 
      * @param chunkId Hash of a chunk ID or shard ID
-     * @returns {Promise<ChunkResult>}
      */
     async chunk(chunkId: ChunkId): Promise<ChunkResult> {
         return this.sendJsonRpc('chunk', [chunkId]);
     }
 
     /**
-     * Query validators of the epoch defined by given block id.
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#detailed-validator-status)
+     * Query validators of the epoch defined by the given block id.
+     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#detailed-validator-status}
+     * 
      * @param blockId Block hash or height, or null for latest.
      */
     async validators(blockId: BlockId | null): Promise<EpochValidatorInfo> {
@@ -142,8 +161,9 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Gets EXPERIMENTAL_genesis_config from RPC
-     * @returns {Promise<NearProtocolConfig>}
+     * @deprecated
+     * Gets the genesis config from RPC
+     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#genesis-config}
      */
     async experimental_genesisConfig(): Promise<NearProtocolConfig> {
         const deprecate = depd('JsonRpcProvider.experimental_protocolConfig({ sync_checkpoint: \'genesis\' })');
@@ -152,17 +172,17 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Gets EXPERIMENTAL_protocol_config from RPC
-     * @returns {Promise<NearProtocolConfig>}
+     * Gets the protocol config at a block from RPC
+     * @see {@link }
+     * 
+     * @param blockReference specifies the block to get the protocol config for
      */
     async experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig> {
         return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', blockReference);
     }
 
     /**
-     * Gets light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
-     * @returns {Promise<LightClientProof>}
-     * @deprecated Use `lightClientProof` instead
+     * @deprecated Use {@link lightClientProof} instead
      */
     async experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
         const deprecate = depd('JsonRpcProvider.experimental_lightClientProof(request)');
@@ -171,15 +191,26 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Gets light_client_proof from RPC (https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
-     * @returns {Promise<LightClientProof>}
+     * Gets a light client execution proof for verifying execution outcomes
+     * @see {@link https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof}
      */
     async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
         return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
     }
 
     /**
+     * Returns gas price for a specific block_height or block_hash.
+     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#gas-price}
+     * 
+     * @param blockId Block hash or height, or null for latest.
+     */
+    async gasPrice(blockId: BlockId | null): Promise<GasPrice> {
+        return await this.sendJsonRpc('gas_price', [blockId]);
+    }
+
+    /**
      * Directly call the RPC specifying the method and params
+     * 
      * @param method RPC method
      * @param params Parameters to the method
      */
@@ -228,14 +259,5 @@ export class JsonRpcProvider extends Provider {
                 `Exceeded ${REQUEST_RETRY_NUMBER} attempts for request to ${method}.`, 'RetriesExceeded');
         }
         return result;
-    }
-
-    /**
-     * Returns gas price for a specific block_height or block_hash.
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#gas-price)
-     * @param blockId Block hash or height, or null for latest.
-     */
-    async gasPrice(blockId: BlockId | null): Promise<GasPrice> {
-        return await this.sendJsonRpc('gas_price', [blockId]);
     }
 }

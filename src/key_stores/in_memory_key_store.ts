@@ -2,9 +2,34 @@ import { KeyStore } from './keystore';
 import { KeyPair } from '../utils/key_pair';
 
 /**
- * Simple in-memory keystore for testing purposes.
+ * Simple in-memory keystore for mainly for testing purposes.
+ * 
+ * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store}
+ * @example
+ * ```js
+ * import { connect, keyStores, utils } from 'near-api-js';
+ * 
+ * const privateKey = '.......';
+ * const keyPair = utils.KeyPair.fromString(privateKey);
+ * 
+ * const keyStore = new keyStores.InMemoryKeyStore();
+ * keyStore.setKey('testnet', 'example-account.testnet', keyPair);
+ * 
+ * const config = { 
+ *   keyStore, // instance of InMemoryKeyStore
+ *   networkId: 'testnet',
+ *   nodeUrl: 'https://rpc.testnet.near.org',
+ *   walletUrl: 'https://wallet.testnet.near.org',
+ *   helperUrl: 'https://helper.testnet.near.org',
+ *   explorerUrl: 'https://explorer.testnet.near.org'
+ * };
+ * 
+ * // inside an async function
+ * const near = await connect(config)
+ * ```
  */
 export class InMemoryKeyStore extends KeyStore {
+    /** @hidden */
     private keys: { [key: string]: string };
 
     constructor() {
@@ -13,7 +38,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Sets an in-memory storage item
+     * Stores a {@KeyPair} in in-memory storage item
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -23,7 +48,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a key from in-memory storage
+     * Gets a {@link KeyPair} from in-memory storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -37,7 +62,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Removes a key from in-memory storage
+     * Removes a {@link KeyPair} from in-memory storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -46,7 +71,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Sets all in-memory keys to empty objects
+     * Removes all {@link KeyPairs} from in-memory storage
      */
     async clear(): Promise<void> {
         this.keys = {};
@@ -81,6 +106,7 @@ export class InMemoryKeyStore extends KeyStore {
         return result;
     }
 
+    /** @hidden */
     toString(): string {
         return 'InMemoryKeyStore';
     }

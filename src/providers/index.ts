@@ -1,3 +1,4 @@
+/** @hidden @module */
 
 import { Provider, FinalExecutionOutcome, ExecutionOutcomeWithId, getTransactionLastResult, FinalExecutionStatusBasic } from './provider';
 import {
