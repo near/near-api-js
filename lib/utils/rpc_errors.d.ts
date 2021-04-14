@@ -3,7 +3,6 @@ import { ExecutionOutcomeWithIdView } from '../providers/provider';
 export declare class ServerError extends TypedError {
     context?: ServerErrorContext;
     constructor(message: string, type: string, context?: ServerErrorContext);
-    isSubtypeOf(errorType: string): boolean;
 }
 export declare class ServerErrorContext {
     transactionHash?: string;

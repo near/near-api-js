@@ -11,11 +11,6 @@ export class ServerError extends TypedError {
         super(message, type);
         this.context = context;
     }
-
-    isSubtypeOf(errorType: string) {
-        return this.context && this.context.errorPath &&
-            JSON.stringify(this.context.errorPath).includes(errorType);
-    }
 }
 
 export class ServerErrorContext {

@@ -18,8 +18,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.isSubtypeOf('TxExecutionError')).toBe(true);
-        expect(error.isSubtypeOf('AccountAlreadyExists')).toBe(true);
+        expect(error.type).toBe('AccountAlreadyExists');
         expect(error.index).toBe(1);
         expect(error.account_id).toBe('bob.near');
         expect(formatError(error.type, error)).toBe('Can\'t create a new account bob.near, because it already exists');
@@ -39,10 +38,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.isSubtypeOf('TxExecutionError')).toBe(true);
-        expect(error.isSubtypeOf('InvalidTxError')).toBe(true);
-        expect(error.isSubtypeOf('InvalidAccessKeyError')).toBe(true);
-        expect(error.isSubtypeOf('ReceiverMismatch')).toBe(true);
+        expect(error.type).toBe('ReceiverMismatch');
         expect(error.ak_receiver).toBe('test.near');
         expect(error.tx_receiver).toBe('bob.near');
         expect(formatError(error.type, error)).toBe(
@@ -63,12 +59,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.isSubtypeOf('TxExecutionError')).toBe(true);
-        expect(error.isSubtypeOf('AccountAlreadyExists')).toBe(false);
-        expect(error.isSubtypeOf('ActionError')).toBe(true);
-        expect(error.isSubtypeOf('FunctionCallError')).toBe(true);
-        expect(error.isSubtypeOf('HostError')).toBe(true);
-        expect(error.isSubtypeOf('InvalidIteratorIndex')).toBe(true);
+        expect(error.type).toBe('InvalidIteratorIndex');
         expect(error.iterator_index).toBe(42);
         expect(formatError(error.type, error)).toBe('Iterator index 42 does not exist');
     });
@@ -88,11 +79,7 @@ describe('rpc-errors', () => {
         };
         let error = parseRpcError(rpc_error);
 
-        expect(error.isSubtypeOf('TxExecutionError')).toBe(true);
-        expect(error.isSubtypeOf('ActionError')).toBe(true);
-        expect(error.isSubtypeOf('FunctionCallError')).toBe(true);
-        expect(error.isSubtypeOf('HostError')).toBe(true);
-        expect(error.isSubtypeOf('GasLimitExceeded')).toBe(true);
+        expect(error.type).toBe('GasLimitExceeded');
 
         expect(formatError(error.type, error)).toBe('Exceeded the maximum amount of gas allowed to burn per contract');
     });
