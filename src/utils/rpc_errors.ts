@@ -5,49 +5,52 @@ import messages from '../res/error_messages.json';
 import { TypedError } from './errors';
 import { ExecutionOutcomeWithIdView } from '../providers/provider';
 
-export class ServerError extends TypedError {
-    context?: ServerErrorContext;
-    constructor(message: string, type: string, context?: ServerErrorContext) {
-        super(message, type);
-        this.context = context;
-    }
-}
-
-export class ServerErrorContext {
+export class RpcError extends TypedError {
     transactionHash?: string;
-    errorPath?: Record<string, any>;
-    constructor(transactionHash?: string, errorPath?: Record<string, any>) {
+    errorPath?: Record<string, any>; //TODO: do we need this field?
+    constructor(message: string, type: string, transactionHash?: string, errorPath?: Record<string, any>) {
+        super(message, type);
         this.transactionHash = transactionHash;
         this.errorPath = errorPath;
     }
 }
-
-export class ServerTransactionError extends ServerError {
-    public transaction_outcome: ExecutionOutcomeWithIdView; //TODO: should it be a part of context?
+export class ReceiptExecutionFailure extends TypedError {
+    //TODO: add recurcive search
+    errorPath?: Record<string, any>;
+    public transaction_outcome: ExecutionOutcomeWithIdView; //TODO: add to constructor?
+    constructor(message: string, type: string, errorPath?: Record<string, any>) {
+        super(message, type);
+        this.errorPath = errorPath;
+    }
 }
 
-export function parseRpcError(errorObj: Record<string, any>): ServerError {
-    const result = {};
-    const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
-    const error = new ServerError(
-        formatError(errorClassName, result),
-        errorClassName,
-        new ServerErrorContext(undefined, errorObj));
-    Object.assign(error, result);
-    return error;
+export function parseRpcError(errorObj: Record<string, any>): RpcError {
+    const additionalData = {};
+    const errorType = walkSubtype(errorObj, schema.schema, additionalData, '');
+    const rpcError = new RpcError(
+        formatError(errorType, additionalData),
+        errorType,
+        undefined, //TODO: should it be here? (transaction hash)
+        errorObj);
+    Object.assign(rpcError, additionalData);
+    return rpcError;
 }
 
-export function parseRpcResultError(result: any): ServerTransactionError {
-    const server_error = parseRpcError(result.status.Failure);
-    const server_tx_error = new ServerTransactionError(server_error.message, server_error.type);
-    Object.assign(server_tx_error, server_error);
-    server_tx_error.transaction_outcome = result.transaction_outcome;
-    return server_tx_error;
+export function parseReceiptExecutionFailure(result: any): ReceiptExecutionFailure {
+    const additionalData = {};
+    const errorType = walkSubtype(result.status.Failure, schema.schema, additionalData, '');
+    const receiptExecutionFailure = new ReceiptExecutionFailure(
+        formatError(errorType, additionalData),
+        errorType,
+        result.status.Failure);
+    Object.assign(receiptExecutionFailure, additionalData);
+    receiptExecutionFailure.transaction_outcome = result.transaction_outcome;
+    return receiptExecutionFailure;
 }
 
-export function formatError(errorClassName: string, errorData): string {
-    if (typeof messages[errorClassName] === 'string') {
-        return Mustache.render(messages[errorClassName], errorData);
+export function formatError(errorType: string, errorData): string {
+    if (typeof messages[errorType] === 'string') {
+        return Mustache.render(messages[errorType], errorData);
     }
     return JSON.stringify(errorData);
 }

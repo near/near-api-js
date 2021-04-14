@@ -27,18 +27,16 @@ import exponentialBackoff from '../utils/exponential-backoff';
 import {
     parseRpcError,
     getErrorTypeFromErrorMessage,
-    ServerError,
-    ServerErrorContext,
-    ServerTransactionError,
+    RpcError,
+    ReceiptExecutionFailure,
 } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
 /** @hidden */
 export {
     TypedError,
-    ServerError,
-    ServerErrorContext,
-    ServerTransactionError,
+    RpcError,
+    ReceiptExecutionFailure,
 };
 
 // Default number of retries before giving up on a request.

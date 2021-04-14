@@ -1,10 +1,10 @@
 import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice, QueryResponseKind } from './provider';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError } from '../utils/errors';
-import { ServerError, ServerErrorContext, ServerTransactionError } from '../utils/rpc_errors';
+import { RpcError, ReceiptExecutionFailure } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 /** @hidden */
-export { TypedError, ServerError, ServerErrorContext, ServerTransactionError, };
+export { TypedError, RpcError, ReceiptExecutionFailure, };
 /**
  * Client class to interact with the NEAR RPC API.
  * @see {@link https://github.com/near/nearcore/tree/master/chain/jsonrpc}

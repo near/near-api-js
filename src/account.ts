@@ -21,7 +21,7 @@ import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
-import { parseRpcError, parseRpcResultError, ServerError } from './utils/rpc_errors';
+import { parseRpcError, parseReceiptExecutionFailure, RpcError } from './utils/rpc_errors';
 
 import exponentialBackoff from './utils/exponential-backoff';
 
@@ -58,7 +58,7 @@ export interface AccountAuthorizedApp {
 interface ReceiptLogWithFailure {
     receiptIds: [string];
     logs: [string];
-    failure: ServerError;
+    failure: RpcError;
 }
 
 function parseJsonFromRawResponse (response: Uint8Array): any {
@@ -195,7 +195,7 @@ export class Account {
                     `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
                     result.status.Failure.error_type);
             } else {
-                throw parseRpcResultError(result);
+                throw parseReceiptExecutionFailure(result);
             }
         }
         // TODO: if Tx is Unknown or Started.
