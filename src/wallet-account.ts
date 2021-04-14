@@ -1,3 +1,11 @@
+/**
+ * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
+ * * {@link WalletConnection} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * * {@link ConnectedWalletAccount} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ * 
+ * @module walletAccount
+ */
+import depd from 'depd';
 import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
@@ -14,14 +22,48 @@ const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
+interface SignInOptions {
+    contractId?: string;
+    // TODO: Replace following with single callbackUrl
+    successUrl?: string;
+    failureUrl?: string;
+}
+
+/**
+ * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
+ * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * 
+ * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#wallet}
+ * @example
+ * ```js
+ * // create new WalletConnection instance
+ * const wallet = new WalletConnection(near, 'my-app');
+ * 
+ * // If not signed in redirect to the NEAR wallet to sign in
+ * // keys will be stored in the BrowserLocalStorageKeyStore
+ * if(!wallet.isSingnedIn()) return wallet.requestSignIn()
+ * ```
+ */
 export class WalletConnection {
+    /** @hidden */
     _walletBaseUrl: string;
+
+    /** @hidden */
     _authDataKey: string;
+
+    /** @hidden */
     _keyStore: KeyStore;
+
+    /** @hidden */
     _authData: any;
+
+    /** @hidden */
     _networkId: string;
 
+    /** @hidden */
     _near: Near;
+
+    /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
     constructor(near: Near, appKeyPrefix: string | null) {
@@ -42,7 +84,10 @@ export class WalletConnection {
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
      * @example
-     * walletAccount.isSignedIn();
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * wallet.isSignedIn();
+     * ```
      */
     isSignedIn() {
         return !!this._authData.accountId;
@@ -51,7 +96,10 @@ export class WalletConnection {
     /**
      * Returns authorized Account ID.
      * @example
-     * walletAccount.getAccountId();
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * wallet.getAccountId();
+     * ```
      */
     getAccountId() {
         return this._authData.accountId || '';
@@ -59,38 +107,52 @@ export class WalletConnection {
 
     /**
      * Redirects current page to the wallet authentication page.
-     * @param contractId The NEAR account where the contract is deployed
-     * @param title Name of the application that will appear as requesting access in Wallet
-     * @param successUrl Optional url to redirect upon success
-     * @param failureUrl Optional url to redirect upon failure
-     * 
+     * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
+     * @param options.successUrl URL to redirect upon success. Default: current url
+     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     *
      * @example
-     *   walletAccount.requestSignIn(
-     *     account-with-deploy-contract,
-     *     "Guest Book",
-     *     "https://example.com/success.html",
-     *     "https://example.com/error.html");
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * // redirects to the NEAR Wallet
+     * wallet.requestSignIn('account-with-deploy-contract.near');
+     * ```
      */
-    async requestSignIn(contractId: string, title: string, successUrl?: string, failureUrl?: string) {
-        if (this.getAccountId() || await this._keyStore.getKey(this._networkId, this.getAccountId())) {
-            return Promise.resolve();
+    async requestSignIn(
+        contractIdOrOptions: string | SignInOptions = {},
+        title?: string,
+        successUrl?: string,
+        failureUrl?: string
+    ) {
+        let options: SignInOptions;
+        if (typeof contractIdOrOptions === 'string') {
+            const deprecate = depd('requestSignIn(contractId, title)');
+            deprecate('`title` ignored; use `requestSignIn({ contractId, successUrl, failureUrl })` instead');
+            options = { contractId: contractIdOrOptions, successUrl, failureUrl };
+        } else {
+            options = contractIdOrOptions as SignInOptions;
         }
+
+        /* Throws exception if account does not exist */
+        const contractAccount = await this._near.account(options.contractId);
+        await contractAccount.state();
 
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
-        newUrl.searchParams.set('title', title);
-        newUrl.searchParams.set('contract_id', contractId);
-        newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
-        newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
-        newUrl.searchParams.set('app_url', currentUrl.origin);
-        const accessKey = KeyPair.fromRandom('ed25519');
-        newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
-        await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+        newUrl.searchParams.set('success_url', options.successUrl || currentUrl.href);
+        newUrl.searchParams.set('failure_url', options.failureUrl || currentUrl.href);
+        if (options.contractId) {
+            newUrl.searchParams.set('contract_id', options.contractId);
+            const accessKey = KeyPair.fromRandom('ed25519');
+            newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
+            await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+        }
         window.location.assign(newUrl.toString());
     }
 
     /**
-     * Requests the user to quickly sign for a transaction or batch of transactions
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      * @param transactions Array of Transaction objects that will be requested to sign
      * @param callbackUrl The url to navigate to after the user is prompted to sign
      */
@@ -108,6 +170,7 @@ export class WalletConnection {
     }
 
     /**
+     * @hidden
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     async _completeSignInWithAccessKey() {
@@ -115,14 +178,16 @@ export class WalletConnection {
         const publicKey = currentUrl.searchParams.get('public_key') || '';
         const allKeys = (currentUrl.searchParams.get('all_keys') || '').split(',');
         const accountId = currentUrl.searchParams.get('account_id') || '';
-        // TODO: Handle situation when access key is not added
-        if (accountId && publicKey) {
+        // TODO: Handle errors during login
+        if (accountId) {
             this._authData = {
                 accountId,
                 allKeys
             };
             window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
-            await this._moveKeyFromTempToPermanent(accountId, publicKey);
+            if (publicKey) {
+                await this._moveKeyFromTempToPermanent(accountId, publicKey);
+            }
         }
         currentUrl.searchParams.delete('public_key');
         currentUrl.searchParams.delete('all_keys');
@@ -131,7 +196,7 @@ export class WalletConnection {
     }
 
     /**
-     * 
+     * @hidden
      * @param accountId The NEAR account owning the given public key
      * @param publicKey The public key being set to the key store
      */
@@ -165,9 +230,9 @@ export class WalletConnection {
 export const WalletAccount = WalletConnection;
 
 /**
- * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
+ * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
  */
-class ConnectedWalletAccount extends Account {
+export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
 
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
@@ -177,6 +242,10 @@ class ConnectedWalletAccount extends Account {
 
     // Overriding Account methods
 
+    /**
+     * Sign a transaction by redirecting to the NEAR Wallet
+     * @see {@link WalletConnection.requestSignTransactions}
+     */
     protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
@@ -242,7 +311,7 @@ class ConnectedWalletAccount extends Account {
                 }
                 const [{ functionCall }] = actions;
                 return functionCall &&
-                    (!functionCall.deposit || functionCall.deposit.toString() === "0") && // TODO: Should support charging amount smaller than allowance?
+                    (!functionCall.deposit || functionCall.deposit.toString() === '0') && // TODO: Should support charging amount smaller than allowance?
                     (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName));
                 // TODO: Handle cases when allowance doesn't have enough to pay for gas
             }
@@ -263,7 +332,7 @@ class ConnectedWalletAccount extends Account {
         const accessKeys = await this.getAccessKeys();
 
         if (localKey) {
-            const accessKey = accessKeys.find(key => key.public_key === localKey.toString());
+            const accessKey = accessKeys.find(key => key.public_key.toString() === localKey.toString());
             if (accessKey && await this.accessKeyMatchesTransaction(accessKey, receiverId, actions)) {
                 return accessKey;
             }

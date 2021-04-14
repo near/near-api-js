@@ -82,6 +82,22 @@ function sleep(time) {
     });
 }
 
+function waitFor(fn) {
+    const _waitFor = async (count = 10) => {
+        try {
+            return await fn();
+        } catch(e) {
+            if(count > 0) {
+                await sleep(500);
+                return _waitFor(count - 1);
+            }
+            else throw e;
+        }
+    };
+
+    return _waitFor();
+}
+
 async function ensureDir(dirpath) {
     try {
         await fs.mkdir(dirpath, { recursive: true });
@@ -98,6 +114,7 @@ module.exports = {
     createAccountMultisig,
     deployContract,
     sleep,
+    waitFor,
     ensureDir,
     HELLO_WASM_PATH,
     HELLO_WASM_BALANCE,

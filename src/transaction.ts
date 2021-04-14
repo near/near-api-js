@@ -9,7 +9,7 @@ import { Signer } from './signer';
 export class FunctionCallPermission extends Assignable {
     allowance?: BN;
     receiverId: string;
-    methodNames: String[];
+    methodNames: string[];
 }
 
 export class FullAccessPermission extends Assignable {}
@@ -28,7 +28,7 @@ export function fullAccessKey(): AccessKey {
     return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({fullAccess: new FullAccessPermission({})}) });
 }
 
-export function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey {
+export function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
     return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({functionCall: new FunctionCallPermission({receiverId, allowance, methodNames})})});
 }
 
@@ -124,6 +124,7 @@ export class SignedTransaction extends Assignable {
 
 /**
  * Contains a list of the valid transaction Actions available with this API
+ * @see {@link https://nomicon.io/RuntimeSpec/Actions.html | Actions Spec}
  */
 export class Action extends Enum {
     createAccount: CreateAccount;

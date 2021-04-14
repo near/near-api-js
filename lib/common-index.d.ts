@@ -1,3 +1,4 @@
+/** @hidden @module */
 import * as providers from './providers';
 import * as utils from './utils';
 import * as transactions from './transaction';
@@ -10,5 +11,5 @@ import { Signer, InMemorySigner } from './signer';
 import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
-import { WalletAccount, WalletConnection } from './wallet-account';
-export { accountCreator, providers, utils, transactions, validators, multisig, Account, Connection, Contract, InMemorySigner, Signer, KeyPair, Near, WalletAccount, WalletConnection };
+import { ConnectedWalletAccount, WalletAccount, WalletConnection } from './wallet-account';
+export { accountCreator, providers, utils, transactions, validators, multisig, Account, Connection, Contract, InMemorySigner, Signer, KeyPair, Near, ConnectedWalletAccount, WalletAccount, WalletConnection };

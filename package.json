@@ -1,77 +1,78 @@
 {
-  "name": "near-api-js",
-  "description": "JavaScript library to interact with NEAR Protocol via RPC API",
-  "version": "0.38.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/near/near-api-js.git"
-  },
-  "homepage": "https://github.com/near/near-api-js",
-  "main": "lib/index.js",
-  "browser": "lib/browser-index.js",
-  "types": "lib/index.d.ts",
-  "dependencies": {
-    "@types/bn.js": "^5.1.0",
-    "bn.js": "^5.0.0",
-    "borsh": "^0.3.1",
-    "bs58": "^4.0.0",
-    "depd": "^2.0.0",
-    "error-polyfill": "^0.1.2",
-    "http-errors": "^1.7.2",
-    "js-sha256": "^0.9.0",
-    "mustache": "^4.0.0",
-    "node-fetch": "^2.6.1",
-    "text-encoding-utf-8": "^1.0.2",
-    "tweetnacl": "^1.0.1"
-  },
-  "devDependencies": {
-    "@types/http-errors": "^1.6.1",
-    "@typescript-eslint/eslint-plugin": "^2.18.0",
-    "@typescript-eslint/parser": "^2.18.0",
-    "browserify": "^16.2.3",
-    "bundlewatch": "^0.3.1",
-    "eslint": "^6.5.1",
-    "in-publish": "^2.0.0",
-    "jest": "^26.0.1",
-    "localstorage-memory": "^1.0.3",
-    "near-hello": "^0.5.1",
-    "rimraf": "^3.0.0",
-    "semver": "^7.1.1",
-    "ts-morph": "^10.0.0",
-    "typedoc": "^0.19.2",
-    "typescript": "^3.5.1",
-    "uglifyify": "^5.0.1"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true
-  },
-  "keywords": [],
-  "license": "(MIT AND Apache-2.0)",
-  "scripts": {
-    "dist": "yarn browserify && yarn doc",
-    "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
-    "prebrowserify": "yarn build",
-    "prepublish": "not-in-install && (yarn build && yarn browserify) || in-install",
-    "compile": "tsc -p ./tsconfig.json",
-    "dev": "yarn compile -w",
-    "doc": "typedoc src && touch docs/.nojekyll",
-    "build": "yarn compile",
-    "pretest": "yarn build",
-    "test": "jest test --runInBand",
-    "lint": "eslint test && eslint src/**/*.ts",
-    "fix": "eslint test --fix && eslint src/**/*.ts --fix",
-    "prefuzz": "yarn build",
-    "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
-  },
-  "bundlewatch": {
-    "files": [
-      {
-        "path": "dist/near-api-js.min.js",
-        "maxSize": "95kB"
-      }
-    ]
-  },
-  "author": "NEAR Inc"
+    "name": "near-api-js",
+    "description": "JavaScript library to interact with NEAR Protocol via RPC API",
+    "version": "0.39.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/near/near-api-js.git"
+    },
+    "homepage": "https://github.com/near/near-api-js",
+    "main": "lib/index.js",
+    "browser": "lib/browser-index.js",
+    "types": "lib/index.d.ts",
+    "dependencies": {
+        "@types/bn.js": "^5.1.0",
+        "bn.js": "^5.0.0",
+        "borsh": "^0.3.1",
+        "bs58": "^4.0.0",
+        "depd": "^2.0.0",
+        "error-polyfill": "^0.1.2",
+        "http-errors": "^1.7.2",
+        "js-sha256": "^0.9.0",
+        "mustache": "^4.0.0",
+        "node-fetch": "^2.6.1",
+        "text-encoding-utf-8": "^1.0.2",
+        "tweetnacl": "^1.0.1"
+    },
+    "devDependencies": {
+        "@types/http-errors": "^1.6.1",
+        "@typescript-eslint/eslint-plugin": "^2.18.0",
+        "@typescript-eslint/parser": "^2.18.0",
+        "browserify": "^16.2.3",
+        "bundlewatch": "^0.3.1",
+        "eslint": "^6.5.1",
+        "in-publish": "^2.0.0",
+        "jest": "^26.0.1",
+        "localstorage-memory": "^1.0.3",
+        "near-hello": "^0.5.1",
+        "rimraf": "^3.0.0",
+        "semver": "^7.1.1",
+        "ts-morph": "^10.0.0",
+        "typedoc": "^0.20.35",
+        "typedoc-neo-theme": "^1.1.0",
+        "typescript": "^3.5.1",
+        "uglifyify": "^5.0.1"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "coverageDirectory": "./coverage/",
+        "collectCoverage": true
+    },
+    "keywords": [],
+    "license": "(MIT AND Apache-2.0)",
+    "scripts": {
+        "dist": "yarn browserify && yarn doc",
+        "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
+        "prebrowserify": "yarn build",
+        "prepublish": "not-in-install && (yarn build && yarn browserify) || in-install",
+        "compile": "tsc -p ./tsconfig.json",
+        "dev": "yarn compile -w",
+        "doc": "typedoc src && touch docs/.nojekyll",
+        "build": "yarn compile",
+        "pretest": "yarn build",
+        "test": "jest test --runInBand",
+        "lint": "eslint test && eslint src/**/*.ts",
+        "fix": "eslint test --fix && eslint src/**/*.ts --fix",
+        "prefuzz": "yarn build",
+        "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/"
+    },
+    "bundlewatch": {
+        "files": [
+            {
+                "path": "dist/near-api-js.min.js",
+                "maxSize": "95kB"
+            }
+        ]
+    },
+    "author": "NEAR Inc"
 }

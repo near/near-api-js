@@ -1,3 +1,4 @@
+/** @hidden @module */
 import * as providers from './providers';
 import * as utils from './utils';
 import * as transactions from './transaction';
@@ -13,7 +14,11 @@ import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
 
 // TODO: Deprecate and remove WalletAccount
-import { WalletAccount, WalletConnection } from './wallet-account';
+import {
+    ConnectedWalletAccount,
+    WalletAccount,
+    WalletConnection
+} from './wallet-account';
 
 export {
     accountCreator,
@@ -32,6 +37,7 @@ export {
 
     Near,
 
+    ConnectedWalletAccount,
     WalletAccount,
     WalletConnection
 };

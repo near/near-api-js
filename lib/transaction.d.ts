@@ -6,7 +6,7 @@ import { Signer } from './signer';
 export declare class FunctionCallPermission extends Assignable {
     allowance?: BN;
     receiverId: string;
-    methodNames: String[];
+    methodNames: string[];
 }
 export declare class FullAccessPermission extends Assignable {
 }
@@ -19,7 +19,7 @@ export declare class AccessKey extends Assignable {
     permission: AccessKeyPermission;
 }
 export declare function fullAccessKey(): AccessKey;
-export declare function functionCallAccessKey(receiverId: string, methodNames: String[], allowance?: BN): AccessKey;
+export declare function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey;
 export declare class IAction extends Assignable {
 }
 export declare class CreateAccount extends IAction {
@@ -89,6 +89,7 @@ export declare class SignedTransaction extends Assignable {
 }
 /**
  * Contains a list of the valid transaction Actions available with this API
+ * @see {@link https://nomicon.io/RuntimeSpec/Actions.html | Actions Spec}
  */
 export declare class Action extends Enum {
     createAccount: CreateAccount;

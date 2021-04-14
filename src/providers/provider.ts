@@ -1,5 +1,10 @@
-import { Network } from '../utils/network';
+/**
+ * NEAR RPC API request types and responses
+ * @module
+ */
+
 import { SignedTransaction } from '../transaction';
+import { PublicKey } from '../utils/key_pair';
 
 export interface SyncInfo {
     latest_block_hash: string;
@@ -303,16 +308,114 @@ export interface AccessKeyWithPublicKey {
     public_key: string;
 }
 
+export interface QueryResponseKind {
+    block_height: BlockHeight;
+    block_hash: BlockHash;
+}
+
+export interface AccountView extends QueryResponseKind {
+    amount: string;
+    locked: string;
+    code_hash: string;
+    storage_usage: number;
+    storage_paid_at: BlockHeight;
+}
+
+interface StateItem {
+    key: string;
+    value: string;
+    proof: string[];
+}
+
+export interface ViewStateResult extends QueryResponseKind {
+    values: StateItem[];
+    proof: string[];
+}
+
+export interface CodeResult extends QueryResponseKind {
+    result: number[];
+    logs: string[];
+}
+
+export interface ContractCodeView extends QueryResponseKind {
+    code_base64: string;
+    hash: string;
+}
+
+export interface FunctionCallPermissionView {
+    FunctionCall: {
+        allowance: string;
+        receiver_id: string;
+        method_names: string[];
+    };
+}
+export interface AccessKeyView extends QueryResponseKind {
+    nonce: number;
+    permission: 'FullAccess' | FunctionCallPermissionView;
+}
+
+export interface AccessKeyInfoView {
+    public_key: PublicKey;
+    access_key: AccessKeyView;
+}
+
+export interface AccessKeyList extends QueryResponseKind {
+    keys: AccessKeyInfoView[];
+}
+
+export interface ViewAccountRequest {
+    request_type: 'view_account';
+    account_id: string;
+}
+
+export interface ViewCodeRequest {
+    request_type: 'view_code';
+    account_id: string;
+}
+
+export interface ViewStateRequest {
+    request_type: 'view_state';
+    account_id: string;
+    prefix_base64: string;
+}
+
+export interface ViewAccessKeyRequest {
+    request_type: 'view_access_key';
+    account_id: string;
+    public_key: string;
+}
+
+export interface ViewAccessKeyListRequest {
+    request_type: 'view_access_key_list';
+    account_id: string;
+}
+
+export interface CallFunctionRequest {
+    request_type: 'call_function';
+    account_id: string;
+    method_name: string;
+    args_base64: string;
+}
+
+export type RpcQueryRequest = (ViewAccountRequest |
+    ViewCodeRequest |
+    ViewStateRequest |
+    ViewAccountRequest |
+    ViewAccessKeyRequest |
+    ViewAccessKeyListRequest |
+    CallFunctionRequest) & BlockReference
+
+
+/** @hidden */
 export abstract class Provider {
-    abstract getNetwork(): Promise<Network>;
     abstract status(): Promise<NodeStatusResult>;
 
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract txStatusReceipts(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
-    abstract query(params: object): Promise<any>;
-    abstract query(path: string, data: string): Promise<any>;
+    abstract query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
+    abstract query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
     // TODO: BlockQuery type?
     abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
     abstract blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult>;
@@ -330,6 +433,7 @@ export abstract class Provider {
     abstract contractCodeChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
 }
 
+/** @hidden */
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): any {
     if (typeof txResult.status === 'object' && typeof txResult.status.SuccessValue === 'string') {
         const value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();
