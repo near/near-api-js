@@ -24,6 +24,9 @@
 import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 import { Near, NearConfig } from './near';
+import fetch from './utils/setup-node-fetch';
+
+global.fetch = fetch;
 
 export interface ConnectConfig extends NearConfig {
     /**
