@@ -3,9 +3,7 @@
  *
  * {@link ConnectConfig.networkId} and {@link ConnectConfig.nodeUrl} are required.
  *
- * To sign transactions you can also pass:
- * 1. {@link ConnectConfig.keyStore}
- * 2. {@link ConnectConfig.deps | ConnectConfig.deps.keyStore}
+ * To sign transactions you can also pass: {@link ConnectConfig.keyStore}
  *
  * Both are passed they are prioritize in that order.
  *
@@ -22,7 +20,7 @@
  *
  * @module browserConnect
  */
-import { Near, NearConfig } from './near';
+import { Near, NearConfig } from "./near";
 export interface ConnectConfig extends NearConfig {
     /** @hidden */
     keyPath?: string;

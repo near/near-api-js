@@ -4,8 +4,13 @@ import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
 import * as CLASSMAP from '../generated/rpc_error_types';
 import { ServerError } from '../generated/rpc_error_types';
+import { utils } from '../common-index';
 
 export * from '../generated/rpc_error_types';
+
+const mustacheHelpers = {
+    formatNear: () => (n, render) => utils.format.formatNearAmount(render(n))
+};
 
 class ServerTransactionError extends ServerError {
     public transaction_outcome: any;
@@ -32,7 +37,10 @@ export function parseResultError(result: any): ServerTransactionError {
 
 export function formatError(errorClassName: string, errorData): string {
     if (typeof messages[errorClassName] === 'string') {
-        return Mustache.render(messages[errorClassName], errorData);
+        return Mustache.render(messages[errorClassName], {
+            ...errorData,
+            ...mustacheHelpers
+        });
     }
     return JSON.stringify(errorData);
 }
