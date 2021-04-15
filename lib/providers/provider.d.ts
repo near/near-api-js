@@ -1,3 +1,7 @@
+/**
+ * NEAR RPC API request types and responses
+ * @module
+ */
 import { SignedTransaction } from '../transaction';
 import { PublicKey } from '../utils/key_pair';
 export interface SyncInfo {
@@ -278,6 +282,7 @@ export interface CallFunctionRequest {
     args_base64: string;
 }
 export declare type RpcQueryRequest = (ViewAccountRequest | ViewCodeRequest | ViewStateRequest | ViewAccountRequest | ViewAccessKeyRequest | ViewAccessKeyListRequest | CallFunctionRequest) & BlockReference;
+/** @hidden */
 export declare abstract class Provider {
     abstract status(): Promise<NodeStatusResult>;
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
@@ -292,5 +297,6 @@ export declare abstract class Provider {
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     abstract gasPrice(blockId: BlockId): Promise<GasPrice>;
 }
+/** @hidden */
 export declare function getTransactionLastResult(txResult: FinalExecutionOutcome): any;
 export {};

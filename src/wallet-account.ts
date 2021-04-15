@@ -1,3 +1,10 @@
+/**
+ * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
+ * * {@link WalletConnection} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * * {@link ConnectedWalletAccount} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ * 
+ * @module walletAccount
+ */
 import depd from 'depd';
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Near } from './near';
@@ -34,14 +41,41 @@ interface RequestSignTransactionsOptions {
     meta?: string;
 }
 
+/**
+ * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
+ * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * 
+ * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#wallet}
+ * @example
+ * ```js
+ * // create new WalletConnection instance
+ * const wallet = new WalletConnection(near, 'my-app');
+ * 
+ * // If not signed in redirect to the NEAR wallet to sign in
+ * // keys will be stored in the BrowserLocalStorageKeyStore
+ * if(!wallet.isSingnedIn()) return wallet.requestSignIn()
+ * ```
+ */
 export class WalletConnection {
+    /** @hidden */
     _walletBaseUrl: string;
+
+    /** @hidden */
     _authDataKey: string;
+
+    /** @hidden */
     _keyStore: KeyStore;
+
+    /** @hidden */
     _authData: any;
+
+    /** @hidden */
     _networkId: string;
 
+    /** @hidden */
     _near: Near;
+
+    /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
     constructor(near: Near, appKeyPrefix: string | null) {
@@ -62,7 +96,10 @@ export class WalletConnection {
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
      * @example
-     * walletAccount.isSignedIn();
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * wallet.isSignedIn();
+     * ```
      */
     isSignedIn() {
         return !!this._authData.accountId;
@@ -71,7 +108,10 @@ export class WalletConnection {
     /**
      * Returns authorized Account ID.
      * @example
-     * walletAccount.getAccountId();
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * wallet.getAccountId();
+     * ```
      */
     getAccountId() {
         return this._authData.accountId || '';
@@ -85,10 +125,11 @@ export class WalletConnection {
      * @param options.failureUrl URL to redirect upon failure. Default: current url
      *
      * @example
-     *   walletAccount.requestSignIn('account-with-deploy-contract.near', {
-     *     successUrl: "https://example.com/success.html",
-     *     failureUrl: "https://example.com/error.html"
-     *   });
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * // redirects to the NEAR Wallet
+     * wallet.requestSignIn('account-with-deploy-contract.near');
+     * ```
      */
     async requestSignIn(
         contractIdOrOptions: string | SignInOptions = {},
@@ -123,12 +164,12 @@ export class WalletConnection {
     }
 
     /**
-     * Requests the user to quickly sign for a transaction or batch of transactions
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      */
     requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void>
     /**
      * @deprecated
-     * Requests the user to quickly sign for a transaction or batch of transactions
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      * @param transactions Array of Transaction objects that will be requested to sign
      * @param callbackUrl The url to navigate to after the user is prompted to sign
      */
@@ -163,6 +204,7 @@ export class WalletConnection {
     }
 
     /**
+     * @hidden
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     async _completeSignInWithAccessKey() {
@@ -188,7 +230,7 @@ export class WalletConnection {
     }
 
     /**
-     * 
+     * @hidden
      * @param accountId The NEAR account owning the given public key
      * @param publicKey The public key being set to the key store
      */
@@ -222,7 +264,7 @@ export class WalletConnection {
 export const WalletAccount = WalletConnection;
 
 /**
- * {@link Account} implementation which redirects to wallet using (@link WalletConnection) when no local key is available.
+ * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
  */
 export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
@@ -234,6 +276,10 @@ export class ConnectedWalletAccount extends Account {
 
     // Overriding Account methods
 
+    /**
+     * Sign a transaction by redirecting to the NEAR Wallet
+     * @see {@link WalletConnection.requestSignTransactions}
+     */
     protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome> {
         if(typeof args[0] === 'string') {
             return this._signAndSendTransaction({ receiverId: args[0], actions: args[1] });

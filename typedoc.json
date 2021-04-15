@@ -1,0 +1,37 @@
+{
+  "theme": "./node_modules/typedoc-neo-theme/bin/default",
+  "plugin": "./node_modules/typedoc-neo-theme",
+  "exclude": "**/*index.ts",
+  "links": [
+    { "label": "NEAR Docs", "url": "https://docs.near.org" },
+    { "label": "API JS Quick Reference", "url": "https://docs.near.org/docs/develop/front-end/naj-quick-reference" },
+    { "label": "RPC Endpoints", "url": "https://docs.near.org/docs/develop/front-end/rpc" }
+  ],
+  "outline": [
+    {
+      "Connect to NEAR": {
+        "browser": "browserconnect",
+        "node.js": "connect"
+      },
+      "Managing Accounts": {
+        "Account": "classes/account.account-1",
+        "Wallet Account": "classes/walletaccount.walletconnection",
+        "Smart Contracts": "classes/contract.contract-1"
+      },
+      "Managing Keys": {
+        "KeyPair": "utils_key_pair",
+        "BrowserLocalStorageKeyStore": "classes/key_stores_browser_local_storage_key_store.browserlocalstoragekeystore",
+        "InMemoryKeyStore": "classes/key_stores_in_memory_key_store.inmemorykeystore",
+        "UnencryptedFileSystemKeyStore": "classes/key_stores_unencrypted_file_system_keystore.unencryptedfilesystemkeystore",
+        "MergeKeyStore": "classes/key_stores_merge_key_store.mergekeystore"
+      },
+      "RPC": {
+        "Request and Response Types": "providers_provider",
+        "Client": "classes/providers_json_rpc_provider.jsonrpcprovider"
+      },
+      "utils": {
+        "Formatting": "utils_format"
+      }
+    }
+  ]
+}

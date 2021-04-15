@@ -30,6 +30,7 @@ interface AccountInfo {
     private_key: string;
 }
 
+/** @hidden */
 export async function loadJsonFile(filename: string): Promise<any> {
     const content = await readFile(filename);
     return JSON.parse(content.toString());
@@ -43,6 +44,7 @@ async function ensureDir(dir: string): Promise<void> {
     }
 }
 
+/** @hidden */
 export async function readKeyFile(filename: string): Promise<[string, KeyPair]> {
     const accountInfo = await loadJsonFile(filename);
     // The private key might be in private_key or secret_key field.
@@ -53,16 +55,43 @@ export async function readKeyFile(filename: string): Promise<[string, KeyPair]> 
     return [accountInfo.account_id, KeyPair.fromString(privateKey)];
 }
 
+/**
+ * This module contains the {@link UnencryptedFileSystemKeyStore} class which is used to store keys on the file system.
+ * 
+ * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store}
+ * @example
+ * ```js
+ * const { homedir } = require('os');
+ * const { connect, keyStores } = require('near-api-js');
+ * 
+ * const keyStore = new keyStores.UnencryptedFileSystemKeyStore(`${homedir()}/.near-credentials`);
+ * const config = { 
+ *   keyStore, // instance of UnencryptedFileSystemKeyStore
+ *   networkId: 'testnet',
+ *   nodeUrl: 'https://rpc.testnet.near.org',
+ *   walletUrl: 'https://wallet.testnet.near.org',
+ *   helperUrl: 'https://helper.testnet.near.org',
+ *   explorerUrl: 'https://explorer.testnet.near.org'
+ * };
+ * 
+ * // inside an async function
+ * const near = await connect(config)
+ * ```
+ */
 export class UnencryptedFileSystemKeyStore extends KeyStore {
+    /** @hidden */
     readonly keyDir: string;
 
+    /**
+     * @param keyDir base directory for key storage. Keys will be stored in `keyDir/networkId/accountId.json`
+     */
     constructor(keyDir: string) {
         super();
         this.keyDir = path.resolve(keyDir);
     }
 
     /**
-     * Sets a storage item in a file, unencrypted
+     * Store a {@link KeyPair} in an unencrypted file
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -74,7 +103,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a key from local storage
+     * Gets a {@link KeyPair} from an unencrypted file
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -89,7 +118,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     /**
-     * Removes a key from local storage
+     * Deletes an unencrypted file holding a {@link KeyPair}
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -100,7 +129,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     /**
-     * Removes all items from local storage
+     * Deletes all unencrypted files from the `keyDir` path.
      */
     async clear(): Promise<void> {
         for (const network of await this.getNetworks()) {
@@ -110,12 +139,13 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         }
     }
 
+    /** @hidden */
     private getKeyFilePath(networkId: string, accountId: string): string {
         return `${this.keyDir}/${networkId}/${accountId}.json`;
     }
 
     /**
-     * Get the network(s) from local storage
+     * Get the network(s) from files in `keyDir`
      * @returns {Promise<string[]>}
      */
     async getNetworks(): Promise<string[]> {
@@ -128,7 +158,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     /**
-     * Gets the account(s) from local storage
+     * Gets the account(s) files in `keyDir/networkId`
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns{Promise<string[]>}
      */
@@ -142,6 +172,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
             .map(file => file.replace(/.json$/, ''));
     }
 
+    /** @hidden */
     toString(): string {
         return `UnencryptedFileSystemKeyStore(${this.keyDir})`;
     }

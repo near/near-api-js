@@ -1,7 +1,12 @@
 import { Near, NearConfig } from './near';
-export declare type ConnectConfig = NearConfig & {
+export interface ConnectConfig extends NearConfig {
+    /**
+     * Initialize an {@link InMemoryKeyStore} by reading the file at keyPath.
+     *
+     * @important {@link ConnectConfig.keyStore | keyStore} and {@link ConnectConfig.deps | deps.keyStore} take priority over keyPath.
+     */
     keyPath?: string;
-};
+}
 /**
  * Initialize connection to Near network.
  */
