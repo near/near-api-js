@@ -19,31 +19,12 @@ const isUint8Array = (x: any) =>
 const isObject = (x: any) =>
     Object.prototype.toString.call(x) === '[object Object]';
 
-export interface ChangeMethodOptions {
-    /**
-     * Arguments to pass to the function call
-     */
+interface ChangeMethodOptions {
     args: object;
-    /**
-     * Name of the change method to invoke
-     */
     methodName: string;
-    /**
-     * Maximum gas that the change method can use
-     */
     gas?: BN;
-    /**
-     * Amount of NEAR to attach to the function call
-     */
     amount?: BN;
-    /**
-     * After the NEAR wallet redirects back to your `callbackUrl` this string will be in the Url query params.
-     * http(s)://{callbackUrl}?meta={meta}
-     */
     meta?: string;
-    /**
-     * Url the NEAR wallet will redirect to after signing the function call transaction
-     */
     callbackUrl?: string;
 }
 
@@ -88,7 +69,12 @@ export interface ContractMethods {
  *   });
  * 
  *   // use a contract change method
- *   await contract.addMessage({ text: 'My new message' })
+ *   await contract.addMessage({
+ *      meta: 'some info',
+ *      callbackUrl: 'https://example.com/callback',
+ *      args: { text: 'my message' },
+ *      amount: 1
+ *   })
  * }
  * ```
  */
