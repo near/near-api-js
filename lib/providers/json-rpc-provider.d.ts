@@ -1,4 +1,4 @@
-import { Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice, QueryResponseKind } from './provider';
+import { AccessKeyWithPublicKey, Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, BlockChangeResult, ChangeResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice, QueryResponseKind } from './provider';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
 import { SignedTransaction } from '../transaction';
@@ -21,12 +21,19 @@ export declare class JsonRpcProvider extends Provider {
      */
     status(): Promise<NodeStatusResult>;
     /**
-     * Sends a signed transaction to the RPC
+     * Sends a signed transaction to the RPC and waits until transaction is fully complete
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await}
      *
      * @param signedTransaction The signed transaction being sent
      */
     sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    /**
+     * Sends a signed transaction to the RPC and immediately returns transaction hash
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#send-transaction-async)
+     * @param signedTransaction The signed transaction being sent
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
+    sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     /**
      * Gets a transaction's status from the RPC
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#transaction-status}
@@ -36,6 +43,15 @@ export declare class JsonRpcProvider extends Provider {
      */
     txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     /**
+     * Gets a transaction's status from the RPC with receipts
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status-with-receipts)
+     * @param txHash The hash of the transaction
+     * @param accountId The NEAR account that signed the transaction
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
+    txStatusReceipts(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
+    /**
+     * Query the RPC as [shown in the docs](https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts)
      * Query the RPC by passing an {@link RpcQueryRequest}
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts}
      *
@@ -44,11 +60,18 @@ export declare class JsonRpcProvider extends Provider {
     query<T extends QueryResponseKind>(...args: any[]): Promise<T>;
     /**
      * Query for block info from the RPC
+     * pass block_id OR finality as blockQuery, not both
      * @see {@link https://docs.near.org/docs/interaction/rpc#block}
      *
      * @param blockQuery {@link BlockReference} (passing a {@link BlockId} is deprecated)
      */
     block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
+    /**
+     * Query changes in block from the RPC
+     * pass block_id OR finality as blockQuery, not both
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#block-details)
+     */
+    blockChanges(blockQuery: BlockReference): Promise<BlockChangeResult>;
     /**
      * Queries for details about a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
      * @see {@link https://docs.near.org/docs/interaction/rpc#chunk}
@@ -85,6 +108,42 @@ export declare class JsonRpcProvider extends Provider {
      * @see {@link https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof}
      */
     lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
+    /**
+     * Gets access key changes for a given array of accountIds
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-all)
+     * @returns {Promise<ChangeResult>}
+     */
+    accessKeyChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult>;
+    /**
+     * Gets single access key changes for a given array of access keys
+     * pass block_id OR finality as blockQuery, not both
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-single)
+     * @returns {Promise<ChangeResult>}
+     */
+    singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], blockQuery: BlockReference): Promise<ChangeResult>;
+    /**
+     * Gets account changes for a given array of accountIds
+     * pass block_id OR finality as blockQuery, not both
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-account-changes)
+     * @returns {Promise<ChangeResult>}
+     */
+    accountChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult>;
+    /**
+     * Gets contract state changes for a given array of accountIds
+     * pass block_id OR finality as blockQuery, not both
+     * Note: If you pass a keyPrefix it must be base64 encoded
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-state-changes)
+     * @returns {Promise<ChangeResult>}
+     */
+    contractStateChanges(accountIdArray: string[], blockQuery: BlockReference, keyPrefix?: string): Promise<ChangeResult>;
+    /**
+     * Gets contract code changes for a given array of accountIds
+     * pass block_id OR finality as blockQuery, not both
+     * Note: Change is returned in a base64 encoded WASM file
+     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-code-changes)
+     * @returns {Promise<ChangeResult>}
+     */
+    contractCodeChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult>;
     /**
      * Returns gas price for a specific block_height or block_hash.
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#gas-price}
