@@ -103,5 +103,13 @@ export declare class Action extends Enum {
 }
 export declare const SCHEMA: Map<Function, any>;
 export declare function createTransaction(signerId: string, publicKey: PublicKey, receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array): Transaction;
+/**
+ * Signs a given transaction from an account with given keys, applied to the given network
+ * @param transaction The Transaction object to sign
+ * @param signer The {Signer} object that assists with signing keys
+ * @param accountId The human-readable NEAR account name
+ * @param networkId The targeted network. (ex. default, betanet, etc…)
+ */
+export declare function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export declare function signTransaction(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;

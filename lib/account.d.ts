@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import BN from 'bn.js';
-import { Action, SignedTransaction } from './transaction';
+import { Action, Transaction, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Finality, BlockId, AccountView, AccessKeyView, AccessKeyInfoView } from './providers/provider';
 import { Connection } from './connection';
@@ -40,13 +40,14 @@ export declare class Account {
     private printLogsAndFailures;
     /** @hidden */
     private printLogs;
+    createTransaction(receiverId: string, actions: Action[]): Promise<Transaction>;
     /**
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
      * @see {@link JsonRpcProvider.sendTransaction}
      */
-    protected signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]>;
+    signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]>;
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
@@ -54,7 +55,7 @@ export declare class Account {
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
      */
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     /** @hidden */
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKeyView;

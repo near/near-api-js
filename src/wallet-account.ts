@@ -24,6 +24,7 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
 
 interface SignInOptions {
     contractId?: string;
+    publicKey?: string;
     // TODO: Replace following with single callbackUrl
     successUrl?: string;
     failureUrl?: string;
@@ -66,18 +67,29 @@ export class WalletConnection {
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
-    constructor(near: Near, appKeyPrefix: string | null) {
+    constructor(near: Near, appKeyPrefix: string | null, authData?: any) {
         this._near = near;
-        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
-        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
-        this._authData = authData || { allKeys: [] };
-        this._authDataKey = authDataKey;
-        if (!this.isSignedIn()) {
-            this._completeSignInWithAccessKey();
+
+        if (authData) {
+            this._authData = authData;
+            return;
+        }
+
+        if (typeof window !== 'undefined') {
+            this._authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+            try {
+                this._authData = JSON.parse(window.localStorage.getItem(this._authDataKey));
+            } catch (e) {
+                console.warn(`Error parsing WalletConnection JSON for ${this._authDataKey} key`);
+            }
+            this._authData = this._authData || { allKeys: [] };
+            if (!this.isSignedIn()) {
+                this._completeSignInWithAccessKey();
+            }
         }
     }
 
@@ -139,16 +151,39 @@ export class WalletConnection {
         await contractAccount.state();
 
         const currentUrl = new URL(window.location.href);
+        options = {
+            ...options,
+            successUrl: options.successUrl || currentUrl.href,
+            failureUrl: options.failureUrl || currentUrl.href
+        }
+        if (options.contractId && !options.publicKey) {
+            const accessKey = KeyPair.fromRandom('ed25519');
+            await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+            options = { ...options, publicKey: accessKey.getPublicKey().toString() }
+        }
+        window.location.assign(this.signInURL(options));
+    }
+
+    /**
+     * Returns the URL of wallet authentication page with given options.
+     * 
+     * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
+     * @param options.successUrl URL to redirect upon success.
+     * @param options.failureUrl URL to redirect upon failure.
+     *
+     */
+    signInURL(options: SignInOptions): string {
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
-        newUrl.searchParams.set('success_url', options.successUrl || currentUrl.href);
-        newUrl.searchParams.set('failure_url', options.failureUrl || currentUrl.href);
+        newUrl.searchParams.set('success_url', options.successUrl);
+        newUrl.searchParams.set('failure_url', options.failureUrl);
         if (options.contractId) {
             newUrl.searchParams.set('contract_id', options.contractId);
-            const accessKey = KeyPair.fromRandom('ed25519');
-            newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
-            await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         }
-        window.location.assign(newUrl.toString());
+        if (options.publicKey) {
+            newUrl.searchParams.set('public_key', options.publicKey);
+        }
+        return newUrl.toString();
     }
 
     /**
@@ -158,15 +193,19 @@ export class WalletConnection {
      */
     async requestSignTransactions(transactions: Transaction[], callbackUrl?: string) {
         const currentUrl = new URL(window.location.href);
+        window.location.assign(this.signTransactionsURL(transactions, callbackUrl || currentUrl.href));
+    }
+
+    signTransactionsURL(transactions: Transaction[], callbackUrl: string): string {
         const newUrl = new URL('sign', this._walletBaseUrl);
 
         newUrl.searchParams.set('transactions', transactions
             .map(transaction => serialize(SCHEMA, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
-        newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
+        newUrl.searchParams.set('callbackUrl', callbackUrl);
 
-        window.location.assign(newUrl.toString());
+        return newUrl.toString();
     }
 
     /**
@@ -242,11 +281,7 @@ export class ConnectedWalletAccount extends Account {
 
     // Overriding Account methods
 
-    /**
-     * Sign a transaction by redirecting to the NEAR Wallet
-     * @see {@link WalletConnection.requestSignTransactions}
-     */
-    protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    async createTransaction(receiverId: string, actions: Action[]): Promise<Transaction> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
@@ -255,7 +290,7 @@ export class ConnectedWalletAccount extends Account {
 
         if (localKey && localKey.toString() === accessKey.public_key) {
             try {
-                return await super.signAndSendTransaction(receiverId, actions);
+                return await super.createTransaction(receiverId, actions);
             } catch (e) {
                 if (e.type === 'NotEnoughBalance') {
                     accessKey = await this.accessKeyForTransaction(receiverId, actions);
@@ -271,7 +306,22 @@ export class ConnectedWalletAccount extends Account {
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
         const nonce = accessKey.access_key.nonce + 1;
-        const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+        return createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+    } 
+
+    /**
+     * Sign a transaction by redirecting to the NEAR Wallet
+     * @see {@link WalletConnection.requestSignTransactions}
+     */
+    async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+        const transaction = await this.createTransaction(receiverId, actions);
+
+        // TODO: Refactor to avoid querying keys 2 times
+        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        if (localKey.toString() === transaction.publicKey.toString()) {
+            return await super.signAndSendTransaction(receiverId, actions);
+        }
+
         await this.walletConnection.requestSignTransactions([transaction], window.location.href);
 
         return new Promise((resolve, reject) => {

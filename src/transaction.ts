@@ -222,7 +222,7 @@ export function createTransaction(signerId: string, publicKey: PublicKey, receiv
  * @param accountId The human-readable NEAR account name
  * @param networkId The targeted network. (ex. default, betanet, etc…)
  */
-async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
+export async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const message = serialize(SCHEMA, transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);

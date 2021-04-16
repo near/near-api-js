@@ -3,7 +3,7 @@ import depd from 'depd';
 import {
     transfer,
     createAccount,
-    signTransaction,
+    signTransactionObject,
     deployContract,
     addKey,
     functionCall,
@@ -12,7 +12,9 @@ import {
     deleteKey,
     stake,
     deleteAccount,
+    createTransaction,
     Action,
+    Transaction,
     SignedTransaction
 } from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
@@ -123,14 +125,8 @@ export class Account {
             console.log(`${prefix}Log [${contractId}]: ${log}`);
         }
     }
-
-    /**
-     * Create a signed transaction which can be broadcast to the network
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the transaction
-     * @see {@link JsonRpcProvider.sendTransaction}
-     */
-    protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
+    
+    async createTransaction(receiverId: string, actions: Action[]): Promise<Transaction> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
         if (!accessKeyInfo) {
             throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
@@ -141,9 +137,19 @@ export class Account {
         const blockHash = block.header.hash;
 
         const nonce = ++accessKey.nonce;
-        return await signTransaction(
-            receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
-        );
+        const publicKey = PublicKey.from((accessKey as any).public_key);
+        return createTransaction(this.accountId, publicKey, receiverId, nonce, actions, baseDecode(blockHash));
+    }
+
+    /**
+     * Create a signed transaction which can be broadcast to the network
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions list of actions to perform as part of the transaction
+     * @see {@link JsonRpcProvider.sendTransaction}
+     */
+    async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
+        return await signTransactionObject(
+            await this.createTransaction(receiverId, actions), this.connection.signer, this.accountId, this.connection.networkId);
     }
 
     /**
@@ -153,7 +159,7 @@ export class Account {
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
      */
-    protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {

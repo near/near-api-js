@@ -7,6 +7,7 @@ import { PublicKey } from './utils';
 import { Connection } from './connection';
 interface SignInOptions {
     contractId?: string;
+    publicKey?: string;
     successUrl?: string;
     failureUrl?: string;
 }
@@ -40,7 +41,7 @@ export declare class WalletConnection {
     _near: Near;
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
-    constructor(near: Near, appKeyPrefix: string | null);
+    constructor(near: Near, appKeyPrefix: string | null, authData?: any);
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
      * @example
@@ -75,11 +76,22 @@ export declare class WalletConnection {
      */
     requestSignIn(contractIdOrOptions?: string | SignInOptions, title?: string, successUrl?: string, failureUrl?: string): Promise<void>;
     /**
+     * Returns the URL of wallet authentication page with given options.
+     *
+     * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
+     * @param options.successUrl URL to redirect upon success.
+     * @param options.failureUrl URL to redirect upon failure.
+     *
+     */
+    signInURL(options: SignInOptions): string;
+    /**
      * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      * @param transactions Array of Transaction objects that will be requested to sign
      * @param callbackUrl The url to navigate to after the user is prompted to sign
      */
     requestSignTransactions(transactions: Transaction[], callbackUrl?: string): Promise<void>;
+    signTransactionsURL(transactions: Transaction[], callbackUrl: string): string;
     /**
      * @hidden
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
@@ -109,11 +121,12 @@ export declare const WalletAccount: typeof WalletConnection;
 export declare class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
+    createTransaction(receiverId: string, actions: Action[]): Promise<Transaction>;
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     /**
      * Check if given access key allows the function call or method attempted in transaction
      * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
