@@ -15,6 +15,7 @@ export class RpcError extends TypedError {
     }
 }
 export class ReceiptExecutionFailure extends TypedError {
+    //TODO: add transaction hash?
     //TODO: add recurcive search
     errorPath?: Record<string, any>;
     public transaction_outcome: ExecutionOutcomeWithIdView; //TODO: add to constructor?

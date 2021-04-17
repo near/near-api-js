@@ -167,7 +167,7 @@ export class Account {
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
-                error.context.transactionHash = baseEncode(txHash);
+                error.transactionHash = baseEncode(txHash);
                 throw error;
             }
         });
