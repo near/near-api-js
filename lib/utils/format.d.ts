@@ -1,4 +1,3 @@
-import BN from 'bn.js';
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
  */
@@ -6,7 +5,7 @@ export declare const NEAR_NOMINATION_EXP = 24;
 /**
  * Number of indivisible units in one NEAR. Derived from {@link NEAR_NOMINATION_EXP}.
  */
-export declare const NEAR_NOMINATION: BN;
+export declare const NEAR_NOMINATION: any;
 /**
  * Convert account balance value from internal indivisible units to NEAR. 1 NEAR is defined by {@link NEAR_NOMINATION}.
  * Effectively this divides given amount by {@link NEAR_NOMINATION}.

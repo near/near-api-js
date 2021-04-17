@@ -413,6 +413,7 @@ export abstract class Provider {
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
+    abstract txStatus(txHash: string, accountId: string): Promise<FinalExecutionOutcome>;
     abstract txStatusReceipts(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
     abstract query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;

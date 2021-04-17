@@ -1,12 +1,11 @@
-import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
 import { Action } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 export declare const MULTISIG_STORAGE_KEY = "__multisigRequest";
-export declare const MULTISIG_ALLOWANCE: BN;
-export declare const MULTISIG_GAS: BN;
-export declare const MULTISIG_DEPOSIT: BN;
+export declare const MULTISIG_ALLOWANCE: any;
+export declare const MULTISIG_GAS: any;
+export declare const MULTISIG_DEPOSIT: any;
 export declare const MULTISIG_CHANGE_METHODS: string[];
 export declare const MULTISIG_VIEW_METHODS: string[];
 export declare const MULTISIG_CONFIRM_METHODS: string[];
