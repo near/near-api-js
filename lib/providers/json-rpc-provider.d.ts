@@ -38,10 +38,10 @@ export declare class JsonRpcProvider extends Provider {
      * Gets a transaction's status from the RPC
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#transaction-status}
      *
-     * @param txHash The hash of the transaction
+     * @param txHash A transaction hash as either a Uint8Array or a base58 encoded string
      * @param accountId The NEAR account that signed the transaction
      */
-    txStatus(txHash: any, accountId: string): Promise<FinalExecutionOutcome>;
+    txStatus(txHash: Uint8Array | string, accountId: string): Promise<FinalExecutionOutcome>;
     private txStatusUint8Array;
     private txStatusString;
     /**
