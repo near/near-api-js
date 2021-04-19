@@ -8,7 +8,7 @@
     },
     "homepage": "https://github.com/near/near-api-js",
     "main": "lib/index.js",
-    "browser": "lib/browser-index.js",
+    "browser": "dist/near-api-js.min.js",
     "types": "lib/index.d.ts",
     "dependencies": {
         "@types/bn.js": "^5.1.0",
