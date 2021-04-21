@@ -11,8 +11,7 @@
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
     "dependencies": {
-        "@types/bn.js": "^5.1.0",
-        "bn.js": "^5.1.0",
+        "bn.js": "^5.2.0",
         "borsh": "^0.3.1",
         "bs58": "^4.0.0",
         "depd": "^2.0.0",
@@ -25,6 +24,7 @@
         "tweetnacl": "^1.0.1"
     },
     "devDependencies": {
+        "@types/bn.js": "^5.1.0",
         "@types/http-errors": "^1.6.1",
         "@typescript-eslint/eslint-plugin": "^2.18.0",
         "@typescript-eslint/parser": "^2.18.0",
