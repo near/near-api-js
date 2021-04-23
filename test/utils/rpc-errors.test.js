@@ -123,4 +123,29 @@ describe('rpc-errors', () => {
         expect(getErrorTypeFromErrorMessage(undefined)).toEqual('UntypedError');
         expect(getErrorTypeFromErrorMessage('')).toEqual('UntypedError');
     });
+
+    test('test NotEnoughBalance message uses human readable values', () => {
+        const error = parseRpcError({
+            NotEnoughBalance: {
+                balance: '1000000000000000000000000',
+                cost: '10000000000000000000000000',
+                signer_id: 'test.near'
+            }
+        });
+
+        expect(error.message).toEqual('Sender test.near does not have enough balance 1 for operation costing 10');
+    });
+
+    test('test TriesToStake message uses human readable values', () => {
+        const error = parseRpcError({
+            TriesToStake: {
+                account_id: 'test.near',
+                balance: '9000000000000000000000000',
+                locked: '1000000000000000000000000',
+                stake: '10000000000000000000000000',
+            }
+        });
+
+        expect(error.message).toEqual('Account test.near tried to stake 10, but has staked 1 and only has 9');
+    });
 });
