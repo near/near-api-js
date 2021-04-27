@@ -235,6 +235,15 @@ export class Account {
                 public_key: publicKey.toString(),
                 finality: 'optimistic'
             });
+
+            // this function can be called multiple times and retrieve the same access key
+            // this checks to see if the access key was already retrieved and cached while
+            // the above network call was in flight. To keep nonce values in line, we return
+            // the cached access key.
+            if(this.accessKeyByPublicKeyCache[publicKey.toString()]) {
+                return { publicKey, accessKey: this.accessKeyByPublicKeyCache[publicKey.toString()] };
+            }
+
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
