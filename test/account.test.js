@@ -67,7 +67,7 @@ test('multiple parallel transactions', async () => {
     }));
 });
 
-test('access keys', async() => {
+test('findAccessKey returns the same access key when fetched simultaneously', async() => {
     const account = await testUtils.createAccount(nearjs);
 
     const [key1, key2] = await Promise.all([
