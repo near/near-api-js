@@ -67,6 +67,17 @@ test('multiple parallel transactions', async () => {
     }));
 });
 
+test('access keys', async() => {
+    const account = await testUtils.createAccount(nearjs);
+
+    const [key1, key2] = await Promise.all([
+        account.findAccessKey(),
+        account.findAccessKey()
+    ]);
+
+    expect(key1.accessKey).toBe(key2.accessKey);
+});
+
 describe('errors', () => {
     let oldLog;
     let logs;
