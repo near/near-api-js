@@ -35,14 +35,13 @@ Start the node by following instructions from [nearcore](https://github.com/near
 
 Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello
 
-# Update error messages
+# Update error schema
 
 Follow next steps:
 
 1. [Change hash for the commit with errors in the nearcore](https://github.com/near/near-api-js/blob/master/gen_error_types.js#L7-L9)
-2. Generate new types for errors: `node gen_error_types.js`
-3. `yarn fix` fix any issues with linter.
-4. `yarn build` to update `lib/**.js` files
+2. Fetch new schema: `node fetch_error_schema.js`
+3. `yarn build` to update `lib/**.js` files
 
 # License
 
