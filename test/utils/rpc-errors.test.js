@@ -16,7 +16,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type === `AccountAlreadyExists`).toBe(true);
+        expect(error.type === 'AccountAlreadyExists').toBe(true);
         expect(error.index).toBe(1);
         expect(error.account_id).toBe('bob.near');
         expect(formatError(error.type, error)).toBe('Can\'t create a new account bob.near, because it already exists');
@@ -36,7 +36,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type === `ReceiverMismatch`).toBe(true);
+        expect(error.type === 'ReceiverMismatch').toBe(true);
         expect(error.ak_receiver).toBe('test.near');
         expect(error.tx_receiver).toBe('bob.near');
         expect(formatError(error.type, error)).toBe(
@@ -57,7 +57,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type === `InvalidIteratorIndex`).toBe(true);
+        expect(error.type === 'InvalidIteratorIndex').toBe(true);
         expect(error.iterator_index).toBe(42);
         expect(formatError(error.type, error)).toBe('Iterator index 42 does not exist');
     });
@@ -74,7 +74,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type === `GasLimitExceeded`).toBe(true);
+        expect(error.type === 'GasLimitExceeded').toBe(true);
 
         expect(formatError(error.type, error)).toBe('Exceeded the maximum amount of gas allowed to burn per contract');
     });
