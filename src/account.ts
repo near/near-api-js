@@ -22,7 +22,7 @@ import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
-import { ServerError } from './generated/rpc_error_types';
+import { ServerError } from './utils/rpc_errors';
 
 import exponentialBackoff from './utils/exponential-backoff';
 

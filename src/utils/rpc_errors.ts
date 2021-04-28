@@ -2,15 +2,15 @@
 import Mustache from 'mustache';
 import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
-import * as CLASSMAP from '../generated/rpc_error_types';
-import { ServerError } from '../generated/rpc_error_types';
 import { utils } from '../common-index';
-
-export * from '../generated/rpc_error_types';
+import { TypedError } from '../utils/errors';
 
 const mustacheHelpers = {
     formatNear: () => (n, render) => utils.format.formatNearAmount(render(n))
 };
+
+export class ServerError extends TypedError {
+}
 
 class ServerTransactionError extends ServerError {
     public transaction_outcome: any;
@@ -20,7 +20,7 @@ export function parseRpcError(errorObj: Record<string, any>): ServerError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
     // NOTE: This assumes that all errors extend TypedError
-    const error = new CLASSMAP[errorClassName](formatError(errorClassName, result), errorClassName);
+    const error = new ServerError(formatError(errorClassName, result), errorClassName);
     Object.assign(error, result);
     return error;
 }
