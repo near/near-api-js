@@ -1,6 +1,7 @@
 const nearApi = require('../lib/index');
 const testUtils  = require('./test-utils');
 const BN = require('bn.js');
+const base58 = require('bs58');
 
 jest.setTimeout(20000);
 
@@ -37,6 +38,17 @@ test('json rpc fetch block info', withProvider(async (provider) => {
     expect(deprecatedStyle.header.height).toEqual(height);
 }));
 
+test('json rpc fetch block changes', withProvider(async (provider) => {
+    let stat = await provider.status();
+    let height = stat.sync_info.latest_block_height - 1;
+    let response = await provider.blockChanges({ blockId: height });
+    console.log(response);
+    expect(response).toMatchObject({
+        block_hash: expect.any(String),
+        changes: expect.any(Array)
+    });
+}));
+
 test('json rpc fetch chunk info', withProvider(async (provider) => {
     let stat = await provider.status();
     let height = stat.sync_info.latest_block_height - 1;
@@ -50,6 +62,18 @@ test('json rpc fetch chunk info', withProvider(async (provider) => {
 test('json rpc fetch validators info', withProvider(async (provider) => {
     let validators = await provider.validators(null);
     expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
+}));
+
+test('txStatus with string hash and buffer hash', withProvider(async(provider) => {
+    const near = await testUtils.setUpTestConnection();
+    const sender = await testUtils.createAccount(near);
+    const receiver = await testUtils.createAccount(near);
+    const outcome = await sender.sendMoney(receiver.accountId, new BN('1'));
+
+    const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
+    const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
+    expect(responseWithString).toEqual(outcome);
+    expect(responseWithUint8Array).toEqual(outcome);
 }));
 
 test('json rpc query account', withProvider(async (provider) => {
@@ -113,7 +137,7 @@ test('json rpc query view_code', withProvider(async (provider) => {
             finality: 'final',
             account_id: contract.contractId
         });
-    
+
         expect(response).toEqual({
             block_height: expect.any(Number),
             block_hash: expect.any(String),

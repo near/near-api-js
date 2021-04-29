@@ -10,7 +10,6 @@ export default async function exponentialBackoff(startWaitTime, retryNumber, wai
 
         await sleep(waitTime);
         waitTime *= waitBackoff;
-        i++;
     }
 
     return null;

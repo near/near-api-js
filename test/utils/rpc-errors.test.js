@@ -18,7 +18,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type).toBe('AccountAlreadyExists');
+        expect(error.type === 'AccountAlreadyExists').toBe(true);
         expect(error.index).toBe(1);
         expect(error.account_id).toBe('bob.near');
         expect(formatError(error.type, error)).toBe('Can\'t create a new account bob.near, because it already exists');
@@ -38,7 +38,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type).toBe('ReceiverMismatch');
+        expect(error.type === 'ReceiverMismatch').toBe(true);
         expect(error.ak_receiver).toBe('test.near');
         expect(error.tx_receiver).toBe('bob.near');
         expect(formatError(error.type, error)).toBe(
@@ -59,7 +59,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type).toBe('InvalidIteratorIndex');
+        expect(error.type === 'InvalidIteratorIndex').toBe(true);
         expect(error.iterator_index).toBe(42);
         expect(formatError(error.type, error)).toBe('Iterator index 42 does not exist');
     });
@@ -78,9 +78,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-
-        expect(error.type).toBe('GasLimitExceeded');
-
+        expect(error.type === 'GasLimitExceeded').toBe(true);
         expect(formatError(error.type, error)).toBe('Exceeded the maximum amount of gas allowed to burn per contract');
     });
 
@@ -118,7 +116,7 @@ describe('rpc-errors', () => {
         );
     });
 
-    test('test ServerError should have errorPath in context', async () => {
+    test('test ReceiptExecutionFailure should have errorPath in context', async () => {
         let errorPath = {
             TxExecutionError: {
                 InvalidTxError: {
@@ -143,7 +141,6 @@ describe('rpc-errors', () => {
 
         let error2 = parseRpcError(result.status.Failure);
         expect(error2.errorPath).toBe(errorPath);
-
     });
 
     test('test getErrorTypeFromErrorMessage', () => {
@@ -160,5 +157,30 @@ describe('rpc-errors', () => {
         expect(getErrorTypeFromErrorMessage('random string')).toEqual('UntypedError');
         expect(getErrorTypeFromErrorMessage(undefined)).toEqual('UntypedError');
         expect(getErrorTypeFromErrorMessage('')).toEqual('UntypedError');
+    });
+
+    test('test NotEnoughBalance message uses human readable values', () => {
+        const error = parseRpcError({
+            NotEnoughBalance: {
+                balance: '1000000000000000000000000',
+                cost: '10000000000000000000000000',
+                signer_id: 'test.near'
+            }
+        });
+
+        expect(error.message).toEqual('Sender test.near does not have enough balance 1 for operation costing 10');
+    });
+
+    test('test TriesToStake message uses human readable values', () => {
+        const error = parseRpcError({
+            TriesToStake: {
+                account_id: 'test.near',
+                balance: '9000000000000000000000000',
+                locked: '1000000000000000000000000',
+                stake: '10000000000000000000000000',
+            }
+        });
+
+        expect(error.message).toEqual('Account test.near tried to stake 10, but has staked 1 and only has 9');
     });
 });

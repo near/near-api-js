@@ -4,6 +4,11 @@ import schema from '../generated/rpc_error_schema.json';
 import messages from '../res/error_messages.json';
 import { TypedError } from './errors';
 import { ExecutionOutcomeWithIdView } from '../providers/provider';
+import { utils } from '../common-index';
+
+const mustacheHelpers = {
+    formatNear: () => (n, render) => utils.format.formatNearAmount(render(n))
+};
 
 export class RpcError extends TypedError {
     transactionHash?: string;
@@ -51,7 +56,10 @@ export function parseReceiptExecutionFailure(result: any): ReceiptExecutionFailu
 
 export function formatError(errorType: string, errorData): string {
     if (typeof messages[errorType] === 'string') {
-        return Mustache.render(messages[errorType], errorData);
+        return Mustache.render(messages[errorType], {
+            ...errorData,
+            ...mustacheHelpers
+        });
     }
     return JSON.stringify(errorData);
 }

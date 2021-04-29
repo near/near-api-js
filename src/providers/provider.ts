@@ -94,15 +94,35 @@ export interface TotalWeight {
 }
 
 export interface BlockHeader {
-    approval_mask: string;
-    approval_sigs: string;
-    hash: string;
     height: number;
+    epoch_id: string;
+    next_epoch_id: string;
+    hash: string;
     prev_hash: string;
     prev_state_root: string;
+    chunk_receipts_root: string;
+    chunk_headers_root: string;
+    chunk_tx_root: string;
+    outcome_root: string;
+    chunks_included: number;
+    challenges_root: string;
     timestamp: number;
-    total_weight: TotalWeight;
-    tx_root: string;
+    timestamp_nanosec: string;
+    random_value: string;
+    validator_proposals: any[];
+    chunk_mask: boolean[];
+    gas_price: string;
+    rent_paid: string;
+    validator_reward: string;
+    total_supply: string;
+    challenges_result: any[];
+    last_final_block: string;
+    last_ds_final_block: string;
+    next_bp_hash: string;
+    block_merkle_root: string;
+    approvals: string[];
+    signature: string;
+    latest_protocol_version: number;
 }
 
 export type ChunkHash = string;
@@ -137,6 +157,27 @@ export interface ChunkResult {
     transactions: Transaction[];
 }
 
+export interface Chunk {
+    chunk_hash: string;
+    prev_block_hash: string;
+    outcome_root: string;
+    prev_state_root: string;
+    encoded_merkle_root: string;
+    encoded_length: number;
+    height_created: number;
+    height_included: number;
+    shard_id: number;
+    gas_used: number;
+    gas_limit: number;
+    rent_paid: string;
+    validator_reward: string;
+    balance_burnt: string;
+    outgoing_receipts_root: string;
+    tx_root: string;
+    validator_proposals: any[];
+    signature: string;
+}
+
 export interface Transaction {
     hash: string;
     public_key: string;
@@ -145,8 +186,24 @@ export interface Transaction {
 }
 
 export interface BlockResult {
+    author: string;
     header: BlockHeader;
-    transactions: Transaction[];
+    chunks: Chunk[];
+}
+
+export interface BlockChange {
+    type: string;
+    account_id: string;
+}
+
+export interface BlockChangeResult {
+    block_hash: string;
+    changes: BlockChange[];
+}
+
+export interface ChangeResult {
+    block_hash: string;
+    changes: any[];
 }
 
 export interface CurrentEpochValidatorInfo {
@@ -244,6 +301,11 @@ export interface LightClientProofRequest {
 
 export interface GasPrice {
     gas_price: string;
+}
+
+export interface AccessKeyWithPublicKey {
+    account_id: string;
+    public_key: string;
 }
 
 export interface QueryResponseKind {
@@ -349,18 +411,26 @@ export abstract class Provider {
     abstract status(): Promise<NodeStatusResult>;
 
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
-    abstract txStatus(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
+    abstract sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    abstract txStatus(txHash: Uint8Array | string, accountId: string): Promise<FinalExecutionOutcome>;
+    abstract txStatusReceipts(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
     abstract query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
     abstract query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
     // TODO: BlockQuery type?
     abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
+    abstract blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult>;
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     // TODO: Use BlockQuery?
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
     abstract experimental_genesisConfig(): Promise<NearProtocolConfig>;
     abstract experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
-    abstract gasPrice(blockId: BlockId): Promise<GasPrice>
+    abstract gasPrice(blockId: BlockId): Promise<GasPrice>;
+    abstract accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    abstract singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    abstract accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    abstract contractStateChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference, keyPrefix: string): Promise<ChangeResult>;
+    abstract contractCodeChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
 }
 
 /** @hidden */

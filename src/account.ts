@@ -22,7 +22,6 @@ import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseReceiptExecutionFailure, RpcError } from './utils/rpc_errors';
-
 import exponentialBackoff from './utils/exponential-backoff';
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
@@ -233,6 +232,15 @@ export class Account {
                 public_key: publicKey.toString(),
                 finality: 'optimistic'
             });
+
+            // this function can be called multiple times and retrieve the same access key
+            // this checks to see if the access key was already retrieved and cached while
+            // the above network call was in flight. To keep nonce values in line, we return
+            // the cached access key.
+            if(this.accessKeyByPublicKeyCache[publicKey.toString()]) {
+                return { publicKey, accessKey: this.accessKeyByPublicKeyCache[publicKey.toString()] };
+            }
+
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
