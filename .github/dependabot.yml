@@ -1,0 +1,50 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: typescript
+    versions:
+    - 4.0.5
+    - 4.0.6
+    - 4.0.7
+    - 4.2.3
+    - 4.2.4
+  - dependency-name: browserify
+    versions:
+    - 17.0.0
+  - dependency-name: semver
+    versions:
+    - 7.3.5
+  - dependency-name: ts-morph
+    versions:
+    - 10.0.1
+    - 10.0.2
+    - 9.1.0
+  - dependency-name: mustache
+    versions:
+    - 4.2.0
+  - dependency-name: typedoc
+    versions:
+    - 0.20.19
+    - 0.20.20
+    - 0.20.23
+    - 0.20.24
+    - 0.20.25
+    - 0.20.27
+    - 0.20.28
+    - 0.20.29
+    - 0.20.30
+    - 0.20.32
+    - 0.20.33
+    - 0.20.34
+  - dependency-name: highlight.js
+    versions:
+    - 10.4.1
+    - 10.6.0
+  - dependency-name: node-notifier
+    versions:
+    - 8.0.1
