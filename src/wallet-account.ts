@@ -318,7 +318,7 @@ export class ConnectedWalletAccount extends Account {
 
         // TODO: Refactor to avoid querying keys 2 times
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
-        if (localKey.toString() === transaction.publicKey.toString()) {
+        if (localKey && localKey.toString() === transaction.publicKey.toString()) {
             return await super.signAndSendTransaction(receiverId, actions);
         }
 

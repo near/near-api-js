@@ -131,13 +131,12 @@ export class Account {
         if (!accessKeyInfo) {
             throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
         }
-        const { accessKey } = accessKeyInfo;
+        const { accessKey, publicKey } = accessKeyInfo;
 
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
 
         const nonce = ++accessKey.nonce;
-        const publicKey = PublicKey.from((accessKey as any).public_key);
         return createTransaction(this.accountId, publicKey, receiverId, nonce, actions, baseDecode(blockHash));
     }
 
