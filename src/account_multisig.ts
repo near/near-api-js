@@ -12,7 +12,7 @@ import { FunctionCallPermissionView } from './providers/provider';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';
 export const MULTISIG_ALLOWANCE = new BN(parseNearAmount('1'));
-// TODO: Different gas value for different requests
+// TODO: Different gas value for different requests (can reduce gas usage dramatically)
 export const MULTISIG_GAS = new BN('100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
@@ -72,6 +72,7 @@ export class AccountMultisig extends Account {
             throw e;
         }
 
+        // TODO: Are following even needed? Seems like it throws on error already
         if (!result.status) {
             throw new Error('Request failed');
         }
@@ -98,6 +99,7 @@ export class AccountMultisig extends Account {
 
     async deleteUnconfirmedRequests () {
         // TODO: Delete in batch, don't delete unexpired
+        // TODO: Delete in batch, don't delete unexpired (can reduce gas usage dramatically)
         const request_ids = await this.getRequestIds();
         const { requestId } = this.getRequest();
         for (const requestIdToDelete of request_ids) {
