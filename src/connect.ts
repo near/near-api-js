@@ -40,7 +40,7 @@ export interface ConnectConfig extends NearConfig {
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
     // Try to find extra key in `KeyPath` if provided.
-    if (config.keyPath && (config.keyStore || config.deps?.keyStore)) {
+    if (config.keyPath && (config.keyStore || config.deps && config.deps.keyStore)) {
         try {
             const accountKeyFile = await readKeyFile(config.keyPath);
             if (accountKeyFile[0]) {
