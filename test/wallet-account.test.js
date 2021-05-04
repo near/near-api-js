@@ -20,6 +20,7 @@ let nearFake;
 let walletConnection;
 let keyStore = new nearApi.keyStores.InMemoryKeyStore();
 beforeEach(() => {
+    keyStore.clear();
     nearFake = {
         config: {
             networkId: 'networkId',
