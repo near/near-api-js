@@ -51,7 +51,10 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                 if (!config.masterAccount) {
                     config.masterAccount = accountKeyFile[0];
                 }
-                config.keyStore = new MergeKeyStore([keyPathStore, (config.keyStore || config.deps.keyStore)], 1);
+                config.keyStore = new MergeKeyStore([
+                    keyPathStore,
+                    (config.keyStore || config.deps.keyStore)
+                ], { writeKeyStoreIndex: 1 });
                 console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {

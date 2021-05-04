@@ -34,17 +34,22 @@ import { KeyPair } from '../utils/key_pair';
  * const near = await connect(config)
  * ```
  */
+
+interface MergeKeyStoreOptions {
+    writeKeyStoreIndex: number;
+}
+
 export class MergeKeyStore extends KeyStore {
-    private writeIndex: number;
+    private options: MergeKeyStoreOptions;
     keyStores: KeyStore[];
 
     /**
      * @param keyStores read calls are attempted from start to end of array
-     * @param writeIndex the keystore index that will receive all write calls
+     * @param options.writeKeyStoreIndex the keystore index that will receive all write calls
      */
-    constructor(keyStores: KeyStore[], writeIndex = 0) {
+    constructor(keyStores: KeyStore[], options: MergeKeyStoreOptions) {
         super();
-        this.writeIndex = writeIndex;
+        this.options = options;
         this.keyStores = keyStores;
     }
 
@@ -55,7 +60,7 @@ export class MergeKeyStore extends KeyStore {
      * @param keyPair The key pair to store in local storage
      */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        await this.keyStores[this.writeIndex].setKey(networkId, accountId, keyPair);
+        await this.keyStores[this.options.writeKeyStoreIndex].setKey(networkId, accountId, keyPair);
     }
 
     /**
