@@ -35,13 +35,16 @@ import { KeyPair } from '../utils/key_pair';
  * ```
  */
 export class MergeKeyStore extends KeyStore {
+    private writeIndex: number;
     keyStores: KeyStore[];
 
     /**
-     * @param keyStores first keystore gets all write calls, read calls are attempted from start to end of array
+     * @param keyStores read calls are attempted from start to end of array
+     * @param writeIndex the keystore index that will receive all write calls
      */
-    constructor(keyStores: KeyStore[]) {
+    constructor(keyStores: KeyStore[], writeIndex = 0) {
         super();
+        this.writeIndex = writeIndex;
         this.keyStores = keyStores;
     }
 
@@ -52,7 +55,7 @@ export class MergeKeyStore extends KeyStore {
      * @param keyPair The key pair to store in local storage
      */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        await this.keyStores[0].setKey(networkId, accountId, keyPair);
+        await this.keyStores[this.writeIndex].setKey(networkId, accountId, keyPair);
     }
 
     /**
