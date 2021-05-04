@@ -24,6 +24,7 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
 
 interface SignInOptions {
     contractId?: string;
+    methodNames?: string[];
     // TODO: Replace following with single callbackUrl
     successUrl?: string;
     failureUrl?: string;
@@ -148,6 +149,13 @@ export class WalletConnection {
             newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
             await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         }
+
+        if(options.methodNames) {
+            options.methodNames.forEach(methodName => {
+                newUrl.searchParams.append('methodNames', methodName);
+            });
+        }
+
         window.location.assign(newUrl.toString());
     }
 
