@@ -8,7 +8,7 @@ import { PublicKey } from './utils/key_pair';
  * Account creator provides an interface for implementations to actually create accounts
  */
 export abstract class AccountCreator {
-    abstract async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void>;
+    abstract createAccount(newAccountId: string, publicKey: PublicKey): Promise<void>;
 }
 
 export class LocalAccountCreator extends AccountCreator {

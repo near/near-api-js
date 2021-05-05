@@ -7,10 +7,10 @@ import { KeyPair } from '../utils/key_pair';
  * @example {@link connect}
  */
 export abstract class KeyStore {
-    abstract async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void>;
-    abstract async getKey(networkId: string, accountId: string): Promise<KeyPair>;
-    abstract async removeKey(networkId: string, accountId: string): Promise<void>;
-    abstract async clear(): Promise<void>;
-    abstract async getNetworks(): Promise<string[]>;
-    abstract async getAccounts(networkId: string): Promise<string[]>;
+    abstract setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void>;
+    abstract getKey(networkId: string, accountId: string): Promise<KeyPair>;
+    abstract removeKey(networkId: string, accountId: string): Promise<void>;
+    abstract clear(): Promise<void>;
+    abstract getNetworks(): Promise<string[]>;
+    abstract getAccounts(networkId: string): Promise<string[]>;
 }

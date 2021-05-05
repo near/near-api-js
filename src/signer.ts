@@ -11,14 +11,14 @@ export abstract class Signer {
     /**
      * Creates new key and returns public key.
      */
-    abstract async createKey(accountId: string, networkId?: string): Promise<PublicKey>;
+    abstract createKey(accountId: string, networkId?: string): Promise<PublicKey>;
 
     /**
      * Returns public key for given account / network.
      * @param accountId accountId to retrieve from.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
-    abstract async getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey>;
+    abstract getPublicKey(accountId?: string, networkId?: string): Promise<PublicKey>;
 
     /**
      * Signs given message, by first hashing with sha256.
@@ -26,7 +26,7 @@ export abstract class Signer {
      * @param accountId accountId to use for signing.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
-    abstract async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
+    abstract signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
 }
 
 /**
