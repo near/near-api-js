@@ -1,4 +1,5 @@
 import BN from 'bn.js';
+import depd from 'depd';
 import { Account } from './account';
 import { getTransactionLastResult } from './providers';
 import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
@@ -17,6 +18,15 @@ const isUint8Array = (x: any) =>
 
 const isObject = (x: any) =>
     Object.prototype.toString.call(x) === '[object Object]';
+
+interface ChangeMethodOptions {
+    args: object;
+    methodName: string;
+    gas?: BN;
+    amount?: BN;
+    meta?: string;
+    callbackUrl?: string;
+}
 
 export interface ContractMethods {
     /**
@@ -59,7 +69,12 @@ export interface ContractMethods {
  *   });
  * 
  *   // use a contract change method
- *   await contract.addMessage({ text: 'My new message' })
+ *   await contract.addMessage({
+ *      meta: 'some info',
+ *      callbackUrl: 'https://example.com/callback',
+ *      args: { text: 'my message' },
+ *      amount: 1
+ *   })
  * }
  * ```
  */
@@ -92,16 +107,42 @@ export class Contract {
             Object.defineProperty(this, methodName, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(methodName, async (args: object = {}, gas?: BN, amount?: BN, ...ignored) => {
-                    if (ignored.length || !(isObject(args) || isUint8Array(args))) {
+                value: nameFunction(methodName, async (...args: any[]) => {
+                    if (args.length && (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))) {
                         throw new PositionalArgsError();
                     }
-                    validateBNLike({ gas, amount });
-                    const rawResult = await this.account.functionCall(this.contractId, methodName, args, gas, amount);
-                    return getTransactionLastResult(rawResult);
+
+                    if(args.length > 1 || !(args[0] && args[0].args)) {
+                        const deprecate = depd('contract.methodName(args, gas, amount)');
+                        deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
+                        return this._changeMethod({
+                            methodName,
+                            args: args[0],
+                            gas: args[1],
+                            amount: args[2]
+                        });
+                    }
+
+                    return this._changeMethod({ methodName, ...args[0] });
                 })
             });
         });
+    }
+
+    private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl }: ChangeMethodOptions) {
+        validateBNLike({ gas, amount });
+
+        const rawResult = await this.account.functionCall({
+            contractId: this.contractId,
+            methodName,
+            args,
+            gas,
+            attachedDeposit: amount,
+            walletMeta: meta,
+            walletCallbackUrl: callbackUrl
+        });
+
+        return getTransactionLastResult(rawResult);
     }
 }
 

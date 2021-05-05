@@ -11,6 +11,17 @@ interface SignInOptions {
     failureUrl?: string;
 }
 /**
+ * Information to send NEAR wallet for signing transactions and redirecting the browser back to the calling application
+ */
+interface RequestSignTransactionsOptions {
+    /** list of transactions to sign */
+    transactions: Transaction[];
+    /** url NEAR Wallet will redirect to after transaction signing is complete */
+    callbackUrl?: string;
+    /** meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
+    meta?: string;
+}
+/**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
  *
@@ -76,10 +87,16 @@ export declare class WalletConnection {
     requestSignIn(contractIdOrOptions?: string | SignInOptions, title?: string, successUrl?: string, failureUrl?: string): Promise<void>;
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
+     */
+    requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void>;
+    /**
+     * @deprecated
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      * @param transactions Array of Transaction objects that will be requested to sign
      * @param callbackUrl The url to navigate to after the user is prompted to sign
      */
-    requestSignTransactions(transactions: Transaction[], callbackUrl?: string): Promise<void>;
+    requestSignTransactions(transactions: Transaction[], callbackUrl?: string, meta?: string): Promise<void>;
+    private _requestSignTransactions;
     /**
      * @hidden
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
@@ -113,7 +130,8 @@ export declare class ConnectedWalletAccount extends Account {
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
+    private _signAndSendTransaction;
     /**
      * Check if given access key allows the function call or method attempted in transaction
      * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items

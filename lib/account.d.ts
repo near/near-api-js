@@ -16,6 +16,51 @@ export interface AccountAuthorizedApp {
     amount: string;
     publicKey: PublicKey;
 }
+/**
+ * Options used to initiate sining and sending transactions
+ */
+export interface SignAndSendTransactionOptions {
+    receiverId: string;
+    actions: Action[];
+    /**
+     * Metadata to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
+    walletMeta?: string;
+    /**
+     * Callback url to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
+    walletCallbackUrl?: string;
+}
+/**
+ * Options used to initiate a function call (especially a change function call)
+ * @see {@link viewFunction} to initiate a view function call
+ */
+export interface FunctionCallOptions {
+    /** The NEAR account id where the contract is deployed */
+    contractId: string;
+    /** The name of the method to invoke */
+    methodName: string;
+    /**
+     * named arguments to pass the method `{ messageText: 'my message' }`
+     */
+    args: object;
+    /** max amount of gas that method call can use */
+    gas?: BN;
+    /** amount of NEAR (in yoctoNEAR) to send together with the call */
+    attachedDeposit?: BN;
+    /**
+     * Metadata to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
+    walletMeta?: string;
+    /**
+     * Callback url to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+     */
+    walletCallbackUrl?: string;
+}
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
 /**
  * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
@@ -50,11 +95,19 @@ export declare class Account {
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
+     */
+    protected signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
+    /**
+     * @deprecated
+     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
+     * @see {@link JsonRpcProvider.sendTransaction}
      *
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
      */
     protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    private signAndSendTransactionV1;
+    private signAndSendTransactionV2;
     /** @hidden */
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKeyView;
@@ -98,15 +151,21 @@ export declare class Account {
      * @param data The compiled contract code
      */
     deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
+    functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
+     * @deprecated
+     *
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The method name on the contract as it is written in the contract code
      * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
      *  or `Uint8Array` instance which represents bytes passed as is.
      * @param gas max amount of gas that method call can use
-      * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+     * @param amount amount of NEAR (in yoctoNEAR) to send together with the call
+     * @returns {Promise<FinalExecutionOutcome>}
      */
     functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>;
+    private functionCallV1;
+    private functionCallV2;
     /**
      * @see {@link https://docs.near.org/docs/concepts/account#access-keys}
      * @todo expand this API to support more options.
