@@ -150,7 +150,7 @@ export class WalletConnection {
             await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         }
 
-        if(options.methodNames) {
+        if (options.methodNames) {
             options.methodNames.forEach(methodName => {
                 newUrl.searchParams.append('methodNames', methodName);
             });
