@@ -34,11 +34,13 @@ import { KeyPair } from '../utils/key_pair';
  * ```
  */
 export declare class MergeKeyStore extends KeyStore {
+    private writeIndex;
     keyStores: KeyStore[];
     /**
-     * @param keyStores first keystore gets all write calls, read calls are attempted from start to end of array
+     * @param keyStores read calls are attempted from start to end of array
+     * @param writeIndex the keystore index that will receive all write calls
      */
-    constructor(keyStores: KeyStore[]);
+    constructor(keyStores: KeyStore[], writeIndex?: number);
     /**
      * Store a {@link KeyPain} to the first index of a key store array
      * @param networkId The targeted network. (ex. default, betanet, etc…)
