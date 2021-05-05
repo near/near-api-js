@@ -339,7 +339,7 @@ export class JsonRpcProvider extends Provider {
      * @param method RPC method
      * @param params Parameters to the method
      */
-    async sendJsonRpc<T>(method: string, params: object): Promise<T> {
+    async sendJsonRpc<T>(method: string, params: any): Promise<T> {
         const result = await exponentialBackoff(REQUEST_RETRY_WAIT, REQUEST_RETRY_NUMBER, REQUEST_RETRY_WAIT_BACKOFF, async () => {
             try {
                 const request = {

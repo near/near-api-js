@@ -159,5 +159,5 @@ export declare class JsonRpcProvider extends Provider {
      * @param method RPC method
      * @param params Parameters to the method
      */
-    sendJsonRpc<T>(method: string, params: object): Promise<T>;
+    sendJsonRpc<T>(method: string, params: any): Promise<T>;
 }
