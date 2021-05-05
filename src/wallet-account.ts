@@ -217,7 +217,8 @@ export class WalletConnection {
             }
             const publicKey = PublicKey.from(accessKey.public_key);
         
-            const nonce = accessKey.access_key.nonce + index + 1;
+            const nonce = accessKey.access_key.nextNonce();
+            
             return createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
         }));
         
