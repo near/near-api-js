@@ -31,8 +31,6 @@ global.fetch = fetch;
 export interface ConnectConfig extends NearConfig {
     /**
      * Initialize an {@link InMemoryKeyStore} by reading the file at keyPath.
-     *
-     * @important {@link ConnectConfig.keyStore | keyStore} and {@link ConnectConfig.deps | deps.keyStore} take priority over keyPath.
      */
     keyPath?: string;
 }
@@ -42,7 +40,7 @@ export interface ConnectConfig extends NearConfig {
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
     // Try to find extra key in `KeyPath` if provided.
-    if (config.keyPath && config.deps && config.deps.keyStore) {
+    if (config.keyPath && (config.keyStore || config.deps && config.deps.keyStore)) {
         try {
             const accountKeyFile = await readKeyFile(config.keyPath);
             if (accountKeyFile[0]) {
@@ -53,7 +51,10 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                 if (!config.masterAccount) {
                     config.masterAccount = accountKeyFile[0];
                 }
-                config.deps.keyStore = new MergeKeyStore([config.deps.keyStore, keyPathStore]);
+                config.keyStore = new MergeKeyStore([
+                    keyPathStore,
+                    (config.keyStore || config.deps.keyStore)
+                ], { writeKeyStoreIndex: 1 });
                 console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {

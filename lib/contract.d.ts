@@ -38,7 +38,12 @@ export interface ContractMethods {
  *   });
  *
  *   // use a contract change method
- *   await contract.addMessage({ text: 'My new message' })
+ *   await contract.addMessage({
+ *      meta: 'some info',
+ *      callbackUrl: 'https://example.com/callback',
+ *      args: { text: 'my message' },
+ *      amount: 1
+ *   })
  * }
  * ```
  */
@@ -51,4 +56,5 @@ export declare class Contract {
      * @param options NEAR smart contract methods that your application will use. These will be available as `contract.methodName`
      */
     constructor(account: Account, contractId: string, options: ContractMethods);
+    private _changeMethod;
 }
