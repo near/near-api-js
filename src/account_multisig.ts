@@ -76,7 +76,7 @@ export class AccountMultisig extends Account {
         if (!result.status) {
             throw new Error('Request failed');
         }
-        const status: any = Object.assign({}, result.status);
+        const status: any = { ...result.status };
         if (!status.SuccessValue || typeof status.SuccessValue !== 'string') {
             throw new Error('Request failed');
         }
