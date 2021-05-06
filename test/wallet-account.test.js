@@ -20,6 +20,7 @@ let nearFake;
 let walletConnection;
 let keyStore = new nearApi.keyStores.InMemoryKeyStore();
 beforeEach(() => {
+    keyStore.clear();
     nearFake = {
         config: {
             networkId: 'networkId',
@@ -84,6 +85,29 @@ describe('can request sign in', () => {
     });
 });
 
+it('can request sign in with methodNames', async () => {
+    await walletConnection.requestSignIn({
+        contractId: 'signInContract',
+        methodNames: ['hello', 'goodbye'],
+        successUrl: 'http://example.com/success', 
+        failureUrl: 'http://example.com/fail'
+    });
+
+    let accounts = await keyStore.getAccounts('networkId');
+    expect(accounts).toHaveLength(1);
+    expect(accounts[0]).toMatch(/^pending_key.+/);
+    expect(url.parse(lastRedirectUrl, true)).toMatchObject({
+        protocol: 'http:',
+        host: 'example.com',
+        query: {
+            contract_id: 'signInContract',
+            methodNames: ['hello', 'goodbye'],
+            success_url: 'http://example.com/success',
+            failure_url: 'http://example.com/fail',
+            public_key: (await keyStore.getKey('networkId', accounts[0])).publicKey.toString()
+        }
+    });
+});
 
 it('can complete sign in', async () => {
     const keyPair = nearApi.KeyPair.fromRandom('ed25519');

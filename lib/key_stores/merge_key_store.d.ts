@@ -33,14 +33,17 @@ import { KeyPair } from '../utils/key_pair';
  * const near = await connect(config)
  * ```
  */
+interface MergeKeyStoreOptions {
+    writeKeyStoreIndex: number;
+}
 export declare class MergeKeyStore extends KeyStore {
-    private writeIndex;
+    private options;
     keyStores: KeyStore[];
     /**
      * @param keyStores read calls are attempted from start to end of array
-     * @param writeIndex the keystore index that will receive all write calls
+     * @param options.writeKeyStoreIndex the keystore index that will receive all write calls
      */
-    constructor(keyStores: KeyStore[], writeIndex?: number);
+    constructor(keyStores: KeyStore[], options?: MergeKeyStoreOptions);
     /**
      * Store a {@link KeyPain} to the first index of a key store array
      * @param networkId The targeted network. (ex. default, betanet, etc…)
@@ -79,3 +82,4 @@ export declare class MergeKeyStore extends KeyStore {
     /** @hidden */
     toString(): string;
 }
+export {};

@@ -7,6 +7,7 @@ import { PublicKey } from './utils';
 import { Connection } from './connection';
 interface SignInOptions {
     contractId?: string;
+    methodNames?: string[];
     successUrl?: string;
     failureUrl?: string;
 }
