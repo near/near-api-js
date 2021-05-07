@@ -6,7 +6,7 @@
  * @module walletAccount
  */
 import depd from 'depd';
-import { Account } from './account';
+import { Account, SignAndSendTransactionOptions } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
 import { FinalExecutionOutcome } from './providers';
@@ -24,9 +24,22 @@ const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pe
 
 interface SignInOptions {
     contractId?: string;
+    methodNames?: string[];
     // TODO: Replace following with single callbackUrl
     successUrl?: string;
     failureUrl?: string;
+}
+
+/**
+ * Information to send NEAR wallet for signing transactions and redirecting the browser back to the calling application
+ */
+interface RequestSignTransactionsOptions {
+    /** list of transactions to sign */
+    transactions: Transaction[];
+    /** url NEAR Wallet will redirect to after transaction signing is complete */
+    callbackUrl?: string;
+    /** meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
+    meta?: string;
 }
 
 /**
@@ -148,15 +161,43 @@ export class WalletConnection {
             newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
             await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         }
+
+        if (options.methodNames) {
+            options.methodNames.forEach(methodName => {
+                newUrl.searchParams.append('methodNames', methodName);
+            });
+        }
+
         window.location.assign(newUrl.toString());
     }
 
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
+     */
+    requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void>
+    /**
+     * @deprecated
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      * @param transactions Array of Transaction objects that will be requested to sign
      * @param callbackUrl The url to navigate to after the user is prompted to sign
      */
-    async requestSignTransactions(transactions: Transaction[], callbackUrl?: string) {
+    requestSignTransactions(transactions: Transaction[], callbackUrl?: string, meta?: string): Promise<void>
+
+    async requestSignTransactions(...args: any[]) {
+        if(Array.isArray(args[0])) {
+            const deprecate = depd('WalletConnection.requestSignTransactions(transactions, callbackUrl, meta)');
+            deprecate('use `WalletConnection.requestSignTransactions(RequestSignTransactionsOptions)` instead');
+            return this._requestSignTransactions({
+                transactions: args[0],
+                callbackUrl: args[1],
+                meta: args[2]
+            });
+        }
+
+        return this._requestSignTransactions(args[0]);
+    }
+
+    private async _requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
@@ -165,6 +206,7 @@ export class WalletConnection {
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
+        if(meta) newUrl.searchParams.set('meta', meta);
 
         window.location.assign(newUrl.toString());
     }
@@ -246,7 +288,15 @@ export class ConnectedWalletAccount extends Account {
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */
-    protected async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome> {
+        if(typeof args[0] === 'string') {
+            return this._signAndSendTransaction({ receiverId: args[0], actions: args[1] });
+        }
+
+        return this._signAndSendTransaction(args[0]);
+    }
+
+    private async _signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
@@ -255,7 +305,7 @@ export class ConnectedWalletAccount extends Account {
 
         if (localKey && localKey.toString() === accessKey.public_key) {
             try {
-                return await super.signAndSendTransaction(receiverId, actions);
+                return await super.signAndSendTransaction({ receiverId, actions });
             } catch (e) {
                 if (e.type === 'NotEnoughBalance') {
                     accessKey = await this.accessKeyForTransaction(receiverId, actions);
@@ -272,7 +322,11 @@ export class ConnectedWalletAccount extends Account {
         // TODO: Cache & listen for nonce updates for given access key
         const nonce = accessKey.access_key.nonce + 1;
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
-        await this.walletConnection.requestSignTransactions([transaction], window.location.href);
+        await this.walletConnection.requestSignTransactions({
+            transactions: [transaction],
+            meta: walletMeta,
+            callbackUrl: walletCallbackUrl
+        });
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {

@@ -8,29 +8,19 @@ export declare const MULTISIG_ALLOWANCE: BN;
 export declare const MULTISIG_GAS: BN;
 export declare const MULTISIG_DEPOSIT: BN;
 export declare const MULTISIG_CHANGE_METHODS: string[];
-export declare const MULTISIG_VIEW_METHODS: string[];
 export declare const MULTISIG_CONFIRM_METHODS: string[];
-interface MultisigContract {
-    get_request_nonce(): any;
-    list_request_ids(): any;
-    delete_request({ request_id: Number }: {
-        request_id: any;
-    }): any;
-}
 declare type sendCodeFunction = () => Promise<any>;
 declare type getCodeFunction = (method: any) => Promise<string>;
 declare type verifyCodeFunction = (securityCode: any) => Promise<any>;
 export declare class AccountMultisig extends Account {
-    contract: MultisigContract;
     storage: any;
     onAddRequestResult: Function;
     constructor(connection: Connection, accountId: string, options: any);
     signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
-    signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
+    private _signAndSendTransaction;
     deleteUnconfirmedRequests(): Promise<void>;
-    getRequestNonce(): Promise<number>;
     getRequestIds(): Promise<string>;
-    isDeleteAction(actions: any): boolean;
     getRequest(): any;
     setRequest(data: any): any;
 }

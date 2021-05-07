@@ -1,8 +1,7 @@
 'use strict';
 
 import BN from 'bn.js';
-import { Account } from './account';
-import { Contract } from './contract';
+import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
@@ -13,17 +12,11 @@ import { FunctionCallPermissionView } from './providers/provider';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';
 export const MULTISIG_ALLOWANCE = new BN(parseNearAmount('1'));
+// TODO: Different gas value for different requests (can reduce gas usage dramatically)
 export const MULTISIG_GAS = new BN('100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
-export const MULTISIG_VIEW_METHODS = ['get_request_nonce', 'list_request_ids'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
-
-interface MultisigContract {
-    get_request_nonce(): any;
-    list_request_ids(): any;
-    delete_request({ request_id: Number }): any;
-}
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
@@ -35,7 +28,6 @@ const storageFallback = {
 };
 
 export class AccountMultisig extends Account {
-    public contract: MultisigContract;
     public storage: any;
     public onAddRequestResult: Function;
 
@@ -43,23 +35,23 @@ export class AccountMultisig extends Account {
         super(connection, accountId);
         this.storage = options.storage;
         this.onAddRequestResult = options.onAddRequestResult;
-        this.contract = getContract(this) as MultisigContract;
     }
 
     async signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         return super.signAndSendTransaction(receiverId, actions);
     }
 
-    async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome> {
+        if(typeof args[0] === 'string') {
+            return this._signAndSendTransaction({ receiverId: args[0], actions: args[1] });
+        }
+
+        return this._signAndSendTransaction(args[0]);
+    }
+
+    private async _signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
-        if (this.isDeleteAction(actions)) {
-            return await super.signAndSendTransaction(accountId, actions);
-        }
-        await this.deleteUnconfirmedRequests();
-
-        const requestId = await this.getRequestNonce();
-        this.setRequest({ accountId, requestId, actions });
         const args = Buffer.from(JSON.stringify({
             request: {
                 receiver_id: receiverId,
@@ -67,22 +59,56 @@ export class AccountMultisig extends Account {
             }
         }));
 
-        const result = await super.signAndSendTransaction(accountId, [
-            functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
-        ]);
+        let result;
+        try {
+            result = await super.signAndSendTransaction(accountId, [
+                functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
+            ]);
+        } catch(e) {
+            if (e.toString().includes('Account has too many active requests. Confirm or delete some')) {
+                await this.deleteUnconfirmedRequests();
+                return await this.signAndSendTransaction(receiverId, actions);
+            }
+            throw e;
+        }
+
+        // TODO: Are following even needed? Seems like it throws on error already
+        if (!result.status) {
+            throw new Error('Request failed');
+        }
+        const status: any = { ...result.status };
+        if (!status.SuccessValue || typeof status.SuccessValue !== 'string') {
+            throw new Error('Request failed');
+        }
+
+        this.setRequest({
+            accountId,
+            actions,
+            requestId: parseInt(Buffer.from(status.SuccessValue, 'base64').toString('ascii'), 10)
+        });
+
         if (this.onAddRequestResult) {
             await this.onAddRequestResult(result);
         }
+
+        // NOTE there is no await on purpose to avoid blocking for 2fa
+        this.deleteUnconfirmedRequests();
 
         return result;
     }
 
     async deleteUnconfirmedRequests () {
-        const { contract } = this;
+        // TODO: Delete in batch, don't delete unexpired
+        // TODO: Delete in batch, don't delete unexpired (can reduce gas usage dramatically)
         const request_ids = await this.getRequestIds();
-        for (const request_id of request_ids) {
+        const { requestId } = this.getRequest();
+        for (const requestIdToDelete of request_ids) {
+            if (requestIdToDelete == requestId) {
+                continue;
+            }
             try {
-                await contract.delete_request({ request_id });
+                await super.signAndSendTransaction(this.accountId, 
+                    [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]);
             } catch(e) {
                 console.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
             }
@@ -91,16 +117,10 @@ export class AccountMultisig extends Account {
 
     // helpers
 
-    async getRequestNonce(): Promise<number> {
-        return this.contract.get_request_nonce();
-    }
-
     async getRequestIds(): Promise<string> {
-        return this.contract.list_request_ids();
-    }
-
-    isDeleteAction(actions): boolean {
-        return actions && actions[0] && actions[0].functionCall && actions[0].functionCall.methodName === 'delete_request';
+        // TODO: Read requests from state to allow filtering by expiration time
+        // TODO: https://github.com/near/core-contracts/blob/305d1db4f4f2cf5ce4c1ef3479f7544957381f11/multisig/src/lib.rs#L84
+        return this.viewFunction(this.accountId, 'list_request_ids');
     }
 
     getRequest() {
@@ -139,7 +159,6 @@ export class Account2FA extends AccountMultisig {
         this.getCode = options.getCode || this.getCodeDefault;
         this.verifyCode = options.verifyCode || this.verifyCodeDefault;
         this.onConfirmResult = options.onConfirmResult;
-        this.contract = getContract(this) as MultisigContract;
     }
 
     async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
@@ -208,10 +227,7 @@ export class Account2FA extends AccountMultisig {
 
     async sendCodeDefault() {
         const { accountId } = this;
-        const { requestId, actions } = this.getRequest();
-        if (this.isDeleteAction(actions)) {
-            return;
-        }
+        const { requestId } = this.getRequest();
         const method = await this.get2faMethod();
         await this.postSignedJson('/2fa/send', {
             accountId,
@@ -295,13 +311,6 @@ export class Account2FA extends AccountMultisig {
 // helpers
 const toPK = (pk) => PublicKey.from(pk);
 const convertPKForContract = (pk) => pk.toString().replace('ed25519:', '');
-
-const getContract = (account): unknown => {
-    return new Contract(account, account.accountId, {
-        viewMethods: MULTISIG_VIEW_METHODS,
-        changeMethods: MULTISIG_CHANGE_METHODS,
-    });
-};
 
 const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
     const type = a.enum;

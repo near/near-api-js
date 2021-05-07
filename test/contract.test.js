@@ -10,7 +10,7 @@ const account = {
     }
 };
 
-const contract = new Contract(account, null, {
+const contract = new Contract(account, 'contractId', {
     viewMethods: ['viewMethod'],
     changeMethods: ['changeMethod'],
 });
@@ -28,22 +28,13 @@ const contract = new Contract(account, null, {
             expect(await callFuncInNewContext(contract[method]));
         });
 
-        test('throws PositionalArgsError if first argument is not an object', () => {
-            return Promise.all([
-                1,
-                'lol',
-                [],
-                new Date(),
-                null,
-                new Set(),
-            ].map(async badArgs => {
-                try {
-                    await contract[method](badArgs);
-                    throw new Error(`Calling \`contract.${method}(${badArgs})\` worked. It shouldn't have worked.`);
-                } catch (e) {
-                    if (!(e instanceof PositionalArgsError)) throw e;
-                }
-            }));
+        test('throws PositionalArgsError if first argument is not an object', async() => {
+            await expect(contract[method](1)).rejects.toBeInstanceOf(PositionalArgsError);
+            await expect(contract[method]('lol')).rejects.toBeInstanceOf(PositionalArgsError);
+            await expect(contract[method]([])).rejects.toBeInstanceOf(PositionalArgsError);
+            await expect(contract[method](new Date())).rejects.toBeInstanceOf(PositionalArgsError);
+            await expect(contract[method](null)).rejects.toBeInstanceOf(PositionalArgsError);
+            await expect(contract[method](new Set())).rejects.toBeInstanceOf(PositionalArgsError);
         });
 
         test('throws PositionalArgsError if given too many arguments', () => {
@@ -91,4 +82,20 @@ describe('changeMethod', () => {
         return expect(contract.changeMethod({ a: 1}, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
     });
 
+    test('makes a functionCall and passes along walletCallbackUrl and walletMeta', async() => {
+        account.functionCall = jest.fn(() => Promise.resolve(account));
+        await contract.changeMethod({
+            args: {},
+            meta: 'someMeta',
+            callbackUrl: 'http://neartest.test/somepath?and=query',
+        });
+
+        expect(account.functionCall).toHaveBeenCalledWith({
+            args: {},
+            contractId: 'contractId',
+            methodName: 'changeMethod',
+            walletMeta: 'someMeta',
+            walletCallbackUrl: 'http://neartest.test/somepath?and=query'
+        });
+    });
 });
