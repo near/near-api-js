@@ -23,7 +23,7 @@ import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './utils/rpc_errors';
-import { DEFAULT_FUNC_CALL_GAS } from './constants';
+import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 
 import exponentialBackoff from './utils/exponential-backoff';
 
@@ -405,11 +405,11 @@ export class Account {
         this.validateArgs(args);
         return this.signAndSendTransaction({
             receiverId: contractId,
-            actions: [functionCall(methodName, args, gas || DEFAULT_FUNC_CALL_GAS, amount)]
+            actions: [functionCall(methodName, args, gas || DEFAULT_FUNCTION_CALL_GAS, amount)]
         });
     }
 
-    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNC_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         return this.signAndSendTransaction({
             receiverId: contractId,
