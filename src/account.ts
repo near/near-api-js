@@ -46,7 +46,7 @@ export interface AccountBalance {
 export interface AccountAuthorizedApp {
     contractId: string;
     amount: string;
-    publicKey: PublicKey;
+    publicKey: string;
 }
 
 /**
