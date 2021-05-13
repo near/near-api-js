@@ -15,6 +15,7 @@ import { Contract } from './contract';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator } from './account_creator';
 import { KeyStore } from './key_stores';
+import { Logger } from './utils/logger';
 export interface NearConfig {
     /** Holds {@link KeyPair | KeyPairs} for signing transactions */
     keyStore?: KeyStore;
@@ -53,6 +54,11 @@ export interface NearConfig {
      * @see {@link https://docs.near.org/docs/tools/near-wallet}
      */
     walletUrl?: string;
+    /**
+     * Interface used to log messages. Defaults to logging to the console using `console.*`.
+     * @see {DefaultLogger}
+     */
+    logger?: Logger;
 }
 /**
  * This is the main class developers should use to interact with NEAR.

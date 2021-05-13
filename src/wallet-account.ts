@@ -5,7 +5,6 @@
  * 
  * @module walletAccount
  */
-import depd from 'depd';
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
@@ -16,6 +15,7 @@ import { KeyPair, PublicKey } from './utils';
 import { baseDecode } from 'borsh';
 import { Connection } from './connection';
 import { serialize } from 'borsh';
+import { getLogger } from './utils/logger';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -140,8 +140,10 @@ export class WalletConnection {
     ) {
         let options: SignInOptions;
         if (typeof contractIdOrOptions === 'string') {
-            const deprecate = depd('requestSignIn(contractId, title)');
-            deprecate('`title` ignored; use `requestSignIn({ contractId, successUrl, failureUrl })` instead');
+            getLogger().deprecate(
+                'requestSignIn(contractId, title)',
+                '`title` ignored; use `requestSignIn({ contractId, successUrl, failureUrl })` instead'
+            );
             options = { contractId: contractIdOrOptions, successUrl, failureUrl };
         } else {
             options = contractIdOrOptions as SignInOptions;
@@ -185,8 +187,10 @@ export class WalletConnection {
 
     async requestSignTransactions(...args: any[]) {
         if(Array.isArray(args[0])) {
-            const deprecate = depd('WalletConnection.requestSignTransactions(transactions, callbackUrl, meta)');
-            deprecate('use `WalletConnection.requestSignTransactions(RequestSignTransactionsOptions)` instead');
+            getLogger().deprecate(
+                'WalletConnection.requestSignTransactions(transactions, callbackUrl, meta)',
+                'use `WalletConnection.requestSignTransactions(RequestSignTransactionsOptions)` instead'
+            );
             return this._requestSignTransactions({
                 transactions: args[0],
                 callbackUrl: args[1],

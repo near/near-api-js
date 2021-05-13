@@ -1,3 +1,10 @@
+/**
+ * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
+ * * {@link WalletConnection} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * * {@link ConnectedWalletAccount} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ *
+ * @module walletAccount
+ */
 import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';

@@ -9,6 +9,7 @@ import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAc
 import { FinalExecutionOutcome } from './providers';
 import { fetchJson } from './utils/web';
 import { FunctionCallPermissionView } from './providers/provider';
+import { getLogger } from './utils/logger';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';
 export const MULTISIG_ALLOWANCE = new BN(parseNearAmount('1'));
@@ -110,7 +111,7 @@ export class AccountMultisig extends Account {
                 await super.signAndSendTransaction(this.accountId, 
                     [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]);
             } catch(e) {
-                console.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
+                getLogger().debug('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
             }
         }
     }
@@ -199,7 +200,7 @@ export class Account2FA extends AccountMultisig {
         if ((await this.state()).code_hash === '11111111111111111111111111111111') {
             actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),);
         }
-        console.log('deploying multisig contract for', accountId);
+        getLogger().debug('deploying multisig contract for', accountId);
         return await super.signAndSendTransactionWithAccount(accountId, actions);
     }
 
@@ -221,7 +222,7 @@ export class Account2FA extends AccountMultisig {
             ...lak2fak.map(({ public_key }) => addKey(public_key, null)),
             deployContract(contractBytes),
         ];
-        console.log('disabling 2fa for', accountId);
+        getLogger().debug('disabling 2fa for', accountId);
         return await this.signAndSendTransaction(accountId, actions);
     }
 
@@ -250,7 +251,7 @@ export class Account2FA extends AccountMultisig {
             // TODO: Parse error from result for real (like in normal account.signAndSendTransaction)
             return result;
         } catch (e) {
-            console.warn('Error validating security code:', e);
+            getLogger().warn('Error validating security code:', e);
             if (e.toString().includes('invalid 2fa code provided') || e.toString().includes('2fa code not valid')) {
                 return await this.promptAndVerify();
             }

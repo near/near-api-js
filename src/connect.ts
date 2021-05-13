@@ -25,6 +25,7 @@ import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 import { Near, NearConfig } from './near';
 import fetch from './utils/setup-node-fetch';
+import { getLogger } from './utils/logger';
 
 global.fetch = fetch;
 
@@ -55,10 +56,10 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                     keyPathStore,
                     (config.keyStore || config.deps.keyStore)
                 ], { writeKeyStoreIndex: 1 });
-                console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+                getLogger().debug(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {
-            console.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
+            getLogger().error(`Failed to load master account key from ${config.keyPath}: ${error}`);
         }
     }
     return new Near(config);

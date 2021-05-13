@@ -1,3 +1,8 @@
+/**
+ * This module contains the {@link JsonRpcProvider} client class
+ * which can be used to interact with the NEAR RPC API.
+ * @see {@link providers/provider} for a list of request and response types
+ */
 import { AccessKeyWithPublicKey, Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, BlockChangeResult, ChangeResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice, QueryResponseKind } from './provider';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';

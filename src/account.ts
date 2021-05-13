@@ -1,5 +1,4 @@
 import BN from 'bn.js';
-import depd from 'depd';
 import {
     transfer,
     createAccount,
@@ -25,6 +24,7 @@ import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './utils/rpc_errors';
 
 import exponentialBackoff from './utils/exponential-backoff';
+import { getLogger } from './utils/logger';
 
 // Default amount of gas to be sent with the function calls. Used to pay for the fees
 // incurred while running the contract execution. The unused amount will be refunded back to
@@ -126,8 +126,7 @@ export class Account {
 
     /** @hidden */
     protected get ready(): Promise<void> {
-        const deprecate = depd('Account.ready()');
-        deprecate('not needed anymore, always ready');
+        getLogger().deprecate('Account.ready()', 'not needed anymore, always ready');
         return Promise.resolve();
     }
 
@@ -137,8 +136,7 @@ export class Account {
     }
 
     async fetchState(): Promise<void> {
-        const deprecate = depd('Account.fetchState()');
-        deprecate('use `Account.state()` instead');
+        getLogger().deprecate('Account.fetchState()', 'use `Account.state()` instead');
     }
 
     /**
@@ -156,10 +154,10 @@ export class Account {
     /** @hidden */
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
         for (const result of results) {
-            console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
+            getLogger().info(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
             this.printLogs(contractId, result.logs, '\t');
             if (result.failure) {
-                console.warn(`\tFailure [${contractId}]: ${result.failure}`);
+                getLogger().warn(`\tFailure [${contractId}]: ${result.failure}`);
             }
         }
     }
@@ -167,7 +165,7 @@ export class Account {
     /** @hidden */
     private printLogs(contractId: string, logs: string[], prefix = '') {
         for (const log of logs) {
-            console.log(`${prefix}Log [${contractId}]: ${log}`);
+            getLogger().info(`${prefix}Log [${contractId}]: ${log}`);
         }
     }
 
@@ -216,8 +214,10 @@ export class Account {
     }
 
     private signAndSendTransactionV1(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        const deprecate = depd('Account.signAndSendTransaction(receiverId, actions');
-        deprecate('use `Account.signAndSendTransaction(SignAndSendTransactionOptions)` instead');
+        getLogger().deprecate(
+            'Account.signAndSendTransaction(receiverId, actions',
+            'use `Account.signAndSendTransaction(SignAndSendTransactionOptions)` instead'
+        );
         return this.signAndSendTransactionV2({ receiverId, actions });
     }
 
@@ -232,7 +232,7 @@ export class Account {
                 return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
                 if (error.type === 'InvalidNonce') {
-                    console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
+                    getLogger().warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
@@ -405,8 +405,10 @@ export class Account {
     }
 
     private functionCallV1(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
-        const deprecate = depd('Account.functionCall(contractId, methodName, args, gas, amount)');
-        deprecate('use `Account.functionCall(FunctionCallOptions)` instead');
+        getLogger().deprecate(
+            'Account.functionCall(contractId, methodName, args, gas, amount)',
+            'use `Account.functionCall(FunctionCallOptions)` instead'
+        );
 
         args = args || {};
         this.validateArgs(args);

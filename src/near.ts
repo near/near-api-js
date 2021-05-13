@@ -15,6 +15,7 @@ import { Contract } from './contract';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
 import { KeyStore } from './key_stores';
+import { getLogger, Logger, setLogger } from './utils/logger';
 
 export interface NearConfig {
     /** Holds {@link KeyPair | KeyPairs} for signing transactions */
@@ -60,6 +61,12 @@ export interface NearConfig {
      * @see {@link https://docs.near.org/docs/tools/near-wallet}
      */
     walletUrl?: string;
+
+    /**
+     * Interface used to log messages. Defaults to logging to the console using `console.*`.
+     * @see {DefaultLogger}
+     */
+    logger?: Logger;
 }
 
 /**
@@ -76,6 +83,10 @@ export class Near {
 
     constructor(config: NearConfig) {
         this.config = config;
+        if(this.config.logger) {
+            setLogger(config.logger);
+        }
+
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl } },
@@ -135,7 +146,7 @@ export class Near {
      * @param receiver
      */
     async sendTokens(amount: BN, originator: string, receiver: string): Promise<string> {
-        console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
+        getLogger().deprecate('near.sendTokens', 'Use `yourAccount.sendMoney` instead.');
         const account = new Account(this.connection, originator);
         const result = await account.sendMoney(receiver, amount);
         return result.transaction_outcome.id;
