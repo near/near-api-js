@@ -4,7 +4,6 @@
  */
 
 import { SignedTransaction } from '../transaction';
-import { PublicKey } from '../utils/key_pair';
 
 export interface SyncInfo {
     latest_block_hash: string;
@@ -355,7 +354,7 @@ export interface AccessKeyView extends QueryResponseKind {
 }
 
 export interface AccessKeyInfoView {
-    public_key: PublicKey;
+    public_key: string;
     access_key: AccessKeyView;
 }
 

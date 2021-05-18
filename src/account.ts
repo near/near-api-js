@@ -22,17 +22,10 @@ import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './utils/rpc_errors';
+import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 
 import exponentialBackoff from './utils/exponential-backoff';
 import { getLogger } from './utils/logger';
-
-// Default amount of gas to be sent with the function calls. Used to pay for the fees
-// incurred while running the contract execution. The unused amount will be refunded back to
-// the originator.
-// Due to protocol changes that charge upfront for the maximum possible gas price inflation due to
-// full blocks, the price of max_prepaid_gas is decreased to `300 * 10**12`.
-// For discussion see https://github.com/nearprotocol/NEPs/issues/67
-const DEFAULT_FUNC_CALL_GAS = new BN('30000000000000');
 
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
@@ -53,7 +46,7 @@ export interface AccountBalance {
 export interface AccountAuthorizedApp {
     contractId: string;
     amount: string;
-    publicKey: PublicKey;
+    publicKey: string;
 }
 
 /**
@@ -414,11 +407,11 @@ export class Account {
         this.validateArgs(args);
         return this.signAndSendTransaction({
             receiverId: contractId,
-            actions: [functionCall(methodName, args, gas || DEFAULT_FUNC_CALL_GAS, amount)]
+            actions: [functionCall(methodName, args, gas || DEFAULT_FUNCTION_CALL_GAS, amount)]
         });
     }
 
-    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNC_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         return this.signAndSendTransaction({
             receiverId: contractId,

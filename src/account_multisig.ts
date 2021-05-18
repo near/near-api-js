@@ -218,8 +218,8 @@ export class Account2FA extends AccountMultisig {
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
         const actions = [
             deleteKey(confirmOnlyKey),
-            ...lak2fak.map(({ public_key }) => deleteKey(public_key)),
-            ...lak2fak.map(({ public_key }) => addKey(public_key, null)),
+            ...lak2fak.map(({ public_key }) => deleteKey(PublicKey.from(public_key))),
+            ...lak2fak.map(({ public_key }) => addKey(PublicKey.from(public_key), null)),
             deployContract(contractBytes),
         ];
         getLogger().debug('disabling 2fa for', accountId);
