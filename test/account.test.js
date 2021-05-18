@@ -4,6 +4,7 @@ const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
 const semver = require('semver');
+const { setLogLevel, LogLevel } = require('../lib/utils/logger');
 
 let nearjs;
 let workingAccount;
@@ -116,6 +117,8 @@ describe('with deploy contract', () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
         await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
+        setLogLevel(LogLevel.INFO);
+
         contract = new Contract(workingAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
