@@ -14,7 +14,7 @@ export interface AccountBalance {
 export interface AccountAuthorizedApp {
     contractId: string;
     amount: string;
-    publicKey: PublicKey;
+    publicKey: string;
 }
 /**
  * Options used to initiate sining and sending transactions
