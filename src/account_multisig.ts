@@ -111,7 +111,7 @@ export class AccountMultisig extends Account {
                 await super.signAndSendTransaction(this.accountId, 
                     [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]);
             } catch(e) {
-                getLogger().debug('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
+                getLogger().warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
             }
         }
     }
