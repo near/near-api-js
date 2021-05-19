@@ -3,7 +3,6 @@
  * @module
  */
 import { SignedTransaction } from '../transaction';
-import { PublicKey } from '../utils/key_pair';
 export interface SyncInfo {
     latest_block_hash: string;
     latest_block_height: number;
@@ -304,7 +303,7 @@ export interface AccessKeyView extends QueryResponseKind {
     permission: 'FullAccess' | FunctionCallPermissionView;
 }
 export interface AccessKeyInfoView {
-    public_key: PublicKey;
+    public_key: string;
     access_key: AccessKeyView;
 }
 export interface AccessKeyList extends QueryResponseKind {
