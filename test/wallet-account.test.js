@@ -13,7 +13,7 @@ global.window = {
 global.document = {
     title: 'documentTitle'
 };
-const nearApi = require('../lib/index');
+const nearApi = require('../src/index');
 
 let history;
 let nearFake;

@@ -1,5 +1,5 @@
-const nearApi = require('../../lib/index');
-const { ServerError } = require('../../lib/utils/rpc_errors');
+const nearApi = require('../../src/index');
+const { ServerError } = require('../../src/utils/rpc_errors');
 const {
     parseRpcError,
     formatError,

@@ -1,5 +1,5 @@
 
-const nearApi = require('../lib/index');
+const nearApi = require('../src/index');
 
 test('test no key', async() => {
     const signer = new nearApi.InMemorySigner(new nearApi.keyStores.InMemoryKeyStore());

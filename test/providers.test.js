@@ -1,4 +1,4 @@
-const nearApi = require('../lib/index');
+const nearApi = require('../src/index');
 const testUtils  = require('./test-utils');
 const BN = require('bn.js');
 const base58 = require('bs58');
