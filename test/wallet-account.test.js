@@ -65,7 +65,11 @@ describe('can request sign in', () => {
     });
     
     it('V2', () => {
-        return walletConnection.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail');
+        return walletConnection.requestSignIn({
+            contractId: 'signInContract',
+            successUrl: 'http://example.com/success', 
+            failureUrl: 'http://example.com/fail'
+        });
     });
 
     afterEach(async () => {
@@ -140,7 +144,10 @@ function createTransferTx() {
 
 describe('can request transaction signing', () => {
     it('V1', async () => {
-        await walletConnection.requestSignTransactions([createTransferTx()], 'http://example.com/callback');
+        await walletConnection.requestSignTransactions({
+            transactions: [createTransferTx()],
+            callbackUrl: 'http://example.com/callback'
+        });
 
         expect(url.parse(lastRedirectUrl, true)).toMatchObject({
             protocol: 'http:',

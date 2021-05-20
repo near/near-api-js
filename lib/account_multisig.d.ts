@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Account } from './account';
+import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
 import { Action } from './transaction';
 import { FinalExecutionOutcome } from './providers';
@@ -37,7 +37,21 @@ export declare class Account2FA extends AccountMultisig {
     onConfirmResult: Function;
     helperUrl: string;
     constructor(connection: Connection, accountId: string, options: any);
+    /**
+     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
+     * @see {@link JsonRpcProvider.sendTransaction}
+     */
+    signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
+    /**
+     * @deprecated
+     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
+     * @see {@link JsonRpcProvider.sendTransaction}
+     *
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions list of actions to perform as part of the transaction
+     */
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
+    private __signAndSendTransaction;
     deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
     disable(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
     sendCodeDefault(): Promise<any>;

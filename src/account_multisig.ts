@@ -1,6 +1,7 @@
 'use strict';
 
 import BN from 'bn.js';
+import depd from 'depd';
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
@@ -38,7 +39,7 @@ export class AccountMultisig extends Account {
     }
 
     async signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        return super.signAndSendTransaction(receiverId, actions);
+        return super.signAndSendTransaction({ receiverId, actions });
     }
 
     protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome> {
@@ -61,9 +62,12 @@ export class AccountMultisig extends Account {
 
         let result;
         try {
-            result = await super.signAndSendTransaction(accountId, [
-                functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
-            ]);
+            result = await super.signAndSendTransaction({
+                receiverId: accountId,
+                actions: [
+                    functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
+                ]
+            });
         } catch(e) {
             if (e.toString().includes('Account has too many active requests. Confirm or delete some')) {
                 await this.deleteUnconfirmedRequests();
@@ -107,8 +111,10 @@ export class AccountMultisig extends Account {
                 continue;
             }
             try {
-                await super.signAndSendTransaction(this.accountId, 
-                    [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]);
+                await super.signAndSendTransaction({
+                    receiverId: this.accountId, 
+                    actions: [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
+                });
             } catch(e) {
                 console.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
             }
@@ -161,8 +167,32 @@ export class Account2FA extends AccountMultisig {
         this.onConfirmResult = options.onConfirmResult;
     }
 
-    async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        await super.signAndSendTransaction(receiverId, actions);
+    /**
+     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
+     * @see {@link JsonRpcProvider.sendTransaction}
+     */
+    signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>
+    /**
+     * @deprecated
+     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
+     * @see {@link JsonRpcProvider.sendTransaction}
+     * 
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions list of actions to perform as part of the transaction
+     */
+    signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>
+    async signAndSendTransaction(...args: any): Promise<FinalExecutionOutcome> {
+        if(typeof args[0] === 'string') {
+            const deprecate = depd('Account.signAndSendTransaction(receiverId, actions');
+            deprecate('use `Account2FA.signAndSendTransaction(SignAndSendTransactionOptions)` instead');
+            return this.__signAndSendTransaction({ receiverId: args[0], actions: args[1] });
+        } else {
+            return this.__signAndSendTransaction(args[0]);
+        }
+    }
+
+    private async __signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions) {
+        await super.signAndSendTransaction({ receiverId, actions });
         // TODO: Should following override onRequestResult in superclass instead of doing custom signAndSendTransaction?
         await this.sendCode();
         const result = await this.promptAndVerify();
@@ -222,7 +252,10 @@ export class Account2FA extends AccountMultisig {
             deployContract(contractBytes),
         ];
         console.log('disabling 2fa for', accountId);
-        return await this.signAndSendTransaction(accountId, actions);
+        return await this.signAndSendTransaction({
+            receiverId: accountId,
+            actions
+        });
     }
 
     async sendCodeDefault() {

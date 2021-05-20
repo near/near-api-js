@@ -204,8 +204,8 @@ export class JsonRpcProvider extends Provider {
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#genesis-config}
      */
     async experimental_genesisConfig(): Promise<NearProtocolConfig> {
-        const deprecate = depd('JsonRpcProvider.experimental_protocolConfig({ sync_checkpoint: \'genesis\' })');
-        deprecate('use `experimental_protocolConfig` to fetch the up-to-date or genesis protocol config explicitly');
+        const deprecate = depd('JsonRpcProvider.experimental_protocolConfig()');
+        deprecate('use `experimental_protocolConfig({ sync_checkpoint: \'genesis\' })` to fetch the up-to-date or genesis protocol config explicitly');
         return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', { sync_checkpoint: 'genesis' });
     }
 
@@ -215,7 +215,7 @@ export class JsonRpcProvider extends Provider {
      *
      * @param blockReference specifies the block to get the protocol config for
      */
-    async experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig> {
+    async experimental_protocolConfig(blockReference: BlockReference | { sync_checkpoint: 'genesis' }): Promise<NearProtocolConfig> {
         return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', blockReference);
     }
 
