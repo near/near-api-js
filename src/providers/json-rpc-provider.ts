@@ -379,7 +379,7 @@ export class JsonRpcProvider extends Provider {
                 throw error;
             }
         });
-        if (!result && result !== "") {
+        if (result === undefined) {
             throw new TypedError(
                 `Exceeded ${REQUEST_RETRY_NUMBER} attempts for request to ${method}.`, 'RetriesExceeded');
         }
