@@ -1,5 +1,5 @@
 /* global BigInt */
-const nearApi = require('../lib/index');
+const nearApi = require('../src/index');
 const fs = require('fs');
 const BN = require('bn.js');
 const testUtils  = require('./test-utils');

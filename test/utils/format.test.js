@@ -1,6 +1,6 @@
 // Unit tests for simple util code
 
-const nearApi = require('../../lib/index');
+const nearApi = require('../../src/index');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 

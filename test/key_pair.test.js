@@ -1,5 +1,5 @@
 
-const nearApi = require('../lib/index');
+const nearApi = require('../src/index');
 const { sha256 } = require('js-sha256');
 
 test('test sign and verify', async () => {

@@ -1,5 +1,5 @@
 
-const nearApi = require('../lib/index');
+const nearApi = require('../src/index');
 const BN = require('bn.js');
 
 test('find seat price', async () => {

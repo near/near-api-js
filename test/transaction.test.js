@@ -1,4 +1,4 @@
-const { functionCall } = require('../lib/transaction');
+const { functionCall } = require('../src/transaction');
 const BN = require('bn.js');
 
 test('functionCall with already serialized args', () => {

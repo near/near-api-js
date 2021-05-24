@@ -1,5 +1,5 @@
 
-const { Account, Contract, providers } = require('../lib/index');
+const { Account, Contract, providers } = require('../src/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');

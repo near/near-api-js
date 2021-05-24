@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const nearApi = require('../lib/index');
+const nearApi = require('../src/index');
 
 class Test extends nearApi.utils.enums.Assignable {
 }

@@ -1,4 +1,4 @@
-const nearApi = require('../../lib/index');
+const nearApi = require('../../src/index');
 
 const InMemoryKeyStore = nearApi.keyStores.InMemoryKeyStore;
 

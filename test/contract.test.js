@@ -1,5 +1,5 @@
-const { Contract } = require('../lib/contract');
-const { PositionalArgsError } = require('../lib/utils/errors');
+const { Contract } = require('../src/contract');
+const { PositionalArgsError } = require('../src/utils/errors');
 
 const account = {
     viewFunction(contractId, methodName, args, options) {
