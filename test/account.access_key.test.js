@@ -25,7 +25,7 @@ test('make function call using access key', async() => {
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
     const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-    await contract.setValue({value: setCallValue});
+    await contract.setValue({ args: { value: setCallValue } });
     expect(await contract.getValue()).toEqual(setCallValue);
 });
 
@@ -37,7 +37,7 @@ test('remove access key no longer works', async() => {
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
     try {
-        await contract.setValue({value: 'test'});
+        await contract.setValue({ args: { value: 'test' } });
         fail('should throw an error');
     } catch (e) {
         if (process.env.NODE_ENV == 'local') {

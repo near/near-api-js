@@ -100,7 +100,9 @@ export declare class JsonRpcProvider extends Provider {
      *
      * @param blockReference specifies the block to get the protocol config for
      */
-    experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
+    experimental_protocolConfig(blockReference: BlockReference | {
+        sync_checkpoint: 'genesis';
+    }): Promise<NearProtocolConfig>;
     /**
      * @deprecated Use {@link lightClientProof} instead
      */

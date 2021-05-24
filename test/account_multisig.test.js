@@ -34,9 +34,12 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
             const originalSigner = nearjs.connection.signer;
             nearjs.connection.signer = await InMemorySigner.fromKeyPair(nearjs.connection.networkId, accountId, account2fa.confirmKey);
             // 2nd confirmation signing with confirmKey from Account instance
-            await account.signAndSendTransaction(accountId, [
-                functionCall('confirm', { request_id: requestId }, MULTISIG_GAS, MULTISIG_DEPOSIT)
-            ]);
+            await account.signAndSendTransaction({
+                receiverId: accountId,
+                actions: [
+                    functionCall('confirm', { request_id: requestId }, MULTISIG_GAS, MULTISIG_DEPOSIT)
+                ]
+            });
             nearjs.connection.signer = originalSigner;
         }
     });

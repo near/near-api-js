@@ -42,7 +42,7 @@ test('json rpc fetch block changes', withProvider(async (provider) => {
     let stat = await provider.status();
     let height = stat.sync_info.latest_block_height - 1;
     let response = await provider.blockChanges({ blockId: height });
-    console.log(response);
+
     expect(response).toMatchObject({
         block_hash: expect.any(String),
         changes: expect.any(Array)
@@ -88,7 +88,7 @@ test('json rpc query view_state', withProvider(async (provider) => {
     const account = await testUtils.createAccount(near);
     const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
 
-    await contract.setValue({ value: 'hello' });
+    await contract.setValue({ args: { value: 'hello' } });
 
     return testUtils.waitFor(async() => {
         const response = await provider.query({
@@ -152,7 +152,7 @@ test('json rpc query call_function', withProvider(async (provider) => {
     const account = await testUtils.createAccount(near);
     const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
 
-    await contract.setValue({ value: 'hello' });
+    await contract.setValue({ args: { value: 'hello' } });
 
     return testUtils.waitFor(async() => {
         const response = await provider.query({
@@ -227,7 +227,7 @@ test('json rpc light client proof', async() => {
     const finalizedStatus = await waitForStatusMatching(status =>
         status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL);
 
-    const block = await provider.block(finalizedStatus.sync_info.latest_block_hash);
+    const block = await provider.block({ blockId: finalizedStatus.sync_info.latest_block_hash });
     const lightClientHead = block.header.last_final_block;
     let lightClientRequest = {
         type: 'transaction',

@@ -135,7 +135,10 @@ describe('with deploy contract', () => {
     });
 
     test('cross-contact assertion and panic', async () => {
-        await expect(contract.crossContract({}, 300000000000000)).rejects.toThrow(/Smart contract panicked: expected to fail./);
+        await expect(contract.crossContract({
+            args: {},
+            gas: 300000000000000
+        })).rejects.toThrow(/Smart contract panicked: expected to fail./);
         expect(logs.length).toEqual(7);
         expect(logs[0]).toMatch(new RegExp('^Receipts: \\w+, \\w+, \\w+$'));
         //	Log [test_contract1591458385248117]: test_contract1591458385248117
@@ -156,14 +159,22 @@ describe('with deploy contract', () => {
         expect(result).toEqual('hello trex');
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-        const result2 = await workingAccount.functionCall(contractId, 'setValue', { value: setCallValue });
+        const result2 = await workingAccount.functionCall({
+            contractId,
+            methodName: 'setValue',
+            args: { value: setCallValue }
+        });
         expect(providers.getTransactionLastResult(result2)).toEqual(setCallValue);
         expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
     });
 
     test('view contract state', async() => {
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-        await workingAccount.functionCall(contractId, 'setValue', { value: setCallValue });
+        await workingAccount.functionCall({
+            contractId,
+            methodName: 'setValue',
+            args: { value: setCallValue }
+        });
 
         const contractAccount = await nearjs.account(contractId);
         const state = (await contractAccount.viewState('')).map(({ key, value }) => [key.toString('utf-8'), value.toString('utf-8')]);
@@ -185,14 +196,17 @@ describe('with deploy contract', () => {
         expect(result).toEqual('hello trex');
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-        const result2 = await contract.setValue({ value: setCallValue });
+        const result2 = await contract.setValue({ args: { value: setCallValue } });
         expect(result2).toEqual(setCallValue);
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
     test('make function calls via contract with gas', async() => {
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-        const result2 = await contract.setValue({ value: setCallValue }, 1000000 * 1000000);
+        const result2 = await contract.setValue({
+            args: { value: setCallValue },
+            gas: 1000000 * 1000000
+        });
         expect(result2).toEqual(setCallValue);
         expect(await contract.getValue()).toEqual(setCallValue);
     });
@@ -234,7 +248,9 @@ describe('with deploy contract', () => {
     });
 
     test('test set/remove', async () => {
-        await contract.testSetRemove({ value: '123' });
+        await contract.testSetRemove({
+            args: { value: '123' }
+        });
     });
 
     test('can have view methods only', async () => {
@@ -248,6 +264,8 @@ describe('with deploy contract', () => {
         const contract = new Contract(workingAccount, contractId, {
             changeMethods: ['hello'],
         });
-        expect(await contract.hello({ name: 'world' })).toEqual('hello world');
+        expect(await contract.hello({
+            args: { name: 'world' }
+        })).toEqual('hello world');
     });
 });
