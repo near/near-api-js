@@ -369,6 +369,7 @@ export class JsonRpcProvider extends Provider {
                         throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data));
                     }
                 }
+                // Success when response.error is not exist
                 return response;
             } catch (error) {
                 if (error.type === 'TimeoutError') {
@@ -379,7 +380,7 @@ export class JsonRpcProvider extends Provider {
                 throw error;
             }
         });
-        let result = response.result;
+        const result = response.result;
         // From jsonrpc spec:
         // result
         //   This member is REQUIRED on success.
