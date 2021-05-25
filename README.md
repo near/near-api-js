@@ -21,7 +21,8 @@ A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
 # Examples
 
-[Cookbook](./examples/cookbook/README.md)
+## [Cookbook](./examples/cookbook/README.md)
+- Examples of common use cases for `near-api-js`
 
 # Publish
 
