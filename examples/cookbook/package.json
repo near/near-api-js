@@ -1,0 +1,17 @@
+{
+  "name": "cookbook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "homedir": "^0.6.0",
+    "near-api-js": "^0.41.0",
+    "path": "^0.12.7"
+  }
+}

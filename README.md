@@ -19,6 +19,11 @@ A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
        yarn build -- -w
 
+# Examples
+
+## [Cookbook](./examples/cookbook/README.md)
+- Examples of common use cases for `near-api-js`
+
 # Publish
 
 Prepare `dist` version by running:
