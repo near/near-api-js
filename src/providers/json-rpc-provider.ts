@@ -380,7 +380,7 @@ export class JsonRpcProvider extends Provider {
                 throw error;
             }
         });
-        const result = response.result;
+        const { result } = response;
         // From jsonrpc spec:
         // result
         //   This member is REQUIRED on success.
