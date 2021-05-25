@@ -340,7 +340,7 @@ export class JsonRpcProvider extends Provider {
      * @param params Parameters to the method
      */
     async sendJsonRpc<T>(method: string, params: object): Promise<T> {
-        const result = await exponentialBackoff(REQUEST_RETRY_WAIT, REQUEST_RETRY_NUMBER, REQUEST_RETRY_WAIT_BACKOFF, async () => {
+        const response = await exponentialBackoff(REQUEST_RETRY_WAIT, REQUEST_RETRY_NUMBER, REQUEST_RETRY_WAIT_BACKOFF, async () => {
             try {
                 const request = {
                     method,
@@ -369,7 +369,8 @@ export class JsonRpcProvider extends Provider {
                         throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data));
                     }
                 }
-                return response.result;
+                // Success when response.error is not exist
+                return response;
             } catch (error) {
                 if (error.type === 'TimeoutError') {
                     console.warn(`Retrying request to ${method} as it has timed out`, params);
@@ -379,7 +380,12 @@ export class JsonRpcProvider extends Provider {
                 throw error;
             }
         });
-        if (!result) {
+        const { result } = response;
+        // From jsonrpc spec:
+        // result
+        //   This member is REQUIRED on success.
+        //   This member MUST NOT exist if there was an error invoking the method.
+        if (typeof result === 'undefined') {
             throw new TypedError(
                 `Exceeded ${REQUEST_RETRY_NUMBER} attempts for request to ${method}.`, 'RetriesExceeded');
         }
