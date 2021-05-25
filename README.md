@@ -19,6 +19,10 @@ A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
        yarn build -- -w
 
+# Examples
+
+[Cookbook](./examples/cookbook/README.md)
+
 # Publish
 
 Prepare `dist` version by running:
