@@ -9,6 +9,18 @@ A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
 [Read the TypeDoc API documentation](https://near.github.io/near-api-js/)
 
+---
+
+# Examples
+
+## [Quick Reference](./examples/quick-reference.md)
+_(Cheat sheet / quick reference)_
+
+## [Cookbook](./examples/cookbook/README.md)
+_(Common use cases / more complex examples)_
+
+---
+
 # Contribute to this library
 
 1. Install dependencies
@@ -19,10 +31,6 @@ A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
        yarn build -- -w
 
-# Examples
-
-## [Cookbook](./examples/cookbook/README.md)
-- Examples of common use cases for `near-api-js`
 
 # Publish
 
@@ -30,7 +38,9 @@ Prepare `dist` version by running:
 
     yarn dist
 
-When publishing to npm use [np](https://github.com/sindresorhus/np). 
+When publishing to npm use [np](https://github.com/sindresorhus/np).
+
+---
 
 # Integration Test
 
