@@ -9,16 +9,6 @@ A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
 [Read the TypeDoc API documentation](https://near.github.io/near-api-js/)
 
-# Contribute to this library
-
-1. Install dependencies
-
-       yarn
-
-2. Run continuous build with:
-
-       yarn build -- -w
-
 ---
 
 # Examples
@@ -30,6 +20,17 @@ _(Cheat sheet / quick reference)_
 _(Common use cases / more complex examples)_
 
 ---
+
+# Contribute to this library
+
+1. Install dependencies
+
+       yarn
+
+2. Run continuous build with:
+
+       yarn build -- -w
+
 
 # Publish
 
