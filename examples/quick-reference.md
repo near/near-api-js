@@ -330,6 +330,17 @@ console.log(response);
 
 [`config setup`](#connect)
 
+### Deploy Contract
+
+```js
+const near = await connect(config);
+const account = await near.account("example-account.testnet");
+const response = await account.deployContract(fs.readFileSync('./wasm_files/status_message.wasm'));
+console.log(response);
+```
+
+[`config setup`](#connect)
+
 ## Contract
 
 ### Load Contract
