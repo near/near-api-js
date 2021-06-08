@@ -307,7 +307,7 @@ export class ConnectedWalletAccount extends Account {
             try {
                 return await super.signAndSendTransaction({ receiverId, actions });
             } catch (e) {
-                if (e.type === 'NotEnoughBalance') {
+                if (e.type === 'NotEnoughAllowance') {
                     accessKey = await this.accessKeyForTransaction(receiverId, actions);
                 } else {
                     throw e;
