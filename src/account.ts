@@ -503,12 +503,15 @@ export class Account {
         { parse = parseJsonFromRawResponse } = {}
     ): Promise<any> {
         this.validateArgs(args);
+
+        const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
+        const serializedArgs = isUint8Array ? args : Buffer.from(JSON.stringify(args));
         
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
             account_id: contractId,
             method_name: methodName,
-            args_base64: Buffer.from(JSON.stringify(args)).toString('base64'),
+            args_base64: serializedArgs.toString('base64'),
             finality: 'optimistic'
         });
 
