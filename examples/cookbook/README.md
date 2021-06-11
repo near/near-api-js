@@ -12,6 +12,7 @@
 | [Create Account](./accounts/create-testnet-account.js)        | Create [NEAR accounts](https://docs.near.org/docs/concepts/account) without using NEAR Wallet.                   |
 | [Access Key Rotation](./accounts/access-keys/README.md)       | Create and delete [access keys](https://docs.near.org/docs/concepts/account#access-keys) for added security.     |
 | **TRANSACTIONS**                                              |                                                                                                                  |
+| [Get Transaction Status](./transactions/get-tx-status.js)     | Gets transaction status using a tx hash and associated account/contract ID.                                      |
 | [Recent Transaction Details](./transactions/get-tx-detail.js) | Get recent transaction details without using an [indexing](https://docs.near.org/docs/concepts/indexer) service. |
 | [Batch Transactions](./transactions/batch-transactions.js)    | Sign and send multiple [transactions](https://docs.near.org/docs/concepts/transaction).                          |
 | **UTILS**                                                     |                                                                                                                  |
