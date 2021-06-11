@@ -1,6 +1,5 @@
 // demonstrates how to get a transaction status
 const { providers } = require("near-api-js");
-const bs58 = require("bs58");
 
 //network config (replace testnet with mainnet or betanet)
 const provider = new providers.JsonRpcProvider(
