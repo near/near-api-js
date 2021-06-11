@@ -14,6 +14,6 @@ const ACCOUNT_ID = "sender.testnet";
 getState(TX_HASH, ACCOUNT_ID);
 
 async function getState(txHash, accountId) {
-    const result = await provider.txStatus(bs58.decode(txHash), accountId);
+    const result = await provider.txStatus(txHash, accountId);
     console.log("Result: ", result);
 }
