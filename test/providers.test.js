@@ -72,8 +72,8 @@ test('txStatus with string hash and buffer hash', withProvider(async(provider) =
 
     const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
     const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
-    expect(responseWithString).toEqual(outcome);
-    expect(responseWithUint8Array).toEqual(outcome);
+    expect(responseWithString).toMatchObject(outcome);
+    expect(responseWithUint8Array).toMatchObject(outcome);
 }));
 
 test('json rpc query account', withProvider(async (provider) => {
