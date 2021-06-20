@@ -1,5 +1,11 @@
 # near-api-js
 
+# fork from near-api-js, add AESEncryptedFileSystemKeyStore
+
+```
+const credentialsPath = path.join(__dirname, `../../../account`)
+  const keyStore = new keyStores.AESEncryptedFileSystemKeyStore(credentialsPath, password);
+```
 [![Build Status](https://travis-ci.com/near/near-api-js.svg?branch=master)](https://travis-ci.com/near/near-api-js)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/near/near-api-js) 
 
