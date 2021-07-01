@@ -69,5 +69,9 @@
             }
         ]
     },
+    "files": [
+        "lib",
+        "browser-exports.js"
+    ],
     "author": "NEAR Inc"
 }
