@@ -229,6 +229,10 @@ export class Account {
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
+                if (error.type === 'Expired') {
+                    console.warn(`Expired block_hash`);
+                    return null;
+                }
 
                 error.context = new ErrorContext(baseEncode(txHash));
                 throw error;
