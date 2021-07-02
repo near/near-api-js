@@ -71,6 +71,7 @@
     },
     "files": [
         "lib",
+        "dist",
         "browser-exports.js"
     ],
     "author": "NEAR Inc"
