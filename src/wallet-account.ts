@@ -147,15 +147,15 @@ export class WalletConnection {
             options = contractIdOrOptions as SignInOptions;
         }
 
-        /* Throws exception if account does not exist */
-        const contractAccount = await this._near.account(options.contractId);
-        await contractAccount.state();
-
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('success_url', options.successUrl || currentUrl.href);
         newUrl.searchParams.set('failure_url', options.failureUrl || currentUrl.href);
-        if (options.contractId) {
+        if (options.contractId) {            
+            /* Throws exception if contract account does not exist */
+            const contractAccount = await this._near.account(options.contractId);
+            await contractAccount.state();
+
             newUrl.searchParams.set('contract_id', options.contractId);
             const accessKey = KeyPair.fromRandom('ed25519');
             newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
