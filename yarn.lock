@@ -518,10 +518,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@ts-morph/common@~0.9.2":
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/@ts-morph/common/-/common-0.9.2.tgz#fc63ed4f8d3a45e4ed6849fe20a57f4f2baecc5d"
-  integrity sha512-IPyg+c3Am0EBoa63W0f/AKeLrJhvzMzQ4BIvD1baxLopmiHOj1HFTXYxC6e8iTZ+UYtN+/WFM9UyGRnoA20b8g==
+"@ts-morph/common@~0.10.1":
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@ts-morph/common/-/common-0.10.1.tgz#be15b9ab13a32bbc1f6a6bd7dc056b2247b272eb"
+  integrity sha512-rKN/VtZUUlW4M+6vjLFSaFc1Z9sK+1hh0832ucPtPkXqOw/mSWE80Lau4z2zTPNTqtxAjfZbvKpQcEwJy0KIEg==
   dependencies:
     fast-glob "^3.2.5"
     minimatch "^3.0.4"
@@ -5045,12 +5045,12 @@ ts-jest@^26.5.6:
     semver "7.x"
     yargs-parser "20.x"
 
-ts-morph@^10.0.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-10.1.0.tgz#b3327fb38a6c03bfd70871771e6d08af1c2d8f93"
-  integrity sha512-hfskRPAbc+N1+2QvPLvJ0MOrhcwxJuBlCbX+D+9T7UnrZZqsdbmWb6FfywQ7sghyqwok6Pc8ZPwzaumlOJ8OBA==
+ts-morph@^11.0.2:
+  version "11.0.2"
+  resolved "https://registry.yarnpkg.com/ts-morph/-/ts-morph-11.0.2.tgz#75bf2321b93230b47b16d21014f7b0b709edc1a2"
+  integrity sha512-8SMHk8PcinHZAtFHNGZd2Ua+f6w9K4Szfwv+kE1BpUuOqq6996ooXEsBGHy5ElbHZ0D6YhjzcorQZYA+7Y9Zww==
   dependencies:
-    "@ts-morph/common" "~0.9.2"
+    "@ts-morph/common" "~0.10.1"
     code-block-writer "^10.1.1"
 
 tslib@^1.8.1, tslib@^1.9.0:
