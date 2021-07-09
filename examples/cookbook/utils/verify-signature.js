@@ -33,5 +33,6 @@ async function verifySignature() {
         signatureData.signature,
         signatureData.publicKey.data
     );
-    console.log(isValid);
+    console.log("Signature Valid?:", isValid);
+    return isValid;
 }
