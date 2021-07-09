@@ -25,7 +25,7 @@ async function verifySignature() {
     const signatureData = await account.connection.signer.signMessage(
         tokenMessage,
         ACCOUNT_ID,
-        "testnet"
+        config.networkId
     );
     const hash = new Uint8Array(sha256.sha256.array(tokenMessage));
     let isValid = nacl.sign.detached.verify(
