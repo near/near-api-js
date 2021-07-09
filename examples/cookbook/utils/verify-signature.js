@@ -19,7 +19,7 @@ const config = {
 verifySignature();
 
 async function verifySignature() {
-    const near = await connect({ ...config, keyStore });
+    const near = await connect(config);
     const account = await near.account(ACCOUNT_ID);
     const tokenMessage = new TextEncoder().encode(`Hello world, ${ACCOUNT_ID}`);
     const signatureData = await account.connection.signer.signMessage(
