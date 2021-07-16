@@ -230,7 +230,7 @@ export class Account {
                     return null;
                 }
                 if (error.type === 'Expired') {
-                    console.warn(`Expired block_hash`);
+                    console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
                     return null;
                 }
 
