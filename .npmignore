@@ -1,5 +1,6 @@
 storage
 node_modules
+examples
 
 # near-api-js files & coverage
 neardev/
