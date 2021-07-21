@@ -129,7 +129,7 @@ export class WalletConnection {
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
      * // redirects to the NEAR Wallet
-     * wallet.requestSignIn('account-with-deploy-contract.near');
+     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
     async requestSignIn(
@@ -141,7 +141,7 @@ export class WalletConnection {
         let options: SignInOptions;
         if (typeof contractIdOrOptions === 'string') {
             const deprecate = depd('requestSignIn(contractId, title)');
-            deprecate('`title` ignored; use `requestSignIn({ contractId, successUrl, failureUrl })` instead');
+            deprecate('`title` ignored; use `requestSignIn({ contractId, methodNames, successUrl, failureUrl })` instead');
             options = { contractId: contractIdOrOptions, successUrl, failureUrl };
         } else {
             options = contractIdOrOptions as SignInOptions;

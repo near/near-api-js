@@ -82,7 +82,7 @@ export declare class WalletConnection {
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
      * // redirects to the NEAR Wallet
-     * wallet.requestSignIn('account-with-deploy-contract.near');
+     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
     requestSignIn(contractIdOrOptions?: string | SignInOptions, title?: string, successUrl?: string, failureUrl?: string): Promise<void>;
