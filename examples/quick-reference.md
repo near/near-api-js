@@ -205,12 +205,12 @@ const wallet = new WalletConnection(near);
 // access key can then be used to connect to NEAR and sign transactions via keyStore
 
 const signIn = () => {
-  wallet.requestSignIn(
-    "example-contract.testnet", // contract requesting access
-    "Example App", // optional
-    "http://YOUR-URL.com/success", // optional
-    "http://YOUR-URL.com/failure" // optional
-  );
+    wallet.requestSignIn({
+        contractId: 'example-contract.testnet', // contract requesting access
+        methodNames: ['hello', 'goodbye'], // optional
+        successUrl: 'http://YOUR-URL.com/success', // optional
+        failureUrl: 'http://YOUR-URL.com/fail' // optional
+    });
 };
 ```
 
