@@ -206,7 +206,7 @@ const wallet = new WalletConnection(near);
 
 const signIn = () => {
     wallet.requestSignIn({
-        contractId: 'example-contract.testnet', // contract requesting access
+        contractId: 'example-contract.testnet', // optional, contract requesting access
         methodNames: ['hello', 'goodbye'], // optional
         successUrl: 'http://YOUR-URL.com/success', // optional
         failureUrl: 'http://YOUR-URL.com/fail' // optional
