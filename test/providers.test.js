@@ -5,6 +5,14 @@ const base58 = require('bs58');
 
 jest.setTimeout(20000);
 
+
+test('near json rpc fetch node status', async () => {
+    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
+    const near = await nearApi.connect(config);
+    let response = await near.connection.provider.status();
+    expect(response.chain_id).toBeTruthy();
+});
+
 const withProvider = (fn) => {
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
     const provider = new nearApi.providers.JsonRpcProvider(config.nodeUrl);
