@@ -79,7 +79,7 @@ export class Near {
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl } },
-            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps?.keyStore }
+            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps && config.deps.keyStore }
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
