@@ -1,8 +1,6 @@
 const { connect, keyStores } = require("near-api-js");
 const path = require("path");
 const homedir = require("os").homedir();
-const nacl = require("tweetnacl");
-const sha256 = require("js-sha256");
 
 const ACCOUNT_ID = "near-example.testnet";
 const CREDENTIALS_DIR = ".near-credentials";
@@ -19,20 +17,14 @@ const config = {
 verifySignature();
 
 async function verifySignature() {
-    const near = await connect(config);
-    const account = await near.account(ACCOUNT_ID);
-    const tokenMessage = new TextEncoder().encode(`Hello world, ${ACCOUNT_ID}`);
-    const signatureData = await account.connection.signer.signMessage(
-        tokenMessage,
-        ACCOUNT_ID,
-        config.networkId
-    );
-    const hash = new Uint8Array(sha256.sha256.array(tokenMessage));
-    let isValid = nacl.sign.detached.verify(
-        hash,
-        signatureData.signature,
-        signatureData.publicKey.data
-    );
+    const keyPair = await keyStore.getKey(config.networkId, ACCOUNT_ID);
+    const msg = Buffer.from("hi");
+  
+    const { signature } = keyPair.sign(msg);
+  
+    const isValid = keyPair.verify(msg, signature);
+  
     console.log("Signature Valid?:", isValid);
+  
     return isValid;
-}
+  }
