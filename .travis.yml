@@ -25,3 +25,6 @@ jobs:
         - fossa init
         - fossa analyze --server-scan
         - fossa test
+    - name: danger
+      script:
+        - yarn danger ci
