@@ -1,4 +1,4 @@
-const { connect, keyStores } = require("near-api-js");
+const { keyStores } = require("near-api-js");
 const path = require("path");
 const homedir = require("os").homedir();
 
@@ -19,12 +19,12 @@ verifySignature();
 async function verifySignature() {
     const keyPair = await keyStore.getKey(config.networkId, ACCOUNT_ID);
     const msg = Buffer.from("hi");
-  
+
     const { signature } = keyPair.sign(msg);
-  
+
     const isValid = keyPair.verify(msg, signature);
-  
+
     console.log("Signature Valid?:", isValid);
-  
+
     return isValid;
-  }
+}
