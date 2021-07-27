@@ -3,11 +3,9 @@ const { Account, Contract, providers } = require('../src/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
-const semver = require('semver');
 
 let nearjs;
 let workingAccount;
-let startFromVersion;
 
 const { HELLO_WASM_PATH, HELLO_WASM_BALANCE } = testUtils;
 
@@ -16,8 +14,6 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
     workingAccount = await testUtils.createAccount(nearjs);
-    let nodeStatus = await nearjs.connection.provider.status();
-    startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
 });
 
 afterAll(async () => {
@@ -95,14 +91,8 @@ describe('errors', () => {
     });
 
     test('create existing account', async() => {
-        if (startFromVersion('0.4.13')) {
-            await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100))
-                .rejects.toThrow(/Can't create a new account .+, because it already exists/);
-        } else {
-            await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100))
-                .rejects.toThrow(/Transaction .+ failed.+already exists/);
-
-        }
+        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100))
+            .rejects.toThrow(/Can't create a new account .+, because it already exists/);
     });
 });
 
@@ -141,10 +131,10 @@ describe('with deploy contract', () => {
         })).rejects.toThrow(/Smart contract panicked: expected to fail./);
         expect(logs.length).toEqual(7);
         expect(logs[0]).toMatch(new RegExp('^Receipts: \\w+, \\w+, \\w+$'));
-        //	Log [test_contract1591458385248117]: test_contract1591458385248117
+        //  Log [test_contract1591458385248117]: test_contract1591458385248117
         expect(logs[1]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ${contractId}$`));
         expect(logs[2]).toMatch(new RegExp('^Receipt: \\w+$'));
-        // 	Log [test_contract1591459677449181]: log before planned panic
+        //   Log [test_contract1591459677449181]: log before planned panic
         expect(logs[3]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before planned panic$`));
         expect(logs[4]).toMatch(new RegExp('^Receipt: \\w+$'));
         expect(logs[5]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before assert$`));
@@ -213,37 +203,20 @@ describe('with deploy contract', () => {
 
     test('can get logs from method result', async () => {
         await contract.generateLogs();
-        if (startFromVersion('0.4.11')) {
-            expect(logs.length).toEqual(3);
-            expect(logs[0].substr(0, 8)).toEqual('Receipt:');
-            expect(logs.slice(1)).toEqual([`\tLog [${contractId}]: log1`, `\tLog [${contractId}]: log2`]);
-        } else {
-            expect(logs).toEqual([`\tLog [${contractId}]: LOG: log1`, `\tLog [${contractId}]: LOG: log2`]);
-        }
-
+        expect(logs.length).toEqual(3);
+        expect(logs[0].substr(0, 8)).toEqual('Receipt:');
+        expect(logs.slice(1)).toEqual([`\tLog [${contractId}]: log1`, `\tLog [${contractId}]: log2`]);
     });
 
     test('can get logs from view call', async () => {
         let result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
-        if (startFromVersion('0.4.11')) {
-            expect(logs).toEqual([`Log [${contractId}]: loooog1`, `Log [${contractId}]: loooog2`]);
-        } else {
-            expect(logs).toEqual([`Log [${contractId}]: LOG: loooog1`, `Log [${contractId}]: LOG: loooog2`]);
-        }
+        expect(logs).toEqual([`Log [${contractId}]: loooog1`, `Log [${contractId}]: loooog2`]);
     });
 
     test('can get assert message from method result', async () => {
-        if (startFromVersion('0.4.13')) {
-            await expect(contract.triggerAssert()).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
-        } else {
-            await expect(contract.triggerAssert()).rejects.toThrow(/Transaction .+ failed.+expected to fail.+/);
-        }
-        if (startFromVersion('0.4.11')) {
-            expect(logs[1]).toEqual(`\tLog [${contractId}]: log before assert`);
-        } else {
-            expect(logs[1]).toEqual(`\tLog [${contractId}]: LOG: log before assert`);
-        }
+        await expect(contract.triggerAssert()).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
+        expect(logs[1]).toEqual(`\tLog [${contractId}]: log before assert`);
         expect(logs[2]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
