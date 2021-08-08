@@ -4,6 +4,7 @@ export interface ConnectConfig extends NearConfig {
      * Initialize an {@link InMemoryKeyStore} by reading the file at keyPath.
      */
     keyPath?: string;
+    accountId?: string;
 }
 /**
  * Initialize connection to Near network.
