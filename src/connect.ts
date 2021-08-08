@@ -33,6 +33,7 @@ export interface ConnectConfig extends NearConfig {
      * Initialize an {@link InMemoryKeyStore} by reading the file at keyPath.
      */
     keyPath?: string;
+    accountId?: string;
 }
 
 /**
@@ -43,19 +44,22 @@ export async function connect(config: ConnectConfig): Promise<Near> {
     if (config.keyPath && (config.keyStore || config.deps && config.deps.keyStore)) {
         try {
             const accountKeyFile = await readKeyFile(config.keyPath);
-            if (accountKeyFile[0]) {
+            // If user explicitly specified an accountId, use that instead,
+            // fallback to account ID from key file
+            const accountId = config.accountId || accountKeyFile[0];
+            if (accountId) {
                 // TODO: Only load key if network ID matches
                 const keyPair = accountKeyFile[1];
                 const keyPathStore = new InMemoryKeyStore();
-                await keyPathStore.setKey(config.networkId, accountKeyFile[0], keyPair);
+                await keyPathStore.setKey(config.networkId, accountId, keyPair);
                 if (!config.masterAccount) {
-                    config.masterAccount = accountKeyFile[0];
+                    config.masterAccount = accountId;
                 }
                 config.keyStore = new MergeKeyStore([
                     keyPathStore,
                     (config.keyStore || config.deps.keyStore)
                 ], { writeKeyStoreIndex: 1 });
-                console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+                console.log(`Loaded master account ${accountId} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {
             console.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
