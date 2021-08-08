@@ -2,9 +2,9 @@
  * This module contains the main class developers will use to interact with NEAR.
  * The {@link Near} class is used to interact with {@link Account | Accounts} through the {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}.
  * It is configured via the {@link NearConfig}.
- * 
+ *
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#account}
- * 
+ *
  * @module near
  */
 import BN from 'bn.js';
@@ -82,7 +82,7 @@ export class Near {
             signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps.keyStore }
         });
         if (config.masterAccount) {
-            // TODO: figure out better way of specifiying initial balance.
+            // TODO: figure out better way of specifying initial balance.
             // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times
             const initialBalance = config.initialBalance ? new BN(config.initialBalance) : new BN('500000000000000000000000000');
             this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), initialBalance);
@@ -106,7 +106,7 @@ export class Near {
      * * using a masterAccount with {@link LocalAccountCreator}
      * * using the helperUrl with {@link UrlAccountCreator}
      * @see {@link NearConfig.masterAccount} and {@link NearConfig.helperUrl}-
-     * 
+     *
      * @param accountId
      * @param publicKey
      */
