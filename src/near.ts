@@ -96,9 +96,8 @@ export class Near {
     /**
      * @param accountId near accountId used to interact with the network.
      */
-    async account(accountId: string): Promise<Account> {
-        const account = new Account(this.connection, accountId);
-        return account;
+    account(accountId: string): Account {
+        return new Account(this.connection, accountId);
     }
 
     /**

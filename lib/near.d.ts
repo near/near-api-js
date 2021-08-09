@@ -69,7 +69,7 @@ export declare class Near {
     /**
      * @param accountId near accountId used to interact with the network.
      */
-    account(accountId: string): Promise<Account>;
+    account(accountId: string): Account;
     /**
      * Create an account using the {@link AccountCreator}. Either:
      * * using a masterAccount with {@link LocalAccountCreator}
