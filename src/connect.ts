@@ -55,7 +55,9 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                     keyPathStore,
                     (config.keyStore || config.deps.keyStore)
                 ], { writeKeyStoreIndex: 1 });
-                console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+                if (process.env["NEAR_RUNNER_DEBUG"]){
+                  console.error(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+                }
             }
         } catch (error) {
             console.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
