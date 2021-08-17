@@ -16,7 +16,7 @@ const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 const config = {
   keyStore,
   networkId: "testnet",
-  nodeUrl: "https://rpc.testnet.near.org",
+  nodeUrl: "https://archival-rpc.testnet.near.org",
 };
 
 getTransactions(START_BLOCK_HASH, END_BLOCK_HASH, CONTRACT_ID);
