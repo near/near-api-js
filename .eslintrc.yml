@@ -18,7 +18,7 @@ rules:
   semi:
     - error
     - always
-  no-console: off
+  no-console: 0
 globals:
   window: true
   fetch: true

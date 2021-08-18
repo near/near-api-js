@@ -51,6 +51,12 @@ export function deployContract(code: Uint8Array): Action {
     return new Action({ deployContract: new DeployContract({code}) });
 }
 
+function stringifyJsonOrBytes(args: any): Buffer {
+    const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
+    const serializedArgs = isUint8Array ? args : Buffer.from(JSON.stringify(args));
+    return serializedArgs;
+}
+
 /**
  * Constructs {@link Action} instance representing contract method call.
  *
@@ -59,12 +65,10 @@ export function deployContract(code: Uint8Array): Action {
  *  or `Uint8Array` instance which represents bytes passed as is.
  * @param gas max amount of gas that method call can use
  * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+ * @param stringify Convert input arguments into bytes array.
  */
-export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN): Action {
-    const anyArgs = args as any;
-    const isUint8Array = anyArgs.byteLength !== undefined && anyArgs.byteLength === anyArgs.length;
-    const serializedArgs = isUint8Array ? args : Buffer.from(JSON.stringify(args));
-    return new Action({functionCall: new FunctionCall({methodName, args: serializedArgs, gas, deposit }) });
+export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, {stringify = stringifyJsonOrBytes} = {}): Action {
+    return new Action({functionCall: new FunctionCall({methodName, args: stringify(args), gas, deposit }) });
 }
 
 export function transfer(deposit: BN): Action {
