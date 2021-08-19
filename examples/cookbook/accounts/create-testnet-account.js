@@ -1,3 +1,8 @@
+const HELP = `Please run this script in the following format:
+
+    node create-testnet-account.js CREATOR_ACCOUNT.testnet NEW_ACCOUNT.testnet AMOUNT
+`;
+
 const { connect, KeyPair, keyStores, utils } = require("near-api-js");
 const path = require("path");
 const homedir = require("os").homedir();
@@ -13,9 +18,7 @@ const config = {
 };
 
 if (process.argv.length !== 5) {
-  console.info(
-    "Please run command in the following format: \n node create-testnet-account CREATOR_ACCOUNT.testnet NEW_ACCOUNT.testnet AMOUNT"
-  );
+  console.info(HELP);
   process.exit(1);
 }
 
