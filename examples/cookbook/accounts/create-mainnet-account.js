@@ -1,3 +1,8 @@
+const HELP = `Please run this script in the following format:
+
+  node create-mainnet-account.js CREATOR_ACCOUNT.near NEW_ACCOUNT.near AMOUNT"
+`;
+
 const { connect, KeyPair, keyStores, utils } = require("near-api-js");
 const path = require("path");
 const homedir = require("os").homedir();
@@ -13,9 +18,7 @@ const config = {
 };
 
 if (process.argv.length !== 5) {
-  console.info(
-    "Please run command in the following format: \n node create-mainnet-account CREATOR_ACCOUNT.near NEW_ACCOUNT.near AMOUNT"
-  );
+  console.info(HELP);
   process.exit(1);
 }
 

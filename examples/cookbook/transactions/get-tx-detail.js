@@ -13,10 +13,13 @@ const CONTRACT_ID = "relayer.ropsten.testnet";
 const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
+// NOTE: we're using the archival rpc to look back in time for a specific set
+// of transactions. For a full list of what nodes are available, visit:
+// https://docs.near.org/docs/develop/node/intro/types-of-node
 const config = {
   keyStore,
   networkId: "testnet",
-  nodeUrl: "https://rpc.testnet.near.org",
+  nodeUrl: "https://archival-rpc.testnet.near.org",
 };
 
 getTransactions(START_BLOCK_HASH, END_BLOCK_HASH, CONTRACT_ID);
