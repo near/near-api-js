@@ -1,3 +1,9 @@
+const HELP = `To convert N $NEAR to wNEAR,  run this script in the following format:
+
+    node wrap-near.js YOU.near N
+
+Note: runs on mainnet!`;
+
 const { connect, keyStores, transactions, utils } = require("near-api-js");
 const path = require("path");
 const homedir = require("os").homedir();
@@ -13,8 +19,12 @@ const config = {
   nodeUrl: "https://rpc.mainnet.near.org",
 };
 
-// Wrap 1 NEAR to wNEAR
-wrapNear("example.near", "1");
+if (process.argv.length !== 4) {
+  console.info(HELP);
+  process.exit(1);
+}
+
+wrapNear(process.argv[2], process.argv[3]);
 
 async function wrapNear(accountId, wrapAmount) {
   const near = await connect(config);
@@ -43,7 +53,7 @@ async function wrapNear(accountId, wrapAmount) {
         "storage_deposit", // method to create an account
         {},
         30000000000000, // attached gas
-        1250000000000000000000 // account creation costs 0.00125 NEAR for storage
+        utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
       )
     );
   }
