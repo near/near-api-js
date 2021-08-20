@@ -13,7 +13,7 @@ A JavaScript/TypeScript library for development of DApps on the NEAR platform
 
 # Examples
 
-## [Quick Reference](https://github.com/near/near-api-js/blob/master/examples/cookbook/README.md)
+## [Quick Reference](https://github.com/near/near-api-js/blob/master/examples/quick-reference.md)
 _(Cheat sheet / quick reference)_
 
 ## [Cookbook](https://github.com/near/near-api-js/blob/master/examples/cookbook/README.md)
