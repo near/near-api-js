@@ -6,9 +6,8 @@ const homedir = require("os").homedir();
 const CREDENTIALS_DIR = ".near-credentials";
 // NOTE: replace "example" with your accountId
 const CONTRACT_NAME = "contract.example.testnet";
-const WHITELIST_ACCOUNT_ID = "lockup-whitelist.example.testnet";
+const WHITELIST_ACCOUNT_ID = "whitelisted-account.example.testnet";
 const WASM_PATH = "../utils/wasm-files/staking_pool_factory.wasm";
-const TRANSFER_AMOUNT = "50000000000000000000000000";
 
 const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
@@ -23,14 +22,11 @@ sendTransactions();
 
 async function sendTransactions() {
     const near = await connect({ ...config, keyStore });
-    // NOTE: replace "example" with your accountId
-    const account = await near.account("example.testnet");
+    const account = await near.account(CONTRACT_NAME);
     const newArgs = { staking_pool_whitelist_account_id: WHITELIST_ACCOUNT_ID };
     const result = await account.signAndSendTransaction({
         receiverId: CONTRACT_NAME,
         actions: [
-            transactions.createAccount(),
-            transactions.transfer(TRANSFER_AMOUNT),
             transactions.deployContract(fs.readFileSync(WASM_PATH)),
             transactions.functionCall(
                 "new",
