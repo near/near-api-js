@@ -12,6 +12,9 @@ const HELLO_WASM_METHODS = {
     changeMethods: ['setValue', 'callPromise']
 };
 const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multisig.wasm';
+// Length of a random account. Set to 40 because in the protocol minimal allowed top-level account length should be at
+// least 32.
+const RANDOM_ACCOUNT_LENGTH = 40;
 
 async function setUpTestConnection() {
     const keyStore = new nearApi.keyStores.InMemoryKeyStore();
@@ -27,9 +30,12 @@ async function setUpTestConnection() {
     return nearApi.connect(config);
 }
 
-// Generate some unique string with a given prefix using the alice nonce.
+// Generate some unique string of length at least RANDOM_ACCOUNT_LENGTH with a given prefix using the alice nonce.
 function generateUniqueString(prefix) {
-    return `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
+    let result = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
+    let add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
+    for (let i = add_symbols; i > 0; --i) result += `0`;
+    return result;
 }
 
 async function createAccount(near) {

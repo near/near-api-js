@@ -53,7 +53,7 @@ test('view account details after adding access keys', async() => {
     const keyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 1000000000);
 
-    const contract2 = await testUtils.deployContract(workingAccount, 'test_contract2_' + Date.now());
+    const contract2 = await testUtils.deployContract(workingAccount, testUtils.generateUniqueString('test_contract2'));
     const keyPair2 = nearApi.utils.KeyPair.fromRandom('ed25519');
     await workingAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', 2000000000);
 
