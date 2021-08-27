@@ -34,7 +34,7 @@ async function setUpTestConnection() {
 function generateUniqueString(prefix) {
     let result = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
     let add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
-    for (let i = add_symbols; i > 0; --i) result += `0`;
+    for (let i = add_symbols; i > 0; --i) result += '0';
     return result;
 }
 
