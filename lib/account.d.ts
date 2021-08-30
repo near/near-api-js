@@ -32,6 +32,7 @@ export interface SignAndSendTransactionOptions {
      * @see {@link RequestSignTransactionsOptions}
      */
     walletCallbackUrl?: string;
+    returnError?: boolean;
 }
 /**
  * Options used to initiate a function call (especially a change function call)

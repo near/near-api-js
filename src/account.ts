@@ -65,6 +65,7 @@ export interface SignAndSendTransactionOptions {
      * @see {@link RequestSignTransactionsOptions}
      */
     walletCallbackUrl?: string;
+    returnError?: boolean;
 }
 
 /**
@@ -218,7 +219,7 @@ export class Account {
         return this.signAndSendTransactionV2({ receiverId, actions });
     }
 
-    private async signAndSendTransactionV2({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    private async signAndSendTransactionV2({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -259,7 +260,7 @@ export class Account {
         }, []);
         this.printLogsAndFailures(signedTx.transaction.receiverId, flatLogs);
 
-        if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
+        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object') {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
                 throw new TypedError(
