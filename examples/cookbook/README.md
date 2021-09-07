@@ -32,13 +32,25 @@
 
 ## Setup
 
-1. Install dependencies
+1. Navigate to the root directory
+
+```bash
+cd ../..
+```
+
+2. Install dependencies
 
 ```bash
 npm install
 ```
 
-3. Run Commands
+3. Navigate back to the cookbook directory
+
+```bash
+cd examples/cookbook
+```
+
+4. Run Commands
 
 Example:
 
