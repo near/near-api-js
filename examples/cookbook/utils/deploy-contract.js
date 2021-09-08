@@ -5,8 +5,7 @@ const homedir = require("os").homedir();
 
 const CREDENTIALS_DIR = ".near-credentials";
 const ACCOUNT_ID = "near-example.testnet";
-const WASM_PATH = "/wasm-files/status_message.wasm";
-const pathToWasm = path.join(__dirname, WASM_PATH);
+const WASM_PATH = path.join(__dirname, "/wasm-files/status_message.wasm");
 const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
@@ -16,7 +15,7 @@ const config = {
     nodeUrl: "https://rpc.testnet.near.org",
 };
 
-deployContract(ACCOUNT_ID, pathToWasm);
+deployContract(ACCOUNT_ID, WASM_PATH);
 
 async function deployContract(accountId, wasmPath) { 
     const near = await connect(config);
