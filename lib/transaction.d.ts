@@ -52,7 +52,7 @@ export declare class DeleteAccount extends IAction {
 }
 export declare function createAccount(): Action;
 export declare function deployContract(code: Uint8Array): Action;
-declare function stringifyJsonOrBytes(args: any): Buffer;
+export declare function stringifyJsonOrBytes(args: any): Buffer;
 /**
  * Constructs {@link Action} instance representing contract method call.
  *
@@ -63,9 +63,7 @@ declare function stringifyJsonOrBytes(args: any): Buffer;
  * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
  * @param stringify Convert input arguments into bytes array.
  */
-export declare function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, { stringify }?: {
-    stringify?: typeof stringifyJsonOrBytes;
-}): Action;
+export declare function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify?: typeof stringifyJsonOrBytes): Action;
 export declare function transfer(deposit: BN): Action;
 export declare function stake(stake: BN, publicKey: PublicKey): Action;
 export declare function addKey(publicKey: PublicKey, accessKey: AccessKey): Action;
@@ -109,4 +107,3 @@ export declare const SCHEMA: Map<Function, any>;
 export declare function createTransaction(signerId: string, publicKey: PublicKey, receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array): Transaction;
 export declare function signTransaction(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export declare function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
-export {};

@@ -51,7 +51,7 @@ export function deployContract(code: Uint8Array): Action {
     return new Action({ deployContract: new DeployContract({code}) });
 }
 
-function stringifyJsonOrBytes(args: any): Buffer {
+export function stringifyJsonOrBytes(args: any): Buffer {
     const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
     const serializedArgs = isUint8Array ? args : Buffer.from(JSON.stringify(args));
     return serializedArgs;
@@ -67,7 +67,7 @@ function stringifyJsonOrBytes(args: any): Buffer {
  * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
  * @param stringify Convert input arguments into bytes array.
  */
-export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, {stringify = stringifyJsonOrBytes} = {}): Action {
+export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify = stringifyJsonOrBytes): Action {
     return new Action({functionCall: new FunctionCall({methodName, args: stringify(args), gas, deposit }) });
 }
 

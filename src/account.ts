@@ -13,7 +13,8 @@ import {
     stake,
     deleteAccount,
     Action,
-    SignedTransaction
+    SignedTransaction,
+    stringifyJsonOrBytes
 } from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
 import { Finality, BlockId, ViewStateResult, AccountView, AccessKeyView, CodeResult, AccessKeyList, AccessKeyInfoView, FunctionCallPermissionView } from './providers/provider';
@@ -424,10 +425,10 @@ export class Account {
 
     private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
-        const opts = stringify === undefined ? {} : {stringify};
+        const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
         return this.signAndSendTransaction({
             receiverId: contractId,
-            actions: [functionCall(methodName, args, gas, attachedDeposit, opts)],
+            actions: [functionCall(methodName, args, gas, attachedDeposit, stringifyArg)],
             walletMeta,
             walletCallbackUrl
         });
@@ -503,8 +504,8 @@ export class Account {
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
      * @param args Any arguments to the view contract method, wrapped in JSON
-     * @param opts.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
-     * @param opts.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
      * @returns {Promise<any>}
      */
     async viewFunction(

@@ -202,8 +202,8 @@ export declare class Account {
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
      * @param args Any arguments to the view contract method, wrapped in JSON
-     * @param opts.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
-     * @param opts.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
      * @returns {Promise<any>}
      */
     viewFunction(contractId: string, methodName: string, args?: any, { parse, stringify }?: {
