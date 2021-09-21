@@ -13,7 +13,8 @@ import {
     stake,
     deleteAccount,
     Action,
-    SignedTransaction
+    SignedTransaction,
+    stringifyJsonOrBytes
 } from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
 import { Finality, BlockId, ViewStateResult, AccountView, AccessKeyView, CodeResult, AccessKeyList, AccessKeyInfoView, FunctionCallPermissionView } from './providers/provider';
@@ -94,6 +95,10 @@ export interface FunctionCallOptions {
      * @see {@link RequestSignTransactionsOptions}
      */
     walletCallbackUrl?: string;
+    /**
+     * Convert input arguments into bytes array.
+     */
+    stringify?: (input: any) => Buffer;
 }
 
 interface ReceiptLogWithFailure {
@@ -106,9 +111,13 @@ function parseJsonFromRawResponse (response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());
 }
 
+function bytesJsonStringify(input: any): Buffer {
+    return Buffer.from(JSON.stringify(input));
+}
+
 /**
  * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
- * 
+ *
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#account}
  * @hint Use {@link WalletConnection} in the browser to redirect to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for Account/key management using the {@link BrowserLocalStorageKeyStore}.
  * @see {@link https://nomicon.io/DataStructures/Account.html | Account Spec}
@@ -195,7 +204,7 @@ export class Account {
      * @deprecated
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
-     * 
+     *
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
      */
@@ -274,9 +283,9 @@ export class Account {
 
     /**
      * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link KeyStore}.
-     * 
+     *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
-     * 
+     *
      * @param receiverId currently unused (see todo)
      * @param actions currently unused (see todo)
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
@@ -322,7 +331,7 @@ export class Account {
 
     /**
      * Create a new account and deploy a contract to it
-     * 
+     *
      * @param contractId NEAR account where the contract is deployed
      * @param publicKey The public key to add to the created contract account
      * @param data The compiled contract code
@@ -384,7 +393,7 @@ export class Account {
     async functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
      * @deprecated
-     * 
+     *
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The method name on the contract as it is written in the contract code
      * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
@@ -393,7 +402,7 @@ export class Account {
      * @param amount amount of NEAR (in yoctoNEAR) to send together with the call
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> 
+    async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>
     async functionCall(...args: any[]): Promise<FinalExecutionOutcome> {
         if(typeof args[0] === 'string') {
             return this.functionCallV1(args[0], args[1], args[2], args[3], args[4]);
@@ -414,11 +423,12 @@ export class Account {
         });
     }
 
-    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
+        const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
         return this.signAndSendTransaction({
             receiverId: contractId,
-            actions: [functionCall(methodName, args, gas, attachedDeposit)],
+            actions: [functionCall(methodName, args, gas, attachedDeposit, stringifyArg)],
             walletMeta,
             walletCallbackUrl
         });
@@ -464,7 +474,7 @@ export class Account {
 
     /**
      * @see {@link https://docs.near.org/docs/validator/staking-overview}
-     * 
+     *
      * @param publicKey The public key for the account that's staking
      * @param amount The account to stake in yoctoⓃ
      */
@@ -490,25 +500,28 @@ export class Account {
     /**
      * Invoke a contract view function using the RPC API.
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#call-a-contract-function}
-     * 
+     *
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
      * @param args Any arguments to the view contract method, wrapped in JSON
+     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
      * @returns {Promise<any>}
      */
     async viewFunction(
         contractId: string,
         methodName: string,
         args: any = {},
-        { parse = parseJsonFromRawResponse } = {}
+        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify } = {}
     ): Promise<any> {
         this.validateArgs(args);
-        
+        const serializedArgs = stringify(args).toString('base64');
+
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
             account_id: contractId,
             method_name: methodName,
-            args_base64: Buffer.from(JSON.stringify(args)).toString('base64'),
+            args_base64: serializedArgs,
             finality: 'optimistic'
         });
 

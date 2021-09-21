@@ -60,8 +60,13 @@ export interface FunctionCallOptions {
      * @see {@link RequestSignTransactionsOptions}
      */
     walletCallbackUrl?: string;
+    /**
+     * Convert input arguments into bytes array.
+     */
+    stringify?: (input: any) => Buffer;
 }
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
+declare function bytesJsonStringify(input: any): Buffer;
 /**
  * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
  *
@@ -197,10 +202,13 @@ export declare class Account {
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
      * @param args Any arguments to the view contract method, wrapped in JSON
+     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
      * @returns {Promise<any>}
      */
-    viewFunction(contractId: string, methodName: string, args?: any, { parse }?: {
+    viewFunction(contractId: string, methodName: string, args?: any, { parse, stringify }?: {
         parse?: typeof parseJsonFromRawResponse;
+        stringify?: typeof bytesJsonStringify;
     }): Promise<any>;
     /**
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
