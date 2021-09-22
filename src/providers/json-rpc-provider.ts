@@ -376,6 +376,10 @@ export class JsonRpcProvider extends Provider {
                     console.warn(`Retrying request to ${method} as it has timed out`, params);
                     return null;
                 }
+                if (error.type === 'Expired') {
+                    console.warn(`Retrying request to ${method} as it has expired`, params);
+                    return null;
+                }
 
                 throw error;
             }
