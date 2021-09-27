@@ -63,6 +63,40 @@ export function parseNearAmount(amt?: string): string | null {
 }
 
 /**
+ * Convert human readable TGas amount to internal indivisible gas units.
+ * e.g. parseTGas(2) returns 2000000000000
+ * @param tGas {number} integer amount denominated in TGas
+ * @returns The parsed gas amount
+ */
+export function parseTGas(tGas: number): string {
+    if (!Number.isInteger(tGas)) {
+        throw new Error('Only integer amount is supported');
+    }
+
+    // 1T Gas = 1,000,000,000,000
+    const oneTGas = new BN('10', 10).pow(new BN(12, 10));
+    const result = oneTGas.mul(new BN(tGas, 10));
+    return result.toString(10);
+}
+
+/**
+ * Convert human readable GGas amount to internal indivisible gas units.
+ * e.g. parseGGas(2) returns 2000000000
+ * @param gGas {number} integer amount denominated in GGas
+ * @returns The parsed gas amount
+ */
+export function parseGGas(gGas: number): string {
+    if (!Number.isInteger(gGas)) {
+        throw new Error('Only integer amount is supported');
+    }
+
+    // 1G Gas = 1,000,000,000
+    const oneGGas = new BN('10', 10).pow(new BN(9, 10));
+    const result = oneGGas.mul(new BN(gGas, 10));
+    return result.toString(10);
+}
+
+/**
  * Removes commas from the input
  * @param amount A value or amount that may contain commas
  * @returns string The cleaned value
