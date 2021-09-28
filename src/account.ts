@@ -157,6 +157,7 @@ export class Account {
 
     /** @hidden */
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
+      if (process.env["NEAR_PRINT_LOGS"]){
         for (const result of results) {
             console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
             this.printLogs(contractId, result.logs, '\t');
@@ -164,13 +165,16 @@ export class Account {
                 console.warn(`\tFailure [${contractId}]: ${result.failure}`);
             }
         }
+      }
     }
 
     /** @hidden */
     private printLogs(contractId: string, logs: string[], prefix = '') {
+      if (process.env["NEAR_PRINT_LOGS"]){
         for (const log of logs) {
             console.log(`${prefix}Log [${contractId}]: ${log}`);
         }
+      }
     }
 
     /**
