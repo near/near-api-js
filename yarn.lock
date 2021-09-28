@@ -2108,14 +2108,14 @@ error-ex@^1.3.1:
   dependencies:
     is-arrayish "^0.2.1"
 
-error-polyfill@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/error-polyfill/-/error-polyfill-0.1.2.tgz#05b27de7d126cbc9d42a96f45faab28a98a0b28b"
-  integrity sha512-8uhnXlJuhFkmIfhw2tAHtWQGpXcw5rrc0dhuY3bhn8tBHvh6l0oL9VJvR2suqx9eltglKKhVPv8luPQy+UxLTA==
+error-polyfill@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/error-polyfill/-/error-polyfill-0.1.3.tgz#df848b61ad8834f7a5db69a70b9913df86721d15"
+  integrity sha512-XHJk60ufE+TG/ydwp4lilOog549iiQF2OAPhkk9DdiYWMrltz5yhDz/xnKuenNwP7gy3dsibssO5QpVhkrSzzg==
   dependencies:
     capability "^0.2.5"
     o3 "^1.0.3"
-    u3 "^0.1.0"
+    u3 "^0.1.1"
 
 es6-promise@^4.0.3:
   version "4.2.8"
@@ -5833,10 +5833,10 @@ typescript@^3.5.1:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.9.tgz#e69905c54bc0681d0518bd4d587cc6f2d0b1a674"
   integrity sha512-kdMjTiekY+z/ubJCATUPlRDl39vXYiMV9iyeMuEuXZh2we6zz80uovNN2WlAxmmdE/Z/YQe+EbOEXB5RHEED3w==
 
-u3@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/u3/-/u3-0.1.0.tgz#0060927663b68353c539cda99e9511d6687edd9d"
-  integrity sha1-AGCSdmO2g1PFOc2pnpUR1mh+3Z0=
+u3@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/u3/-/u3-0.1.1.tgz#5f52044f42ee76cd8de33148829e14528494b73b"
+  integrity sha512-+J5D5ir763y+Am/QY6hXNRlwljIeRMZMGs0cT6qqZVVzzT3X3nFPXVyPOFRMOR4kupB0T8JnCdpWdp6Q/iXn3w==
 
 uglify-js@^3.1.4:
   version "3.13.3"
