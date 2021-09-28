@@ -13,3 +13,4 @@ export declare class ErrorContext {
     transactionHash?: string;
     constructor(transactionHash?: string);
 }
+export declare function logWarning(...args: any[]): void;
