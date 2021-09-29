@@ -21,7 +21,7 @@ import { Finality, BlockId, ViewStateResult, AccountView, AccessKeyView, CodeRes
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
-import { PositionalArgsError } from './utils/errors';
+import { logWarning, PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './utils/rpc_errors';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
@@ -157,6 +157,7 @@ export class Account {
 
     /** @hidden */
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
+      if (!process.env["NEAR_NO_LOGS"]){
         for (const result of results) {
             console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
             this.printLogs(contractId, result.logs, '\t');
@@ -164,13 +165,16 @@ export class Account {
                 console.warn(`\tFailure [${contractId}]: ${result.failure}`);
             }
         }
+      }
     }
 
     /** @hidden */
     private printLogs(contractId: string, logs: string[], prefix = '') {
+      if (!process.env["NEAR_NO_LOGS"]){
         for (const log of logs) {
             console.log(`${prefix}Log [${contractId}]: ${log}`);
         }
+      }
     }
 
     /**
@@ -234,12 +238,12 @@ export class Account {
                 return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
                 if (error.type === 'InvalidNonce') {
-                    console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
+                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
                 if (error.type === 'Expired') {
-                    console.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
+                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
                     return null;
                 }
 
