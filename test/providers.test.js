@@ -76,12 +76,12 @@ test('txStatus with string hash and buffer hash', withProvider(async(provider) =
     expect(responseWithUint8Array).toMatchObject(outcome);
 }));
 
-test('json rpc query with blockId', withProvider(async(provider) => {
+test('json rpc query with block_id', withProvider(async(provider) => {
     const stat = await provider.status();
-    let blockId = stat.sync_info.latest_block_height - 1;
+    let block_id = stat.sync_info.latest_block_height - 1;
 
     const response = await provider.query({
-        blockId,
+        block_id,
         request_type: 'view_account',
         account_id: 'test.near'
     });
