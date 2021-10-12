@@ -56,6 +56,13 @@ export class PublicKey extends Assignable {
     toString(): string {
         return `${key_type_to_str(this.keyType)}:${base_encode(this.data)}`;
     }
+
+    verify(message: Uint8Array, signature: Uint8Array): boolean {
+        switch (this.keyType) {
+        case KeyType.ED25519: return nacl.sign.detached.verify(message, signature, this.data);
+        default: throw new Error(`Unknown key type ${this.keyType}`);
+        }
+    }
 }
 
 export abstract class KeyPair {
@@ -131,7 +138,7 @@ export class KeyPairEd25519 extends KeyPair {
     }
 
     verify(message: Uint8Array, signature: Uint8Array): boolean {
-        return nacl.sign.detached.verify(message, signature, this.publicKey.data);
+        return this.publicKey.verify(message, signature);
     }
 
     toString(): string {
