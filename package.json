@@ -14,8 +14,10 @@
     "exports": {
         ".": {
             "import": "./esm/index.js",
-            "require": "./lib/index.js"
-        }
+            "require": "./lib/index.js",
+            "default": "./lib/index.js"
+        },
+        "./lib/key_stores": "./lib/key_stores/index.js"
     },
     "dependencies": {
         "bn.js": "5.2.0",
