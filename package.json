@@ -11,6 +11,12 @@
     "module": "esm/index.js",
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./esm/index.js",
+            "require": "./lib/index.js"
+        }
+    },
     "dependencies": {
         "bn.js": "5.2.0",
         "borsh": "^0.6.0",
@@ -54,9 +60,11 @@
         "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
         "prebrowserify": "yarn build",
         "prepublish": "not-in-install && (yarn build && yarn browserify) || in-install",
-        "compile": "npm run compile:cjs && npm run compile:esm",
+        "compile": "npm run compile:clean && npm run compile:cjs && npm run compile:esm && npm run compile:fix",
+        "compile:clean": "rm -rf lib && rm -rf esm",
         "compile:cjs": "tsc -p ./tsconfig.json",
         "compile:esm": "tsc -p ./tsconfig.esm.json",
+        "compile:fix": "./fix_compile.sh",
         "dev": "yarn compile -w",
         "doc": "typedoc src && touch docs/.nojekyll",
         "build": "yarn compile",
