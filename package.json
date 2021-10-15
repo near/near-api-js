@@ -8,6 +8,7 @@
     },
     "homepage": "https://github.com/near/near-api-js",
     "main": "lib/index.js",
+    "module": "esm/index.js",
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
     "dependencies": {
@@ -53,7 +54,9 @@
         "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
         "prebrowserify": "yarn build",
         "prepublish": "not-in-install && (yarn build && yarn browserify) || in-install",
-        "compile": "tsc -p ./tsconfig.json && tsc -p ./tsconfig.esm.json",
+        "compile": "npm run compile:cjs && npm run compile:esm",
+        "compile:cjs": "tsc -p ./tsconfig.json",
+        "compile:esm": "tsc -p ./tsconfig.esm.json",
         "dev": "yarn compile -w",
         "doc": "typedoc src && touch docs/.nojekyll",
         "build": "yarn compile",
