@@ -17,6 +17,14 @@ test('test sign and verify with random', async () => {
     expect(keyPair.verify(message, signature.signature)).toBeTruthy();
 });
 
+test('test sign and verify with public key', async () => {
+    const keyPair = new nearApi.utils.key_pair.KeyPairEd25519('5JueXZhEEVqGVT5powZ5twyPP8wrap2K7RdAYGGdjBwiBdd7Hh6aQxMP1u3Ma9Yanq1nEv32EW7u8kUJsZ6f315C');
+    const message = new Uint8Array(sha256.array('message'));
+    const signature = keyPair.sign(message);
+    const publicKey = nearApi.utils.key_pair.PublicKey.from('ed25519:EWrekY1deMND7N3Q7Dixxj12wD7AVjFRt2H9q21QHUSW');
+    expect(publicKey.verify(message, signature.signature)).toBeTruthy();
+});
+
 test('test from secret', async () => {
     const keyPair = new nearApi.utils.key_pair.KeyPairEd25519('5JueXZhEEVqGVT5powZ5twyPP8wrap2K7RdAYGGdjBwiBdd7Hh6aQxMP1u3Ma9Yanq1nEv32EW7u8kUJsZ6f315C');
     expect(keyPair.publicKey.toString()).toEqual('ed25519:EWrekY1deMND7N3Q7Dixxj12wD7AVjFRt2H9q21QHUSW');
