@@ -144,17 +144,13 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         return `${this.keyDir}/${networkId}/${accountId}.json`;
     }
 
-    /**
-     * Get the network(s) from files in `keyDir`
+   /**
+     * Get the network(s) from subdirectory names in `keyDir`
      * @returns {Promise<string[]>}
      */
     async getNetworks(): Promise<string[]> {
-        const files: string[] = await readdir(this.keyDir);
-        const result = new Array<string>();
-        files.forEach((item) => {
-            result.push(item);
-        });
-        return result;
+        const files: fs.Dirent[] = await readdir(this.keyDir, {withFileTypes: true});
+        return files.filter(item => item.isDirectory()).map(item => item.name);
     }
 
     /**
