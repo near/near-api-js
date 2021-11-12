@@ -88,11 +88,11 @@ function walkSubtype(errorObj, schema, result, typeName) {
 export function getErrorTypeFromErrorMessage(errorMessage) {
     // This function should be removed when JSON RPC starts returning typed errors.
     switch (true) {
-    case /^account .*? does not exist while viewing$/.test(errorMessage):
+    case /account .*? does not exist while viewing$/.test(errorMessage):
         return 'AccountDoesNotExist';
-    case /^Account .*? doesn't exist$/.test(errorMessage):
+    case /Account .*? doesn't exist$/.test(errorMessage):
         return 'AccountDoesNotExist';
-    case /^access key .*? does not exist while viewing$/.test(errorMessage):
+    case /access key .*? does not exist while viewing$/.test(errorMessage):
         return 'AccessKeyDoesNotExist';
     case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(errorMessage):
         return 'CodeDoesNotExist';
