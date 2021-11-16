@@ -1,8 +1,13 @@
 // demonstrates how to use API-KEY with provider 
 const { providers } = require("near-api-js");
 
+//TODO: use https when it's available
+const RPC_API_ENDPOINT = 'http://34.141.205.230:3030/';
+//TODO: should we keep example API_KEY here?
+const API_KEY = 'ZmowOTMyNHUwMnUzNDA5MnUzMDk0dTIzeA==';
+
 const provider = new providers.JsonRpcProvider(
-    'https://rpc.testnet.near.org'
+    RPC_API_ENDPOINT
 );
 
 getState();
