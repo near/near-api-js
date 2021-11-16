@@ -56,9 +56,14 @@ export class JsonRpcProvider extends Provider {
     /**
      * @param url RPC API endpoint URL
      */
-    constructor(url?: string) {
+    constructor(connectionInfoOrUrl?: string | ConnectionInfo) {
         super();
-        this.connection = { url };
+        if (!connectionInfoOrUrl) { return; }
+        if (typeof (connectionInfoOrUrl) === 'string') {
+            this.connection = { url: connectionInfoOrUrl };
+        } else {
+            this.connection = connectionInfoOrUrl as ConnectionInfo;
+        }
     }
 
     /**
@@ -99,7 +104,7 @@ export class JsonRpcProvider extends Provider {
      * @param accountId The NEAR account that signed the transaction
      */
     async txStatus(txHash: Uint8Array | string, accountId: string): Promise<FinalExecutionOutcome> {
-        if(typeof txHash === 'string') {
+        if (typeof txHash === 'string') {
             return this.txStatusString(txHash, accountId);
         } else {
             return this.txStatusUint8Array(txHash, accountId);
@@ -313,8 +318,8 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<ChangeResult>}
      */
     async contractCodeChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
-        const {finality} = blockQuery as any;
-        const {blockId} = blockQuery as any;
+        const { finality } = blockQuery as any;
+        const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
             changes_type: 'contract_code_changes',
             account_ids: accountIdArray,
@@ -362,7 +367,7 @@ export class JsonRpcProvider extends Provider {
                         // NOTE: All this hackery is happening because structured errors not implemented
                         // TODO: Fix when https://github.com/nearprotocol/nearcore/issues/1839 gets resolved
                         if (response.error.data === 'Timeout' || errorMessage.includes('Timeout error')
-                                || errorMessage.includes('query has timed out')) {
+                            || errorMessage.includes('query has timed out')) {
                             throw new TypedError(errorMessage, 'TimeoutError');
                         }
 

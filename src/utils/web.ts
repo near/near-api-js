@@ -17,16 +17,13 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-export async function fetchJson(connection: string | ConnectionInfo, json?: string): Promise<any> {
+export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
     let connectionInfo: ConnectionInfo = null;
-    if (typeof (connection) === 'string') {
-        connectionInfo.url = connection;
+    if (typeof (connectionInfoOrUrl) === 'string') {
+        connectionInfo.url = connectionInfoOrUrl;
     } else {
-        connectionInfo = connection as ConnectionInfo;
+        connectionInfo = connectionInfoOrUrl as ConnectionInfo;
     }
-
-    //TODO: delete
-    // connectionInfo.headers = {'X-API-KEY': 'ZmowOTMyNHUwMnUzNDA5MnUzMDk0dTIzeA=='};
 
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {
