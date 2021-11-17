@@ -16,7 +16,7 @@ const config = {
     networkId: 'mainnet',
     keyStore,
     nodeUrl: RPC_API_ENDPOINT,
-    nodeUrlApiKey: API_KEY,
+    headers: { 'X-API-KEY': API_KEY },
 };
 
 async function getState(accountId) {

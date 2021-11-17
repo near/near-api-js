@@ -56,10 +56,10 @@ export interface NearConfig {
     nodeUrl: string;
 
     /**
-     * API KEY for server specified with nodeUrl parameter. Used to make authorized JSON RPC calls.
+     * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
      * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
      */
-    nodeUrlApiKey: string;
+    headers: { [key: string]: string | number };
 
     /**
      * NEAR wallet url used to redirect users to their wallet in browser applications.
@@ -84,7 +84,7 @@ export class Near {
         this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
-            provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, nodeUrlApiKey: config.nodeUrlApiKey } },
+            provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
             signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps.keyStore }
         });
         if (config.masterAccount) {

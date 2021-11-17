@@ -49,10 +49,12 @@ export interface NearConfig {
      */
     nodeUrl: string;
     /**
-     * API KEY for server specified with nodeUrl parameter. Used to make authorized JSON RPC calls.
+     * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
      * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
      */
-    nodeUrlApiKey: string;
+    headers: {
+        [key: string]: string | number;
+    };
     /**
      * NEAR wallet url used to redirect users to their wallet in browser applications.
      * @see {@link https://docs.near.org/docs/tools/near-wallet}
