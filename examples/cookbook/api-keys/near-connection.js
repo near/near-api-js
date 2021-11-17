@@ -7,8 +7,8 @@ const CREDENTIALS_DIR = ".near-credentials";
 const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
-const RPC_API_ENDPOINT = 'http://34.141.205.230:3030/';
-const API_KEY = 'ZmowOTMyNHUwMnUzNDA5MnUzMDk0dTIzeA==';
+const RPC_API_ENDPOINT = '<Replace this string with your RPC server URL>';
+const API_KEY = '<Replace this string with your API KEY>';
 
 const ACCOUNT_ID = 'serhii.near';
 
