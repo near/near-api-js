@@ -9,7 +9,10 @@ function getProvider(config: any): Provider {
     switch (config.type) {
         case undefined:
             return config;
-        case 'JsonRpcProvider': return new JsonRpcProvider(config.args.url);
+        case 'JsonRpcProvider': return new JsonRpcProvider({
+            url: config.args.url,
+            headers: { 'X-API-KEY': config.args.nodeUrlApiKey },
+        });
         default: throw new Error(`Unknown provider type ${config.type}`);
     }
 }

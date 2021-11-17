@@ -8,14 +8,15 @@ const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
 const RPC_API_ENDPOINT = 'http://34.141.205.230:3030/';
-const API_KEY = 'ZmowOTMyNHUwMnUzNDA5MnUzMDk0dTIzeA=='; //TODO: use api-key
+const API_KEY = 'ZmowOTMyNHUwMnUzNDA5MnUzMDk0dTIzeA==';
 
-const ACCOUNT_ID = 'serhii.testnet';
+const ACCOUNT_ID = 'serhii.near';
 
 const config = {
-    networkId: 'testnet',
+    networkId: 'mainnet',
     keyStore,
     nodeUrl: RPC_API_ENDPOINT,
+    nodeUrlApiKey: API_KEY,
 };
 
 async function getState(accountId) {
