@@ -18,7 +18,7 @@ export interface ConnectionInfo {
 }
 
 export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
-    let connectionInfo: ConnectionInfo = null;
+    let connectionInfo: ConnectionInfo = { url: null };
     if (typeof (connectionInfoOrUrl) === 'string') {
         connectionInfo.url = connectionInfoOrUrl;
     } else {
