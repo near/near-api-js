@@ -43,6 +43,12 @@ export class PublicKey extends Assignable {
     toString() {
         return `${key_type_to_str(this.keyType)}:${base_encode(this.data)}`;
     }
+    verify(message, signature) {
+        switch (this.keyType) {
+            case KeyType.ED25519: return nacl.sign.detached.verify(message, signature, this.data);
+            default: throw new Error(`Unknown key type ${this.keyType}`);
+        }
+    }
 }
 export class KeyPair {
     /**
@@ -106,7 +112,7 @@ export class KeyPairEd25519 extends KeyPair {
         return { signature, publicKey: this.publicKey };
     }
     verify(message, signature) {
-        return nacl.sign.detached.verify(message, signature, this.publicKey.data);
+        return this.publicKey.verify(message, signature);
     }
     toString() {
         return `ed25519:${this.secretKey}`;

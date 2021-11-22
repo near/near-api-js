@@ -105,7 +105,7 @@ export class Account {
         deprecate('use `Account.signAndSendTransaction(SignAndSendTransactionOptions)` instead');
         return this.signAndSendTransactionV2({ receiverId, actions });
     }
-    async signAndSendTransactionV2({ receiverId, actions }) {
+    async signAndSendTransactionV2({ receiverId, actions, returnError }) {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -145,7 +145,7 @@ export class Account {
                 return acc;
         }, []);
         this.printLogsAndFailures(signedTx.transaction.receiverId, flatLogs);
-        if (typeof result.status === 'object' && typeof result.status.Failure === 'object') {
+        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object') {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
                 throw new TypedError(`Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`, result.status.Failure.error_type);
