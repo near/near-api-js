@@ -17,6 +17,7 @@ export declare class PublicKey extends Assignable {
     static from(value: string | PublicKey): PublicKey;
     static fromString(encodedKey: string): PublicKey;
     toString(): string;
+    verify(message: Uint8Array, signature: Uint8Array): boolean;
 }
 export declare abstract class KeyPair {
     abstract sign(message: Uint8Array): Signature;
