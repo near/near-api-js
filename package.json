@@ -11,14 +11,6 @@
     "module": "esm/index.js",
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./esm/index.js",
-            "require": "./lib/index.js",
-            "default": "./lib/index.js"
-        },
-        "./lib/key_stores": "./lib/key_stores/index.js"
-    },
     "dependencies": {
         "bn.js": "5.2.0",
         "borsh": "^0.6.0",
