@@ -6,7 +6,7 @@ const API_KEY = '<Replace this string with your API KEY>';
 
 const provider = new providers.JsonRpcProvider({
     url: RPC_API_ENDPOINT,
-    headers: { 'X-API-KEY': API_KEY },
+    headers: { 'x-api-key': API_KEY },
 });
 
 getNetworkStatus();

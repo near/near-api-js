@@ -10,13 +10,13 @@ const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 const RPC_API_ENDPOINT = '<Replace this string with your RPC server URL>';
 const API_KEY = '<Replace this string with your API KEY>';
 
-const ACCOUNT_ID = 'serhii.near';
+const ACCOUNT_ID = 'serhii.testnet';
 
 const config = {
-    networkId: 'mainnet',
+    networkId: 'testnet',
     keyStore,
     nodeUrl: RPC_API_ENDPOINT,
-    headers: { 'X-API-KEY': API_KEY },
+    headers: { 'x-api-key': API_KEY },
 };
 
 async function getState(accountId) {
