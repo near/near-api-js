@@ -19,6 +19,13 @@ export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 
+// We deploy an empty contract when we disable 2FA (main.wasm), so we must check for that
+// contract's hash OR no code_hash to be sure it's safe
+const ALLOW_2FA_ENABLE_HASHES = [
+    'E8jZ1giWcVrps8PcV75ATauu6gFRkcwjNtKp7NKmipZG',
+    '11111111111111111111111111111111'
+];
+
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
 type verifyCodeFunction = (securityCode: any) => Promise<any>;
@@ -205,7 +212,7 @@ export class Account2FA extends AccountMultisig {
     // default helpers for CH deployments of multisig
 
     async deployMultisig(contractBytes: Uint8Array) {
-        if ((await this.state()).code_hash === '11111111111111111111111111111111') {
+        if (ALLOW_2FA_ENABLE_HASHES.includes((await this.state()).code_hash)) {
             const { accountId } = this;
             const seedOrLedgerKey = (await this.getRecoveryMethods()).data
                 .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
