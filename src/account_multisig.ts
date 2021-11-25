@@ -43,7 +43,7 @@ export class AccountMultisig extends Account {
     }
 
     protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome> {
-        if(typeof args[0] === 'string') {
+        if (typeof args[0] === 'string') {
             return this._signAndSendTransaction({ receiverId: args[0], actions: args[1] });
         }
 
@@ -68,7 +68,7 @@ export class AccountMultisig extends Account {
                     functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
                 ]
             });
-        } catch(e) {
+        } catch (e) {
             if (e.toString().includes('Account has too many active requests. Confirm or delete some')) {
                 await this.deleteUnconfirmedRequests();
                 return await this.signAndSendTransaction(receiverId, actions);
@@ -101,7 +101,7 @@ export class AccountMultisig extends Account {
         return result;
     }
 
-    async deleteUnconfirmedRequests () {
+    async deleteUnconfirmedRequests() {
         // TODO: Delete in batch, don't delete unexpired
         // TODO: Delete in batch, don't delete unexpired (can reduce gas usage dramatically)
         const request_ids = await this.getRequestIds();
@@ -112,10 +112,10 @@ export class AccountMultisig extends Account {
             }
             try {
                 await super.signAndSendTransaction({
-                    receiverId: this.accountId, 
+                    receiverId: this.accountId,
                     actions: [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
                 });
-            } catch(e) {
+            } catch (e) {
                 console.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
             }
         }
@@ -135,7 +135,7 @@ export class AccountMultisig extends Account {
         }
         return storageFallback[MULTISIG_STORAGE_KEY];
     }
-    
+
     setRequest(data) {
         if (this.storage) {
             return this.storage.setItem(MULTISIG_STORAGE_KEY, JSON.stringify(data));
@@ -150,7 +150,7 @@ export class Account2FA extends AccountMultisig {
     - sendCode: how to send the 2FA code in case you don't use NEAR Contract Helper
     - getCode: how to get code from user (use this to provide custom UI/UX for prompt of 2FA code)
     - onResult: the tx result after it's been confirmed by NEAR Contract Helper
-    ********************************/   
+    ********************************/
     public sendCode: sendCodeFunction;
     public getCode: getCodeFunction;
     public verifyCode: verifyCodeFunction;
@@ -182,7 +182,7 @@ export class Account2FA extends AccountMultisig {
      */
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>
     async signAndSendTransaction(...args: any): Promise<FinalExecutionOutcome> {
-        if(typeof args[0] === 'string') {
+        if (typeof args[0] === 'string') {
             const deprecate = depd('Account.signAndSendTransaction(receiverId, actions');
             deprecate('use `Account2FA.signAndSendTransaction(SignAndSendTransactionOptions)` instead');
             return this.__signAndSendTransaction({ receiverId: args[0], actions: args[1] });
@@ -205,32 +205,33 @@ export class Account2FA extends AccountMultisig {
     // default helpers for CH deployments of multisig
 
     async deployMultisig(contractBytes: Uint8Array) {
-        const { accountId } = this;
-
-        const seedOrLedgerKey = (await this.getRecoveryMethods()).data
-            .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
-            .map((rm) => rm.publicKey);
-
-        const fak2lak = (await this.getAccessKeys())
-            .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
-            .map((ak) => ak.public_key)
-            .map(toPK);
-
-        const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
-
-        const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
-
-        const actions = [
-            ...fak2lak.map((pk) => deleteKey(pk)),
-            ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
-            addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
-            deployContract(contractBytes),
-        ];
         if ((await this.state()).code_hash === '11111111111111111111111111111111') {
-            actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),);
+            const { accountId } = this;
+            const seedOrLedgerKey = (await this.getRecoveryMethods()).data
+                .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
+                .map((rm) => rm.publicKey);
+
+            const fak2lak = (await this.getAccessKeys())
+                .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
+                .map((ak) => ak.public_key)
+                .map(toPK);
+
+            const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+
+            const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
+
+            const actions = [
+                ...fak2lak.map((pk) => deleteKey(pk)),
+                ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
+                addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
+                deployContract(contractBytes),
+                functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT)
+            ];
+            console.log('deploying multisig contract for', accountId);
+            return await super.signAndSendTransactionWithAccount(accountId, actions);
+        } else {
+            throw new Error('Cannot deploy multisig on this account as the account already has a contract deployed.');
         }
-        console.log('deploying multisig contract for', accountId);
-        return await super.signAndSendTransactionWithAccount(accountId, actions);
     }
 
     async disable(contractBytes: Uint8Array) {
@@ -240,7 +241,7 @@ export class Account2FA extends AccountMultisig {
             .filter(({ access_key }) => access_key.permission !== 'FullAccess')
             .filter(({ access_key }) => {
                 const perm = (access_key.permission as FunctionCallPermissionView).FunctionCall;
-                return  perm.receiver_id === accountId &&
+                return perm.receiver_id === accountId &&
                     perm.method_names.length === 4 &&
                     perm.method_names.includes('add_request_and_confirm');
             });
