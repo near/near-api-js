@@ -58,12 +58,10 @@ export class JsonRpcProvider extends Provider {
      */
     constructor(connectionInfoOrUrl?: string | ConnectionInfo) {
         super();
-        this.connection = { url: null };
-        if (!connectionInfoOrUrl) { return; }
-        if (typeof (connectionInfoOrUrl) === 'string') {
-            this.connection = { url: connectionInfoOrUrl };
-        } else {
+        if (connectionInfoOrUrl != null && typeof connectionInfoOrUrl == 'object') {
             this.connection = connectionInfoOrUrl as ConnectionInfo;
+        } else {
+            this.connection = { url: connectionInfoOrUrl as string };
         }
     }
 
