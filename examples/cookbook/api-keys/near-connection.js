@@ -10,7 +10,7 @@ const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 const RPC_API_ENDPOINT = '<Replace this string with your RPC server URL>';
 const API_KEY = '<Replace this string with your API KEY>';
 
-const ACCOUNT_ID = 'serhii.testnet';
+const ACCOUNT_ID = '<Replace this string with existing account ID>';
 
 const config = {
     networkId: 'testnet',
