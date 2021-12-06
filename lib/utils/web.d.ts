@@ -8,4 +8,4 @@ export interface ConnectionInfo {
         [key: string]: string | number;
     };
 }
-export declare function fetchJson(connection: string | ConnectionInfo, json?: string): Promise<any>;
+export declare function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any>;

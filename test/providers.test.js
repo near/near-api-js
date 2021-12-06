@@ -319,3 +319,13 @@ test('json rpc gas price', withProvider(async (provider) => {
     let response3 = await provider.gasPrice();
     expect(response3.gas_price).toMatch(positiveIntegerRegex);
 }));
+
+test('JsonRpc connection object exist without url provided', async () => {
+    const provider = new nearApi.providers.JsonRpcProvider();
+    expect(provider.connection).toStrictEqual({ url: undefined });
+});
+
+test('JsonRpc connection url is not null on empty string', async () => {
+    const provider = new nearApi.providers.JsonRpcProvider('');
+    expect(provider.connection).toStrictEqual({ url: '' });
+});

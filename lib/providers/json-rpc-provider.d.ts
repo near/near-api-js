@@ -12,9 +12,9 @@ export declare class JsonRpcProvider extends Provider {
     /** @hidden */
     readonly connection: ConnectionInfo;
     /**
-     * @param url RPC API endpoint URL
+     * @param connectionInfoOrUrl ConnectionInfo or RPC API endpoint URL (deprecated)
      */
-    constructor(url?: string);
+    constructor(connectionInfoOrUrl?: string | ConnectionInfo);
     /**
      * Gets the RPC's status
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#general-validator-status}

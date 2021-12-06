@@ -41,7 +41,7 @@ cd ../..
 2. Install dependencies
 
 ```bash
-npm install
+yarn
 ```
 
 3. Navigate back to the cookbook directory
@@ -49,8 +49,13 @@ npm install
 ```bash
 cd examples/cookbook
 ```
+4. Install local dependencies
 
-4. Run Commands
+```bash
+yarn
+```
+
+5. Run Commands
 
 Example:
 

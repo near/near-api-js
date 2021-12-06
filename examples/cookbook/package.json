@@ -11,6 +11,6 @@
   "dependencies": {
     "chalk": "^4.1.1",
     "homedir": "^0.6.0",
-    "near-api-js": "file:../../lib/index.js"
+    "near-api-js": "file:../../"
   }
 }
