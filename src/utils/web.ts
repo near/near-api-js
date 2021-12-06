@@ -17,24 +17,24 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-export async function fetchJson(connection: string | ConnectionInfo, json?: string): Promise<any> {
-    let url: string = null;
-    if (typeof(connection) === 'string') {
-        url = connection;
+export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
+    let connectionInfo: ConnectionInfo = { url: null };
+    if (typeof (connectionInfoOrUrl) === 'string') {
+        connectionInfo.url = connectionInfoOrUrl;
     } else {
-        url = connection.url;
+        connectionInfo = connectionInfoOrUrl as ConnectionInfo;
     }
 
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {
-            const response = await fetch(url, {
+            const response = await fetch(connectionInfo.url, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
-                headers: { 'Content-Type': 'application/json; charset=utf-8' }
+                headers: { ...connectionInfo.headers, 'Content-Type': 'application/json; charset=utf-8' }
             });
             if (!response.ok) {
                 if (response.status === 503) {
-                    logWarning(`Retrying HTTP request for ${url} as it's not available now`);
+                    logWarning(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
                     return null;
                 }
                 throw createError(response.status, await response.text());
@@ -42,14 +42,14 @@ export async function fetchJson(connection: string | ConnectionInfo, json?: stri
             return response;
         } catch (error) {
             if (error.toString().includes('FetchError') || error.toString().includes('Failed to fetch')) {
-                logWarning(`Retrying HTTP request for ${url} because of error: ${error}`);
+                logWarning(`Retrying HTTP request for ${connectionInfo.url} because of error: ${error}`);
                 return null;
             }
             throw error;
         }
     });
     if (!response) {
-        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${url}.`, 'RetriesExceeded');
+        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${connectionInfo.url}.`, 'RetriesExceeded');
     }
     return await response.json();
 }
