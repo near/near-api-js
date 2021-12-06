@@ -12,7 +12,7 @@ export declare class JsonRpcProvider extends Provider {
     /** @hidden */
     readonly connection: ConnectionInfo;
     /**
-     * @param url RPC API endpoint URL
+     * @param connectionInfoOrUrl ConnectionInfo or RPC API endpoint URL
      */
     constructor(connectionInfoOrUrl?: string | ConnectionInfo);
     /**
