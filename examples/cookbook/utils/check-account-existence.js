@@ -17,7 +17,7 @@ async function accountExists() {
                 finality: "final",
             });
         } catch (e) {
-            if (e.message.includes(`Server error: account ${account_id} does not exist while viewing`)) {
+            if (e.type === 'AccountDoesNotExist') {
                 succeeded = false;
             }
         }
