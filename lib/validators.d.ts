@@ -3,9 +3,11 @@ import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from './providers/p
 /** Finds seat price given validators stakes and number of seats.
  *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection
  * @params validators: current or next epoch validators.
- * @params numSeats: number of seats.
+ * @params maxNumberOfSeats: maximum number of seats in the network.
+ * @params minimumStakeRatio: minimum stake ratio
+ * @params protocolVersion: version of the protocol from genesis config
  */
-export declare function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], numSeats: number): BN;
+export declare function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number, protocolVersion?: number): BN;
 export interface ChangedValidatorInfo {
     current: CurrentEpochValidatorInfo;
     next: NextEpochValidatorInfo;

@@ -1,6 +1,7 @@
 'use strict';
 
 import BN from 'bn.js';
+import depd from 'depd';
 import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from './providers/provider';
 
 /** Finds seat price given validators stakes and number of seats.
@@ -10,9 +11,14 @@ import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from './providers/p
  * @params minimumStakeRatio: minimum stake ratio 
  * @params protocolVersion: version of the protocol from genesis config
  */
-export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio?: number, protocolVersion?: number): BN {
-    if (!minimumStakeRatio || !protocolVersion || protocolVersion < 49) {
+export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number, protocolVersion?: number): BN {
+    if (protocolVersion && protocolVersion < 49) {
         return findSeatPriceForProtocolBefore49(validators, maxNumberOfSeats);
+    }
+    if (!minimumStakeRatio) {
+        const deprecate = depd('findSeatPrice(validators, maxNumberOfSeats)');
+        deprecate('`use `findSeatPrice(validators, maxNumberOfSeats, minimumStakeRatio)` instead');
+        minimumStakeRatio = 6250; // harcoded minimumStakeRation from 12/7/21
     }
     return findSeatPriceForProtocolAfter49(validators, maxNumberOfSeats, minimumStakeRatio);
 }
@@ -45,6 +51,7 @@ function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo
     return left;
 }
 
+// nearcore reference: https://github.com/near/nearcore/blob/5a8ae263ec07930cd34d0dcf5bcee250c67c02aa/chain/epoch_manager/src/validator_selection.rs#L308;L315
 function findSeatPriceForProtocolAfter49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number): BN {
     const stakes = validators.map(v => new BN(v.stake, 10)).sort((a, b) => a.cmp(b));
     const stakesSum = stakes.reduce((a, b) => a.add(b));
