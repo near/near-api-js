@@ -1,14 +1,29 @@
 'use strict';
 
 import BN from 'bn.js';
+import depd from 'depd';
 import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from './providers/provider';
 
 /** Finds seat price given validators stakes and number of seats.
  *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection
  * @params validators: current or next epoch validators.
- * @params numSeats: number of seats.
+ * @params maxNumberOfSeats: maximum number of seats in the network.
+ * @params minimumStakeRatio: minimum stake ratio 
+ * @params protocolVersion: version of the protocol from genesis config
  */
-export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], numSeats: number): BN {
+export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number, protocolVersion?: number): BN {
+    if (protocolVersion && protocolVersion < 49) {
+        return findSeatPriceForProtocolBefore49(validators, maxNumberOfSeats);
+    }
+    if (!minimumStakeRatio) {
+        const deprecate = depd('findSeatPrice(validators, maxNumberOfSeats)');
+        deprecate('`use `findSeatPrice(validators, maxNumberOfSeats, minimumStakeRatio)` instead');
+        minimumStakeRatio = 6250; // harcoded minimumStakeRation from 12/7/21
+    }
+    return findSeatPriceForProtocolAfter49(validators, maxNumberOfSeats, minimumStakeRatio);
+}
+
+function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], numSeats: number): BN {
     const stakes = validators.map(v => new BN(v.stake, 10)).sort((a, b) => a.cmp(b));
     const num = new BN(numSeats);
     const stakesSum = stakes.reduce((a, b) => a.add(b));
@@ -36,6 +51,17 @@ export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpoch
     return left;
 }
 
+// nearcore reference: https://github.com/near/nearcore/blob/5a8ae263ec07930cd34d0dcf5bcee250c67c02aa/chain/epoch_manager/src/validator_selection.rs#L308;L315
+function findSeatPriceForProtocolAfter49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number): BN {
+    const stakes = validators.map(v => new BN(v.stake, 10)).sort((a, b) => a.cmp(b));
+    const stakesSum = stakes.reduce((a, b) => a.add(b));
+    if (validators.length < maxNumberOfSeats) {
+        return stakesSum.div(new BN(minimumStakeRatio));
+    } else {
+        return stakes[0].add(new BN(1));
+    }
+}
+
 export interface ChangedValidatorInfo {
     current: CurrentEpochValidatorInfo;
     next: NextEpochValidatorInfo;
@@ -56,9 +82,9 @@ export function diffEpochValidators(currentValidators: CurrentEpochValidatorInfo
     const validatorsMap = new Map<string, CurrentEpochValidatorInfo>();
     currentValidators.forEach(v => validatorsMap.set(v.account_id, v));
     const nextValidatorsSet = new Set(nextValidators.map(v => v.account_id));
-    return { 
+    return {
         newValidators: nextValidators.filter(v => !validatorsMap.has(v.account_id)),
-        removedValidators: currentValidators.filter(v => !nextValidatorsSet.has(v.account_id)), 
+        removedValidators: currentValidators.filter(v => !nextValidatorsSet.has(v.account_id)),
         changedValidators: nextValidators.filter(v => (validatorsMap.has(v.account_id) && validatorsMap.get(v.account_id).stake != v.stake))
             .map(v => ({ current: validatorsMap.get(v.account_id), next: v }))
     };

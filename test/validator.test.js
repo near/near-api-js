@@ -4,15 +4,17 @@ const BN = require('bn.js');
 
 test('find seat price', async () => {
     expect(nearApi.validators.findSeatPrice(
-        [{stake: '1000000'}, {stake: '1000000'}, {stake: '10'}], 10)).toEqual(new BN('200000'));
+        [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}], 2, 6250, 49
+    )).toEqual(new BN('101'));
     expect(nearApi.validators.findSeatPrice(
-        [{ stake: '1000000000' }, { stake: '10' }], 10)).toEqual(new BN('100000000'));
+        [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}], 3, 6250
+    )).toEqual(new BN('101'));
     expect(nearApi.validators.findSeatPrice(
-        [{ stake: '1000000000' }], 1000000000)).toEqual(new BN('1'));
+        [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}], 4, 6250, 49
+    )).toEqual(new BN('320'));
     expect(nearApi.validators.findSeatPrice(
-        [{ stake: '1000' }, { stake: '1' }, { stake: '1' }, { stake: '1' }, { stake: '1' }, { stake: '1' }, { stake: '1' }, { stake: '1' }, { stake: '1' }], 1)).toEqual(new BN('1000'));
-    expect(() => { nearApi.validators.findSeatPrice(
-        [{ stake: '1' }, { stake: '1' }, { stake: '2' }], 100); }).toThrow();
+        [{stake: '1000'}, {stake: '1000'}, {stake: '200'}], 100, 25
+    )).toEqual(new BN('88'));
 });
 
 test('diff validators', async () => {
