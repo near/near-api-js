@@ -1,11 +1,9 @@
 language: node_js
 
-node_js: 10
+node_js: 12
 
 env:
   - NODE_ENV=ci
-  - NODE_ENV=ci-betanet
-    #  - NODE_ENV=betanet
 
 cache: yarn
 
