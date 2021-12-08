@@ -15,6 +15,29 @@ test('find seat price', async () => {
         [{ stake: '1' }, { stake: '1' }, { stake: '2' }], 100); }).toThrow();
 });
 
+test('test findSeatPriceForProtocolAfter49', async () => {
+    expect(nearApi.validators.findSeatPriceForProtocolAfter49(
+        [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}],
+        6250,
+        2
+    )).toEqual(new BN('101'));
+    expect(nearApi.validators.findSeatPriceForProtocolAfter49(
+        [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}],
+        6250,
+        3
+    )).toEqual(new BN('101'));
+    expect(nearApi.validators.findSeatPriceForProtocolAfter49(
+        [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}],
+        6250,
+        4
+    )).toEqual(new BN('320'));
+    expect(nearApi.validators.findSeatPriceForProtocolAfter49(
+        [{stake: '1000'}, {stake: '1000'}, {stake: '200'}],
+        25,
+        100
+    )).toEqual(new BN('88'));
+});
+
 test('diff validators', async () => {
     expect(nearApi.validators.diffEpochValidators(
         [{account_id: 'x', stake: '10'}],

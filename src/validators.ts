@@ -36,6 +36,16 @@ export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpoch
     return left;
 }
 
+export function findSeatPriceForProtocolAfter49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], minimumStakeRatio: number, maxNumberOfSeats: number): BN {
+    const stakes = validators.map(v => new BN(v.stake, 10)).sort((a, b) => a.cmp(b));
+    const stakesSum = stakes.reduce((a, b) => a.add(b));
+    if (validators.length < maxNumberOfSeats) {
+        return stakesSum.div(new BN(minimumStakeRatio));
+    } else {
+        return stakes[0].add(new BN(1));
+    }
+}
+
 export interface ChangedValidatorInfo {
     current: CurrentEpochValidatorInfo;
     next: NextEpochValidatorInfo;
