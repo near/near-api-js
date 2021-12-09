@@ -7,7 +7,7 @@ import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from './providers/p
  * @params minimumStakeRatio: minimum stake ratio
  * @params protocolVersion: version of the protocol from genesis config
  */
-export declare function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number, protocolVersion?: number): BN;
+export declare function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number[], protocolVersion?: number): BN;
 export interface ChangedValidatorInfo {
     current: CurrentEpochValidatorInfo;
     next: NextEpochValidatorInfo;
