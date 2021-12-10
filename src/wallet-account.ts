@@ -22,6 +22,9 @@ const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key';
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key'; // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)
 
+const windowOrNull = (typeof window === 'undefined') ? null : window;
+const placeholderUrl = new URL('https://example.com'); // This variable only exists to prevent build errors since NodeJs doesn't have access to the `window` global variable.
+
 interface SignInOptions {
     contractId?: string;
     methodNames?: string[];
@@ -82,7 +85,7 @@ export class WalletConnection {
     constructor(near: Near, appKeyPrefix: string | null) {
         this._near = near;
         const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
-        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
+        const authData = windowOrNull ? JSON.parse(window.localStorage.getItem(authDataKey)) : null;
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
@@ -147,7 +150,7 @@ export class WalletConnection {
             options = contractIdOrOptions as SignInOptions;
         }
 
-        const currentUrl = new URL(window.location.href);
+        const currentUrl = windowOrNull ? new URL(window.location.href) : placeholderUrl;
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('success_url', options.successUrl || currentUrl.href);
         newUrl.searchParams.set('failure_url', options.failureUrl || currentUrl.href);
@@ -168,7 +171,7 @@ export class WalletConnection {
             });
         }
 
-        window.location.assign(newUrl.toString());
+        if (windowOrNull) { window.location.assign(newUrl.toString()); }
     }
 
     /**
@@ -198,7 +201,7 @@ export class WalletConnection {
     }
 
     private async _requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
-        const currentUrl = new URL(window.location.href);
+        const currentUrl = windowOrNull ? new URL(window.location.href) : placeholderUrl;
         const newUrl = new URL('sign', this._walletBaseUrl);
 
         newUrl.searchParams.set('transactions', transactions
@@ -208,7 +211,7 @@ export class WalletConnection {
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
         if(meta) newUrl.searchParams.set('meta', meta);
 
-        window.location.assign(newUrl.toString());
+        if (windowOrNull) { window.location.assign(newUrl.toString()); }
     }
 
     /**
@@ -216,7 +219,7 @@ export class WalletConnection {
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
      */
     async _completeSignInWithAccessKey() {
-        const currentUrl = new URL(window.location.href);
+        const currentUrl = windowOrNull ? new URL(window.location.href) : placeholderUrl;
         const publicKey = currentUrl.searchParams.get('public_key') || '';
         const allKeys = (currentUrl.searchParams.get('all_keys') || '').split(',');
         const accountId = currentUrl.searchParams.get('account_id') || '';
@@ -226,7 +229,7 @@ export class WalletConnection {
                 accountId,
                 allKeys
             };
-            window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
+            if (windowOrNull) { window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData)); }
             if (publicKey) {
                 await this._moveKeyFromTempToPermanent(accountId, publicKey);
             }
@@ -237,7 +240,7 @@ export class WalletConnection {
         currentUrl.searchParams.delete('meta');
         currentUrl.searchParams.delete('transactionHashes');
 
-        window.history.replaceState({}, document.title, currentUrl.toString());
+        if (windowOrNull) { window.history.replaceState({}, document.title, currentUrl.toString()); }
     }
 
     /**
@@ -258,7 +261,7 @@ export class WalletConnection {
      */
     signOut() {
         this._authData = {};
-        window.localStorage.removeItem(this._authDataKey);
+        if (windowOrNull) { window.localStorage.removeItem(this._authDataKey); }
     }
 
     /**
@@ -299,7 +302,7 @@ export class ConnectedWalletAccount extends Account {
         return this._signAndSendTransaction(args[0]);
     }
 
-    private async _signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    private async _signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = windowOrNull ? window.location.href : '' }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
