@@ -1,7 +1,7 @@
 import { KeyStore } from './keystore';
 import { KeyPair } from '../utils/key_pair';
 /**
- * This class is used to store keys in the browsers local storage.
+ * This class is used to store keys in the browser's local storage.
  *
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store}
  * @example

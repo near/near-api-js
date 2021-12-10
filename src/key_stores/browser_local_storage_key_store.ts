@@ -3,8 +3,10 @@ import { KeyPair } from '../utils/key_pair';
 
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 
+const windowLocalStorage = (typeof window === 'undefined') ? null : window.localStorage;
+
 /**
- * This class is used to store keys in the browsers local storage.
+ * This class is used to store keys in the browser's local storage.
  * 
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store}
  * @example
@@ -35,7 +37,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
      * @param localStorage defaults to window.localStorage
      * @param prefix defaults to `near-api-js:keystore:`
      */
-    constructor(localStorage: any = window.localStorage, prefix = LOCAL_STORAGE_KEY_PREFIX) {
+    constructor(localStorage: any = windowLocalStorage, prefix = LOCAL_STORAGE_KEY_PREFIX) {
         super();
         this.localStorage = localStorage;
         this.prefix = prefix;
