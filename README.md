@@ -31,7 +31,6 @@ _(Common use cases / more complex examples)_
 
        yarn build -- -w
 
-
 # Publish
 
 Prepare `dist` version by running:
