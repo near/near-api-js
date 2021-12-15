@@ -21,7 +21,7 @@ export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 
 // We deploy an empty contract when we disable 2FA (main.wasm), so we must check for that
 // contract's hash OR no code_hash to be sure it's safe
-const ALLOW_2FA_ENABLE_HASHES = [
+const ALLOW_2FA_ENABLE_HASHES = process.env.ALLOW_2FA_ENABLE_HASHES || [
     'E8jZ1giWcVrps8PcV75ATauu6gFRkcwjNtKp7NKmipZG',
     '11111111111111111111111111111111'
 ];
@@ -212,33 +212,34 @@ export class Account2FA extends AccountMultisig {
     // default helpers for CH deployments of multisig
 
     async deployMultisig(contractBytes: Uint8Array) {
-        if (ALLOW_2FA_ENABLE_HASHES.includes((await this.state()).code_hash)) {
-            const { accountId } = this;
-            const seedOrLedgerKey = (await this.getRecoveryMethods()).data
-                .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
-                .map((rm) => rm.publicKey);
 
-            const fak2lak = (await this.getAccessKeys())
-                .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
-                .map((ak) => ak.public_key)
-                .map(toPK);
-
-            const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
-
-            const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
-
-            const actions = [
-                ...fak2lak.map((pk) => deleteKey(pk)),
-                ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
-                addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
-                deployContract(contractBytes),
-                functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT)
-            ];
-            console.log('deploying multisig contract for', accountId);
-            return await super.signAndSendTransactionWithAccount(accountId, actions);
-        } else {
+        if (!ALLOW_2FA_ENABLE_HASHES.includes((await this.state()).code_hash)) {
             throw new Error('Cannot deploy multisig on this account as the account already has a contract deployed.');
         }
+
+        const { accountId } = this;
+        const seedOrLedgerKey = (await this.getRecoveryMethods()).data
+            .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
+            .map((rm) => rm.publicKey);
+
+        const fak2lak = (await this.getAccessKeys())
+            .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
+            .map((ak) => ak.public_key)
+            .map(toPK);
+
+        const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+
+        const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
+
+        const actions = [
+            ...fak2lak.map((pk) => deleteKey(pk)),
+            ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
+            addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
+            deployContract(contractBytes),
+            functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT)
+        ];
+        console.log('deploying multisig contract for', accountId);
+        return await super.signAndSendTransactionWithAccount(accountId, actions);
     }
 
     async disable(contractBytes: Uint8Array) {
