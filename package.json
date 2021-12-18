@@ -12,7 +12,7 @@
     "types": "lib/index.d.ts",
     "dependencies": {
         "bn.js": "5.2.0",
-        "borsh": "^0.6.0",
+        "borsh": "^0.7.0",
         "bs58": "^4.0.0",
         "depd": "^2.0.0",
         "error-polyfill": "^0.1.3",
