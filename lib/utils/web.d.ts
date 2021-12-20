@@ -1,5 +1,8 @@
 export interface ConnectionInfo {
     url: string;
+    apiKeys?: {
+        [url: string]: string;
+    };
     user?: string;
     password?: string;
     allowInsecure?: boolean;

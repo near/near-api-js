@@ -10,6 +10,7 @@ const RETRY_NUMBER = 10;
 
 export interface ConnectionInfo {
     url: string;
+    apiKeys?: { [url: string]: string }
     user?: string;
     password?: string;
     allowInsecure?: boolean;
@@ -30,7 +31,11 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
             const response = await fetch(connectionInfo.url, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
-                headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': connectionInfo.apiKeys ? connectionInfo.apiKeys[connectionInfo.url] : undefined,
+                    ...connectionInfo.headers,
+                },
             });
             if (!response.ok) {
                 if (response.status === 503) {
