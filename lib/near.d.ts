@@ -49,6 +49,10 @@ export interface NearConfig {
      */
     nodeUrl: string;
     /**
+     * RPC API Keys. Used to authenticate users on RPC Server.
+     */
+    apiKeys: string;
+    /**
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
      * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
      */
