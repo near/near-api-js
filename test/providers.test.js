@@ -1,5 +1,5 @@
 const nearApi = require('../src/index');
-const testUtils  = require('./test-utils');
+const testUtils = require('./test-utils');
 const BN = require('bn.js');
 const base58 = require('bs58');
 
@@ -64,7 +64,7 @@ test('json rpc fetch validators info', withProvider(async (provider) => {
     expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
 }));
 
-test('txStatus with string hash and buffer hash', withProvider(async(provider) => {
+test('txStatus with string hash and buffer hash', withProvider(async (provider) => {
     const near = await testUtils.setUpTestConnection();
     const sender = await testUtils.createAccount(near);
     const receiver = await testUtils.createAccount(near);
@@ -76,7 +76,7 @@ test('txStatus with string hash and buffer hash', withProvider(async(provider) =
     expect(responseWithUint8Array).toMatchObject(outcome);
 }));
 
-test('json rpc query with block_id', withProvider(async(provider) => {
+test('json rpc query with block_id', withProvider(async (provider) => {
     const stat = await provider.status();
     let block_id = stat.sync_info.latest_block_height - 1;
 
@@ -111,7 +111,7 @@ test('json rpc query view_state', withProvider(async (provider) => {
 
     await contract.setValue({ args: { value: 'hello' } });
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'view_state',
             finality: 'final',
@@ -152,7 +152,7 @@ test('json rpc query view_code', withProvider(async (provider) => {
     const account = await testUtils.createAccount(near);
     const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'view_code',
             finality: 'final',
@@ -175,7 +175,7 @@ test('json rpc query call_function', withProvider(async (provider) => {
 
     await contract.setValue({ args: { value: 'hello' } });
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'call_function',
             finality: 'final',
@@ -200,7 +200,7 @@ test('json rpc query call_function', withProvider(async (provider) => {
     });
 }));
 
-test('final tx result', async() => {
+test('final tx result', async () => {
     const result = {
         status: { SuccessValue: 'e30=' },
         transaction: { id: '11111', outcome: { status: { SuccessReceiptId: '11112' }, logs: [], receipt_ids: ['11112'], gas_burnt: 1 } },
@@ -212,7 +212,7 @@ test('final tx result', async() => {
     expect(nearApi.providers.getTransactionLastResult(result)).toEqual({});
 });
 
-test('final tx result with null', async() => {
+test('final tx result with null', async () => {
     const result = {
         status: 'Failure',
         transaction: { id: '11111', outcome: { status: { SuccessReceiptId: '11112' }, logs: [], receipt_ids: ['11112'], gas_burnt: 1 } },
@@ -224,7 +224,7 @@ test('final tx result with null', async() => {
     expect(nearApi.providers.getTransactionLastResult(result)).toEqual(null);
 });
 
-test('json rpc light client proof', async() => {
+test('json rpc light client proof', async () => {
     const near = await testUtils.setUpTestConnection();
     const workingAccount = await testUtils.createAccount(near);
     const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, new BN(10000));
@@ -335,4 +335,20 @@ test('near json rpc fetch node status', async () => {
     const near = await nearApi.connect(config);
     let response = await near.connection.provider.status();
     expect(response.chain_id).toBeTruthy();
+});
+
+test('JsonRpc rotateRpcServers', async () => {
+    const SERVER_1 = "server1";
+    const SERVER_2 = "server2";
+    const SERVER_3 = "server3";
+    const provider = new nearApi.providers.JsonRpcProvider({ url: [SERVER_1, SERVER_2, SERVER_3] });
+    expect(provider.connection.url.length).toEqual(3);
+    expect(provider.connection.url[0]).toMatch(SERVER_1);
+    expect(provider.connection.url[1]).toMatch(SERVER_2);
+    expect(provider.connection.url[2]).toMatch(SERVER_3);
+    provider.rotateRpcServers();
+    expect(provider.connection.url.length).toEqual(3);
+    expect(provider.connection.url[0]).toMatch(SERVER_2);
+    expect(provider.connection.url[1]).toMatch(SERVER_3);
+    expect(provider.connection.url[2]).toMatch(SERVER_1);
 });
