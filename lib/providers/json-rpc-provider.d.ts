@@ -156,6 +156,11 @@ export declare class JsonRpcProvider extends Provider {
      */
     gasPrice(blockId: BlockId | null): Promise<GasPrice>;
     /**
+     * Part of the RPC failover design.
+     * Changing current (first) rpc server and moves it to the and of the queue.
+     */
+    private rotateRpcServers;
+    /**
      * Directly call the RPC specifying the method and params
      *
      * @param method RPC method

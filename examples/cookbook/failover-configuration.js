@@ -8,10 +8,8 @@ const FAILOVER_RPC_SERVER_2 = 'https://testnet.rpc.near.dev'; //this one needs A
 
 // Provider example
 const provider = new providers.JsonRpcProvider({
-    url: MAIN_RPC_SERVER,
-    /* In case of several unsuccessful calls to the main RPC Server,
-    near-api-js will make an attempt to execute call on failover RPC servers. */
-    failoverUrls: [FAILOVER_RPC_SERVER_1, FAILOVER_RPC_SERVER_2],
+    // TODO: what is happening here
+    url: [MAIN_RPC_SERVER, FAILOVER_RPC_SERVER_1, FAILOVER_RPC_SERVER_2],
 });
 
 async function getNetworkStatus() {
