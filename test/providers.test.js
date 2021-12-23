@@ -338,9 +338,9 @@ test('near json rpc fetch node status', async () => {
 });
 
 test('JsonRpc rotateRpcServers', async () => {
-    const SERVER_1 = "server1";
-    const SERVER_2 = "server2";
-    const SERVER_3 = "server3";
+    const SERVER_1 = 'server1';
+    const SERVER_2 = 'server2';
+    const SERVER_3 = 'server3';
     const provider = new nearApi.providers.JsonRpcProvider({ url: [SERVER_1, SERVER_2, SERVER_3] });
     expect(provider.connection.url.length).toEqual(3);
     expect(provider.connection.url[0]).toMatch(SERVER_1);

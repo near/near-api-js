@@ -11,7 +11,7 @@ const RETRY_NUMBER = 10;
 export interface ConnectionInfo {
     // RPC Server URL or the prioritized array of such URLs
     url: string | string[];
-    apiKeys?: { [url: string]: string }
+    apiKeys?: { [url: string]: string };
     user?: string;
     password?: string;
     allowInsecure?: boolean;
