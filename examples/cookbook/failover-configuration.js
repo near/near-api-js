@@ -1,14 +1,13 @@
-// Demonstrates how to use failover functionality with provider 
-const { providers } = require("near-api-js");
+// Demonstrates how to use failover functionality RPC Servers
+const { providers, connect } = require("near-api-js");
 
-//TODO: replace with placeholders
-const MAIN_RPC_SERVER = 'https://rpc.testnet.near.org';
-const FAILOVER_RPC_SERVER_1 = 'https://rpc.ci-testnet.near.org';
-const FAILOVER_RPC_SERVER_2 = 'https://testnet.rpc.near.dev'; //this one needs API Key
+const MAIN_RPC_SERVER = '<RPC Server 1>';
+const FAILOVER_RPC_SERVER_1 = '<RPC Server 2>';
+const FAILOVER_RPC_SERVER_2 = '<RPC Server 1>';
 
 // Provider example
 const provider = new providers.JsonRpcProvider({
-    // TODO: what is happening here
+    // preoritized list of RPC Servers
     url: [MAIN_RPC_SERVER, FAILOVER_RPC_SERVER_1, FAILOVER_RPC_SERVER_2],
 });
 
@@ -20,4 +19,18 @@ async function getNetworkStatus() {
 getNetworkStatus();
 
 // Connection example
-//TODO⏎
+const ACCOUNT_ID = "<Account ID>";
+
+const config = {
+    networkId: 'testnet',
+    nodeUrl: [MAIN_RPC_SERVER, FAILOVER_RPC_SERVER_1, FAILOVER_RPC_SERVER_2],
+};
+
+async function getState(accountId) {
+    const near = await connect(config);
+    const account = await near.account(accountId);
+    const state = await account.state();
+    console.log(state);
+}
+
+getState(ACCOUNT_ID);

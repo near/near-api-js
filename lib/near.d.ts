@@ -44,10 +44,11 @@ export interface NearConfig {
      */
     networkId: string;
     /**
-     * NEAR RPC API url. used to make JSON RPC calls to interact with NEAR.
+     * NEAR RPC API url. Used to make JSON RPC calls to interact with NEAR.
+     * You can set multiple RPC Server URLs to turn on failover functionality.
      * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
      */
-    nodeUrl: string;
+    nodeUrl: string | string[];
     /**
      * RPC API Keys. Used to authenticate users on RPC Server.
      */
