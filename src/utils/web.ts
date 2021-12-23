@@ -10,6 +10,7 @@ const RETRY_NUMBER = 10;
 
 export interface ConnectionInfo {
     url: string;
+    failoverRpcUrls?: string[],
     apiKeys?: { [url: string]: string }
     user?: string;
     password?: string;

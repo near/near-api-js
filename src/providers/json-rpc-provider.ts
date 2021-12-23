@@ -379,7 +379,7 @@ export class JsonRpcProvider extends Provider {
                 return response;
             } catch (error) {
                 if (error.type === 'TimeoutError') {
-                    if (!process.env['NEAR_NO_LOGS']){
+                    if (!process.env['NEAR_NO_LOGS']) {
                         console.warn(`Retrying request to ${method} as it has timed out`, params);
                     }
                     return null;
