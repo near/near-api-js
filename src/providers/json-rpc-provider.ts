@@ -345,7 +345,11 @@ export class JsonRpcProvider extends Provider {
      */
     private rotateRpcServers() {
         if (typeof this.connection.url === 'string') { return; }
-        this.connection.url.push(this.connection.url.shift());
+        const currentRpcServer = this.connection.url.shift();
+        this.connection.url.push(currentRpcServer);
+        if (!process.env['NEAR_NO_LOGS']) {
+            console.warn(`Switched from ${currentRpcServer} RPC Server to ${this.connection.url[0]}`);
+        }
     }
 
     /**
