@@ -127,21 +127,9 @@ export class Account {
     readonly connection: Connection;
     readonly accountId: string;
 
-    /** @hidden */
-    protected get ready(): Promise<void> {
-        const deprecate = depd('Account.ready()');
-        deprecate('not needed anymore, always ready');
-        return Promise.resolve();
-    }
-
     constructor(connection: Connection, accountId: string) {
         this.connection = connection;
         this.accountId = accountId;
-    }
-
-    async fetchState(): Promise<void> {
-        const deprecate = depd('Account.fetchState()');
-        deprecate('use `Account.state()` instead');
     }
 
     /**

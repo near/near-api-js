@@ -78,10 +78,7 @@ declare function bytesJsonStringify(input: any): Buffer;
 export declare class Account {
     readonly connection: Connection;
     readonly accountId: string;
-    /** @hidden */
-    protected get ready(): Promise<void>;
     constructor(connection: Connection, accountId: string);
-    fetchState(): Promise<void>;
     /**
      * Returns basic NEAR account information via the `view_account` RPC query method
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#view-account}
