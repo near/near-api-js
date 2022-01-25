@@ -56,6 +56,12 @@ export interface NearConfig {
     nodeUrl: string;
 
     /**
+     * NEAR RPC API urls. Compatibility with existing nodeUrl, multiple URLs for JSON RPC calls.
+     * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
+     */
+    nodeUrls: string;
+
+    /**
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
      * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
      */
@@ -82,9 +88,21 @@ export class Near {
 
     constructor(config: NearConfig) {
         this.config = config;
+
+        const nodeUrls = [];
+        if(config.nodeUrl) {
+            nodeUrls.push(config.nodeUrl);
+        }
+        if(config.nodeUrls) {
+            nodeUrls.push(...config.nodeUrls);
+        }
+        if(nodeUrls.length === 0) {
+            throw new Error('Need to pass nodeUrl or nodeUrls.');
+        }
+
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
-            provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
+            provider: { type: 'JsonRpcProvider', args: { selectUrlIndex: 0, urls: nodeUrls, headers: config.headers } },
             signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || (config.deps && config.deps.keyStore) }
         });
         if (config.masterAccount) {

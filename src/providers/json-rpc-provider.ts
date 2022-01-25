@@ -56,14 +56,14 @@ export class JsonRpcProvider extends Provider {
     /**
      * @param connectionInfoOrUrl ConnectionInfo or RPC API endpoint URL (deprecated)
      */
-    constructor(connectionInfoOrUrl?: string | ConnectionInfo) {
+    constructor(connectionInfoOrUrls?: string | ConnectionInfo) {
         super();
-        if (connectionInfoOrUrl != null && typeof connectionInfoOrUrl == 'object') {
-            this.connection = connectionInfoOrUrl as ConnectionInfo;
+        if (connectionInfoOrUrls != null && typeof connectionInfoOrUrls == 'object') {
+            this.connection = connectionInfoOrUrls as ConnectionInfo;
         } else {
             const deprecate = depd('JsonRpcProvider(url?: string)');
             deprecate('use `JsonRpcProvider(connectionInfo: ConnectionInfo)` instead');
-            this.connection = { url: connectionInfoOrUrl as string };
+            this.connection = { selectUrlIndex: 0, urls: [connectionInfoOrUrls as string] };
         }
     }
 

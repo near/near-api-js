@@ -49,6 +49,11 @@ export interface NearConfig {
      */
     nodeUrl: string;
     /**
+     * NEAR RPC API urls. Compatibility with existing nodeUrl, multiple URLs for JSON RPC calls.
+     * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
+     */
+    nodeUrls: string;
+    /**
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
      * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
      */

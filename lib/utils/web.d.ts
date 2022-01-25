@@ -1,5 +1,6 @@
 export interface ConnectionInfo {
-    url: string;
+    selectUrlIndex: number;
+    urls: string[];
     user?: string;
     password?: string;
     allowInsecure?: boolean;
