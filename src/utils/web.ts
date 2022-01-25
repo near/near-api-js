@@ -30,15 +30,17 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
     }
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         connectionInfo.selectUrlIndex = (connectionInfo.selectUrlIndex + 1) % connectionInfo.urls.length;
+        const currentUrl = connectionInfo.urls[connectionInfo.selectUrlIndex];
+        const nextUrl = connectionInfo.urls[(connectionInfo.selectUrlIndex + 1) % connectionInfo.urls.length];
         try {
-            const response = await fetch(connectionInfo.urls[connectionInfo.selectUrlIndex], {
+            const response = await fetch(currentUrl, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
                 headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
             });
             if (!response.ok) {
                 if (response.status === 503) {
-                    logWarning(`Retrying HTTP request for ${connectionInfo.urls[connectionInfo.selectUrlIndex]} as it's not available now`);
+                    logWarning(`Retrying HTTP request for ${nextUrl} as ${currentUrl} not available now`);
                     return null;
                 }
                 throw createError(response.status, await response.text());
@@ -46,14 +48,14 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
             return response;
         } catch (error) {
             if (error.toString().includes('FetchError') || error.toString().includes('Failed to fetch')) {
-                logWarning(`Retrying HTTP request for ${connectionInfo.urls[connectionInfo.selectUrlIndex]} because of error: ${error}`);
+                logWarning(`Retrying HTTP request for ${nextUrl} because of error: ${error}`);
                 return null;
             }
             throw error;
         }
     });
     if (!response) {
-        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${connectionInfo.urls[connectionInfo.selectUrlIndex]}.`, 'RetriesExceeded');
+        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts.`, 'RetriesExceeded');
     }
     return await response.json();
 }
