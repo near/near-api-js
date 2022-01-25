@@ -14,7 +14,7 @@ describe('web', () => {
         expect(result.result.chain_id).toBe('testnet');
     });
     test('object parameter in fetchJson', async () => {
-        const connection = { urls: ['https://rpc.testnet.near.org'], selectUrlIndex: 0 };
+        const connection = { urls: ['https://rpc.testnet.near.org'] };
         const statusRequest = {
             'jsonrpc': '2.0',
             'id': 'dontcare',

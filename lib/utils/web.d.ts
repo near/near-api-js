@@ -1,5 +1,5 @@
 export interface ConnectionInfo {
-    selectUrlIndex: number;
+    selectUrlIndex?: number;
     urls: string[];
     user?: string;
     password?: string;
