@@ -52,7 +52,7 @@ export declare class WalletConnection {
     _near: Near;
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
-    constructor(near: Near, appKeyPrefix: string | null);
+    constructor(near: Near, appKeyPrefix?: string);
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
      * @example

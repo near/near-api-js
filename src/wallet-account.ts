@@ -79,7 +79,7 @@ export class WalletConnection {
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
-    constructor(near: Near, appKeyPrefix: string | null) {
+    constructor(near: Near, appKeyPrefix?: string) {
         this._near = near;
         const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
