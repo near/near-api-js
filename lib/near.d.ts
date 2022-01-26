@@ -52,7 +52,7 @@ export interface NearConfig {
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
      * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
      */
-    headers: {
+    headers?: {
         [key: string]: string | number;
     };
     /**
