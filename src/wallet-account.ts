@@ -132,38 +132,24 @@ export class WalletConnection {
      * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
-    async requestSignIn(
-        contractIdOrOptions: string | SignInOptions = {},
-        title?: string,
-        successUrl?: string,
-        failureUrl?: string
-    ) {
-        let options: SignInOptions;
-        if (typeof contractIdOrOptions === 'string') {
-            const deprecate = depd('requestSignIn(contractId, title)');
-            deprecate('`title` ignored; use `requestSignIn({ contractId, methodNames, successUrl, failureUrl })` instead');
-            options = { contractId: contractIdOrOptions, successUrl, failureUrl };
-        } else {
-            options = contractIdOrOptions as SignInOptions;
-        }
-
+    async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
-        newUrl.searchParams.set('success_url', options.successUrl || currentUrl.href);
-        newUrl.searchParams.set('failure_url', options.failureUrl || currentUrl.href);
-        if (options.contractId) {            
+        newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
+        newUrl.searchParams.set('failure_url', failureUrl || currentUrl.href);
+        if (contractId) {
             /* Throws exception if contract account does not exist */
-            const contractAccount = await this._near.account(options.contractId);
+            const contractAccount = await this._near.account(contractId);
             await contractAccount.state();
 
-            newUrl.searchParams.set('contract_id', options.contractId);
+            newUrl.searchParams.set('contract_id', contractId);
             const accessKey = KeyPair.fromRandom('ed25519');
             newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
             await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         }
 
-        if (options.methodNames) {
-            options.methodNames.forEach(methodName => {
+        if (methodNames) {
+            methodNames.forEach(methodName => {
                 newUrl.searchParams.append('methodNames', methodName);
             });
         }
@@ -184,7 +170,7 @@ export class WalletConnection {
     requestSignTransactions(transactions: Transaction[], callbackUrl?: string, meta?: string): Promise<void>
 
     async requestSignTransactions(...args: any[]) {
-        if(Array.isArray(args[0])) {
+        if (Array.isArray(args[0])) {
             const deprecate = depd('WalletConnection.requestSignTransactions(transactions, callbackUrl, meta)');
             deprecate('use `WalletConnection.requestSignTransactions(RequestSignTransactionsOptions)` instead');
             return this._requestSignTransactions({
@@ -206,7 +192,7 @@ export class WalletConnection {
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
-        if(meta) newUrl.searchParams.set('meta', meta);
+        if (meta) newUrl.searchParams.set('meta', meta);
 
         window.location.assign(newUrl.toString());
     }
@@ -292,7 +278,7 @@ export class ConnectedWalletAccount extends Account {
      * @see {@link WalletConnection.requestSignTransactions}
      */
     protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome> {
-        if(typeof args[0] === 'string') {
+        if (typeof args[0] === 'string') {
             return this._signAndSendTransaction({ receiverId: args[0], actions: args[1] });
         }
 
