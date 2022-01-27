@@ -1,5 +1,4 @@
 import BN from 'bn.js';
-import depd from 'depd';
 import {
     transfer,
     createAccount,
@@ -359,40 +358,11 @@ export class Account {
         });
     }
 
-    async functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
-     * @deprecated
-     *
-     * @param contractId NEAR account where the contract is deployed
-     * @param methodName The method name on the contract as it is written in the contract code
-     * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
-     *  or `Uint8Array` instance which represents bytes passed as is.
-     * @param gas max amount of gas that method call can use
-     * @param amount amount of NEAR (in yoctoNEAR) to send together with the call
+     * Execute function call
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>
-    async functionCall(...args: any[]): Promise<FinalExecutionOutcome> {
-        if (typeof args[0] === 'string') {
-            return this.functionCallV1(args[0], args[1], args[2], args[3], args[4]);
-        } else {
-            return this.functionCallV2(args[0]);
-        }
-    }
-
-    private functionCallV1(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
-        const deprecate = depd('Account.functionCall(contractId, methodName, args, gas, amount)');
-        deprecate('use `Account.functionCall(FunctionCallOptions)` instead');
-
-        args = args || {};
-        this.validateArgs(args);
-        return this.signAndSendTransaction({
-            receiverId: contractId,
-            actions: [functionCall(methodName, args, gas || DEFAULT_FUNCTION_CALL_GAS, amount)]
-        });
-    }
-
-    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+    async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
         return this.signAndSendTransaction({

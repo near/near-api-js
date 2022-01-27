@@ -144,21 +144,11 @@ export declare class Account {
      * @param data The compiled contract code
      */
     deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
-    functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
-     * @deprecated
-     *
-     * @param contractId NEAR account where the contract is deployed
-     * @param methodName The method name on the contract as it is written in the contract code
-     * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
-     *  or `Uint8Array` instance which represents bytes passed as is.
-     * @param gas max amount of gas that method call can use
-     * @param amount amount of NEAR (in yoctoNEAR) to send together with the call
+     * Execute function call
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>;
-    private functionCallV1;
-    private functionCallV2;
+    functionCall({ contractId, methodName, args, gas, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
      * @see {@link https://docs.near.org/docs/concepts/account#access-keys}
      * @todo expand this API to support more options.
