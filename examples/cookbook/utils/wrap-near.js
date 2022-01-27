@@ -2,21 +2,22 @@ const HELP = `To convert N $NEAR to wNEAR,  run this script in the following for
 
     node wrap-near.js YOU.near N
 
-Note: runs on mainnet!`;
+`;
 
 const { connect, keyStores, transactions, utils } = require("near-api-js");
 const path = require("path");
 const homedir = require("os").homedir();
 
-const WRAP_NEAR_CONTRACT_ID = "wrap.near";
+// On mainnet it's wrap.near, by the way
+const WRAP_NEAR_CONTRACT_ID = "wrap.testnet";
 
 const credentialsPath = path.join(homedir, ".near-credentials");
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
 const config = {
   keyStore,
-  networkId: "mainnet",
-  nodeUrl: "https://rpc.mainnet.near.org",
+  networkId: "testnet",
+  nodeUrl: "https://rpc.testnet.near.org",
 };
 
 if (process.argv.length !== 4) {
