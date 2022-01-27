@@ -156,7 +156,7 @@ export class JsonRpcProvider extends Provider {
      */
     async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
         const { finality } = blockQuery as any;
-        let { blockId } = blockQuery as any;
+        const { blockId } = blockQuery as any;
         return this.sendJsonRpc('block', { block_id: blockId, finality });
     }
 
