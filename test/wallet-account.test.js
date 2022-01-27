@@ -59,10 +59,6 @@ it('not signed in by default', () => {
 
 describe('can request sign in', () => {
     beforeEach(() => keyStore.clear());
-
-    it('V1', () => {
-        return walletConnection.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail');
-    });
     
     it('V2', () => {
         return walletConnection.requestSignIn({
