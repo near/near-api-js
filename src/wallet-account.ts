@@ -251,15 +251,7 @@ export class ConnectedWalletAccount extends Account {
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */
-    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome> {
-        if (typeof args[0] === 'string') {
-            return this._signAndSendTransaction({ receiverId: args[0], actions: args[1] });
-        }
-
-        return this._signAndSendTransaction(args[0]);
-    }
-
-    private async _signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    protected async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {

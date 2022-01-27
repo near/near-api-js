@@ -246,19 +246,6 @@ describe('requests transaction signing automatically when there is no local key'
         });
     });
 
-    it('V1', async () => {
-        try {
-            await walletConnection.account().signAndSendTransaction(
-                'receiver.near',
-                [nearApi.transactions.transfer(1)]
-            );
-            fail('expected to throw');
-        } catch (e) {
-            expect(e.message).toEqual('Failed to redirect to sign transaction');
-        }
-        transactions = parseTransactionsFromUrl(lastRedirectUrl);
-    });
-
     it('V2', async() => {
         try {
             await walletConnection.account().signAndSendTransaction({
@@ -320,20 +307,6 @@ describe('requests transaction signing automatically when function call has atta
         await keyStore.setKey('networkId', 'signer.near', localKeyPair);
     });
 
-    it('V1', async () => {
-        try {
-            await walletConnection.account().signAndSendTransaction('receiver.near', [
-                nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
-            ]);
-            fail('expected to throw');
-        } catch (e) {
-            expect(e.message).toEqual('Failed to redirect to sign transaction');
-        }
-    
-        const transactions = parseTransactionsFromUrl(lastRedirectUrl);
-        expect(transactions).toHaveLength(1);
-    });
-
     it('V2', async() => {
         try {
             await walletConnection.account().signAndSendTransaction({
@@ -375,20 +348,6 @@ describe('requests transaction signing with 2fa access key', () => {
         await keyStore.setKey('networkId', 'signer.near', localKeyPair);
     });
 
-    it('V1', async () => {
-        try {
-            const res = await walletConnection.account().signAndSendTransaction('receiver.near', [
-                nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))
-            ]);
-
-            // multisig access key is accepted res is object representing transaction, populated upon wallet redirect to app
-            expect(res).toHaveProperty('transaction_outcome');
-            expect(res).toHaveProperty('receipts_outcome');
-        } catch (e) {
-            fail('expected transaction outcome');
-        }
-    });
-
     it('V2', async () => {
         try {
             const res = await walletConnection.account().signAndSendTransaction({
@@ -428,15 +387,6 @@ describe('fails requests transaction signing without 2fa access key', () => {
         await keyStore.setKey('networkId', 'signer.near', localKeyPair);
     });
 
-    it('V1', () => {
-        return expect(
-            walletConnection.account().signAndSendTransaction(
-                'receiver.near',
-                [nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))]
-            )
-        ).rejects.toThrow('Cannot find matching key for transaction sent to receiver.near');
-    });
-
     it('V2', () => {
         return expect(
             walletConnection.account().signAndSendTransaction({
@@ -473,27 +423,7 @@ describe('can sign transaction locally when function call has no attached deposi
         nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0')),
         nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1')),
         nearApi.transactions.functionCall('someMethod', new Uint8Array())
-    ])('V1', async (functionCall) => {
-        await walletConnection.account().signAndSendTransaction('receiver.near', [ functionCall ]);
-        // NOTE: Transaction gets signed without wallet in this test
-        expect(lastTransaction).toMatchObject({
-            transaction: {
-                receiverId: 'receiver.near',
-                signerId: 'signer.near',
-                actions: [{
-                    functionCall: {
-                        methodName: 'someMethod',
-                    }
-                }]
-            }
-        });
-    });
-
-    it.each([
-        nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0')),
-        nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1')),
-        nearApi.transactions.functionCall('someMethod', new Uint8Array())
-    ])('V1', async (functionCall) => {
+    ])('V2', async (functionCall) => {
         await walletConnection.account().signAndSendTransaction({
             receiverId: 'receiver.near',
             actions: [ functionCall ]

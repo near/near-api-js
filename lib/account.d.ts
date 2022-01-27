@@ -99,18 +99,7 @@ export declare class Account {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
      */
-    protected signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
-    /**
-     * @deprecated
-     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link JsonRpcProvider.sendTransaction}
-     *
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the transaction
-     */
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
-    private signAndSendTransactionV1;
-    private signAndSendTransactionV2;
+    protected signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     /** @hidden */
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKeyView;
