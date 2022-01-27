@@ -1,3 +1,10 @@
+/**
+ * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
+ * * {@link WalletConnection} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * * {@link ConnectedWalletAccount} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ *
+ * @module walletAccount
+ */
 import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
@@ -89,15 +96,7 @@ export declare class WalletConnection {
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      */
-    requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void>;
-    /**
-     * @deprecated
-     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
-     * @param transactions Array of Transaction objects that will be requested to sign
-     * @param callbackUrl The url to navigate to after the user is prompted to sign
-     */
-    requestSignTransactions(transactions: Transaction[], callbackUrl?: string, meta?: string): Promise<void>;
-    private _requestSignTransactions;
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
     /**
      * @hidden
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.

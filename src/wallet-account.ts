@@ -5,7 +5,6 @@
  * 
  * @module walletAccount
  */
-import depd from 'depd';
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
@@ -160,30 +159,7 @@ export class WalletConnection {
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      */
-    requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void>
-    /**
-     * @deprecated
-     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
-     * @param transactions Array of Transaction objects that will be requested to sign
-     * @param callbackUrl The url to navigate to after the user is prompted to sign
-     */
-    requestSignTransactions(transactions: Transaction[], callbackUrl?: string, meta?: string): Promise<void>
-
-    async requestSignTransactions(...args: any[]) {
-        if (Array.isArray(args[0])) {
-            const deprecate = depd('WalletConnection.requestSignTransactions(transactions, callbackUrl, meta)');
-            deprecate('use `WalletConnection.requestSignTransactions(RequestSignTransactionsOptions)` instead');
-            return this._requestSignTransactions({
-                transactions: args[0],
-                callbackUrl: args[1],
-                meta: args[2]
-            });
-        }
-
-        return this._requestSignTransactions(args[0]);
-    }
-
-    private async _requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
