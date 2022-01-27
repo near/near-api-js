@@ -95,7 +95,7 @@ export class WalletConnection {
     }
 
     /**
-     * Returns true, if this WalletAccount is authorized with the wallet.
+     * Returns true, if this WalletConnection is authorized with the wallet.
      * @example
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
@@ -240,7 +240,7 @@ export class WalletConnection {
     /**
      * Sign out from the current account
      * @example
-     * walletAccount.signOut();
+     * walletConnection.signOut();
      */
     signOut() {
         this._authData = {};
@@ -257,8 +257,6 @@ export class WalletConnection {
         return this._connectedAccount;
     }
 }
-
-export const WalletAccount = WalletConnection;
 
 /**
  * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.

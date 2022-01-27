@@ -54,7 +54,7 @@ export declare class WalletConnection {
     _connectedAccount: ConnectedWalletAccount;
     constructor(near: Near, appKeyPrefix: string | null);
     /**
-     * Returns true, if this WalletAccount is authorized with the wallet.
+     * Returns true, if this WalletConnection is authorized with the wallet.
      * @example
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
@@ -112,7 +112,7 @@ export declare class WalletConnection {
     /**
      * Sign out from the current account
      * @example
-     * walletAccount.signOut();
+     * walletConnection.signOut();
      */
     signOut(): void;
     /**
@@ -120,7 +120,6 @@ export declare class WalletConnection {
      */
     account(): ConnectedWalletAccount;
 }
-export declare const WalletAccount: typeof WalletConnection;
 /**
  * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
  */
