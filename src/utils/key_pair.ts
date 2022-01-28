@@ -1,6 +1,7 @@
 import nacl from 'tweetnacl';
 import { base_encode, base_decode } from './serialize';
 import { Assignable } from './enums';
+import {convertPublicKey, convertSecretKey} from 'ed2curve';
 
 export type Arrayish = string | ArrayLike<number>;
 
@@ -147,5 +148,34 @@ export class KeyPairEd25519 extends KeyPair {
 
     getPublicKey(): PublicKey {
         return this.publicKey;
+    }
+
+    encryptMessage(message: Uint8Array, receiverPublicKey: PublicKey): Uint8Array {
+        const ephemeralKeyPair = nacl.box.keyPair();
+        const nonce = nacl.randomBytes(24);
+
+        const cipher = nacl.box(
+            message, 
+            nonce, 
+            convertPublicKey(receiverPublicKey.data),
+            ephemeralKeyPair.secretKey
+        );
+
+        const result = new Uint8Array(nonce.length + cipher.length + ephemeralKeyPair.publicKey.length);
+        result.set(ephemeralKeyPair.publicKey, 0);
+        result.set(nonce, ephemeralKeyPair.publicKey.length);
+        result.set(cipher, ephemeralKeyPair.publicKey.length + nonce.length);
+
+        return result;
+    }
+
+    decryptMessage(fullCipher: Uint8Array): Uint8Array {
+        const secretKey = convertSecretKey(base_decode(this.secretKey));
+        const senderPublicKey = fullCipher.slice(0, 32);
+        const nonce = fullCipher.slice(32, 56);
+        const cipher = fullCipher.slice(56);
+
+        const plaintext = nacl.box.open(cipher, nonce, senderPublicKey, secretKey);
+        return plaintext;
     }
 }

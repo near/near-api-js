@@ -39,3 +39,37 @@ test('convert to string', async () => {
     const keyPair2 = nearApi.utils.key_pair.KeyPair.fromString(keyString);
     expect(keyPair2.toString()).toEqual(keyString);
 });
+
+test('test encrypt and decrypt message', async () => {
+    const senderKeypair = new nearApi.utils.key_pair.KeyPairEd25519('5JueXZhEEVqGVT5powZ5twyPP8wrap2K7RdAYGGdjBwiBdd7Hh6aQxMP1u3Ma9Yanq1nEv32EW7u8kUJsZ6f315C');
+    const receiverKeypair = new nearApi.utils.key_pair.KeyPairEd25519('26x56YPzPDro5t2smQfGcYAPy3j7R2jB2NUb7xKbAGK23B6x4WNQPh3twb6oDksFov5X8ts5CtntUNbpQpAKFdbR');
+
+    const message = new Uint8Array([0x1, 0x2, 0x3, 0x4, 0x5, 0x6]);
+    const encryptedMessage = senderKeypair.encryptMessage(message, receiverKeypair.publicKey);
+
+    const decryptedMessage = receiverKeypair.decryptMessage(encryptedMessage);
+    expect(decryptedMessage).toEqual(message);
+});
+
+test('fail to decrypt message - wrong privateKey', async () => {
+    const senderKeypair = new nearApi.utils.key_pair.KeyPairEd25519('5JueXZhEEVqGVT5powZ5twyPP8wrap2K7RdAYGGdjBwiBdd7Hh6aQxMP1u3Ma9Yanq1nEv32EW7u8kUJsZ6f315C');
+    const receiverKeypair = new nearApi.utils.key_pair.KeyPairEd25519('26x56YPzPDro5t2smQfGcYAPy3j7R2jB2NUb7xKbAGK23B6x4WNQPh3twb6oDksFov5X8ts5CtntUNbpQpAKFdbR');
+
+    const message = new Uint8Array([0x1, 0x2, 0x3, 0x4, 0x5, 0x6]);
+    const encryptedMessage = senderKeypair.encryptMessage(message, receiverKeypair.publicKey);
+
+    // Wrong private key - receiverKeypair should be used to decrypt
+    const decryptedMessage = senderKeypair.decryptMessage(encryptedMessage);
+    expect(decryptedMessage).toEqual(null);
+});
+
+test('test encrypt and decrypt message - send to self', async () => {
+    const senderKeypair = new nearApi.utils.key_pair.KeyPairEd25519('5JueXZhEEVqGVT5powZ5twyPP8wrap2K7RdAYGGdjBwiBdd7Hh6aQxMP1u3Ma9Yanq1nEv32EW7u8kUJsZ6f315C');
+
+    const message = new Uint8Array([0x1, 0x2, 0x3, 0x4, 0x5, 0x6]);
+    const encryptedMessage = senderKeypair.encryptMessage(message, senderKeypair.publicKey);
+
+    // decrypt the message yourself
+    const decryptedMessage = senderKeypair.decryptMessage(encryptedMessage);
+    expect(decryptedMessage).toEqual(message);
+});

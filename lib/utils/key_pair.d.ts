@@ -59,4 +59,6 @@ export declare class KeyPairEd25519 extends KeyPair {
     verify(message: Uint8Array, signature: Uint8Array): boolean;
     toString(): string;
     getPublicKey(): PublicKey;
+    encryptMessage(message: Uint8Array, receiverPublicKey: PublicKey): Uint8Array;
+    decryptMessage(fullCipher: Uint8Array): Uint8Array;
 }
