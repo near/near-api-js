@@ -6,7 +6,8 @@ export interface Signature {
 }
 /** All supported key types */
 export declare enum KeyType {
-    ED25519 = 0
+    ED25519 = 0,
+    SECP256K1 = 1
 }
 /**
  * PublicKey representation that has type and bytes of the key.
@@ -55,6 +56,35 @@ export declare class KeyPairEd25519 extends KeyPair {
      * // returns [SECRET_KEY]
      */
     static fromRandom(): KeyPairEd25519;
+    sign(message: Uint8Array): Signature;
+    verify(message: Uint8Array, signature: Uint8Array): boolean;
+    toString(): string;
+    getPublicKey(): PublicKey;
+}
+/**
+ * This class provides key pair functionality for Secp256k1 curve:
+ * generating key pairs, encoding key pairs, signing and verifying.
+ */
+export declare class KeyPairSecp256k1 extends KeyPair {
+    readonly publicKey: PublicKey;
+    readonly secretKey: string;
+    /**
+     * Construct an instance of key pair given a secret key.
+     * It's generally assumed that these are encoded in base58.
+     * @param {string} secretKey
+     */
+    constructor(secretKey: string);
+    /**
+     * Generate a new random keypair.
+     * @example
+     * const keyRandom = KeyPair.fromRandom();
+     * keyRandom.publicKey
+     * // returns [PUBLIC_KEY]
+     *
+     * keyRandom.secretKey
+     * // returns [SECRET_KEY]
+     */
+    static fromRandom(): KeyPairSecp256k1;
     sign(message: Uint8Array): Signature;
     verify(message: Uint8Array, signature: Uint8Array): boolean;
     toString(): string;
