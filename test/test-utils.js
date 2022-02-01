@@ -20,7 +20,7 @@ async function setUpTestConnection() {
     const keyStore = new nearApi.keyStores.InMemoryKeyStore();
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
         networkId: networkId,
-        deps: { keyStore },
+        keyStore
     });
 
     if (config.masterAccount) {
@@ -51,7 +51,7 @@ async function createAccountMultisig(near, options) {
     const newPublicKey = await near.connection.signer.createKey(newAccountName, networkId);
     await near.createAccount(newAccountName, newPublicKey);
     // add a confirm key for multisig (contract helper sim)
-    
+
     try {
         const confirmKeyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
         const { publicKey } = confirmKeyPair;
@@ -65,12 +65,12 @@ async function createAccountMultisig(near, options) {
         accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
             switch (path) {
-            case '/2fa/getAccessKey': return { publicKey };
+                case '/2fa/getAccessKey': return { publicKey };
             }
         };
         await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
         return accountMultisig;
-    } catch(e) {
+    } catch (e) {
         console.log(e);
     }
 }
@@ -92,8 +92,8 @@ function waitFor(fn) {
     const _waitFor = async (count = 10) => {
         try {
             return await fn();
-        } catch(e) {
-            if(count > 0) {
+        } catch (e) {
+            if (count > 0) {
                 await sleep(500);
                 return _waitFor(count - 1);
             }

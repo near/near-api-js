@@ -1,17 +1,6 @@
-/**
- * This module contains the main class developers will use to interact with NEAR.
- * The {@link Near} class is used to interact with {@link Account | Accounts} through the {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}.
- * It is configured via the {@link NearConfig}.
- *
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#account}
- *
- * @module near
- */
-import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
 import { Signer } from './signer';
-import { Contract } from './contract';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator } from './account_creator';
 import { KeyStore } from './key_stores';
@@ -20,10 +9,6 @@ export interface NearConfig {
     keyStore?: KeyStore;
     /** @hidden */
     signer?: Signer;
-    /** @deprecated use {@link NearConfig.keyStore} */
-    deps?: {
-        keyStore: KeyStore;
-    };
     /**
      * {@link https://github.com/near/near-contract-helper | NEAR Contract Helper} url used to create accounts if no master account is provided
      * @see {@link UrlAccountCreator}
@@ -87,21 +72,4 @@ export declare class Near {
      * @param publicKey
      */
     createAccount(accountId: string, publicKey: PublicKey): Promise<Account>;
-    /**
-     * @deprecated Use {@link Contract} instead.
-     * @param contractId
-     * @param options
-     */
-    loadContract(contractId: string, options: {
-        viewMethods: string[];
-        changeMethods: string[];
-        sender: string;
-    }): Promise<Contract>;
-    /**
-     * @deprecated Use {@link Account.sendMoney} instead.
-     * @param amount
-     * @param originator
-     * @param receiver
-     */
-    sendTokens(amount: BN, originator: string, receiver: string): Promise<string>;
 }
