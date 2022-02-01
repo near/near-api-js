@@ -163,6 +163,18 @@ interface AccountInfo {
     getAccountBalance(): Promise<AccountBalance>;
 }
 
+/*
+* Account class functionality that in not a part of any interface now:
+*   - signAndSendTransaction
+*       - signTransaction()
+*       - printLogsAndFailures()
+*            - printLogs()
+*   - validateArgs(args: any) (used in viewFunction and functionCall, can be copied)
+*
+* Can it be moved somewhere? Can we use this new entity instead of ConnectedWalletAccount?
+* Can Wallet be an implementation of a Signer?
+*/
+
 /**
  * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
  *
