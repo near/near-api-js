@@ -1,4 +1,11 @@
-import { Account } from './account';
+/**
+ * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
+ * * {@link WalletConnection} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * * {@link ConnectedWalletAccount} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ *
+ * @module walletAccount
+ */
+import { Account, SignAndSendTransactionOptions } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
 import { FinalExecutionOutcome } from './providers';
@@ -54,7 +61,7 @@ export declare class WalletConnection {
     _connectedAccount: ConnectedWalletAccount;
     constructor(near: Near, appKeyPrefix: string | null);
     /**
-     * Returns true, if this WalletAccount is authorized with the wallet.
+     * Returns true, if this WalletConnection is authorized with the wallet.
      * @example
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
@@ -85,19 +92,11 @@ export declare class WalletConnection {
      * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
-    requestSignIn(contractIdOrOptions?: string | SignInOptions, title?: string, successUrl?: string, failureUrl?: string): Promise<void>;
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): Promise<void>;
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
      */
-    requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void>;
-    /**
-     * @deprecated
-     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
-     * @param transactions Array of Transaction objects that will be requested to sign
-     * @param callbackUrl The url to navigate to after the user is prompted to sign
-     */
-    requestSignTransactions(transactions: Transaction[], callbackUrl?: string, meta?: string): Promise<void>;
-    private _requestSignTransactions;
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
     /**
      * @hidden
      * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
@@ -112,7 +111,7 @@ export declare class WalletConnection {
     /**
      * Sign out from the current account
      * @example
-     * walletAccount.signOut();
+     * walletConnection.signOut();
      */
     signOut(): void;
     /**
@@ -120,7 +119,6 @@ export declare class WalletConnection {
      */
     account(): ConnectedWalletAccount;
 }
-export declare const WalletAccount: typeof WalletConnection;
 /**
  * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
  */
@@ -131,8 +129,7 @@ export declare class ConnectedWalletAccount extends Account {
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */
-    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
-    private _signAndSendTransaction;
+    protected signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     /**
      * Check if given access key allows the function call or method attempted in transaction
      * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items

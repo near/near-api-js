@@ -33,9 +33,6 @@ test('json rpc fetch block info', withProvider(async (provider) => {
 
     let finalBlock = await provider.block({ finality: 'final' });
     expect(finalBlock.header.height - height).toBeLessThan(5);
-
-    let deprecatedStyle = await provider.block(height);
-    expect(deprecatedStyle.header.height).toEqual(height);
 }));
 
 test('json rpc fetch block changes', withProvider(async (provider) => {
@@ -285,14 +282,6 @@ test('json rpc light client proof', async() => {
     await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
 });
 
-test('json rpc fetch genesis protocol config', withProvider(async (provider) => {
-    const response = await provider.experimental_genesisConfig();
-    expect('chain_id' in response).toBe(true);
-    expect('genesis_height' in response).toBe(true);
-    expect('runtime_config' in response).toBe(true);
-    expect('storage_amount_per_byte' in response.runtime_config).toBe(true);
-}));
-
 test('json rpc fetch protocol config', withProvider(async (provider) => {
     const status = await provider.status();
     const blockHeight = status.sync_info.latest_block_height;
@@ -320,13 +309,8 @@ test('json rpc gas price', withProvider(async (provider) => {
     expect(response3.gas_price).toMatch(positiveIntegerRegex);
 }));
 
-test('JsonRpc connection object exist without url provided', async () => {
+test('JsonRpc connection object exist without connectionInfo provided', async () => {
     const provider = new nearApi.providers.JsonRpcProvider();
-    expect(provider.connection).toStrictEqual({ url: undefined });
-});
-
-test('JsonRpc connection url is not null on empty string', async () => {
-    const provider = new nearApi.providers.JsonRpcProvider('');
     expect(provider.connection).toStrictEqual({ url: '' });
 });
 

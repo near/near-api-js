@@ -78,10 +78,7 @@ declare function bytesJsonStringify(input: any): Buffer;
 export declare class Account {
     readonly connection: Connection;
     readonly accountId: string;
-    /** @hidden */
-    protected get ready(): Promise<void>;
     constructor(connection: Connection, accountId: string);
-    fetchState(): Promise<void>;
     /**
      * Returns basic NEAR account information via the `view_account` RPC query method
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#view-account}
@@ -102,18 +99,7 @@ export declare class Account {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
      */
-    protected signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
-    /**
-     * @deprecated
-     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link JsonRpcProvider.sendTransaction}
-     *
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the transaction
-     */
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
-    private signAndSendTransactionV1;
-    private signAndSendTransactionV2;
+    protected signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     /** @hidden */
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKeyView;
@@ -158,21 +144,11 @@ export declare class Account {
      * @param data The compiled contract code
      */
     deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
-    functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
-     * @deprecated
-     *
-     * @param contractId NEAR account where the contract is deployed
-     * @param methodName The method name on the contract as it is written in the contract code
-     * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
-     *  or `Uint8Array` instance which represents bytes passed as is.
-     * @param gas max amount of gas that method call can use
-     * @param amount amount of NEAR (in yoctoNEAR) to send together with the call
+     * Execute function call
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>;
-    private functionCallV1;
-    private functionCallV2;
+    functionCall({ contractId, methodName, args, gas, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
      * @see {@link https://docs.near.org/docs/concepts/account#access-keys}
      * @todo expand this API to support more options.

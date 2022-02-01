@@ -15,7 +15,7 @@
       },
       "Managing Accounts": {
         "Account": "classes/account.account-1",
-        "Wallet Account": "classes/walletaccount.walletconnection",
+        "Wallet Connection": "classes/walletaccount.walletconnection",
         "Smart Contracts": "classes/contract.contract-1"
       },
       "Managing Keys": {
