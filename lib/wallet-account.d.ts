@@ -30,6 +30,21 @@ interface RequestSignTransactionsOptions {
     meta?: string;
 }
 /**
+ * WalletConnection interface
+ * It's a current version of the interface.
+ * I believe we should not use it for wallet selector and switch to something simillar to the Wallet interface decribed below.
+ */
+interface IWalletConnection {
+    isSignedIn(): any;
+    getAccountId(): any;
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): any;
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
+    signOut(): any;
+    account(): any;
+}
+export declare class WalletSelector {
+}
+/**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
  *
@@ -44,7 +59,7 @@ interface RequestSignTransactionsOptions {
  * if(!wallet.isSingnedIn()) return wallet.requestSignIn()
  * ```
  */
-export declare class WalletConnection {
+export declare class WalletConnection implements IWalletConnection {
     /** @hidden */
     _walletBaseUrl: string;
     /** @hidden */

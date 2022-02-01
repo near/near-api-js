@@ -42,6 +42,37 @@ interface RequestSignTransactionsOptions {
 }
 
 /**
+ * WalletConnection interface
+ * It's a current version of the interface.
+ * I believe we should not use it for wallet selector and switch to something simillar to the Wallet interface decribed below.
+ */
+interface IWalletConnection {
+    isSignedIn();
+    getAccountId();
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions);
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
+    signOut();
+    account();
+}
+
+/* Wrapper class for wallets, should be used by dApp developers instead of WalletConnection*/
+export class WalletSelector {
+    // TODO
+}
+
+/* Theoretically it's possible to limit number of functions in this interface to 1 - transaction signing. */
+interface Wallet {
+    /* Do we need to pass accountId? Who holds the acc name, dApp or Wallet?
+    Should dApp be aware of the account and key that is signing a transaction? */
+    signTransactions(accountId: string, pk?: PublicKey);
+    /* Should wallets send transactions?
+    It's possible for WEB and Injected wallets, but something Ledger can't do.
+    I'm voting to limit the number to actions that wallet can do to one (transaction signing) */
+    signAndSendTransactions(accountId: string, pk?: PublicKey);
+    // Note: there is no signIn() function here, since it's just a transaction with addKey action.
+}
+
+/**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
  * 
@@ -56,7 +87,8 @@ interface RequestSignTransactionsOptions {
  * if(!wallet.isSingnedIn()) return wallet.requestSignIn()
  * ```
  */
-export class WalletConnection {
+
+export class WalletConnection implements IWalletConnection {
     /** @hidden */
     _walletBaseUrl: string;
 

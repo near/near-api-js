@@ -19,7 +19,8 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": false,
         "noImplicitReturns": true,
-        "noUnusedLocals": true,
+        //TODO: change to true before the merge
+        "noUnusedLocals": false,
         "experimentalDecorators": true,
         "resolveJsonModule": true,
     },
