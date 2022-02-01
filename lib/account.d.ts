@@ -69,13 +69,46 @@ export interface FunctionCallOptions {
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
 declare function bytesJsonStringify(input: any): Buffer;
 /**
+ * Account interface
+ */
+interface IAccount {
+    state(): Promise<AccountView>;
+    findAccessKey(receiverId: string, actions: Action[]): Promise<{
+        publicKey: PublicKey;
+        accessKey: AccessKeyView;
+    }>;
+    createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
+    sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
+    createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    deleteAccount(beneficiaryId: string): any;
+    deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
+    functionCall({ contractId, methodName, args, gas, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome>;
+    addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome>;
+    deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
+    stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
+    viewState(prefix: string | Uint8Array, blockQuery: {
+        blockId: BlockId;
+    } | {
+        finality: Finality;
+    }): Promise<Array<{
+        key: Buffer;
+        value: Buffer;
+    }>>;
+    getAccessKeys(): Promise<AccessKeyInfoView[]>;
+    getAccountDetails(): Promise<{
+        authorizedApps: AccountAuthorizedApp[];
+    }>;
+    getAccountBalance(): Promise<AccountBalance>;
+}
+/**
  * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
  *
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#account}
  * @hint Use {@link WalletConnection} in the browser to redirect to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for Account/key management using the {@link BrowserLocalStorageKeyStore}.
  * @see {@link https://nomicon.io/DataStructures/Account.html | Account Spec}
  */
-export declare class Account {
+export declare class Account implements IAccount {
     readonly connection: Connection;
     readonly accountId: string;
     constructor(connection: Connection, accountId: string);
