@@ -118,19 +118,45 @@ function bytesJsonStringify(input: any): Buffer {
 /**
  * Account interface
  */
-interface IAccount {
-    state(): Promise<AccountView>;
+interface IAccount extends AccountActions, AccountInfo {
+
+    /* Looks like this function was not intended to be a part of this interface.
+     * Not widely used. Should we make it private?
+     */
     findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }>;
+
+    /* This one is used, but  it just wraps several actions. It can be replaced by more generic signAndSendTransaction*/
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
-    sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
+    /*
+     * Should we expose signAndSendTransaction? Now it's protected, but we are using it anyway.
+     * Example: https://github.com/near/near-api-js/blob/master/examples/cookbook/transactions/batch-transactions.js
+     * It can be a part of the separate interface. Interface can include creation, signing and sending transaction functionality.
+     */
+
+}
+
+
+/**
+ * NEAR Actions interface (requires FullAccess or FunctionCall Key to be executed)
+ */
+interface AccountActions {
     createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
     deleteAccount(beneficiaryId: string);
-    deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
-    functionCall({ contractId, methodName, args, gas, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome>;
     deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
+    // TODO: rename it to correspond action name (transfer)
+    sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
     stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
+    functionCall({ contractId, methodName, args, gas, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome>;
+}
+
+/**
+ * Account information interface
+ */
+interface AccountInfo {
     viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
+    state(): Promise<AccountView>;
     viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality }): Promise<Array<{ key: Buffer; value: Buffer }>>;
     getAccessKeys(): Promise<AccessKeyInfoView[]>;
     getAccountDetails(): Promise<{ authorizedApps: AccountAuthorizedApp[] }>;

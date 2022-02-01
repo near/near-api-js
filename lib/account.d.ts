@@ -71,22 +71,32 @@ declare function bytesJsonStringify(input: any): Buffer;
 /**
  * Account interface
  */
-interface IAccount {
-    state(): Promise<AccountView>;
+interface IAccount extends AccountActions, AccountInfo {
     findAccessKey(receiverId: string, actions: Action[]): Promise<{
         publicKey: PublicKey;
         accessKey: AccessKeyView;
     }>;
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
-    sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
+}
+/**
+ * NEAR Actions interface (requires FullAccess or FunctionCall Key to be executed)
+ */
+interface AccountActions {
     createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
     deleteAccount(beneficiaryId: string): any;
-    deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
-    functionCall({ contractId, methodName, args, gas, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome>;
     deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
+    sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
     stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
+    functionCall({ contractId, methodName, args, gas, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome>;
+}
+/**
+ * Account information interface
+ */
+interface AccountInfo {
     viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
+    state(): Promise<AccountView>;
     viewState(prefix: string | Uint8Array, blockQuery: {
         blockId: BlockId;
     } | {
