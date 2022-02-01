@@ -11,7 +11,6 @@ import BN from 'bn.js';
 import { Account } from './account';
 import { Connection } from './connection';
 import { Signer } from './signer';
-import { Contract } from './contract';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
 import { KeyStore } from './key_stores';
@@ -22,9 +21,6 @@ export interface NearConfig {
 
     /** @hidden */
     signer?: Signer;
-
-    /** @deprecated use {@link NearConfig.keyStore} */
-    deps?: { keyStore: KeyStore };
 
     /**
      * {@link https://github.com/near/near-contract-helper | NEAR Contract Helper} url used to create accounts if no master account is provided
@@ -85,7 +81,7 @@ export class Near {
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
-            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || (config.deps && config.deps.keyStore) }
+            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore }
         });
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
@@ -122,28 +118,5 @@ export class Near {
         }
         await this.accountCreator.createAccount(accountId, publicKey);
         return new Account(this.connection, accountId);
-    }
-
-    /**
-     * @deprecated Use {@link Contract} instead.
-     * @param contractId
-     * @param options
-     */
-    async loadContract(contractId: string, options: { viewMethods: string[]; changeMethods: string[]; sender: string }): Promise<Contract> {
-        const account = new Account(this.connection, options.sender);
-        return new Contract(account, contractId, options);
-    }
-
-    /**
-     * @deprecated Use {@link Account.sendMoney} instead.
-     * @param amount
-     * @param originator
-     * @param receiver
-     */
-    async sendTokens(amount: BN, originator: string, receiver: string): Promise<string> {
-        console.warn('near.sendTokens is deprecated. Use `yourAccount.sendMoney` instead.');
-        const account = new Account(this.connection, originator);
-        const result = await account.sendMoney(receiver, amount);
-        return result.transaction_outcome.id;
     }
 }
