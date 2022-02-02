@@ -42,6 +42,18 @@ interface RequestSignTransactionsOptions {
 }
 
 /**
+ * WalletConnection interface
+ */
+ interface IWalletConnection {
+    isSignedIn();
+    getAccountId();
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions);
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
+    signOut();
+    account();
+}
+
+/**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
  * 
@@ -56,7 +68,7 @@ interface RequestSignTransactionsOptions {
  * if(!wallet.isSingnedIn()) return wallet.requestSignIn()
  * ```
  */
-export class WalletConnection {
+export class WalletConnection implements IWalletConnection {
     /** @hidden */
     _walletBaseUrl: string;
 
@@ -251,7 +263,7 @@ export class ConnectedWalletAccount extends Account {
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */
-    protected async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {

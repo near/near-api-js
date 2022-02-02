@@ -116,13 +116,48 @@ function bytesJsonStringify(input: any): Buffer {
 }
 
 /**
+ * Account interface
+ */
+interface IAccount extends AccountActions, AccountInfo {
+    signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
+    createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
+}
+
+/**
+ * NEAR Actions interface (requires FullAccess or FunctionCall Key to be executed)
+ */
+interface AccountActions {
+    createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    deleteAccount(beneficiaryId: string);
+    addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome>;
+    deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
+    // TODO: rename sendMoney to corresponding action name (transfer)
+    sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
+    stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
+    deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
+    functionCall({ contractId, methodName, args, gas, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome>;
+}
+
+/**
+ * Account information interface
+ */
+interface AccountInfo {
+    viewFunction(contractId: string, methodName: string, args: any): Promise<any>;
+    state(): Promise<AccountView>;
+    viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality }): Promise<Array<{ key: Buffer; value: Buffer }>>;
+    getAccessKeys(): Promise<AccessKeyInfoView[]>;
+    getAccountDetails(): Promise<{ authorizedApps: AccountAuthorizedApp[] }>;
+    getAccountBalance(): Promise<AccountBalance>;
+}
+
+/**
  * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
  *
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#account}
  * @hint Use {@link WalletConnection} in the browser to redirect to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for Account/key management using the {@link BrowserLocalStorageKeyStore}.
  * @see {@link https://nomicon.io/DataStructures/Account.html | Account Spec}
  */
-export class Account {
+export class Account implements IAccount {
     readonly connection: Connection;
     readonly accountId: string;
 
@@ -191,7 +226,7 @@ export class Account {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
      */
-    protected async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -258,7 +293,7 @@ export class Account {
      * @param actions currently unused (see todo)
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
-    async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
+    protected async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
         // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {

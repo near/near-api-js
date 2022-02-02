@@ -30,6 +30,17 @@ interface RequestSignTransactionsOptions {
     meta?: string;
 }
 /**
+ * WalletConnection interface
+ */
+interface IWalletConnection {
+    isSignedIn(): any;
+    getAccountId(): any;
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): any;
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
+    signOut(): any;
+    account(): any;
+}
+/**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
  *
@@ -44,7 +55,7 @@ interface RequestSignTransactionsOptions {
  * if(!wallet.isSingnedIn()) return wallet.requestSignIn()
  * ```
  */
-export declare class WalletConnection {
+export declare class WalletConnection implements IWalletConnection {
     /** @hidden */
     _walletBaseUrl: string;
     /** @hidden */
@@ -129,7 +140,7 @@ export declare class ConnectedWalletAccount extends Account {
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */
-    protected signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
+    signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     /**
      * Check if given access key allows the function call or method attempted in transaction
      * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
