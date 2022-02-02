@@ -117,15 +117,15 @@ export class Contract {
                         if(args.length > 1 || !(args[0] && args[0].args)) {
                             const deprecate = depd('contract.methodName(args, gas, amount)');
                             deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
-                            return this._changeMethod({
-                                methodName,
+                            return this[resultType === '' ? '_changeMethod' : '_changeMethodRaw']({
+                                methodName: baseMethodName,
                                 args: args[0],
                                 gas: args[1],
                                 amount: args[2]
                             });
                         }
 
-                        return this._changeMethod({ methodName, ...args[0] });
+                        return this[resultType === '' ? '_changeMethod' : '_changeMethodRaw']({ methodName: baseMethodName, ...args[0] });
                     })
                 });
             });
