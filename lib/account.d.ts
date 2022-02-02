@@ -72,10 +72,7 @@ declare function bytesJsonStringify(input: any): Buffer;
  * Account interface
  */
 interface IAccount extends AccountActions, AccountInfo {
-    findAccessKey(receiverId: string, actions: Action[]): Promise<{
-        publicKey: PublicKey;
-        accessKey: AccessKeyView;
-    }>;
+    signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
 }
 /**
@@ -142,7 +139,7 @@ export declare class Account implements IAccount {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
      */
-    protected signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
+    signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     /** @hidden */
     accessKeyByPublicKeyCache: {
         [key: string]: AccessKeyView;
@@ -156,7 +153,7 @@ export declare class Account implements IAccount {
      * @param actions currently unused (see todo)
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
-    findAccessKey(receiverId: string, actions: Action[]): Promise<{
+    protected findAccessKey(receiverId: string, actions: Action[]): Promise<{
         publicKey: PublicKey;
         accessKey: AccessKeyView;
     }>;

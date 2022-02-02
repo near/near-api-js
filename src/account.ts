@@ -119,22 +119,9 @@ function bytesJsonStringify(input: any): Buffer {
  * Account interface
  */
 interface IAccount extends AccountActions, AccountInfo {
-
-    /* Looks like this function was not intended to be a part of this interface.
-     * Not widely used. Should we make it private?
-     */
-    findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }>;
-
-    /* This one is used, but  it just wraps several actions. It can be replaced by more generic signAndSendTransaction*/
+    signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
-    /*
-     * Should we expose signAndSendTransaction? Now it's protected, but we are using it anyway.
-     * Example: https://github.com/near/near-api-js/blob/master/examples/cookbook/transactions/batch-transactions.js
-     * It can be a part of the separate interface. Interface can include creation, signing and sending transaction functionality.
-     */
-
 }
-
 
 /**
  * NEAR Actions interface (requires FullAccess or FunctionCall Key to be executed)
@@ -144,7 +131,7 @@ interface AccountActions {
     deleteAccount(beneficiaryId: string);
     addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome>;
     deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome>;
-    // TODO: rename it to correspond action name (transfer)
+    // TODO: rename sendMoney to corresponding action name (transfer)
     sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome>;
     stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome>;
     deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
@@ -162,18 +149,6 @@ interface AccountInfo {
     getAccountDetails(): Promise<{ authorizedApps: AccountAuthorizedApp[] }>;
     getAccountBalance(): Promise<AccountBalance>;
 }
-
-/*
-* Account class functionality that in not a part of any interface now:
-*   - signAndSendTransaction
-*       - signTransaction()
-*       - printLogsAndFailures()
-*            - printLogs()
-*   - validateArgs(args: any) (used in viewFunction and functionCall, can be copied)
-*
-* Can it be moved somewhere? Can we use this new entity instead of ConnectedWalletAccount?
-* Can Wallet be an implementation of a Signer?
-*/
 
 /**
  * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
@@ -251,7 +226,7 @@ export class Account implements IAccount {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
      */
-    protected async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -318,7 +293,7 @@ export class Account implements IAccount {
      * @param actions currently unused (see todo)
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
-    async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
+    protected async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
         // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
