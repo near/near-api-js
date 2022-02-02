@@ -56,5 +56,6 @@ export declare class Contract {
      * @param options NEAR smart contract methods that your application will use. These will be available as `contract.methodName`
      */
     constructor(account: Account, contractId: string, options: ContractMethods);
+    private _changeMethodRaw;
     private _changeMethod;
 }

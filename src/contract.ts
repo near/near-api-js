@@ -26,7 +26,6 @@ interface ChangeMethodOptions {
     amount?: BN;
     meta?: string;
     callbackUrl?: string;
-    returnRawResult?: boolean;
 }
 
 export interface ContractMethods {
@@ -104,36 +103,39 @@ export class Contract {
                 })
             });
         });
-        changeMethods.forEach((methodName) => {
-            Object.defineProperty(this, methodName, {
-                writable: false,
-                enumerable: true,
-                value: nameFunction(methodName, async (...args: any[]) => {
-                    if (args.length && (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))) {
-                        throw new PositionalArgsError();
-                    }
+        changeMethods.forEach((baseMethodName) => {
+            ['', 'Raw'].forEach((resultType) => {
+                const methodName = `${baseMethodName}${resultType}`;
+                Object.defineProperty(this, methodName, {
+                    writable: false,
+                    enumerable: true,
+                    value: nameFunction(methodName, async (...args: any[]) => {
+                        if (args.length && (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))) {
+                            throw new PositionalArgsError();
+                        }
 
-                    if(args.length > 1 || !(args[0] && args[0].args)) {
-                        const deprecate = depd('contract.methodName(args, gas, amount)');
-                        deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
-                        return this._changeMethod({
-                            methodName,
-                            args: args[0],
-                            gas: args[1],
-                            amount: args[2]
-                        });
-                    }
+                        if(args.length > 1 || !(args[0] && args[0].args)) {
+                            const deprecate = depd('contract.methodName(args, gas, amount)');
+                            deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
+                            return this._changeMethod({
+                                methodName,
+                                args: args[0],
+                                gas: args[1],
+                                amount: args[2]
+                            });
+                        }
 
-                    return this._changeMethod({ methodName, ...args[0] });
-                })
+                        return this._changeMethod({ methodName, ...args[0] });
+                    })
+                });
             });
         });
     }
 
-    private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl, returnRawResult = false }: ChangeMethodOptions) {
+    private async _changeMethodRaw({ args, methodName, gas, amount, meta, callbackUrl }: ChangeMethodOptions) {
         validateBNLike({ gas, amount });
 
-        const rawResult = await this.account.functionCall({
+        const result = await this.account.functionCall({
             contractId: this.contractId,
             methodName,
             args,
@@ -143,8 +145,15 @@ export class Contract {
             walletCallbackUrl: callbackUrl
         });
 
-        return returnRawResult ? rawResult : getTransactionLastResult(rawResult);
+        return result;
     }
+    
+    private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl }: ChangeMethodOptions) {
+        const result = await this._changeMethodRaw({ args, methodName, gas, amount, meta, callbackUrl });
+
+        return getTransactionLastResult(result);
+    }
+
 }
 
 /**
