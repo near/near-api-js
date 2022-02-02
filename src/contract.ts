@@ -26,6 +26,7 @@ interface ChangeMethodOptions {
     amount?: BN;
     meta?: string;
     callbackUrl?: string;
+    returnRawResult?: boolean;
 }
 
 export interface ContractMethods {
@@ -129,7 +130,7 @@ export class Contract {
         });
     }
 
-    private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl }: ChangeMethodOptions) {
+    private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl, returnRawResult = false }: ChangeMethodOptions) {
         validateBNLike({ gas, amount });
 
         const rawResult = await this.account.functionCall({
@@ -142,7 +143,7 @@ export class Contract {
             walletCallbackUrl: callbackUrl
         });
 
-        return getTransactionLastResult(rawResult);
+        return returnRawResult ? rawResult : getTransactionLastResult(rawResult);
     }
 }
 
