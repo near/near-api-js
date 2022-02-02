@@ -5,7 +5,6 @@ module.exports = function getConfig(env) {
         return {
             networkId: 'mainnet',
             nodeUrl: 'https://rpc.mainnet.near.org',
-            walletUrl: 'https://wallet.near.org',
             helperUrl: 'https://helper.mainnet.near.org',
         };
     case 'development':
@@ -13,7 +12,6 @@ module.exports = function getConfig(env) {
         return {
             networkId: 'default',
             nodeUrl: 'https://rpc.testnet.near.org',
-            walletUrl: 'https://wallet.testnet.near.org',
             helperUrl: 'https://helper.testnet.near.org',
             masterAccount: 'test.near',
         };
@@ -21,7 +19,6 @@ module.exports = function getConfig(env) {
         return {
             networkId: 'betanet',
             nodeUrl: 'https://rpc.betanet.near.org',
-            walletUrl: 'https://wallet.betanet.near.org',
             helperUrl: 'https://helper.betanet.near.org',
         };
     case 'local':
@@ -29,7 +26,6 @@ module.exports = function getConfig(env) {
             networkId: 'local',
             nodeUrl: 'http://localhost:3030',
             keyPath: `${process.env.HOME}/.near/validator_key.json`,
-            walletUrl: 'http://localhost:4000/wallet',
         };
     case 'test':
     case 'ci':

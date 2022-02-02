@@ -56,12 +56,6 @@ export interface NearConfig {
      * @see {@link JsonRpcProvider.JsonRpcProvider | JsonRpcProvider}
      */
     headers: { [key: string]: string | number };
-
-    /**
-     * NEAR wallet url used to redirect users to their wallet in browser applications.
-     * @see {@link https://docs.near.org/docs/tools/near-wallet}
-     */
-    walletUrl?: string;
 }
 
 /**

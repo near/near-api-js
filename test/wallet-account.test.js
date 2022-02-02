@@ -25,7 +25,6 @@ beforeEach(() => {
         config: {
             networkId: 'networkId',
             contractName: 'contractId',
-            walletUrl: 'http://example.com/wallet',
         },
         connection: {
             networkId: 'networkId',
@@ -50,7 +49,7 @@ beforeEach(() => {
             replaceState: (state, title, url) => history.push([state, title, url])
         }
     });
-    walletConnection = new nearApi.WalletConnection(nearFake);
+    walletConnection = new nearApi.WalletConnectionRedirect(nearFake, 'app-name', 'http://example.com/wallet');
 });
 
 it('not signed in by default', () => {

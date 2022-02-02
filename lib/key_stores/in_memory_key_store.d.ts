@@ -18,7 +18,6 @@ import { KeyPair } from '../utils/key_pair';
  *   keyStore, // instance of InMemoryKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
- *   walletUrl: 'https://wallet.testnet.near.org',
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };

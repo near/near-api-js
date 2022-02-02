@@ -15,7 +15,7 @@ import { Near } from './near';
 
 import {
     ConnectedWalletAccount,
-    WalletConnection
+    WalletConnectionRedirect
 } from './wallet-account';
 
 export {
@@ -36,5 +36,5 @@ export {
     Near,
 
     ConnectedWalletAccount,
-    WalletConnection
+    WalletConnectionRedirect
 };

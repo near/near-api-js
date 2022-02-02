@@ -18,7 +18,6 @@ export declare function readKeyFile(filename: string): Promise<[string, KeyPair]
  *   keyStore, // instance of UnencryptedFileSystemKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
- *   walletUrl: 'https://wallet.testnet.near.org',
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };

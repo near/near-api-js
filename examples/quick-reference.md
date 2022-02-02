@@ -77,7 +77,6 @@ const config = {
   networkId: "testnet",
   keyStore, // optional if not signing transactions
   nodeUrl: "https://rpc.testnet.near.org",
-  walletUrl: "https://wallet.testnet.near.org",
   helperUrl: "https://helper.testnet.near.org",
   explorerUrl: "https://explorer.testnet.near.org",
 };
@@ -93,7 +92,6 @@ const config = {
   networkId: "mainnet",
   keyStore, // optional if not signing transactions
   nodeUrl: "https://rpc.mainnet.near.org",
-  walletUrl: "https://wallet.mainnet.near.org",
   helperUrl: "https://helper.mainnet.near.org",
   explorerUrl: "https://explorer.mainnet.near.org",
 };
@@ -109,7 +107,6 @@ const config = {
   networkId: "betanet",
   keyStore, // optional if not signing transactions
   nodeUrl: "https://rpc.betanet.near.org",
-  walletUrl: "https://wallet.betanet.near.org",
   helperUrl: "https://helper.betanet.near.org",
   explorerUrl: "https://explorer.betanet.near.org",
 };
@@ -123,7 +120,6 @@ const { connect } = nearAPI;
 const config = {
   networkId: "local",
   nodeUrl: "http://localhost:3030",
-  walletUrl: "http://localhost:4000/wallet",
 };
 const near = await connect(config);
 ```
@@ -137,13 +133,12 @@ const near = await connect(config);
 Testnet:
 
 ```js
-const { connect, keyStores, WalletConnection } = nearAPI;
+const { connect, keyStores, WalletconnectionRedirect } = nearAPI;
 
 const config = {
   networkId: "testnet",
   keyStore: new keyStores.BrowserLocalStorageKeyStore(),
   nodeUrl: "https://rpc.testnet.near.org",
-  walletUrl: "https://wallet.testnet.near.org",
   helperUrl: "https://helper.testnet.near.org",
   explorerUrl: "https://explorer.testnet.near.org",
 };
@@ -152,19 +147,18 @@ const config = {
 const near = await connect(config);
 
 // create wallet connection
-const wallet = new WalletConnection(near);
+const walletConnection = new WalletConnectionRedirect(near, 'app-name', 'https://wallet.testnet.near.org');
 ```
 
 Mainnet:
 
 ```js
-const { connect, keyStores, WalletConnection } = nearAPI;
+const { connect, keyStores, WalletConnectionRedirect } = nearAPI;
 
 const config = {
   networkId: "mainnet",
   keyStore: new keyStores.BrowserLocalStorageKeyStore(),
   nodeUrl: "https://rpc.mainnet.near.org",
-  walletUrl: "https://wallet.mainnet.near.org",
   helperUrl: "https://helper.mainnet.near.org",
   explorerUrl: "https://explorer.mainnet.near.org",
 };
@@ -173,19 +167,18 @@ const config = {
 const near = await connect(config);
 
 // create wallet connection
-const wallet = new WalletConnection(near);
+const walletConnection = new WalletConnectionRedirect(near, 'app-name', 'https://wallet.mainnet.near.org');
 ```
 
 Betanet:
 
 ```js
-const { connect, keyStores, WalletConnection } = nearAPI;
+const { connect, keyStores, WalletConnectionRedirect } = nearAPI;
 
 const config = {
   networkId: "betanet",
   keyStore: new keyStores.BrowserLocalStorageKeyStore(),
   nodeUrl: "https://rpc.betanet.near.org",
-  walletUrl: "https://wallet.betanet.near.org",
   helperUrl: "https://helper.betanet.near.org",
   explorerUrl: "https://explorer.betanet.near.org",
 };
@@ -194,7 +187,7 @@ const config = {
 const near = await connect(config);
 
 // create wallet connection
-const wallet = new WalletConnection(near);
+const walletConnection = new WalletConnectionRedirect(near, 'app-name', 'https://wallet.betanet.near.org');
 ```
 
 ### Sign In

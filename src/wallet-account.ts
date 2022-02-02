@@ -1,6 +1,6 @@
 /**
  * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
- * * {@link WalletConnection} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * * {@link WalletConnectionRedirect} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
  * * {@link ConnectedWalletAccount} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
  * 
  * @module walletAccount
@@ -44,7 +44,7 @@ interface RequestSignTransactionsOptions {
 /**
  * WalletConnection interface
  */
- interface IWalletConnection {
+interface IWalletConnection {
     isSignedIn();
     getAccountId();
     requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions);
@@ -60,15 +60,19 @@ interface RequestSignTransactionsOptions {
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#wallet}
  * @example
  * ```js
- * // create new WalletConnection instance
- * const wallet = new WalletConnection(near, 'my-app');
- * 
+ * // Create new WalletConnectionRedirect instance.
+ * // Typically, you will want to used one of this servers:
+ * // mainnetWalletUrl: 'https://wallet.near.org',
+ * // testnetWalletUrl: 'https://wallet.testnet.near.org',
+ * // betanetWalletUrl: 'https://wallet.betanet.near.org',
+ * // localhostWalletUrl: 'http://localhost:4000/wallet',
+ * const walletConnection = new WalletConnectionRedirect(near, 'my-app', 'https://wallet.testnet.near.org');
  * // If not signed in redirect to the NEAR wallet to sign in
  * // keys will be stored in the BrowserLocalStorageKeyStore
- * if(!wallet.isSingnedIn()) return wallet.requestSignIn()
+ * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
  * ```
  */
-export class WalletConnection implements IWalletConnection {
+export class WalletConnectionRedirect implements IWalletConnection {
     /** @hidden */
     _walletBaseUrl: string;
 
@@ -90,12 +94,17 @@ export class WalletConnection implements IWalletConnection {
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
-    constructor(near: Near, appKeyPrefix: string | null) {
+    /**
+     * @param {Near} near Near object
+     * @param {string} appKeyPrefix application identifier
+     * @param {string} walletBaseUrl NEAR wallet URL, used to redirect users to their wallet for signing and sending transactions
+     */
+    constructor(near: Near, appKeyPrefix: string | null, walletBaseUrl: string) {
         this._near = near;
         const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
-        this._walletBaseUrl = near.config.walletUrl;
+        this._walletBaseUrl = walletBaseUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
         this._authData = authData || { allKeys: [] };
@@ -106,11 +115,11 @@ export class WalletConnection implements IWalletConnection {
     }
 
     /**
-     * Returns true, if this WalletConnection is authorized with the wallet.
+     * Returns true, if this WalletConnectionRedirect is authorized with the wallet.
      * @example
      * ```js
-     * const wallet = new WalletConnection(near, 'my-app');
-     * wallet.isSignedIn();
+     * const walletConnection = new WalletConnectionRedirect(near, 'my-app', walletBaseUrl);
+     * walletConnection.isSignedIn();
      * ```
      */
     isSignedIn() {
@@ -121,8 +130,8 @@ export class WalletConnection implements IWalletConnection {
      * Returns authorized Account ID.
      * @example
      * ```js
-     * const wallet = new WalletConnection(near, 'my-app');
-     * wallet.getAccountId();
+     * const walletConnection = new WalletConnection(near, 'my-app', walletBaseUrl);
+     * walletConnection.getAccountId();
      * ```
      */
     getAccountId() {
@@ -138,9 +147,9 @@ export class WalletConnection implements IWalletConnection {
      *
      * @example
      * ```js
-     * const wallet = new WalletConnection(near, 'my-app');
+     * const walletConnection = new WalletConnectionRedirect(near, 'my-app', walletBaseUrl);
      * // redirects to the NEAR Wallet
-     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * walletConnection.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
     async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
@@ -247,12 +256,12 @@ export class WalletConnection implements IWalletConnection {
 }
 
 /**
- * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
+ * {@link Account} implementation which redirects to wallet using {@link WalletConnectionRedirect} when no local key is available.
  */
 export class ConnectedWalletAccount extends Account {
-    walletConnection: WalletConnection;
+    walletConnection: WalletConnectionRedirect;
 
-    constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
+    constructor(walletConnection: WalletConnectionRedirect, connection: Connection, accountId: string) {
         super(connection, accountId);
         this.walletConnection = walletConnection;
     }

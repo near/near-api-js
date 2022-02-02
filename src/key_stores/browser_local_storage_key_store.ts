@@ -16,7 +16,6 @@ const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
  *   keyStore, // instance of BrowserLocalStorageKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
- *   walletUrl: 'https://wallet.testnet.near.org',
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };
