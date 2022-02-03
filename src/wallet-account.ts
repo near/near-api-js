@@ -1,7 +1,7 @@
 /**
  * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
  * * {@link WalletConnectionRedirect} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
- * * {@link ConnectedWalletAccount} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ * * {@link ConnectedWalletAccountRedirect} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
  * 
  * @module walletAccount
  */
@@ -56,29 +56,7 @@ interface AcocuntProvider {
     account(): Account;
 }
 
-/**
- * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
- * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
- * 
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#wallet}
- * @example
- * ```js
- * // Create new WalletConnectionRedirect instance.
- * // Typically, you will want to used one of this servers:
- * // mainnetWalletUrl: 'https://wallet.near.org',
- * // testnetWalletUrl: 'https://wallet.testnet.near.org',
- * // betanetWalletUrl: 'https://wallet.betanet.near.org',
- * // localhostWalletUrl: 'http://localhost:4000/wallet',
- * const walletConnection = new WalletConnectionRedirect(near, 'my-app', 'https://wallet.testnet.near.org');
- * // If not signed in redirect to the NEAR wallet to sign in
- * // keys will be stored in the BrowserLocalStorageKeyStore
- * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
- * ```
- */
-export class WalletConnectionRedirect implements TransactionsSigner, SignInProvider, AcocuntProvider {
-    /** @hidden */
-    _walletBaseUrl: string;
-
+abstract class WalletConection implements TransactionsSigner, SignInProvider, AcocuntProvider {
     /** @hidden */
     _authDataKey: string;
 
@@ -97,24 +75,12 @@ export class WalletConnectionRedirect implements TransactionsSigner, SignInProvi
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
-    /**
-     * @param {Near} near Near object
-     * @param {string} appKeyPrefix application identifier
-     * @param {string} walletBaseUrl NEAR wallet URL, used to redirect users to their wallet for signing and sending transactions
-     */
-    constructor(near: Near, appKeyPrefix: string | null, walletBaseUrl: string) {
-        this._near = near;
-        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
-        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
-        this._networkId = near.config.networkId;
-        this._walletBaseUrl = walletBaseUrl;
-        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
-        this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
-        this._authData = authData || { allKeys: [] };
-        this._authDataKey = authDataKey;
-        if (!this.isSignedIn()) {
-            this._completeSignInWithAccessKey();
-        }
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
+        throw new Error('Method not implemented.');
     }
 
     /**
@@ -139,6 +105,65 @@ export class WalletConnectionRedirect implements TransactionsSigner, SignInProvi
      */
     getAccountId(): string {
         return this._authData.accountId || '';
+    }
+
+    /**
+    * Sign out from the current account
+    * @example
+    * walletConnection.signOut();
+    */
+    signOut(): void {
+        this._authData = {};
+        window.localStorage.removeItem(this._authDataKey);
+    }
+
+    account(): Account {
+        throw new Error('Method not implemented.');
+    }
+}
+
+/**
+ * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
+ * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * 
+ * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#wallet}
+ * @example
+ * ```js
+ * // Create new WalletConnectionRedirect instance.
+ * // Typically, you will want to used one of this servers:
+ * // mainnetWalletUrl: 'https://wallet.near.org',
+ * // testnetWalletUrl: 'https://wallet.testnet.near.org',
+ * // betanetWalletUrl: 'https://wallet.betanet.near.org',
+ * // localhostWalletUrl: 'http://localhost:4000/wallet',
+ * const walletConnection = new WalletConnectionRedirect(near, 'my-app', 'https://wallet.testnet.near.org');
+ * // If not signed in redirect to the NEAR wallet to sign in
+ * // keys will be stored in the BrowserLocalStorageKeyStore
+ * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
+ * ```
+ */
+export class WalletConnectionRedirect extends WalletConection {
+    /** @hidden */
+    _walletBaseUrl: string;
+
+    /**
+     * @param {Near} near Near object
+     * @param {string} appKeyPrefix application identifier
+     * @param {string} walletBaseUrl NEAR wallet URL, used to redirect users to their wallet for signing and sending transactions
+     */
+    constructor(near: Near, appKeyPrefix: string | null, walletBaseUrl: string) {
+        super();
+        this._near = near;
+        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
+        this._networkId = near.config.networkId;
+        this._walletBaseUrl = walletBaseUrl;
+        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
+        this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
+        this._authData = authData || { allKeys: [] };
+        this._authDataKey = authDataKey;
+        if (!this.isSignedIn()) {
+            this._completeSignInWithAccessKey();
+        }
     }
 
     /**
@@ -238,32 +263,24 @@ export class WalletConnectionRedirect implements TransactionsSigner, SignInProvi
     }
 
     /**
-     * Sign out from the current account
-     * @example
-     * walletConnection.signOut();
-     */
-    signOut(): void {
-        this._authData = {};
-        window.localStorage.removeItem(this._authDataKey);
-    }
-
-    /**
      * Returns the current connected wallet account
      */
     account(): Account {
         if (!this._connectedAccount) {
-            this._connectedAccount = new ConnectedWalletAccount(this, this._near.connection, this._authData.accountId);
+            this._connectedAccount = new ConnectedWalletAccountRedirect(this, this._near.connection, this._authData.accountId);
         }
         return this._connectedAccount;
     }
 }
 
+abstract class ConnectedWalletAccount extends Account {
+    walletConnection: WalletConection;
+}
+
 /**
  * {@link Account} implementation which redirects to wallet using {@link WalletConnectionRedirect} when no local key is available.
  */
-export class ConnectedWalletAccount extends Account {
-    walletConnection: WalletConnectionRedirect;
-
+export class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
     constructor(walletConnection: WalletConnectionRedirect, connection: Connection, accountId: string) {
         super(connection, accountId);
         this.walletConnection = walletConnection;
@@ -379,5 +396,27 @@ export class ConnectedWalletAccount extends Account {
         }
 
         return null;
+    }
+}
+
+export class WalletConnectionInjected extends WalletConection {
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
+        throw new Error('Method not implemented.');
+    }
+    account(): Account {
+        if (!this._connectedAccount) {
+            this._connectedAccount = new ConnectedWalletAccountInjected(this, this._near.connection, this._authData.accountId);
+        }
+        return this._connectedAccount;
+    }
+}
+
+export class ConnectedWalletAccountInjected extends ConnectedWalletAccount {
+    constructor(walletConnection: WalletConnectionInjected, connection: Connection, accountId: string) {
+        super(connection, accountId);
+        this.walletConnection = walletConnection;
     }
 }

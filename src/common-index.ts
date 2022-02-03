@@ -14,7 +14,7 @@ import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
 
 import {
-    ConnectedWalletAccount,
+    ConnectedWalletAccountRedirect,
     WalletConnectionRedirect
 } from './wallet-account';
 
@@ -35,6 +35,6 @@ export {
 
     Near,
 
-    ConnectedWalletAccount,
+    ConnectedWalletAccountRedirect,
     WalletConnectionRedirect
 };

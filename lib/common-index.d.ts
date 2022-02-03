@@ -11,5 +11,5 @@ import { Signer, InMemorySigner } from './signer';
 import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
-import { ConnectedWalletAccount, WalletConnectionRedirect } from './wallet-account';
-export { accountCreator, providers, utils, transactions, validators, multisig, Account, Connection, Contract, InMemorySigner, Signer, KeyPair, Near, ConnectedWalletAccount, WalletConnectionRedirect };
+import { ConnectedWalletAccountRedirect, WalletConnectionRedirect } from './wallet-account';
+export { accountCreator, providers, utils, transactions, validators, multisig, Account, Connection, Contract, InMemorySigner, Signer, KeyPair, Near, ConnectedWalletAccountRedirect, WalletConnectionRedirect };

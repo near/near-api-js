@@ -89,6 +89,7 @@ export class Near {
         }
     }
 
+    //TODO: why this function is async?
     /**
      * @param accountId near accountId used to interact with the network.
      */
