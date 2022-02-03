@@ -147,6 +147,21 @@ export declare class WalletConnectionRedirect extends WalletConection {
 }
 declare abstract class ConnectedWalletAccount extends Account {
     walletConnection: WalletConection;
+    /**
+   * Check if given access key allows the function call or method attempted in transaction
+   * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
+   * @param receiverId The NEAR account attempting to have access
+   * @param actions The action(s) needed to be checked for access
+   */
+    accessKeyMatchesTransaction(accessKey: any, receiverId: string, actions: Action[]): Promise<boolean>;
+    /**
+     * Helper function returning the access key (if it exists) to the receiver that grants the designated permission
+     * @param receiverId The NEAR account seeking the access key for a transaction
+     * @param actions The action(s) sought to gain access to
+     * @param localKey A local public key provided to check for access
+     * @returns Promise<any>
+     */
+    accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any>;
 }
 /**
  * {@link Account} implementation which redirects to wallet using {@link WalletConnectionRedirect} when no local key is available.
@@ -158,21 +173,6 @@ export declare class ConnectedWalletAccountRedirect extends ConnectedWalletAccou
      * @see {@link WalletConnection.requestSignTransactions}
      */
     signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
-    /**
-     * Check if given access key allows the function call or method attempted in transaction
-     * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
-     * @param receiverId The NEAR account attempting to have access
-     * @param actions The action(s) needed to be checked for access
-     */
-    accessKeyMatchesTransaction(accessKey: any, receiverId: string, actions: Action[]): Promise<boolean>;
-    /**
-     * Helper function returning the access key (if it exists) to the receiver that grants the designated permission
-     * @param receiverId The NEAR account seeking the access key for a transaction
-     * @param actions The action(s) sought to gain access to
-     * @param localKey A local public key provided to check for access
-     * @returns Promise<any>
-     */
-    accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any>;
 }
 export declare class WalletConnectionInjected extends WalletConection {
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
