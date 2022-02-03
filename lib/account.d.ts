@@ -69,13 +69,6 @@ export interface FunctionCallOptions {
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
 declare function bytesJsonStringify(input: any): Buffer;
 /**
- * Account interface
- */
-interface IAccount extends AccountActions, AccountInfo {
-    signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
-    createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account>;
-}
-/**
  * NEAR Actions interface (requires FullAccess or FunctionCall Key to be executed)
  */
 interface AccountActions {
@@ -115,7 +108,7 @@ interface AccountInfo {
  * @hint Use {@link WalletConnectionRedirect} in the browser to redirect to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for Account/key management using the {@link BrowserLocalStorageKeyStore}.
  * @see {@link https://nomicon.io/DataStructures/Account.html | Account Spec}
  */
-export declare class Account implements IAccount {
+export declare class Account implements AccountActions, AccountInfo {
     readonly connection: Connection;
     readonly accountId: string;
     constructor(connection: Connection, accountId: string);

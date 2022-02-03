@@ -29,16 +29,17 @@ interface RequestSignTransactionsOptions {
     /** meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
     meta?: string;
 }
-/**
- * WalletConnection interface
- */
-interface IWalletConnection {
-    isSignedIn(): any;
-    getAccountId(): any;
-    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): any;
+interface TransactionsSigner {
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
-    signOut(): any;
-    account(): any;
+}
+interface SignInProvider {
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): any;
+    isSignedIn(): boolean;
+    getAccountId(): string;
+    signOut(): void;
+}
+interface AcocuntProvider {
+    account(): Account;
 }
 /**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
@@ -59,7 +60,7 @@ interface IWalletConnection {
  * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
  * ```
  */
-export declare class WalletConnectionRedirect implements IWalletConnection {
+export declare class WalletConnectionRedirect implements TransactionsSigner, SignInProvider, AcocuntProvider {
     /** @hidden */
     _walletBaseUrl: string;
     /** @hidden */
@@ -97,7 +98,7 @@ export declare class WalletConnectionRedirect implements IWalletConnection {
      * walletConnection.getAccountId();
      * ```
      */
-    getAccountId(): any;
+    getAccountId(): string;
     /**
      * Redirects current page to the wallet authentication page.
      * @param options An optional options object
@@ -137,7 +138,7 @@ export declare class WalletConnectionRedirect implements IWalletConnection {
     /**
      * Returns the current connected wallet account
      */
-    account(): ConnectedWalletAccount;
+    account(): Account;
 }
 /**
  * {@link Account} implementation which redirects to wallet using {@link WalletConnectionRedirect} when no local key is available.

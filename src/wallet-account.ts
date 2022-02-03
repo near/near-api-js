@@ -41,16 +41,19 @@ interface RequestSignTransactionsOptions {
     meta?: string;
 }
 
-/**
- * WalletConnection interface
- */
-interface IWalletConnection {
-    isSignedIn();
-    getAccountId();
-    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions);
+interface TransactionsSigner {
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
-    signOut();
-    account();
+}
+
+interface SignInProvider {
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions);
+    isSignedIn(): boolean;
+    getAccountId(): string;
+    signOut(): void;
+}
+
+interface AcocuntProvider {
+    account(): Account;
 }
 
 /**
@@ -72,7 +75,7 @@ interface IWalletConnection {
  * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
  * ```
  */
-export class WalletConnectionRedirect implements IWalletConnection {
+export class WalletConnectionRedirect implements TransactionsSigner, SignInProvider, AcocuntProvider {
     /** @hidden */
     _walletBaseUrl: string;
 
@@ -122,7 +125,7 @@ export class WalletConnectionRedirect implements IWalletConnection {
      * walletConnection.isSignedIn();
      * ```
      */
-    isSignedIn() {
+    isSignedIn(): boolean {
         return !!this._authData.accountId;
     }
 
@@ -134,7 +137,7 @@ export class WalletConnectionRedirect implements IWalletConnection {
      * walletConnection.getAccountId();
      * ```
      */
-    getAccountId() {
+    getAccountId(): string {
         return this._authData.accountId || '';
     }
 
@@ -239,7 +242,7 @@ export class WalletConnectionRedirect implements IWalletConnection {
      * @example
      * walletConnection.signOut();
      */
-    signOut() {
+    signOut(): void {
         this._authData = {};
         window.localStorage.removeItem(this._authDataKey);
     }
@@ -247,7 +250,7 @@ export class WalletConnectionRedirect implements IWalletConnection {
     /**
      * Returns the current connected wallet account
      */
-    account() {
+    account(): Account {
         if (!this._connectedAccount) {
             this._connectedAccount = new ConnectedWalletAccount(this, this._near.connection, this._authData.accountId);
         }
