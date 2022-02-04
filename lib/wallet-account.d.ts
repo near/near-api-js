@@ -41,7 +41,7 @@ interface SignInProvider {
 interface AcocuntProvider {
     account(): Account;
 }
-declare abstract class WalletConection implements TransactionsSigner, SignInProvider, AcocuntProvider {
+declare abstract class WalletConnection implements TransactionsSigner, SignInProvider, AcocuntProvider {
     /** @hidden */
     _authDataKey: string;
     /** @hidden */
@@ -101,7 +101,7 @@ declare abstract class WalletConection implements TransactionsSigner, SignInProv
  * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
  * ```
  */
-export declare class WalletConnectionRedirect extends WalletConection {
+export declare class WalletConnectionRedirect extends WalletConnection {
     /** @hidden */
     _walletBaseUrl: string;
     /**
@@ -146,7 +146,7 @@ export declare class WalletConnectionRedirect extends WalletConection {
     account(): Account;
 }
 declare abstract class ConnectedWalletAccount extends Account {
-    walletConnection: WalletConection;
+    walletConnection: WalletConnection;
     /**
    * Check if given access key allows the function call or method attempted in transaction
    * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
@@ -174,7 +174,7 @@ export declare class ConnectedWalletAccountRedirect extends ConnectedWalletAccou
      */
     signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
 }
-export declare class WalletConnectionInjected extends WalletConection {
+export declare class WalletConnectionInjected extends WalletConnection {
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
     requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): void;
     account(): Account;

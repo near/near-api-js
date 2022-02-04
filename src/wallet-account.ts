@@ -56,7 +56,7 @@ interface AcocuntProvider {
     account(): Account;
 }
 
-abstract class WalletConection implements TransactionsSigner, SignInProvider, AcocuntProvider {
+abstract class WalletConnection implements TransactionsSigner, SignInProvider, AcocuntProvider {
     /** @hidden */
     _authDataKey: string;
 
@@ -141,7 +141,7 @@ abstract class WalletConection implements TransactionsSigner, SignInProvider, Ac
  * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
  * ```
  */
-export class WalletConnectionRedirect extends WalletConection {
+export class WalletConnectionRedirect extends WalletConnection {
     /** @hidden */
     _walletBaseUrl: string;
 
@@ -274,7 +274,7 @@ export class WalletConnectionRedirect extends WalletConection {
 }
 
 abstract class ConnectedWalletAccount extends Account {
-    walletConnection: WalletConection;
+    walletConnection: WalletConnection;
 
     /**
    * Check if given access key allows the function call or method attempted in transaction
@@ -399,7 +399,7 @@ export class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
     }
 }
 
-export class WalletConnectionInjected extends WalletConection {
+export class WalletConnectionInjected extends WalletConnection {
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
         throw new Error('Method not implemented.');
     }
