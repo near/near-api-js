@@ -1,10 +1,11 @@
 /// <reference types="node" />
 import BN from 'bn.js';
-import { Action, SignedTransaction } from './transaction';
+import { Action, SignedTransaction, AccessKey } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import { Finality, BlockId, AccountView, AccessKeyView, AccessKeyInfoView } from './providers/provider';
 import { Connection } from './connection';
-import { PublicKey } from './utils/key_pair';
+import { KeyPair, PublicKey } from './utils/key_pair';
+import { NEAR } from '.';
 export interface AccountBalance {
     total: string;
     stateStaked: string;
@@ -243,5 +244,33 @@ export declare class Account {
      * Returns calculated account balance
      */
     getAccountBalance(): Promise<AccountBalance>;
+    createTransaction(recevier: Account | string): Transaction;
+    hasDeployedContract(): Promise<boolean>;
+}
+/**
+ * Transaction Builder class. Initialized to an account that will sign the final transaction
+ */
+export declare class Transaction {
+    private sender;
+    readonly receiverId: string;
+    readonly actions: Action[];
+    private accountToBeCreated;
+    private _transferAmount?;
+    constructor(sender: Account, receiver: Account | string);
+    addKey(publicKey: string | PublicKey, accessKey?: AccessKey): this;
+    createAccount(): this;
+    deleteAccount(beneficiaryId: string): this;
+    deleteKey(publicKey: string | PublicKey): this;
+    deployContract(code: Uint8Array | Buffer): this;
+    functionCall(methodName: string, args: Record<string, unknown> | Uint8Array, { gas, attachedDeposit, }?: {
+        gas?: BN | string;
+        attachedDeposit?: BN | string;
+    }): this;
+    stake(amount: BN | string, publicKey: PublicKey | string): this;
+    transfer(amount: string | BN): this;
+    get accountCreated(): boolean;
+    get transferAmount(): NEAR;
+    signAndSend(keyPair?: KeyPair): Promise<FinalExecutionOutcome>;
+    sign(): Promise<[Uint8Array, SignedTransaction]>;
 }
 export {};
