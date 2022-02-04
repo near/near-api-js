@@ -147,6 +147,7 @@ export declare class WalletConnectionRedirect extends WalletConnection {
 }
 declare abstract class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
+    constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
     /**
    * Check if given access key allows the function call or method attempted in transaction
    * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
@@ -167,7 +168,6 @@ declare abstract class ConnectedWalletAccount extends Account {
  * {@link Account} implementation which redirects to wallet using {@link WalletConnectionRedirect} when no local key is available.
  */
 export declare class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
-    constructor(walletConnection: WalletConnectionRedirect, connection: Connection, accountId: string);
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
@@ -180,6 +180,5 @@ export declare class WalletConnectionInjected extends WalletConnection {
     account(): Account;
 }
 export declare class ConnectedWalletAccountInjected extends ConnectedWalletAccount {
-    constructor(walletConnection: WalletConnectionInjected, connection: Connection, accountId: string);
 }
 export {};
