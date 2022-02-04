@@ -54,6 +54,11 @@ declare abstract class WalletConnection implements TransactionsSigner, SignInPro
     _near: Near;
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
+    /**
+     * @param {Near} near Near object
+     * @param {string} appKeyPrefix application identifier
+     */
+    constructor(near: Near, appKeyPrefix: string | null);
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
     requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): void;
     /**
@@ -105,10 +110,8 @@ export declare class WalletConnectionRedirect extends WalletConnection {
     /** @hidden */
     _walletBaseUrl: string;
     /**
-     * @param {Near} near Near object
-     * @param {string} appKeyPrefix application identifier
      * @param {string} walletBaseUrl NEAR wallet URL, used to redirect users to their wallet for signing and sending transactions
-     */
+    */
     constructor(near: Near, appKeyPrefix: string | null, walletBaseUrl: string);
     /**
      * Redirects current page to the wallet authentication page.
@@ -175,10 +178,21 @@ export declare class ConnectedWalletAccountRedirect extends ConnectedWalletAccou
     signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
 }
 export declare class WalletConnectionInjected extends WalletConnection {
+    _walletName: string;
+    constructor(near: Near, appKeyPrefix: string | null, walletName: string);
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
     requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): void;
     account(): Account;
 }
+export declare enum WalletConnectionType {
+    REDIRECT = 0,
+    INJECTED = 1
+}
 export declare class ConnectedWalletAccountInjected extends ConnectedWalletAccount {
 }
+export interface WalletConnectionParameterOptions {
+    type: WalletConnectionType;
+    data: any;
+}
+export declare function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnection;
 export {};

@@ -75,6 +75,21 @@ abstract class WalletConnection implements TransactionsSigner, SignInProvider, A
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
+    /**
+     * @param {Near} near Near object
+     * @param {string} appKeyPrefix application identifier
+     */
+    constructor(near: Near, appKeyPrefix: string | null) {
+        this._near = near;
+        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
+        this._networkId = near.config.networkId;
+        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
+        this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
+        this._authData = authData || { allKeys: [] };
+        this._authDataKey = authDataKey;
+    }
+
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
         throw new Error('Method not implemented.');
     }
@@ -146,21 +161,11 @@ export class WalletConnectionRedirect extends WalletConnection {
     _walletBaseUrl: string;
 
     /**
-     * @param {Near} near Near object
-     * @param {string} appKeyPrefix application identifier
      * @param {string} walletBaseUrl NEAR wallet URL, used to redirect users to their wallet for signing and sending transactions
-     */
+    */
     constructor(near: Near, appKeyPrefix: string | null, walletBaseUrl: string) {
-        super();
-        this._near = near;
-        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
-        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
-        this._networkId = near.config.networkId;
+        super(near, appKeyPrefix);
         this._walletBaseUrl = walletBaseUrl;
-        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
-        this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
-        this._authData = authData || { allKeys: [] };
-        this._authDataKey = authDataKey;
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
         }
@@ -400,6 +405,14 @@ export class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
 }
 
 export class WalletConnectionInjected extends WalletConnection {
+
+    _walletName: string;
+
+    constructor(near: Near, appKeyPrefix: string | null, walletName: string) {
+        super(near, appKeyPrefix);
+        this._walletName = walletName;
+    }
+
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
         throw new Error('Method not implemented.');
     }
@@ -414,4 +427,26 @@ export class WalletConnectionInjected extends WalletConnection {
     }
 }
 
+
+export enum WalletConnectionType {
+    REDIRECT,
+    INJECTED,
+}
+
 export class ConnectedWalletAccountInjected extends ConnectedWalletAccount { }
+
+export interface WalletConnectionParameterOptions {
+    type: WalletConnectionType,
+    data: any,
+}
+
+export function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnection {
+    switch (type) {
+        case WalletConnectionType.REDIRECT: {
+            return new WalletConnectionRedirect(near, appKeyPrefix, data.walletBaseUrl);
+        }
+        case WalletConnectionType.INJECTED: {
+            return new WalletConnectionInjected(near, appKeyPrefix, data.walletName);
+        }
+    }
+}
