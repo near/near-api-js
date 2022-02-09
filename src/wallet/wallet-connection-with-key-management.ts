@@ -87,9 +87,10 @@ export abstract class WalletConnectionWithKeyManagement extends WalletConnection
     * @example
     * walletConnection.signOut();
     */
-    signOut(): void {
+    signOut(): boolean {
         this._authData = {};
         window.localStorage.removeItem(this._authDataKey);
+        return true;
     }
 
     account(): Account {

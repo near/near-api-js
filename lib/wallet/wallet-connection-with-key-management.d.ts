@@ -53,7 +53,7 @@ export declare abstract class WalletConnectionWithKeyManagement extends WalletCo
     * @example
     * walletConnection.signOut();
     */
-    signOut(): void;
+    signOut(): boolean;
     account(): Account;
 }
 export declare abstract class ConnectedWalletAccountWithKeyManagement extends Account {

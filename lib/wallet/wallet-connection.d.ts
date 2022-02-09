@@ -13,7 +13,7 @@ export declare abstract class WalletConnection implements TransactionsSigner, Si
     abstract requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): any;
     abstract isSignedIn(): boolean;
     abstract getAccountId(): string;
-    abstract signOut(): void;
+    abstract signOut(): boolean;
     abstract account(): Account;
 }
 /**
@@ -40,7 +40,7 @@ interface SignInProvider {
     requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): any;
     isSignedIn(): boolean;
     getAccountId(): string;
-    signOut(): void;
+    signOut(): boolean;
 }
 interface AcocuntProvider {
     account(): Account;

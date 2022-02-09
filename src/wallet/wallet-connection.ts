@@ -21,7 +21,7 @@ export abstract class WalletConnection implements TransactionsSigner, SignInProv
     abstract requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions);
     abstract isSignedIn(): boolean;
     abstract getAccountId(): string;
-    abstract signOut(): void;
+    abstract signOut(): boolean;
     abstract account(): Account;
 }
 
@@ -53,7 +53,7 @@ interface SignInProvider {
     requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions);
     isSignedIn(): boolean;
     getAccountId(): string;
-    signOut(): void;
+    signOut(): boolean;
 }
 
 interface AcocuntProvider {

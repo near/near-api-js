@@ -39,7 +39,7 @@ export class WalletConnectionInjected extends WalletConnection {
     getAccountId(): string {
         return window[this._walletName].getAccountId();
     }
-    signOut(): void {
+    signOut(): boolean {
         window[this._walletName].signOut().then((res) => {
             if (res.result !== "success") {
                 throw new Error("Failed to sign out");
@@ -47,6 +47,7 @@ export class WalletConnectionInjected extends WalletConnection {
                 console.log("Signed out");
             }
         });
+        return true;
     }
     account(): Account {
         throw new Error('Method not implemented.');

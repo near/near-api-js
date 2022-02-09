@@ -8,6 +8,6 @@ export declare class WalletConnectionInjected extends WalletConnection {
     requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): Promise<void>;
     isSignedIn(): boolean;
     getAccountId(): string;
-    signOut(): void;
+    signOut(): boolean;
     account(): Account;
 }
