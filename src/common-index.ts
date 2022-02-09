@@ -16,7 +16,7 @@ import { Near } from './near';
 import {
     ConnectedWalletAccountRedirect,
     WalletConnectionRedirect
-} from './wallet-account';
+} from './wallet/index';
 
 export {
     accountCreator,
