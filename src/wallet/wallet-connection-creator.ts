@@ -19,17 +19,17 @@ export interface WalletConnectionParameterOptions {
 
 export function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnection {
     switch (type) {
-    case WalletConnectionType.REDIRECT: {
-        return new WalletConnectionRedirect(near, appKeyPrefix, data.walletBaseUrl);
-    }
-    case WalletConnectionType.INJECTED: {
-        return new WalletConnectionInjected(near, appKeyPrefix, data.walletName);
-    }
-    case WalletConnectionType.INJECTED_WITH_LOCAL_FCK_MANAGEMENT: {
-        return new WalletConnectionInjectedWithLocalFckManagement(near, appKeyPrefix, data.walletName);
-    }
-    default: {
-        throw 'Unsupported WalletConnecitonType';
-    }
+        case WalletConnectionType.REDIRECT: {
+            return new WalletConnectionRedirect(near, appKeyPrefix, data.walletBaseUrl);
+        }
+        case WalletConnectionType.INJECTED: {
+            return new WalletConnectionInjected(near, appKeyPrefix, data.walletName);
+        }
+        case WalletConnectionType.INJECTED_WITH_LOCAL_FCK_MANAGEMENT: {
+            return new WalletConnectionInjectedWithLocalFckManagement(near, appKeyPrefix, data.walletName);
+        }
+        default: {
+            throw 'Unsupported WalletConnecitonType';
+        }
     }
 }

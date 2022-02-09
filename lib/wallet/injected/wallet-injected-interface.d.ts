@@ -1,16 +1,58 @@
+import { FinalExecutionOutcome } from '../../providers';
 import { Action, Transaction } from '../../transaction';
-export interface IInjectedWallet {
-    init: (params: InitParams) => Promise<InitResponse>;
-    getAccountId: () => string;
-    getRpc: () => Promise<GetRpcResponse>;
-    requestSignIn: (params: RequestSignInParams) => Promise<InitResponse>;
-    signOut: () => Promise<SignOutResponse>;
+export interface InjectedWallet {
+    /** Creates a new Function call key that is stored locally */
+    requestSignIn: ({ contractId, methodNames }: SignInOptions) => Promise<boolean>;
+    /** Returns true if function call key was created or false otherwise */
     isSignedIn: () => boolean;
-    onAccountChanged: (callback: AccountChangedCallback) => void;
-    onRpcChanged: (callback: RpcChangedCallback) => void;
-    sendMoney: (params: SendMoneyParams) => Promise<unknown>;
+    signOut: () => boolean;
+    /** Returns accounId of the logged in user or '' if there is no such user */
+    getAccountId: () => string;
+    /** On excecution of this function user should be prompted.
+     * On approval transaction should be signed and sent.
+     * */
+    requestSignTransactions: (params: RequestSignTransactionsOptions) => Promise<Array<FinalExecutionOutcome>>;
+}
+/**
+ * These options will become a part of the newly created Function Call key.
+ * {
+    public_key: 'ed25519:<public key>',
+    access_key: {
+      nonce: <nonce>,
+      permission: {
+        FunctionCall: {
+          allowance: null,
+          receiver_id: 'contractId',              <------ @param contracId goes here
+          method_names: [<array of method names>] <------ @param methodNames goes here
+        }
+      }
+    }
+  }
+ */
+export interface SignInOptions {
+    contractId?: string;
+    methodNames?: string[];
+}
+export interface RequestSignTransactionsOptions {
+    /** List of transactions to sign */
+    transactions: Transaction[];
+    /** Meta information Wallet will send back to the application */
+    meta?: string;
+    /** callback to be excecuted after function excecution */
+    callback: any;
+}
+export interface SenderWallet {
+    requestSignIn: (params: RequestSignInParams) => Promise<InitResponse>;
+    isSignedIn: () => boolean;
+    signOut: () => Promise<SignOutResponse>;
+    getAccountId: () => string;
+    requestSignTransactions: (params: RequestSignTransactionsParams) => Promise<Array<SignAndSendTransactionResponse>>;
     signAndSendTransaction: (params: SignAndSendTransactionParams) => Promise<SignAndSendTransactionResponse>;
-    requestSignTransactions: (params: RequestSignTransactionsParams) => Promise<unknown>;
+    sendMoney: (params: SendMoneyParams) => Promise<unknown>;
+    onAccountChanged: (callback: AccountChangedCallback) => void;
+    getRpc: () => Promise<GetRpcResponse>;
+    onRpcChanged: (callback: RpcChangedCallback) => void;
+    init: (params: InitParams) => Promise<InitResponse>;
 }
 export interface InitParams {
     contractId: string;
