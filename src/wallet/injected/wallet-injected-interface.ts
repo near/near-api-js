@@ -74,7 +74,9 @@ export interface SenderWallet {
         params: RequestSignTransactionsParams
     ) => Promise<Array<SignAndSendTransactionResponse>>;
 
-    /* There is no reason to have  */
+    /* There is no reason to have an interface to sign one transaction,
+     * when we have interface for signing multiple transactions.
+     */
     signAndSendTransaction: (
         params: SignAndSendTransactionParams
     ) => Promise<SignAndSendTransactionResponse>;
