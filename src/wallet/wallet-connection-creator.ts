@@ -4,7 +4,7 @@ import {
     WalletConnectionInjected,
 } from './index';
 import { Near } from '../near';
-import { WalletConnectionBase } from './wallet-connection';
+import { WalletConnection } from './wallet-connection';
 
 export enum WalletConnectionType {
     REDIRECT,
@@ -17,7 +17,7 @@ export interface WalletConnectionParameterOptions {
     data: any;
 }
 
-export function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnectionBase {
+export function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnection {
     switch (type) {
     case WalletConnectionType.REDIRECT: {
         return new WalletConnectionRedirect(near, appKeyPrefix, data.walletBaseUrl);

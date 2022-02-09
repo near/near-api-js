@@ -1,9 +1,12 @@
 import {
-    WalletConnectionWithKeyManagement,
     RequestSignTransactionsOptions,
     SignInOptions,
-    ConnectedWalletAccount,
 } from "../wallet-connection";
+
+import {
+    WalletConnectionWithKeyManagement,
+    ConnectedWalletAccountWithKeyManagement
+} from "../wallet-connection-with-key-management";
 
 import {
     Near,
@@ -30,10 +33,10 @@ export class WalletConnectionInjectedWithLocalFckManagement extends WalletConnec
     }
     account(): Account {
         if (!this._connectedAccount) {
-            this._connectedAccount = new ConnectedWalletAccountInjected(this, this._near.connection, this._authData.accountId);
+            this._connectedAccount = new ConnectedWalletAccountInjectedWithKeyManagement(this, this._near.connection, this._authData.accountId);
         }
         return this._connectedAccount;
     }
 }
 
-export class ConnectedWalletAccountInjected extends ConnectedWalletAccount { }
+export class ConnectedWalletAccountInjectedWithKeyManagement extends ConnectedWalletAccountWithKeyManagement { }

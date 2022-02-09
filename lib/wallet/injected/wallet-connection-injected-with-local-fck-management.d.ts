@@ -1,4 +1,5 @@
-import { WalletConnectionWithKeyManagement, RequestSignTransactionsOptions, SignInOptions, ConnectedWalletAccount } from "../wallet-connection";
+import { RequestSignTransactionsOptions, SignInOptions } from "../wallet-connection";
+import { WalletConnectionWithKeyManagement, ConnectedWalletAccountWithKeyManagement } from "../wallet-connection-with-key-management";
 import { Near } from '../../near';
 import { Account } from '../../account';
 export declare class WalletConnectionInjectedWithLocalFckManagement extends WalletConnectionWithKeyManagement {
@@ -8,5 +9,5 @@ export declare class WalletConnectionInjectedWithLocalFckManagement extends Wall
     requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): void;
     account(): Account;
 }
-export declare class ConnectedWalletAccountInjected extends ConnectedWalletAccount {
+export declare class ConnectedWalletAccountInjectedWithKeyManagement extends ConnectedWalletAccountWithKeyManagement {
 }

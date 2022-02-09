@@ -1,7 +1,7 @@
-import { WalletConnectionWithKeyManagement } from '../index';
 import { Account, SignAndSendTransactionOptions } from '../../account';
 import { Near } from '../../near';
-import { ConnectedWalletAccount, RequestSignTransactionsOptions, SignInOptions } from '../wallet-connection';
+import { RequestSignTransactionsOptions, SignInOptions } from '../wallet-connection';
+import { ConnectedWalletAccountWithKeyManagement, WalletConnectionWithKeyManagement } from '../wallet-connection-with-key-management';
 import { FinalExecutionOutcome } from '../../providers';
 /**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
@@ -67,7 +67,7 @@ export declare class WalletConnectionRedirect extends WalletConnectionWithKeyMan
 /**
  * {@link Account} implementation which redirects to wallet using {@link WalletConnectionRedirect} when no local key is available.
  */
-export declare class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
+export declare class ConnectedWalletAccountRedirect extends ConnectedWalletAccountWithKeyManagement {
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnectionWithKeyManagement.requestSignTransactions}

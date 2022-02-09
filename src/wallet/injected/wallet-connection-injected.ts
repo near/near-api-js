@@ -1,13 +1,13 @@
 import {
     RequestSignTransactionsOptions,
     SignInOptions,
-    WalletConnectionBase,
+    WalletConnection,
 } from "../wallet-connection";
 
 import { Near } from '../../near';
 import { Account } from '../../account'
 
-export class WalletConnectionInjected extends WalletConnectionBase {
+export class WalletConnectionInjected extends WalletConnection {
     _walletName: string;
 
     constructor(near: Near, appKeyPrefix: string | null, walletName: string) {

@@ -1,5 +1,5 @@
 import { Near } from '../near';
-import { WalletConnectionBase } from './wallet-connection';
+import { WalletConnection } from './wallet-connection';
 export declare enum WalletConnectionType {
     REDIRECT = 0,
     INJECTED = 1,
@@ -9,4 +9,4 @@ export interface WalletConnectionParameterOptions {
     type: WalletConnectionType;
     data: any;
 }
-export declare function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnectionBase;
+export declare function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnection;

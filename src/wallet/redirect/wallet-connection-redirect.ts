@@ -1,8 +1,4 @@
 import {
-    WalletConnectionWithKeyManagement,
-} from '../index';
-
-import {
     Account,
     SignAndSendTransactionOptions,
 } from '../../account';
@@ -12,10 +8,14 @@ import {
 } from '../../near';
 
 import {
-    ConnectedWalletAccount,
     RequestSignTransactionsOptions,
     SignInOptions,
 } from '../wallet-connection'
+
+import {
+    ConnectedWalletAccountWithKeyManagement,
+    WalletConnectionWithKeyManagement,
+} from '../wallet-connection-with-key-management'
 
 import {
     KeyPair, PublicKey,
@@ -172,7 +172,7 @@ export class WalletConnectionRedirect extends WalletConnectionWithKeyManagement 
 /**
  * {@link Account} implementation which redirects to wallet using {@link WalletConnectionRedirect} when no local key is available.
  */
-export class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
+export class ConnectedWalletAccountRedirect extends ConnectedWalletAccountWithKeyManagement {
     // Overriding Account methods
 
     /**
