@@ -1,7 +1,7 @@
 /**
  * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
  * * {@link WalletConnectionRedirect} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
- * * {@link ConnectedWalletAccountRedirect} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ * * {@link ConnectedWalletAccountRedirect} is an {@link Account} implementation that uses {@link WalletConnectionWithKeyManagement} to get keys
  *
  * @module walletAccount
  */
@@ -41,7 +41,22 @@ interface SignInProvider {
 interface AcocuntProvider {
     account(): Account;
 }
-declare abstract class WalletConnection implements TransactionsSigner, SignInProvider, AcocuntProvider {
+declare abstract class WalletConnectionBase implements TransactionsSigner, SignInProvider, AcocuntProvider {
+    /** @hidden */
+    _near: Near;
+    /**
+    * @param {Near} near Near object
+    * @param {string} appKeyPrefix application identifier
+    */
+    constructor(near: Near, appKeyPrefix: string | null);
+    abstract requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
+    abstract requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): any;
+    abstract isSignedIn(): boolean;
+    abstract getAccountId(): string;
+    abstract signOut(): void;
+    abstract account(): Account;
+}
+declare abstract class WalletConnectionWithKeyManagement extends WalletConnectionBase {
     /** @hidden */
     _authDataKey: string;
     /** @hidden */
@@ -50,8 +65,6 @@ declare abstract class WalletConnection implements TransactionsSigner, SignInPro
     _authData: any;
     /** @hidden */
     _networkId: string;
-    /** @hidden */
-    _near: Near;
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
     /**
@@ -106,7 +119,7 @@ declare abstract class WalletConnection implements TransactionsSigner, SignInPro
  * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
  * ```
  */
-export declare class WalletConnectionRedirect extends WalletConnection {
+export declare class WalletConnectionRedirect extends WalletConnectionWithKeyManagement {
     /** @hidden */
     _walletBaseUrl: string;
     /**
@@ -149,8 +162,8 @@ export declare class WalletConnectionRedirect extends WalletConnection {
     account(): Account;
 }
 declare abstract class ConnectedWalletAccount extends Account {
-    walletConnection: WalletConnection;
-    constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
+    walletConnection: WalletConnectionWithKeyManagement;
+    constructor(walletConnection: WalletConnectionWithKeyManagement, connection: Connection, accountId: string);
     /**
    * Check if given access key allows the function call or method attempted in transaction
    * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
@@ -173,11 +186,11 @@ declare abstract class ConnectedWalletAccount extends Account {
 export declare class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
-     * @see {@link WalletConnection.requestSignTransactions}
+     * @see {@link WalletConnectionWithKeyManagement.requestSignTransactions}
      */
     signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
 }
-export declare class WalletConnectionInjected extends WalletConnection {
+export declare class WalletConnectionInjected extends WalletConnectionWithKeyManagement {
     _walletName: string;
     constructor(near: Near, appKeyPrefix: string | null, walletName: string);
     requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
@@ -186,7 +199,8 @@ export declare class WalletConnectionInjected extends WalletConnection {
 }
 export declare enum WalletConnectionType {
     REDIRECT = 0,
-    INJECTED = 1
+    INJECTED = 1,
+    INJECTED_ALL_KEYS_MANAGER = 2
 }
 export declare class ConnectedWalletAccountInjected extends ConnectedWalletAccount {
 }
@@ -194,5 +208,106 @@ export interface WalletConnectionParameterOptions {
     type: WalletConnectionType;
     data: any;
 }
-export declare function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnection;
+export declare function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnectionBase;
+declare global {
+    interface Window {
+        wallet: InjectedWalletAllKeysManager | undefined;
+    }
+}
+interface InjectedWalletAllKeysManager {
+    init: (params: InitParams) => Promise<InitResponse>;
+    getAccountId: () => string;
+    getRpc: () => Promise<GetRpcResponse>;
+    requestSignIn: (params: RequestSignInParams) => Promise<InitResponse>;
+    signOut: () => Promise<SignOutResponse>;
+    isSignedIn: () => boolean;
+    onAccountChanged: (callback: AccountChangedCallback) => void;
+    onRpcChanged: (callback: RpcChangedCallback) => void;
+    sendMoney: (params: SendMoneyParams) => Promise<unknown>;
+    signAndSendTransaction: (params: SignAndSendTransactionParams) => Promise<SignAndSendTransactionResponse>;
+    requestSignTransactions: (params: RequestSignTransactionsParams) => Promise<unknown>;
+}
+export interface InitParams {
+    contractId: string;
+}
+export interface InitResponse {
+    accessKey: "" | {
+        publicKey: {
+            data: Uint8Array;
+            keyType: number;
+        };
+        secretKey: string;
+    };
+}
+export interface RpcInfo {
+    explorerUrl: string;
+    helperUrl: string;
+    index: number;
+    name: string;
+    network: string;
+    networkId: string;
+    nodeUrl: string;
+    walletUrl: string;
+    wrapNearContract: string;
+}
+export interface GetRpcResponse {
+    method: "getRpc";
+    notificationId: number;
+    rpc: RpcInfo;
+    type: "sender-wallet-result";
+}
+export interface RequestSignInParams {
+    contractId: string;
+    methodNames?: Array<string>;
+}
+export interface SignOutResponse {
+    result: "success";
+}
+export declare type AccountChangedCallback = (newAccountId: string) => void;
+export interface RpcChangedResponse {
+    method: "rpcChanged";
+    notificationId: number;
+    rpc: RpcInfo;
+    type: "sender-wallet-fromContent";
+}
+export declare type RpcChangedCallback = (newRpc: RpcChangedResponse) => void;
+export interface SendMoneyParams {
+    receiverId: string;
+    amount: string;
+}
+export interface ActionParams {
+    methodName: string;
+    args: object;
+    gas: string;
+    deposit: string;
+}
+export interface SignAndSendTransactionParams {
+    receiverId: string;
+    actions: Array<Action>;
+}
+export interface SignAndSendTransactionResponse {
+    error?: string;
+    method: "signAndSendTransaction";
+    notificationId: number;
+    res?: Array<object>;
+    type: "sender-wallet-result";
+    url: string;
+}
+export interface TransactionParams {
+    receiverId: string;
+    actions: Array<Action>;
+}
+export interface RequestSignTransactionsParams {
+    transactions: Array<Transaction>;
+}
+export declare class WalletConnectionInjectedAllKeysManager extends WalletConnectionBase {
+    _walletName: string;
+    constructor(near: Near, appKeyPrefix: string | null, walletName: string);
+    requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
+    requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): Promise<void>;
+    isSignedIn(): boolean;
+    getAccountId(): string;
+    signOut(): void;
+    account(): Account;
+}
 export {};

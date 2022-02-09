@@ -1,7 +1,7 @@
 /**
  * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
  * * {@link WalletConnectionRedirect} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
- * * {@link ConnectedWalletAccountRedirect} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ * * {@link ConnectedWalletAccountRedirect} is an {@link Account} implementation that uses {@link WalletConnectionWithKeyManagement} to get keys
  * 
  * @module walletAccount
  */
@@ -56,7 +56,28 @@ interface AcocuntProvider {
     account(): Account;
 }
 
-abstract class WalletConnection implements TransactionsSigner, SignInProvider, AcocuntProvider {
+abstract class WalletConnectionBase implements TransactionsSigner, SignInProvider, AcocuntProvider {
+    /** @hidden */
+    _near: Near;
+
+    /**
+    * @param {Near} near Near object
+    * @param {string} appKeyPrefix application identifier
+    */
+    constructor(near: Near, appKeyPrefix: string | null) {
+        this._near = near;
+        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
+    }
+
+    abstract requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
+    abstract requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions);
+    abstract isSignedIn(): boolean;
+    abstract getAccountId(): string;
+    abstract signOut(): void;
+    abstract account(): Account;
+}
+
+abstract class WalletConnectionWithKeyManagement extends WalletConnectionBase {
     /** @hidden */
     _authDataKey: string;
 
@@ -70,9 +91,6 @@ abstract class WalletConnection implements TransactionsSigner, SignInProvider, A
     _networkId: string;
 
     /** @hidden */
-    _near: Near;
-
-    /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
     /**
@@ -80,11 +98,10 @@ abstract class WalletConnection implements TransactionsSigner, SignInProvider, A
      * @param {string} appKeyPrefix application identifier
      */
     constructor(near: Near, appKeyPrefix: string | null) {
-        this._near = near;
         const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+        super(near, appKeyPrefix); // NOTE: super called here for backward compatability
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
-        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
         this._authData = authData || { allKeys: [] };
         this._authDataKey = authDataKey;
@@ -156,7 +173,7 @@ abstract class WalletConnection implements TransactionsSigner, SignInProvider, A
  * if(!walletConnection.isSingnedIn()) return walletConnection.requestSignIn()
  * ```
  */
-export class WalletConnectionRedirect extends WalletConnection {
+export class WalletConnectionRedirect extends WalletConnectionWithKeyManagement {
     /** @hidden */
     _walletBaseUrl: string;
 
@@ -279,9 +296,9 @@ export class WalletConnectionRedirect extends WalletConnection {
 }
 
 abstract class ConnectedWalletAccount extends Account {
-    walletConnection: WalletConnection;
+    walletConnection: WalletConnectionWithKeyManagement;
 
-    constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
+    constructor(walletConnection: WalletConnectionWithKeyManagement, connection: Connection, accountId: string) {
         super(connection, accountId);
         this.walletConnection = walletConnection;
     }
@@ -359,7 +376,7 @@ export class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
 
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
-     * @see {@link WalletConnection.requestSignTransactions}
+     * @see {@link WalletConnectionWithKeyManagement.requestSignTransactions}
      */
     async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
@@ -404,7 +421,7 @@ export class ConnectedWalletAccountRedirect extends ConnectedWalletAccount {
     }
 }
 
-export class WalletConnectionInjected extends WalletConnection {
+export class WalletConnectionInjected extends WalletConnectionWithKeyManagement {
 
     _walletName: string;
 
@@ -431,6 +448,7 @@ export class WalletConnectionInjected extends WalletConnection {
 export enum WalletConnectionType {
     REDIRECT,
     INJECTED,
+    INJECTED_ALL_KEYS_MANAGER,
 }
 
 export class ConnectedWalletAccountInjected extends ConnectedWalletAccount { }
@@ -440,7 +458,7 @@ export interface WalletConnectionParameterOptions {
     data: any,
 }
 
-export function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnection {
+export function createWalletConnection(near: Near, appKeyPrefix: string, { type, data }: WalletConnectionParameterOptions): WalletConnectionBase {
     switch (type) {
         case WalletConnectionType.REDIRECT: {
             return new WalletConnectionRedirect(near, appKeyPrefix, data.walletBaseUrl);
@@ -448,5 +466,176 @@ export function createWalletConnection(near: Near, appKeyPrefix: string, { type,
         case WalletConnectionType.INJECTED: {
             return new WalletConnectionInjected(near, appKeyPrefix, data.walletName);
         }
+        case WalletConnectionType.INJECTED_ALL_KEYS_MANAGER: {
+            return new WalletConnectionInjectedAllKeysManager(near, appKeyPrefix, data.walletName);
+        }
+        default: {
+            throw 'Unsupported WalletConnecitonType';
+        }
+    }
+}
+
+// TODO: interface from wallet-selector, refactor
+declare global {
+    interface Window {
+        wallet: InjectedWalletAllKeysManager | undefined;
+    }
+}
+
+interface InjectedWalletAllKeysManager {
+    init: (params: InitParams) => Promise<InitResponse>;
+    getAccountId: () => string;
+    getRpc: () => Promise<GetRpcResponse>;
+    requestSignIn: (params: RequestSignInParams) => Promise<InitResponse>;
+    signOut: () => Promise<SignOutResponse>;
+    isSignedIn: () => boolean;
+    onAccountChanged: (callback: AccountChangedCallback) => void;
+    onRpcChanged: (callback: RpcChangedCallback) => void;
+    // TODO: Determine return type.
+    sendMoney: (params: SendMoneyParams) => Promise<unknown>;
+    signAndSendTransaction: (
+        params: SignAndSendTransactionParams
+    ) => Promise<SignAndSendTransactionResponse>;
+    // TODO: Determine return type.
+    requestSignTransactions: (
+        params: RequestSignTransactionsParams
+    ) => Promise<unknown>;
+}
+
+export interface InitParams {
+    contractId: string;
+}
+
+export interface InitResponse {
+    accessKey:
+    | ""
+    | {
+        publicKey: {
+            data: Uint8Array;
+            keyType: number;
+        };
+        secretKey: string;
+    };
+}
+
+export interface RpcInfo {
+    explorerUrl: string;
+    helperUrl: string;
+    index: number;
+    name: string;
+    network: string;
+    networkId: string;
+    nodeUrl: string;
+    walletUrl: string;
+    wrapNearContract: string;
+}
+
+export interface GetRpcResponse {
+    method: "getRpc";
+    notificationId: number;
+    rpc: RpcInfo;
+    type: "sender-wallet-result";
+}
+
+export interface RequestSignInParams {
+    contractId: string;
+    methodNames?: Array<string>;
+}
+
+export interface SignOutResponse {
+    // TODO: Figure out when this isn't "success".
+    result: "success";
+}
+
+export type AccountChangedCallback = (newAccountId: string) => void;
+
+export interface RpcChangedResponse {
+    method: "rpcChanged";
+    notificationId: number;
+    rpc: RpcInfo;
+    type: "sender-wallet-fromContent";
+}
+
+export type RpcChangedCallback = (newRpc: RpcChangedResponse) => void;
+
+export interface SendMoneyParams {
+    receiverId: string;
+    amount: string;
+}
+
+export interface ActionParams {
+    methodName: string;
+    args: object;
+    gas: string;
+    deposit: string;
+}
+
+export interface SignAndSendTransactionParams {
+    receiverId: string;
+    actions: Array<Action>;
+}
+
+export interface SignAndSendTransactionResponse {
+    error?: string;
+    method: "signAndSendTransaction";
+    notificationId: number;
+    // TODO: Heavily nested objects. Define if needed.
+    res?: Array<object>;
+    type: "sender-wallet-result";
+    url: string;
+}
+
+export interface TransactionParams {
+    receiverId: string;
+    actions: Array<Action>;
+}
+
+export interface RequestSignTransactionsParams {
+    transactions: Array<Transaction>;
+}
+
+export class WalletConnectionInjectedAllKeysManager extends WalletConnectionBase {
+    _walletName: string;
+
+    constructor(near: Near, appKeyPrefix: string | null, walletName: string) {
+        super(near, appKeyPrefix);
+        this._walletName = walletName;
+    }
+
+    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+        window[this._walletName].requestSignTransactions({ transactions })
+            .then((res) => {
+                if (res.error) {
+                    //TOOD: is it the right structure for responce?
+                    throw new Error(res.error);
+                }
+                console.log('requestSignTransactions res:', res);
+                return res;
+            });
+    }
+    async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): Promise<void> {
+        const { accessKey } = await window[this._walletName].requestSignIn({
+            contractId: contractId,
+        });
+        //TODO: why do we need accessKey here?
+        console.log("New function call key added:", accessKey);
+    }
+    isSignedIn(): boolean {
+        return window[this._walletName].isSignedIn();
+    }
+    getAccountId(): string {
+        return window[this._walletName].getAccountId();
+    }
+    signOut(): void {
+        window[this._walletName].signOut().then((res) => {
+            if (res.result !== "success") {
+                throw new Error("Failed to sign out");
+            } else {
+                console.log("Signed out");
+            }
+        });
+    }
+    account(): Account {
+        throw new Error('Method not implemented.');
     }
 }
