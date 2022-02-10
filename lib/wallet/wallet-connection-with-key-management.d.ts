@@ -8,9 +8,8 @@
 import { Account } from '../account';
 import { Near } from '../near';
 import { KeyStore } from '../key_stores';
-import { RequestSignTransactionsOptions, SignInOptions, WalletConnection } from './wallet-connection';
+import { ConnectedWalletAccount, RequestSignTransactionsOptions, SignInOptions, WalletConnection } from './wallet-connection';
 import { PublicKey } from '../utils';
-import { Connection } from '../connection';
 import { Action } from '../transaction';
 export declare abstract class WalletConnectionWithKeyManagement extends WalletConnection {
     /** @hidden */
@@ -56,9 +55,8 @@ export declare abstract class WalletConnectionWithKeyManagement extends WalletCo
     signOut(): boolean;
     abstract account(): Account;
 }
-export declare abstract class ConnectedWalletAccountWithKeyManagement extends Account {
+export declare abstract class ConnectedWalletAccountWithKeyManagement extends ConnectedWalletAccount {
     walletConnection: WalletConnectionWithKeyManagement;
-    constructor(walletConnection: WalletConnectionWithKeyManagement, connection: Connection, accountId: string);
     /**
    * Check if given access key allows the function call or method attempted in transaction
    * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items

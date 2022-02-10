@@ -1,9 +1,12 @@
 import { Account } from '../account';
+import { Connection } from '../connection';
 import { Near } from '../near';
 import { Transaction } from '../transaction';
 export declare abstract class WalletConnection implements TransactionsSigner, SignInProvider, AcocuntProvider {
     /** @hidden */
     _near: Near;
+    /** @hidden */
+    _connectedAccount: ConnectedWalletAccount;
     /**
     * @param {Near} near Near object
     * @param {string} appKeyPrefix application identifier
@@ -15,6 +18,13 @@ export declare abstract class WalletConnection implements TransactionsSigner, Si
     abstract getAccountId(): string;
     abstract signOut(): boolean;
     abstract account(): Account;
+}
+/**
+ * Object of this class should be returned by WalletConnection.account() method
+ */
+export declare abstract class ConnectedWalletAccount extends Account {
+    walletConnection: WalletConnection;
+    constructor(walletConnection: WalletConnection, connection: Connection, accountId: string);
 }
 /**
  * Information to send NEAR wallet for signing transactions and redirecting the browser back to the calling application

@@ -11,12 +11,12 @@ import { Near } from '../near';
 import { KeyStore } from '../key_stores';
 import { InMemorySigner } from '../signer';
 import {
+    ConnectedWalletAccount,
     RequestSignTransactionsOptions,
     SignInOptions,
     WalletConnection,
 } from './wallet-connection';
 import { PublicKey } from '../utils';
-import { Connection } from '../connection';
 import {
     Action,
 } from '../transaction';
@@ -38,7 +38,7 @@ export abstract class WalletConnectionWithKeyManagement extends WalletConnection
     _networkId: string;
 
     /** @hidden */
-    _connectedAccount: ConnectedWalletAccountWithKeyManagement;
+    declare _connectedAccount: ConnectedWalletAccountWithKeyManagement;
 
     /**
      * @param {Near} near Near object
@@ -96,13 +96,9 @@ export abstract class WalletConnectionWithKeyManagement extends WalletConnection
     abstract account(): Account;
 }
 
-export abstract class ConnectedWalletAccountWithKeyManagement extends Account {
-    walletConnection: WalletConnectionWithKeyManagement;
+export abstract class ConnectedWalletAccountWithKeyManagement extends ConnectedWalletAccount {
 
-    constructor(walletConnection: WalletConnectionWithKeyManagement, connection: Connection, accountId: string) {
-        super(connection, accountId);
-        this.walletConnection = walletConnection;
-    }
+    declare walletConnection: WalletConnectionWithKeyManagement;
 
     /**
    * Check if given access key allows the function call or method attempted in transaction

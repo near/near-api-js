@@ -1,4 +1,5 @@
 import { Account } from '../account';
+import { Connection } from '../connection';
 import { Near } from '../near';
 import {
     Transaction,
@@ -7,6 +8,9 @@ import {
 export abstract class WalletConnection implements TransactionsSigner, SignInProvider, AcocuntProvider {
     /** @hidden */
     _near: Near;
+
+    /** @hidden */
+    _connectedAccount: ConnectedWalletAccount;
 
     /**
     * @param {Near} near Near object
@@ -23,6 +27,18 @@ export abstract class WalletConnection implements TransactionsSigner, SignInProv
     abstract getAccountId(): string;
     abstract signOut(): boolean;
     abstract account(): Account;
+}
+
+/**
+ * Object of this class should be returned by WalletConnection.account() method
+ */
+export abstract class ConnectedWalletAccount extends Account {
+    walletConnection: WalletConnection;
+
+    constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
+        super(connection, accountId);
+        this.walletConnection = walletConnection;
+    }
 }
 
 /**

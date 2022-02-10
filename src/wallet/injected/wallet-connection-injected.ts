@@ -1,4 +1,5 @@
 import {
+    ConnectedWalletAccount,
     RequestSignTransactionsOptions,
     SignInOptions,
     WalletConnection,
@@ -47,6 +48,13 @@ export class WalletConnectionInjected extends WalletConnection {
     }
 
     account(): Account {
-        throw new Error('Method not implemented.');
+        if (!this._connectedAccount) {
+            this._connectedAccount = new ConnectedWalletAccountInjected(this, this._near.connection, this.getAccountId());
+        }
+        return this._connectedAccount;
     }
+}
+
+class ConnectedWalletAccountInjected extends ConnectedWalletAccount {
+
 }
