@@ -9,7 +9,9 @@ export interface InjectedWallet {
     signOut: () => boolean;
     /** Returns accounId from local storage or '' if it is not present */
     getAccountId: () => string;
-    /** On excecution of this function user should be prompted.
+    /** On excecution of this function injected wallet should check if it can use Function call key
+     * to sign transaction and do that wihtout any prompts if possible.
+     * If this transaction requires Full access key,  user should be prompted.
      * On approval transaction should be signed and sent.
      * */
     requestSignTransactions: (params: RequestSignTransactionsOptions) => Promise<Array<FinalExecutionOutcome>>;

@@ -22,12 +22,10 @@ export interface InjectedWallet {
     /** Returns accounId from local storage or '' if it is not present */
     getAccountId: () => string;
 
-    /* TODO: should it try to sign transactions with function call key without prompt?
-     * if not, why it's holding that key in a first place? 
-     *
-     * TODO: should it return other type of info if transaction was rejected by the user?
-     */
-    /** On excecution of this function user should be prompted.
+    /* TODO: should it return other type of info if transaction was rejected by the user? */
+    /** On excecution of this function injected wallet should check if it can use Function call key
+     * to sign transaction and do that wihtout any prompts if possible.
+     * If this transaction requires Full access key,  user should be prompted.
      * On approval transaction should be signed and sent.
      * */
     requestSignTransactions: (
