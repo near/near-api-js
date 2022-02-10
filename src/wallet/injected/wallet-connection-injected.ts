@@ -6,8 +6,10 @@ import {
 } from "../wallet-connection";
 
 import { Near } from '../../near';
-import { Account } from '../../account'
+import { Account, SignAndSendTransactionOptions } from '../../account'
 import { InjectedWallet, RequestSignTransactionsInjectedOptions } from "./wallet-injected-interface";
+import { FinalExecutionOutcome } from "../../providers";
+import { Transaction } from "../../transaction";
 
 export class WalletConnectionInjected extends WalletConnection {
     private injecteWallet: InjectedWallet;
@@ -56,5 +58,11 @@ export class WalletConnectionInjected extends WalletConnection {
 }
 
 class ConnectedWalletAccountInjected extends ConnectedWalletAccount {
-
+    /**
+    * Sign a transaction with InjectedWallet
+    */
+    async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+        this.walletConnection.requestSignTransactions({ transactions: [{ receiverId, actions } as Transaction] });
+        return null; //TODO: convert or create common interface
+    }
 }
