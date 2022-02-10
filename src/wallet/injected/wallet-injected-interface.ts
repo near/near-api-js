@@ -8,7 +8,7 @@ import {
 
 
 export interface InjectedWallet {
-    /** Creates a new Function call key that is stored locally */
+    /** Creates a new Function call key that is stored locally alongside with accountId*/
     requestSignIn: ({ contractId, methodNames }: SignInOptions) => Promise<boolean>;
 
     /** Returns true if function call key was created or false otherwise */
@@ -16,15 +16,16 @@ export interface InjectedWallet {
 
     // TODO: Sender Wallet returns Promise<boolean>, is it possible to return boolean?
     // TODO: Should we make signOut reurn boolean in walletconnection interface? 
+    /** Cleares function call key and accountId from local storage*/
     signOut: () => boolean;
 
-    /** Returns accounId of the logged in user or '' if there is no such user */
+    /** Returns accounId from local storage or '' if it is not present */
     getAccountId: () => string;
 
     /* TODO: should it try to sign transactions with function call key without prompt?
      * if not, why it's holding that key in a first place? 
      *
-     * TODO: should it return other type of info if transaction was rejected?
+     * TODO: should it return other type of info if transaction was rejected by the user?
      */
     /** On excecution of this function user should be prompted.
      * On approval transaction should be signed and sent.
@@ -43,7 +44,7 @@ export interface InjectedWallet {
       permission: {
         FunctionCall: {
           allowance: null,
-          receiver_id: 'contractId',              <------ @param contracId goes here
+          receiver_id: '<contractId>',              <------ @param contracId goes here
           method_names: [<array of method names>] <------ @param methodNames goes here
         }
       }
@@ -59,9 +60,9 @@ export interface RequestSignTransactionsOptions {
     /** List of transactions to sign */
     transactions: Transaction[];
     /** Meta information Wallet will send back to the application */
-    meta?: string; // should we have this field?
+    meta?: string; // TODO: should we have this field?
     /** callback to be excecuted after function excecution */
-    callback // should we have this field?
+    callback // TODO: should we have this field?
 }
 
 /////////////////////////// This section needs to be deleted after dicussions /////////////////////////////////

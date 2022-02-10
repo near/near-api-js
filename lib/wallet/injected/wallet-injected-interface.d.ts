@@ -1,12 +1,13 @@
 import { FinalExecutionOutcome } from '../../providers';
 import { Action, Transaction } from '../../transaction';
 export interface InjectedWallet {
-    /** Creates a new Function call key that is stored locally */
+    /** Creates a new Function call key that is stored locally alongside with accountId*/
     requestSignIn: ({ contractId, methodNames }: SignInOptions) => Promise<boolean>;
     /** Returns true if function call key was created or false otherwise */
     isSignedIn: () => boolean;
+    /** Cleares function call key and accountId from local storage*/
     signOut: () => boolean;
-    /** Returns accounId of the logged in user or '' if there is no such user */
+    /** Returns accounId from local storage or '' if it is not present */
     getAccountId: () => string;
     /** On excecution of this function user should be prompted.
      * On approval transaction should be signed and sent.
@@ -22,7 +23,7 @@ export interface InjectedWallet {
       permission: {
         FunctionCall: {
           allowance: null,
-          receiver_id: 'contractId',              <------ @param contracId goes here
+          receiver_id: '<contractId>',              <------ @param contracId goes here
           method_names: [<array of method names>] <------ @param methodNames goes here
         }
       }
