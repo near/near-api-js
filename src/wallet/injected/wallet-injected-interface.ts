@@ -29,7 +29,7 @@ export interface InjectedWallet {
      * On approval transaction should be signed and sent.
      * */
     requestSignTransactions: (
-        params: RequestSignTransactionsOptions
+        params: RequestSignTransactionsInjectedOptions
     ) => Promise<Array<FinalExecutionOutcome>>;
 }
 
@@ -54,13 +54,13 @@ export interface SignInOptions {
     methodNames?: string[];
 }
 
-export interface RequestSignTransactionsOptions {
+export interface RequestSignTransactionsInjectedOptions {
     /** List of transactions to sign */
     transactions: Transaction[];
     /** Meta information Wallet will send back to the application */
     meta?: string; // TODO: should we have this field?
     /** callback to be excecuted after function excecution */
-    callback // TODO: should we have this field?
+    callback? // TODO: should we have this field?
 }
 
 /////////////////////////// This section needs to be deleted after dicussions /////////////////////////////////

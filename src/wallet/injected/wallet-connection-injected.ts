@@ -6,49 +6,46 @@ import {
 
 import { Near } from '../../near';
 import { Account } from '../../account'
+import { InjectedWallet, RequestSignTransactionsInjectedOptions } from "./wallet-injected-interface";
 
 export class WalletConnectionInjected extends WalletConnection {
-    _walletName: string;
+    private injecteWallet: InjectedWallet;
 
     constructor(near: Near, appKeyPrefix: string | null, walletName: string) {
         super(near, appKeyPrefix);
-        this._walletName = walletName;
+        this.injecteWallet = window[walletName] as InjectedWallet;
     }
 
-    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
-        window[this._walletName].requestSignTransactions({ transactions })
+    async requestSignTransactions({ transactions }: RequestSignTransactionsOptions): Promise<void> {
+        // TODO: we should have a common interface here
+        this.injecteWallet.requestSignTransactions({ transactions } as RequestSignTransactionsInjectedOptions)
             .then((res) => {
-                if (res.error) {
-                    //TOOD: is it the right structure for responce?
-                    throw new Error(res.error);
-                }
+                // TODO: change interface or convert responce
                 console.log('requestSignTransactions res:', res);
-                return res;
             });
     }
+
     async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): Promise<void> {
-        const { accessKey } = await window[this._walletName].requestSignIn({
-            contractId: contractId,
-        });
-        //TODO: why do we need accessKey here?
-        console.log("New function call key added:", accessKey);
+        this.injecteWallet.requestSignIn({
+            contractId, methodNames
+        }).then((result) => {
+            console.log('requestSignIn result:', result);
+        })
+        //TODO: how to return something here? Should we change interface?
     }
+
     isSignedIn(): boolean {
-        return window[this._walletName].isSignedIn();
+        return this.injecteWallet.isSignedIn();
     }
+
     getAccountId(): string {
-        return window[this._walletName].getAccountId();
+        return this.injecteWallet.getAccountId();
     }
+
     signOut(): boolean {
-        window[this._walletName].signOut().then((res) => {
-            if (res.result !== "success") {
-                throw new Error("Failed to sign out");
-            } else {
-                console.log("Signed out");
-            }
-        });
-        return true;
+        return this.injecteWallet.signOut();
     }
+
     account(): Account {
         throw new Error('Method not implemented.');
     }

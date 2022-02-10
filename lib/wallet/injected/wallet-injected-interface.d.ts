@@ -14,7 +14,7 @@ export interface InjectedWallet {
      * If this transaction requires Full access key,  user should be prompted.
      * On approval transaction should be signed and sent.
      * */
-    requestSignTransactions: (params: RequestSignTransactionsOptions) => Promise<Array<FinalExecutionOutcome>>;
+    requestSignTransactions: (params: RequestSignTransactionsInjectedOptions) => Promise<Array<FinalExecutionOutcome>>;
 }
 /**
  * These options will become a part of the newly created Function Call key.
@@ -36,13 +36,13 @@ export interface SignInOptions {
     contractId?: string;
     methodNames?: string[];
 }
-export interface RequestSignTransactionsOptions {
+export interface RequestSignTransactionsInjectedOptions {
     /** List of transactions to sign */
     transactions: Transaction[];
     /** Meta information Wallet will send back to the application */
     meta?: string;
     /** callback to be excecuted after function excecution */
-    callback: any;
+    callback?: any;
 }
 export interface SenderWallet {
     requestSignIn: (params: RequestSignInParams) => Promise<InitResponse>;
