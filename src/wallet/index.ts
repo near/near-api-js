@@ -11,8 +11,11 @@ import {
     WalletConnectionInjected,
 } from './injected/wallet-connection-injected';
 import {
-    WalletConnectionInjectedWithLocalFckManagement,
-} from './injected/wallet-connection-injected-with-local-fck-management';
+    WalletConnectionSender,
+} from './injected/wallet-connection-sender';
+import {
+    WalletConnectionInjectedWithFckManagement,
+} from './injected/wallet-connection-injected-with-fck-management';
 import {
     WalletConnectionRedirect,
     ConnectedWalletAccountRedirect,
@@ -33,7 +36,8 @@ export {
     SignInOptions,
     WalletConnectionWithKeyManagement,
     WalletConnectionInjected,
-    WalletConnectionInjectedWithLocalFckManagement,
+    WalletConnectionSender,
+    WalletConnectionInjectedWithFckManagement,
     WalletConnectionRedirect,
     ConnectedWalletAccountRedirect, //TODO: do we need this export?
     wallet_injected_interface,

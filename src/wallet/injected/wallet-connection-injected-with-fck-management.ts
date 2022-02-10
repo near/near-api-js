@@ -16,7 +16,7 @@ import {
     Account,
 } from '../../account';
 
-export class WalletConnectionInjectedWithLocalFckManagement extends WalletConnectionWithKeyManagement {
+export class WalletConnectionInjectedWithFckManagement extends WalletConnectionWithKeyManagement {
 
     _walletName: string;
 

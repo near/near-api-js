@@ -93,9 +93,7 @@ export abstract class WalletConnectionWithKeyManagement extends WalletConnection
         return true;
     }
 
-    account(): Account {
-        throw new Error('Method not implemented.');
-    }
+    abstract account(): Account;
 }
 
 export abstract class ConnectedWalletAccountWithKeyManagement extends Account {

@@ -1,7 +1,8 @@
 import {
     WalletConnectionRedirect,
-    WalletConnectionInjectedWithLocalFckManagement,
+    WalletConnectionInjectedWithFckManagement,
     WalletConnectionInjected,
+    WalletConnectionSender
 } from './index';
 import { Near } from '../near';
 import { WalletConnection } from './wallet-connection';
@@ -9,7 +10,8 @@ import { WalletConnection } from './wallet-connection';
 export enum WalletConnectionType {
     REDIRECT,
     INJECTED,
-    INJECTED_WITH_LOCAL_FCK_MANAGEMENT,
+    INJECTED_SENDER_WALLET, //TODO: tmp implementation, delete
+    INJECTED_WITH_FCK_MANAGEMENT,
 }
 
 export interface WalletConnectionParameterOptions {
@@ -25,8 +27,12 @@ export function createWalletConnection(near: Near, appKeyPrefix: string, { type,
         case WalletConnectionType.INJECTED: {
             return new WalletConnectionInjected(near, appKeyPrefix, data.walletName);
         }
-        case WalletConnectionType.INJECTED_WITH_LOCAL_FCK_MANAGEMENT: {
-            return new WalletConnectionInjectedWithLocalFckManagement(near, appKeyPrefix, data.walletName);
+        case WalletConnectionType.INJECTED_SENDER_WALLET: {
+            console.warn("Temporary implementation, should be relaced with WalletConnectionInjected");
+            return new WalletConnectionSender(near, appKeyPrefix, data.walletName);
+        }
+        case WalletConnectionType.INJECTED_WITH_FCK_MANAGEMENT: {
+            return new WalletConnectionInjectedWithFckManagement(near, appKeyPrefix, data.walletName);
         }
         default: {
             throw 'Unsupported WalletConnecitonType';
