@@ -4265,6 +4265,13 @@ near-hello@^0.5.1:
   resolved "https://registry.yarnpkg.com/near-hello/-/near-hello-0.5.1.tgz#68621928857afc21f5a7e0c21a47069a5dc058ef"
   integrity sha512-k7S8VFyESWgkKYDso99B4XbxAdo0VX9b3+GAaO5PvMgQjNr/6o09PHRywg/NkBQpf+ZYj7nNpJcyrNJGQsvA3w==
 
+near-units@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/near-units/-/near-units-0.1.9.tgz#4bf07da0b046e08e0b8785ad8e32d4df3a944b93"
+  integrity sha512-xiuBjpNsi+ywiu7P6iWRZdgFm7iCr/cfWlVO6+e5uaAqH4mE1rrurElyrL91llNDSnMwogd9XmlZOw5KbbHNsA==
+  dependencies:
+    bn.js "^5.2.0"
+
 neo-async@^2.6.0:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
