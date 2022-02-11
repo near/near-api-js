@@ -6,41 +6,40 @@ import {
 
 import { Near } from '../../near';
 import { Account } from '../../account'
+import { SenderWallet } from "./wallet-injected-interface";
 
 export class WalletConnectionSender extends WalletConnection {
-    _walletName: string;
+    private senderWallet: SenderWallet;
+
 
     constructor(near: Near, appKeyPrefix: string | null, walletName: string) {
+        console.warn("This implementation is temporary, regular Injected Wallet should be used instead.");
         super(near, appKeyPrefix);
-        this._walletName = walletName;
+        this.senderWallet = window[walletName] as SenderWallet;
     }
 
     async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
-        window[this._walletName].requestSignTransactions({ transactions })
+        this.senderWallet.requestSignTransactions({ transactions })
             .then((res) => {
-                if (res.error) {
-                    //TOOD: is it the right structure for responce?
-                    throw new Error(res.error);
-                }
                 console.log('requestSignTransactions res:', res);
                 return res;
             });
     }
     async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): Promise<void> {
-        const { accessKey } = await window[this._walletName].requestSignIn({
+        const { accessKey } = await this.senderWallet.requestSignIn({
             contractId: contractId,
         });
         //TODO: why do we need accessKey here?
         console.log("New function call key added:", accessKey);
     }
     isSignedIn(): boolean {
-        return window[this._walletName].isSignedIn();
+        return this.senderWallet.isSignedIn();
     }
     getAccountId(): string {
-        return window[this._walletName].getAccountId();
+        return this.senderWallet.getAccountId();
     }
     signOut(): boolean {
-        window[this._walletName].signOut().then((res) => {
+        this.senderWallet.signOut().then((res) => {
             if (res.result !== "success") {
                 throw new Error("Failed to sign out");
             } else {

@@ -16,6 +16,7 @@ export class WalletConnectionInjected extends WalletConnection {
 
     constructor(near: Near, appKeyPrefix: string | null, walletName: string) {
         super(near, appKeyPrefix);
+        // TODOD: pass InjectedWallet instead of the name
         this.injecteWallet = window[walletName] as InjectedWallet;
     }
 

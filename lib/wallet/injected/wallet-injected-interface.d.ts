@@ -9,6 +9,7 @@ export interface InjectedWallet {
     signOut: () => boolean;
     /** Returns accounId from local storage or '' if it is not present */
     getAccountId: () => string;
+    /** TODOD: Should we return error type if transaction was not sent? */
     /** On excecution of this function injected wallet should check if it can use Function call key
      * to sign transaction and do that wihtout any prompts if possible.
      * If this transaction requires Full access key,  user should be prompted.

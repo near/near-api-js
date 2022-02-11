@@ -59,6 +59,11 @@ export class WalletConnectionRedirect extends WalletConnectionWithKeyManagement 
         this._walletBaseUrl = walletBaseUrl;
         if (!this.isSignedIn()) {
             this._completeSignInWithAccessKey();
+            // TODOD:
+            // Emit the same result after redirect, with same data
+            // Use local storage to save some data?
+            // Event emiting API
+            // Attach Event Handler
         }
     }
 
@@ -213,6 +218,7 @@ export class ConnectedWalletAccountRedirect extends ConnectedWalletAccountWithKe
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
+                // TODOD: return an error here that is consistent with injected wallets?
                 reject(new Error('Failed to redirect to sign transaction'));
             }, 1000);
         });

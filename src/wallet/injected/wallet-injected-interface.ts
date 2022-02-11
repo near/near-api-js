@@ -7,6 +7,7 @@ import {
 } from '../../transaction';
 
 
+// TODOD: it should become Wallet interface, not InjectedWAllet I.
 export interface InjectedWallet {
     /** Creates a new Function call key that is stored locally alongside with accountId*/
     requestSignIn: ({ contractId, methodNames }: SignInOptions) => Promise<boolean>;
@@ -23,6 +24,7 @@ export interface InjectedWallet {
     getAccountId: () => string;
 
     /* TODO: should it return other type of info if transaction was rejected by the user? */
+    /** TODOD: Should we return error type if transaction was not sent? */
     /** On excecution of this function injected wallet should check if it can use Function call key
      * to sign transaction and do that wihtout any prompts if possible.
      * If this transaction requires Full access key,  user should be prompted.
