@@ -28,7 +28,7 @@ export function createWalletConnection(near: Near, appKeyPrefix: string, { type,
             return new WalletConnectionInjected(near, appKeyPrefix, data.walletName);
         }
         case WalletConnectionType.INJECTED_SENDER_WALLET: {
-            console.warn("Temporary implementation, should be relaced with WalletConnectionInjected");
+            console.warn('Temporary implementation, should be relaced with WalletConnectionInjected');
             return new WalletConnectionSender(near, appKeyPrefix, data.walletName);
         }
         case WalletConnectionType.INJECTED_WITH_FCK_MANAGEMENT: {

@@ -2,8 +2,9 @@ import { Account } from '../account';
 import { Connection } from '../connection';
 import { Near } from '../near';
 import {
-    Transaction,
-} from '../transaction';
+    RequestSignTransactionsOptions,
+    SignInOptions,
+} from './wallet-interface';
 
 export abstract class WalletConnection implements TransactionsSigner, SignInProvider, AcocuntProvider {
     /** @hidden */
@@ -39,26 +40,6 @@ export abstract class ConnectedWalletAccount extends Account {
         super(connection, accountId);
         this.walletConnection = walletConnection;
     }
-}
-
-/**
- * Information to send NEAR wallet for signing transactions and redirecting the browser back to the calling application
- */
-export interface RequestSignTransactionsOptions {
-    /** list of transactions to sign */
-    transactions: Transaction[];
-    /** url NEAR Wallet will redirect to after transaction signing is complete */
-    callbackUrl?: string;
-    /** meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
-    meta?: string;
-}
-
-export interface SignInOptions {
-    contractId?: string;
-    methodNames?: string[];
-    // TODO: Replace following with single callbackUrl
-    successUrl?: string;
-    failureUrl?: string;
 }
 
 interface TransactionsSigner {

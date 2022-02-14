@@ -1,28 +1,26 @@
+import { SignInOptions } from "../wallet-interface";
 import {
     ConnectedWalletAccount,
-    RequestSignTransactionsOptions,
-    SignInOptions,
     WalletConnection,
 } from "../wallet-connection";
-
 import { Near } from '../../near';
 import { Account, SignAndSendTransactionOptions } from '../../account'
-import { InjectedWallet, RequestSignTransactionsInjectedOptions } from "./wallet-injected-interface";
+import { Wallet, RequestSignTransactionsOptions } from "../wallet-interface";
 import { FinalExecutionOutcome } from "../../providers";
 import { Transaction } from "../../transaction";
 
 export class WalletConnectionInjected extends WalletConnection {
-    private injecteWallet: InjectedWallet;
+    private injecteWallet: Wallet;
 
     constructor(near: Near, appKeyPrefix: string | null, walletName: string) {
         super(near, appKeyPrefix);
         // TODOD: pass InjectedWallet instead of the name
-        this.injecteWallet = window[walletName] as InjectedWallet;
+        this.injecteWallet = window[walletName] as Wallet;
     }
 
     async requestSignTransactions({ transactions }: RequestSignTransactionsOptions): Promise<void> {
         // TODO: we should have a common interface here
-        this.injecteWallet.requestSignTransactions({ transactions } as RequestSignTransactionsInjectedOptions)
+        this.injecteWallet.requestSignTransactions({ transactions } as RequestSignTransactionsOptions)
             .then((res) => {
                 // TODO: change interface or convert responce
                 console.log('requestSignTransactions res:', res);

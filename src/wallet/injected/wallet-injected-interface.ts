@@ -1,73 +1,12 @@
 import {
-    FinalExecutionOutcome,
-} from '../../providers';
-import {
     Action,
     Transaction,
 } from '../../transaction';
 
-
-// TODOD: it should become Wallet interface, not InjectedWAllet I.
-export interface InjectedWallet {
-    /** Creates a new Function call key that is stored locally alongside with accountId*/
-    requestSignIn: ({ contractId, methodNames }: SignInOptions) => Promise<boolean>;
-
-    /** Returns true if function call key was created or false otherwise */
-    isSignedIn: () => boolean;
-
-    // TODO: Sender Wallet returns Promise<boolean>, is it possible to return boolean?
-    // TODO: Should we make signOut reurn boolean in walletconnection interface? 
-    /** Cleares function call key and accountId from local storage*/
-    signOut: () => boolean;
-
-    /** Returns accounId from local storage or '' if it is not present */
-    getAccountId: () => string;
-
-    /* TODO: should it return other type of info if transaction was rejected by the user? */
-    /** TODOD: Should we return error type if transaction was not sent? */
-    /** On excecution of this function injected wallet should check if it can use Function call key
-     * to sign transaction and do that wihtout any prompts if possible.
-     * If this transaction requires Full access key,  user should be prompted.
-     * On approval transaction should be signed and sent.
-     * */
-    requestSignTransactions: (
-        params: RequestSignTransactionsInjectedOptions
-    ) => Promise<Array<FinalExecutionOutcome>>;
-}
-
-/**
- * These options will become a part of the newly created Function Call key.
- * {
-    public_key: 'ed25519:<public key>',
-    access_key: {
-      nonce: <nonce>,
-      permission: {
-        FunctionCall: {
-          allowance: null,
-          receiver_id: '<contractId>',              <------ @param contracId goes here
-          method_names: [<array of method names>] <------ @param methodNames goes here
-        }
-      }
-    }
-  }
- */
-export interface SignInOptions {
-    contractId?: string;
-    methodNames?: string[];
-}
-
-export interface RequestSignTransactionsInjectedOptions {
-    /** List of transactions to sign */
-    transactions: Transaction[];
-    /** Meta information Wallet will send back to the application */
-    meta?: string; // TODO: should we have this field?
-    /** callback to be excecuted after function excecution */
-    callback? // TODO: should we have this field?
-}
-
 /////////////////////////// This section needs to be deleted after dicussions /////////////////////////////////
 export interface SenderWallet {
     requestSignIn: (params: RequestSignInParams) => Promise<InitResponse>;
+    // TODO: Sender Wallet returns Promise<boolean>, is it possible to return boolean?
     isSignedIn: () => boolean;
     signOut: () => Promise<SignOutResponse>;
     getAccountId: () => string;

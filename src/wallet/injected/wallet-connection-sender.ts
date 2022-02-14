@@ -1,9 +1,10 @@
 import {
     RequestSignTransactionsOptions,
     SignInOptions,
+} from '../wallet-interface'
+import {
     WalletConnection,
 } from "../wallet-connection";
-
 import { Near } from '../../near';
 import { Account } from '../../account'
 import { SenderWallet } from "./wallet-injected-interface";

@@ -1,17 +1,14 @@
 import {
     RequestSignTransactionsOptions,
     SignInOptions,
-} from "../wallet-connection";
-
+} from "../wallet-interface";
 import {
     WalletConnectionWithKeyManagement,
     ConnectedWalletAccountWithKeyManagement
 } from "../wallet-connection-with-key-management";
-
 import {
     Near,
 } from '../../near';
-
 import {
     Account,
 } from '../../account';

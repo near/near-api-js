@@ -11,9 +11,11 @@ import { Near } from '../near';
 import { KeyStore } from '../key_stores';
 import { InMemorySigner } from '../signer';
 import {
-    ConnectedWalletAccount,
     RequestSignTransactionsOptions,
     SignInOptions,
+} from './wallet-interface';
+import {
+    ConnectedWalletAccount,
     WalletConnection,
 } from './wallet-connection';
 import { PublicKey } from '../utils';

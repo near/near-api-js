@@ -1,4 +1,5 @@
-import { RequestSignTransactionsOptions, SignInOptions, WalletConnection } from "../wallet-connection";
+import { RequestSignTransactionsOptions, SignInOptions } from '../wallet-interface';
+import { WalletConnection } from "../wallet-connection";
 import { Near } from '../../near';
 import { Account } from '../../account';
 export declare class WalletConnectionSender extends WalletConnection {

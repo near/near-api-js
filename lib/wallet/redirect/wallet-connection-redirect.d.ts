@@ -1,6 +1,6 @@
 import { Account, SignAndSendTransactionOptions } from '../../account';
 import { Near } from '../../near';
-import { RequestSignTransactionsOptions, SignInOptions } from '../wallet-connection';
+import { RequestSignTransactionsOptions, SignInOptions } from '../wallet-interface';
 import { ConnectedWalletAccountWithKeyManagement, WalletConnectionWithKeyManagement } from '../wallet-connection-with-key-management';
 import { FinalExecutionOutcome } from '../../providers';
 /**

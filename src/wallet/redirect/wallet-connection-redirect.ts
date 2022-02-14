@@ -10,7 +10,7 @@ import {
 import {
     RequestSignTransactionsOptions,
     SignInOptions,
-} from '../wallet-connection'
+} from '../wallet-interface'
 
 import {
     ConnectedWalletAccountWithKeyManagement,

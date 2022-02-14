@@ -8,7 +8,8 @@
 import { Account } from '../account';
 import { Near } from '../near';
 import { KeyStore } from '../key_stores';
-import { ConnectedWalletAccount, RequestSignTransactionsOptions, SignInOptions, WalletConnection } from './wallet-connection';
+import { RequestSignTransactionsOptions, SignInOptions } from './wallet-interface';
+import { ConnectedWalletAccount, WalletConnection } from './wallet-connection';
 import { PublicKey } from '../utils';
 import { Action } from '../transaction';
 export declare abstract class WalletConnectionWithKeyManagement extends WalletConnection {

@@ -1,6 +1,8 @@
-import { RequestSignTransactionsOptions, SignInOptions, WalletConnection } from "../wallet-connection";
+import { SignInOptions } from "../wallet-interface";
+import { WalletConnection } from "../wallet-connection";
 import { Near } from '../../near';
 import { Account } from '../../account';
+import { RequestSignTransactionsOptions } from "../wallet-interface";
 export declare class WalletConnectionInjected extends WalletConnection {
     private injecteWallet;
     constructor(near: Near, appKeyPrefix: string | null, walletName: string);

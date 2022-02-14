@@ -1,8 +1,10 @@
-
 import {
-    WalletConnection,
+    Wallet,
     RequestSignTransactionsOptions,
     SignInOptions,
+} from './wallet-interface';
+import {
+    WalletConnection,
 } from './wallet-connection';
 import {
     WalletConnectionWithKeyManagement,
@@ -28,12 +30,13 @@ import {
 import * as wallet_injected_interface from './injected/wallet-injected-interface';
 
 export {
+    Wallet,
+    RequestSignTransactionsOptions,
+    SignInOptions,
     createWalletConnection,
     WalletConnectionType,
     WalletConnectionParameterOptions,
     WalletConnection,
-    RequestSignTransactionsOptions,
-    SignInOptions,
     WalletConnectionWithKeyManagement,
     WalletConnectionInjected,
     WalletConnectionSender,
