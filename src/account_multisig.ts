@@ -7,7 +7,7 @@ import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAccessKey } from './transaction';
-import { FinalExecutionOutcome } from './providers';
+import { FinalExecutionOutcome, TypedError } from './providers';
 import { fetchJson } from './utils/web';
 import { FunctionCallPermissionView } from './providers/provider';
 
@@ -205,6 +205,16 @@ export class Account2FA extends AccountMultisig {
     // default helpers for CH deployments of multisig
 
     async deployMultisig(contractBytes: Uint8Array) {
+        const contractHasExistingStateError = new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
+        const currentAccountState = await this.viewState('').catch(error => {
+            if(error.cause?.name == 'NO_CONTRACT_CODE') {
+                return [];
+            }
+            throw  error.cause?.name == 'TOO_LARGE_CONTRACT_STATE' ? contractHasExistingStateError : error;
+        });
+        if(currentAccountState.length) {
+            throw contractHasExistingStateError;
+        }
         const { accountId } = this;
 
         const seedOrLedgerKey = (await this.getRecoveryMethods()).data
