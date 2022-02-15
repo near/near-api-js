@@ -391,10 +391,11 @@ export class Account {
     async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
         const contractHasExistingStateError = new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
         const currentAccountState = await this.viewState('').catch(error => {
-            if(error.cause?.name == 'NO_CONTRACT_CODE') {
+            const cause = error.cause && error.cause.name;
+            if(cause == 'NO_CONTRACT_CODE') {
                 return [];
             }
-            throw  error.cause?.name == 'TOO_LARGE_CONTRACT_STATE' ? contractHasExistingStateError : error;
+            throw cause == 'TOO_LARGE_CONTRACT_STATE' ? contractHasExistingStateError : error;
         });
         if(currentAccountState.length) {
             throw contractHasExistingStateError;
