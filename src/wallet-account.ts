@@ -82,14 +82,15 @@ export class WalletConnection {
     constructor(near: Near, appKeyPrefix: string | null) {
         this._near = near;
         const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
-        const authData = JSON.parse(window.localStorage.getItem(authDataKey));
+        const isBrowser = typeof window !== 'undefined';
+        const authData = isBrowser && JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
         this._authData = authData || { allKeys: [] };
         this._authDataKey = authDataKey;
-        if (!this.isSignedIn()) {
+        if (isBrowser && !this.isSignedIn()) {
             this._completeSignInWithAccessKey();
         }
     }
