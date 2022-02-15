@@ -1,4 +1,4 @@
-import sha256 from 'js-sha256';
+import { Sha256 } from '@aws-crypto/sha256-browser';
 import { Signature, KeyPair, PublicKey } from './utils/key_pair';
 import { KeyStore } from './key_stores/keystore';
 import { InMemoryKeyStore } from './key_stores/in_memory_key_store';
@@ -50,7 +50,7 @@ export class InMemorySigner extends Signer {
      * @param keyPair The keyPair to use for signing
      */
     static async fromKeyPair(networkId: string, accountId: string, keyPair: KeyPair): Promise<Signer> {
-        const keyStore = new InMemoryKeyStore()
+        const keyStore = new InMemoryKeyStore();
         await keyStore.setKey(networkId, accountId, keyPair);
         return new InMemorySigner(keyStore);
     }
@@ -88,7 +88,9 @@ export class InMemorySigner extends Signer {
      * @returns {Promise<Signature>}
      */
     async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature> {
-        const hash = new Uint8Array(sha256.sha256.array(message));
+        const hash = new Sha256();
+        hash.update(message);
+        const result = await hash.digest();
         if (!accountId) {
             throw new Error('InMemorySigner requires provided account id');
         }
@@ -96,7 +98,7 @@ export class InMemorySigner extends Signer {
         if (keyPair === null) {
             throw new Error(`Key for ${accountId} not found in ${networkId}`);
         }
-        return keyPair.sign(hash);
+        return keyPair.sign(result);
     }
 
     toString(): string {
