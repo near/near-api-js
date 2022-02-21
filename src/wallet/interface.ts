@@ -1,6 +1,4 @@
-import {
-  Transaction,
-} from '../transaction';
+import { SignAndSendTransactionOptions } from '../account';
 
 /**
  * This interface is expected to be implemented as a single wallet or wallet selector and passed to WalletConnection.
@@ -36,9 +34,7 @@ export interface Wallet {
    * If this transaction requires FullAccess key,  user should be prompted.
    * On approval transaction should be signed and sent.
    */
-  requestSignTransactions: (
-    params: RequestSignTransactionsOptions
-  ) => void;
+  requestSignTransaction: (options: SignAndSendTransactionOptions) => void
 }
 
 /**
@@ -63,18 +59,4 @@ export interface SignInOptions {
   //TODO: refactor to use callbacks
   successUrl?: string;
   failureUrl?: string;
-}
-
-/**
- * Information to send too the wallet for signing transactions.
- */
-export interface RequestSignTransactionsOptions {
-  /**
-   * List of transactions to sign
-   */
-  transactions: Transaction[];
-  //TODO: refactor to use callbacks
-  callbackUrl?: string;
-  /** meta information wallet will send back to the application */
-  meta?: string;
 }

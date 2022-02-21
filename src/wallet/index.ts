@@ -1,16 +1,14 @@
 import {
     Wallet,
-    RequestSignTransactionsOptions,
     SignInOptions,
 } from './interface';
 
 import {
     WalletConnection,
-} from './connection';
+} from './wallet-connection';
 
 export {
     Wallet,
-    RequestSignTransactionsOptions,
     SignInOptions,
     WalletConnection,
 };

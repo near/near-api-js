@@ -2,12 +2,12 @@
  * This is a tmp file. It is used to test integration with SenderWallet.
  */
 
+import { SignAndSendTransactionOptions } from '../../account';
 import {
     Transaction,
 } from '../../transaction';
 
 import {
-    RequestSignTransactionsOptions,
     SignInOptions,
     Wallet,
 } from '../interface'
@@ -17,7 +17,7 @@ export class SenderWallet implements Wallet {
     isSignedIn: () => boolean;
     signOut: () => boolean;
     getAccountId: () => string;
-    requestSignTransactions: (params: RequestSignTransactionsOptions) => void;
+    requestSignTransaction: (options: SignAndSendTransactionOptions) => void;
 }
 
 /**
