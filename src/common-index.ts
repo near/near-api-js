@@ -13,11 +13,6 @@ import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
 
-import {
-    ConnectedWalletAccountRedirect,
-    WalletConnectionRedirect
-} from './wallet/index';
-
 export {
     accountCreator,
     providers,
@@ -34,7 +29,4 @@ export {
     KeyPair,
 
     Near,
-
-    ConnectedWalletAccountRedirect,
-    WalletConnectionRedirect
 };
