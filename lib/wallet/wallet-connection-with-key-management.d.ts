@@ -8,7 +8,7 @@
 import { Account } from '../account';
 import { Near } from '../near';
 import { KeyStore } from '../key_stores';
-import { RequestSignTransactionsOptions, SignInOptions } from './wallet-interface';
+import { Wallet, RequestSignTransactionsOptions, SignInOptions } from './wallet-interface';
 import { ConnectedWalletAccount, WalletConnection } from './wallet-connection';
 import { PublicKey } from '../utils';
 import { Action } from '../transaction';
@@ -27,7 +27,7 @@ export declare abstract class WalletConnectionWithKeyManagement extends WalletCo
      * @param {Near} near Near object
      * @param {string} appKeyPrefix application identifier
      */
-    constructor(near: Near, appKeyPrefix: string | null);
+    constructor(near: Near, appKeyPrefix: string | null, wallet: Wallet);
     abstract requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void>;
     abstract requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions): any;
     /**
