@@ -1,3 +1,4 @@
-import { Wallet, RequestSignTransactionsOptions, SignInOptions } from './wallet-interface';
+import { Wallet, SignInOptions } from './interface';
 import { WalletConnection } from './wallet-connection';
-export { Wallet, RequestSignTransactionsOptions, SignInOptions, WalletConnection, };
+import { WalletRedirect } from './implementations/redirect';
+export { Wallet, SignInOptions, WalletConnection, WalletRedirect };

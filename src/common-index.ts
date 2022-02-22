@@ -13,6 +13,13 @@ import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
 
+import {
+    Wallet,
+    SignInOptions,
+    WalletConnection,
+    WalletRedirect,
+} from './wallet';
+
 export {
     accountCreator,
     providers,
@@ -29,4 +36,9 @@ export {
     KeyPair,
 
     Near,
+
+    Wallet,
+    SignInOptions,
+    WalletConnection,
+    WalletRedirect,
 };
