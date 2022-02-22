@@ -20,6 +20,9 @@ export class WalletConnection {
         this._wallet = wallet;
     }
 
+    /**
+    * Returns the current connected wallet account
+    */
     public account(): Account {
         if (this._wallet.isSignedIn()) {
             return new ConnectedWalletAccount(
