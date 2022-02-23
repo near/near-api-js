@@ -2,7 +2,7 @@ import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
 import { Enum, Assignable } from './utils/enums';
-import { serialize, deserialize } from 'borsh';
+import { serialize, deserialize, BinaryReader, BinaryWriter } from 'borsh';
 import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
 
@@ -97,6 +97,26 @@ export function deleteAccount(beneficiaryId: string): Action {
 export class Signature extends Assignable {
     keyType: KeyType;
     data: Uint8Array;
+    
+    static borshDeserialize(reader: BinaryReader) {
+        const keyType = reader.readU8();
+        let data: Uint8Array
+        switch (keyType) {
+            case KeyType.ED25519: 
+            data = reader.readFixedArray(64)
+            break
+            case KeyType.SECP256K1: 
+            data = reader.readFixedArray(65)
+            break
+            default: throw new Error(`Unknown key type ${keyType}`);
+        }
+        return new Signature({keyType, data})
+     }
+    
+    borshSerialize(writer: BinaryWriter) {
+        writer.writeU8(this.keyType);
+        writer.writeFixedArray(this.data)
+    }
 }
 
 export class Transaction extends Assignable {
@@ -147,10 +167,7 @@ export class Action extends Enum {
 type Class<T = any> = new (...args: any[]) => T;
 
 export const SCHEMA = new Map<Class, any>([
-    [Signature, {kind: 'struct', fields: [
-        ['keyType', 'u8'],
-        ['data', [64]]
-    ]}],
+    [Signature, {kind: 'function'}],
     [SignedTransaction, {kind: 'struct', fields: [
         ['transaction', Transaction],
         ['signature', Signature]
@@ -163,10 +180,7 @@ export const SCHEMA = new Map<Class, any>([
         ['blockHash', [32]],
         ['actions', [Action]]
     ]}],
-    [PublicKey, { kind: 'struct', fields: [
-        ['keyType', 'u8'],
-        ['data', [32]]
-    ]}],
+    [PublicKey, { kind: 'function'}],
     [AccessKey, { kind: 'struct', fields: [
         ['nonce', 'u64'],
         ['permission', AccessKeyPermission],

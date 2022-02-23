@@ -29,6 +29,16 @@ test('make function call using access key', async() => {
     expect(await contract.getValue()).toEqual(setCallValue);
 });
 
+test('make function call using secp256k1 access key', async() => {
+    const keyPair = nearApi.utils.KeyPair.fromRandom('secp256k1');
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '2000000000000000000000000');
+    // Override in the key store the workingAccount key to the given access key.
+    await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
+    const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+    await contract.setValue({ args: { value: setCallValue } });
+    expect(await contract.getValue()).toEqual(setCallValue);
+});
+
 test('remove access key no longer works', async() => {
     const keyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
     let publicKey = keyPair.getPublicKey();
