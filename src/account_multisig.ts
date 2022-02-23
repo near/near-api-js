@@ -101,6 +101,16 @@ export class AccountMultisig extends Account {
         return result;
     }
 
+    async deleteAllRequests() {
+        const request_ids = await this.getRequestIds();
+        if(request_ids.length) {
+            await super.signAndSendTransaction({
+                receiverId: this.accountId,
+                actions: request_ids.map(requestIdToDelete => functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT))
+            })
+        }
+    }
+
     async deleteUnconfirmedRequests () {
         // TODO: Delete in batch, don't delete unexpired
         // TODO: Delete in batch, don't delete unexpired (can reduce gas usage dramatically)
@@ -123,7 +133,7 @@ export class AccountMultisig extends Account {
 
     // helpers
 
-    async getRequestIds(): Promise<string> {
+    async getRequestIds(): Promise<string[]> {
         // TODO: Read requests from state to allow filtering by expiration time
         // TODO: https://github.com/near/core-contracts/blob/305d1db4f4f2cf5ce4c1ef3479f7544957381f11/multisig/src/lib.rs#L84
         return this.viewFunction(this.accountId, 'list_request_ids');
@@ -156,6 +166,7 @@ export class Account2FA extends AccountMultisig {
     public verifyCode: verifyCodeFunction;
     public onConfirmResult: Function;
     public helperUrl = 'https://helper.testnet.near.org';
+    public contractHasExistingStateError = new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
 
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId, options);
@@ -205,16 +216,15 @@ export class Account2FA extends AccountMultisig {
     // default helpers for CH deployments of multisig
 
     async deployMultisig(contractBytes: Uint8Array) {
-        const contractHasExistingStateError = new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
         const currentAccountState = await this.viewState('').catch(error => {
             const cause = error.cause && error.cause.name;
             if(cause == 'NO_CONTRACT_CODE') {
                 return [];
             }
-            throw cause == 'TOO_LARGE_CONTRACT_STATE' ? contractHasExistingStateError : error;
+            throw cause == 'TOO_LARGE_CONTRACT_STATE' ? this.contractHasExistingStateError : error;
         });
-        if(currentAccountState.length) {
-            throw contractHasExistingStateError;
+        if(currentAccountState.length) { // TODO add check that tries to deserialize existing state and passes if it can
+            throw this.contractHasExistingStateError;
         }
         const { accountId } = this;
 
@@ -236,15 +246,13 @@ export class Account2FA extends AccountMultisig {
             ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
             addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
             deployContract(contractBytes),
+            functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT)
         ];
-        if ((await this.state()).code_hash === '11111111111111111111111111111111') {
-            actions.push(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),);
-        }
         console.log('deploying multisig contract for', accountId);
         return await super.signAndSendTransactionWithAccount(accountId, actions);
     }
 
-    async disable(contractBytes: Uint8Array) {
+    async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
         const { accountId } = this;
         const accessKeys = await this.getAccessKeys();
         const lak2fak = accessKeys
@@ -256,7 +264,21 @@ export class Account2FA extends AccountMultisig {
                     perm.method_names.includes('add_request_and_confirm');
             });
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+        await this.deleteAllRequests();
+        const currentAccountState: { key: Buffer, value: Buffer }[] = await this.viewState('').catch(error => {
+            const cause = error.cause && error.cause.name;
+            if (cause == 'NO_CONTRACT_CODE') {
+                return [];
+            }
+            throw cause == 'TOO_LARGE_CONTRACT_STATE' ? this.contractHasExistingStateError : error;
+        });
+        const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'))
+        const cleanupActions = currentAccountState.length ? [
+            deployContract(cleanupContractBytes),
+            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, new BN('0'))
+        ] : [];
         const actions = [
+            ...cleanupActions,
             deleteKey(confirmOnlyKey),
             ...lak2fak.map(({ public_key }) => deleteKey(PublicKey.from(public_key))),
             ...lak2fak.map(({ public_key }) => addKey(PublicKey.from(public_key), null)),

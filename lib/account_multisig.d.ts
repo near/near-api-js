@@ -2,7 +2,7 @@ import BN from 'bn.js';
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
 import { Action } from './transaction';
-import { FinalExecutionOutcome } from './providers';
+import { FinalExecutionOutcome, TypedError } from './providers';
 export declare const MULTISIG_STORAGE_KEY = "__multisigRequest";
 export declare const MULTISIG_ALLOWANCE: BN;
 export declare const MULTISIG_GAS: BN;
@@ -19,8 +19,9 @@ export declare class AccountMultisig extends Account {
     signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
     private _signAndSendTransaction;
+    deleteAllRequests(): Promise<void>;
     deleteUnconfirmedRequests(): Promise<void>;
-    getRequestIds(): Promise<string>;
+    getRequestIds(): Promise<string[]>;
     getRequest(): any;
     setRequest(data: any): any;
 }
@@ -36,6 +37,7 @@ export declare class Account2FA extends AccountMultisig {
     verifyCode: verifyCodeFunction;
     onConfirmResult: Function;
     helperUrl: string;
+    contractHasExistingStateError: TypedError;
     constructor(connection: Connection, accountId: string, options: any);
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
@@ -53,7 +55,7 @@ export declare class Account2FA extends AccountMultisig {
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     private __signAndSendTransaction;
     deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
-    disable(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
+    disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
     sendCodeDefault(): Promise<any>;
     getCodeDefault(method: any): Promise<string>;
     promptAndVerify(): any;
