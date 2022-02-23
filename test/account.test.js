@@ -36,6 +36,17 @@ test('create account and then view account returns the created account', async (
     expect(state.amount).toEqual(newAmount.toString());
 });
 
+test('create account with a secp256k1 key and then view account returns the created account', async () => {
+    const newAccountName = testUtils.generateUniqueString('test');
+    const newAccountPublicKey = 'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28';
+    const { amount } = await workingAccount.state();
+    const newAmount = new BN(amount).div(new BN(10));
+    await workingAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
+    const newAccount = new Account(nearjs.connection, newAccountName);
+    const state = await newAccount.state();
+    expect(state.amount).toEqual(newAmount.toString());
+});
+
 test('send money', async() => {
     const sender = await testUtils.createAccount(nearjs);
     const receiver = await testUtils.createAccount(nearjs);

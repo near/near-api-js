@@ -1,4 +1,4 @@
-import { Signature, KeyPair, PublicKey } from './utils/key_pair';
+import { Signature, KeyType, KeyPair, PublicKey } from './utils/key_pair';
 import { KeyStore } from './key_stores/keystore';
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
@@ -7,7 +7,7 @@ export declare abstract class Signer {
     /**
      * Creates new key and returns public key.
      */
-    abstract createKey(accountId: string, networkId?: string): Promise<PublicKey>;
+    abstract createKey(accountId: string, networkId?: string, keyType?: KeyType): Promise<PublicKey>;
     /**
      * Returns public key for given account / network.
      * @param accountId accountId to retrieve from.
@@ -44,7 +44,7 @@ export declare class InMemorySigner extends Signer {
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns {Promise<PublicKey>}
      */
-    createKey(accountId: string, networkId: string): Promise<PublicKey>;
+    createKey(accountId: string, networkId: string, keyType?: KeyType): Promise<PublicKey>;
     /**
      * Gets the existing public key for a given account
      * @param accountId The NEAR account to assign a public key to

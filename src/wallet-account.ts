@@ -136,7 +136,8 @@ export class WalletConnection {
         contractIdOrOptions: string | SignInOptions = {},
         title?: string,
         successUrl?: string,
-        failureUrl?: string
+        failureUrl?: string,
+        keyType: 'ed25519' | 'secp256k1' = 'ed25519'
     ) {
         let options: SignInOptions;
         if (typeof contractIdOrOptions === 'string') {
@@ -157,7 +158,7 @@ export class WalletConnection {
             await contractAccount.state();
 
             newUrl.searchParams.set('contract_id', options.contractId);
-            const accessKey = KeyPair.fromRandom('ed25519');
+            const accessKey = KeyPair.fromRandom(keyType);
             newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
             await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         }

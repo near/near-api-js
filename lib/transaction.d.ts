@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import BN from 'bn.js';
 import { Enum, Assignable } from './utils/enums';
+import { BinaryReader, BinaryWriter } from 'borsh';
 import { KeyType, PublicKey } from './utils/key_pair';
 import { Signer } from './signer';
 export declare class FunctionCallPermission extends Assignable {
@@ -72,6 +73,8 @@ export declare function deleteAccount(beneficiaryId: string): Action;
 export declare class Signature extends Assignable {
     keyType: KeyType;
     data: Uint8Array;
+    static borshDeserialize(reader: BinaryReader): Signature;
+    borshSerialize(writer: BinaryWriter): void;
 }
 export declare class Transaction extends Assignable {
     signerId: string;
