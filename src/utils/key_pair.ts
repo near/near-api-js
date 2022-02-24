@@ -2,7 +2,7 @@ import nacl from 'tweetnacl';
 import { base_encode, base_decode } from './serialize';
 import { Assignable } from './enums';
 import { randomBytes } from 'crypto';
-import {BinaryReader, BinaryWriter} from 'borsh'
+import {BinaryReader, BinaryWriter} from 'borsh';
 import secp256k1 from 'secp256k1';
 
 export type Arrayish = string | ArrayLike<number>;
@@ -76,22 +76,22 @@ export class PublicKey extends Assignable {
     
     static borshDeserialize(reader: BinaryReader) {
         const keyType = reader.readU8();
-        let data: Uint8Array
+        let data: Uint8Array;
         switch (keyType) {
         case KeyType.ED25519: 
-            data = reader.readFixedArray(32)
-            break
+            data = reader.readFixedArray(32);
+            break;
         case KeyType.SECP256K1: 
-            data = reader.readFixedArray(64)
-            break
+            data = reader.readFixedArray(64);
+            break;
         default: throw new Error(`Unknown key type ${keyType}`);
         }
-        return new PublicKey({keyType, data})
-     }
+        return new PublicKey({keyType, data});
+    }
     
     borshSerialize(writer: BinaryWriter) {
         writer.writeU8(this.keyType);
-        writer.writeFixedArray(this.data)
+        writer.writeFixedArray(this.data);
     }
 }
 
@@ -203,8 +203,8 @@ export class KeyPairSecp256k1 extends KeyPair {
      */
     constructor(secretKey: string) {
         super();
-        const withHeader = secp256k1.publicKeyCreate(base_decode(secretKey), false)
-        const data = withHeader.subarray(1, withHeader.length) // remove the 0x04 header byte
+        const withHeader = secp256k1.publicKeyCreate(base_decode(secretKey), false);
+        const data = withHeader.subarray(1, withHeader.length); // remove the 0x04 header byte
         this.publicKey = new PublicKey({
             keyType: KeyType.SECP256K1,
             data
