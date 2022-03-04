@@ -18,11 +18,22 @@ export const MULTISIG_GAS = new BN('100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
-const SHOULD_BE_INITIALIZED_ERROR_REGEX = /Smart contract panicked: Multisig contract should be initialized before usage/;
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
 type verifyCodeFunction = (securityCode: any) => Promise<any>;
+
+enum MultisigDeleteRequestRejectionError {
+    CANNOT_DESERIALIZE_STATE = `Smart contract panicked: panicked at 'Cannot deserialize the contract state\.: Custom { kind: InvalidInput, error: "Unexpected length of input" }'`,
+    MULTISIG_NOT_INITIALIZED = `Smart contract panicked: Multisig contract should be initialized before usage`,
+    NO_SUCH_REQUEST = `Smart contract panicked: panicked at 'No such request: either wrong number or already confirmed'`
+};
+
+enum MultisigStateStatus {
+    INVALID_STATE,
+    NOT_INITIALIZED,
+    VALID
+}
 
 // in memory request cache for node w/o localStorage
 const storageFallback = {
@@ -100,6 +111,27 @@ export class AccountMultisig extends Account {
         this.deleteUnconfirmedRequests();
 
         return result;
+    }
+
+    async checkMultisigStateStatus(contractBytes: Uint8Array): Promise<MultisigStateStatus> {
+        const u32_max = 4_294_967_295;
+        return super.signAndSendTransaction({
+            receiverId: this.accountId, actions: [
+                deployContract(contractBytes),
+                functionCall('delete_request', { request_id: u32_max }, MULTISIG_GAS, MULTISIG_DEPOSIT)
+            ]
+        })
+            .then(() => MultisigStateStatus.VALID)
+            .catch((e) => {
+                if (new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(e?.kind?.ExecutionError)) {
+                    return MultisigStateStatus.INVALID_STATE;
+                } else if (new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(e?.kind?.ExecutionError)) {
+                    return MultisigStateStatus.NOT_INITIALIZED;
+                } else if (new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(e?.kind?.ExecutionError)) {
+                    return MultisigStateStatus.VALID;
+                }
+                throw e;
+            })
     }
 
     async deleteAllRequests() {
@@ -231,12 +263,6 @@ export class Account2FA extends AccountMultisig {
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
 
         const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
-        const emptyRequest = Buffer.from(JSON.stringify({
-            request: {
-                receiver_id: accountId,
-                actions: convertActions([], accountId, accountId)
-            }
-        }));
 
         const actions = [
             ...fak2lak.map((pk) => deleteKey(pk)),
@@ -244,16 +270,15 @@ export class Account2FA extends AccountMultisig {
             addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
             deployContract(contractBytes),
         ];
-        const addRequestFunctionCallActionBatch = actions.concat(functionCall('add_request', emptyRequest, MULTISIG_GAS, MULTISIG_DEPOSIT));
         const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT))
         console.log('deploying multisig contract for', accountId);
-        return await super.signAndSendTransactionWithAccount(accountId, addRequestFunctionCallActionBatch)
-            .catch(error => {
-                if (SHOULD_BE_INITIALIZED_ERROR_REGEX.test(error?.kind?.ExecutionError)) {
-                    return super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
-                } 
-                throw error;
-            });
+
+        const multisigStateStatus = await this.checkMultisigStateStatus(contractBytes);
+        switch (multisigStateStatus) {
+            case MultisigStateStatus.NOT_INITIALIZED: return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
+            case MultisigStateStatus.VALID: return await super.signAndSendTransactionWithAccount(accountId, actions);
+            case MultisigStateStatus.INVALID_STATE: throw this.contractHasExistingStateError;
+        }
     }
 
     async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {

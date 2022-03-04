@@ -12,6 +12,11 @@ export declare const MULTISIG_CONFIRM_METHODS: string[];
 declare type sendCodeFunction = () => Promise<any>;
 declare type getCodeFunction = (method: any) => Promise<string>;
 declare type verifyCodeFunction = (securityCode: any) => Promise<any>;
+declare enum MultisigStateStatus {
+    INVALID_STATE = 0,
+    NOT_INITIALIZED = 1,
+    VALID = 2
+}
 export declare class AccountMultisig extends Account {
     storage: any;
     onAddRequestResult: Function;
@@ -19,6 +24,7 @@ export declare class AccountMultisig extends Account {
     signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
     private _signAndSendTransaction;
+    checkMultisigStateStatus(contractBytes: Uint8Array): Promise<MultisigStateStatus>;
     deleteAllRequests(): Promise<void>;
     deleteUnconfirmedRequests(): Promise<void>;
     getRequestIds(): Promise<string[]>;
