@@ -18,6 +18,7 @@ export const MULTISIG_GAS = new BN('100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
+const SHOULD_BE_INITIALIZED_ERROR_REGEX = /Smart contract panicked: Multisig contract should be initialized before usage/;
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
@@ -216,16 +217,6 @@ export class Account2FA extends AccountMultisig {
     // default helpers for CH deployments of multisig
 
     async deployMultisig(contractBytes: Uint8Array) {
-        const currentAccountState = await this.viewState('').catch(error => {
-            const cause = error.cause && error.cause.name;
-            if(cause == 'NO_CONTRACT_CODE') {
-                return [];
-            }
-            throw cause == 'TOO_LARGE_CONTRACT_STATE' ? this.contractHasExistingStateError : error;
-        });
-        if(currentAccountState.length) { // TODO add check that tries to deserialize existing state and passes if it can
-            throw this.contractHasExistingStateError;
-        }
         const { accountId } = this;
 
         const seedOrLedgerKey = (await this.getRecoveryMethods()).data
@@ -240,16 +231,29 @@ export class Account2FA extends AccountMultisig {
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
 
         const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
+        const emptyRequest = Buffer.from(JSON.stringify({
+            request: {
+                receiver_id: accountId,
+                actions: convertActions([], accountId, accountId)
+            }
+        }));
 
         const actions = [
             ...fak2lak.map((pk) => deleteKey(pk)),
             ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
             addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
             deployContract(contractBytes),
-            functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT)
         ];
+        const addRequestFunctionCallActionBatch = actions.concat(functionCall('add_request', emptyRequest, MULTISIG_GAS, MULTISIG_DEPOSIT));
+        const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT))
         console.log('deploying multisig contract for', accountId);
-        return await super.signAndSendTransactionWithAccount(accountId, actions);
+        return await super.signAndSendTransactionWithAccount(accountId, addRequestFunctionCallActionBatch)
+            .catch(error => {
+                if (SHOULD_BE_INITIALIZED_ERROR_REGEX.test(error?.kind?.ExecutionError)) {
+                    return super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
+                } 
+                throw error;
+            });
     }
 
     async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
@@ -264,7 +268,7 @@ export class Account2FA extends AccountMultisig {
                     perm.method_names.includes('add_request_and_confirm');
             });
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
-        await this.deleteAllRequests();
+        await this.deleteAllRequests().catch(e => e);
         const currentAccountState: { key: Buffer, value: Buffer }[] = await this.viewState('').catch(error => {
             const cause = error.cause && error.cause.name;
             if (cause == 'NO_CONTRACT_CODE') {
