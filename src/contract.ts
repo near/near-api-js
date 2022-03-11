@@ -150,7 +150,6 @@ export class Contract {
     
     private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl }: ChangeMethodOptions) {
         const result = await this._changeMethodRaw({ args, methodName, gas, amount, meta, callbackUrl });
-
         return getTransactionLastResult(result);
     }
 
