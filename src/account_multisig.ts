@@ -275,9 +275,12 @@ export class Account2FA extends AccountMultisig {
 
         const multisigStateStatus = await this.checkMultisigStateStatus(contractBytes);
         switch (multisigStateStatus) {
-            case MultisigStateStatus.NOT_INITIALIZED: return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
-            case MultisigStateStatus.VALID: return await super.signAndSendTransactionWithAccount(accountId, actions);
-            case MultisigStateStatus.INVALID_STATE: throw this.contractHasExistingStateError;
+            case MultisigStateStatus.NOT_INITIALIZED:
+              return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
+            case MultisigStateStatus.VALID:
+              return await super.signAndSendTransactionWithAccount(accountId, actions);
+            case MultisigStateStatus.INVALID_STATE:
+              throw this.contractHasExistingStateError;
         }
     }
 
