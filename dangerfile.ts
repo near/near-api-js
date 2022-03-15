@@ -9,7 +9,7 @@ import {
 schedule(async () => {
     const packageDiff = await danger.git.JSONDiffForFile("package.json")
     checkForRelease(packageDiff)
-    checkForNewDependencies(packageDiff)
+    checkForNewDependencies('./package.json', packageDiff, {}, undefined)
     checkForLockfileDiff(packageDiff)
     checkForTypesInDeps(packageDiff)
-  })
+})
