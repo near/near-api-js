@@ -2,7 +2,7 @@ import BN from 'bn.js';
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
 import { Action } from './transaction';
-import { FinalExecutionOutcome, TypedError } from './providers';
+import { FinalExecutionOutcome } from './providers';
 export declare const MULTISIG_STORAGE_KEY = "__multisigRequest";
 export declare const MULTISIG_ALLOWANCE: BN;
 export declare const MULTISIG_GAS: BN;
@@ -43,7 +43,6 @@ export declare class Account2FA extends AccountMultisig {
     verifyCode: verifyCodeFunction;
     onConfirmResult: Function;
     helperUrl: string;
-    contractHasExistingStateError: TypedError;
     constructor(connection: Connection, accountId: string, options: any);
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.

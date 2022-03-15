@@ -199,7 +199,6 @@ export class Account2FA extends AccountMultisig {
     public verifyCode: verifyCodeFunction;
     public onConfirmResult: Function;
     public helperUrl = 'https://helper.testnet.near.org';
-    public contractHasExistingStateError = new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
 
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId, options);
@@ -280,7 +279,7 @@ export class Account2FA extends AccountMultisig {
             case MultisigStateStatus.VALID:
               return await super.signAndSendTransactionWithAccount(accountId, actions);
             case MultisigStateStatus.INVALID_STATE:
-              throw this.contractHasExistingStateError;
+              throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
         }
     }
 
@@ -302,7 +301,9 @@ export class Account2FA extends AccountMultisig {
             if (cause == 'NO_CONTRACT_CODE') {
                 return [];
             }
-            throw cause == 'TOO_LARGE_CONTRACT_STATE' ? this.contractHasExistingStateError : error;
+            throw cause == 'TOO_LARGE_CONTRACT_STATE' ?
+                new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState') :
+                error;
         });
         const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'))
         const cleanupActions = currentAccountState.length ? [
