@@ -3,13 +3,16 @@ import {
     checkForRelease,
     checkForNewDependencies,
     checkForLockfileDiff,
-    checkForTypesInDeps
+    checkForTypesInDeps,
+    DepDuplicationCache
 } from 'danger-plugin-yarn';
 
 schedule(async () => {
-    const packageDiff = await danger.git.JSONDiffForFile("package.json")
+    const packagePath = 'package.json';
+    const packageDiff = await danger.git.JSONDiffForFile(packagePath)
+    const depDuplicationCache: DepDuplicationCache = {}
     checkForRelease(packageDiff)
-    checkForNewDependencies('./package.json', packageDiff, {})
+    checkForNewDependencies(packagePath, packageDiff, depDuplicationCache)
     checkForLockfileDiff(packageDiff)
     checkForTypesInDeps(packageDiff)
 })
