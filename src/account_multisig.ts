@@ -24,9 +24,10 @@ type getCodeFunction = (method: any) => Promise<string>;
 type verifyCodeFunction = (securityCode: any) => Promise<any>;
 
 enum MultisigDeleteRequestRejectionError {
-    CANNOT_DESERIALIZE_STATE = `Smart contract panicked: panicked at 'Cannot deserialize the contract state\.: Custom { kind: InvalidInput, error: "Unexpected length of input" }'`,
+    CANNOT_DESERIALIZE_STATE = `Cannot deserialize the contract state`,
     MULTISIG_NOT_INITIALIZED = `Smart contract panicked: Multisig contract should be initialized before usage`,
-    NO_SUCH_REQUEST = `Smart contract panicked: panicked at 'No such request: either wrong number or already confirmed'`
+    NO_SUCH_REQUEST = `Smart contract panicked: panicked at 'No such request: either wrong number or already confirmed'`,
+    REQUEST_COOLDOWN_ERROR = `Request cannot be deleted immediately after creation.`
 };
 
 enum MultisigStateStatus {
@@ -113,6 +114,11 @@ export class AccountMultisig extends Account {
         return result;
     }
 
+    /* 
+     * This method submits a canary transaction that is expected to always fail in order to determine whether the contract currently has valid multisig state 
+     * and whether it is initialized. The canary transaction attempts to delete a request at index u32_max and will go through if a request exists at that index.
+     * a u32_max + 1 and -1 value cannot be used for the canary due to expected u32 error thrown before deserialization attempt.
+     */
     async checkMultisigStateStatus(contractBytes: Uint8Array): Promise<MultisigStateStatus> {
         const u32_max = 4_294_967_295;
         return super.signAndSendTransaction({
@@ -137,10 +143,12 @@ export class AccountMultisig extends Account {
     async deleteAllRequests() {
         const request_ids = await this.getRequestIds();
         if(request_ids.length) {
-            await super.signAndSendTransaction({
-                receiverId: this.accountId,
-                actions: request_ids.map(requestIdToDelete => functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT))
-            })
+            await Promise.all(request_ids.map(requestIdToDelete => 
+                super.signAndSendTransaction({
+                    receiverId: this.accountId,
+                    actions: [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
+                })
+            ))
         }
     }
 
@@ -295,7 +303,12 @@ export class Account2FA extends AccountMultisig {
                     perm.method_names.includes('add_request_and_confirm');
             });
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
-        await this.deleteAllRequests().catch(e => e);
+        await this.deleteAllRequests().catch(e => {
+            if(new RegExp(MultisigDeleteRequestRejectionError.REQUEST_COOLDOWN_ERROR).test(e?.kind?.ExecutionError)) {
+                return e;
+            }
+            throw e;
+        });
         const currentAccountState: { key: Buffer, value: Buffer }[] = await this.viewState('').catch(error => {
             const cause = error.cause && error.cause.name;
             if (cause == 'NO_CONTRACT_CODE') {
