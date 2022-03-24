@@ -40,7 +40,8 @@ enum MultisigStateStatus {
 
 enum MultisigCodeStatus {
     INVALID_CODE,
-    VALID_CODE
+    VALID_CODE,
+    UNKNOWN_CODE
 }
 
 // in memory request cache for node w/o localStorage
@@ -126,42 +127,33 @@ export class AccountMultisig extends Account {
      * and whether it is initialized. The canary transaction attempts to delete a request at index u32_max and will go through if a request exists at that index.
      * a u32_max + 1 and -1 value cannot be used for the canary due to expected u32 error thrown before deserialization attempt.
      */
-    async checkMultisigStateStatus(contractBytes: Uint8Array): Promise<MultisigStateStatus> {
+    async checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{ codeStatus: MultisigCodeStatus, stateStatus: MultisigStateStatus }> {
         const u32_max = 4_294_967_295;
-        try {
-            await super.signAndSendTransaction({
-                receiverId: this.accountId, actions: [
-                    deployContract(contractBytes),
-                    functionCall('delete_request', { request_id: u32_max }, MULTISIG_GAS, MULTISIG_DEPOSIT)
-                ]
-            });
-            return MultisigStateStatus.VALID_STATE;
-        } catch (e) {
-            if (new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(e?.kind?.ExecutionError)) {
-                return MultisigStateStatus.INVALID_STATE;
-            } else if (new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(e?.kind?.ExecutionError)) {
-                return MultisigStateStatus.STATE_NOT_INITIALIZED;
-            } else if (new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(e?.kind?.ExecutionError)) {
-                return MultisigStateStatus.VALID_STATE;
-            }
-            throw e;
-        }
-    }
+        const validCodeStatusIfNoDeploy = contractBytes ? MultisigCodeStatus.UNKNOWN_CODE : MultisigCodeStatus.VALID_CODE;
 
-    async checkMultisigCodeAndStateStatus(): Promise<[MultisigCodeStatus, MultisigStateStatus]> {
-        const u32_max = 4_294_967_295;
         try {
-            await this.deleteRequest(u32_max);
-            return [MultisigCodeStatus.VALID_CODE, MultisigStateStatus.VALID_STATE];
+            if(contractBytes) {
+                await super.signAndSendTransaction({
+                    receiverId: this.accountId, actions: [
+                        deployContract(contractBytes),
+                        functionCall('delete_request', { request_id: u32_max }, MULTISIG_GAS, MULTISIG_DEPOSIT)
+                    ]
+                });
+            } else {
+                await this.deleteRequest(u32_max);
+            }
+            
+            return { codeStatus: MultisigCodeStatus.VALID_CODE, stateStatus: MultisigStateStatus.VALID_STATE };
         } catch (e) {
             if (new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(e?.kind?.ExecutionError)) {
-                return [MultisigCodeStatus.VALID_CODE, MultisigStateStatus.INVALID_STATE];
+                return { codeStatus: validCodeStatusIfNoDeploy, stateStatus: MultisigStateStatus.INVALID_STATE };
             } else if (new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(e?.kind?.ExecutionError)) {
-                return [MultisigCodeStatus.VALID_CODE, MultisigStateStatus.STATE_NOT_INITIALIZED];
+                return { codeStatus: validCodeStatusIfNoDeploy, stateStatus: MultisigStateStatus.STATE_NOT_INITIALIZED };
             } else if (new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(e?.kind?.ExecutionError)) {
-                return [MultisigCodeStatus.VALID_CODE, MultisigStateStatus.VALID_STATE];
-            } else if (new RegExp(MultisigDeleteRequestRejectionError.METHOD_NOT_FOUND).test(e?.kind?.ExecutionError)) {
-                return [MultisigCodeStatus.INVALID_CODE, MultisigStateStatus.UNKNOWN_STATE];
+                return { codeStatus: validCodeStatusIfNoDeploy, stateStatus: MultisigStateStatus.VALID_STATE };
+            } else if (new RegExp(MultisigDeleteRequestRejectionError.METHOD_NOT_FOUND).test(e?.message)) {
+                // not reachable if transaction included a deploy
+                return { codeStatus: MultisigCodeStatus.UNKNOWN_CODE, stateStatus: MultisigStateStatus.UNKNOWN_STATE };
             }
             throw e;
         }
@@ -309,7 +301,7 @@ export class Account2FA extends AccountMultisig {
         const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT))
         console.log('deploying multisig contract for', accountId);
 
-        const multisigStateStatus = await this.checkMultisigStateStatus(contractBytes);
+        const { stateStatus: multisigStateStatus } = await this.checkMultisigCodeAndStateStatus(contractBytes);
         switch (multisigStateStatus) {
             case MultisigStateStatus.STATE_NOT_INITIALIZED:
               return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
@@ -334,20 +326,24 @@ export class Account2FA extends AccountMultisig {
                     perm.method_names.includes('add_request_and_confirm');
             });
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
-        const [,stateValidity] = await this.checkMultisigCodeAndStateStatus();
-        if(stateValidity !== MultisigStateStatus.VALID_STATE && stateValidity !== MultisigStateStatus.STATE_NOT_INITIALIZED) {
+
+        const { stateStatus } = await this.checkMultisigCodeAndStateStatus();
+        if(stateStatus !== MultisigStateStatus.VALID_STATE && stateStatus !== MultisigStateStatus.STATE_NOT_INITIALIZED) {
             throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
         }
-        await this.deleteAllRequests().catch(e => e);
+
+        let deleteAllRequestsError;
+        await this.deleteAllRequests().catch(e => deleteAllRequestsError = e);
         const currentAccountState: { key: Buffer, value: Buffer }[] = await this.viewState('').catch(error => {
             const cause = error.cause && error.cause.name;
             if (cause == 'NO_CONTRACT_CODE') {
                 return [];
             }
             throw cause == 'TOO_LARGE_CONTRACT_STATE' ?
-                new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState') :
+                deleteAllRequestsError || new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState') :
                 error;
         });
+
         const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'))
         const cleanupActions = currentAccountState.length ? [
             deployContract(cleanupContractBytes),

@@ -20,7 +20,8 @@ declare enum MultisigStateStatus {
 }
 declare enum MultisigCodeStatus {
     INVALID_CODE = 0,
-    VALID_CODE = 1
+    VALID_CODE = 1,
+    UNKNOWN_CODE = 2
 }
 export declare class AccountMultisig extends Account {
     storage: any;
@@ -29,8 +30,10 @@ export declare class AccountMultisig extends Account {
     signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
     private _signAndSendTransaction;
-    checkMultisigStateStatus(contractBytes: Uint8Array): Promise<MultisigStateStatus>;
-    checkMultisigCodeAndStateStatus(): Promise<[MultisigCodeStatus, MultisigStateStatus]>;
+    checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{
+        codeStatus: MultisigCodeStatus;
+        stateStatus: MultisigStateStatus;
+    }>;
     deleteRequest(request_id: any): Promise<FinalExecutionOutcome>;
     deleteAllRequests(): Promise<void>;
     deleteUnconfirmedRequests(): Promise<void>;
