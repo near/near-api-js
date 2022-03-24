@@ -65,7 +65,7 @@ async function createAccountMultisig(near, options) {
         accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
             switch (path) {
-                case '/2fa/getAccessKey': return { publicKey };
+            case '/2fa/getAccessKey': return { publicKey };
             }
         };
         await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
