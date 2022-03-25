@@ -23,7 +23,7 @@ type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
 type verifyCodeFunction = (securityCode: any) => Promise<any>;
 
-enum MultisigDeleteRequestRejectionError {
+export enum MultisigDeleteRequestRejectionError {
     CANNOT_DESERIALIZE_STATE = `Cannot deserialize the contract state`,
     MULTISIG_NOT_INITIALIZED = `Smart contract panicked: Multisig contract should be initialized before usage`,
     NO_SUCH_REQUEST = `Smart contract panicked: panicked at 'No such request: either wrong number or already confirmed'`,
@@ -31,7 +31,7 @@ enum MultisigDeleteRequestRejectionError {
     METHOD_NOT_FOUND = `Contract method is not found`
 };
 
-enum MultisigStateStatus {
+export enum MultisigStateStatus {
     INVALID_STATE,
     STATE_NOT_INITIALIZED,
     VALID_STATE,
@@ -153,7 +153,7 @@ export class AccountMultisig extends Account {
                 return { codeStatus: validCodeStatusIfNoDeploy, stateStatus: MultisigStateStatus.VALID_STATE };
             } else if (new RegExp(MultisigDeleteRequestRejectionError.METHOD_NOT_FOUND).test(e?.message)) {
                 // not reachable if transaction included a deploy
-                return { codeStatus: MultisigCodeStatus.UNKNOWN_CODE, stateStatus: MultisigStateStatus.UNKNOWN_STATE };
+                return { codeStatus: MultisigCodeStatus.INVALID_CODE, stateStatus: MultisigStateStatus.UNKNOWN_STATE };
             }
             throw e;
         }
@@ -314,6 +314,11 @@ export class Account2FA extends AccountMultisig {
         }
     }
 
+    /**
+     * This method converts LAKs back to FAKs, clears state and deploys an 'empty' contract (contractBytes param)
+     * @param [contractBytes]{@link https://github.com/near/near-wallet/blob/master/packages/frontend/src/wasm/main.wasm?raw=true}
+     * @param [cleanupContractBytes]{@link https://github.com/near/core-contracts/blob/master/state-cleanup/res/state_cleanup.wasm?raw=true}
+     */
     async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
         const { accountId } = this;
         const accessKeys = await this.getAccessKeys();
