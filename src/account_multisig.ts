@@ -349,9 +349,9 @@ export class Account2FA extends AccountMultisig {
             if (cause == 'NO_CONTRACT_CODE') {
                 return [];
             }
-            throw cause == 'TOO_LARGE_CONTRACT_STATE' ?
-                new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState') :
-                error;
+            throw cause == 'TOO_LARGE_CONTRACT_STATE'
+                ? new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState')
+                : error;
         });
 
         const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'))
