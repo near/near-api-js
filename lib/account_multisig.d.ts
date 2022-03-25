@@ -12,6 +12,24 @@ export declare const MULTISIG_CONFIRM_METHODS: string[];
 declare type sendCodeFunction = () => Promise<any>;
 declare type getCodeFunction = (method: any) => Promise<string>;
 declare type verifyCodeFunction = (securityCode: any) => Promise<any>;
+export declare enum MultisigDeleteRequestRejectionError {
+    CANNOT_DESERIALIZE_STATE = "Cannot deserialize the contract state",
+    MULTISIG_NOT_INITIALIZED = "Smart contract panicked: Multisig contract should be initialized before usage",
+    NO_SUCH_REQUEST = "Smart contract panicked: panicked at 'No such request: either wrong number or already confirmed'",
+    REQUEST_COOLDOWN_ERROR = "Request cannot be deleted immediately after creation.",
+    METHOD_NOT_FOUND = "Contract method is not found"
+}
+export declare enum MultisigStateStatus {
+    INVALID_STATE = 0,
+    STATE_NOT_INITIALIZED = 1,
+    VALID_STATE = 2,
+    UNKNOWN_STATE = 3
+}
+declare enum MultisigCodeStatus {
+    INVALID_CODE = 0,
+    VALID_CODE = 1,
+    UNKNOWN_CODE = 2
+}
 export declare class AccountMultisig extends Account {
     storage: any;
     onAddRequestResult: Function;
@@ -19,8 +37,14 @@ export declare class AccountMultisig extends Account {
     signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
     private _signAndSendTransaction;
+    checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{
+        codeStatus: MultisigCodeStatus;
+        stateStatus: MultisigStateStatus;
+    }>;
+    deleteRequest(request_id: any): Promise<FinalExecutionOutcome>;
+    deleteAllRequests(): Promise<void>;
     deleteUnconfirmedRequests(): Promise<void>;
-    getRequestIds(): Promise<string>;
+    getRequestIds(): Promise<string[]>;
     getRequest(): any;
     setRequest(data: any): any;
 }
@@ -53,7 +77,12 @@ export declare class Account2FA extends AccountMultisig {
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     private __signAndSendTransaction;
     deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
-    disable(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
+    /**
+     * This method converts LAKs back to FAKs, clears state and deploys an 'empty' contract (contractBytes param)
+     * @param [contractBytes]{@link https://github.com/near/near-wallet/blob/master/packages/frontend/src/wasm/main.wasm?raw=true}
+     * @param [cleanupContractBytes]{@link https://github.com/near/core-contracts/blob/master/state-cleanup/res/state_cleanup.wasm?raw=true}
+     */
+    disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
     sendCodeDefault(): Promise<any>;
     getCodeDefault(method: any): Promise<string>;
     promptAndVerify(): any;
