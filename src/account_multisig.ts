@@ -316,17 +316,11 @@ export class Account2FA extends AccountMultisig {
 
     async disableWithFAK({ contractBytes, cleanupContractBytes }: { contractBytes: Uint8Array, cleanupContractBytes?: Uint8Array }) {
         let cleanupActions = [];
-        const keyConversionActions = await this.get2faDisableKeyConversionActions();
         if(cleanupContractBytes) {
-            let deleteAllRequestsError;
-            await this.deleteAllRequests().catch(e => deleteAllRequestsError = e);
-            cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch(e => {
-                if(e.type === 'ContractHasExistingState') {
-                    throw deleteAllRequestsError || e;
-                }
-                throw e;
-            });
+            await this.deleteAllRequests().catch(e => e);
+            cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes);
         }
+        const keyConversionActions = await this.get2faDisableKeyConversionActions();
 
         const actions = [
             ...cleanupActions,
