@@ -330,7 +330,7 @@ export class Account2FA extends AccountMultisig {
 
         const accessKeyInfo = await this.findAccessKey(this.accountId, actions);
 
-        if(accessKeyInfo?.accessKey?.permission !== 'FullAccess') {
+        if(accessKeyInfo && accessKeyInfo.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
             throw new TypedError(`No full access key found in keystore. Unable to bypass multisig`, 'NoFAKFound');
         }
 
