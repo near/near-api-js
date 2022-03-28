@@ -6,7 +6,7 @@ import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
-import { Action, addKey, deleteKey, deployContract, functionCall, functionCallAccessKey } from './transaction';
+import { Action, addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } from './transaction';
 import { FinalExecutionOutcome, TypedError } from './providers';
 import { fetchJson } from './utils/web';
 import { FunctionCallPermissionView } from './providers/provider';
@@ -314,12 +314,48 @@ export class Account2FA extends AccountMultisig {
         }
     }
 
-    /**
-     * This method converts LAKs back to FAKs, clears state and deploys an 'empty' contract (contractBytes param)
-     * @param [contractBytes]{@link https://github.com/near/near-wallet/blob/master/packages/frontend/src/wasm/main.wasm?raw=true}
-     * @param [cleanupContractBytes]{@link https://github.com/near/core-contracts/blob/master/state-cleanup/res/state_cleanup.wasm?raw=true}
-     */
-    async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
+    async disableWithFAK({ contractBytes, cleanupContractBytes }: { contractBytes: Uint8Array, cleanupContractBytes?: Uint8Array }) {
+        let cleanupActions = [];
+        if(cleanupContractBytes) {
+            await this.deleteAllRequests().catch(e => e);
+            cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes);
+        }
+        const keyConversionActions = await this.get2faDisableKeyConversionActions();
+
+        const actions = [
+            ...cleanupActions,
+            ...keyConversionActions,
+            deployContract(contractBytes)
+        ];
+
+        const accessKeyInfo = await this.findAccessKey(this.accountId, actions);
+
+        if(accessKeyInfo && accessKeyInfo.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
+            throw new TypedError(`No full access key found in keystore. Unable to bypass multisig`, 'NoFAKFound');
+        }
+
+        return this.signAndSendTransactionWithAccount(this.accountId, actions);
+    }
+
+    async get2faDisableCleanupActions(cleanupContractBytes: Uint8Array) {
+        const currentAccountState: { key: Buffer, value: Buffer }[] = await this.viewState('').catch(error => {
+            const cause = error.cause && error.cause.name;
+            if (cause == 'NO_CONTRACT_CODE') {
+                return [];
+            }
+            throw cause == 'TOO_LARGE_CONTRACT_STATE'
+                ? new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState')
+                : error;
+        });
+
+        const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'))
+        return currentAccountState.length ? [
+            deployContract(cleanupContractBytes),
+            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, new BN('0'))
+        ] : [];
+    }
+
+    async get2faDisableKeyConversionActions() {
         const { accountId } = this;
         const accessKeys = await this.getAccessKeys();
         const lak2fak = accessKeys
@@ -331,7 +367,19 @@ export class Account2FA extends AccountMultisig {
                     perm.method_names.includes('add_request_and_confirm');
             });
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+        return [
+            deleteKey(confirmOnlyKey),
+            ...lak2fak.map(({ public_key }) => deleteKey(PublicKey.from(public_key))),
+            ...lak2fak.map(({ public_key }) => addKey(PublicKey.from(public_key), fullAccessKey()))
+        ];
+    }
 
+    /**
+     * This method converts LAKs back to FAKs, clears state and deploys an 'empty' contract (contractBytes param)
+     * @param [contractBytes]{@link https://github.com/near/near-wallet/blob/master/packages/frontend/src/wasm/main.wasm?raw=true}
+     * @param [cleanupContractBytes]{@link https://github.com/near/core-contracts/blob/master/state-cleanup/res/state_cleanup.wasm?raw=true}
+     */
+    async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
         const { stateStatus } = await this.checkMultisigCodeAndStateStatus();
         if(stateStatus !== MultisigStateStatus.VALID_STATE && stateStatus !== MultisigStateStatus.STATE_NOT_INITIALIZED) {
             throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
@@ -339,31 +387,22 @@ export class Account2FA extends AccountMultisig {
 
         let deleteAllRequestsError;
         await this.deleteAllRequests().catch(e => deleteAllRequestsError = e);
-        const currentAccountState: { key: Buffer, value: Buffer }[] = await this.viewState('').catch(error => {
-            const cause = error.cause && error.cause.name;
-            if (cause == 'NO_CONTRACT_CODE') {
-                return [];
-            }
-            throw cause == 'TOO_LARGE_CONTRACT_STATE' ?
-                deleteAllRequestsError || new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState') :
-                error;
-        });
 
-        const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'))
-        const cleanupActions = currentAccountState.length ? [
-            deployContract(cleanupContractBytes),
-            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, new BN('0'))
-        ] : [];
+        const cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch(e => {
+            if(e.type === 'ContractHasExistingState') {
+                throw deleteAllRequestsError || e;
+            }
+            throw e;
+        })
+
         const actions = [
             ...cleanupActions,
-            deleteKey(confirmOnlyKey),
-            ...lak2fak.map(({ public_key }) => deleteKey(PublicKey.from(public_key))),
-            ...lak2fak.map(({ public_key }) => addKey(PublicKey.from(public_key), null)),
+            ...(await this.get2faDisableKeyConversionActions()),
             deployContract(contractBytes),
         ];
-        console.log('disabling 2fa for', accountId);
+        console.log('disabling 2fa for', this.accountId);
         return await this.signAndSendTransaction({
-            receiverId: accountId,
+            receiverId: this.accountId,
             actions
         });
     }

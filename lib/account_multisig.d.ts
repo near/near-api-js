@@ -77,6 +77,12 @@ export declare class Account2FA extends AccountMultisig {
     signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
     private __signAndSendTransaction;
     deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
+    disableWithFAK({ contractBytes, cleanupContractBytes }: {
+        contractBytes: Uint8Array;
+        cleanupContractBytes?: Uint8Array;
+    }): Promise<FinalExecutionOutcome>;
+    get2faDisableCleanupActions(cleanupContractBytes: Uint8Array): Promise<Action[]>;
+    get2faDisableKeyConversionActions(): Promise<Action[]>;
     /**
      * This method converts LAKs back to FAKs, clears state and deploys an 'empty' contract (contractBytes param)
      * @param [contractBytes]{@link https://github.com/near/near-wallet/blob/master/packages/frontend/src/wasm/main.wasm?raw=true}
