@@ -11,6 +11,7 @@
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
     "dependencies": {
+        "@react-native-async-storage/async-storage": "^1.17.2",
         "bn.js": "5.2.0",
         "borsh": "^0.7.0",
         "bs58": "^4.0.0",

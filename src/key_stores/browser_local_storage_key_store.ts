@@ -1,5 +1,9 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyStore } from './keystore';
 import { KeyPair } from '../utils/key_pair';
+
+
+
 
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 
@@ -48,7 +52,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
      * @param keyPair The key pair to store in local storage
      */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        this.localStorage.setItem(this.storageKeyForSecretKey(networkId, accountId), keyPair.toString());
+        AsyncStorage.setItem(this.storageKeyForSecretKey(networkId, accountId), keyPair.toString());
     }
 
     /**
@@ -58,7 +62,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
      * @returns {Promise<KeyPair>}
      */
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
-        const value = this.localStorage.getItem(this.storageKeyForSecretKey(networkId, accountId));
+        const value = await AsyncStorage.getItem(this.storageKeyForSecretKey(networkId, accountId));
         if (!value) {
             return null;
         }
@@ -71,7 +75,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
      * @param accountId The NEAR account tied to the key pair
      */
     async removeKey(networkId: string, accountId: string): Promise<void> {
-        this.localStorage.removeItem(this.storageKeyForSecretKey(networkId, accountId));
+        AsyncStorage.removeItem(this.storageKeyForSecretKey(networkId, accountId));
     }
 
     /**
@@ -80,7 +84,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     async clear(): Promise<void> {
         for (const key of this.storageKeys()) {
             if (key.startsWith(this.prefix)) {
-                this.localStorage.removeItem(key);
+                AsyncStorage.removeItem(key);
             }
         }
     }
