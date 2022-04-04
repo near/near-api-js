@@ -21,15 +21,13 @@ import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
 import { Finality, BlockId, ViewStateResult, AccountView, AccessKeyView, CodeResult, AccessKeyList, AccessKeyInfoView, FunctionCallPermissionView } from './providers/provider';
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
-import { KeyPair, PublicKey } from './utils/key_pair';
+import { PublicKey } from './utils/key_pair';
 import { logWarning, PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './utils/rpc_errors';
-import { DEFAULT_FUNCTION_CALL_GAS, EMPTY_CONTRACT_HASH } from './constants';
+import { DEFAULT_FUNCTION_CALL_GAS, EMPTY_CONTRACT_HASH, ZERO_NEAR } from './constants';
 
 import exponentialBackoff from './utils/exponential-backoff';
-import { NEAR } from '.';
-import { parseGas, parseNEAR } from "./utils/misc";
 
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
@@ -623,12 +621,12 @@ export class Account {
         };
     }
 
-    createTransaction(recevier: Account|string): Transaction {
+    createTransaction(recevier: Account | string): Transaction {
       return new Transaction(this, recevier);
     }
 
     async hasDeployedContract(): Promise<boolean> {
-      return (await this.state()).code_hash === EMPTY_CONTRACT_HASH; 
+      return (await this.state()).code_hash !== EMPTY_CONTRACT_HASH; 
     }
 }
 
@@ -640,9 +638,9 @@ export class Transaction {
   readonly receiverId: string;
   readonly actions: Action[] = [];
   private accountToBeCreated = false;
-  private _transferAmount?: NEAR;
+  private _transferAmount?: BN;
 
-  constructor(private sender: Account, receiver: Account | string) {
+  constructor(private signer: Account, receiver: Account | string) {
     this.receiverId = typeof receiver === 'string' ? receiver : receiver.accountId;
   }
 
@@ -677,23 +675,28 @@ export class Transaction {
     args: Record<string, unknown> | Uint8Array,
     {
       gas = DEFAULT_FUNCTION_CALL_GAS,
-      attachedDeposit = NEAR.from(0),
-    }: {gas?: BN | string; attachedDeposit?: BN | string} = {},
+      attachedDeposit = ZERO_NEAR,
+    }: {gas?: BN; attachedDeposit?: BN} = {},
   ): this {
     this.actions.push(
-      functionCall(methodName, args, parseGas(gas), parseNEAR(attachedDeposit)),
+      functionCall(methodName, args, gas, attachedDeposit),
     );
     return this;
   }
 
-  stake(amount: BN | string, publicKey: PublicKey | string): this {
-    this.actions.push(stake(new BN(amount), PublicKey.from(publicKey)));
+  stake(amount: BN, publicKey: PublicKey | string): this {
+    this.actions.push(stake(amount, PublicKey.from(publicKey)));
     return this;
   }
 
-  transfer(amount: string | BN): this {
-    this._transferAmount = parseNEAR(amount);
+  transfer(amount: BN): this {
+    this._transferAmount = amount;
     this.actions.push(transfer(this._transferAmount));
+    return this;
+  }
+
+  push(action: Action): this {
+    this.actions.push(action);
     return this;
   }
 
@@ -701,18 +704,18 @@ export class Transaction {
     return this.accountToBeCreated;
   }
 
-  get transferAmount(): NEAR {
-    return this._transferAmount ?? NEAR.from('0');
+  get transferAmount(): BN {
+    return this._transferAmount ?? ZERO_NEAR;
   }
 
-  signAndSend(keyPair?: KeyPair): Promise<FinalExecutionOutcome> {
+  signAndSend(): Promise<FinalExecutionOutcome> {
     //@ts-expect-error is protected
-    return this.sender.signAndSendTransaction({receiverId: this.receiverId, actions: this.actions})
+    return this.signer.signAndSendTransaction({receiverId: this.receiverId, actions: this.actions})
   }
 
   sign(): Promise<[Uint8Array, SignedTransaction]> {
     //@ts-expect-error is protected
-    return this.sender.signTransaction(this.receiverId, this.actions);
+    return this.signer.signTransaction(this.receiverId, this.actions);
   }
 }
 
