@@ -127,6 +127,18 @@ it('can complete sign in', async () => {
     ]);
 });
 
+it('Promise until complete sign in', async () => {
+    const keyPair = nearApi.KeyPair.fromRandom('ed25519');
+    global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
+    await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
+
+    const newWalletConn = new nearApi.WalletConnection(nearFake);
+
+    expect(newWalletConn.isSignedIn()).toBeFalsy();
+    await newWalletConn.promiseSignIn();
+    expect(newWalletConn.isSignedIn()).toBeTruthy();
+});
+
 const BLOCK_HASH = '244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM';
 const blockHash = nearApi.utils.serialize.base_decode(BLOCK_HASH);
 function createTransferTx() {

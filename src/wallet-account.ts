@@ -79,6 +79,9 @@ export class WalletConnection {
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
 
+    /** @hidden */
+    _completeSignInPromise: Promise<void>;
+
     constructor(near: Near, appKeyPrefix: string | null) {
         this._near = near;
         const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
@@ -90,7 +93,7 @@ export class WalletConnection {
         this._authData = authData || { allKeys: [] };
         this._authDataKey = authDataKey;
         if (!this.isSignedIn()) {
-            this._completeSignInWithAccessKey();
+            this._completeSignInPromise = this._completeSignInWithAccessKey();
         }
     }
 
@@ -104,6 +107,25 @@ export class WalletConnection {
      */
     isSignedIn() {
         return !!this._authData.accountId;
+    }
+
+    /**
+     * Returns promise of completing singing in
+     * @example
+     * ```js
+     * // on login callback page
+     * const wallet = new WalletConnection(near, 'my-app');
+     * wallet.isSignedIn(); // false
+     * await wallet.promiseSignIn();
+     * wallet.isSignedIn(); // true
+     * ```
+     */
+    async promiseSignIn() {
+        if (!this._completeSignInPromise) {
+            return {};
+        }
+
+        return this._completeSignInPromise;
     }
 
     /**
@@ -222,14 +244,15 @@ export class WalletConnection {
         const accountId = currentUrl.searchParams.get('account_id') || '';
         // TODO: Handle errors during login
         if (accountId) {
-            this._authData = {
+            const authData = {
                 accountId,
                 allKeys
             };
-            window.localStorage.setItem(this._authDataKey, JSON.stringify(this._authData));
+            window.localStorage.setItem(this._authDataKey, JSON.stringify(authData));
             if (publicKey) {
                 await this._moveKeyFromTempToPermanent(accountId, publicKey);
             }
+            this._authData = authData;
         }
         currentUrl.searchParams.delete('public_key');
         currentUrl.searchParams.delete('all_keys');
