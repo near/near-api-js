@@ -134,9 +134,13 @@ it('Promise until complete sign in', async () => {
 
     const newWalletConn = new nearApi.WalletConnection(nearFake);
 
-    expect(newWalletConn.isSignedIn()).toBeFalsy();
     await newWalletConn.promiseSignIn();
     expect(newWalletConn.isSignedIn()).toBeTruthy();
+    expect(await keyStore.getKey('networkId', 'near.account')).toEqual(keyPair);
+    expect(localStorage.getItem('contractId_wallet_auth_key'));
+    expect(history.slice(1)).toEqual([
+        [{}, 'documentTitle', 'http://example.com/location']
+    ]);
 });
 
 const BLOCK_HASH = '244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM';
