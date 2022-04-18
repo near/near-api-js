@@ -129,16 +129,15 @@ it('can complete sign in', async () => {
 
 it('Promise until complete sign in', async () => {
     const keyPair = nearApi.KeyPair.fromRandom('ed25519');
-    global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
+    global.window.location.href = `http://example.com/location?account_id=near2.account&public_key=${keyPair.publicKey}`;
     await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
 
-    const newWalletConn = new nearApi.WalletConnection(nearFake);
+    const newWalletConn = new nearApi.WalletConnection(nearFake, 'promise_on_complete_signin');
 
     await newWalletConn.promiseSignIn();
-    expect(newWalletConn.isSignedIn()).toBeTruthy();
-    expect(await keyStore.getKey('networkId', 'near.account')).toEqual(keyPair);
-    expect(localStorage.getItem('contractId_wallet_auth_key'));
-    expect(history.slice(1)).toEqual([
+    expect(await keyStore.getKey('networkId', 'near2.account')).toEqual(keyPair);
+    expect(localStorage.getItem('promise_on_complete_signin_wallet_auth_key'));
+    expect(history).toEqual([
         [{}, 'documentTitle', 'http://example.com/location']
     ]);
 });
