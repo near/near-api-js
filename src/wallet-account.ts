@@ -92,7 +92,6 @@ export class WalletConnection {
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
         this._authData = authData || { allKeys: [] };
         this._authDataKey = authDataKey;
-        console.log(this.isSignedIn(), appKeyPrefix);
         if (!this.isSignedIn()) {
             this._completeSignInPromise = this._completeSignInWithAccessKey();
         }
