@@ -178,10 +178,13 @@ export interface Chunk {
 }
 
 export interface Transaction {
+    actions: Array<any>;
     hash: string;
+    nonce: bigint;
     public_key: string;
+    receiver_id: string;
     signature: string;
-    body: any;
+    signer_id: string;
 }
 
 export interface BlockResult {
