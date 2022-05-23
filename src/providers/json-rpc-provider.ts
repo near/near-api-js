@@ -127,7 +127,7 @@ export class JsonRpcProvider extends Provider {
      * @param accountId The NEAR account that signed the transaction
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async txStatusReceipts(txHash: string|Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
+    async txStatusReceipts(txHash: Uint8Array | string, accountId: string): Promise<FinalExecutionOutcome> {
         if (typeof txHash === 'string') {
             return this.sendJsonRpc('EXPERIMENTAL_tx_status', [txHash, accountId]);
         }

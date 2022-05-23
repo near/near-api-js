@@ -51,7 +51,7 @@ export declare class JsonRpcProvider extends Provider {
      * @param accountId The NEAR account that signed the transaction
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    txStatusReceipts(txHash: string | Uint8Array, accountId: string): Promise<FinalExecutionOutcome>;
+    txStatusReceipts(txHash: Uint8Array | string, accountId: string): Promise<FinalExecutionOutcome>;
     /**
      * Query the RPC as [shown in the docs](https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts)
      * Query the RPC by passing an {@link RpcQueryRequest}
