@@ -2,7 +2,7 @@
 import BN from 'bn.js';
 import { Action, SignedTransaction } from './transaction';
 import { FinalExecutionOutcome } from './providers';
-import { Finality, BlockId, AccountView, AccessKeyView, AccessKeyInfoView } from './providers/provider';
+import { AccountView, AccessKeyView, AccessKeyInfoView, BlockReference } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
 export interface AccountBalance {
@@ -70,8 +70,6 @@ export interface FunctionCallOptions {
      */
     jsContract?: boolean;
 }
-declare function parseJsonFromRawResponse(response: Uint8Array): any;
-declare function bytesJsonStringify(input: any): Buffer;
 /**
  * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
  *
@@ -212,11 +210,13 @@ export declare class Account {
      * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
      * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
      * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
-    viewFunction(contractId: string, methodName: string, args?: any, { parse, stringify, jsContract }?: {
-        parse?: typeof parseJsonFromRawResponse;
-        stringify?: typeof bytesJsonStringify;
+    viewFunction(contractId: string, methodName: string, args?: any, { parse, stringify, jsContract, blockQuery }?: {
+        parse?: (response: Uint8Array) => any;
+        stringify?: (input: any) => Buffer;
+        blockQuery?: BlockReference;
         jsContract?: boolean;
     }): Promise<any>;
     /**
@@ -227,11 +227,7 @@ export declare class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    viewState(prefix: string | Uint8Array, blockQuery?: {
-        blockId: BlockId;
-    } | {
-        finality: Finality;
-    }): Promise<Array<{
+    viewState(prefix: string | Uint8Array, blockQuery?: BlockReference): Promise<Array<{
         key: Buffer;
         value: Buffer;
     }>>;
@@ -252,4 +248,3 @@ export declare class Account {
      */
     getAccountBalance(): Promise<AccountBalance>;
 }
-export {};

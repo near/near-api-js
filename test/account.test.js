@@ -191,6 +191,59 @@ describe('with deploy contract', () => {
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
+    test('view function calls by block Id and finality', async() => {
+        const setCallValue1 = testUtils.generateUniqueString('setCallPrefix');
+        const result1 = await contract.setValue({ args: { value: setCallValue1 } });
+        expect(result1).toEqual(setCallValue1);
+        expect(await contract.getValue()).toEqual(setCallValue1);
+
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
+            blockQuery: { finality: 'optimistic' }
+        })).toEqual(setCallValue1);
+
+        const block1 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
+        const blockHash1 = block1.header.hash;
+        const blockIndex1 = block1.header.height;
+
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
+            blockQuery: { blockId: blockHash1 }
+        })).toEqual(setCallValue1);
+
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
+            blockQuery: { blockId: blockIndex1 }
+        })).toEqual(setCallValue1);
+
+        const setCallValue2 = testUtils.generateUniqueString('setCallPrefix');
+        const result2 = await contract.setValue({ args: { value: setCallValue2 } });
+        expect(result2).toEqual(setCallValue2);
+        expect(await contract.getValue()).toEqual(setCallValue2);
+
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
+            blockQuery: { finality: 'optimistic' }
+        })).toEqual(setCallValue2);
+
+        // Old blockHash should still be value #1
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
+            blockQuery: { blockId: blockHash1 }
+        })).toEqual(setCallValue1);
+
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
+            blockQuery: { blockId: blockIndex1 }
+        })).toEqual(setCallValue1);
+
+        const block2 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
+        const blockHash2 = block2.header.hash;
+        const blockIndex2 = block2.header.height;
+
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
+            blockQuery: { blockId: blockHash2 }
+        })).toEqual(setCallValue2);
+
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
+            blockQuery: { blockId: blockIndex2 }
+        })).toEqual(setCallValue2);
+    });
+
     test('make function calls via contract with gas', async() => {
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({

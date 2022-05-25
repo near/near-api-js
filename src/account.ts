@@ -17,7 +17,16 @@ import {
     stringifyJsonOrBytes
 } from './transaction';
 import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
-import { Finality, BlockId, ViewStateResult, AccountView, AccessKeyView, CodeResult, AccessKeyList, AccessKeyInfoView, FunctionCallPermissionView } from './providers/provider';
+import {
+    ViewStateResult,
+    AccountView,
+    AccessKeyView,
+    CodeResult,
+    AccessKeyList,
+    AccessKeyInfoView,
+    FunctionCallPermissionView,
+    BlockReference
+} from './providers/provider';
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
@@ -535,13 +544,14 @@ export class Account {
      * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
      * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
      * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
     async viewFunction(
         contractId: string,
         methodName: string,
         args: any = {},
-        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract=false } = {}
+        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract=false, blockQuery = { finality: 'optimistic' } }: { parse?: (response: Uint8Array) => any; stringify?: (input: any) => Buffer; blockQuery?: BlockReference; jsContract?: boolean } = {}
     ): Promise<any> {
         let encodedArgs;
         this.validateArgs(args);
@@ -554,6 +564,7 @@ export class Account {
 
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
+            ...blockQuery,
             account_id: jsContract ? this.connection.jsvmAccountId : contractId,
             method_name: jsContract ? 'view_js_contract'  : methodName,
             args_base64: encodedArgs.toString('base64'),
@@ -575,7 +586,7 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: { blockId: BlockId } | { finality: Finality } = { finality: 'optimistic' } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
+    async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
         const { values } = await this.connection.provider.query<ViewStateResult>({
             request_type: 'view_state',
             ...blockQuery,

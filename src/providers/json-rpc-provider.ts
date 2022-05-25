@@ -348,6 +348,10 @@ export class JsonRpcProvider extends Provider {
     async sendJsonRpc<T>(method: string, params: object): Promise<T> {
         const response = await exponentialBackoff(REQUEST_RETRY_WAIT, REQUEST_RETRY_NUMBER, REQUEST_RETRY_WAIT_BACKOFF, async () => {
             try {
+                if ('blockId' in params) {
+                    params['block_id'] = params['blockId'];
+                    delete params['blockId'];
+                }
                 const request = {
                     method,
                     params,
