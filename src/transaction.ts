@@ -67,8 +67,11 @@ export function stringifyJsonOrBytes(args: any): Buffer {
  * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
  * @param stringify Convert input arguments into bytes array.
  */
-export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify = stringifyJsonOrBytes): Action {
-    return new Action({functionCall: new FunctionCall({methodName, args: stringify(args), gas, deposit }) });
+export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify = stringifyJsonOrBytes, jsContract = false): Action {
+    if(jsContract){
+     return new Action({ functionCall: new FunctionCall({ contractId: "jsvm.testnet", methodName, args, gas }) });
+    }
+    return new Action({ functionCall: new FunctionCall({ methodName, args: stringify(args), gas, deposit }) });
 }
 
 export function transfer(deposit: BN): Action {
