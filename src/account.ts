@@ -102,7 +102,7 @@ export interface FunctionCallOptions {
     stringify?: (input: any) => Buffer;
 
     /**
-     * Is contract from JS SDK, automatically encodes args
+     * Is contract from JS SDK, automatically encodes args from JS SDK to binary.
      */
     jsContract?: boolean;
 }
