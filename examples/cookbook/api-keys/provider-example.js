@@ -1,12 +1,12 @@
 // demonstrates how to use API-KEY with provider 
 const { providers } = require("near-api-js");
 
-const RPC_API_ENDPOINT = '<Replace this string with your RPC server URL>';
 const API_KEY = '<Replace this string with your API KEY>';
 
 const provider = new providers.JsonRpcProvider({
-    url: RPC_API_ENDPOINT,
-    headers: { 'x-api-key': API_KEY },
+    url: '<Replace this string with your RPC server URL>',
+    // RPC server URL in apiKeys should match the one specified in url
+    apiKeys: { '<Replace this string with your RPC server URL>': API_KEY }
 });
 
 getNetworkStatus();

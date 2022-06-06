@@ -9,7 +9,9 @@ const BACKOFF_MULTIPLIER = 1.5;
 const RETRY_NUMBER = 10;
 
 export interface ConnectionInfo {
-    url: string;
+    // RPC Server URL or the prioritized array of such URLs
+    url: string | string[];
+    apiKeys?: { [url: string]: string };
     user?: string;
     password?: string;
     allowInsecure?: boolean;
@@ -25,16 +27,22 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
         connectionInfo = connectionInfoOrUrl as ConnectionInfo;
     }
 
+    const currentRpcServer = typeof connectionInfo.url === 'string' ? connectionInfo.url : connectionInfo.url[0];
+
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {
-            const response = await fetch(connectionInfo.url, {
+            const response = await fetch(currentRpcServer, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
-                headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': connectionInfo.apiKeys ? connectionInfo.apiKeys[currentRpcServer] : undefined,
+                    ...connectionInfo.headers,
+                },
             });
             if (!response.ok) {
                 if (response.status === 503) {
-                    logWarning(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
+                    logWarning(`Retrying HTTP request for ${currentRpcServer} as it's not available now`);
                     return null;
                 }
                 throw createError(response.status, await response.text());
@@ -42,14 +50,14 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
             return response;
         } catch (error) {
             if (error.toString().includes('FetchError') || error.toString().includes('Failed to fetch')) {
-                logWarning(`Retrying HTTP request for ${connectionInfo.url} because of error: ${error}`);
+                logWarning(`Retrying HTTP request for ${currentRpcServer} because of error: ${error}`);
                 return null;
             }
             throw error;
         }
     });
     if (!response) {
-        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${connectionInfo.url}.`, 'RetriesExceeded');
+        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${currentRpcServer}.`, 'RetriesExceeded');
     }
     return await response.json();
 }
