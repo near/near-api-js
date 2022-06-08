@@ -66,6 +66,11 @@ export interface NearConfig {
      * @see {@link https://docs.near.org/docs/tools/near-wallet}
      */
     walletUrl?: string;
+
+    /**
+     * JVSM account ID for NEAR JS SDK
+     */
+    jvsmAccountId?: string;
 }
 
 /**
@@ -85,8 +90,10 @@ export class Near {
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
-            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || (config.deps && config.deps.keyStore) }
+            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || (config.deps && config.deps.keyStore) },
+            jsvmAccountId: config.jvsmAccountId || `jsvm.${config.networkId}`
         });
+        
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
             // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times

@@ -60,6 +60,10 @@ export interface NearConfig {
      * @see {@link https://docs.near.org/docs/tools/near-wallet}
      */
     walletUrl?: string;
+    /**
+     * JVSM account ID for NEAR JS SDK
+     */
+    jvsmAccountId?: string;
 }
 /**
  * This is the main class developers should use to interact with NEAR.

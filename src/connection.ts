@@ -36,6 +36,7 @@ export class Connection {
     readonly networkId: string;
     readonly provider: Provider;
     readonly signer: Signer;
+    readonly jsvmAccountId: string;
 
     constructor(networkId: string, provider: Provider, signer: Signer) {
         this.networkId = networkId;

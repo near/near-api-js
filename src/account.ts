@@ -438,18 +438,19 @@ export class Account {
         let functionCallArgs;
 
         if(jsContract){
-            function encodeCall(contract:string, method:string, args) {
+            function encodeCall(contract: string, method: string, args) {
                 return Buffer.concat([Buffer.from(contract), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)])
             }
-            let encodedArgs = encodeCall( contractId, methodName, JSON.stringify(Object.values(args)) );
-            functionCallArgs=  ['call_js_contract', encodedArgs, gas, null, null, true  ]
+            const encodedArgs = encodeCall( contractId, methodName, JSON.stringify(Object.values(args)) );
+            functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, null, true ];
         } else{
             const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
-            functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false]
+            functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
         }
 
         return this.signAndSendTransaction({
-            receiverId: jsContract ? 'call_js_contract' : contractId,
+            receiverId: jsContract ? this.connection.jsvmAccountId: contractId,
+            // eslint-disable-next-line prefer-spread
             actions: [functionCall.apply(void 0, functionCallArgs)],
             walletMeta,
             walletCallbackUrl

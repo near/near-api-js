@@ -69,7 +69,7 @@ export function stringifyJsonOrBytes(args: any): Buffer {
  */
 export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify = stringifyJsonOrBytes, jsContract = false): Action {
     if(jsContract){
-     return new Action({ functionCall: new FunctionCall({ contractId: "jsvm.testnet", methodName, args, gas }) });
+     return new Action({ functionCall: new FunctionCall({ methodName, args, gas, deposit }) });
     }
     return new Action({ functionCall: new FunctionCall({ methodName, args: stringify(args), gas, deposit }) });
 }
