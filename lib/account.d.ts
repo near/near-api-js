@@ -162,6 +162,8 @@ export declare class Account {
      * @param data The compiled contract code
      */
     deployContract(data: Uint8Array): Promise<FinalExecutionOutcome>;
+    /** @hidden */
+    private encodeJSContractArgs;
     functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
      * @deprecated
@@ -209,11 +211,13 @@ export declare class Account {
      * @param args Any arguments to the view contract method, wrapped in JSON
      * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
      * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
      * @returns {Promise<any>}
      */
-    viewFunction(contractId: string, methodName: string, args?: any, { parse, stringify }?: {
+    viewFunction(contractId: string, methodName: string, args?: any, { parse, /*  */ stringify, jsContract }?: {
         parse?: typeof parseJsonFromRawResponse;
         stringify?: typeof bytesJsonStringify;
+        jsContract?: boolean;
     }): Promise<any>;
     /**
      * Returns the state (key value pairs) of this account's contract based on the key prefix.

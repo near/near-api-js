@@ -62,6 +62,7 @@ export declare function stringifyJsonOrBytes(args: any): Buffer;
  * @param gas max amount of gas that method call can use
  * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
  * @param stringify Convert input arguments into bytes array.
+ * @param jsContract  Is contract from JS SDK, skips stringification of arguments.
  */
 export declare function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify?: typeof stringifyJsonOrBytes, jsContract?: boolean): Action;
 export declare function transfer(deposit: BN): Action;
