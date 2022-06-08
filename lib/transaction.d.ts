@@ -63,7 +63,7 @@ export declare function stringifyJsonOrBytes(args: any): Buffer;
  * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
  * @param stringify Convert input arguments into bytes array.
  */
-export declare function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify?: typeof stringifyJsonOrBytes): Action;
+export declare function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify?: typeof stringifyJsonOrBytes, jsContract?: boolean): Action;
 export declare function transfer(deposit: BN): Action;
 export declare function stake(stake: BN, publicKey: PublicKey): Action;
 export declare function addKey(publicKey: PublicKey, accessKey: AccessKey): Action;

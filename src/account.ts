@@ -100,6 +100,11 @@ export interface FunctionCallOptions {
      * Convert input arguments into bytes array.
      */
     stringify?: (input: any) => Buffer;
+
+    /**
+     * Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     */
+    jsContract?: boolean;
 }
 
 interface ReceiptLogWithFailure {
@@ -428,12 +433,25 @@ export class Account {
         });
     }
 
-    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
-        const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
+        let functionCallArgs;
+
+        if(jsContract){
+            function encodeCall(contractId: string, method: string, args) {
+                return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
+            }
+            const encodedArgs = encodeCall( contractId, methodName, JSON.stringify(Object.values(args)) );
+            functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true ];
+        } else{
+            const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
+            functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
+        }
+
         return this.signAndSendTransaction({
-            receiverId: contractId,
-            actions: [functionCall(methodName, args, gas, attachedDeposit, stringifyArg)],
+            receiverId: jsContract ? this.connection.jsvmAccountId: contractId,
+            // eslint-disable-next-line prefer-spread
+            actions: [functionCall.apply(void 0, functionCallArgs)],
             walletMeta,
             walletCallbackUrl
         });

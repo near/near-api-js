@@ -65,6 +65,10 @@ export interface FunctionCallOptions {
      * Convert input arguments into bytes array.
      */
     stringify?: (input: any) => Buffer;
+    /**
+     * Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     */
+    jsContract?: boolean;
 }
 declare function parseJsonFromRawResponse(response: Uint8Array): any;
 declare function bytesJsonStringify(input: any): Buffer;
