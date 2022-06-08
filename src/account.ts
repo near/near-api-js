@@ -442,7 +442,7 @@ export class Account {
                 return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
             }
             const encodedArgs = encodeCall( contractId, methodName, JSON.stringify(Object.values(args)) );
-            functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, null, true ];
+            functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true ];
         } else{
             const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
             functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
