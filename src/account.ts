@@ -438,8 +438,8 @@ export class Account {
         let functionCallArgs;
 
         if(jsContract){
-            function encodeCall(contract: string, method: string, args) {
-                return Buffer.concat([Buffer.from(contract), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)])
+            function encodeCall(contractId: string, method: string, args) {
+                return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
             }
             const encodedArgs = encodeCall( contractId, methodName, JSON.stringify(Object.values(args)) );
             functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, null, true ];

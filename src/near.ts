@@ -70,7 +70,7 @@ export interface NearConfig {
     /**
      * JVSM account ID for NEAR JS SDK
      */
-    jvsmAccountId?: string;
+    jsvmAccountId?: string;
 }
 
 /**
@@ -91,7 +91,7 @@ export class Near {
             networkId: config.networkId,
             provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
             signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || (config.deps && config.deps.keyStore) },
-            jsvmAccountId: config.jvsmAccountId || `jsvm.${config.networkId}`
+            jsvmAccountId: config.jsvmAccountId || `jsvm.${config.networkId}`
         });
         
         if (config.masterAccount) {

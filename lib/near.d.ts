@@ -63,7 +63,7 @@ export interface NearConfig {
     /**
      * JVSM account ID for NEAR JS SDK
      */
-    jvsmAccountId?: string;
+    jsvmAccountId?: string;
 }
 /**
  * This is the main class developers should use to interact with NEAR.
