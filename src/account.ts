@@ -538,8 +538,7 @@ export class Account {
         contractId: string,
         methodName: string,
         args: any = {},
-        { parse = parseJsonFromRawResponse, /*  */
-        stringify = bytesJsonStringify, jsContract=false } = {}
+        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract=false } = {}
     ): Promise<any> {
         let encodedArgs;
         this.validateArgs(args);

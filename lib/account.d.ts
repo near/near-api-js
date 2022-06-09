@@ -214,7 +214,7 @@ export declare class Account {
      * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
      * @returns {Promise<any>}
      */
-    viewFunction(contractId: string, methodName: string, args?: any, { parse, /*  */ stringify, jsContract }?: {
+    viewFunction(contractId: string, methodName: string, args?: any, { parse, stringify, jsContract }?: {
         parse?: typeof parseJsonFromRawResponse;
         stringify?: typeof bytesJsonStringify;
         jsContract?: boolean;
