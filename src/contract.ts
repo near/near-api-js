@@ -1,7 +1,6 @@
 import BN from 'bn.js';
 import depd from 'depd';
 import { Account } from './account';
-import { getTransactionLastResult } from './providers';
 import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
 
 // Makes `function.name` return given name
