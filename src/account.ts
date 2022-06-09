@@ -544,7 +544,7 @@ export class Account {
         this.validateArgs(args);
     
         if(jsContract){
-            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(Object.values(args)): '');
+            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
         } else{
             encodedArgs =  stringify(args);
         }
