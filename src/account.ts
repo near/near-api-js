@@ -544,16 +544,16 @@ export class Account {
         this.validateArgs(args);
     
         if(jsContract){
-            encodedArgs = this.encodeJSContractArgs( contractId, methodName, !args ? '' :  JSON.stringify(Object.values(args)) );
+            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(Object.values(args)): '');
         } else{
-            encodedArgs =  stringify(args).toString('base64');
+            encodedArgs =  stringify(args);
         }
 
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
             account_id: jsContract ? this.connection.jsvmAccountId : contractId,
-            method_name: methodName,
-            args_base64: encodedArgs,
+            method_name: jsContract ? 'view_js_contract'  : methodName,
+            args_base64: encodedArgs.toString('base64'),
             finality: 'optimistic'
         });
 
