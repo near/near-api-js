@@ -132,7 +132,7 @@ export class Contract {
     private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl }: ChangeMethodOptions) {
         validateBNLike({ gas, amount });
 
-        const rawResult = await this.account.functionCall({
+        return await this.account.functionCall({
             contractId: this.contractId,
             methodName,
             args,
@@ -141,8 +141,6 @@ export class Contract {
             walletMeta: meta,
             walletCallbackUrl: callbackUrl
         });
-
-        return getTransactionLastResult(rawResult);
     }
 }
 
