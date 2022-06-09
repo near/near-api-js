@@ -443,7 +443,7 @@ export class Account {
         let functionCallArgs;
 
         if(jsContract){
-            const encodedArgs = this.encodeJSContractArgs( contractId, methodName, JSON.stringify(Object.values(args)) );
+            const encodedArgs = this.encodeJSContractArgs( contractId, methodName, JSON.stringify(args) );
             functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true ];
         } else{
             const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
