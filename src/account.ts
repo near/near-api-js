@@ -400,6 +400,11 @@ export class Account {
         });
     }
 
+    /** @hidden */
+    private encodeJSContractArgs(contractId: string, method: string, args) {
+        return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
+    }
+
     async functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
      * @deprecated
@@ -438,10 +443,7 @@ export class Account {
         let functionCallArgs;
 
         if(jsContract){
-            function encodeCall(contractId: string, method: string, args) {
-                return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
-            }
-            const encodedArgs = encodeCall( contractId, methodName, JSON.stringify(Object.values(args)) );
+            const encodedArgs = this.encodeJSContractArgs( contractId, methodName, JSON.stringify(args) );
             functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true ];
         } else{
             const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
@@ -529,22 +531,29 @@ export class Account {
      * @param args Any arguments to the view contract method, wrapped in JSON
      * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
      * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
      * @returns {Promise<any>}
      */
     async viewFunction(
         contractId: string,
         methodName: string,
         args: any = {},
-        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify } = {}
+        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract=false } = {}
     ): Promise<any> {
+        let encodedArgs;
         this.validateArgs(args);
-        const serializedArgs = stringify(args).toString('base64');
+    
+        if(jsContract){
+            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
+        } else{
+            encodedArgs =  stringify(args);
+        }
 
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
-            account_id: contractId,
-            method_name: methodName,
-            args_base64: serializedArgs,
+            account_id: jsContract ? this.connection.jsvmAccountId : contractId,
+            method_name: jsContract ? 'view_js_contract'  : methodName,
+            args_base64: encodedArgs.toString('base64'),
             finality: 'optimistic'
         });
 

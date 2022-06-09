@@ -38,10 +38,11 @@ export class Connection {
     readonly signer: Signer;
     readonly jsvmAccountId: string;
 
-    constructor(networkId: string, provider: Provider, signer: Signer) {
+    constructor(networkId: string, provider: Provider, signer: Signer, jsvmAccountId: string) {
         this.networkId = networkId;
         this.provider = provider;
         this.signer = signer;
+        this.jsvmAccountId = jsvmAccountId; 
     }
 
     /**
@@ -50,6 +51,6 @@ export class Connection {
     static fromConfig(config: any): Connection {
         const provider = getProvider(config.provider);
         const signer = getSigner(config.signer);
-        return new Connection(config.networkId, provider, signer);
+        return new Connection(config.networkId, provider, signer, config.jsvmAccountId);
     }
 }

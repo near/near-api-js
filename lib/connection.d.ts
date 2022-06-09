@@ -8,7 +8,7 @@ export declare class Connection {
     readonly provider: Provider;
     readonly signer: Signer;
     readonly jsvmAccountId: string;
-    constructor(networkId: string, provider: Provider, signer: Signer);
+    constructor(networkId: string, provider: Provider, signer: Signer, jsvmAccountId: string);
     /**
      * @param config Contains connection info details
      */
