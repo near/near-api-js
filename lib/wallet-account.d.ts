@@ -34,7 +34,7 @@ interface RequestSignTransactionsOptions {
  *
  * // If not signed in redirect to the NEAR wallet to sign in
  * // keys will be stored in the BrowserLocalStorageKeyStore
- * if(!wallet.isSingnedIn()) return wallet.requestSignIn()
+ * if(!wallet.isSignedIn()) return wallet.requestSignIn()
  * ```
  */
 export declare class WalletConnection {
