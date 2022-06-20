@@ -384,6 +384,7 @@ export class Account {
      * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
      */
     async deleteAccount(beneficiaryId: string) {
+        console.log("Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.")
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteAccount(beneficiaryId)]
