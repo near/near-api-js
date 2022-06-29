@@ -201,6 +201,8 @@ describe('with deploy contract', () => {
             blockQuery: { finality: 'optimistic' }
         })).toEqual(setCallValue1);
 
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue1);
+
         const block1 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
         const blockHash1 = block1.header.hash;
         const blockIndex1 = block1.header.height;
@@ -221,6 +223,8 @@ describe('with deploy contract', () => {
         expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
             blockQuery: { finality: 'optimistic' }
         })).toEqual(setCallValue2);
+
+        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue2);
 
         // Old blockHash should still be value #1
         expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {

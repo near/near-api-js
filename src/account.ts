@@ -567,8 +567,7 @@ export class Account {
             ...blockQuery,
             account_id: jsContract ? this.connection.jsvmAccountId : contractId,
             method_name: jsContract ? 'view_js_contract'  : methodName,
-            args_base64: encodedArgs.toString('base64'),
-            finality: 'optimistic'
+            args_base64: encodedArgs.toString('base64')
         });
 
         if (result.logs) {
