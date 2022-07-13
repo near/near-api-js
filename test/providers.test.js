@@ -76,6 +76,19 @@ test('txStatus with string hash and buffer hash', withProvider(async(provider) =
     expect(responseWithUint8Array).toMatchObject(outcome);
 }));
 
+test('txStatusReciept with string hash and buffer hash', withProvider(async(provider) => {
+    const near = await testUtils.setUpTestConnection();
+    const sender = await testUtils.createAccount(near);
+    const receiver = await testUtils.createAccount(near);
+    const outcome = await sender.sendMoney(receiver.accountId, new BN('1'));
+    const reciepts = await provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
+
+    const responseWithString = await provider.txStatusReceipts(outcome.transaction.hash, sender.accountId);
+    const responseWithUint8Array = await provider.txStatusReceipts(base58.decode(outcome.transaction.hash), sender.accountId);
+    expect(responseWithString).toMatchObject(reciepts);
+    expect(responseWithUint8Array).toMatchObject(reciepts);
+}));
+
 test('json rpc query with block_id', withProvider(async(provider) => {
     const stat = await provider.status();
     let block_id = stat.sync_info.latest_block_height - 1;
