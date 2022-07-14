@@ -138,10 +138,10 @@ export interface ChunkHeader {
     gas_used: number;
     height_created: number;
     height_included: number;
+    outcome_root: string;
     outgoing_receipts_root: string;
     prev_block_hash: string;
-    prev_state_num_parts: number;
-    prev_state_root_hash: string;
+    prev_state_root: string;
     rent_paid: string;
     shard_id: number;
     signature: string;
@@ -151,6 +151,7 @@ export interface ChunkHeader {
 }
 
 export interface ChunkResult {
+    author: string;
     header: ChunkHeader;
     receipts: any[];
     transactions: Transaction[];
