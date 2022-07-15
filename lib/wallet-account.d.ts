@@ -52,6 +52,8 @@ export declare class WalletConnection {
     _near: Near;
     /** @hidden */
     _connectedAccount: ConnectedWalletAccount;
+    /** @hidden */
+    _completeSignInPromise: Promise<void>;
     constructor(near: Near, appKeyPrefix: string | null);
     /**
      * Returns true, if this WalletAccount is authorized with the wallet.
@@ -62,6 +64,17 @@ export declare class WalletConnection {
      * ```
      */
     isSignedIn(): boolean;
+    /**
+     * Returns promise of completing signing in after redirecting from wallet
+     * @example
+     * ```js
+     * // on login callback page
+     * const wallet = new WalletConnection(near, 'my-app');
+     * wallet.isSignedIn(); // false
+     * await wallet.isSignedInAsync(); // true
+     * ```
+     */
+    isSignedInAsync(): Promise<boolean>;
     /**
      * Returns authorized Account ID.
      * @example
