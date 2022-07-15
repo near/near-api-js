@@ -65,17 +65,16 @@ export declare class WalletConnection {
      */
     isSignedIn(): boolean;
     /**
-     * Returns promise of completing singing in
+     * Returns promise of completing signing in after redirecting from wallet
      * @example
      * ```js
      * // on login callback page
      * const wallet = new WalletConnection(near, 'my-app');
      * wallet.isSignedIn(); // false
-     * await wallet.promiseSignIn();
-     * wallet.isSignedIn(); // true
+     * await wallet.isSignedInAsync(); // true
      * ```
      */
-    promiseSignIn(): Promise<void | {}>;
+    isSignedInAsync(): Promise<boolean>;
     /**
      * Returns authorized Account ID.
      * @example

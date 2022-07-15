@@ -134,7 +134,8 @@ it('Promise until complete sign in', async () => {
 
     const newWalletConn = new nearApi.WalletConnection(nearFake, 'promise_on_complete_signin');
 
-    await newWalletConn.promiseSignIn();
+    expect(newWalletConn.isSignedIn()).toEqual(false);
+    expect(await newWalletConn.isSignedInAsync()).toEqual(true);
     expect(await keyStore.getKey('networkId', 'near2.account')).toEqual(keyPair);
     expect(localStorage.getItem('promise_on_complete_signin_wallet_auth_key'));
     expect(history).toEqual([

@@ -110,22 +110,22 @@ export class WalletConnection {
     }
 
     /**
-     * Returns promise of completing singing in
+     * Returns promise of completing signing in after redirecting from wallet
      * @example
      * ```js
      * // on login callback page
      * const wallet = new WalletConnection(near, 'my-app');
      * wallet.isSignedIn(); // false
-     * await wallet.promiseSignIn();
-     * wallet.isSignedIn(); // true
+     * await wallet.isSignedInAsync(); // true
      * ```
      */
-    async promiseSignIn() {
+    async isSignedInAsync() {
         if (!this._completeSignInPromise) {
-            return {};
+            return this.isSignedIn();
         }
 
-        return this._completeSignInPromise;
+        await this._completeSignInPromise;
+        return this.isSignedIn();
     }
 
     /**
