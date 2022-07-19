@@ -26,7 +26,7 @@ declare type BlockHeight = number;
 export declare type BlockId = BlockHash | BlockHeight;
 export declare type Finality = 'optimistic' | 'near-final' | 'final';
 export declare type BlockReference = {
-    blockId: BlockId;
+    block_id: BlockId;
 } | {
     finality: Finality;
 } | {
