@@ -1,0 +1,34 @@
+name: Publish Packages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+        cache: yarn
+        registry-url: https://registry.npmjs.org
+
+    - name: Install dependencies
+      run: lerna bootstrap
+
+    - name: Publish packages
+      run: |
+        git config user.email "wallet@near.org"
+        git config user.name "CI"
+        lerna publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
