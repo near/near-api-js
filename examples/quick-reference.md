@@ -24,7 +24,6 @@ Node:
 const nearAPI = require("near-api-js");
 ```
 
-
 ### Key Store
 
 Browser:
@@ -57,7 +56,7 @@ Using private key string:
 const { keyStores, KeyPair } = nearAPI;
 const keyStore = new keyStores.InMemoryKeyStore();
 const PRIVATE_KEY =
-  "by8kdJoJHu7uUkKfoaLd2J2Dp1q1TigeWMG123pHdu9UREqPcshCM223kWadm";
+    "by8kdJoJHu7uUkKfoaLd2J2Dp1q1TigeWMG123pHdu9UREqPcshCM223kWadm";
 // creates a public / private key pair using the provided private key
 const keyPair = KeyPair.fromString(PRIVATE_KEY);
 // adds the keyPair you created to keyStore
@@ -74,12 +73,12 @@ Testnet:
 const { connect } = nearAPI;
 
 const config = {
-  networkId: "testnet",
-  keyStore, // optional if not signing transactions
-  nodeUrl: "https://rpc.testnet.near.org",
-  walletUrl: "https://wallet.testnet.near.org",
-  helperUrl: "https://helper.testnet.near.org",
-  explorerUrl: "https://explorer.testnet.near.org",
+    networkId: "testnet",
+    keyStore, // optional if not signing transactions
+    nodeUrl: "https://rpc.testnet.near.org",
+    walletUrl: "https://wallet.testnet.near.org",
+    helperUrl: "https://helper.testnet.near.org",
+    explorerUrl: "https://explorer.testnet.near.org",
 };
 const near = await connect(config);
 ```
@@ -90,12 +89,12 @@ Mainnet:
 const { connect } = nearAPI;
 
 const config = {
-  networkId: "mainnet",
-  keyStore, // optional if not signing transactions
-  nodeUrl: "https://rpc.mainnet.near.org",
-  walletUrl: "https://wallet.mainnet.near.org",
-  helperUrl: "https://helper.mainnet.near.org",
-  explorerUrl: "https://explorer.mainnet.near.org",
+    networkId: "mainnet",
+    keyStore, // optional if not signing transactions
+    nodeUrl: "https://rpc.mainnet.near.org",
+    walletUrl: "https://wallet.mainnet.near.org",
+    helperUrl: "https://helper.mainnet.near.org",
+    explorerUrl: "https://explorer.mainnet.near.org",
 };
 const near = await connect(config);
 ```
@@ -106,12 +105,12 @@ Betanet:
 const { connect } = nearAPI;
 
 const config = {
-  networkId: "betanet",
-  keyStore, // optional if not signing transactions
-  nodeUrl: "https://rpc.betanet.near.org",
-  walletUrl: "https://wallet.betanet.near.org",
-  helperUrl: "https://helper.betanet.near.org",
-  explorerUrl: "https://explorer.betanet.near.org",
+    networkId: "betanet",
+    keyStore, // optional if not signing transactions
+    nodeUrl: "https://rpc.betanet.near.org",
+    walletUrl: "https://wallet.betanet.near.org",
+    helperUrl: "https://helper.betanet.near.org",
+    explorerUrl: "https://explorer.betanet.near.org",
 };
 const near = await connect(config);
 ```
@@ -121,9 +120,9 @@ Localnet:
 ```js
 const { connect } = nearAPI;
 const config = {
-  networkId: "local",
-  nodeUrl: "http://localhost:3030",
-  walletUrl: "http://localhost:4000/wallet",
+    networkId: "local",
+    nodeUrl: "http://localhost:3030",
+    walletUrl: "http://localhost:4000/wallet",
 };
 const near = await connect(config);
 ```
@@ -140,12 +139,12 @@ Testnet:
 const { connect, keyStores, WalletConnection } = nearAPI;
 
 const config = {
-  networkId: "testnet",
-  keyStore: new keyStores.BrowserLocalStorageKeyStore(),
-  nodeUrl: "https://rpc.testnet.near.org",
-  walletUrl: "https://wallet.testnet.near.org",
-  helperUrl: "https://helper.testnet.near.org",
-  explorerUrl: "https://explorer.testnet.near.org",
+    networkId: "testnet",
+    keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+    nodeUrl: "https://rpc.testnet.near.org",
+    walletUrl: "https://wallet.testnet.near.org",
+    helperUrl: "https://helper.testnet.near.org",
+    explorerUrl: "https://explorer.testnet.near.org",
 };
 
 // connect to NEAR
@@ -161,12 +160,12 @@ Mainnet:
 const { connect, keyStores, WalletConnection } = nearAPI;
 
 const config = {
-  networkId: "mainnet",
-  keyStore: new keyStores.BrowserLocalStorageKeyStore(),
-  nodeUrl: "https://rpc.mainnet.near.org",
-  walletUrl: "https://wallet.mainnet.near.org",
-  helperUrl: "https://helper.mainnet.near.org",
-  explorerUrl: "https://explorer.mainnet.near.org",
+    networkId: "mainnet",
+    keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+    nodeUrl: "https://rpc.mainnet.near.org",
+    walletUrl: "https://wallet.mainnet.near.org",
+    helperUrl: "https://helper.mainnet.near.org",
+    explorerUrl: "https://explorer.mainnet.near.org",
 };
 
 // connect to NEAR
@@ -182,12 +181,12 @@ Betanet:
 const { connect, keyStores, WalletConnection } = nearAPI;
 
 const config = {
-  networkId: "betanet",
-  keyStore: new keyStores.BrowserLocalStorageKeyStore(),
-  nodeUrl: "https://rpc.betanet.near.org",
-  walletUrl: "https://wallet.betanet.near.org",
-  helperUrl: "https://helper.betanet.near.org",
-  explorerUrl: "https://explorer.betanet.near.org",
+    networkId: "betanet",
+    keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+    nodeUrl: "https://rpc.betanet.near.org",
+    walletUrl: "https://wallet.betanet.near.org",
+    helperUrl: "https://helper.betanet.near.org",
+    explorerUrl: "https://explorer.betanet.near.org",
 };
 
 // connect to NEAR
@@ -206,10 +205,10 @@ const wallet = new WalletConnection(near);
 
 const signIn = () => {
     wallet.requestSignIn({
-        contractId: 'example-contract.testnet', // optional, contract requesting access
-        methodNames: ['hello', 'goodbye'], // optional
-        successUrl: 'http://YOUR-URL.com/success', // optional
-        failureUrl: 'http://YOUR-URL.com/fail' // optional
+        contractId: "example-contract.testnet", // optional, contract requesting access
+        methodNames: ["hello", "goodbye"], // optional
+        successUrl: "http://YOUR-URL.com/success", // optional
+        failureUrl: "http://YOUR-URL.com/fail", // optional
     });
 };
 ```
@@ -220,7 +219,7 @@ const signIn = () => {
 
 ```js
 const signOut = () => {
-  wallet.signOut();
+    wallet.signOut();
 };
 ```
 
@@ -262,9 +261,9 @@ const account = await near.account("example-account.testnet");
 const near = await connect(config);
 const account = await near.account("example-account.testnet");
 await account.createAccount(
-  "example-account2.testnet", // new account name
-  "8hSHprDq2StXwMtNd43wDTXQYsjXcD4MJTXQYsjXcc", // public key for new account
-  "10000000000000000000" // initial balance for new account in yoctoNEAR
+    "example-account2.testnet", // new account name
+    "8hSHprDq2StXwMtNd43wDTXQYsjXcD4MJTXQYsjXcc", // public key for new account
+    "10000000000000000000" // initial balance for new account in yoctoNEAR
 );
 ```
 
@@ -311,8 +310,8 @@ await account.getAccountDetails();
 const near = await connect(config);
 const account = await near.account("sender-account.testnet");
 await account.sendMoney(
-  "receiver-account.testnet", // receiver account
-  "1000000000000000000000000" // amount in yoctoNEAR
+    "receiver-account.testnet", // receiver account
+    "1000000000000000000000000" // amount in yoctoNEAR
 );
 ```
 
@@ -335,7 +334,9 @@ console.log(response);
 ```js
 const near = await connect(config);
 const account = await near.account("example-account.testnet");
-const response = await account.deployContract(fs.readFileSync('./wasm_files/status_message.wasm'));
+const response = await account.deployContract(
+    fs.readFileSync("./wasm_files/status_message.wasm")
+);
 console.log(response);
 ```
 
@@ -349,14 +350,13 @@ Standard:
 
 ```js
 const contract = new nearAPI.Contract(
-  account, // the account object that is connecting
-  "example-contract.testnet",
-  {
-    // name of contract you're connecting to
-    viewMethods: ["getMessages"], // view methods do not change state but usually return a value
-    changeMethods: ["addMessage"], // change methods modify state
-    sender: account, // account object to initialize and sign transactions.
-  }
+    account, // the account object that is connecting
+    "example-contract.testnet",
+    {
+        // name of contract you're connecting to
+        viewMethods: ["getMessages"], // view methods do not change state but usually return a value
+        changeMethods: ["addMessage"], // change methods modify state
+    }
 );
 ```
 
@@ -366,19 +366,18 @@ Using Wallet:
 
 ```js
 const contract = new nearAPI.Contract(
-  wallet.account(), // the account object that is connecting
-  "example-contract.testnet",
-  {
-    // name of contract you're connecting to
-    viewMethods: ["getMessages"], // view methods do not change state but usually return a value
-    changeMethods: ["addMessage"], // change methods modify state
-    sender: wallet.Account(), // account object to initialize and sign transactions.
-  }
+    wallet.account(), // the account object that is connecting
+    "example-contract.testnet",
+    {
+        // name of contract you're connecting to
+        viewMethods: ["getMessages"], // view methods do not change state but usually return a value
+        changeMethods: ["addMessage"], // change methods modify state
+        sender: wallet.Account(), // account object to initialize and sign transactions.
+    }
 );
 ```
 
 [`config setup`](#connect)
-
 
 ### Call Contract
 
@@ -386,28 +385,26 @@ Change Method:
 
 ```js
 await contract.method_name(
-  {
-    arg_name: "value", // argument name and value - pass empty object if no args required
-  },
-  300000000000000, // attached GAS (optional)
-  1000000000000000000000000 // attached deposit in yoctoNEAR (optional)
+    {
+        arg_name: "value", // argument name and value - pass empty object if no args required
+    },
+    300000000000000, // attached GAS (optional)
+    1000000000000000000000000 // attached deposit in yoctoNEAR (optional)
 );
 ```
 
 Change Method w/ callbackUrl and meta:
 
 ```js
-await contract.method_name(
-  {
-    callbackUrl: 'https://example.com/callback', // callbackUrl after the transaction approved (optional)
-    meta: 'some info', // meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
+await contract.method_name({
+    callbackUrl: "https://example.com/callback", // callbackUrl after the transaction approved (optional)
+    meta: "some info", // meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
     args: {
-        arg_name: "value" // argument name and value - pass empty object if no args required
+        arg_name: "value", // argument name and value - pass empty object if no args required
     },
     gas: 300000000000000, // attached GAS (optional)
-    amount: 1000000000000000000000000 // attached deposit in yoctoNEAR (optional)
-  }
-);
+    amount: 1000000000000000000000000, // attached deposit in yoctoNEAR (optional)
+});
 ```
 
 View Method:
@@ -444,10 +441,10 @@ await account.addKey("8hSHprDq2StXwMtNd43wDTXQYsjXcD4MJTXQYsjXcc");
 const near = await connect(config);
 const account = await near.account("example-account.testnet");
 await account.addKey(
-  "8hSHprDq2StXwMtNd43wDTXQYsjXcD4MJTXQYsjXcc", // public key for new account
-  "example-account.testnet", // contract this key is allowed to call (optional)
-  "example_method", // methods this key is allowed to call (optional)
-  "2500000000000" // allowance key can use to call methods (optional)
+    "8hSHprDq2StXwMtNd43wDTXQYsjXcD4MJTXQYsjXcc", // public key for new account
+    "example-account.testnet", // contract this key is allowed to call (optional)
+    "example_method", // methods this key is allowed to call (optional)
+    "2500000000000" // allowance key can use to call methods (optional)
 );
 ```
 
