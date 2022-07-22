@@ -35,8 +35,7 @@ export declare class AccountMultisig extends Account {
     onAddRequestResult: Function;
     constructor(connection: Connection, accountId: string, options: any);
     signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
-    protected signAndSendTransaction(...args: any[]): Promise<FinalExecutionOutcome>;
-    private _signAndSendTransaction;
+    protected signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{
         codeStatus: MultisigCodeStatus;
         stateStatus: MultisigStateStatus;
@@ -65,17 +64,7 @@ export declare class Account2FA extends AccountMultisig {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
      */
-    signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
-    /**
-     * @deprecated
-     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link JsonRpcProvider.sendTransaction}
-     *
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the transaction
-     */
-    signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>;
-    private __signAndSendTransaction;
+    protected signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>;
     deployMultisig(contractBytes: Uint8Array): Promise<FinalExecutionOutcome>;
     disableWithFAK({ contractBytes, cleanupContractBytes }: {
         contractBytes: Uint8Array;

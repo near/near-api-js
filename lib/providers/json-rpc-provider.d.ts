@@ -1,3 +1,8 @@
+/**
+ * This module contains the {@link JsonRpcProvider} client class
+ * which can be used to interact with the NEAR RPC API.
+ * @see {@link providers/provider} for a list of request and response types
+ */
 import { AccessKeyWithPublicKey, Provider, FinalExecutionOutcome, NodeStatusResult, BlockId, BlockReference, BlockResult, BlockChangeResult, ChangeResult, ChunkId, ChunkResult, EpochValidatorInfo, NearProtocolConfig, LightClientProof, LightClientProofRequest, GasPrice, QueryResponseKind } from './provider';
 import { ConnectionInfo } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
@@ -12,9 +17,9 @@ export declare class JsonRpcProvider extends Provider {
     /** @hidden */
     readonly connection: ConnectionInfo;
     /**
-     * @param connectionInfoOrUrl ConnectionInfo or RPC API endpoint URL (deprecated)
+     * @param connectionInfo Connection info
      */
-    constructor(connectionInfoOrUrl?: string | ConnectionInfo);
+    constructor(connectionInfo: ConnectionInfo);
     /**
      * Gets the RPC's status
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#general-validator-status}
@@ -89,12 +94,6 @@ export declare class JsonRpcProvider extends Provider {
      */
     validators(blockId: BlockId | null): Promise<EpochValidatorInfo>;
     /**
-     * @deprecated
-     * Gets the genesis config from RPC
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#genesis-config}
-     */
-    experimental_genesisConfig(): Promise<NearProtocolConfig>;
-    /**
      * Gets the protocol config at a block from RPC
      * @see {@link }
      *
@@ -103,10 +102,6 @@ export declare class JsonRpcProvider extends Provider {
     experimental_protocolConfig(blockReference: BlockReference | {
         sync_checkpoint: 'genesis';
     }): Promise<NearProtocolConfig>;
-    /**
-     * @deprecated Use {@link lightClientProof} instead
-     */
-    experimental_lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     /**
      * Gets a light client execution proof for verifying execution outcomes
      * @see {@link https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof}

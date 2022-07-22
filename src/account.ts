@@ -1,5 +1,4 @@
 import BN from 'bn.js';
-import depd from 'depd';
 import {
     transfer,
     createAccount,
@@ -122,7 +121,7 @@ interface ReceiptLogWithFailure {
     failure: ServerError;
 }
 
-function parseJsonFromRawResponse (response: Uint8Array): any {
+function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());
 }
 
@@ -141,21 +140,9 @@ export class Account {
     readonly connection: Connection;
     readonly accountId: string;
 
-    /** @hidden */
-    protected get ready(): Promise<void> {
-        const deprecate = depd('Account.ready()');
-        deprecate('not needed anymore, always ready');
-        return Promise.resolve();
-    }
-
     constructor(connection: Connection, accountId: string) {
         this.connection = connection;
         this.accountId = accountId;
-    }
-
-    async fetchState(): Promise<void> {
-        const deprecate = depd('Account.fetchState()');
-        deprecate('use `Account.state()` instead');
     }
 
     /**
@@ -172,24 +159,24 @@ export class Account {
 
     /** @hidden */
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
-      if (!process.env["NEAR_NO_LOGS"]){
-        for (const result of results) {
-            console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
-            this.printLogs(contractId, result.logs, '\t');
-            if (result.failure) {
-                console.warn(`\tFailure [${contractId}]: ${result.failure}`);
+        if (!process.env["NEAR_NO_LOGS"]) {
+            for (const result of results) {
+                console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
+                this.printLogs(contractId, result.logs, '\t');
+                if (result.failure) {
+                    console.warn(`\tFailure [${contractId}]: ${result.failure}`);
+                }
             }
         }
-      }
     }
 
     /** @hidden */
     private printLogs(contractId: string, logs: string[], prefix = '') {
-      if (!process.env["NEAR_NO_LOGS"]){
-        for (const log of logs) {
-            console.log(`${prefix}Log [${contractId}]: ${log}`);
+        if (!process.env["NEAR_NO_LOGS"]) {
+            for (const log of logs) {
+                console.log(`${prefix}Log [${contractId}]: ${log}`);
+            }
         }
-      }
     }
 
     /**
@@ -218,31 +205,7 @@ export class Account {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link JsonRpcProvider.sendTransaction}
      */
-    protected signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome>
-    /**
-     * @deprecated
-     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link JsonRpcProvider.sendTransaction}
-     *
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the transaction
-     */
-    protected signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome>
-    protected signAndSendTransaction(...args: any): Promise<FinalExecutionOutcome> {
-        if(typeof args[0] === 'string') {
-            return this.signAndSendTransactionV1(args[0], args[1]);
-        } else {
-            return this.signAndSendTransactionV2(args[0]);
-        }
-    }
-
-    private signAndSendTransactionV1(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        const deprecate = depd('Account.signAndSendTransaction(receiverId, actions');
-        deprecate('use `Account.signAndSendTransaction(SignAndSendTransactionOptions)` instead');
-        return this.signAndSendTransactionV2({ receiverId, actions });
-    }
-
-    private async signAndSendTransactionV2({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    protected async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -309,7 +272,7 @@ export class Account {
      * @param actions currently unused (see todo)
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
-    async findAccessKey(receiverId: string, actions: Action[]): Promise<{publicKey: PublicKey; accessKey: AccessKeyView}> {
+    async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
         // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
@@ -333,7 +296,7 @@ export class Account {
             // this checks to see if the access key was already retrieved and cached while
             // the above network call was in flight. To keep nonce values in line, we return
             // the cached access key.
-            if(this.accessKeyByPublicKeyCache[publicKey.toString()]) {
+            if (this.accessKeyByPublicKeyCache[publicKey.toString()]) {
                 return { publicKey, accessKey: this.accessKeyByPublicKeyCache[publicKey.toString()] };
             }
 
@@ -417,40 +380,11 @@ export class Account {
         return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
     }
 
-    async functionCall(props: FunctionCallOptions): Promise<FinalExecutionOutcome>;
     /**
-     * @deprecated
-     *
-     * @param contractId NEAR account where the contract is deployed
-     * @param methodName The method name on the contract as it is written in the contract code
-     * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
-     *  or `Uint8Array` instance which represents bytes passed as is.
-     * @param gas max amount of gas that method call can use
-     * @param amount amount of NEAR (in yoctoNEAR) to send together with the call
+     * Execute function call
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async functionCall(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome>
-    async functionCall(...args: any[]): Promise<FinalExecutionOutcome> {
-        if(typeof args[0] === 'string') {
-            return this.functionCallV1(args[0], args[1], args[2], args[3], args[4]);
-        } else {
-            return this.functionCallV2(args[0]);
-        }
-    }
-
-    private functionCallV1(contractId: string, methodName: string, args: any, gas?: BN, amount?: BN): Promise<FinalExecutionOutcome> {
-        const deprecate = depd('Account.functionCall(contractId, methodName, args, gas, amount)');
-        deprecate('use `Account.functionCall(FunctionCallOptions)` instead');
-
-        args = args || {};
-        this.validateArgs(args);
-        return this.signAndSendTransaction({
-            receiverId: contractId,
-            actions: [functionCall(methodName, args, gas || DEFAULT_FUNCTION_CALL_GAS, amount)]
-        });
-    }
-
-    private functionCallV2({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+    async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         let functionCallArgs;
 
@@ -479,7 +413,7 @@ export class Account {
      * @param methodNames The method names on the contract that should be allowed to be called. Pass null for no method names and '' or [] for any method names.
      * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
      */
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string|string[], amount?: BN): Promise<FinalExecutionOutcome> {
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome> {
         if (!methodNames) {
             methodNames = [];
         }
@@ -593,7 +527,7 @@ export class Account {
             prefix_base64: Buffer.from(prefix).toString('base64')
         });
 
-        return values.map(({key, value}) => ({
+        return values.map(({ key, value }) => ({
             key: Buffer.from(key, 'base64'),
             value: Buffer.from(value, 'base64')
         }));

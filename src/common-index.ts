@@ -13,10 +13,8 @@ import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
 
-// TODO: Deprecate and remove WalletAccount
 import {
     ConnectedWalletAccount,
-    WalletAccount,
     WalletConnection
 } from './wallet-account';
 
@@ -38,6 +36,5 @@ export {
     Near,
 
     ConnectedWalletAccount,
-    WalletAccount,
     WalletConnection
 };

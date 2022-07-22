@@ -41,7 +41,7 @@ export interface ConnectConfig extends NearConfig {
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
     // Try to find extra key in `KeyPath` if provided.
-    if (config.keyPath && (config.keyStore || config.deps && config.deps.keyStore)) {
+    if (config.keyPath && config.keyStore) {
         try {
             const accountKeyFile = await readKeyFile(config.keyPath);
             if (accountKeyFile[0]) {
@@ -54,9 +54,9 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                 }
                 config.keyStore = new MergeKeyStore([
                     keyPathStore,
-                    (config.keyStore || config.deps.keyStore)
+                    config.keyStore
                 ], { writeKeyStoreIndex: 1 });
-                if (!process.env["NEAR_NO_LOGS"]){
+                if (!process.env["NEAR_NO_LOGS"]) {
                     console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
                 }
             }

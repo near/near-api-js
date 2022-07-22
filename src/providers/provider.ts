@@ -425,7 +425,6 @@ export abstract class Provider {
     abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
     // TODO: Use BlockQuery?
     abstract validators(blockId: BlockId): Promise<EpochValidatorInfo>;
-    abstract experimental_genesisConfig(): Promise<NearProtocolConfig>;
     abstract experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     abstract gasPrice(blockId: BlockId): Promise<GasPrice>;
