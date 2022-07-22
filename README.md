@@ -1,27 +1,21 @@
-# near-api-js
+# NEAR JavaScript API
 
 [![Build Status](https://travis-ci.com/near/near-api-js.svg?branch=master)](https://travis-ci.com/near/near-api-js)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/near/near-api-js) 
 
-A JavaScript/TypeScript library for development of DApps on the NEAR platform
+NEAR JavaScript API is a complete library to interact with the NEAR blockchain. You can use it in the browser, or in Node.js runtime.
 
-# Documentation
+## Documentation
 
-[Read the TypeDoc API documentation](https://near.github.io/near-api-js/)
+- [Learn how to use](https://docs.near.org/tools/near-api-js/using-near-api-js) the library in your project
 
----
+- Read the [TypeDoc API](https://near.github.io/near-api-js/) documentation
 
-# Examples
+- [Cookbook](./examples/cookbook) with common use cases
 
-## [Quick Reference](https://github.com/near/near-api-js/blob/master/examples/quick-reference.md)
-_(Cheat sheet / quick reference)_
+- To quickly get started with integrating NEAR in a _web browser_, read our [Web Frontend integration](https://docs.near.org/develop/integrate/frontend) article.
 
-## [Cookbook](https://github.com/near/near-api-js/blob/master/examples/cookbook/README.md)
-_(Common use cases / more complex examples)_
-
----
-
-# Contribute to this library
+## Contribute to this library
 
 1. Install dependencies
 
@@ -32,7 +26,7 @@ _(Common use cases / more complex examples)_
        yarn build -- -w
 
 
-# Publish
+### Publish
 
 Prepare `dist` version by running:
 
@@ -40,9 +34,8 @@ Prepare `dist` version by running:
 
 When publishing to npm use [np](https://github.com/sindresorhus/np).
 
----
 
-# Integration Test
+### Integration Test
 
 Start the node by following instructions from [nearcore](https://github.com/nearprotocol/nearcore), then
 
@@ -50,7 +43,7 @@ Start the node by following instructions from [nearcore](https://github.com/near
 
 Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello
 
-# Update error schema
+### Update error schema
 
 Follow next steps:
 
@@ -58,7 +51,7 @@ Follow next steps:
 2. Fetch new schema: `node fetch_error_schema.js`
 3. `yarn build` to update `lib/**.js` files
 
-# License
+## License
 
 This repository is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 See [LICENSE](LICENSE) and [LICENSE-APACHE](LICENSE-APACHE) for details.
