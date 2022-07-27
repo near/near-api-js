@@ -19,6 +19,3 @@ package\-lock\.json
 
 # Generated typedoc files
 docs/
-
-# Generated test files
-test-keys/
