@@ -91,7 +91,7 @@ class Account {
         return __awaiter(this, void 0, void 0, function* () {
             const accessKeyInfo = yield this.findAccessKey(receiverId, actions);
             if (!accessKeyInfo) {
-                throw new providers_1.TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
+                throw new providers_1.TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair exists for this account`, 'KeyNotFound');
             }
             const { accessKey } = accessKeyInfo;
             const block = yield this.connection.provider.block({ finality: 'final' });
@@ -172,7 +172,7 @@ class Account {
             // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
             const publicKey = yield this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
             if (!publicKey) {
-                return null;
+                throw new providers_1.TypedError(`no matching key pair found in ${this.connection.signer}`, 'PublicKeyNotFound');
             }
             const cachedAccessKey = this.accessKeyByPublicKeyCache[publicKey.toString()];
             if (cachedAccessKey !== undefined) {
