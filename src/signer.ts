@@ -50,7 +50,7 @@ export class InMemorySigner extends Signer {
      * @param keyPair The keyPair to use for signing
      */
     static async fromKeyPair(networkId: string, accountId: string, keyPair: KeyPair): Promise<Signer> {
-        const keyStore = new InMemoryKeyStore()
+        const keyStore = new InMemoryKeyStore();
         await keyStore.setKey(networkId, accountId, keyPair);
         return new InMemorySigner(keyStore);
     }
