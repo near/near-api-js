@@ -17,6 +17,7 @@
     "test": "yarn lerna run test --stream",
     "browserify": "yarn lerna run browserify",
     "bundlewatch": "yarn lerna exec yarn run bundlewatch",
+    "release": "yarn lerna version --conventional-commits",
     "prepare": "husky install"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 {
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
-    "version": "0.46.0",
+    "version": "0.45.1",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
@@ -65,7 +65,7 @@
         "lint:test:fix": "eslint --ext .js --fix test",
         "prefuzz": "yarn build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "rimraf lib"
+        "prepare": "husky install"
     },
     "bundlewatch": {
         "files": [
