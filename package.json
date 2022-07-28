@@ -11,7 +11,7 @@
     ]
   },
   "scripts": {
-    "build": "yarn tsc -b packages",
+    "build": "yarn lerna run build",
     "clean": "yarn lerna run clean --concurrency 4",
     "lint": "yarn lerna run lint --stream --concurrency 1",
     "test": "yarn lerna run test --stream",

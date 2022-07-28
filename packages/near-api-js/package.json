@@ -65,6 +65,7 @@
         "lint:test:fix": "eslint --ext .js --fix test",
         "prefuzz": "yarn build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
+        "clean": "yarn rimraf lib",
         "prepare": "husky install"
     },
     "bundlewatch": {
