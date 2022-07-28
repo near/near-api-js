@@ -8,6 +8,10 @@ extends:
 parser: '@typescript-eslint/parser'
 rules:
   no-inner-declarations: off
+  indent:
+    - error
+    - 4
+    - SwitchCase: 1
   '@typescript-eslint/no-explicit-any': off
   # TODO: Clean-up code and enable following rules
   '@typescript-eslint/camelcase': off
