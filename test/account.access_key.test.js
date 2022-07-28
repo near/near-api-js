@@ -40,11 +40,7 @@ test('remove access key no longer works', async() => {
         await contract.setValue({ args: { value: 'test' } });
         fail('should throw an error');
     } catch (e) {
-        if (process.env.NODE_ENV == 'local') {
-            expect(e.message).toEqual(`Can not sign transactions for account ${workingAccount.accountId} on network unittest, no matching key pair found in InMemorySigner(MergeKeyStore(InMemoryKeyStore, InMemoryKeyStore)).`);
-        } else {
-            expect(e.message).toEqual(`Can not sign transactions for account ${workingAccount.accountId} on network unittest, no matching key pair found in InMemorySigner(InMemoryKeyStore).`);
-        }
+        expect(e.message).toEqual(`Can not sign transactions for account ${workingAccount.accountId} on network ${testUtils.networkId}, no matching key pair exists for this account`);
         expect(e.type).toEqual('KeyNotFound');
     }
 });
@@ -85,4 +81,16 @@ test('loading account after adding a full key', async() => {
     const addedKey = accessKeys.find(item => item.public_key == keyPair.getPublicKey().toString());
     expect(addedKey).toBeTruthy();
     expect(addedKey.access_key.permission).toEqual('FullAccess');
+});
+
+test('load invalid key pair', async() => {
+    // Override in the key store with invalid key pair
+    await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, '');
+    try {
+        await contract.setValue({ args: { value: 'test' } });
+        fail('should throw an error');
+    } catch (e) {
+        expect(e.message).toEqual(`no matching key pair found in ${nearjs.connection.signer}`);
+        expect(e.type).toEqual('PublicKeyNotFound');
+    }
 });
