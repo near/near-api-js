@@ -313,7 +313,7 @@ export class Account {
         // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
-            throw new TypedError('Could not find public key in keystore for this accountId.', 'KeyNotFound');
+            throw new TypedError(`Can not sign transactions. Could not find public key in keystore for this accountId ${this.accountId}`, 'PublicKeyNotFound');
         }
 
         const cachedAccessKey = this.accessKeyByPublicKeyCache[publicKey.toString()];
@@ -335,10 +335,6 @@ export class Account {
             // the cached access key.
             if(this.accessKeyByPublicKeyCache[publicKey.toString()]) {
                 return { publicKey, accessKey: this.accessKeyByPublicKeyCache[publicKey.toString()] };
-            }
-
-            if (!accessKey) {
-                throw new TypedError('Could not find access key, check keystore entries or account id access keys', 'KeyNotFound');
             }
 
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;

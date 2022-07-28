@@ -86,3 +86,15 @@ test('loading account after adding a full key', async() => {
     expect(addedKey).toBeTruthy();
     expect(addedKey.access_key.permission).toEqual('FullAccess');
 });
+
+test('load invalid key pair', async() => {
+    // Override in the key store with invalid key pair
+    await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, '');
+    try {
+        await contract.setValue({ args: { value: 'test' } });
+        fail('should throw an error');
+    } catch (e) {
+        expect(e.message).toEqual(`Can not sign transactions. Could not find public key in keystore for this accountId ${workingAccount.accountId}`);
+        expect(e.type).toEqual('PublicKeyNotFound');
+    }
+});
