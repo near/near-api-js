@@ -201,7 +201,7 @@ export class Account {
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
         if (!accessKeyInfo) {
-            throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair found in ${this.connection.signer}.`, 'KeyNotFound');
+            throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair exists for this account`, 'KeyNotFound');
         }
         const { accessKey } = accessKeyInfo;
 
@@ -313,7 +313,7 @@ export class Account {
         // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         if (!publicKey) {
-            throw new TypedError(`Can not sign transactions. Could not find public key in keystore for this accountId ${this.accountId}`, 'PublicKeyNotFound');
+            throw new TypedError(`no matching key pair found in ${this.connection.signer}`, 'PublicKeyNotFound');
         }
 
         const cachedAccessKey = this.accessKeyByPublicKeyCache[publicKey.toString()];
