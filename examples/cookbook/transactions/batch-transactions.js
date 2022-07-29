@@ -24,18 +24,14 @@ async function sendTransactions() {
     const near = await connect({ ...config, keyStore });
     const account = await near.account(CONTRACT_NAME);
     const newArgs = { staking_pool_whitelist_account_id: WHITELIST_ACCOUNT_ID };
-    const result = await account.signAndSendTransaction({
-        receiverId: CONTRACT_NAME,
-        actions: [
-            transactions.deployContract(fs.readFileSync(WASM_PATH)),
-            transactions.functionCall(
+    const txn = account.createTransaction(CONTRACT_NAME);
+
+    const result = await tnx.deployContract(fs.readFileSync(WASM_PATH)).functionCall(
                 "new",
                 Buffer.from(JSON.stringify(newArgs)),
                 10000000000000,
                 "0"
-            ),
-        ],
-    });
-
+            ).signAndSend();
+            
     console.log(result);
 }
