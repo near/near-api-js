@@ -23,12 +23,12 @@ type getCodeFunction = (method: any) => Promise<string>;
 type verifyCodeFunction = (securityCode: any) => Promise<any>;
 
 export enum MultisigDeleteRequestRejectionError {
-    CANNOT_DESERIALIZE_STATE = `Cannot deserialize the contract state`,
-    MULTISIG_NOT_INITIALIZED = `Smart contract panicked: Multisig contract should be initialized before usage`,
-    NO_SUCH_REQUEST = `Smart contract panicked: panicked at 'No such request: either wrong number or already confirmed'`,
-    REQUEST_COOLDOWN_ERROR = `Request cannot be deleted immediately after creation.`,
-    METHOD_NOT_FOUND = `Contract method is not found`
-};
+    CANNOT_DESERIALIZE_STATE = 'Cannot deserialize the contract state',
+    MULTISIG_NOT_INITIALIZED = 'Smart contract panicked: Multisig contract should be initialized before usage',
+    NO_SUCH_REQUEST = 'Smart contract panicked: panicked at \'No such request: either wrong number or already confirmed\'',
+    REQUEST_COOLDOWN_ERROR = 'Request cannot be deleted immediately after creation.',
+    METHOD_NOT_FOUND = 'Contract method is not found'
+}
 
 export enum MultisigStateStatus {
     INVALID_STATE,
@@ -118,7 +118,7 @@ export class AccountMultisig extends Account {
      * and whether it is initialized. The canary transaction attempts to delete a request at index u32_max and will go through if a request exists at that index.
      * a u32_max + 1 and -1 value cannot be used for the canary due to expected u32 error thrown before deserialization attempt.
      */
-    async checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{ codeStatus: MultisigCodeStatus, stateStatus: MultisigStateStatus }> {
+    async checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{ codeStatus: MultisigCodeStatus; stateStatus: MultisigStateStatus }> {
         const u32_max = 4_294_967_295;
         const validCodeStatusIfNoDeploy = contractBytes ? MultisigCodeStatus.UNKNOWN_CODE : MultisigCodeStatus.VALID_CODE;
 
@@ -269,23 +269,23 @@ export class Account2FA extends AccountMultisig {
             addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
             deployContract(contractBytes),
         ];
-        const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT))
+        const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT));
         console.log('deploying multisig contract for', accountId);
 
         const { stateStatus: multisigStateStatus } = await this.checkMultisigCodeAndStateStatus(contractBytes);
         switch (multisigStateStatus) {
             case MultisigStateStatus.STATE_NOT_INITIALIZED:
-              return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
+                return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
             case MultisigStateStatus.VALID_STATE:
-              return await super.signAndSendTransactionWithAccount(accountId, actions);
+                return await super.signAndSendTransactionWithAccount(accountId, actions);
             case MultisigStateStatus.INVALID_STATE:
-              throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
+                throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
             default:
-              throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
+                throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
         }
     }
 
-    async disableWithFAK({ contractBytes, cleanupContractBytes }: { contractBytes: Uint8Array, cleanupContractBytes?: Uint8Array }) {
+    async disableWithFAK({ contractBytes, cleanupContractBytes }: { contractBytes: Uint8Array; cleanupContractBytes?: Uint8Array }) {
         let cleanupActions = [];
         if(cleanupContractBytes) {
             await this.deleteAllRequests().catch(e => e);
@@ -302,14 +302,14 @@ export class Account2FA extends AccountMultisig {
         const accessKeyInfo = await this.findAccessKey(this.accountId, actions);
 
         if(accessKeyInfo && accessKeyInfo.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
-            throw new TypedError(`No full access key found in keystore. Unable to bypass multisig`, 'NoFAKFound');
+            throw new TypedError('No full access key found in keystore. Unable to bypass multisig', 'NoFAKFound');
         }
 
         return this.signAndSendTransactionWithAccount(this.accountId, actions);
     }
 
     async get2faDisableCleanupActions(cleanupContractBytes: Uint8Array) {
-        const currentAccountState: { key: Buffer, value: Buffer }[] = await this.viewState('').catch(error => {
+        const currentAccountState: { key: Buffer; value: Buffer }[] = await this.viewState('').catch(error => {
             const cause = error.cause && error.cause.name;
             if (cause == 'NO_CONTRACT_CODE') {
                 return [];
@@ -319,7 +319,7 @@ export class Account2FA extends AccountMultisig {
                 : error;
         });
 
-        const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'))
+        const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'));
         return currentAccountState.length ? [
             deployContract(cleanupContractBytes),
             functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, new BN('0'))
@@ -364,7 +364,7 @@ export class Account2FA extends AccountMultisig {
                 throw deleteAllRequestsError || e;
             }
             throw e;
-        })
+        });
 
         const actions = [
             ...cleanupActions,

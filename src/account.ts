@@ -159,7 +159,7 @@ export class Account {
 
     /** @hidden */
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
-        if (!process.env["NEAR_NO_LOGS"]) {
+        if (!process.env['NEAR_NO_LOGS']) {
             for (const result of results) {
                 console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
                 this.printLogs(contractId, result.logs, '\t');
@@ -172,7 +172,7 @@ export class Account {
 
     /** @hidden */
     private printLogs(contractId: string, logs: string[], prefix = '') {
-        if (!process.env["NEAR_NO_LOGS"]) {
+        if (!process.env['NEAR_NO_LOGS']) {
             for (const log of logs) {
                 console.log(`${prefix}Log [${contractId}]: ${log}`);
             }
@@ -356,8 +356,8 @@ export class Account {
      * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
      */
     async deleteAccount(beneficiaryId: string) {
-        if (!process.env["NEAR_NO_LOGS"]) {
-            console.log("Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.");
+        if (!process.env['NEAR_NO_LOGS']) {
+            console.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
         }
         return this.signAndSendTransaction({
             receiverId: this.accountId,
