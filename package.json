@@ -12,9 +12,9 @@
   },
   "scripts": {
     "build": "yarn lerna run build",
-    "clean": "yarn lerna run clean --concurrency 4",
-    "lint": "yarn lerna run lint --stream --concurrency 1",
-    "test": "yarn lerna run test --stream",
+    "clean": "yarn lerna run clean",
+    "lint": "yarn lerna run lint --stream",
+    "test": "yarn lerna run test --stream --concurrency 1",
     "browserify": "yarn lerna run browserify",
     "bundlewatch": "yarn lerna exec yarn run bundlewatch",
     "release": "yarn lerna version --conventional-commits",
