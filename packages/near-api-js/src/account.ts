@@ -261,7 +261,7 @@ export class Account {
     }
 
     /** @hidden */
-    accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {}
+    accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
      * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link KeyStore}.
@@ -272,6 +272,7 @@ export class Account {
      * @param actions currently unused (see todo)
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
         // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);

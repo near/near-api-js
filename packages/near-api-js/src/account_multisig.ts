@@ -50,7 +50,7 @@ const storageFallback = {
 
 export class AccountMultisig extends Account {
     public storage: any;
-    public onAddRequestResult: Function;
+    public onAddRequestResult: (any) => any;
 
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId);
@@ -217,7 +217,7 @@ export class Account2FA extends AccountMultisig {
     public sendCode: sendCodeFunction;
     public getCode: getCodeFunction;
     public verifyCode: verifyCodeFunction;
-    public onConfirmResult: Function;
+    public onConfirmResult: (any) => any;
     public helperUrl = 'https://helper.testnet.near.org';
 
     constructor(connection: Connection, accountId: string, options: any) {
@@ -390,7 +390,7 @@ export class Account2FA extends AccountMultisig {
         return requestId;
     }
 
-    async getCodeDefault(method: any): Promise<string> {
+    async getCodeDefault(): Promise<string> {
         throw new Error('There is no getCode callback provided. Please provide your own in AccountMultisig constructor options. It has a parameter method where method.kind is "email" or "phone".');
     }
 

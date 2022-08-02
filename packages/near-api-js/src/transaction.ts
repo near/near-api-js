@@ -145,7 +145,9 @@ export class Action extends Enum {
     deleteAccount: DeleteAccount;
 }
 
-export const SCHEMA = new Map<Function, any>([
+type Class<T = any> = new (...args: any[]) => T;
+
+export const SCHEMA = new Map<Class, any>([
     [Signature, {kind: 'struct', fields: [
         ['keyType', 'u8'],
         ['data', [64]]
