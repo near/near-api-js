@@ -18,7 +18,7 @@
     "browserify": "yarn lerna run browserify",
     "bundlewatch": "yarn lerna exec yarn run bundlewatch",
     "release": "yarn lerna version --conventional-commits",
-    "prepare": "husky install"
+    "prepare": "yarn husky install && yarn lerna run prepare"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",

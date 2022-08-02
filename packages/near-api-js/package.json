@@ -51,7 +51,6 @@
         "dist": "yarn browserify && yarn doc",
         "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
         "prebrowserify": "yarn build",
-        "prepublish": "not-in-install && (yarn build && yarn browserify) || in-install",
         "compile": "tsc -p ./tsconfig.json",
         "dev": "yarn compile -w",
         "doc": "typedoc src && touch docs/.nojekyll",
@@ -66,7 +65,7 @@
         "prefuzz": "yarn build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "yarn rimraf lib",
-        "prepare": "husky install"
+        "prepare": "yarn build && yarn browserify"
     },
     "bundlewatch": {
         "files": [
