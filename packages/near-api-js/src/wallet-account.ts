@@ -44,6 +44,7 @@ interface RequestSignTransactionsOptions {
 /**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * This class is not intended for use outside the browser. Without `window` (i.e. in server contexts), it will instantiate but will throw a clear error when used.
  * 
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#wallet}
  * @example
