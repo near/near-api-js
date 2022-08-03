@@ -61,7 +61,7 @@ export interface NearConfig {
      * NEAR wallet url used to redirect users to their wallet in browser applications.
      * @see {@link https://docs.near.org/docs/tools/near-wallet}
      */
-    walletUrl?: string;
+    walletUrl: string;
 
     /**
      * JVSM account ID for NEAR JS SDK
@@ -82,6 +82,10 @@ export class Near {
     readonly accountCreator: AccountCreator;
 
     constructor(config: NearConfig) {
+        if (!config.walletUrl) {
+            throw new Error('walletUrl is required but was not supplied');
+        }
+
         this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
