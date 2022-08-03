@@ -1,5 +1,16 @@
 {
   "npmClient": "yarn",
   "version": "independent",
-  "useWorkspaces": true
+  "useWorkspaces": true,
+  "changelogPreset": "conventionalcommits",
+  "command": {
+    "version": {
+      "conventionalCommits": true,
+      "message": "chore(release): publish packages",
+      "allowBranch": "master"
+    },
+    "publish": {
+      "yes": true
+    }
+  }
 }
