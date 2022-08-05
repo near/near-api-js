@@ -298,4 +298,13 @@ describe('with deploy contract', () => {
             args: { name: 'world' }
         })).toEqual('hello world');
     });
+
+    test('make viewFunction call with object format', async() => {
+        const result = await workingAccount.viewFunction({
+            contractId,
+            methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
+            args: {name: 'trex'},
+        });
+        expect(result).toEqual('hello trex');
+    });
 });

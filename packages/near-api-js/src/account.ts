@@ -482,7 +482,26 @@ export class Account {
      * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
-    async viewFunction(
+
+    async viewFunction(obj : any, ...restArgs: any[]) {
+        if (restArgs.length === 0) {
+            const {
+                contractId,
+                methodName,
+                args,
+                options,
+            } = obj;
+            return await this.viewFunctionCall(contractId, methodName, args, options);
+        } else {
+            const contractId = obj;
+            const methodName = restArgs[0];
+            const args = restArgs[1];
+            const options = restArgs[2];
+            return await this.viewFunctionCall(contractId, methodName, args, options);
+        }
+    }
+
+    async viewFunctionCall(
         contractId: string,
         methodName: string,
         args: any = {},
