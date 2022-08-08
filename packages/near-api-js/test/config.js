@@ -37,6 +37,7 @@ module.exports = function getConfig(env) {
             networkId: 'shared-test',
             nodeUrl: 'https://rpc.ci-testnet.near.org',
             masterAccount: 'test.near',
+            walletUrl: 'https://wallet.testnet.near.org',
         };
     default:
         throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
