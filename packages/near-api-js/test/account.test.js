@@ -303,7 +303,7 @@ describe('with deploy contract', () => {
         const result = await workingAccount.viewFunction({
             contractId,
             methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
-            args: {name: 'trex'},
+            args: { name: 'trex' },
         });
         expect(result).toEqual('hello trex');
     });

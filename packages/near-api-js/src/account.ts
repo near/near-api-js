@@ -1,4 +1,5 @@
 import BN from 'bn.js';
+import depd from 'depd';
 import {
     transfer,
     createAccount,
@@ -95,24 +96,30 @@ export interface FunctionCallOptions {
     /** amount of NEAR (in yoctoNEAR) to send together with the call */
     attachedDeposit?: BN;
     /**
-     * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
-     */
-    walletMeta?: string;
-    /**
-     * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
-     */
-    walletCallbackUrl?: string;
-    /**
      * Convert input arguments into bytes array.
      */
     stringify?: (input: any) => Buffer;
-
     /**
      * Is contract from JS SDK, automatically encodes args from JS SDK to binary.
      */
     jsContract?: boolean;
+}
+
+export interface ChangeFunctionCallOptions extends FunctionCallOptions {
+    /**
+     * Metadata to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+    */
+    walletMeta?: string;
+    /**
+     * Callback url to send the NEAR Wallet if using it to sign transactions.
+     * @see {@link RequestSignTransactionsOptions}
+    */
+    walletCallbackUrl?: string;
+}
+export interface ViewFunctionCallOptions extends FunctionCallOptions { 
+    parse?: (response: Uint8Array) => any; 
+    blockQuery?: BlockReference; 
 }
 
 interface ReceiptLogWithFailure {
@@ -385,7 +392,7 @@ export class Account {
      * Execute function call
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: FunctionCallOptions): Promise<FinalExecutionOutcome> {
+    async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         let functionCallArgs;
 
@@ -483,31 +490,40 @@ export class Account {
      * @returns {Promise<any>}
      */
 
-    async viewFunction(obj : any, ...restArgs: any[]) {
-        if (restArgs.length === 0) {
-            const {
-                contractId,
-                methodName,
-                args,
-                options,
-            } = obj;
-            return await this.viewFunctionCall(contractId, methodName, args, options);
+    async viewFunction(...restArgs: any) {
+        if (typeof restArgs[0] === 'string') {
+            const contractId = restArgs[0];
+            const methodName = restArgs[1];
+            const args = restArgs[2];
+            const options = restArgs[3];
+            return await this.viewFunctionV1(contractId, methodName, args, options);
         } else {
-            const contractId = obj;
-            const methodName = restArgs[0];
-            const args = restArgs[1];
-            const options = restArgs[2];
-            return await this.viewFunctionCall(contractId, methodName, args, options);
+            return await this.viewFunctionV2(restArgs[0]);
         }
     }
 
-    async viewFunctionCall(
+    async viewFunctionV1(
         contractId: string,
         methodName: string,
         args: any = {},
         { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract=false, blockQuery = { finality: 'optimistic' } }: { parse?: (response: Uint8Array) => any; stringify?: (input: any) => Buffer; blockQuery?: BlockReference; jsContract?: boolean } = {}
     ): Promise<any> {
+        const deprecate = depd('Account.viewFunction(contractId, methodName, args, options)');
+        deprecate('use `Account.viewFunction(ViewFunctionCallOptions)` instead');
+        return this.viewFunctionV2({ contractId, methodName, args, parse, stringify, jsContract, blockQuery });
+    }
+
+    async viewFunctionV2({
+        contractId,
+        methodName,
+        args,
+        parse = parseJsonFromRawResponse,
+        stringify = bytesJsonStringify,
+        jsContract = false,
+        blockQuery = { finality: 'optimistic' }
+    }: ViewFunctionCallOptions): Promise<any> {
         let encodedArgs;
+        
         this.validateArgs(args);
     
         if(jsContract){
