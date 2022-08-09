@@ -1,6 +1,9 @@
 {
   "name": "@near-api-js/monorepo",
   "private": true,
+  "engines": {
+    "node": ">=16.16.0"
+  },
   "workspaces": {
     "packages": [
       "packages/*"
