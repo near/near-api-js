@@ -40,7 +40,7 @@ test('remove access key no longer works', async() => {
         await contract.setValue({ args: { value: 'test' } });
         fail('should throw an error');
     } catch (e) {
-        expect(e.message).toContain(`Querying [object Object] failed: access key ${publicKey} does not exist while viewing.`);
+        expect(e.message).toContain(`Querying failed: access key ${publicKey} does not exist while viewing.`);
         expect(e.type).toEqual('UntypedError');
     }
 });

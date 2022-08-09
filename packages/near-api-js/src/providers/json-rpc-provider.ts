@@ -146,7 +146,7 @@ export class JsonRpcProvider extends Provider {
             result = await this.sendJsonRpc<T>('query', [path, data]);
         }
         if (result && result.error) {
-            throw new TypedError(`Querying ${args} failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`, result.error.name);
+            throw new TypedError(`Querying failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`, result.error.name);
         }
         return result;
     }
