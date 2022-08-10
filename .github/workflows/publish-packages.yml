@@ -6,7 +6,11 @@ on:
       - master
 
 jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
   publish:
+    needs: checks
     runs-on: ubuntu-latest
 
     steps:
