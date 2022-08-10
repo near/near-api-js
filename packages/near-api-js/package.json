@@ -1,5 +1,5 @@
 {
-    "name": "near-api-js",
+    "name": "morgan-testing",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
     "version": "0.45.1",
     "repository": {

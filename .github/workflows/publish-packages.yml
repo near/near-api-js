@@ -1,9 +1,7 @@
 name: Publish Packages
 
 on:
-  push:
-    branches:
-      - master
+  pull_request:
 
 jobs:
   publish:
@@ -14,6 +12,9 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+
+    - name: Hack to bypass detached HEAD in PR
+      run: git checkout naj-12-publish-ci
 
     - name: Setup Node
       uses: actions/setup-node@v3
@@ -27,8 +28,13 @@ jobs:
         git config user.email "<>"
         git config user.name "Github Actions Bot"
 
+    - run: git log --oneline
+
     - name: Install dependencies
-      run: lerna bootstrap
+      run: yarn --frozen-lockfile
+
+    - name: Build dependencies
+      run: yarn build
 
     - name: Publish packages
       run: lerna publish

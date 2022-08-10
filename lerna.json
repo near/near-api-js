@@ -6,8 +6,7 @@
   "command": {
     "version": {
       "conventionalCommits": true,
-      "message": "chore(release): publish packages",
-      "allowBranch": "master"
+      "message": "chore(release): publish packages"
     },
     "publish": {
       "yes": true
