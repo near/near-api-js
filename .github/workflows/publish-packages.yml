@@ -28,7 +28,7 @@ jobs:
         git config user.name "Github Actions Bot"
 
     - name: Install dependencies
-      run: lerna bootstrap
+      run: yarn --frozen-lockfile
 
     - name: Publish packages
       run: lerna publish
