@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.47.0](https://github.com/near/near-api-js/compare/morgan-testing@0.46.0...morgan-testing@0.47.0) (2022-08-10)
+
+
+### Features
+
+* update near-api-js ([9a2efbe](https://github.com/near/near-api-js/commit/9a2efbe4f061fde80598cbd9e1347d167f6b3520))
+
+
+
 ## 0.46.0 (2022-08-10)
 
 
