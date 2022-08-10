@@ -35,8 +35,6 @@ import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './utils/rpc_errors';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 
-// update
-
 import exponentialBackoff from './utils/exponential-backoff';
 
 // Default number of retries with different nonce before giving up on a transaction.
