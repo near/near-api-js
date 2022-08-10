@@ -22,13 +22,15 @@ jobs:
         cache: yarn
         registry-url: https://registry.npmjs.org
 
+    - name: Configure Git user
+      run: |
+        git config user.email "<>"
+        git config user.name "Github Actions Bot"
+
     - name: Install dependencies
       run: lerna bootstrap
 
     - name: Publish packages
-      run: |
-        git config user.email "wallet@near.org"
-        git config user.name "CI"
-        lerna publish
+      run: lerna publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
