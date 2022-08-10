@@ -12,6 +12,7 @@ jobs:
   publish:
     needs: checks
     runs-on: ubuntu-latest
+    environment: NPM
 
     steps:
     - name: Checkout repository
