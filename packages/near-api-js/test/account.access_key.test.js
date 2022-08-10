@@ -40,8 +40,8 @@ test('remove access key no longer works', async() => {
         await contract.setValue({ args: { value: 'test' } });
         fail('should throw an error');
     } catch (e) {
-        expect(e.message).toEqual(`Can not sign transactions for account ${workingAccount.accountId} on network ${testUtils.networkId}, no matching key pair exists for this account`);
-        expect(e.type).toEqual('KeyNotFound');
+        expect(e.message).toContain(`Querying failed: access key ${publicKey} does not exist while viewing.`);
+        expect(e.type).toEqual('UntypedError');
     }
 });
 
