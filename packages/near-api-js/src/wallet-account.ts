@@ -292,6 +292,14 @@ export class ConnectedWalletAccount extends Account {
     // Overriding Account methods
 
     /**
+     * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
+     * @see {@link JsonRpcProvider.sendTransaction}
+     */
+    signAndSendBundledActions(options: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction(options);
+    }
+
+    /**
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */

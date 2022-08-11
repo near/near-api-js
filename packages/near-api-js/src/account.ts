@@ -222,6 +222,14 @@ export class Account {
     }
 
     /**
+     * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
+     * @see {@link JsonRpcProvider.sendTransaction}
+     */
+    signAndSendBundledActions(options: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction(options);
+    }
+
+    /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
