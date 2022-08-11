@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  checks:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,4 +14,14 @@ jobs:
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: yarn lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
       - run: yarn test
