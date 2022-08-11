@@ -50,11 +50,10 @@
     "scripts": {
         "dist": "yarn browserify && yarn doc",
         "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
-        "prebrowserify": "yarn build",
         "compile": "tsc -p ./tsconfig.json",
         "dev": "yarn compile -w",
         "doc": "typedoc src && touch docs/.nojekyll",
-        "build": "yarn compile",
+        "build": "yarn compile && yarn browserify",
         "test": "jest test",
         "lint": "concurrently \"yarn:lint:*(!fix)\"",
         "lint:src": "eslint --ext .ts src",
@@ -65,7 +64,7 @@
         "prefuzz": "yarn build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "yarn rimraf lib",
-        "prepare": "yarn build && yarn browserify"
+        "prepare": "yarn build"
     },
     "bundlewatch": {
         "files": [
