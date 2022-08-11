@@ -85,16 +85,16 @@ export class WalletConnection {
     _completeSignInPromise: Promise<void>;
 
     constructor(near: Near, appKeyPrefix: string | null) {
-        if(typeof window === 'undefined') {
+        if (typeof window === 'undefined') {
             return new Proxy(this, {
                 get(target, property) {
-                    if(property === 'isSignedIn') {
+                    if (property === 'isSignedIn') {
                         return () => false;
                     }
-                    if(property === 'getAccountId') {
+                    if (property === 'getAccountId') {
                         return () => '';
                     }
-                    if(target[property] && typeof target[property] === 'function') {
+                    if (target[property] && typeof target[property] === 'function') {
                         return () => {
                             throw new Error('No window found in context, please ensure you are using WalletConnection on the browser');
                         };
@@ -104,7 +104,16 @@ export class WalletConnection {
             });
         }
         this._near = near;
-        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+        const DEPRECATED_authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
+        const DEPRECATED_authData = JSON.parse(window.localStorage.getItem(DEPRECATED_authDataKey));
+        const authDataKey = (appKeyPrefix || near.config.contractName || 'default') + LOCAL_STORAGE_KEY_SUFFIX;
+
+        // Migrate dApps that previously used a faulty authDataKey.
+        if (DEPRECATED_authData) {
+            window.localStorage.setItem(authDataKey, JSON.stringify(DEPRECATED_authData));
+            window.localStorage.removeItem(DEPRECATED_authDataKey);
+        }
+
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
