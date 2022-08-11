@@ -35,6 +35,9 @@ jobs:
     - name: Install dependencies
       run: yarn --frozen-lockfile
 
+    - name: Build packages
+      run: lerna build
+
     - name: Publish packages
       run: lerna publish
       env:
