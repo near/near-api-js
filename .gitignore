@@ -1,5 +1,6 @@
 #IDE
 .idea
+.vscode
 
 storage
 node_modules
