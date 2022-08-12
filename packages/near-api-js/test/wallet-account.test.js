@@ -161,7 +161,7 @@ it('can complete sign in', async () => {
 });
 
 it('can get the default appKeyPrefix', async () => {
-    nearNewFake = {
+    nearFakeWithoutContract = {
         config: {
             networkId: 'networkId',
             walletUrl: 'http://example.com/wallet',
@@ -181,7 +181,7 @@ it('can get the default appKeyPrefix', async () => {
     global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
     await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
 
-    const newWalletConnection = new nearApi.WalletConnection(nearNewFake);
+    const newWalletConnection = new nearApi.WalletConnection(nearFakeWithoutContract);
     await newWalletConnection._completeSignInWithAccessKey();
 
     expect(localStorage.getItem('default_wallet_auth_key')).toBeTruthy();
