@@ -28,6 +28,7 @@ import { baseEncode } from 'borsh';
 import exponentialBackoff from '../utils/exponential-backoff';
 import { parseRpcError } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
+import { Logger } from '../utils/near-logger';
 
 /** @hidden */
 export { TypedError, ErrorContext };
@@ -350,9 +351,7 @@ export class JsonRpcProvider extends Provider {
                 return response;
             } catch (error) {
                 if (error.type === 'TimeoutError') {
-                    if (!process.env['NEAR_NO_LOGS']) {
-                        console.warn(`Retrying request to ${method} as it has timed out`, params);
-                    }
+                    Logger.warn(`Retrying request to ${method} as it has timed out`, params);
                     return null;
                 }
 

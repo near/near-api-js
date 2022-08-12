@@ -2,6 +2,7 @@ const nearApi = require('../src/index');
 const testUtils  = require('./test-utils');
 const BN = require('bn.js');
 const base58 = require('bs58');
+const { Logger } = require('../src/utils/near-logger');
 
 jest.setTimeout(20000);
 
@@ -10,6 +11,14 @@ const withProvider = (fn) => {
     const provider = new nearApi.providers.JsonRpcProvider(config.nodeUrl);
     return () => fn(provider);
 };
+
+beforeAll(async () => {
+    nearApi.configureLogging({ showLogs: () => false });
+});
+
+afterAll(async () => {
+    Logger.reset();
+});
 
 test('json rpc fetch node status', withProvider(async (provider) => {
     let response = await provider.status();

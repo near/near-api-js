@@ -3,6 +3,7 @@ const { Account, Contract, providers } = require('../src/index');
 const testUtils  = require('./test-utils');
 const fs = require('fs');
 const BN = require('bn.js');
+const { Logger, configureLogging } = require('../src/utils/near-logger');
 
 let nearjs;
 let workingAccount;
@@ -12,12 +13,14 @@ const { HELLO_WASM_PATH, HELLO_WASM_BALANCE } = testUtils;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
+    configureLogging({ showLogs: () => false });
     nearjs = await testUtils.setUpTestConnection();
     workingAccount = await testUtils.createAccount(nearjs);
 });
 
 afterAll(async () => {
     await workingAccount.deleteAccount(workingAccount.accountId);
+    Logger.reset();
 });
 
 test('view pre-defined account works and returns correct name', async () => {
@@ -75,19 +78,21 @@ test('findAccessKey returns the same access key when fetched simultaneously', as
 });
 
 describe('errors', () => {
-    let oldLog;
     let logs;
 
     beforeEach(async () => {
-        oldLog = console.log;
         logs = [];
-        console.log = function () {
-            logs.push(Array.from(arguments).join(' '));
-        };
+        configureLogging({
+            showLogs: () => true,
+            onLog: (args) => {
+                logs.push(Array.from(args).join(' '));
+            },
+            onWarn: () => {}, // Do nothing onWarn
+        });
     });
 
     afterEach(async () => {
-        console.log = oldLog;
+        configureLogging({ showLogs: () => false });
     });
 
     test('create existing account', async() => {
@@ -97,7 +102,6 @@ describe('errors', () => {
 });
 
 describe('with deploy contract', () => {
-    let oldLog;
     let logs;
     let contractId = testUtils.generateUniqueString('test_contract');
     let contract;
@@ -113,15 +117,18 @@ describe('with deploy contract', () => {
     });
 
     beforeEach(async () => {
-        oldLog = console.log;
         logs = [];
-        console.log = function () {
-            logs.push(Array.from(arguments).join(' '));
-        };
+        configureLogging({
+            showLogs: () => true,
+            onLog: (args) => {
+                logs.push(Array.from(args).join(' '));
+            },
+            onWarn: () => {}, // Do nothing onWarn
+        });
     });
 
     afterEach(async () => {
-        console.log = oldLog;
+        configureLogging({ showLogs: () => false });
     });
 
     test('cross-contact assertion and panic', async () => {

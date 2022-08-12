@@ -1,5 +1,6 @@
 const nearApi = require('../src/index');
 const testUtils = require('./test-utils');
+const { Logger } = require('../src/utils/near-logger');
 
 let nearjs;
 let workingAccount;
@@ -9,7 +10,12 @@ let contract;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
 beforeAll(async () => {
+    nearApi.configureLogging({ showLogs: () => false });
     nearjs = await testUtils.setUpTestConnection();
+});
+
+afterAll(async () => {
+    Logger.reset();
 });
 
 beforeEach(async () => {

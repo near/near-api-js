@@ -4,6 +4,7 @@ const fs = require('fs');
 const BN = require('bn.js');
 const testUtils  = require('./test-utils');
 const semver = require('semver');
+const { Logger } = require('../src/utils/near-logger');
 
 let nearjs;
 let startFromVersion;
@@ -53,10 +54,15 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
 };
 
 beforeAll(async () => {
+    nearApi.configureLogging({showLogs: () => false });
     nearjs = await testUtils.setUpTestConnection();
     let nodeStatus = await nearjs.connection.provider.status();
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
     console.log(startFromVersion);
+});
+
+afterAll(async () => {
+    Logger.reset();
 });
 
 describe('deployMultisig key rotations', () => {

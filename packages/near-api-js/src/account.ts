@@ -30,12 +30,13 @@ import {
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
-import { logWarning, PositionalArgsError } from './utils/errors';
+import { PositionalArgsError } from './utils/errors';
 import { parseRpcError, parseResultError } from './utils/rpc_errors';
 import { ServerError } from './utils/rpc_errors';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 
 import exponentialBackoff from './utils/exponential-backoff';
+import { Logger } from './utils/near-logger';
 
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
@@ -166,23 +167,19 @@ export class Account {
 
     /** @hidden */
     private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
-        if (!process.env['NEAR_NO_LOGS']) {
-            for (const result of results) {
-                console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
-                this.printLogs(contractId, result.logs, '\t');
-                if (result.failure) {
-                    console.warn(`\tFailure [${contractId}]: ${result.failure}`);
-                }
+        for (const result of results) {
+            Logger.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
+            this.printLogs(contractId, result.logs, '\t');
+            if (result.failure) {
+                Logger.warn(`\tFailure [${contractId}]: ${result.failure}`);
             }
         }
     }
 
-    /** @hidden */
+    /** @hidden */ 
     private printLogs(contractId: string, logs: string[], prefix = '') {
-        if (!process.env['NEAR_NO_LOGS']) {
-            for (const log of logs) {
-                console.log(`${prefix}Log [${contractId}]: ${log}`);
-            }
+        for (const log of logs) {
+            Logger.log(`${prefix}Log [${contractId}]: ${log}`);    
         }
     }
 
@@ -223,12 +220,12 @@ export class Account {
                 return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
                 if (error.type === 'InvalidNonce') {
-                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
+                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
                 if (error.type === 'Expired') {
-                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
+                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
                     return null;
                 }
 
@@ -364,9 +361,7 @@ export class Account {
      * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
      */
     async deleteAccount(beneficiaryId: string) {
-        if (!process.env['NEAR_NO_LOGS']) {
-            console.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
-        }
+        Logger.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteAccount(beneficiaryId)]
@@ -539,10 +534,7 @@ export class Account {
             method_name: jsContract ? 'view_js_contract'  : methodName,
             args_base64: encodedArgs.toString('base64')
         });
-
-        if (result.logs) {
-            this.printLogs(contractId, result.logs);
-        }
+        this.printLogs(contractId, result.logs);
 
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
     }

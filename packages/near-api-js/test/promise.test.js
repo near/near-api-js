@@ -1,5 +1,6 @@
 const BN = require('bn.js');
 const testUtils = require('./test-utils');
+const { Logger, configureLogging } = require('../src/utils/near-logger');
 
 let nearjs;
 let workingAccount;
@@ -9,13 +10,17 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
 const CONTRACT_CALL_GAS = new BN(300000000000000);
 
 beforeAll(async () => {
+    configureLogging({ showLogs: () => false });
     nearjs = await testUtils.setUpTestConnection();
     workingAccount = await testUtils.createAccount(nearjs);
 });
 
+afterAll(async () => {
+    Logger.reset();
+});
+
 describe('with promises', () => {
     let contract, contract1, contract2;
-    let oldLog;
     let logs;
     let contractName = testUtils.generateUniqueString('cnt');
     let contractName1 = testUtils.generateUniqueString('cnt');
@@ -28,15 +33,17 @@ describe('with promises', () => {
     });
 
     beforeEach(async () => {
-        oldLog = console.log;
         logs = [];
-        console.log = function() {
-            logs.push(Array.from(arguments).join(' '));
-        };
+        configureLogging({
+            showLogs: () => true,
+            onLog: (args) => {
+                logs.push(Array.from(args).join(' '));
+            }, onWarn: () => {}
+        });
     });
 
     afterEach(async () => {
-        console.log = oldLog;
+        configureLogging({ showLogs: () => false });
     });
 
     // -> means async call
