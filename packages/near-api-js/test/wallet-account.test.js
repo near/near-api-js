@@ -17,6 +17,7 @@ const nearApi = require('../src/index');
 
 let history;
 let nearFake;
+let nearFakeWithoutContract;
 let walletConnection;
 let keyStore = new nearApi.keyStores.InMemoryKeyStore();
 beforeEach(() => {
