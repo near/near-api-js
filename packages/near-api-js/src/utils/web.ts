@@ -2,7 +2,7 @@ import createError from 'http-errors';
 
 import exponentialBackoff from './exponential-backoff';
 import { TypedError } from '../providers';
-import { logWarning } from './errors';
+import { Logger } from './near-logger';
 
 const START_WAIT_TIME_MS = 1000;
 const BACKOFF_MULTIPLIER = 1.5;
@@ -34,7 +34,7 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
             });
             if (!response.ok) {
                 if (response.status === 503) {
-                    logWarning(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
+                    Logger.warn(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
                     return null;
                 }
                 throw createError(response.status, await response.text());
@@ -42,7 +42,7 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
             return response;
         } catch (error) {
             if (error.toString().includes('FetchError') || error.toString().includes('Failed to fetch')) {
-                logWarning(`Retrying HTTP request for ${connectionInfo.url} because of error: ${error}`);
+                Logger.warn(`Retrying HTTP request for ${connectionInfo.url} because of error: ${error}`);
                 return null;
             }
             throw error;
