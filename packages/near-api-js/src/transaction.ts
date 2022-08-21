@@ -102,7 +102,7 @@ export class Signature extends Assignable {
 export class Transaction extends Assignable {
     signerId: string;
     publicKey: PublicKey;
-    nonce: number;
+    nonce: BN;
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
@@ -220,7 +220,7 @@ export const SCHEMA = new Map<Class, any>([
     ]}],
 ]);
 
-export function createTransaction(signerId: string, publicKey: PublicKey, receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array): Transaction {
+export function createTransaction(signerId: string, publicKey: PublicKey, receiverId: string, nonce: BN | string | number, actions: Action[], blockHash: Uint8Array): Transaction {
     return new Transaction({ signerId, publicKey, nonce, receiverId, actions, blockHash });
 }
 
@@ -243,7 +243,7 @@ async function signTransactionObject(transaction: Transaction, signer: Signer, a
 }
 
 export async function signTransaction(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
-export async function signTransaction(receiverId: string, nonce: number, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
+export async function signTransaction(receiverId: string, nonce: BN, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export async function signTransaction(...args): Promise<[Uint8Array, SignedTransaction]> {
     if (args[0].constructor === Transaction) {
         const [ transaction, signer, accountId, networkId ] = args;

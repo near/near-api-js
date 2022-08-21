@@ -16,6 +16,7 @@ import { KeyPair, PublicKey } from './utils';
 import { baseDecode } from 'borsh';
 import { Connection } from './connection';
 import { serialize } from 'borsh';
+import BN from 'bn.js';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -318,7 +319,7 @@ export class ConnectedWalletAccount extends Account {
 
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
-        const nonce = accessKey.access_key.nonce + 1;
+        const nonce = accessKey.access_key.nonce.add(new BN(1));
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
         await this.walletConnection.requestSignTransactions({
             transactions: [transaction],

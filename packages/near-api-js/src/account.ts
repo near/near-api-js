@@ -21,6 +21,7 @@ import {
     ViewStateResult,
     AccountView,
     AccessKeyView,
+    AccessKeyViewRaw,
     CodeResult,
     AccessKeyList,
     AccessKeyInfoView,
@@ -202,7 +203,7 @@ export class Account {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
 
-        const nonce = ++accessKey.nonce;
+        const nonce = accessKey.nonce.add(new BN(1));
         return await signTransaction(
             receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
         );
@@ -294,13 +295,18 @@ export class Account {
         }
 
         try {
-            const accessKey = await this.connection.provider.query<AccessKeyView>({
+            const rawAccessKey = await this.connection.provider.query<AccessKeyViewRaw>({
                 request_type: 'view_access_key',
                 account_id: this.accountId,
                 public_key: publicKey.toString(),
                 finality: 'optimistic'
             });
 
+            // store nonce as BN to preserve precision on big number
+            const accessKey = {
+                ...rawAccessKey,
+                nonce: new BN(rawAccessKey.nonce),
+            }
             // this function can be called multiple times and retrieve the same access key
             // this checks to see if the access key was already retrieved and cached while
             // the above network call was in flight. To keep nonce values in line, we return
@@ -580,13 +586,15 @@ export class Account {
             account_id: this.accountId,
             finality: 'optimistic'
         });
+        // Replace raw nonce into a new BN
+        const newResponse = { keys: response?.keys?.map((key) => ({ ...key, access_key: { ...key.access_key, nonce: new BN(key.access_key.nonce) } }))};
         // A breaking API change introduced extra information into the
         // response, so it now returns an object with a `keys` field instead
         // of an array: https://github.com/nearprotocol/nearcore/pull/1789
-        if (Array.isArray(response)) {
-            return response;
+        if (Array.isArray(newResponse)) {
+            return newResponse;
         }
-        return response.keys;
+        return newResponse.keys;
     }
 
     /**
