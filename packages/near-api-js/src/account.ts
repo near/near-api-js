@@ -306,7 +306,7 @@ export class Account {
             const accessKey = {
                 ...rawAccessKey,
                 nonce: new BN(rawAccessKey.nonce),
-            }
+            };
             // this function can be called multiple times and retrieve the same access key
             // this checks to see if the access key was already retrieved and cached while
             // the above network call was in flight. To keep nonce values in line, we return
