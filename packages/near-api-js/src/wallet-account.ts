@@ -110,8 +110,8 @@ export class WalletConnection {
 
         // Migrate dApps that previously used a faulty authDataKey.
         if (DEPRECATED_authData) {
-            window.localStorage.setItem(authDataKey, JSON.stringify(DEPRECATED_authData));
             window.localStorage.removeItem(DEPRECATED_authDataKey);
+            window.localStorage.setItem(authDataKey, JSON.stringify(DEPRECATED_authData));
         }
 
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
