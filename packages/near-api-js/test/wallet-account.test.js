@@ -209,7 +209,7 @@ it('Promise until complete sign in', async () => {
     expect(newWalletConn.isSignedIn()).toEqual(false);
     expect(await newWalletConn.isSignedInAsync()).toEqual(true);
     expect(await keyStore.getKey('networkId', 'near2.account')).toEqual(keyPair);
-    expect(localStorage.getItem('promise_on_complete_signin_wallet_auth_key'));
+    expect(localStorage.getItem('promise_on_complete_signin_wallet_auth_key')).toBeTruthy();
     expect(history).toEqual([
         [{}, 'documentTitle', 'http://example.com/location']
     ]);
