@@ -91,7 +91,7 @@ export interface FunctionCallOptions {
     /**
      * named arguments to pass the method `{ messageText: 'my message' }`
      */
-    args: object;
+    args?: object;
     /** max amount of gas that method call can use */
     gas?: BN;
     /** amount of NEAR (in yoctoNEAR) to send together with the call */
