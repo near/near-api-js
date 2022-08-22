@@ -24,9 +24,9 @@ async function setUpTestConnection() {
     });
 
     if (config.masterAccount) {
+        // hardcoded publicKey is the public key of test.near (config.masterAccount)
         await keyStore.setKey(networkId, config.masterAccount, nearApi.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
     }
-
     return nearApi.connect(config);
 }
 
@@ -65,7 +65,7 @@ async function createAccountMultisig(near, options) {
         accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
             switch (path) {
-            case '/2fa/getAccessKey': return { publicKey };
+                case '/2fa/getAccessKey': return { publicKey };
             }
         };
         await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
