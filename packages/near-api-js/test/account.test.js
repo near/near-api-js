@@ -173,20 +173,26 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue);
     });
 
-    test('make function calls via txn', async() => {
-      const result = await workingAccount.viewFunction(
-          contractId,
-          'hello', // this is the function defined in hello.wasm file that we are calling
-          {name: 'trex'});
-      expect(result).toEqual('hello trex');
+    test('make function calls via txn', async () => {
+        const result = await workingAccount.viewFunction(
+            contractId,
+            'hello', // this is the function defined in hello.wasm file that we are calling
+            { name: 'trex' }
+        );
+        expect(result).toEqual('hello trex');
 
-      const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-      const result2 = await workingAccount.createTransaction(contractId).functionCall(
-        'setValue',
-        { value: setCallValue }).signAndSend();
-      expect(providers.getTransactionLastResult(result2)).toEqual(setCallValue);
-      expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
-  });
+        const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+        const result2 = await workingAccount
+            .createTransaction(contractId)
+            .functionCall('setValue', { value: setCallValue })
+            .signAndSend();
+        expect(providers.getTransactionLastResult(result2)).toEqual(
+            setCallValue
+        );
+        expect(
+            await workingAccount.viewFunction(contractId, 'getValue', {})
+        ).toEqual(setCallValue);
+    });
 
     test('view contract state', async() => {
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');

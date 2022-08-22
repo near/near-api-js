@@ -12,6 +12,6 @@ export const DEFAULT_FUNCTION_CALL_GAS = new BN('30000000000000');
 /**
  * Hash if no contract is present for an account.
  */
-export const EMPTY_CONTRACT_HASH = "11111111111111111111111111111111";
+export const EMPTY_CONTRACT_HASH = '11111111111111111111111111111111';
 
 export const ZERO_NEAR = new BN('0');
