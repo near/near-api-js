@@ -2,8 +2,8 @@ const { Contract } = require('../src/contract');
 const { PositionalArgsError } = require('../src/utils/errors');
 
 const account = {
-    viewFunction(contractId, methodName, args, options) {
-        return { this: this, contractId, methodName, args, options };
+    viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery}) {
+        return { this: this, contractId, methodName, args, parse, stringify, jsContract, blockQuery };
     },
     functionCall() {
         return this;
@@ -50,8 +50,8 @@ const contract = new Contract(account, 'contractId', {
 describe('viewMethod', () => {
     test('passes options through to account viewFunction', async () => {
         function customParser () {}
-        const stubbedReturnValue = await contract.viewMethod({}, { parse: customParser });
-        expect(stubbedReturnValue.options.parse).toBe(customParser);
+        const stubbedReturnValue = await account.viewFunction({ parse: customParser });
+        expect(stubbedReturnValue.parse).toBe(customParser);
     });
 
     describe.each([

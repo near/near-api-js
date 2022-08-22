@@ -189,7 +189,10 @@ export class AccountMultisig extends Account {
     async getRequestIds(): Promise<string[]> {
         // TODO: Read requests from state to allow filtering by expiration time
         // TODO: https://github.com/near/core-contracts/blob/305d1db4f4f2cf5ce4c1ef3479f7544957381f11/multisig/src/lib.rs#L84
-        return this.viewFunction(this.accountId, 'list_request_ids');
+        return this.viewFunction({
+            contractId: this.accountId,
+            methodName: 'list_request_ids',
+        });
     }
 
     getRequest() {
