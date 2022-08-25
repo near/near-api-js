@@ -106,10 +106,12 @@ export class WalletConnection {
         this._near = near;
         const DEPRECATED_authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         const DEPRECATED_authData = JSON.parse(window.localStorage.getItem(DEPRECATED_authDataKey));
-        const authDataKey = (appKeyPrefix || near.config.contractName || 'default') + LOCAL_STORAGE_KEY_SUFFIX;
+
+        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
+        const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
 
         // Migrate dApps that previously used a faulty authDataKey.
-        if (DEPRECATED_authData) {
+        if (DEPRECATED_authData && DEPRECATED_authDataKey != authDataKey) {
             window.localStorage.removeItem(DEPRECATED_authDataKey);
             window.localStorage.setItem(authDataKey, JSON.stringify(DEPRECATED_authData));
         }
@@ -117,7 +119,6 @@ export class WalletConnection {
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
-        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
         this._authData = authData || { allKeys: [] };
         this._authDataKey = authDataKey;
