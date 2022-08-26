@@ -68,7 +68,7 @@ export class WalletConnection {
     _keyStore: KeyStore;
 
     /** @hidden */
-    _authData: any;
+    _authData: { accountId?: string; allKeys?: string[] };
 
     /** @hidden */
     _networkId: string;
@@ -154,7 +154,7 @@ export class WalletConnection {
      * wallet.getAccountId();
      * ```
      */
-    getAccountId() : string {
+    getAccountId() {
         return this._authData.accountId || '';
     }
 
