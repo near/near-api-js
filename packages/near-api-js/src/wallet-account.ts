@@ -68,7 +68,7 @@ export class WalletConnection {
     _keyStore: KeyStore;
 
     /** @hidden */
-    _authData: any;
+    _authData: { accountId?: string; allKeys?: string[] };
 
     /** @hidden */
     _networkId: string;
