@@ -3,7 +3,6 @@ const { ServerError } = require('../../src/utils/rpc_errors');
 const {
     parseRpcError,
     formatError,
-    getErrorTypeFromErrorMessage,
 } = nearApi.utils.rpc_errors;
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {
@@ -83,22 +82,6 @@ describe('rpc-errors', () => {
         const errorStr = '{"status":{"Failure":{"ActionError":{"index":0,"kind":{"FunctionCallError":{"EvmError":"ArgumentParseError"}}}}},"transaction":{"signer_id":"test.near","public_key":"ed25519:D5HVgBE8KgXkSirDE4UQ8qwieaLAR4wDDEgrPRtbbNep","nonce":110,"receiver_id":"evm","actions":[{"FunctionCall":{"method_name":"transfer","args":"888ZO7SvECKvfSCJ832LrnFXuF/QKrSGztwAAA==","gas":300000000000000,"deposit":"0"}}],"signature":"ed25519:7JtWQ2Ux63ixaKy7bTDJuRTWnv6XtgE84ejFMMjYGKdv2mLqPiCfkMqbAPt5xwLWwFdKjJniTcxWZe7FdiRWpWv","hash":"E1QorKKEh1WLJwRQSQ1pdzQN3f8yeFsQQ8CbJjnz1ZQe"},"transaction_outcome":{"proof":[],"block_hash":"HXXBPjGp65KaFtam7Xr67B8pZVGujZMZvTmVW6Fy9tXf","id":"E1QorKKEh1WLJwRQSQ1pdzQN3f8yeFsQQ8CbJjnz1ZQe","outcome":{"logs":[],"receipt_ids":["ZsKetkrZQGVTtmXr2jALgNjzcRqpoQQsk9HdLmFafeL"],"gas_burnt":2428001493624,"tokens_burnt":"2428001493624000000000","executor_id":"test.near","status":{"SuccessReceiptId":"ZsKetkrZQGVTtmXr2jALgNjzcRqpoQQsk9HdLmFafeL"}}},"receipts_outcome":[{"proof":[],"block_hash":"H6fQCVpxBDv9y2QtmTVHoxHibJvamVsHau7fDi7AmFa2","id":"ZsKetkrZQGVTtmXr2jALgNjzcRqpoQQsk9HdLmFafeL","outcome":{"logs":[],"receipt_ids":["DgRyf1Wv3ZYLFvM8b67k2yZjdmnyUUJtRkTxAwoFi3qD"],"gas_burnt":2428001493624,"tokens_burnt":"2428001493624000000000","executor_id":"evm","status":{"Failure":{"ActionError":{"index":0,"kind":{"FunctionCallError":{"EvmError":"ArgumentParseError"}}}}}}},{"proof":[],"block_hash":"9qNVA235L9XdZ8rZLBAPRNBbiGPyNnMUfpbi9WxbRdbB","id":"DgRyf1Wv3ZYLFvM8b67k2yZjdmnyUUJtRkTxAwoFi3qD","outcome":{"logs":[],"receipt_ids":[],"gas_burnt":0,"tokens_burnt":"0","executor_id":"test.near","status":{"SuccessValue":""}}}]}';
         const error = parseRpcError(JSON.parse(errorStr).status.Failure);
         expect(error).toEqual(new ServerError('{"index":0,"kind":{"EvmError":"ArgumentParseError"}}'));
-    });
-
-    test('test getErrorTypeFromErrorMessage', () => {
-        const err1 = 'account random.near does not exist while viewing';
-        const err2 = 'Account random2.testnet doesn\'t exist';
-        const err3 = 'access key ed25519:DvXowCpBHKdbD2qutgfhG6jvBMaXyUh7DxrDSjkLxMHp does not exist while viewing';
-        const err4 = 'wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: "random.testnet" }))';
-        const err5 = '[-32000] Server error: Invalid transaction: Transaction nonce 1 must be larger than nonce of the used access key 1';
-        expect(getErrorTypeFromErrorMessage(err1)).toEqual('AccountDoesNotExist');
-        expect(getErrorTypeFromErrorMessage(err2)).toEqual('AccountDoesNotExist');
-        expect(getErrorTypeFromErrorMessage(err3)).toEqual('AccessKeyDoesNotExist');
-        expect(getErrorTypeFromErrorMessage(err4)).toEqual('CodeDoesNotExist');
-        expect(getErrorTypeFromErrorMessage(err5)).toEqual('InvalidNonce');
-        expect(getErrorTypeFromErrorMessage('random string')).toEqual('UntypedError');
-        expect(getErrorTypeFromErrorMessage(undefined)).toEqual('UntypedError');
-        expect(getErrorTypeFromErrorMessage('')).toEqual('UntypedError');
     });
 
     test('test NotEnoughBalance message uses human readable values', () => {

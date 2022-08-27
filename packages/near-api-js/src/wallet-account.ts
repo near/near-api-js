@@ -44,6 +44,7 @@ interface RequestSignTransactionsOptions {
 /**
  * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * This class is not intended for use outside the browser. Without `window` (i.e. in server contexts), it will instantiate but will throw a clear error when used.
  * 
  * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#wallet}
  * @example
@@ -67,7 +68,7 @@ export class WalletConnection {
     _keyStore: KeyStore;
 
     /** @hidden */
-    _authData: any;
+    _authData: { accountId?: string; allKeys?: string[] };
 
     /** @hidden */
     _networkId: string;
@@ -82,6 +83,24 @@ export class WalletConnection {
     _completeSignInPromise: Promise<void>;
 
     constructor(near: Near, appKeyPrefix: string | null) {
+        if(typeof window === 'undefined') {
+            return new Proxy(this, {
+                get(target, property) {
+                    if(property === 'isSignedIn') {
+                        return () => false;
+                    }
+                    if(property === 'getAccountId') {
+                        return () => '';
+                    }
+                    if(target[property] && typeof target[property] === 'function') {
+                        return () => {
+                            throw new Error('No window found in context, please ensure you are using WalletConnection on the browser');
+                        };
+                    }
+                    return target[property];
+                }
+            });
+        }
         this._near = near;
         const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX;
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
