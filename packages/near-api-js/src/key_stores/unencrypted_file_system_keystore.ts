@@ -56,9 +56,9 @@ export async function readKeyFile(filename: string): Promise<[string, KeyPair]> 
 }
 
 /**
- * This module contains the {@link UnencryptedFileSystemKeyStore} class which is used to store keys on the file system.
+ * This class is used to store keys on the file system.
  * 
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store}
+ * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store](https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store)
  * @example
  * ```js
  * const { homedir } = require('os');
@@ -91,7 +91,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     /**
-     * Store a {@link KeyPair} in an unencrypted file
+     * Store a {@link utils/key_pair!KeyPair} in an unencrypted file
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -103,7 +103,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a {@link KeyPair} from an unencrypted file
+     * Gets a {@link utils/key_pair!KeyPair} from an unencrypted file
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -118,7 +118,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     }
 
     /**
-     * Deletes an unencrypted file holding a {@link KeyPair}
+     * Deletes an unencrypted file holding a {@link utils/key_pair!KeyPair}
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -160,7 +160,6 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     /**
      * Gets the account(s) files in `keyDir/networkId`
      * @param networkId The targeted network. (ex. default, betanet, etc…)
-     * @returns{Promise<string[]>}
      */
     async getAccounts(networkId: string): Promise<string[]> {
         if (!await exists(`${this.keyDir}/${networkId}`)) {

@@ -1,7 +1,8 @@
 /**
- * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}. This module exposes two classes:
- * * {@link WalletConnection} which redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
- * * {@link ConnectedWalletAccount} is an {@link Account} implementation that uses {@link WalletConnection} to get keys
+ * The classes in this module are used in conjunction with the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
+ * This module exposes two classes:
+ * * {@link WalletConnection} which redirects users to [NEAR Wallet](https://wallet.near.org/) for key management.
+ * * {@link ConnectedWalletAccount} is an {@link account!Account} implementation that uses {@link WalletConnection} to get keys
  * 
  * @module walletAccount
  */
@@ -42,11 +43,11 @@ interface RequestSignTransactionsOptions {
 }
 
 /**
- * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
- * It redirects users to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for key management.
+ * This class is used in conjunction with the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
+ * It redirects users to [NEAR Wallet](https://wallet.near.org) for key management.
  * This class is not intended for use outside the browser. Without `window` (i.e. in server contexts), it will instantiate but will throw a clear error when used.
  * 
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#wallet}
+ * @see [https://docs.near.org/tools/near-api-js/quick-reference#wallet](https://docs.near.org/tools/near-api-js/quick-reference#wallet)
  * @example
  * ```js
  * // create new WalletConnection instance
@@ -277,7 +278,7 @@ export class WalletConnection {
 }
 
 /**
- * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
+ * {@link account!Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
  */
 export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
@@ -337,7 +338,7 @@ export class ConnectedWalletAccount extends Account {
 
     /**
      * Check if given access key allows the function call or method attempted in transaction
-     * @param accessKey Array of {access_key: AccessKey, public_key: PublicKey} items
+     * @param accessKey Array of \{access_key: AccessKey, public_key: PublicKey\} items
      * @param receiverId The NEAR account attempting to have access
      * @param actions The action(s) needed to be checked for access
      */
