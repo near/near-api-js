@@ -30,6 +30,7 @@ jobs:
           cd packages/near-api-js
           npm run dist
           cd ../../typedoc
+          npm install
           mkdir docs
           npm run build
       - name: Setup Pages
