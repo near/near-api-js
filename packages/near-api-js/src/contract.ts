@@ -32,14 +32,14 @@ export interface ContractMethods {
     /**
      * Methods that change state. These methods cost gas and require a signed transaction.
      * 
-     * @see {@link Account.functionCall}
+     * @see {@link account!Account.functionCall}
      */
     changeMethods: string[];
 
     /**
      * View methods do not require a signed transaction.
      * 
-     * @@see {@link Account.viewFunction}
+     * @see {@link account!Account#viewFunction}
      */
     viewMethods: string[];
 }
@@ -47,7 +47,7 @@ export interface ContractMethods {
 /**
  * Defines a smart contract on NEAR including the change (mutable) and view (non-mutable) methods
  * 
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#contract}
+ * @see [https://docs.near.org/tools/near-api-js/quick-reference#contract](https://docs.near.org/tools/near-api-js/quick-reference#contract)
  * @example
  * ```js
  * import { Contract } from 'near-api-js';

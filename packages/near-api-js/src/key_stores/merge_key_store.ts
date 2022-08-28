@@ -54,7 +54,7 @@ export class MergeKeyStore extends KeyStore {
     }
 
     /**
-     * Store a {@link KeyPain} to the first index of a key store array
+     * Store a {@link utils/key_pair!KeyPair} to the first index of a key store array
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -64,7 +64,7 @@ export class MergeKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a {@link KeyPair} from the array of key stores
+     * Gets a {@link utils/key_pair!KeyPair} from the array of key stores
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -80,7 +80,7 @@ export class MergeKeyStore extends KeyStore {
     }
     
     /**
-     * Removes a {@link KeyPair} from the array of key stores
+     * Removes a {@link utils/key_pair!KeyPair} from the array of key stores
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -116,7 +116,6 @@ export class MergeKeyStore extends KeyStore {
     /**
      * Gets the account(s) from the array of key stores
      * @param networkId The targeted network. (ex. default, betanet, etc…)
-     * @returns{Promise<string[]>}
      */    
     async getAccounts(networkId: string): Promise<string[]> {
         const result = new Set<string>();

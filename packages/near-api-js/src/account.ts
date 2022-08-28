@@ -80,7 +80,7 @@ export interface SignAndSendTransactionOptions {
 
 /**
  * Options used to initiate a function call (especially a change function call)
- * @see {@link viewFunction} to initiate a view function call
+ * @see {@link account!Account#viewFunction} to initiate a view function call
  */
 export interface FunctionCallOptions {
     /** The NEAR account id where the contract is deployed */
@@ -137,11 +137,11 @@ function bytesJsonStringify(input: any): Buffer {
 }
 
 /**
- * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
+ * This class provides common account related RPC calls including signing transactions with a {@link utils/key_pair!KeyPair}.
  *
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#account}
- * @hint Use {@link WalletConnection} in the browser to redirect to {@link https://docs.near.org/docs/tools/near-wallet | NEAR Wallet} for Account/key management using the {@link BrowserLocalStorageKeyStore}.
- * @see {@link https://nomicon.io/DataStructures/Account.html | Account Spec}
+ * @hint Use {@link walletAccount!WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
+ * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
+ * @see [Account Spec](https://nomicon.io/DataStructures/Account.html)
  */
 export class Account {
     readonly connection: Connection;
@@ -154,7 +154,7 @@ export class Account {
 
     /**
      * Returns basic NEAR account information via the `view_account` RPC query method
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#view-account}
+     * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
      */
     async state(): Promise<AccountView> {
         return this.connection.provider.query<AccountView>({
@@ -190,7 +190,7 @@ export class Account {
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
-     * @see {@link JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
@@ -210,7 +210,7 @@ export class Account {
 
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
@@ -271,7 +271,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link KeyStore}.
+     * Finds the {@link providers/provider!AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *
@@ -414,7 +414,7 @@ export class Account {
     }
 
     /**
-     * @see {@link https://docs.near.org/docs/concepts/account#access-keys}
+     * @see [https://docs.near.org/concepts/basics/accounts/access-keys](https://docs.near.org/concepts/basics/accounts/access-keys)
      * @todo expand this API to support more options.
      * @param publicKey A public key to be associated with the contract
      * @param contractId NEAR account where the contract is deployed
@@ -452,7 +452,7 @@ export class Account {
     }
 
     /**
-     * @see {@link https://docs.near.org/docs/validator/staking-overview}
+     * @see [https://near-nodes.io/validator/staking-and-delegation](https://near-nodes.io/validator/staking-and-delegation)
      *
      * @param publicKey The public key for the account that's staking
      * @param amount The account to stake in yoctoⓃ
@@ -478,7 +478,7 @@ export class Account {
 
     /**
      * Invoke a contract view function using the RPC API.
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#call-a-contract-function}
+     * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
      *
      * @param contractId NEAR account where the contract is deployed
      * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
@@ -550,7 +550,7 @@ export class Account {
     /**
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
      * Pass an empty string for prefix if you would like to return the entire state.
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#view-contract-state}
+     * @see [https://docs.near.org/api/rpc/contracts#view-contract-state](https://docs.near.org/api/rpc/contracts#view-contract-state)
      *
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
@@ -571,7 +571,7 @@ export class Account {
 
     /**
      * Get all access keys for the account
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#view-access-key-list}
+     * @see [https://docs.near.org/api/rpc/access-keys#view-access-key-list](https://docs.near.org/api/rpc/access-keys#view-access-key-list)
      */
     async getAccessKeys(): Promise<AccessKeyInfoView[]> {
         const response = await this.connection.provider.query<AccessKeyList>({
