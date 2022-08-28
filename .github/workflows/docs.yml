@@ -29,12 +29,15 @@ jobs:
           npm run build
           cd packages/near-api-js
           npm run dist
+          cd ../../typedoc
+          mkdir docs
+          npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: './packages/near-api-js/docs'
+          path: './typedoc/docs'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1

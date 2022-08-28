@@ -378,7 +378,6 @@ export class ConnectedWalletAccount extends Account {
      * @param receiverId The NEAR account seeking the access key for a transaction
      * @param actions The action(s) sought to gain access to
      * @param localKey A local public key provided to check for access
-     * @returns Promise<any>
      */
     async accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any> {
         const accessKeys = await this.getAccessKeys();
