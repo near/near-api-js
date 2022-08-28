@@ -26,7 +26,8 @@ jobs:
       - name: Build docs
         run: |
           cd packages/near-api-js
-          npm run doc
+          npm install
+          npm run dist
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
