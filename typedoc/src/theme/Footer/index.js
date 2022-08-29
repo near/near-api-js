@@ -80,7 +80,7 @@ function Footer() {
             <ul className="list-reset text-24 font-black text-yellow mt-50">
               <li>
                 <a
-                  href="typedoc/src/theme/Footer/index"
+                  href="https://mynearwallet.com/"
                   className="hover:text-white"
                 >
                   Wallet
@@ -88,19 +88,19 @@ function Footer() {
               </li>
               <li>
                 <a
-                  href="typedoc/src/theme/Footer/index"
+                  href="https://explorer.near.org/"
                   className="hover:text-white"
                 >
                   Explorer
                 </a>
               </li>
               <li>
-                <a href="typedoc/src/theme/Footer/index" className="hover:text-white">
+                <a href="https://near.dev/" className="hover:text-white">
                   Examples
                 </a>
               </li>
               <li>
-                <a href="typedoc/src/theme/Footer/index" className="hover:text-white">
+                <a href="https://wiki.near.org/" className="hover:text-white">
                   Wiki
                 </a>
               </li>
@@ -117,7 +117,7 @@ function Footer() {
                 >
                   <span className="icon icon-36">
                     <svg
-                      enableBackground="new 0 0 34 35"
+                      enable-background="new 0 0 34 35"
                       viewBox="0 0 34 35"
                       xmlns="http://www.w3.org/2000/svg"
                     >
@@ -242,10 +242,10 @@ function Footer() {
                   className="footer-menu list-reset mt-5 text-16 md:text-18"
                 >
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-550">
-                    <a href="typedoc/src/theme/Footer/index">Overview</a>
+                    <a href="https://near.org/developers/">Overview</a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2801">
-                    <a href="typedoc/src/theme/Footer/index">Technology</a>
+                    <a href="https://near.org/technology/">Technology</a>
                   </li>
                   <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-116">
                     <a
@@ -258,10 +258,10 @@ function Footer() {
                     </a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-4720">
-                    <a href="typedoc/src/theme/Footer/index">Bounties</a>
+                    <a href="https://near.org/bounties/">Bounties</a>
                   </li>
                   <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-580">
-                    <a href="typedoc/src/theme/Footer/index">
+                    <a href="https://near.org/grants/">
                       Grants
                     </a>
                   </li>
@@ -276,7 +276,7 @@ function Footer() {
                   className="footer-menu list-reset mt-5 text-16 md:text-18"
                 >
                   <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-6804">
-                    <a href="typedoc/src/theme/Footer/index">Forum</a>
+                    <a href="https://gov.near.org/">Forum</a>
                   </li>
                   <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-4650">
                     <a href="https://near.events">Events</a>
@@ -287,7 +287,7 @@ function Footer() {
                     </a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-4157">
-                    <a href="typedoc/src/theme/Footer/index">Guild Program</a>
+                    <a href="https://near.org/guilds/">Guild Program</a>
                   </li>
                   <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-2945">
                     <a
@@ -299,10 +299,10 @@ function Footer() {
                     </a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-4719">
-                    <a href="typedoc/src/theme/Footer/index">Bounties</a>
+                    <a href="https://near.org/bounties/">Bounties</a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-7161">
-                    <a href="typedoc/src/theme/Footer/index">Tokens</a>
+                    <a href="https://near.org/tokens/">Tokens</a>
                   </li>
                 </ul>
               </div>
@@ -313,13 +313,13 @@ function Footer() {
                   className="footer-menu list-reset mt-5 text-16 md:text-18"
                 >
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-441">
-                    <a href="typedoc/src/theme/Footer/index">About Us</a>
+                    <a href="https://near.org/about/">About Us</a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-124">
-                    <a href="typedoc/src/theme/Footer/index">Careers</a>
+                    <a href="https://near.org/careers/">Careers</a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-400">
-                    <a href="typedoc/src/theme/Footer/index">Backers</a>
+                    <a href="https://near.org/backers/">Backers</a>
                   </li>
                   <li className="menu-item menu-item-type-custom menu-item-object-custom menu-item-3490">
                     <a href="https://near.org/downloads/NEAR_PressKit.zip">
@@ -327,10 +327,10 @@ function Footer() {
                     </a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-2419">
-                    <a href="typedoc/src/theme/Footer/index">Brand Guidelines</a>
+                    <a href="https://near.org/brand/">Brand Guidelines</a>
                   </li>
                   <li className="menu-item menu-item-type-post_type menu-item-object-page menu-item-3267">
-                    <a href="typedoc/src/theme/Footer/index">Privacy Policy</a>
+                    <a href="https://near.org/privacy/">Privacy Policy</a>
                   </li>
                 </ul>
               </div>
@@ -345,7 +345,7 @@ function Footer() {
             hello@near.org
           </a>
           <span className="mx-10">|</span>
-          <a href="typedoc/src/theme/Footer/index" className="hover:text-yellow">
+          <a href="https://near.org/privacy/" className="hover:text-yellow">
             Privacy Policy
           </a>
           <span className="mx-10">|</span>
