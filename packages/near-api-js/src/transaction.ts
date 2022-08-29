@@ -20,16 +20,15 @@ export class AccessKeyPermission extends Enum {
 }
 
 export class AccessKey extends Assignable {
-    nonce: number;
     permission: AccessKeyPermission;
 }
 
 export function fullAccessKey(): AccessKey {
-    return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({fullAccess: new FullAccessPermission({})}) });
+    return new AccessKey({ permission: new AccessKeyPermission({fullAccess: new FullAccessPermission({})}) });
 }
 
 export function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
-    return new AccessKey({ nonce: 0, permission: new AccessKeyPermission({functionCall: new FunctionCallPermission({receiverId, allowance, methodNames})})});
+    return new AccessKey({ permission: new AccessKeyPermission({functionCall: new FunctionCallPermission({receiverId, allowance, methodNames})})});
 }
 
 export class IAction extends Assignable {}
