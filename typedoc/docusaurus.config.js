@@ -32,7 +32,8 @@ const config = {
                 frontmatter: {
                     pagination_prev: null,
                     pagination_next: null
-                }
+                },
+                hideMembersSymbol: true,
             },
         ],
     ],
