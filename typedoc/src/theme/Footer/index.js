@@ -117,7 +117,7 @@ function Footer() {
                 >
                   <span className="icon icon-36">
                     <svg
-                      enable-background="new 0 0 34 35"
+                      enableBackground="new 0 0 34 35"
                       viewBox="0 0 34 35"
                       xmlns="http://www.w3.org/2000/svg"
                     >
