@@ -967,9 +967,8 @@ table.custom-stripe tr.stripe {
     background-color: #f6f8fa !important;
     border-top: 1px solid #dfe2e5;
 }
-
+/*
 .typedoc-icon-label {
-    /*outline: 1px solid red;*/
     margin-left: -15px;
     padding-right: 15px;
     white-space: nowrap;
@@ -1028,7 +1027,7 @@ table.custom-stripe tr.stripe {
 .typedoc-icon.typedoc-icon-enum-member {
     background-position: 0px -136px;
 }
-
+*/
 h2#modules + ul,
 h2#enumerations + ul,
 h2#classes + ul,
