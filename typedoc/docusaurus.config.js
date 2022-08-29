@@ -36,6 +36,19 @@ const config = {
             },
         ],
     ],
+    themes: [
+        [
+            require.resolve('@easyops-cn/docusaurus-search-local'),
+            {
+                hashed: true,
+                indexPages: false,
+                indexBlog: false,
+                docsRouteBasePath: ['/'],
+                docsDir: ['docs'],
+                language: ['en'],
+            },
+        ]
+    ],
     title: 'NEAR JavaScript API',
     url: 'https://near.github.io/',
     baseUrl: '/near-api-js/',
