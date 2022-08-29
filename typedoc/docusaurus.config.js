@@ -38,7 +38,7 @@ const config = {
     ],
     title: 'NEAR JavaScript API',
     url: 'https://near.github.io/',
-    baseUrl: '/',
+    baseUrl: '/near-api-js/',
     onBrokenLinks: 'warn',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
