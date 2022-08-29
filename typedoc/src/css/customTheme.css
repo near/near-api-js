@@ -967,67 +967,9 @@ table.custom-stripe tr.stripe {
     background-color: #f6f8fa !important;
     border-top: 1px solid #dfe2e5;
 }
-/*
-.typedoc-icon-label {
-    margin-left: -15px;
-    padding-right: 15px;
-    white-space: nowrap;
-}
-.typedoc-icon {
-    content: "";
-    display: inline-block;
-    vertical-align: middle;
-    width: 17px;
-    height: 17px;
-    margin: 0 3px 2px 0;
-    background-image: url(/img/typedoc-icons.png);
-    background-size: 238px 204px;
-    background-repeat: no-repeat;
-}
 
-.typedoc-icon.typedoc-icon-class {
-    background-position: 0px -34px;
-}
-.typedoc-icon.typedoc-icon-function {
-    background-position: -136px -68px;
-}
-.typedoc-icon.typedoc-icon-interface {
-    background-position: 0px -68px;
-}
-.typedoc-icon.typedoc-icon-interface-property {
-    background-position: -204px -0px;
-}
-.typedoc-icon.typedoc-icon-module {
-    background-position: 0px -102px;
-}
-.typedoc-icon.typedoc-icon-method {
-    background-position: -51px -68px;
-}
-.typedoc-icon.typedoc-icon-private-method {
-    background-position: -119px -68px;
-}
-.typedoc-icon.typedoc-icon-protected-method {
-    background-position: -85px -68px;
-}
-.typedoc-icon.typedoc-icon-property {
-    background-position: -51px -0px;
-}
-.typedoc-icon.typedoc-icon-constructor {
-    background-position: -51px -102px;
-}
-.typedoc-icon.typedoc-icon-variable {
-    background-position: -136px -0px;
-}
-.typedoc-icon.typedoc-icon-type-alias {
-    background-position: 0px -170px;
-}
-.typedoc-icon.typedoc-icon-enum {
-    background-position: 0px -119px;
-}
-.typedoc-icon.typedoc-icon-enum-member {
-    background-position: 0px -136px;
-}
-*/
+
+
 h2#modules + ul,
 h2#enumerations + ul,
 h2#classes + ul,
@@ -1093,6 +1035,67 @@ h2#methods ~ h3::before {
     background-position: -51px -68px;
 }
 h2#enumeration-members ~ h3::before {
+    background-position: 0px -136px;
+}
+
+.typedoc-icon-label {
+    margin-left: -15px;
+    padding-right: 15px;
+    white-space: nowrap;
+}
+.typedoc-icon {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    width: 17px;
+    height: 17px;
+    margin: 0 3px 2px 0;
+    background-image: url(/img/typedoc-icons.png);
+    background-size: 238px 204px;
+    background-repeat: no-repeat;
+}
+
+.typedoc-icon.typedoc-icon-module {
+    background-position: 0px -102px;
+}
+.typedoc-icon.typedoc-icon-class {
+    background-position: 0px -34px;
+}
+.typedoc-icon.typedoc-icon-function {
+    background-position: -136px -68px;
+}
+.typedoc-icon.typedoc-icon-interface {
+    background-position: 0px -68px;
+}
+.typedoc-icon.typedoc-icon-interface-property {
+    background-position: -204px -0px;
+}
+
+.typedoc-icon.typedoc-icon-method {
+    background-position: -51px -68px;
+}
+.typedoc-icon.typedoc-icon-private-method {
+    background-position: -119px -68px;
+}
+.typedoc-icon.typedoc-icon-protected-method {
+    background-position: -85px -68px;
+}
+.typedoc-icon.typedoc-icon-property {
+    background-position: -51px -0px;
+}
+.typedoc-icon.typedoc-icon-constructor {
+    background-position: -51px -102px;
+}
+.typedoc-icon.typedoc-icon-variable {
+    background-position: -136px -0px;
+}
+.typedoc-icon.typedoc-icon-type-alias {
+    background-position: 0px -170px;
+}
+.typedoc-icon.typedoc-icon-enum {
+    background-position: 0px -119px;
+}
+.typedoc-icon.typedoc-icon-enum-member {
     background-position: 0px -136px;
 }
 
