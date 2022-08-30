@@ -1,5 +1,6 @@
 import { Provider, JsonRpcProvider } from './providers';
 import { Signer, InMemorySigner } from './signer';
+import { fetchJson } from './utils/web';
 
 /**
  * @param config Contains connection info details
@@ -30,6 +31,25 @@ function getSigner(config: any): Signer {
 }
 
 /**
+ * @param networkId network id in string
+ * @returns {string} url
+ */
+function getIndexerUrl(networkId: string) :string {
+    switch(networkId) {
+        case 'mainnet':
+            return 'https://api.kitwallet.app';
+        case 'testnet':
+        default:
+            return 'https://testnet-api.kitwallet.app';
+    }
+}
+
+export interface StakingDeposit {
+    deposit: string;
+    validator_id: string;
+}
+
+/**
  * Connects an account to a given network via a given provider
  */
 export class Connection {
@@ -52,5 +72,12 @@ export class Connection {
         const provider = getProvider(config.provider);
         const signer = getSigner(config.signer);
         return new Connection(config.networkId, provider, signer, config.jsvmAccountId);
+    }
+
+    getListStakingDeposit(accountId: string): Promise<StakingDeposit[]> {
+        return fetchJson({
+            url: `${getIndexerUrl(this.networkId)}/staking-deposits/${accountId}`,
+            headers: { 'X-requestor': 'near' },
+        });
     }
 }

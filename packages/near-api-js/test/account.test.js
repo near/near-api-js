@@ -307,4 +307,10 @@ describe('with deploy contract', () => {
         });
         expect(result).toEqual('hello trex');
     });
+
+    test('get total stake balance', async() => {
+        const account = new Account(nearjs.connection, 'test.near');
+        const result = await account.getTotalStakeBalance();
+        expect(result).toEqual('0');
+    });
 });

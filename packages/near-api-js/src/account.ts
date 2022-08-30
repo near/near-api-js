@@ -37,6 +37,7 @@ import { ServerError } from './utils/rpc_errors';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 
 import exponentialBackoff from './utils/exponential-backoff';
+import { getValidatorRegExp } from './utils/validator_reg_exp';
 
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
@@ -630,5 +631,32 @@ export class Account {
             staked: staked.toString(),
             available: availableBalance.toString()
         };
+    }
+
+    async getTotalStakeBalance(): Promise<string>  {
+        const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(null);
+        const pools:Set<string> = new Set();
+        [...current_validators, ...next_validators, ...current_proposals]
+            .forEach((validator) => pools.add(validator.account_id));
+
+        const prefix = getValidatorRegExp(this.connection.networkId);
+        const promises = [...pools]
+            .filter((v) => v.indexOf('nfvalidator') === -1 && v.match(prefix))
+            .map(async (validator) => (
+                await this.viewFunction({
+                    contractId: validator,
+                    methodName: 'get_account_total_balance',
+                    args: { account_id: this.accountId },
+                })
+            ));
+        const results = await Promise.all(promises);
+        const total = results.reduce((sum, current) => {
+            const currentBN = new BN(current);
+            if (!currentBN.isZero()) {
+                return sum.add(new BN(current));
+            }
+            return sum;
+        }, new BN(0));
+        return total.toString();
     }
 }
