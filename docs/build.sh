@@ -10,4 +10,4 @@ export DOCS_BASE_PATH=../packages/near-api-js/src
 export DOCS_README=../docs/README_TYPEDOC.md
 
 mkdir docs
-yarn build
+yarn build-production
