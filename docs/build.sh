@@ -9,4 +9,5 @@ export DOCS_TS_CONFIG=../../packages/near-api-js/tsconfig.json
 export DOCS_BASE_PATH=../../packages/near-api-js/src
 export DOCS_README=../README_TYPEDOC.md
 
+mkdir docs
 yarn build
