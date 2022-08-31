@@ -1,4 +1,4 @@
-const { connect, keyStores, transactions, utils } = require("near-api-js");
+const { connect, keyStores, utils } = require("near-api-js");
 const path = require("path");
 const homedir = require("os").homedir();
 

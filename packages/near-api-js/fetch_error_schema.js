@@ -1,9 +1,5 @@
 const https = require('https');
 const fs = require('fs');
-const {
-    Project,
-    Scope,
-} = require('ts-morph');
 
 const ERROR_SCHEMA_URL =
     'https://raw.githubusercontent.com/nearprotocol/nearcore/4c1149974ccf899dbcb2253a3e27cbab86dc47be/chain/jsonrpc/res/rpc_errors_schema.json';
