@@ -2,7 +2,7 @@
 
 Docs for this project are generated with an external generator:
 
-[https://github.com/near/near-api-js-docs-generator](https://github.com/near/near-api-js-docs-generator)
+[https://github.com/near/docs-generator](https://github.com/near/docs-generator)
 
 A GitHub [action](../.github/workflows/docs.yml) is triggered upon every `near-api-js` release.
 

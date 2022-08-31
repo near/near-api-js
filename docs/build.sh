@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/near/near-api-js-docs-generator.git ./builder
+git clone https://github.com/near/docs-generator.git ./builder
 cd builder
 yarn install
 
