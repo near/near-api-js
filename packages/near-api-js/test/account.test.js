@@ -310,7 +310,7 @@ describe('with deploy contract', () => {
 
     test('get total stake balance', async() => {
         const account = new Account(nearjs.connection, 'test.near');
-        const result = await account.getTotalStakeBalance();
+        const result = await account.getActiveDelegatedStakeBalance();
         expect(result).toEqual('0');
     });
 });

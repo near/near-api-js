@@ -633,7 +633,11 @@ export class Account {
         };
     }
 
-    async getTotalStakeBalance(): Promise<string>  {
+    /**
+     * Returns total delgated stake of the account
+     * @returns {Promise<string>}
+     */
+    async getActiveDelegatedStakeBalance(): Promise<string>  {
         const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(null);
         const pools:Set<string> = new Set();
         [...current_validators, ...next_validators, ...current_proposals]
