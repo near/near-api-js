@@ -6,7 +6,7 @@ const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 /**
  * This class is used to store keys in the browsers local storage.
  * 
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store}
+ * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store](https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store)
  * @example
  * ```js
  * import { connect, keyStores } from 'near-api-js';
@@ -42,7 +42,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Stores a {@link KeyPair} in local storage.
+     * Stores a {@link utils/key_pair!KeyPair} in local storage.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -52,7 +52,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a {@link KeyPair} from local storage
+     * Gets a {@link utils/key_pair!KeyPair} from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -66,7 +66,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Removes a {@link KeyPair} from local storage
+     * Removes a {@link utils/key_pair!KeyPair} from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -103,7 +103,6 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     /**
      * Gets the account(s) from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
-     * @returns{Promise<string[]>}
      */
     async getAccounts(networkId: string): Promise<string[]> {
         const result = new Array<string>();

@@ -1,7 +1,9 @@
 /**
+ * @module
+ * @description
  * This module contains the {@link JsonRpcProvider} client class
- * which can be used to interact with the NEAR RPC API.
- * @see {@link providers/provider} for a list of request and response types
+ * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
+ * @see {@link providers/provider | providers} for a list of request and response types
  */
 import {
     AccessKeyWithPublicKey,
@@ -45,8 +47,8 @@ const REQUEST_RETRY_WAIT_BACKOFF = 1.5;
 let _nextId = 123;
 
 /**
- * Client class to interact with the NEAR RPC API.
- * @see {@link https://github.com/near/nearcore/tree/master/chain/jsonrpc}
+ * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
+ * @see [https://github.com/near/nearcore/tree/master/chain/jsonrpc](https://github.com/near/nearcore/tree/master/chain/jsonrpc)
  */
 export class JsonRpcProvider extends Provider {
     /** @hidden */
@@ -62,7 +64,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets the RPC's status
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#general-validator-status}
+     * @see [https://docs.near.org/docs/develop/front-end/rpc#general-validator-status](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
      */
     async status(): Promise<NodeStatusResult> {
         return this.sendJsonRpc('status', []);
@@ -70,7 +72,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Sends a signed transaction to the RPC and waits until transaction is fully complete
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await}
+     * @see [https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
      *
      * @param signedTransaction The signed transaction being sent
      */
@@ -92,7 +94,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets a transaction's status from the RPC
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#transaction-status}
+     * @see [https://docs.near.org/docs/develop/front-end/rpc#transaction-status](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
      *
      * @param txHash A transaction hash as either a Uint8Array or a base58 encoded string
      * @param accountId The NEAR account that signed the transaction
@@ -130,9 +132,8 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query the RPC as [shown in the docs](https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts)
-     * Query the RPC by passing an {@link RpcQueryRequest}
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#accounts--contracts}
+     * Query the RPC by passing an {@link providers/provider!RpcQueryRequest}
+     * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
      *
      * @typeParam T the shape of the returned query response
      */
@@ -154,9 +155,9 @@ export class JsonRpcProvider extends Provider {
     /**
      * Query for block info from the RPC
      * pass block_id OR finality as blockQuery, not both
-     * @see {@link https://docs.near.org/docs/interaction/rpc#block}
+     * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
      *
-     * @param blockQuery {@link BlockReference} (passing a {@link BlockId} is deprecated)
+     * @param blockQuery {@link providers/provider!BlockReference} (passing a {@link providers/provider!BlockId} is deprecated)
      */
     async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
         const { finality } = blockQuery as any;
@@ -167,7 +168,7 @@ export class JsonRpcProvider extends Provider {
     /**
      * Query changes in block from the RPC
      * pass block_id OR finality as blockQuery, not both
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#block-details)
+     * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
      */
     async blockChanges(blockQuery: BlockReference): Promise<BlockChangeResult> {
         const { finality } = blockQuery as any;
@@ -177,7 +178,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Queries for details about a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
-     * @see {@link https://docs.near.org/docs/interaction/rpc#chunk}
+     * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
      *
      * @param chunkId Hash of a chunk ID or shard ID
      */
@@ -187,7 +188,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Query validators of the epoch defined by the given block id.
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#detailed-validator-status}
+     * @see [https://docs.near.org/api/rpc/network#validation-status](https://docs.near.org/api/rpc/network#validation-status)
      *
      * @param blockId Block hash or height, or null for latest.
      */
@@ -197,7 +198,6 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets the protocol config at a block from RPC
-     * @see {@link }
      *
      * @param blockReference specifies the block to get the protocol config for
      */
@@ -207,7 +207,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Gets a light client execution proof for verifying execution outcomes
-     * @see {@link https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof}
+     * @see [https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof](https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      */
     async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
         return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
@@ -302,7 +302,7 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Returns gas price for a specific block_height or block_hash.
-     * @see {@link https://docs.near.org/docs/develop/front-end/rpc#gas-price}
+     * @see [https://docs.near.org/api/rpc/gas](https://docs.near.org/api/rpc/gas)
      *
      * @param blockId Block hash or height, or null for latest.
      */
