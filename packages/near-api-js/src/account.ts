@@ -253,6 +253,7 @@ export class Account {
         }, []);
         this.printLogsAndFailures(signedTx.transaction.receiverId, flatLogs);
 
+       // Should be falsy if result.status.Failure is null
         if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object'  && result.status.Failure !== null) {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
