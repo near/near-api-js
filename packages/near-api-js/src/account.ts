@@ -634,7 +634,9 @@ export class Account {
     }
 
     /**
-     * Returns total delgated stake of the account
+     * Returns the NEAR tokens balance of a given account that is delegated to the staking pools that are part of the validators set in the current epoch.
+     * 
+     * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<string>}
      */
     async getActiveDelegatedStakeBalance(): Promise<string>  {
@@ -644,6 +646,8 @@ export class Account {
             .forEach((validator) => pools.add(validator.account_id));
 
         const prefix = getValidatorRegExp(this.connection.networkId);
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = block.header.hash;
         const promises = [...pools]
             .filter((v) => v.indexOf('nfvalidator') === -1 && v.match(prefix))
             .map(async (validator) => (
@@ -651,6 +655,7 @@ export class Account {
                     contractId: validator,
                     methodName: 'get_account_total_balance',
                     args: { account_id: this.accountId },
+                    blockQuery: { blockId: blockHash }
                 })
             ));
         const results = await Promise.all(promises);
