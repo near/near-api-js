@@ -202,7 +202,8 @@ export class JsonRpcProvider extends Provider {
      * @param blockReference specifies the block to get the protocol config for
      */
     async experimental_protocolConfig(blockReference: BlockReference | { sync_checkpoint: 'genesis' }): Promise<NearProtocolConfig> {
-        return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', blockReference);
+        const { blockId, ...otherParams } = blockReference as any;
+        return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', {...otherParams, block_id: blockId});
     }
 
     /**
