@@ -18,8 +18,5 @@ lib/
 # OS X
 .DS_Store
 
-# Generated typedoc files
-docs/
-
 # Generated test files
 test-keys/

@@ -1,25 +1,41 @@
-# This workflow builds the docs and deploys them to GitHub Pages on every commit to the master branch
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Build & Deploy Docs
+name: Release docs to GH Pages
 
 on:
   push:
-    branches: [ master ]
+    branches: ["master"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "docs"
+  cancel-in-progress: true
 
 jobs:
-  build:
-
+  build-docs:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
-    - run: yarn install --frozen-lockfile
-    - uses: sterlingwes/gh-pages-deploy-action@v1.1
-      with:
-        access-token: ${{ secrets.ACCESS_TOKEN }}
-        source-directory: docs
-        build-command: yarn doc
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build
+        run: |
+          yarn install
+          yarn build
+      - name: Build docs
+        run: |
+          ./docs/build.sh
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './builder/build'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

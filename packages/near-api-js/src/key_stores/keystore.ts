@@ -1,10 +1,10 @@
 import { KeyPair } from '../utils/key_pair';
 
 /**
- * KeyStores are passed to {@link Near} via {@link NearConfig}
- * and are used by the {@link InMemorySigner} to sign transactions.
+ * KeyStores are passed to {@link near!Near} via {@link near!NearConfig}
+ * and are used by the {@link signer!InMemorySigner} to sign transactions.
  * 
- * @example {@link connect}
+ * @see {@link connect}
  */
 export abstract class KeyStore {
     abstract setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void>;

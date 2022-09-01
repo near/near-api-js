@@ -4,7 +4,7 @@ import { KeyPair } from '../utils/key_pair';
 /**
  * Simple in-memory keystore for mainly for testing purposes.
  * 
- * @example {@link https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store}
+ * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store](https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store)
  * @example
  * ```js
  * import { connect, keyStores, utils } from 'near-api-js';
@@ -38,7 +38,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Stores a {@KeyPair} in in-memory storage item
+     * Stores a {@link utils/key_pair!KeyPair} in in-memory storage item
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -48,7 +48,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a {@link KeyPair} from in-memory storage
+     * Gets a {@link utils/key_pair!KeyPair} from in-memory storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -62,7 +62,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Removes a {@link KeyPair} from in-memory storage
+     * Removes a {@link utils/key_pair!KeyPair} from in-memory storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -71,7 +71,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Removes all {@link KeyPairs} from in-memory storage
+     * Removes all {@link utils/key_pair!KeyPair} from in-memory storage
      */
     async clear(): Promise<void> {
         this.keys = {};
@@ -93,7 +93,6 @@ export class InMemoryKeyStore extends KeyStore {
     /**
      * Gets the account(s) from in-memory storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
-     * @returns{Promise<string[]>}
      */
     async getAccounts(networkId: string): Promise<string[]> {
         const result = new Array<string>();
