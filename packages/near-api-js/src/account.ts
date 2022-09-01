@@ -587,14 +587,7 @@ export class Account {
             finality: 'optimistic'
         });
         // Replace raw nonce into a new BN
-        const newResponse = { keys: response?.keys?.map((key) => ({ ...key, access_key: { ...key.access_key, nonce: new BN(key.access_key.nonce) } }))};
-        // A breaking API change introduced extra information into the
-        // response, so it now returns an object with a `keys` field instead
-        // of an array: https://github.com/nearprotocol/nearcore/pull/1789
-        if (Array.isArray(newResponse)) {
-            return newResponse;
-        }
-        return newResponse.keys;
+        return response?.keys?.map((key) => ({ ...key, access_key: { ...key.access_key, nonce: new BN(key.access_key.nonce) } }));
     }
 
     /**
