@@ -640,29 +640,32 @@ export class Account {
      * @returns {Promise<string>}
      */
     async getActiveDelegatedStakeBalance(): Promise<string>  {
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = block.header.hash;
         const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(null);
         const pools:Set<string> = new Set();
         [...current_validators, ...next_validators, ...current_proposals]
             .forEach((validator) => pools.add(validator.account_id));
 
         const prefix = getValidatorRegExp(this.connection.networkId);
-        const block = await this.connection.provider.block({ finality: 'final' });
-        const blockHash = block.header.hash;
         const promises = [...pools]
             .filter((v) => v.indexOf('nfvalidator') === -1 && v.match(prefix))
-            .map(async (validator) => (
-                await this.viewFunction({
+            .map((validator) => (
+                this.viewFunction({
                     contractId: validator,
                     methodName: 'get_account_total_balance',
                     args: { account_id: this.accountId },
                     blockQuery: { blockId: blockHash }
                 })
             ));
-        const results = await Promise.all(promises);
-        const total = results.reduce((sum, current) => {
-            const currentBN = new BN(current);
-            if (!currentBN.isZero()) {
-                return sum.add(new BN(current));
+
+        const results = await Promise.allSettled(promises);
+        const total = results.reduce((sum, state) => {
+            if (state.status === 'fulfilled') {
+                const currentBN = new BN(state.value);
+                if (!currentBN.isZero()) {
+                    return sum.add(new BN(state.value));
+                }
             }
             return sum;
         }, new BN(0));

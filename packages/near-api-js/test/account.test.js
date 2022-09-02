@@ -309,8 +309,69 @@ describe('with deploy contract', () => {
     });
 
     test('get total stake balance', async() => {
-        const account = new Account(nearjs.connection, 'test.near');
+        const mockConnection = {
+            ...nearjs.connection,
+            provider: {
+                ...nearjs.connection.provider,
+                validators: () => ({
+                    current_validators: [
+                        {
+                            account_id: 'testing1.pool.f863973.m0',
+                            is_slashed: false,
+                            num_expected_blocks: 7,
+                            num_expected_chunks: 19,
+                            num_produced_blocks: 7,
+                            num_produced_chunks: 18,
+                            public_key: 'ed25519:5QzHuNZ4stznMwf3xbDfYGUbjVt8w48q8hinDRmVx41z',
+                            shards: [ 1 ],
+                            stake: '73527610191458905577047103204'
+                        },
+                        {
+                            account_id: 'testing2.pool.f863973.m0',
+                            is_slashed: false,
+                            num_expected_blocks: 4,
+                            num_expected_chunks: 22,
+                            num_produced_blocks: 4,
+                            num_produced_chunks: 20,
+                            public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
+                            shards: [ 2 ],
+                            stake: '74531922534760985104659653178'
+                        },
+                        {
+                            account_id: 'invalid_account_id',
+                            is_slashed: false,
+                            num_expected_blocks: 4,
+                            num_expected_chunks: 22,
+                            num_produced_blocks: 4,
+                            num_produced_chunks: 20,
+                            public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
+                            shards: [ 2 ],
+                            stake: '74531922534760985104659653178'
+                        },
+                    ],
+                    next_validators: [],
+                    current_proposals: [],
+                }),
+            },
+        };
+
+        const account = new Account(mockConnection, 'test.near');
+        // mock internal functions that are being used on getActiveDelegatedStakeBalance
+        account.viewFunction = async ({ methodName, ...args}) => {
+            if (methodName === 'get_account_total_balance') {
+                return Promise.resolve('10000');
+            } else {
+                return await account.viewFunction({ methodName, ...args });
+            }
+        };
+        account.connection.provider.block = async () => {
+            return Promise.resolve({
+                header: {
+                    hash: '1234'
+                }
+            });
+        };
         const result = await account.getActiveDelegatedStakeBalance();
-        expect(result).toEqual('0');
+        expect(result).toEqual('20000');
     });
 });
