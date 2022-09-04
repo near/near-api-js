@@ -11,6 +11,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: NPM
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
