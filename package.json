@@ -18,6 +18,7 @@
     "clean": "turbo run clean",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "release": "changeset publish",
     "prepare": "husky install && turbo run prepare"
   },
   "devDependencies": {
