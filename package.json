@@ -18,7 +18,6 @@
     "clean": "yarn lerna run clean",
     "lint": "yarn lerna run lint --stream",
     "test": "yarn lerna run test --stream --concurrency 1",
-    "release": "yarn lerna version --conventional-commits",
     "prepare": "yarn husky install && yarn lerna run prepare"
   },
   "devDependencies": {
