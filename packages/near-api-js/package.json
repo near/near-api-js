@@ -62,6 +62,7 @@
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "yarn rimraf lib",
         "prepare": "yarn build",
+        "bundlewatch": "bundlewatch"
     },
     "bundlewatch": {
         "files": [
