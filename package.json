@@ -2,16 +2,8 @@
   "name": "@near-api-js/monorepo",
   "private": true,
   "engines": {
-    "node": ">=16.14.0"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
-    "nohoist": [
-      "**/near-hello",
-      "**/near-hello/**"
-    ]
+    "node": ">=16.14.0",
+    "pnpm": ">=7"
   },
   "scripts": {
     "build": "turbo run build",
