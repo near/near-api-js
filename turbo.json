@@ -16,9 +16,6 @@
     "clean": {
       "outputs": [],
       "cache": false
-    },
-    "prepare": {
-      "outputs": []
     }
   }
 }

@@ -19,7 +19,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "release": "changeset publish",
-    "prepare": "husky install && turbo run prepare"
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.6",
