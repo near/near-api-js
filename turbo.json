@@ -19,10 +19,6 @@
     },
     "prepare": {
       "outputs": []
-    },
-    "release": {
-      "dependsOn": ["build", "test", "lint"],
-      "outputs": []
     }
   }
 }
