@@ -206,6 +206,19 @@ describe('can migrate from an existing appKeyPrefix successfully', () => {
     });
 });
 
+it('can migrate from an existing appKeyPrefix successfully', async () => {
+    const keyPair = nearApi.KeyPair.fromRandom('ed25519');
+    global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
+    await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
+
+    localStorage.setItem('undefined_wallet_auth_key');
+
+    const newWalletConnection = new nearApi.WalletConnection(nearFake, 'near-app');
+    await newWalletConnection._completeSignInWithAccessKey();
+
+    expect(localStorage.getItem('near-app_wallet_auth_key')).toBeTruthy();
+});
+
 it('Promise until complete sign in', async () => {
     const keyPair = nearApi.KeyPair.fromRandom('ed25519');
     global.window.location.href = `http://example.com/location?account_id=near2.account&public_key=${keyPair.publicKey}`;
