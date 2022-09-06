@@ -4,6 +4,7 @@
  */
 
 import { SignedTransaction } from '../transaction';
+import BN from 'bn.js';
 
 export interface SyncInfo {
     latest_block_hash: string;
@@ -181,7 +182,7 @@ export interface Chunk {
 export interface Transaction {
     actions: Array<any>;
     hash: string;
-    nonce: bigint;
+    nonce: BN;
     public_key: string;
     receiver_id: string;
     signature: string;
@@ -352,8 +353,12 @@ export interface FunctionCallPermissionView {
         method_names: string[];
     };
 }
-export interface AccessKeyView extends QueryResponseKind {
+export interface AccessKeyViewRaw extends QueryResponseKind {
     nonce: number;
+    permission: 'FullAccess' | FunctionCallPermissionView;
+}
+export interface AccessKeyView extends QueryResponseKind {
+    nonce: BN;
     permission: 'FullAccess' | FunctionCallPermissionView;
 }
 
