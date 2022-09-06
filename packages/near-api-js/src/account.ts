@@ -642,7 +642,8 @@ export class Account {
     async getActiveDelegatedStakeBalance(): Promise<string>  {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
-        const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(null);
+        const epochId = block.header.epoch_id;
+        const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(epochId);
         const pools:Set<string> = new Set();
         [...current_validators, ...next_validators, ...current_proposals]
             .forEach((validator) => pools.add(validator.account_id));
