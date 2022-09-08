@@ -358,18 +358,18 @@ describe('with deploy contract', () => {
         const account = new Account(mockConnection, 'test.near');
         // mock internal functions that are being used on getActiveDelegatedStakeBalance
         account.viewFunction = async ({ methodName, ...args}) => {
-            if (methodName === 'get_account_total_balance' && args.contractId !== 'invalid_account_id') {
+            if (methodName === 'get_account_total_balance') {
+                // getActiveDelegatedStakeBalance sums stake from active validators and ignores throws
+                if (args.contractId === 'invalid_account_id') {
+                    throw new Error('Invalid function call');
+                }
                 return Promise.resolve('10000');
             } else {
                 return await account.viewFunction({ methodName, ...args });
             }
         };
         account.connection.provider.block = async () => {
-            return Promise.resolve({
-                header: {
-                    hash: '1234'
-                }
-            });
+            return Promise.resolve({ header: { hash: 'dontcare' } });
         };
         const result = await account.getActiveDelegatedStakeBalance();
         expect(result).toEqual('20000');
