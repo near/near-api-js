@@ -78,13 +78,13 @@ export class PublicKey extends Assignable {
         const keyType = reader.readU8();
         let data: Uint8Array;
         switch (keyType) {
-        case KeyType.ED25519: 
-            data = reader.readFixedArray(32);
-            break;
-        case KeyType.SECP256K1: 
-            data = reader.readFixedArray(64);
-            break;
-        default: throw new Error(`Unknown key type ${keyType}`);
+            case KeyType.ED25519: 
+                data = reader.readFixedArray(32);
+                break;
+            case KeyType.SECP256K1: 
+                data = reader.readFixedArray(64);
+                break;
+            default: throw new Error(`Unknown key type ${keyType}`);
         }
         return new PublicKey({keyType, data});
     }

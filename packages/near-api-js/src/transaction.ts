@@ -100,22 +100,22 @@ export class Signature extends Assignable {
     
     static borshDeserialize(reader: BinaryReader) {
         const keyType = reader.readU8();
-        let data: Uint8Array
+        let data: Uint8Array;
         switch (keyType) {
             case KeyType.ED25519: 
-            data = reader.readFixedArray(64)
-            break
+                data = reader.readFixedArray(64);
+                break;
             case KeyType.SECP256K1: 
-            data = reader.readFixedArray(65)
-            break
+                data = reader.readFixedArray(65);
+                break;
             default: throw new Error(`Unknown key type ${keyType}`);
         }
-        return new Signature({keyType, data})
-     }
+        return new Signature({keyType, data});
+    }
     
     borshSerialize(writer: BinaryWriter) {
         writer.writeU8(this.keyType);
-        writer.writeFixedArray(this.data)
+        writer.writeFixedArray(this.data);
     }
 }
 
