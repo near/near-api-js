@@ -1,6 +1,7 @@
 
 const { Account, Contract, providers } = require('../src/index');
 const testUtils  = require('./test-utils');
+const { TypedError } = require('../src/utils/errors');
 const fs = require('fs');
 const BN = require('bn.js');
 
@@ -308,7 +309,8 @@ describe('with deploy contract', () => {
         expect(result).toEqual('hello trex');
     });
 
-    test('get total stake balance', async() => {
+    test('get total stake balance and validator responses', async() => {
+        const CUSTOM_ERROR = new TypedError('Querying failed: wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: AccountId("invalid_account_id") })).', 'UntypedError');
         const mockConnection = {
             ...nearjs.connection,
             provider: {
@@ -346,7 +348,7 @@ describe('with deploy contract', () => {
                             num_produced_chunks: 20,
                             public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
                             shards: [ 2 ],
-                            stake: '74531922534760985104659653178'
+                            stake: '0'
                         },
                     ],
                     next_validators: [],
@@ -361,7 +363,7 @@ describe('with deploy contract', () => {
             if (methodName === 'get_account_total_balance') {
                 // getActiveDelegatedStakeBalance sums stake from active validators and ignores throws
                 if (args.contractId === 'invalid_account_id') {
-                    throw new Error('Invalid function call');
+                    throw CUSTOM_ERROR;
                 }
                 return Promise.resolve('10000');
             } else {
@@ -372,6 +374,34 @@ describe('with deploy contract', () => {
             return Promise.resolve({ header: { hash: 'dontcare' } });
         };
         const result = await account.getActiveDelegatedStakeBalance();
-        expect(result).toEqual('20000');
+        expect(result).toEqual({
+            stakedValidators: [{ validatorId: 'testing1.pool.f863973.m0', amount: '10000'}, { validatorId: 'testing2.pool.f863973.m0', amount: '10000'}],
+            failedValidators: [{ validatorId: 'invalid_account_id', error: CUSTOM_ERROR}],
+            total: '20000'
+        });
     });
+
+    // test.only('get total stake balance', async() => {
+    //     const path = require("path");
+    //     const homedir = require("os").homedir();
+    //     const { connect, keyStores } = require("near-api-js");
+    //     const CREDENTIALS_DIR = ".near-credentials";
+    //     const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
+    //     const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+    //     // const config = {
+    //     //     keyStore,
+    //     //     networkId: "testnet",
+    //     //     nodeUrl: "https://rpc.testnet.near.org",
+    //     // };
+    //     const config = {
+    //         keyStore,
+    //         networkId: "mainnet",
+    //         nodeUrl: "https://rpc.mainnet.near.org",
+    //     };
+    //     const near = await connect({ ...config, keyStore });
+    //     const account = new Account(near.connection, 'hcho112.near');
+    //     const result = await account.getActiveDelegatedStakeBalance();
+    //     console.warn('result', result);
+    //     // expect(result).toEqual('0');
+    // });
 });
