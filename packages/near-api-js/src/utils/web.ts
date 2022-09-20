@@ -33,7 +33,7 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
                 headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
             });
             if (!response.ok) {
-                if (response.status === 503) {
+                if (response.status === 503 || response.status === 408) {
                     logWarning(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
                     return null;
                 }
