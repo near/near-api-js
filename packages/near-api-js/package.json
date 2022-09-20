@@ -24,7 +24,7 @@
         "tweetnacl": "^1.0.1"
     },
     "devDependencies": {
-        "@types/bn.js": "^5.1.0",
+        "@types/bn.js": "^5.1.1",
         "@types/http-errors": "^1.6.1",
         "browserify": "^16.2.3",
         "bundlewatch": "^0.3.1",
