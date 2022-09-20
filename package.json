@@ -9,8 +9,7 @@
       "packages/*"
     ],
     "nohoist": [
-      "**/near-hello",
-      "**/near-hello/**"
+      "**/near-hello"
     ]
   },
   "scripts": {
