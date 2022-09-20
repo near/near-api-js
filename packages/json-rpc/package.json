@@ -1,0 +1,47 @@
+{
+    "name": "json-rpc",
+    "version": "1.0.0",
+    "description": "json-rpc",
+    "homepage": "https://github.com/near/near-api-js#readme",
+    "license": "ISC",
+    "main": "lib/index.js",
+    "directories": {
+        "lib": "lib",
+        "test": "test"
+    },
+    "files": [
+        "lib"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/near/near-api-js.git"
+    },
+    "scripts": {
+        "dist": "yarn browserify",
+        "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
+        "prebrowserify": "yarn build",
+        "compile": "tsc -p ./tsconfig.json",
+        "dev": "yarn compile -w",
+        "build": "yarn compile",
+        "test": "jest test",
+        "lint": "concurrently \"yarn:lint:*(!fix)\"",
+        "lint:src": "eslint --ext .ts src",
+        "lint:test": "eslint --ext .js test",
+        "lint:fix": "concurrently \"yarn:lint:*:fix\"",
+        "lint:src:fix": "eslint --ext .ts --fix src",
+        "lint:test:fix": "eslint --ext .js --fix test",
+        "prefuzz": "yarn build",
+        "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
+        "clean": "yarn rimraf lib",
+        "prepare": "yarn build && yarn browserify"
+    },
+    "bugs": {
+        "url": "https://github.com/near/near-api-js/issues"
+    },
+    "dependencies": {
+        "bn.js": "^5.2.1",
+        "jest": "^26.0.1",
+        "near-hello": "^0.5.1",
+        "ts-jest": "^26.5.6"
+    }
+}
