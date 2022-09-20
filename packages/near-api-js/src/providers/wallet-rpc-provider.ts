@@ -406,8 +406,8 @@ export class WalletRpcProvider extends Provider {
                     const response = await this._provider.request(request);
                     if (Array.isArray(response)) {
                         // Success when error is not exist
-                        const tsStatus = await this.txStatusString(response[0], this._account);
-                        return tsStatus;
+                        const txStatus = await this.txStatusString(response[0], this._account);
+                        return txStatus;
                     } else if ((response as any).error) {
                         const error = (response as any).error;
                         if (typeof error.data === 'object') {
@@ -444,7 +444,7 @@ export class WalletRpcProvider extends Provider {
                 throw error;
             }
         });
-        const { result } = response;
+        const result = response;
         // From jsonrpc spec:
         // result
         //   This member is REQUIRED on success.
