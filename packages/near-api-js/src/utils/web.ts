@@ -1,7 +1,7 @@
 import createError from 'http-errors';
 
 import exponentialBackoff from './exponential-backoff';
-import { TypedError } from '../providers';
+import { TypedError } from 'json-rpc/src';
 import { logWarning } from './errors';
 
 const START_WAIT_TIME_MS = 1000;

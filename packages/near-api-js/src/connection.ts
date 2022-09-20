@@ -1,4 +1,4 @@
-import { Provider, JsonRpcProvider } from './providers';
+import { Provider, JsonRpcProvider } from 'json-rpc/src';
 import { Signer, InMemorySigner } from './signer';
 
 /**
@@ -42,7 +42,7 @@ export class Connection {
         this.networkId = networkId;
         this.provider = provider;
         this.signer = signer;
-        this.jsvmAccountId = jsvmAccountId; 
+        this.jsvmAccountId = jsvmAccountId;
     }
 
     /**

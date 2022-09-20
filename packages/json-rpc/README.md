@@ -1,11 +1,11 @@
-# `json-rpc-test`
+# `json-rpc`
 
 > TODO: description
 
 ## Usage
 
 ```
-const jsonRpcTest = require('json-rpc-test');
+const jsonRpcTest = require('json-rpc');
 
 // TODO: DEMONSTRATE API
 ```

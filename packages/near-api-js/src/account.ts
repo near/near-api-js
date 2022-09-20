@@ -16,7 +16,7 @@ import {
     SignedTransaction,
     stringifyJsonOrBytes
 } from './transaction';
-import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
+import { FinalExecutionOutcome, TypedError, ErrorContext } from 'json-rpc/src';
 import {
     ViewStateResult,
     AccountView,
@@ -27,7 +27,7 @@ import {
     AccessKeyInfoView,
     FunctionCallPermissionView,
     BlockReference
-} from './providers/provider';
+} from 'json-rpc/src/provider';
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
@@ -118,9 +118,9 @@ export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     */
     walletCallbackUrl?: string;
 }
-export interface ViewFunctionCallOptions extends FunctionCallOptions { 
-    parse?: (response: Uint8Array) => any; 
-    blockQuery?: BlockReference; 
+export interface ViewFunctionCallOptions extends FunctionCallOptions {
+    parse?: (response: Uint8Array) => any;
+    blockQuery?: BlockReference;
 }
 
 interface ReceiptLogWithFailure {
@@ -255,7 +255,7 @@ export class Account {
         this.printLogsAndFailures(signedTx.transaction.receiverId, flatLogs);
 
         // Should be falsy if result.status.Failure is null
-        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object'  && result.status.Failure !== null) {
+        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object' && result.status.Failure !== null) {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
                 throw new TypedError(
@@ -403,16 +403,16 @@ export class Account {
         this.validateArgs(args);
         let functionCallArgs;
 
-        if(jsContract){
-            const encodedArgs = this.encodeJSContractArgs( contractId, methodName, JSON.stringify(args) );
-            functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true ];
-        } else{
+        if (jsContract) {
+            const encodedArgs = this.encodeJSContractArgs(contractId, methodName, JSON.stringify(args));
+            functionCallArgs = ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true];
+        } else {
             const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
             functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
         }
 
         return this.signAndSendTransaction({
-            receiverId: jsContract ? this.connection.jsvmAccountId: contractId,
+            receiverId: jsContract ? this.connection.jsvmAccountId : contractId,
             // eslint-disable-next-line prefer-spread
             actions: [functionCall.apply(void 0, functionCallArgs)],
             walletMeta,
@@ -513,7 +513,7 @@ export class Account {
         contractId: string,
         methodName: string,
         args: any = {},
-        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract=false, blockQuery = { finality: 'optimistic' } }: { parse?: (response: Uint8Array) => any; stringify?: (input: any) => Buffer; blockQuery?: BlockReference; jsContract?: boolean } = {}
+        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract = false, blockQuery = { finality: 'optimistic' } }: { parse?: (response: Uint8Array) => any; stringify?: (input: any) => Buffer; blockQuery?: BlockReference; jsContract?: boolean } = {}
     ): Promise<any> {
         const deprecate = depd('Account.viewFunction(contractId, methodName, args, options)');
         deprecate('use `Account.viewFunction(ViewFunctionCallOptions)` instead');
@@ -530,20 +530,20 @@ export class Account {
         blockQuery = { finality: 'optimistic' }
     }: ViewFunctionCallOptions): Promise<any> {
         let encodedArgs;
-        
+
         this.validateArgs(args);
-    
-        if(jsContract){
-            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
-        } else{
-            encodedArgs =  stringify(args);
+
+        if (jsContract) {
+            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length > 0 ? JSON.stringify(args) : '');
+        } else {
+            encodedArgs = stringify(args);
         }
 
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
             ...blockQuery,
             account_id: jsContract ? this.connection.jsvmAccountId : contractId,
-            method_name: jsContract ? 'view_js_contract'  : methodName,
+            method_name: jsContract ? 'view_js_contract' : methodName,
             args_base64: encodedArgs.toString('base64')
         });
 
@@ -562,7 +562,7 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
+    async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' }): Promise<Array<{ key: Buffer; value: Buffer }>> {
         const { values } = await this.connection.provider.query<ViewStateResult>({
             request_type: 'view_state',
             ...blockQuery,

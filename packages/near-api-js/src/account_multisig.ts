@@ -6,9 +6,9 @@ import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } from './transaction';
-import { FinalExecutionOutcome, TypedError } from './providers';
+import { FinalExecutionOutcome, TypedError } from 'json-rpc/src';
 import { fetchJson } from './utils/web';
-import { FunctionCallPermissionView } from './providers/provider';
+import { FunctionCallPermissionView } from 'json-rpc/src/provider';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';
 export const MULTISIG_ALLOWANCE = new BN(parseNearAmount('1'));
@@ -123,7 +123,7 @@ export class AccountMultisig extends Account {
         const validCodeStatusIfNoDeploy = contractBytes ? MultisigCodeStatus.UNKNOWN_CODE : MultisigCodeStatus.VALID_CODE;
 
         try {
-            if(contractBytes) {
+            if (contractBytes) {
                 await super.signAndSendTransaction({
                     receiverId: this.accountId, actions: [
                         deployContract(contractBytes),
@@ -133,7 +133,7 @@ export class AccountMultisig extends Account {
             } else {
                 await this.deleteRequest(u32_max);
             }
-            
+
             return { codeStatus: MultisigCodeStatus.VALID_CODE, stateStatus: MultisigStateStatus.VALID_STATE };
         } catch (e) {
             if (new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(e && e.kind && e.kind.ExecutionError)) {
@@ -159,12 +159,12 @@ export class AccountMultisig extends Account {
 
     async deleteAllRequests() {
         const request_ids = await this.getRequestIds();
-        if(request_ids.length) {
+        if (request_ids.length) {
             await Promise.all(request_ids.map((id) => this.deleteRequest(id)));
         }
     }
 
-    async deleteUnconfirmedRequests () {
+    async deleteUnconfirmedRequests() {
         // TODO: Delete in batch, don't delete unexpired
         // TODO: Delete in batch, don't delete unexpired (can reduce gas usage dramatically)
         const request_ids = await this.getRequestIds();
@@ -287,7 +287,7 @@ export class Account2FA extends AccountMultisig {
 
     async disableWithFAK({ contractBytes, cleanupContractBytes }: { contractBytes: Uint8Array; cleanupContractBytes?: Uint8Array }) {
         let cleanupActions = [];
-        if(cleanupContractBytes) {
+        if (cleanupContractBytes) {
             await this.deleteAllRequests().catch(e => e);
             cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes);
         }
@@ -301,7 +301,7 @@ export class Account2FA extends AccountMultisig {
 
         const accessKeyInfo = await this.findAccessKey(this.accountId, actions);
 
-        if(accessKeyInfo && accessKeyInfo.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
+        if (accessKeyInfo && accessKeyInfo.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
             throw new TypedError('No full access key found in keystore. Unable to bypass multisig', 'NoFAKFound');
         }
 
@@ -352,7 +352,7 @@ export class Account2FA extends AccountMultisig {
      */
     async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
         const { stateStatus } = await this.checkMultisigCodeAndStateStatus();
-        if(stateStatus !== MultisigStateStatus.VALID_STATE && stateStatus !== MultisigStateStatus.STATE_NOT_INITIALIZED) {
+        if (stateStatus !== MultisigStateStatus.VALID_STATE && stateStatus !== MultisigStateStatus.STATE_NOT_INITIALIZED) {
             throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
         }
 
@@ -360,7 +360,7 @@ export class Account2FA extends AccountMultisig {
         await this.deleteAllRequests().catch(e => deleteAllRequestsError = e);
 
         const cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch(e => {
-            if(e.type === 'ContractHasExistingState') {
+            if (e.type === 'ContractHasExistingState') {
                 throw deleteAllRequestsError || e;
             }
             throw e;

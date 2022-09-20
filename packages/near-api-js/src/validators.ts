@@ -2,7 +2,7 @@
 
 import BN from 'bn.js';
 import depd from 'depd';
-import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from './providers/provider';
+import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from 'json-rpc/src/provider';
 
 /** Finds seat price given validators stakes and number of seats.
  *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection
