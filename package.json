@@ -6,6 +6,7 @@
     "pnpm": ">=7"
   },
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "turbo run build",
     "clean": "turbo run clean",
     "lint": "turbo run lint",
