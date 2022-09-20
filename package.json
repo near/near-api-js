@@ -1,5 +1,5 @@
 {
-  "name": "@near-api-js/monorepo",
+  "name": "@near-js/monorepo",
   "private": true,
   "engines": {
     "node": ">=16.14.0",
