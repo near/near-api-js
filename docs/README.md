@@ -4,10 +4,7 @@ Docs for this project are generated with an external generator:
 
 [https://github.com/near/docs-generator](https://github.com/near/docs-generator)
 
-A GitHub [action](../.github/workflows/docs.yml) is triggered upon every `near-api-js` release.
+- A GitHub [workflow](../.github/workflows/docs-generator.yml) is triggered upon every `near-api-js` release.
+- It invokes a lister on a GitHub App installed on @near/docs (deployed on Vercel).
 
-The build script ([./build.sh](./build.sh)):
-1. Clones the generator
-2. Builds the docs with [Docusaurus](https://docusaurus.io/)
-
-Then the Action publishes the generated site to GitHub Pages: [https://near.github.io/near-api-js/](https://near.github.io/near-api-js/)
+See [https://github.com/near/docs-generator](https://github.com/near/docs-generator) to learn more.

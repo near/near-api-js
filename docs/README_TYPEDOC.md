@@ -18,28 +18,28 @@ NEAR JavaScript API is a complete library to interact with the NEAR blockchain. 
 
 ### Connect to NEAR
 
-- [From the browser](/modules/browserConnect.html)
-- [From Node.js](/modules/connect.html)
+- [From the browser](modules/browserConnect.html)
+- [From Node.js](modules/connect.html)
 
 ### Managing Accounts
 
-- Class [`Account`](/classes/account.Account.html)
-- Module [`walletAccount`](/modules/walletAccount.html)
-- Class [`Contract`](/classes/contract.Contract.html)
+- Class [`Account`](classes/account.Account.html)
+- Module [`walletAccount`](modules/walletAccount.html)
+- Class [`Contract`](classes/contract.Contract.html)
 
 ### Managing Keys
 
-- Module [`utils/key_pair`](/modules/utils_key_pair.html)
-- Class [`BrowserLocalStorageKeyStore`](/classes/key_stores_browser_local_storage_key_store.BrowserLocalStorageKeyStore.html)
-- Class [`InMemoryKeyStore`](/classes/key_stores_in_memory_key_store.InMemoryKeyStore.html)
-- Class [`UnencryptedFileSystemKeyStore`](/classes/key_stores_unencrypted_file_system_keystore.UnencryptedFileSystemKeyStore.html)
-- Class [`MergeKeyStore`](/classes/key_stores_merge_key_store.MergeKeyStore.html)
+- Module [`utils/key_pair`](modules/utils_key_pair.html)
+- Class [`BrowserLocalStorageKeyStore`](classes/key_stores_browser_local_storage_key_store.BrowserLocalStorageKeyStore.html)
+- Class [`InMemoryKeyStore`](classes/key_stores_in_memory_key_store.InMemoryKeyStore.html)
+- Class [`UnencryptedFileSystemKeyStore`](classes/key_stores_unencrypted_file_system_keystore.UnencryptedFileSystemKeyStore.html)
+- Class [`MergeKeyStore`](classes/key_stores_merge_key_store.MergeKeyStore.html)
 
 ### RPC
 
-- [Request and Response Types](/modules/providers_provider.html)
-- [Client](/classes/providers_json_rpc_provider.JsonRpcProvider.html)
+- [Request and Response Types](modules/providers_provider.html)
+- [Client](classes/providers_json_rpc_provider.JsonRpcProvider.html)
 
 ### Utils
 
-- [Formatting utils](/modules/utils_format.html)
+- [Formatting utils](modules/utils_format.html)
