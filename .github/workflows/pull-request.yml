@@ -17,17 +17,25 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2.2.2
+      with:
+        version: 7
+
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
         node-version: 16.x
-        cache: 'yarn'
+        cache: pnpm
 
     - name: Install dependencies
-      run: yarn --frozen-lockfile
+      run: pnpm install
 
-    - name: Run lint
-      run: yarn lint
+    - name: Build
+      run: pnpm build
 
-    - name: Run tests
-      run: yarn test
+    - name: Lint
+      run: pnpm lint
+
+    - name: Test
+      run: pnpm test
