@@ -68,20 +68,33 @@ export class WalletRpcProvider extends Provider {
 
     private _network = '';
     private _account = '';
-    private _pubKey = '';
+    private _pubKeys: string[] = [];
 
+    /**
+     * get chain id (near or testnet)
+     */
     get network(): string {
         return this._network;
     }
 
+    /**
+     * get selected account id
+     */
     get account(): string {
         return this._account;
     }
 
-    get pubKey(): string {
-        return this._pubKey;
+
+    /**
+     * get access key of selected account id
+     */
+    get pubKeys(): string[] {
+        return this._pubKeys;
     }
 
+    /**
+     * get type of provider
+     */
     get isWalletProvider(): boolean {
         return true;
     }
@@ -99,6 +112,8 @@ export class WalletRpcProvider extends Provider {
 
     private async init() {
         if(this._provider) {
+            const { chain_id } = await this.status();
+            this._network = chain_id;
             this._account = await this._provider.getAccount();
         }
     }
@@ -113,9 +128,9 @@ export class WalletRpcProvider extends Provider {
     /**
      * update selected account
      */
-    private updateAccount(account: { address: string; pubKey: string}) {
+    private updateAccount(account: { address: string; pubKeys: string[]}) {
         this._account = account.address;
-        this._pubKey = account.pubKey;
+        this._pubKeys = account.pubKeys;
     }
 
     /**
@@ -158,7 +173,7 @@ export class WalletRpcProvider extends Provider {
     }
 
     /**
-     * Sends a transaction to the RPC and waits until transaction is fully complete
+     * Sign and Sends a transaction to the RPC and waits until transaction is fully complete
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await}
      *
      * @param transaction The transaction being sent
@@ -407,7 +422,7 @@ export class WalletRpcProvider extends Provider {
                     if (Array.isArray(response)) {
                         // Success when error is not exist
                         const txStatus = await this.txStatusString(response[0], this._account);
-                        return txStatus;
+                        return { reesult: txStatus };
                     } else if ((response as any).error) {
                         const error = (response as any).error;
                         if (typeof error.data === 'object') {
@@ -430,7 +445,7 @@ export class WalletRpcProvider extends Provider {
                         }
                     }
                     // Success when response.error is not exist
-                    return response;
+                    return { result: response };
                 }
                 throw new Error('Provider not exist');
             } catch (error) {
@@ -444,7 +459,7 @@ export class WalletRpcProvider extends Provider {
                 throw error;
             }
         });
-        const result = response;
+        const { result } = response;
         // From jsonrpc spec:
         // result
         //   This member is REQUIRED on success.
