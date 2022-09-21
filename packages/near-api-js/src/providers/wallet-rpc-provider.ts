@@ -422,7 +422,7 @@ export class WalletRpcProvider extends Provider {
                     if (Array.isArray(response)) {
                         // Success when error is not exist
                         const txStatus = await this.txStatusString(response[0], this._account);
-                        return { reesult: txStatus };
+                        return { result: txStatus };
                     } else if ((response as any).error) {
                         const error = (response as any).error;
                         if (typeof error.data === 'object') {
