@@ -176,7 +176,7 @@ export class WalletRpcProvider extends Provider {
      * Sign and Sends a transaction to the RPC and waits until transaction is fully complete
      * @see {@link https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await}
      *
-     * @param transaction The transaction being sent
+     * @param transactions The transactions being sent
      */
     async signAndSendTransaction(transactions: Transaction[]): Promise<FinalExecutionOutcome> {
         const txs = transactions.map((tx) => Buffer.from(tx.encode()).toString('base64'));
