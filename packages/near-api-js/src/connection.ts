@@ -1,4 +1,4 @@
-import { Provider, JsonRpcProvider } from 'json-rpc/src';
+import { Provider, JsonRpcProvider } from '../../json-rpc/src';
 import { Signer, InMemorySigner } from './signer';
 
 /**

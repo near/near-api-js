@@ -16,7 +16,7 @@ import {
     SignedTransaction,
     stringifyJsonOrBytes
 } from './transaction';
-import { FinalExecutionOutcome, TypedError, ErrorContext } from 'json-rpc/src';
+import { FinalExecutionOutcome, TypedError, ErrorContext } from '../../json-rpc/src';
 import {
     ViewStateResult,
     AccountView,
@@ -27,7 +27,7 @@ import {
     AccessKeyInfoView,
     FunctionCallPermissionView,
     BlockReference
-} from 'json-rpc/src/provider';
+} from '../../json-rpc/src/provider';
 import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';

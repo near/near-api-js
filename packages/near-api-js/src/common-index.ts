@@ -1,5 +1,5 @@
 /** @hidden @module */
-import * as providers from 'json-rpc/src';
+import * as providers from '../../json-rpc/src';
 import * as utils from './utils';
 import * as transactions from './transaction';
 import * as validators from './validators';

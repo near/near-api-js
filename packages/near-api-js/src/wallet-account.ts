@@ -9,7 +9,7 @@
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
-import { FinalExecutionOutcome } from 'json-rpc/src';
+import { FinalExecutionOutcome } from '../../json-rpc/src';
 import { InMemorySigner } from './signer';
 import { Transaction, Action, SCHEMA, createTransaction } from './transaction';
 import { KeyPair, PublicKey } from './utils';

@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 import depd from 'depd';
 import { Account } from './account';
-import { getTransactionLastResult } from 'json-rpc/src';
+import { getTransactionLastResult } from '../../json-rpc/src';
 import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
 
 // Makes `function.name` return given name

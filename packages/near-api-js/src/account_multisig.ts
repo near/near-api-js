@@ -6,9 +6,9 @@ import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } from './transaction';
-import { FinalExecutionOutcome, TypedError } from 'json-rpc/src';
+import { FinalExecutionOutcome, TypedError } from '../../json-rpc/src';
 import { fetchJson } from './utils/web';
-import { FunctionCallPermissionView } from 'json-rpc/src/provider';
+import { FunctionCallPermissionView } from '../../json-rpc/src/provider';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';
 export const MULTISIG_ALLOWANCE = new BN(parseNearAmount('1'));
