@@ -178,9 +178,9 @@ export class WalletRpcProvider extends Provider {
      *
      * @param transaction The transaction being sent
      */
-    async signAndSendTransaction(transaction: Transaction): Promise<FinalExecutionOutcome> {
-        const bytes = transaction.encode();
-        return this.sendJsonRpc('signAndSendTransaction', [Buffer.from(bytes).toString('base64')]);
+    async signAndSendTransaction(transactions: Transaction[]): Promise<FinalExecutionOutcome> {
+        const txs = transactions.map((tx) => Buffer.from(tx.encode()).toString('base64'));
+        return this.sendJsonRpc('signAndSendTransaction', txs);
     }
 
     /**
