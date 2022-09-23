@@ -1,9 +1,9 @@
 // demonstrates how to use API-KEY with 'connect' function. 
-const { connect, keyStores } = require("near-api-js");
-const path = require("path");
+const { connect, keyStores } = require('near-api-js');
+const path = require('path');
 
-const homedir = require("os").homedir();
-const CREDENTIALS_DIR = ".near-credentials";
+const homedir = require('os').homedir();
+const CREDENTIALS_DIR = '.near-credentials';
 const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
