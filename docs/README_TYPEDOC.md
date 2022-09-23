@@ -4,7 +4,7 @@ NEAR JavaScript API is a complete library to interact with the NEAR blockchain. 
 
 ## Resources
 
-- [Cookbook](https://github.com/near/near-api-js/blob/master/examples/cookbook/README.md) with common use cases
+- [Cookbook](https://github.com/near/near-api-js/blob/master/packages/cookbook/README.md) with common use cases
 
 - To quickly get started with integrating NEAR in a _web browser_, read our [Web Frontend integration](https://docs.near.org/develop/integrate/frontend) article.
 
