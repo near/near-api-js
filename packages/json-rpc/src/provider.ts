@@ -3,7 +3,7 @@
  * @module
  */
 
-import { SignedTransaction } from 'near-api-js/src/transaction';
+import { SignedTransaction } from '../../near-api-js/src/transaction';
 import BN from 'bn.js';
 
 export interface SyncInfo {

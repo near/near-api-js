@@ -17,31 +17,37 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "scripts": {
-        "dist": "yarn browserify",
-        "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
-        "prebrowserify": "yarn build",
+        "dist": "pnpm browserify",
+        "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/json-rpc.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/json-rpc.min.js",
+        "prebrowserify": "pnpm build",
         "compile": "tsc -p ./tsconfig.json",
-        "dev": "yarn compile -w",
-        "build": "yarn compile",
+        "dev": "pnpm compile -w",
+        "build": "pnpm compile",
         "test": "jest test",
-        "lint": "concurrently \"yarn:lint:*(!fix)\"",
+        "lint": "concurrently \"pnpm:lint:*(!fix)\"",
         "lint:src": "eslint --ext .ts src",
         "lint:test": "eslint --ext .js test",
-        "lint:fix": "concurrently \"yarn:lint:*:fix\"",
+        "lint:fix": "concurrently \"pnpm:lint:*:fix\"",
         "lint:src:fix": "eslint --ext .ts --fix src",
         "lint:test:fix": "eslint --ext .js --fix test",
-        "prefuzz": "yarn build",
+        "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "yarn rimraf lib",
-        "prepare": "yarn build && yarn browserify"
+        "clean": "pnpm rimraf lib",
+        "prepare": "pnpm build && pnpm browserify"
     },
     "bugs": {
         "url": "https://github.com/near/near-api-js/issues"
     },
     "dependencies": {
         "bn.js": "^5.2.1",
+        "borsh": "^0.7.0",
         "jest": "^26.0.1",
         "near-hello": "^0.5.1",
         "ts-jest": "^26.5.6"
+    },
+    "devDependencies": {
+        "browserify": "^16.2.3",
+        "uglifyify": "^5.0.1",
+        "concurrently": "^7.3.0"
     }
 }

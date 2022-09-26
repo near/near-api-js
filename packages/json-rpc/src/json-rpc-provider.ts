@@ -24,12 +24,12 @@ import {
     GasPrice,
     QueryResponseKind
 } from './provider';
-import { ConnectionInfo, fetchJson } from 'near-api-js/src/utils/web';
-import { TypedError, ErrorContext } from 'near-api-js/src//utils/errors';
+import { ConnectionInfo, fetchJson } from '../../near-api-js/src/utils/web';
+import { TypedError, ErrorContext } from '../../near-api-js/src/utils/errors';
 import { baseEncode } from 'borsh';
-import exponentialBackoff from 'near-api-js/src//utils/exponential-backoff';
-import { parseRpcError } from 'near-api-js/src//utils/rpc_errors';
-import { SignedTransaction } from 'near-api-js/src//transaction';
+import exponentialBackoff from '../../near-api-js/src/utils/exponential-backoff';
+import { parseRpcError } from '../../near-api-js/src/utils/rpc_errors';
+import { SignedTransaction } from '../../near-api-js/src/transaction';
 
 /** @hidden */
 export { TypedError, ErrorContext };
