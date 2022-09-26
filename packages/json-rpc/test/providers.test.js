@@ -1,12 +1,12 @@
 const nearApi = require('../../near-api-js/src/index');
-const testUtils = require('near-api-js/test/test-utils');
+const testUtils = require('../../near-api-js/test/test-utils');
 const BN = require('bn.js');
 const base58 = require('bs58');
 
 jest.setTimeout(20000);
 
 const withProvider = (fn) => {
-    const config = Object.assign(require('near-api-js/test/config')(process.env.NODE_ENV || 'test'));
+    const config = Object.assign(require('../../near-api-js/test/config')(process.env.NODE_ENV || 'test'));
     const provider = new nearApi.providers.JsonRpcProvider(config.nodeUrl);
     return () => fn(provider);
 };
@@ -328,7 +328,7 @@ test('JsonRpc connection object exist without connectionInfo provided', async ()
 });
 
 test('near json rpc fetch node status', async () => {
-    const config = require('near-api-js/test/config')(process.env.NODE_ENV || 'test');
+    const config = require('../../near-api-js/test/config')(process.env.NODE_ENV || 'test');
     const near = await nearApi.connect(config);
     let response = await near.connection.provider.status();
     expect(response.chain_id).toBeTruthy();
