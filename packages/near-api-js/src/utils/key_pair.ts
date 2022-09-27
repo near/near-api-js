@@ -47,7 +47,7 @@ export class PublicKey extends Assignable {
         }
         return value;
     }
-    
+
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
         if (parts.length === 1) {
@@ -58,7 +58,7 @@ export class PublicKey extends Assignable {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
     }
-    
+
     toString(): string {
         return `${key_type_to_str(this.keyType)}:${base_encode(this.data)}`;
     }
@@ -113,12 +113,10 @@ export abstract class KeyPair {
         }
     }
 
-    static fromString(encodedKey: string): KeyPair {
+    static fromString(encodedKey: `${'secp256k1' | 'ed25519'}:${string}`): KeyPair {
         const parts = encodedKey.split(':');
         //TODO: clarify what we must do here
-        if (parts.length === 1) {
-            return new KeyPairEd25519(parts[0]);
-        } else if (parts.length === 2) {
+        if (parts.length === 2) {
             switch (parts[0].toUpperCase()) {
                 case 'ED25519': return new KeyPairEd25519(parts[1]);
                 case 'SECP256K1': return new KeyPairSecp256k1(parts[1]);
