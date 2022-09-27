@@ -117,7 +117,6 @@ export abstract class KeyPair {
 
     static fromString(encodedKey: KeyPairString): KeyPair {
         const parts = encodedKey.split(':');
-        //TODO: clarify what we must do here
         if (parts.length === 2) {
             switch (parts[0].toUpperCase()) {
                 case 'ED25519': return new KeyPairEd25519(parts[1]);
