@@ -1,5 +1,5 @@
 import { KeyStore } from './keystore';
-import { KeyPair } from '../utils/key_pair';
+import { KeyPair, KeyPairString } from '../utils/key_pair';
 
 /**
  * Simple in-memory keystore for mainly for testing purposes.
@@ -30,7 +30,7 @@ import { KeyPair } from '../utils/key_pair';
  */
 export class InMemoryKeyStore extends KeyStore {
     /** @hidden */
-    private keys: { [key: string]: string };
+    private keys: { [key: string]: KeyPairString };
 
     constructor() {
         super();

@@ -95,10 +95,12 @@ export class PublicKey extends Assignable {
     }
 }
 
+export type KeyPairString = `ed25519:${string}` | `secp256k1:${string}`;
+
 export abstract class KeyPair {
     abstract sign(message: Uint8Array): Signature;
     abstract verify(message: Uint8Array, signature: Uint8Array): boolean;
-    abstract toString(): string;
+    abstract toString(): KeyPairString;
     abstract getPublicKey(): PublicKey;
 
     /**
@@ -113,7 +115,7 @@ export abstract class KeyPair {
         }
     }
 
-    static fromString(encodedKey: `${'secp256k1' | 'ed25519'}:${string}`): KeyPair {
+    static fromString(encodedKey: KeyPairString): KeyPair {
         const parts = encodedKey.split(':');
         //TODO: clarify what we must do here
         if (parts.length === 2) {
@@ -172,7 +174,7 @@ export class KeyPairEd25519 extends KeyPair {
         return this.publicKey.verify(message, signature);
     }
 
-    toString(): string {
+    toString(): KeyPairString {
         return `ed25519:${this.secretKey}`;
     }
 
@@ -236,7 +238,7 @@ export class KeyPairSecp256k1 extends KeyPair {
         return this.publicKey.verify(message, signature);
     }
 
-    toString(): string {
+    toString(): KeyPairString {
         return `secp256k1:${this.secretKey}`;
     }
 
