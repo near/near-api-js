@@ -105,7 +105,7 @@ export abstract class KeyPair {
      * @param curve Name of elliptical curve, case-insensitive
      * @returns Random KeyPair based on the curve
      */
-    static fromRandom(curve: string): KeyPair {
+    static fromRandom(curve: 'ed25519' | 'secp256k1'): KeyPair {
         switch (curve.toUpperCase()) {
             case 'ED25519': return KeyPairEd25519.fromRandom();
             case 'SECP256K1': return KeyPairSecp256k1.fromRandom();
