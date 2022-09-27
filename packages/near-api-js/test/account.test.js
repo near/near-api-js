@@ -380,28 +380,54 @@ describe('with deploy contract', () => {
             total: '20000'
         });
     });
+    test('Fail to get total stake balance upon timeout error', async () => {
+        const ERROR_MESSAGE = 'Failed to get delegated stake balance';
+        const CUSTOM_ERROR = new TypedError('RPC DOWN', 'TimeoutError');
+        const mockConnection = {
+            ...nearjs.connection,
+            provider: {
+                ...nearjs.connection.provider,
+                validators: () => ({
+                    current_validators: [
+                        {
+                            account_id: 'timeout_account_id',
+                            is_slashed: false,
+                            num_expected_blocks: 4,
+                            num_expected_chunks: 22,
+                            num_produced_blocks: 4,
+                            num_produced_chunks: 20,
+                            public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
+                            shards: [ 2 ],
+                            stake: '0'
+                        },
+                    ],
+                    next_validators: [],
+                    current_proposals: [],
+                }),
+            },
+        };
 
-    // test.only('get total stake balance', async() => {
-    //     const path = require("path");
-    //     const homedir = require("os").homedir();
-    //     const { connect, keyStores } = require("near-api-js");
-    //     const CREDENTIALS_DIR = ".near-credentials";
-    //     const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
-    //     const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-    //     // const config = {
-    //     //     keyStore,
-    //     //     networkId: "testnet",
-    //     //     nodeUrl: "https://rpc.testnet.near.org",
-    //     // };
-    //     const config = {
-    //         keyStore,
-    //         networkId: "mainnet",
-    //         nodeUrl: "https://rpc.mainnet.near.org",
-    //     };
-    //     const near = await connect({ ...config, keyStore });
-    //     const account = new Account(near.connection, 'hcho112.near');
-    //     const result = await account.getActiveDelegatedStakeBalance();
-    //     console.warn('result', result);
-    //     // expect(result).toEqual('0');
-    // });
+        const account = new Account(mockConnection, 'test.near');
+        // mock internal functions that are being used on getActiveDelegatedStakeBalance
+        account.viewFunction = async ({ methodName, ...args}) => {
+            if (methodName === 'get_account_total_balance') {
+                // getActiveDelegatedStakeBalance sums stake from active validators and ignores throws
+                if (args.contractId === 'timeout_account_id') {
+                    throw CUSTOM_ERROR;
+                }
+                return Promise.resolve('10000');
+            } else {
+                return await account.viewFunction({ methodName, ...args });
+            }
+        };
+        account.connection.provider.block = async () => {
+            return Promise.resolve({ header: { hash: 'dontcare' } });
+        };
+
+        try {
+            await account.getActiveDelegatedStakeBalance();
+        } catch(e) {
+            expect(e).toEqual(new Error(ERROR_MESSAGE));
+        }
+    });
 });

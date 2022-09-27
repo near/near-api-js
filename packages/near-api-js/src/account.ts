@@ -671,6 +671,18 @@ export class Account {
             ));
 
         const results = await Promise.allSettled(promises);
+
+        const hasTimeoutError = results.some((result) => {
+            if (result.status === 'rejected' && result.reason.type === 'TimeoutError') {
+                return true;
+            }
+            return false;
+        });
+
+        // When RPC is down and return timeout error, throw error
+        if (hasTimeoutError) {
+            throw new Error('Failed to get delegated stake balance');
+        }
         const summary = results.reduce((result, state, index) => {
             const validatorId = uniquePools[index];
             if (state.status === 'fulfilled') {
