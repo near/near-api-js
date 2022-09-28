@@ -129,6 +129,18 @@ interface ReceiptLogWithFailure {
     failure: ServerError;
 }
 
+interface StakedBalance {
+    validatorId: string;
+    amount?: string;
+    error?: string;
+}
+
+interface ActiveDelegatedStakeBalance {
+    stakedValidators: StakedBalance[];
+    failedValidators: StakedBalance[];
+    total: BN | string;
+}
+
 function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());
 }
@@ -629,6 +641,73 @@ export class Account {
             stateStaked: stateStaked.toString(),
             staked: staked.toString(),
             available: availableBalance.toString()
+        };
+    }
+
+    /**
+     * Returns the NEAR tokens balance and validators of a given account that is delegated to the staking pools that are part of the validators set in the current epoch.
+     * 
+     * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
+     * @returns {Promise<ActiveDelegatedStakeBalance>}
+     */
+    async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance>  {
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = block.header.hash;
+        const epochId = block.header.epoch_id;
+        const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(epochId);
+        const pools:Set<string> = new Set();
+        [...current_validators, ...next_validators, ...current_proposals]
+            .forEach((validator) => pools.add(validator.account_id));
+
+        const uniquePools = [...pools];
+        const promises = uniquePools
+            .map((validator) => (
+                this.viewFunction({
+                    contractId: validator,
+                    methodName: 'get_account_total_balance',
+                    args: { account_id: this.accountId },
+                    blockQuery: { blockId: blockHash }
+                })
+            ));
+
+        const results = await Promise.allSettled(promises);
+
+        const hasTimeoutError = results.some((result) => {
+            if (result.status === 'rejected' && result.reason.type === 'TimeoutError') {
+                return true;
+            }
+            return false;
+        });
+
+        // When RPC is down and return timeout error, throw error
+        if (hasTimeoutError) {
+            throw new Error('Failed to get delegated stake balance');
+        }
+        const summary = results.reduce((result, state, index) => {
+            const validatorId = uniquePools[index];
+            if (state.status === 'fulfilled') {
+                const currentBN = new BN(state.value);
+                if (!currentBN.isZero()) {
+                    return {
+                        ...result,
+                        stakedValidators: [...result.stakedValidators, { validatorId, amount: currentBN.toString() }],
+                        total: result.total.add(currentBN),
+                    };
+                }
+            }
+            if (state.status === 'rejected') {
+                return {
+                    ...result,
+                    failedValidators: [...result.failedValidators, { validatorId, error: state.reason }],
+                };
+            }
+            return result;
+        },
+        { stakedValidators: [], failedValidators: [], total: new BN(0) });
+
+        return {
+            ...summary,
+            total: summary.total.toString(),
         };
     }
 }
