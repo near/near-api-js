@@ -1,8 +1,3 @@
-const HELP = `Please run this script in the following format:
-
-  node create-mainnet-account.js CREATOR_ACCOUNT.near NEW_ACCOUNT.near AMOUNT"
-`;
-
 const { connect, KeyPair, keyStores, utils } = require('near-api-js');
 const path = require('path');
 const homedir = require('os').homedir();
@@ -16,13 +11,6 @@ const config = {
     networkId: 'mainnet',
     nodeUrl: 'https://rpc.mainnet.near.org',
 };
-
-if (process.argv.length !== 5) {
-    console.info(HELP);
-    process.exit(1);
-}
-
-createAccount(process.argv[2], process.argv[3], process.argv[4]);
 
 async function createAccount(creatorAccountId, newAccountId, amount) {
     const near = await connect(config);
@@ -41,4 +29,20 @@ async function createAccount(creatorAccountId, newAccountId, amount) {
         gas: '300000000000000',
         attachedDeposit: utils.format.parseNearAmount(amount),
     });
+}
+
+const HELP = `Please run this script in the following format:
+
+  node create-mainnet-account.js CREATOR_ACCOUNT.near NEW_ACCOUNT.near AMOUNT"
+`;
+
+if (process.argv.length !== 5) {
+    console.info(HELP);
+    process.exit(1);
+}
+
+if (require.main === module) {
+    (async function () {
+        await createAccount(process.argv[2], process.argv[3], process.argv[4]);
+    }());
 }

@@ -26,4 +26,8 @@ async function getState(accountId) {
     console.log(state);
 }
 
-getState(ACCOUNT_ID);
+if (require.main === module) {
+    (async function () {
+        await getState(ACCOUNT_ID);
+    }());
+}

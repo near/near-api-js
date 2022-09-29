@@ -9,9 +9,13 @@ const provider = new providers.JsonRpcProvider({
     headers: { 'x-api-key': API_KEY },
 });
 
-getNetworkStatus();
-
 async function getNetworkStatus() {
     const result = await provider.status();
     console.log(result);
+}
+
+if (require.main === module) {
+    (async function () {
+        await getNetworkStatus();
+    }());
 }

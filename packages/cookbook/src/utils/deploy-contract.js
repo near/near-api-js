@@ -15,11 +15,15 @@ const config = {
     nodeUrl: 'https://rpc.testnet.near.org',
 };
 
-deployContract(ACCOUNT_ID, WASM_PATH);
-
 async function deployContract(accountId, wasmPath) { 
     const near = await connect(config);
     const account = await near.account(accountId);
     const result = await account.deployContract(fs.readFileSync(wasmPath));
     console.log(result);
+}
+
+if (require.main === module) {
+    (async function () {
+        await deployContract(ACCOUNT_ID, WASM_PATH);
+    }());
 }

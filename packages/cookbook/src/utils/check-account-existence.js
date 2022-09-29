@@ -23,4 +23,8 @@ async function accountExists() {
     }
 }
 
-accountExists();
+if (require.main === module) {
+    (async function () {
+        await accountExists();
+    }());
+}

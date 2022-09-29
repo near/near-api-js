@@ -13,9 +13,6 @@ const config = {
     nodeUrl: 'https://rpc.mainnet.near.org',
 };
 
-// Unwrap 1 wNEAR to NEAR
-unwrapNear('example.near', '1');
-
 async function unwrapNear(accountId, unwrapAmount) {
     const near = await connect(config);
     const account = await near.account(accountId);
@@ -26,4 +23,11 @@ async function unwrapNear(accountId, unwrapAmount) {
         args: { amount: utils.format.parseNearAmount(unwrapAmount) },
         attachedDeposit: '1', // attach one yoctoNEAR
     });
+}
+
+if (require.main === module) {
+    (async function () {
+        // Unwrap 1 wNEAR to NEAR
+        await unwrapNear('example.near', '1');
+    }());
 }

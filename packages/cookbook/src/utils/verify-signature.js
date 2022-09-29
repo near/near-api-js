@@ -14,8 +14,6 @@ const config = {
     nodeUrl: 'https://rpc.testnet.near.org',
 };
 
-verifySignature();
-
 async function verifySignature() {
     const keyPair = await keyStore.getKey(config.networkId, ACCOUNT_ID);
     const msg = Buffer.from('hi');
@@ -27,4 +25,10 @@ async function verifySignature() {
     console.log('Signature Valid?:', isValid);
 
     return isValid;
+}
+
+if (require.main === module) {
+    (async function () {
+        await verifySignature();
+    }());
 }

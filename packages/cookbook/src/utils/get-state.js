@@ -6,8 +6,6 @@ const provider = new providers.JsonRpcProvider(
     'https://rpc.testnet.near.org'
 );
 
-getState();
-
 async function getState() {
     const rawResult = await provider.query({
         request_type: 'call_function',
@@ -20,4 +18,10 @@ async function getState() {
     // format result
     const res = JSON.parse(Buffer.from(rawResult.result).toString());
     console.log(res);
+}
+
+if (require.main === module) {
+    (async function () {
+        await getState();
+    }());
 }

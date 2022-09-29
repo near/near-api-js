@@ -23,8 +23,6 @@ const config = {
     nodeUrl: 'https://rpc.testnet.near.org',
 };
 
-calculateGas(CONTRACT_ID, METHOD_NAME, args, ATTACHED_DEPOSIT);
-
 async function calculateGas(contractId, methodName, args, depositAmount) {
     const near = await connect(config);
     const account = await near.account(ACCOUNT_ID);
@@ -62,4 +60,10 @@ async function calculateGas(contractId, methodName, args, depositAmount) {
         totalTokensBurned,
         totalGasBurned,
     };
+}
+
+if (require.main === module) {
+    (async function () {
+        await calculateGas(CONTRACT_ID, METHOD_NAME, args, ATTACHED_DEPOSIT);
+    }());
 }

@@ -13,8 +13,6 @@ const config = {
     nodeUrl: 'https://rpc.testnet.near.org',
 };
 
-addFunctionAccessKey(ACCOUNT_ID);
-
 async function addFunctionAccessKey(accountId) {
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.publicKey.toString();
@@ -27,4 +25,10 @@ async function addFunctionAccessKey(accountId) {
         'example_method',            // methods this key is allowed to call (optional)
         '2500000000000'              // allowance key can use to call methods (optional)
     );
+}
+
+if (require.main === module) {
+    (async function () {
+        await addFunctionAccessKey(ACCOUNT_ID);
+    }());
 }

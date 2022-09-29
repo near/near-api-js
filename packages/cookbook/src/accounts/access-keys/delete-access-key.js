@@ -16,10 +16,14 @@ const config = {
     nodeUrl: 'https://rpc.testnet.near.org',
 };
 
-deleteAccessKey(ACCOUNT_ID, PUBLIC_KEY);
-
 async function deleteAccessKey(accountId, publicKey) {
     const near = await connect(config);
     const account = await near.account(accountId);
     await account.deleteKey(publicKey);
+}
+
+if (require.main === module) {
+    (async function () {
+        await deleteAccessKey(ACCOUNT_ID, PUBLIC_KEY);
+    }());
 }

@@ -1,9 +1,3 @@
-const HELP = `To convert N $NEAR to wNEAR,  run this script in the following format:
-
-    node wrap-near.js YOU.near N
-
-`;
-
 const { connect, keyStores, transactions, utils } = require('near-api-js');
 const path = require('path');
 const homedir = require('os').homedir();
@@ -19,13 +13,6 @@ const config = {
     networkId: 'testnet',
     nodeUrl: 'https://rpc.testnet.near.org',
 };
-
-if (process.argv.length !== 4) {
-    console.info(HELP);
-    process.exit(1);
-}
-
-wrapNear(process.argv[2], process.argv[3]);
 
 async function wrapNear(accountId, wrapAmount) {
     const near = await connect(config);
@@ -64,4 +51,21 @@ async function wrapNear(accountId, wrapAmount) {
         receiverId: WRAP_NEAR_CONTRACT_ID,
         actions,
     });
+}
+
+const HELP = `To convert N $NEAR to wNEAR,  run this script in the following format:
+
+    node wrap-near.js YOU.near N
+
+`;
+
+if (process.argv.length !== 4) {
+    console.info(HELP);
+    process.exit(1);
+}
+
+if (require.main === module) {
+    (async function () {
+        await wrapNear(process.argv[2], process.argv[3]);
+    }());
 }

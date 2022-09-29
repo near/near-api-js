@@ -13,8 +13,6 @@ const config = {
     nodeUrl: 'https://rpc.testnet.near.org',
 };
 
-createFullAccessKey(ACCOUNT_ID);
-
 async function createFullAccessKey(accountId) {
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.publicKey.toString();
@@ -22,4 +20,10 @@ async function createFullAccessKey(accountId) {
     const account = await near.account(accountId);
     await keyStore.setKey(config.networkId, publicKey, keyPair);
     await account.addKey(publicKey);
+}
+
+if (require.main === module) {
+    (async function () {
+        await createFullAccessKey(ACCOUNT_ID);
+    }());
 }

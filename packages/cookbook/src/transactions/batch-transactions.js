@@ -18,8 +18,6 @@ const config = {
     nodeUrl: 'https://rpc.testnet.near.org',
 };
 
-sendTransactions();
-
 async function sendTransactions() {
     const near = await connect({ ...config, keyStore });
     const account = await near.account(CONTRACT_NAME);
@@ -38,4 +36,10 @@ async function sendTransactions() {
     });
 
     console.log(result);
+}
+
+if (require.main === module) {
+    (async function () {
+        await sendTransactions();
+    }());
 }

@@ -22,8 +22,6 @@ const config = {
     nodeUrl: 'https://archival-rpc.testnet.near.org',
 };
 
-getTransactions(START_BLOCK_HASH, END_BLOCK_HASH, CONTRACT_ID);
-
 async function getTransactions(startBlock, endBlock, accountId) {
     const near = await connect(config);
 
@@ -78,4 +76,10 @@ async function getBlockByID(blockID) {
         blockId: blockID,
     });
     return blockInfoByHeight;
+}
+
+if (require.main === module) {
+    (async function () {
+        await getTransactions(START_BLOCK_HASH, END_BLOCK_HASH, CONTRACT_ID);
+    }());
 }
