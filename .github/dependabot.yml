@@ -19,11 +19,6 @@ updates:
   - dependency-name: semver
     versions:
     - 7.3.5
-  - dependency-name: ts-morph
-    versions:
-    - 10.0.1
-    - 10.0.2
-    - 9.1.0
   - dependency-name: mustache
     versions:
     - 4.2.0
