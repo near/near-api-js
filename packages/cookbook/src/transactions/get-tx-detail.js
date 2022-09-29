@@ -72,10 +72,9 @@ async function getTransactions(startBlock, endBlock, accountId) {
 
 async function getBlockByID(blockID) {
     const near = await connect(config);
-    const blockInfoByHeight = await near.connection.provider.block({
+    return near.connection.provider.block({
         blockId: blockID,
     });
-    return blockInfoByHeight;
 }
 
 if (require.main === module) {

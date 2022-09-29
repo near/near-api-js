@@ -2,9 +2,9 @@
 // up an account. (View methods only)
 const { providers } = require('near-api-js');
 //network config (replace testnet with mainnet or betanet)
-const provider = new providers.JsonRpcProvider(
-    'https://rpc.testnet.near.org'
-);
+const provider = new providers.JsonRpcProvider({
+    url: 'https://rpc.testnet.near.org',
+});
 
 async function getState() {
     const rawResult = await provider.query({

@@ -1,3 +1,4 @@
+const BN = require('bn.js');
 const { connect, keyStores, transactions, utils, DEFAULT_FUNCTION_CALL_GAS } = require('near-api-js');
 const path = require('path');
 const homedir = require('os').homedir();
@@ -23,7 +24,7 @@ async function wrapNear(accountId, wrapAmount) {
             'near_deposit', // contract method to deposit NEAR for wNEAR
             {},
             DEFAULT_FUNCTION_CALL_GAS, // attached gas
-            utils.format.parseNearAmount(wrapAmount) // amount of NEAR to deposit and wrap
+            new BN(utils.format.parseNearAmount(wrapAmount)) // amount of NEAR to deposit and wrap
         ),
     ];
 
@@ -41,7 +42,7 @@ async function wrapNear(accountId, wrapAmount) {
                 'storage_deposit', // method to create an account
                 {},
                 DEFAULT_FUNCTION_CALL_GAS, // attached gas
-                utils.format.parseNearAmount('0.00125') // account creation costs 0.00125 NEAR for storage
+                new BN(utils.format.parseNearAmount('0.00125')) // account creation costs 0.00125 NEAR for storage
             )
         );
     }

@@ -1,3 +1,4 @@
+const BN = require('bn.js');
 const { KeyPair, keyStores, connect } = require('near-api-js');
 const path = require('path');
 const homedir = require('os').homedir();
@@ -23,7 +24,7 @@ async function addFunctionAccessKey(accountId) {
         publicKey,                   // public key for new account
         'example-account.testnet',   // contract this key is allowed to call (optional)
         'example_method',            // methods this key is allowed to call (optional)
-        '2500000000000'              // allowance key can use to call methods (optional)
+        new BN(2500000000000)              // allowance key can use to call methods (optional)
     );
 }
 

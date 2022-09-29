@@ -1,9 +1,9 @@
 // Demonstrates checking if an account exists
 const { providers } = require('near-api-js');
 
-const provider = new providers.JsonRpcProvider(
-    'https://archival-rpc.testnet.near.org'
-);
+const provider = new providers.JsonRpcProvider({
+    url: 'https://archival-rpc.testnet.near.org',
+});
 
 async function accountExists() {
     for (const account_id of ['does-not-exist.mike.testnet', 'mike.testnet']) {

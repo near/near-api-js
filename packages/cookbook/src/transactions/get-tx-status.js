@@ -2,9 +2,9 @@
 const { providers } = require('near-api-js');
 
 //network config (replace testnet with mainnet or betanet)
-const provider = new providers.JsonRpcProvider(
-    'https://archival-rpc.testnet.near.org'
-);
+const provider = new providers.JsonRpcProvider({
+    url: 'https://archival-rpc.testnet.near.org',
+});
 
 const TX_HASH = '9av2U6cova7LZPA9NPij6CTUrpBbgPG6LKVkyhcCqtk3';
 // account ID associated with the transaction

@@ -1,3 +1,4 @@
+const BN = require('bn.js');
 const { connect, transactions, keyStores } = require('near-api-js');
 const fs = require('fs');
 const path = require('path');
@@ -29,8 +30,8 @@ async function sendTransactions() {
             transactions.functionCall(
                 'new',
                 Buffer.from(JSON.stringify(newArgs)),
-                10000000000000,
-                '0'
+                new BN(10000000000000),
+                new BN(0)
             ),
         ],
     });
