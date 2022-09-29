@@ -10,12 +10,12 @@ const provider = new providers.JsonRpcProvider({
 });
 
 async function getNetworkStatus() {
-    const result = await provider.status();
-    console.log(result);
+    return provider.status();
 }
 
 if (require.main === module) {
     (async function () {
-        await getNetworkStatus();
+        const status = await getNetworkStatus();
+        console.log({ status });
     }());
 }

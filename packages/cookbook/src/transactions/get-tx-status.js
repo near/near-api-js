@@ -10,13 +10,13 @@ const TX_HASH = '9av2U6cova7LZPA9NPij6CTUrpBbgPG6LKVkyhcCqtk3';
 // account ID associated with the transaction
 const ACCOUNT_ID = 'sender.testnet';
 
-async function getState(txHash, accountId) {
-    const result = await provider.txStatus(txHash, accountId);
-    console.log('Result: ', result);
+async function getTransactionStatus(txHash, accountId) {
+    return provider.txStatus(txHash, accountId);
 }
 
 if (require.main === module) {
     (async function () {
-        await getState(TX_HASH, ACCOUNT_ID);
+        const status = await getTransactionStatus(TX_HASH, ACCOUNT_ID);
+        console.log({ status });
     }());
 }

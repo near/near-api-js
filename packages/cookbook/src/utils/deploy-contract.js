@@ -18,12 +18,12 @@ const config = {
 async function deployContract(accountId, wasmPath) { 
     const near = await connect(config);
     const account = await near.account(accountId);
-    const result = await account.deployContract(fs.readFileSync(wasmPath));
-    console.log(result);
+    return account.deployContract(fs.readFileSync(wasmPath));
 }
 
 if (require.main === module) {
     (async function () {
-        await deployContract(ACCOUNT_ID, WASM_PATH);
+        const deployment = await deployContract(ACCOUNT_ID, WASM_PATH);
+        console.log({ deployment });
     }());
 }

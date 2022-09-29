@@ -19,16 +19,12 @@ async function verifySignature() {
     const msg = Buffer.from('hi');
 
     const { signature } = keyPair.sign(msg);
-
-    const isValid = keyPair.verify(msg, signature);
-
-    console.log('Signature Valid?:', isValid);
-
-    return isValid;
+    return keyPair.verify(msg, signature);
 }
 
 if (require.main === module) {
     (async function () {
-        await verifySignature();
+        const isValid = await verifySignature();
+        console.log({ isValid });
     }());
 }

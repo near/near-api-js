@@ -14,7 +14,7 @@ const args = {
     text: 'Howdy!',
 };
 
-const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
+const credentialsPath = path.join(homedir, CREDENTIALS_DIR, 'testnet');
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
 const config = {
@@ -26,35 +26,27 @@ const config = {
 async function calculateGas(contractId, methodName, args, depositAmount) {
     const near = await connect(config);
     const account = await near.account(ACCOUNT_ID);
-    const result = await account.functionCall({
+    const { receipts_outcome, transaction_outcome } = await account.functionCall({
         contractId,
         methodName,
         args,
         gas: MAX_GAS,
         attachedDeposit: utils.format.parseNearAmount(depositAmount),
     });
-    const { totalGasBurned, totalTokensBurned } = result.receipts_outcome.reduce(
+
+    const { totalGasBurned, totalTokensBurned } = receipts_outcome.reduce(
         (acc, receipt) => {
             acc.totalGasBurned += receipt.outcome.gas_burnt;
-            acc.totalTokensBurned += utils.format.formatNearAmount(
-                receipt.outcome.tokens_burnt
-            );
+            acc.totalTokensBurned += utils.format.formatNearAmount(receipt.outcome.tokens_burnt);
             return acc;
         },
         {
-            totalGasBurned: result.transaction_outcome.outcome.gas_burnt,
+            totalGasBurned: transaction_outcome.outcome.gas_burnt,
             totalTokensBurned: utils.format.formatNearAmount(
-                result.transaction_outcome.outcome.tokens_burnt
+                transaction_outcome.outcome.tokens_burnt
             ),
         }
     );
-
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
-    console.log(chalk`{bold.green RESULTS} {white for: [ {bold.blue ${METHOD_NAME}} ] called on contract: [ {bold.blue ${CONTRACT_ID}} ]}` );
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
-    console.log(chalk`{bold.white Gas Burnt}     {white |}  {bold.yellow ${totalGasBurned}}`);
-    console.log(chalk`{bold.white Tokens Burnt}  {white |}  {bold.yellow ${totalTokensBurned}}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
 
     return {
         totalTokensBurned,
@@ -64,6 +56,16 @@ async function calculateGas(contractId, methodName, args, depositAmount) {
 
 if (require.main === module) {
     (async function () {
-        await calculateGas(CONTRACT_ID, METHOD_NAME, args, ATTACHED_DEPOSIT);
+        const {
+            totalGasBurned,
+            totalTokensBurned,
+        } = await calculateGas(CONTRACT_ID, METHOD_NAME, args, ATTACHED_DEPOSIT);
+
+        console.log(chalk`{white ------------------------------------------------------------------------ }`);
+        console.log(chalk`{bold.green RESULTS} {white for: [ {bold.blue ${METHOD_NAME}} ] called on contract: [ {bold.blue ${CONTRACT_ID}} ]}` );
+        console.log(chalk`{white ------------------------------------------------------------------------ }`);
+        console.log(chalk`{bold.white Gas Burnt}     {white |}  {bold.yellow ${totalGasBurned}}`);
+        console.log(chalk`{bold.white Tokens Burnt}  {white |}  {bold.yellow ${totalTokensBurned}}`);
+        console.log(chalk`{white ------------------------------------------------------------------------ }`);
     }());
 }

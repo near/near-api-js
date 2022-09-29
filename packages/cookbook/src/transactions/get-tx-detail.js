@@ -61,13 +61,16 @@ async function getTransactions(startBlock, endBlock, accountId) {
         (chunk.transactions || []).filter((tx) => tx.signer_id === accountId)
     );
 
-    //creates transaction links from matchingTxs
-    const txsLinks = transactions.map((txs) => ({
+    // creates transaction links from matchingTxs
+    const transactionLinks = transactions.map((txs) => ({
         method: txs.actions[0].FunctionCall.method_name,
         link: `https://explorer.testnet.near.org/transactions/${txs.hash}`,
     }));
-    console.log('MATCHING TRANSACTIONS: ', transactions);
-    console.log('TRANSACTION LINKS: ', txsLinks);
+
+    return {
+        transactionLinks,
+        transactions,
+    };
 }
 
 async function getBlockByID(blockID) {
@@ -79,6 +82,7 @@ async function getBlockByID(blockID) {
 
 if (require.main === module) {
     (async function () {
-        await getTransactions(START_BLOCK_HASH, END_BLOCK_HASH, CONTRACT_ID);
+        const response = await getTransactions(START_BLOCK_HASH, END_BLOCK_HASH, CONTRACT_ID);
+        console.log(response);
     }());
 }

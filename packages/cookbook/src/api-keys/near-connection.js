@@ -22,12 +22,12 @@ const config = {
 async function getState(accountId) {
     const near = await connect(config);
     const account = await near.account(accountId);
-    const state = await account.state();
-    console.log(state);
+    return account.state();
 }
 
 if (require.main === module) {
     (async function () {
-        await getState(ACCOUNT_ID);
+        const state = await getState(ACCOUNT_ID);
+        console.log({ state });
     }());
 }

@@ -16,12 +16,12 @@ async function getState() {
     });
 
     // format result
-    const res = JSON.parse(Buffer.from(rawResult.result).toString());
-    console.log(res);
+    return JSON.parse(Buffer.from(rawResult.result).toString());
 }
 
 if (require.main === module) {
     (async function () {
-        await getState();
+        const state = await getState();
+        console.log({ state });
     }());
 }

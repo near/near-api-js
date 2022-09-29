@@ -5,26 +5,35 @@ const provider = new providers.JsonRpcProvider({
     url: 'https://archival-rpc.testnet.near.org',
 });
 
-async function accountExists() {
-    for (const account_id of ['does-not-exist.mike.testnet', 'mike.testnet']) {
-        let succeeded = true;
-        try {
-            await provider.query({
-                request_type: 'view_account',
-                account_id: account_id,
-                finality: 'final',
-            });
-        } catch (e) {
-            if (e.type === 'AccountDoesNotExist') {
-                succeeded = false;
-            }
+async function accountExists(accountId) {
+    try {
+        await provider.query({
+            request_type: 'view_account',
+            account_id: accountId,
+            finality: 'final',
+        });
+    } catch (e) {
+        if (e.type === 'AccountDoesNotExist') {
+            return false;
         }
-        console.log(succeeded ? `The account ${account_id} exists.` : `There is no account ${account_id}.`);
     }
+
+    return true;
 }
 
 if (require.main === module) {
     (async function () {
-        await accountExists();
+        const accounts = {
+            doesNotExist: 'does-not-exist.mike.testnet',
+            exists: 'mike.testnet',
+        };
+
+        const shouldExist = await accountExists(accounts.exists);
+        const shouldNotExist = await accountExists(accounts.doesNotExist);
+
+        console.log({
+            shouldExist,
+            shouldNotExist,
+        });
     }());
 }

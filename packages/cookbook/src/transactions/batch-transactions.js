@@ -23,7 +23,7 @@ async function sendTransactions() {
     const near = await connect({ ...config, keyStore });
     const account = await near.account(CONTRACT_NAME);
     const newArgs = { staking_pool_whitelist_account_id: WHITELIST_ACCOUNT_ID };
-    const result = await account.signAndSendTransaction({
+    return account.signAndSendTransaction({
         receiverId: CONTRACT_NAME,
         actions: [
             transactions.deployContract(fs.readFileSync(WASM_PATH)),
@@ -35,12 +35,11 @@ async function sendTransactions() {
             ),
         ],
     });
-
-    console.log(result);
 }
 
 if (require.main === module) {
     (async function () {
-        await sendTransactions();
+        const outcome = await sendTransactions();
+        console.log({ outcome });
     }());
 }
