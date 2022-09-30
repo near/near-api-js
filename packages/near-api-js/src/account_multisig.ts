@@ -62,15 +62,7 @@ export class AccountMultisig extends Account {
         return super.signAndSendTransaction({ receiverId, actions });
     }
 
-    /**
-     * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
-     * @see {@link JsonRpcProvider.sendTransaction}
-     */
-    signAndSendBundledActions(options: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction(options);
-    }
-
-    protected async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
         const args = Buffer.from(JSON.stringify({
@@ -236,14 +228,6 @@ export class Account2FA extends AccountMultisig {
         this.getCode = options.getCode || this.getCodeDefault;
         this.verifyCode = options.verifyCode || this.verifyCodeDefault;
         this.onConfirmResult = options.onConfirmResult;
-    }
-
-    /**
-     * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
-     * @see {@link JsonRpcProvider.sendTransaction}
-     */
-    signAndSendBundledActions(options: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction(options);
     }
 
     /**

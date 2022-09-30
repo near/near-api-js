@@ -51,7 +51,7 @@ test('send money through signAndSendBundledActions', async() => {
     const sender = await testUtils.createAccount(nearjs);
     const receiver = await testUtils.createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
-    await sender.signAndSendBundledActions({receiverId: receiver.accountId, actions: [transfer(new BN(10000))]});
+    await sender.signAndSendTransaction({receiverId: receiver.accountId, actions: [transfer(new BN(10000))]});
     const state = await receiver.state();
     expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
 });
