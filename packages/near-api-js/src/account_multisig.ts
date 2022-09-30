@@ -1,12 +1,22 @@
 'use strict';
 
 import BN from 'bn.js';
+
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
 import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
-import { Action, addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } from './transaction';
-import { FinalExecutionOutcome, TypedError } from './providers';
+import {
+    AccessKey,
+    Action,
+    addKey,
+    deleteKey,
+    deployContract,
+    fullAccessKey,
+    functionCall,
+    functionCallAccessKey,
+} from './transaction';
+import {FinalExecutionOutcome, TypedError} from './providers';
 import { fetchJson } from './utils/web';
 import { FunctionCallPermissionView } from './providers/provider';
 
@@ -44,13 +54,13 @@ enum MultisigCodeStatus {
 }
 
 // in memory request cache for node w/o localStorage
-const storageFallback = {
+const storageFallback: { [key: string]: object } = {
     [MULTISIG_STORAGE_KEY]: null
 };
 
 export class AccountMultisig extends Account {
     public storage: any;
-    public onAddRequestResult: (any) => any;
+    public onAddRequestResult: (e: any) => any;
 
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId);
@@ -88,19 +98,14 @@ export class AccountMultisig extends Account {
             throw e;
         }
 
-        // TODO: Are following even needed? Seems like it throws on error already
-        if (!result.status) {
-            throw new Error('Request failed');
-        }
-        const status: any = { ...result.status };
-        if (!status.SuccessValue || typeof status.SuccessValue !== 'string') {
+        if (!result.status || typeof result.status !== 'object' || !result.status.SuccessValue || result.status.SuccessValue !== 'string') {
             throw new Error('Request failed');
         }
 
         this.setRequest({
             accountId,
             actions,
-            requestId: parseInt(Buffer.from(status.SuccessValue, 'base64').toString('ascii'), 10)
+            requestId: parseInt(Buffer.from(result.status.SuccessValue, 'base64').toString('ascii'), 10)
         });
 
         if (this.onAddRequestResult) {
@@ -150,7 +155,7 @@ export class AccountMultisig extends Account {
         }
     }
 
-    deleteRequest(request_id) {
+    deleteRequest(request_id: number | string) {
         return super.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [functionCall('delete_request', { request_id }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
@@ -202,7 +207,7 @@ export class AccountMultisig extends Account {
         return storageFallback[MULTISIG_STORAGE_KEY];
     }
 
-    setRequest(data) {
+    setRequest(data: { accountId: string, actions: Action[], requestId: number }) {
         if (this.storage) {
             return this.storage.setItem(MULTISIG_STORAGE_KEY, JSON.stringify(data));
         }
@@ -220,7 +225,7 @@ export class Account2FA extends AccountMultisig {
     public sendCode: sendCodeFunction;
     public getCode: getCodeFunction;
     public verifyCode: verifyCodeFunction;
-    public onConfirmResult: (any) => any;
+    public onConfirmResult: (e: any) => any;
     public helperUrl = 'https://helper.testnet.near.org';
 
     constructor(connection: Connection, accountId: string, options: any) {
@@ -289,7 +294,7 @@ export class Account2FA extends AccountMultisig {
     }
 
     async disableWithFAK({ contractBytes, cleanupContractBytes }: { contractBytes: Uint8Array; cleanupContractBytes?: Uint8Array }) {
-        let cleanupActions = [];
+        let cleanupActions: Action[] = [];
         if(cleanupContractBytes) {
             await this.deleteAllRequests().catch(e => e);
             cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes);
@@ -359,7 +364,7 @@ export class Account2FA extends AccountMultisig {
             throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
         }
 
-        let deleteAllRequestsError;
+        let deleteAllRequestsError: Error;
         await this.deleteAllRequests().catch(e => deleteAllRequestsError = e);
 
         const cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch(e => {
@@ -397,7 +402,7 @@ export class Account2FA extends AccountMultisig {
         throw new Error('There is no getCode callback provided. Please provide your own in AccountMultisig constructor options. It has a parameter method where method.kind is "email" or "phone".');
     }
 
-    async promptAndVerify() {
+    async promptAndVerify(): Promise<FinalExecutionOutcome> {
         const method = await this.get2faMethod();
         const securityCode = await this.getCode(method);
         try {
@@ -429,7 +434,7 @@ export class Account2FA extends AccountMultisig {
         });
     }
 
-    async getRecoveryMethods() {
+    async getRecoveryMethods(): Promise<{ accountId: string, data: { detail: string, kind: string, publicKey: string }[] }> {
         const { accountId } = this;
         return {
             accountId,
@@ -438,13 +443,20 @@ export class Account2FA extends AccountMultisig {
     }
 
     async get2faMethod() {
-        let { data } = await this.getRecoveryMethods();
-        if (data && data.length) {
-            data = data.find((m) => m.kind.indexOf('2fa-') === 0);
+        const { data } = await this.getRecoveryMethods();
+        if (!Array.isArray(data)) {
+            return null;
         }
-        if (!data) return null;
-        const { kind, detail } = data;
-        return { kind, detail };
+
+        const method = data.find((m) => m.kind.indexOf('2fa-') === 0);
+        if (!method) {
+            return null;
+        }
+
+        return {
+            detail: method.detail,
+            kind: method.kind,
+        };
     }
 
     async signatureFor() {
@@ -456,7 +468,7 @@ export class Account2FA extends AccountMultisig {
         return { blockNumber, blockNumberSignature };
     }
 
-    async postSignedJson(path, body) {
+    async postSignedJson(path: string, body: object) {
         return await fetchJson(this.helperUrl + path, JSON.stringify({
             ...body,
             ...(await this.signatureFor())
@@ -465,12 +477,21 @@ export class Account2FA extends AccountMultisig {
 }
 
 // helpers
-const toPK = (pk) => PublicKey.from(pk);
-const convertPKForContract = (pk) => pk.toString().replace('ed25519:', '');
+const toPK = (pk: string) => PublicKey.from(pk);
+const convertPKForContract = (pk: PublicKey) => pk.toString().replace('ed25519:', '');
 
-const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
+const convertActions = (actions: Action[], accountId: string, receiverId: string) => actions.map((a) => {
     const type = a.enum;
-    const { gas, publicKey, methodName, args, deposit, accessKey, code } = a[type];
+    const { gas, publicKey, methodName, args, deposit, accessKey, code }: {
+        gas: BN;
+        publicKey: PublicKey;
+        methodName: string;
+        args: Uint8Array;
+        deposit: BN;
+        accessKey: AccessKey;
+        code: string;
+    } = (a as { [key: string]: any })[type];
+
     const action = {
         type: type[0].toUpperCase() + type.substr(1),
         gas: (gas && gas.toString()) || undefined,
@@ -480,7 +501,7 @@ const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
         code: (code && Buffer.from(code).toString('base64')) || undefined,
         amount: (deposit && deposit.toString()) || undefined,
         deposit: (deposit && deposit.toString()) || '0',
-        permission: undefined,
+        permission: undefined as object,
     };
     if (accessKey) {
         if (receiverId === accountId && accessKey.permission.enum !== 'fullAccess') {
