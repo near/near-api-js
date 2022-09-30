@@ -622,7 +622,6 @@ export class Transaction {
     }
 
     signAndSend(): Promise<FinalExecutionOutcome> {
-        //@ts-expect-error is protected
         return this.signer.signAndSendTransaction({ receiverId: this.receiverId, actions: this.actions });
     }
 
