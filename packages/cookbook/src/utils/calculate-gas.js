@@ -3,34 +3,14 @@ const { connect, keyStores, utils } = require('near-api-js');
 const os = require('os');
 const path = require('path');
 
-const CREDENTIALS_DIR = '.near-credentials';
-const ACCOUNT_ID = 'near-example.testnet';
-const CONTRACT_ID = 'guest-book.testnet';
-const METHOD_NAME = 'addMessage';
-const MAX_GAS = '300000000000000';
-const ATTACHED_DEPOSIT = '0';
-
-const args = {
-    text: 'Howdy!',
-};
-
-const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR, 'testnet');
-const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-
-const config = {
-    keyStore,
-    networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
-};
-
-async function calculateGas(contractId, methodName, args, depositAmount) {
-    const near = await connect(config);
-    const account = await near.account(ACCOUNT_ID);
+async function calculateGas({ accountId, contractId, keyStore, maxGas, methodName, networkId, nodeUrl, args, depositAmount }) {
+    const near = await connect({ keyStore, networkId, nodeUrl });
+    const account = await near.account(accountId);
     const { receipts_outcome, transaction_outcome } = await account.functionCall({
         contractId,
         methodName,
         args,
-        gas: MAX_GAS,
+        gas: maxGas,
         attachedDeposit: utils.format.parseNearAmount(depositAmount),
     });
 
@@ -56,13 +36,28 @@ async function calculateGas(contractId, methodName, args, depositAmount) {
 
 if (require.main === module) {
     (async function () {
+        const accountId = 'near-example.testnet';
+        const contractId = 'guest-book.testnet';
+        const methodName = 'addMessage';
+        const maxGas = '300000000000000';
+        const networkId = 'testnet';
+        const nodeUrl = 'https://archival-rpc.testnet.near.org';
+        const depositAmount = '0';
+        const args = {
+            text: 'Howdy!',
+        };
+
+        const CREDENTIALS_DIR = '.near-credentials';
+        const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR, 'testnet');
+        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+
         const {
             totalGasBurned,
             totalTokensBurned,
-        } = await calculateGas(CONTRACT_ID, METHOD_NAME, args, ATTACHED_DEPOSIT);
+        } = await calculateGas({ accountId, args, contractId, depositAmount, keyStore, maxGas, methodName, networkId, nodeUrl });
 
         console.log(chalk`{white ------------------------------------------------------------------------ }`);
-        console.log(chalk`{bold.green RESULTS} {white for: [ {bold.blue ${METHOD_NAME}} ] called on contract: [ {bold.blue ${CONTRACT_ID}} ]}` );
+        console.log(chalk`{bold.green RESULTS} {white for: [ {bold.blue ${methodName}} ] called on contract: [ {bold.blue ${contractId}} ]}` );
         console.log(chalk`{white ------------------------------------------------------------------------ }`);
         console.log(chalk`{bold.white Gas Burnt}     {white |}  {bold.yellow ${totalGasBurned}}`);
         console.log(chalk`{bold.white Tokens Burnt}  {white |}  {bold.yellow ${totalTokensBurned}}`);

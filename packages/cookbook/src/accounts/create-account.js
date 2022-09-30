@@ -2,15 +2,17 @@ const { connect, KeyPair, keyStores, utils } = require('near-api-js');
 const os = require('os');
 const path = require('path');
 
-async function createAccount({ config, creatorAccountId, newAccountId, amount }) {
-    const near = await connect(config);
-    const creatorAccount = await near.account(creatorAccountId);
+async function createAccount({ amount, creatorAccountId, keyStore, networkId, newAccountId, nodeUrl }) {
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.publicKey.toString();
-    await config.keyStore.setKey(config.networkId, newAccountId, keyPair);
 
-    return await creatorAccount.functionCall({
-        contractId: config.networkId === 'mainnet' ? 'near' : config.networkId,
+    const near = await connect({ keyStore, networkId, nodeUrl });
+    const creatorAccount = await near.account(creatorAccountId);
+
+    await keyStore.setKey(networkId, newAccountId, keyPair);
+
+    return creatorAccount.functionCall({
+        contractId: networkId === 'mainnet' ? 'near' : networkId,
         methodName: 'create_account',
         args: {
             new_account_id: newAccountId,
@@ -37,22 +39,20 @@ if (process.argv.length !== 6) {
 
 if (require.main === module) {
     (async function () {
+        const networkId = process.argv[2];
+        const nodeUrl = `https://rpc.${networkId}.near.org`;
+
         const CREDENTIALS_DIR = '.near-credentials';
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
         const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
-        const networkId = process.argv[2];
-        const config = {
+        await createAccount({
+            amount: process.argv[5],
+            creatorAccountId: process.argv[3],
             keyStore,
             networkId,
-            nodeUrl: `https://rpc.${networkId}.near.org`,
-        };
-
-        await createAccount({
-            config,
-            creatorAccountId: process.argv[3],
             newAccountId: process.argv[4],
-            amount: process.argv[5],
+            nodeUrl,
         });
     }());
 }

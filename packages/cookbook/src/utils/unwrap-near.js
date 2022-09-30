@@ -2,23 +2,12 @@ const { connect, keyStores, utils } = require('near-api-js');
 const os = require('os');
 const path = require('path');
 
-const WRAP_NEAR_CONTRACT_ID = 'wrap.near';
-
-const credentialsPath = path.join(os.homedir(), '.near-credentials');
-const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-
-const config = {
-    keyStore,
-    networkId: 'mainnet',
-    nodeUrl: 'https://rpc.mainnet.near.org',
-};
-
-async function unwrapNear(accountId, unwrapAmount) {
-    const near = await connect(config);
+async function unwrapNear({ accountId, keyStore, networkId, nodeUrl, unwrapAmount, wrapContractId }) {
+    const near = await connect({ keyStore, networkId, nodeUrl });
     const account = await near.account(accountId);
   
     return account.functionCall({
-        contractId: WRAP_NEAR_CONTRACT_ID,
+        contractId: wrapContractId,
         methodName: 'near_withdraw', // method to withdraw wNEAR for NEAR
         args: { amount: utils.format.parseNearAmount(unwrapAmount) },
         attachedDeposit: '1', // attach one yoctoNEAR
@@ -27,7 +16,15 @@ async function unwrapNear(accountId, unwrapAmount) {
 
 if (require.main === module) {
     (async function () {
+        const networkId = 'mainnet';
+        const nodeUrl = 'https://rpc.mainnet.near.org';
+        const wrapContractId = 'wrap.near';
+
+        const CREDENTIALS_DIR = '.near-credentials';
+        const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
+        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+
         // Unwrap 1 wNEAR to NEAR
-        await unwrapNear('example.near', '1');
+        await unwrapNear({ accountId: 'example.near', keyStore, networkId, nodeUrl, unwrapAmount: '1', wrapContractId });
     }());
 }

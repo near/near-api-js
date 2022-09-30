@@ -3,27 +3,24 @@ const { keyStores, connect } = require('near-api-js');
 const os = require('os');
 const path = require('path');
 
-const CREDENTIALS_DIR = '.near-credentials';
-const ACCOUNT_ID = 'near-example.testnet';
-const WASM_PATH = path.join(__dirname, '/wasm-files/status_message.wasm');
-const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-
-const config = {
-    keyStore,
-    networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
-};
-
-async function deployContract(accountId, wasmPath) { 
-    const near = await connect(config);
+async function deployContract({ accountId, contractWasm, keyStore, networkId, nodeUrl }) {
+    const near = await connect({ keyStore, networkId, nodeUrl });
     const account = await near.account(accountId);
-    return account.deployContract(fs.readFileSync(wasmPath));
+    return account.deployContract(contractWasm);
 }
 
 if (require.main === module) {
     (async function () {
-        const deployment = await deployContract(ACCOUNT_ID, WASM_PATH);
+        const accountId = 'near-example.testnet';
+        const contractWasm = fs.readFileSync(path.join(__dirname, '/wasm-files/status_message.wasm'));
+        const networkId = 'testnet';
+        const nodeUrl = 'https://rpc.testnet.near.org';
+
+        const CREDENTIALS_DIR = '.near-credentials';
+        const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
+        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+
+        const deployment = await deployContract({ accountId, contractWasm, keyStore, networkId, nodeUrl });
         console.log({ deployment });
     }());
 }

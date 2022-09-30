@@ -2,28 +2,8 @@ const { connect, keyStores } = require('near-api-js');
 const os = require('os');
 const path = require('path');
 
-const CREDENTIALS_DIR = '.near-credentials';
-// block hash of query start (oldest block)
-const START_BLOCK_HASH = 'GZ8vKdcgsavkEndkDWHCjuhyqSR2TGnp9VDZbTzd6ufG';
-// block hash of query end (newest block)
-const END_BLOCK_HASH = '8aEcKhF7N1Jyw84e6vHW6Hzp3Ep7mSXJ6Rvnsy5qGJPF';
-// contract ID or account ID you want to find transactions details for
-const CONTRACT_ID = 'relayer.ropsten.testnet';
-
-const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-
-// NOTE: we're using the archival rpc to look back in time for a specific set
-// of transactions. For a full list of what nodes are available, visit:
-// https://docs.near.org/docs/develop/node/intro/types-of-node
-const config = {
-    keyStore,
-    networkId: 'testnet',
-    nodeUrl: 'https://archival-rpc.testnet.near.org',
-};
-
-async function getTransactions(startBlock, endBlock, accountId) {
-    const near = await connect(config);
+async function getTransactions({ accountId, endBlock, keyStore, networkId, nodeUrl, startBlock }) {
+    const near = await connect({ keyStore, networkId, nodeUrl });
 
     // creates an array of block hashes for given range
     const blockArr = [];
@@ -73,16 +53,31 @@ async function getTransactions(startBlock, endBlock, accountId) {
     };
 }
 
-async function getBlockByID(blockID) {
-    const near = await connect(config);
-    return near.connection.provider.block({
-        blockId: blockID,
-    });
+async function getBlockByID({ blockId, keyStore, networkId, nodeUrl }) {
+    const near = await connect({ keyStore, networkId, nodeUrl });
+    return near.connection.provider.block({ blockId });
 }
 
 if (require.main === module) {
     (async function () {
-        const response = await getTransactions(START_BLOCK_HASH, END_BLOCK_HASH, CONTRACT_ID);
+        const contractName = 'relayer.ropsten.testnet'; // contract/account ID you want to find transactions details for
+        const endBlock = '8aEcKhF7N1Jyw84e6vHW6Hzp3Ep7mSXJ6Rvnsy5qGJPF'; // block hash of query end (newest block)
+        const networkId = 'testnet';
+        const nodeUrl = 'https://archival-rpc.testnet.near.org';
+        const startBlock = 'GZ8vKdcgsavkEndkDWHCjuhyqSR2TGnp9VDZbTzd6ufG'; // block hash of query start (oldest block)
+
+        const CREDENTIALS_DIR = '.near-credentials';
+        const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
+        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+
+        const response = await getTransactions({
+            accountId: contractName,
+            endBlock,
+            keyStore,
+            networkId,
+            nodeUrl,
+            startBlock,
+        });
         console.log(response);
     }());
 }

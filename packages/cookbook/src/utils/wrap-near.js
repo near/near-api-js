@@ -3,20 +3,8 @@ const { connect, keyStores, transactions, utils, DEFAULT_FUNCTION_CALL_GAS } = r
 const os = require('os');
 const path = require('path');
 
-// On mainnet it's wrap.near, by the way
-const WRAP_NEAR_CONTRACT_ID = 'wrap.testnet';
-
-const credentialsPath = path.join(os.homedir(), '.near-credentials');
-const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-
-const config = {
-    keyStore,
-    networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
-};
-
-async function wrapNear(accountId, wrapAmount) {
-    const near = await connect(config);
+async function wrapNear({ accountId, keyStore, networkId, nodeUrl, wrapAmount, wrapContractId }) {
+    const near = await connect({ keyStore, networkId, nodeUrl });
     const account = await near.account(accountId);
 
     const actions = [
@@ -28,12 +16,12 @@ async function wrapNear(accountId, wrapAmount) {
         ),
     ];
 
-  // check if storage has been paid (the account has a wNEAR account)
-  const storage = await account.viewFunction({
-    contractId: WRAP_NEAR_CONTRACT_ID,
-    methodName: 'storage_balance_of',
-    args: { account_id: accountId },
-  });
+    // check if storage has been paid (the account has a wNEAR account)
+    const storage = await account.viewFunction({
+        contractId: wrapContractId,
+        methodName: 'storage_balance_of',
+        args: { account_id: accountId },
+    });
 
     // if storage hasn't been paid, pay for storage (create an account)
     if (!storage) {
@@ -49,7 +37,7 @@ async function wrapNear(accountId, wrapAmount) {
 
     // send batched transaction
     return account.signAndSendTransaction({
-        receiverId: WRAP_NEAR_CONTRACT_ID,
+        receiverId: wrapContractId,
         actions,
     });
 }
@@ -67,6 +55,16 @@ if (process.argv.length !== 4) {
 
 if (require.main === module) {
     (async function () {
-        await wrapNear(process.argv[2], process.argv[3]);
+        const accountId = process.argv[2];
+        const networkId = 'testnet';
+        const nodeUrl = 'https://rpc.testnet.near.org';
+        const wrapAmount = process.argv[3];
+        const wrapContractId = 'wrap.testnet';
+
+        const CREDENTIALS_DIR = '.near-credentials';
+        const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
+        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+
+        await wrapNear({ accountId, keyStore, networkId, nodeUrl, wrapAmount, wrapContractId });
     }());
 }

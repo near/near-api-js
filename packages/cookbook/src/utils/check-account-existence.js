@@ -1,11 +1,10 @@
-// Demonstrates checking if an account exists
 const { providers } = require('near-api-js');
 
-const provider = new providers.JsonRpcProvider({
-    url: 'https://archival-rpc.testnet.near.org',
-});
+async function accountExists({ accountId, nodeUrl }) {
+    const provider = new providers.JsonRpcProvider({
+        url: nodeUrl,
+    });
 
-async function accountExists(accountId) {
     try {
         await provider.query({
             request_type: 'view_account',
@@ -27,9 +26,10 @@ if (require.main === module) {
             doesNotExist: 'does-not-exist.mike.testnet',
             exists: 'mike.testnet',
         };
+        const nodeUrl = 'https://archival-rpc.testnet.near.org';
 
-        const shouldExist = await accountExists(accounts.exists);
-        const shouldNotExist = await accountExists(accounts.doesNotExist);
+        const shouldExist = await accountExists({ accountId: accounts.exists, nodeUrl });
+        const shouldNotExist = await accountExists({ accountId: accounts.doesNotExist, nodeUrl });
 
         console.log({
             shouldExist,

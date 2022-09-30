@@ -1,16 +1,16 @@
 // demonstrates how to query the state without setting 
 // up an account. (View methods only)
 const { providers } = require('near-api-js');
-//network config (replace testnet with mainnet or betanet)
-const provider = new providers.JsonRpcProvider({
-    url: 'https://rpc.testnet.near.org',
-});
 
-async function getState() {
+async function getState({ contractName, methodName, nodeUrl }) {
+    const provider = new providers.JsonRpcProvider({
+        url: nodeUrl,
+    });
+
     const rawResult = await provider.query({
         request_type: 'call_function',
-        account_id: 'guest-book.testnet',
-        method_name: 'getMessages',
+        account_id: contractName,
+        method_name: methodName,
         args_base64: 'e30=',
         finality: 'optimistic',
     });
@@ -21,7 +21,11 @@ async function getState() {
 
 if (require.main === module) {
     (async function () {
-        const state = await getState();
+        const contractName = 'guest-book.testnet';
+        const methodName = 'getMessages';
+        const nodeUrl = 'https://rpc.testnet.near.org';
+
+        const state = await getState({ contractName, methodName, nodeUrl });
         console.log({ state });
     }());
 }
