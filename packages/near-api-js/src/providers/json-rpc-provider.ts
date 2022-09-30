@@ -347,7 +347,7 @@ export class JsonRpcProvider extends Provider {
                             throw new TypedError(errorMessage, 'TimeoutError');
                         }
 
-                        throw new TypedError(errorMessage, response.error.name);
+                        throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data, response.error.name));
                     }
                 }
                 // Success when response.error is not exist
