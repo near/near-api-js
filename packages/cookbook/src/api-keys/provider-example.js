@@ -1,4 +1,3 @@
-// demonstrates how to use API-KEY with provider 
 const { providers } = require('near-api-js');
 
 const RPC_API_ENDPOINT = '<Replace this string with your RPC server URL>';

@@ -1,7 +1,7 @@
-const { connect, keyStores, utils } = require('near-api-js');
-const path = require('path');
-const homedir = require('os').homedir();
 const chalk = require('chalk');
+const { connect, keyStores, utils } = require('near-api-js');
+const os = require('os');
+const path = require('path');
 
 const CREDENTIALS_DIR = '.near-credentials';
 const ACCOUNT_ID = 'near-example.testnet';
@@ -14,7 +14,7 @@ const args = {
     text: 'Howdy!',
 };
 
-const credentialsPath = path.join(homedir, CREDENTIALS_DIR, 'testnet');
+const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR, 'testnet');
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
 const config = {

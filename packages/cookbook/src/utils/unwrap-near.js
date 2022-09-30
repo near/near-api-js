@@ -1,10 +1,10 @@
 const { connect, keyStores, utils } = require('near-api-js');
+const os = require('os');
 const path = require('path');
-const homedir = require('os').homedir();
 
 const WRAP_NEAR_CONTRACT_ID = 'wrap.near';
 
-const credentialsPath = path.join(homedir, '.near-credentials');
+const credentialsPath = path.join(os.homedir(), '.near-credentials');
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
 const config = {

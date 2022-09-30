@@ -1,8 +1,8 @@
 const BN = require('bn.js');
-const { connect, transactions, keyStores } = require('near-api-js');
 const fs = require('fs');
+const { connect, transactions, keyStores } = require('near-api-js');
+const os = require('os');
 const path = require('path');
-const homedir = require('os').homedir();
 
 const CREDENTIALS_DIR = '.near-credentials';
 // NOTE: replace "example" with your accountId
@@ -10,7 +10,7 @@ const CONTRACT_NAME = 'contract.example.testnet';
 const WHITELIST_ACCOUNT_ID = 'whitelisted-account.example.testnet';
 const WASM_PATH = path.join(__dirname, '../utils/wasm-files/staking_pool_factory.wasm');
 
-const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
+const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
 const config = {

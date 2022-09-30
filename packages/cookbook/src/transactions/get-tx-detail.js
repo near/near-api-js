@@ -1,6 +1,6 @@
 const { connect, keyStores } = require('near-api-js');
+const os = require('os');
 const path = require('path');
-const homedir = require('os').homedir();
 
 const CREDENTIALS_DIR = '.near-credentials';
 // block hash of query start (oldest block)
@@ -10,7 +10,7 @@ const END_BLOCK_HASH = '8aEcKhF7N1Jyw84e6vHW6Hzp3Ep7mSXJ6Rvnsy5qGJPF';
 // contract ID or account ID you want to find transactions details for
 const CONTRACT_ID = 'relayer.ropsten.testnet';
 
-const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
+const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
 // NOTE: we're using the archival rpc to look back in time for a specific set

@@ -1,12 +1,12 @@
 const BN = require('bn.js');
 const { connect, keyStores, transactions, utils, DEFAULT_FUNCTION_CALL_GAS } = require('near-api-js');
+const os = require('os');
 const path = require('path');
-const homedir = require('os').homedir();
 
 // On mainnet it's wrap.near, by the way
 const WRAP_NEAR_CONTRACT_ID = 'wrap.testnet';
 
-const credentialsPath = path.join(homedir, '.near-credentials');
+const credentialsPath = path.join(os.homedir(), '.near-credentials');
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
 const config = {
