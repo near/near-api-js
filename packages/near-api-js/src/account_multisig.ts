@@ -234,7 +234,7 @@ export class Account2FA extends AccountMultisig {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    protected async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         await super.signAndSendTransaction({ receiverId, actions });
         // TODO: Should following override onRequestResult in superclass instead of doing custom signAndSendTransaction?
         await this.sendCode();
