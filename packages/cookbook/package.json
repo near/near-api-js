@@ -8,7 +8,8 @@
     "license": "ISC",
     "scripts": {
       "lint": "eslint --ext .js .",
-      "lint:fix": "pnpm lint --fix"
+      "lint:fix": "pnpm lint --fix",
+      "test": "jest test"
     },
     "dependencies": {
       "@near-js/accounts": "workspace:*",
@@ -20,5 +21,8 @@
       "chalk": "^4.1.1",
       "homedir": "^0.6.0",
       "near-api-js": "workspace:*"
+    },
+    "devDependencies": {
+      "jest": "^26.0.1"
     }
 }
