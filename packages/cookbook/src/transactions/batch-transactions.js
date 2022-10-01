@@ -31,7 +31,7 @@ module.exports = {
 if (require.main === module) {
     (async function () {
         const contractName = 'contract.example.testnet';
-        const contractWasm = fs.readFileSync(path.join(__dirname, '../utils/wasm-files/staking_pool_factory.wasm'));
+        const contractWasm = fs.readFileSync(path.join(__dirname, '../../assets/staking_pool_factory.wasm'));
         const networkId = 'testnet';
         const nodeUrl = 'https://rpc.testnet.near.org';
         const whitelistAccountId = 'whitelisted-account.example.testnet';
