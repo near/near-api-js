@@ -6,32 +6,23 @@ async function getTransactions({ accountId, endBlock, keyStore, networkId, nodeU
     const near = await connect({ keyStore, networkId, nodeUrl });
 
     // creates an array of block hashes for given range
-    const blockArr = [];
+    const blocks = [];
     let blockHash = endBlock;
     do {
-        const currentBlock = await getBlockByID(blockHash);
-        blockArr.push(currentBlock.header.hash);
+        const currentBlock = await near.connection.provider.block({ blockId: blockHash });
+        blocks.push(currentBlock);
         blockHash = currentBlock.header.prev_hash;
         console.log('working...', blockHash);
     } while (blockHash !== startBlock);
 
-    // returns block details based on hashes in array
-    const blockDetails = await Promise.all(
-        blockArr.map((blockId) =>
-            near.connection.provider.block({
-                blockId,
-            })
-        )
-    );
-
     // returns an array of chunk hashes from block details
-    const chunkHashArr = blockDetails.flatMap((block) =>
-        block.chunks.map(({ chunk_hash }) => chunk_hash)
+    const chunkHashes = blocks.flatMap(({ chunks }) =>
+        chunks.map(({ chunk_hash }) => chunk_hash)
     );
 
     //returns chunk details based from the array of hashes
     const chunkDetails = await Promise.all(
-        chunkHashArr.map(chunk => near.connection.provider.chunk(chunk))
+        chunkHashes.map((chunk) => near.connection.provider.chunk(chunk))
     );
 
     // checks chunk details for transactions
@@ -51,11 +42,6 @@ async function getTransactions({ accountId, endBlock, keyStore, networkId, nodeU
         transactionLinks,
         transactions,
     };
-}
-
-async function getBlockByID({ blockId, keyStore, networkId, nodeUrl }) {
-    const near = await connect({ keyStore, networkId, nodeUrl });
-    return near.connection.provider.block({ blockId });
 }
 
 if (require.main === module) {
