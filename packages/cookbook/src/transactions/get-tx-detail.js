@@ -44,6 +44,10 @@ async function getTransactions({ accountId, endBlock, keyStore, networkId, nodeU
     };
 }
 
+module.exports = {
+    getTransactions,
+};
+
 if (require.main === module) {
     (async function () {
         const contractName = 'relayer.ropsten.testnet'; // contract/account ID you want to find transactions details for

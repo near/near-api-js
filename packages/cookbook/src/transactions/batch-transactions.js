@@ -24,6 +24,10 @@ async function sendTransactions({ contractName, contractWasm, keyStore, networkI
     });
 }
 
+module.exports = {
+    sendTransactions,
+};
+
 if (require.main === module) {
     (async function () {
         const contractName = 'contract.example.testnet';

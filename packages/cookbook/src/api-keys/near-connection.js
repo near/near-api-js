@@ -13,6 +13,10 @@ async function getAccountStateWithApiKey({ accountId, apiKey, keyStore, networkI
     return account.state();
 }
 
+module.exports = {
+    getAccountStateWithApiKey,
+};
+
 if (require.main === module) {
     (async function () {
         const accountId = '<Replace this string with existing account ID>';

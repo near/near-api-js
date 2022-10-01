@@ -9,6 +9,10 @@ async function getNetworkStatusWithApiKey({ apiKey, nodeUrl }) {
     return provider.status();
 }
 
+module.exports = {
+    getNetworkStatusWithApiKey,
+};
+
 if (require.main === module) {
     (async function () {
         const apiKey = '<Replace this string with your API KEY>';

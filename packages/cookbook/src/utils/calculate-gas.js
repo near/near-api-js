@@ -34,6 +34,10 @@ async function calculateGas({ accountId, contractId, keyStore, maxGas, methodNam
     };
 }
 
+module.exports = {
+    calculateGas,
+};
+
 if (require.main === module) {
     (async function () {
         const accountId = 'near-example.testnet';

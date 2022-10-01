@@ -19,6 +19,10 @@ async function addFunctionAccessKey({ accountId, keyStore, networkId, nodeUrl })
     );
 }
 
+module.exports = {
+    addFunctionAccessKey,
+};
+
 if (require.main === module) {
     (async function () {
         const accountId = 'example.testnet';

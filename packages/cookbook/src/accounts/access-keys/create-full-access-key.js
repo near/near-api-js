@@ -13,6 +13,10 @@ async function createFullAccessKey({ accountId, keyStore, networkId, nodeUrl }) 
     await account.addKey(publicKey);
 }
 
+module.exports = {
+    createFullAccessKey,
+};
+
 if (require.main === module) {
     (async function () {
         const accountId = 'example.testnet';

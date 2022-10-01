@@ -8,6 +8,10 @@ async function getTransactionStatus({ accountId, nodeUrl, txHash }) {
     return provider.txStatus(txHash, accountId);
 }
 
+module.exports = {
+    getTransactionStatus,
+};
+
 if (require.main === module) {
     (async function () {
         const accountId = 'sender.testnet'; // account associated with the transaction

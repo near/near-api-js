@@ -8,6 +8,10 @@ async function deleteAccessKey({ accountId, keyStore, networkId, nodeUrl, public
     await account.deleteKey(publicKey);
 }
 
+module.exports = {
+    deleteAccessKey,
+};
+
 if (require.main === module) {
     (async function () {
         const accountId = 'example.testnet';

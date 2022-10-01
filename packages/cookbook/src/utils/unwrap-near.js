@@ -14,6 +14,10 @@ async function unwrapNear({ accountId, keyStore, networkId, nodeUrl, unwrapAmoun
     });
 }
 
+module.exports = {
+    unwrapNear,
+};
+
 if (require.main === module) {
     (async function () {
         const networkId = 'mainnet';

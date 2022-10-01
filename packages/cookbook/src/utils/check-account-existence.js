@@ -20,6 +20,10 @@ async function accountExists({ accountId, nodeUrl }) {
     return true;
 }
 
+module.exports = {
+    accountExists,
+};
+
 if (require.main === module) {
     (async function () {
         const accounts = {

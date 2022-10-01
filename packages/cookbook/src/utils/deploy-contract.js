@@ -9,6 +9,10 @@ async function deployContract({ accountId, contractWasm, keyStore, networkId, no
     return account.deployContract(contractWasm);
 }
 
+module.exports = {
+    deployContract,
+};
+
 if (require.main === module) {
     (async function () {
         const accountId = 'near-example.testnet';

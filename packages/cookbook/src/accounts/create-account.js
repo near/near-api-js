@@ -23,6 +23,10 @@ async function createAccount({ amount, creatorAccountId, keyStore, networkId, ne
     });
 }
 
+module.exports = {
+    createAccount,
+};
+
 const HELP = `Please run this script in the following format:
 
     node create-account.js NETWORK CREATOR_ACCOUNT.testnet NEW_ACCOUNT.testnet AMOUNT
@@ -32,13 +36,13 @@ const HELP = `Please run this script in the following format:
     node create-account.js mainnet creator_account.near new_account.near 1
 `;
 
-if (process.argv.length !== 6) {
-    console.info(HELP);
-    process.exit(1);
-}
-
 if (require.main === module) {
     (async function () {
+        if (process.argv.length !== 6) {
+            console.info(HELP);
+            process.exit(1);
+        }
+
         const networkId = process.argv[2];
         const nodeUrl = `https://rpc.${networkId}.near.org`;
 

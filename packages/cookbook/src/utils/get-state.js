@@ -19,6 +19,10 @@ async function getState({ contractName, methodName, nodeUrl }) {
     return JSON.parse(Buffer.from(rawResult.result).toString());
 }
 
+module.exports = {
+    getState,
+};
+
 if (require.main === module) {
     (async function () {
         const contractName = 'guest-book.testnet';

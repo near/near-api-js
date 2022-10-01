@@ -42,19 +42,23 @@ async function wrapNear({ accountId, keyStore, networkId, nodeUrl, wrapAmount, w
     });
 }
 
+module.exports = {
+    wrapNear,
+};
+
 const HELP = `To convert N $NEAR to wNEAR,  run this script in the following format:
 
     node wrap-near.js YOU.near N
 
 `;
 
-if (process.argv.length !== 4) {
-    console.info(HELP);
-    process.exit(1);
-}
-
 if (require.main === module) {
     (async function () {
+        if (process.argv.length !== 4) {
+            console.info(HELP);
+            process.exit(1);
+        }
+
         const accountId = process.argv[2];
         const networkId = 'testnet';
         const nodeUrl = 'https://rpc.testnet.near.org';

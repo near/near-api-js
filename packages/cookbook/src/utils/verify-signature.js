@@ -8,6 +8,10 @@ async function verifySignature({ accountId, keyStore, message, networkId }) {
     return keyPair.verify(message, signature);
 }
 
+module.exports = {
+    verifySignature,
+};
+
 if (require.main === module) {
     (async function () {
         const accountId = 'near-example.testnet';
