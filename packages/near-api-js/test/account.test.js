@@ -4,7 +4,6 @@ const testUtils  = require('./test-utils');
 const { TypedError } = require('../src/utils/errors');
 const fs = require('fs');
 const BN = require('bn.js');
-const { transfer } = require('../src/transaction');
 
 let nearjs;
 let workingAccount;
@@ -43,15 +42,6 @@ test('send money', async() => {
     const receiver = await testUtils.createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
     await sender.sendMoney(receiver.accountId, new BN(10000));
-    const state = await receiver.state();
-    expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
-});
-
-test('send money through signAndSendTransaction', async() => {
-    const sender = await testUtils.createAccount(nearjs);
-    const receiver = await testUtils.createAccount(nearjs);
-    const { amount: receiverAmount } = await receiver.state();
-    await sender.signAndSendTransaction({receiverId: receiver.accountId, actions: [transfer(new BN(10000))]});
     const state = await receiver.state();
     expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
 });
