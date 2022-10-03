@@ -15,6 +15,8 @@ async function accountExists({ accountId, nodeUrl }) {
         if (e.type === 'AccountDoesNotExist') {
             return false;
         }
+
+        throw e;
     }
 
     return true;
