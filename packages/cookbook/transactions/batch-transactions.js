@@ -26,12 +26,15 @@ async function sendTransactions() {
     const newArgs = { staking_pool_whitelist_account_id: WHITELIST_ACCOUNT_ID };
     const txn = account.createTransaction(CONTRACT_NAME);
 
-    const result = await tnx.deployContract(fs.readFileSync(WASM_PATH)).functionCall(
-                "new",
-                Buffer.from(JSON.stringify(newArgs)),
-                10000000000000,
-                "0"
-            ).signAndSend();
+    const result = await txn
+        .deployContract(fs.readFileSync(WASM_PATH))
+        .functionCall(
+            "new",
+            Buffer.from(JSON.stringify(newArgs)),
+            10000000000000,
+            "0"
+        )
+        .signAndSend();
             
     console.log(result);
 }
