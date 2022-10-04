@@ -472,7 +472,7 @@ export class Account {
      * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
-     async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance>  {
+    async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance>  {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
         const epochId = block.header.epoch_id;
