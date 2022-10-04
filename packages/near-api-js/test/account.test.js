@@ -174,11 +174,11 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via TransactionBuilder', async () => {
-        const result = await workingAccount.viewFunction(
+        const result = await workingAccount.viewFunction({
             contractId,
-            'hello', // this is the function defined in hello.wasm file that we are calling
-            { name: 'trex' }
-        );
+            methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
+            args: { name: 'trex' }
+        });
         expect(result).toEqual('hello trex');
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
@@ -190,7 +190,7 @@ describe('with deploy contract', () => {
             setCallValue
         );
         expect(
-            await workingAccount.viewFunction(contractId, 'getValue', {})
+            await workingAccount.viewFunction({ contractId, methodName: 'getValue' })
         ).toEqual(setCallValue);
     });
 
