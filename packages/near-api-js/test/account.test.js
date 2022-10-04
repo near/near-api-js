@@ -184,7 +184,7 @@ describe('with deploy contract', () => {
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
         const result2 = await workingAccount
             .createTransaction(contractId)
-            .functionCall('setValue', { value: setCallValue })
+            .functionCall({ methodName: 'setValue', args: { value: setCallValue } })
             .signAndSend();
         expect(providers.getTransactionLastResult(result2)).toEqual(
             setCallValue
