@@ -1,6 +1,7 @@
 import BN from 'bn.js';
+import { FunctionCallOptions } from './account';
 import { Connection } from './connection';
-import { DEFAULT_FUNCTION_CALL_GAS, ZERO_NEAR } from './constants';
+import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 import { AccessKeyView, FinalExecutionOutcome } from './providers/provider';
 import { AccessKey, Action, addKey, createAccount, deleteAccount, deleteKey, deployContract, fullAccessKey, functionCall, SignedTransaction, stake, transfer } from './transaction';
 import { TransactionSender } from './transaction_sender';
@@ -51,16 +52,9 @@ export class TransactionBuilder extends TransactionSender {
         return this;
     }
 
-    functionCall(
-        methodName: string,
-        args: Record<string, unknown> | Uint8Array,
-        {
-            gas = DEFAULT_FUNCTION_CALL_GAS,
-            attachedDeposit = ZERO_NEAR,
-        }: { gas?: BN; attachedDeposit?: BN } = {},
-    ): this {
+    functionCall({ methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, stringify }: Omit<FunctionCallOptions, 'contractId' | 'jsContract'>): this {
         this.actions.push(
-            functionCall(methodName, args, gas, attachedDeposit),
+            functionCall(methodName, args, gas, attachedDeposit, stringify),
         );
         return this;
     }
