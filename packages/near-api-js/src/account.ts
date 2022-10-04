@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import depd from 'depd';
+
 import {
     transfer,
     createAccount,
@@ -91,7 +91,7 @@ export interface FunctionCallOptions {
     /**
      * named arguments to pass the method `{ messageText: 'my message' }`
      */
-    args: object;
+    args?: object;
     /** max amount of gas that method call can use */
     gas?: BN;
     /** amount of NEAR (in yoctoNEAR) to send together with the call */
@@ -499,43 +499,20 @@ export class Account {
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
      *
-     * @param contractId NEAR account where the contract is deployed
-     * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
-     * @param args Any arguments to the view contract method, wrapped in JSON
-     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
-     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
-     * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
-     * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     * @param viewFunctionCallOptions.contractId NEAR account where the contract is deployed
+     * @param viewFunctionCallOptions.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
+     * @param viewFunctionCallOptions.args Any arguments to the view contract method, wrapped in JSON
+     * @param viewFunctionCallOptions.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param viewFunctionCallOptions.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param viewFunctionCallOptions.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     * @param viewFunctionCallOptions.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
 
-    async viewFunction(...restArgs: any) {
-        if (typeof restArgs[0] === 'string') {
-            const contractId = restArgs[0];
-            const methodName = restArgs[1];
-            const args = restArgs[2];
-            const options = restArgs[3];
-            return await this.viewFunctionV1(contractId, methodName, args, options);
-        } else {
-            return await this.viewFunctionV2(restArgs[0]);
-        }
-    }
-
-    async viewFunctionV1(
-        contractId: string,
-        methodName: string,
-        args: any = {},
-        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract=false, blockQuery = { finality: 'optimistic' } }: { parse?: (response: Uint8Array) => any; stringify?: (input: any) => Buffer; blockQuery?: BlockReference; jsContract?: boolean } = {}
-    ): Promise<any> {
-        const deprecate = depd('Account.viewFunction(contractId, methodName, args, options)');
-        deprecate('use `Account.viewFunction(ViewFunctionCallOptions)` instead');
-        return this.viewFunctionV2({ contractId, methodName, args, parse, stringify, jsContract, blockQuery });
-    }
-
-    async viewFunctionV2({
+    async viewFunction({
         contractId,
         methodName,
-        args,
+        args = {},
         parse = parseJsonFromRawResponse,
         stringify = bytesJsonStringify,
         jsContract = false,

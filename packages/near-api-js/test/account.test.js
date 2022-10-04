@@ -153,10 +153,11 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via account', async() => {
-        const result = await workingAccount.viewFunction(
+        const result = await workingAccount.viewFunction({
             contractId,
-            'hello', // this is the function defined in hello.wasm file that we are calling
-            {name: 'trex'});
+            methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
+            args: {name: 'trex'}
+        });
         expect(result).toEqual('hello trex');
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
@@ -166,7 +167,10 @@ describe('with deploy contract', () => {
             args: { value: setCallValue }
         });
         expect(providers.getTransactionLastResult(result2)).toEqual(setCallValue);
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue'
+        })).toEqual(setCallValue);
     });
 
     test('view contract state', async() => {
@@ -183,12 +187,12 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via account with custom parser', async() => {
-        const result = await workingAccount.viewFunction(
+        const result = await workingAccount.viewFunction({
             contractId,
-            'hello', // this is the function defined in hello.wasm file that we are calling
-            {name: 'trex'},
-            { parse: x => JSON.parse(x.toString()).replace('trex', 'friend') }
-        );
+            methodName:'hello', // this is the function defined in hello.wasm file that we are calling
+            args: {name: 'trex'},
+            parse: x => JSON.parse(x.toString()).replace('trex', 'friend')
+        });
         expect(result).toEqual('hello friend');
     });
 
@@ -208,22 +212,31 @@ describe('with deploy contract', () => {
         expect(result1).toEqual(setCallValue1);
         expect(await contract.getValue()).toEqual(setCallValue1);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { finality: 'optimistic' }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { finality: 'optimistic' },
         })).toEqual(setCallValue1);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue1);
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue'
+        })).toEqual(setCallValue1);
 
         const block1 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
         const blockHash1 = block1.header.hash;
         const blockIndex1 = block1.header.height;
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockHash1 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockHash1 },
         })).toEqual(setCallValue1);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockIndex1 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockIndex1 },
         })).toEqual(setCallValue1);
 
         const setCallValue2 = testUtils.generateUniqueString('setCallPrefix');
@@ -231,31 +244,44 @@ describe('with deploy contract', () => {
         expect(result2).toEqual(setCallValue2);
         expect(await contract.getValue()).toEqual(setCallValue2);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { finality: 'optimistic' }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { finality: 'optimistic' },
         })).toEqual(setCallValue2);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue2);
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue'
+        })).toEqual(setCallValue2);
 
         // Old blockHash should still be value #1
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockHash1 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockHash1 },
         })).toEqual(setCallValue1);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockIndex1 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockIndex1 },
         })).toEqual(setCallValue1);
 
         const block2 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
         const blockHash2 = block2.header.hash;
         const blockIndex2 = block2.header.height;
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockHash2 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockHash2 },
         })).toEqual(setCallValue2);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockIndex2 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockIndex2 },
         })).toEqual(setCallValue2);
     });
 
