@@ -11,10 +11,7 @@ import {
     deleteKey,
     stake,
     deleteAccount,
-    Action,
-    SignedTransaction,
-    stringifyJsonOrBytes,
-    AccessKey
+    stringifyJsonOrBytes
 } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import {
@@ -31,8 +28,10 @@ import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { printLogs } from './utils/logging';
-import { DEFAULT_FUNCTION_CALL_GAS, EMPTY_CONTRACT_HASH, ZERO_NEAR } from './constants';
+import { DEFAULT_FUNCTION_CALL_GAS, EMPTY_CONTRACT_HASH } from './constants';
 import { SignAndSendTransactionOptions, TransactionSender } from './transaction_sender';
+import { TransactionBuilder } from './transaction_builder';
+
 export interface AccountBalance {
     total: string;
     stateStaked: string;
@@ -473,7 +472,7 @@ export class Account {
      * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
-    async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance>  {
+     async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance>  {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
         const epochId = block.header.epoch_id;
@@ -534,99 +533,11 @@ export class Account {
         };
     }
 
-    createTransaction(recevier: Account | string): Transaction {
-        return new Transaction(this, recevier);
+    createTransaction(receiver: Account | string): TransactionBuilder {
+        return new TransactionBuilder(this.connection, this.accountId, typeof receiver === 'string' ? receiver : receiver.accountId);
     }
   
     async hasDeployedContract(): Promise<boolean> {
         return (await this.state()).code_hash !== EMPTY_CONTRACT_HASH;
-    }
-}
-
-
-/**
- * Transaction Builder class. Initialized to an account that will sign the final transaction
- */
-export class Transaction {
-    readonly receiverId: string;
-    readonly actions: Action[] = [];
-    private accountToBeCreated = false;
-    private _transferAmount?: BN;
-
-    constructor(private signer: Account, receiver: Account | string) {
-        this.receiverId = typeof receiver === 'string' ? receiver : receiver.accountId;
-    }
-
-    addKey(publicKey: string | PublicKey, accessKey: AccessKey = fullAccessKey()): this {
-        this.actions.push(addKey(PublicKey.from(publicKey), accessKey));
-        return this;
-    }
-
-    createAccount(): this {
-        this.accountToBeCreated = true;
-        this.actions.push(createAccount());
-        return this;
-    }
-
-    deleteAccount(beneficiaryId: string): this {
-        this.actions.push(deleteAccount(beneficiaryId));
-        return this;
-    }
-
-    deleteKey(publicKey: string | PublicKey): this {
-        this.actions.push(deleteKey(PublicKey.from(publicKey)));
-        return this;
-    }
-
-    deployContract(code: Uint8Array | Buffer): this {
-        this.actions.push(deployContract(code));
-        return this;
-    }
-
-    functionCall(
-        methodName: string,
-        args: Record<string, unknown> | Uint8Array,
-        {
-            gas = DEFAULT_FUNCTION_CALL_GAS,
-            attachedDeposit = ZERO_NEAR,
-        }: { gas?: BN; attachedDeposit?: BN } = {},
-    ): this {
-        this.actions.push(
-            functionCall(methodName, args, gas, attachedDeposit),
-        );
-        return this;
-    }
-
-    stake(amount: BN, publicKey: PublicKey | string): this {
-        this.actions.push(stake(amount, PublicKey.from(publicKey)));
-        return this;
-    }
-
-    transfer(amount: BN): this {
-        this._transferAmount = amount;
-        this.actions.push(transfer(this._transferAmount));
-        return this;
-    }
-
-    push(action: Action): this {
-        this.actions.push(action);
-        return this;
-    }
-
-    get accountCreated(): boolean {
-        return this.accountToBeCreated;
-    }
-
-    get transferAmount(): BN {
-        return this._transferAmount ?? ZERO_NEAR;
-    }
-
-    signAndSend(): Promise<FinalExecutionOutcome> {
-        return this.signer.signAndSendTransaction({ receiverId: this.receiverId, actions: this.actions });
-    }
-
-    sign(): Promise<[Uint8Array, SignedTransaction]> {
-        //@ts-expect-error is protected
-        return this.signer.signTransaction(this.receiverId, this.actions);
     }
 }
