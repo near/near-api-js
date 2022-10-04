@@ -173,7 +173,7 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue);
     });
 
-    test('make function calls via txn', async () => {
+    test('make function calls via TransactionBuilder', async () => {
         const result = await workingAccount.viewFunction(
             contractId,
             'hello', // this is the function defined in hello.wasm file that we are calling
