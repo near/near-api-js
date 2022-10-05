@@ -113,7 +113,12 @@ export class WalletConnection {
             const DEPRECATED_authData = JSON.parse(window.localStorage.getItem(DEPRECATED_authDataKey));
             if (DEPRECATED_authData) {
                 window.localStorage.removeItem(DEPRECATED_authDataKey);
-                window.localStorage.setItem(authDataKey, JSON.stringify(DEPRECATED_authData));
+                const authData = JSON.parse(window.localStorage.getItem(authDataKey));
+                const authDataAccountId = authData && authData.accountId;
+                const authDataAllKeys = authData && authData.allKeys;
+                const deprecatedAuthDataAllKeys = DEPRECATED_authData && DEPRECATED_authData.allKeys;
+                const mergedAuthData = { accountId: authDataAccountId || DEPRECATED_authData.accountId, allKeys: [...new Set((deprecatedAuthDataAllKeys || []).concat(authDataAllKeys || []))] };
+                window.localStorage.setItem(authDataKey, JSON.stringify(mergedAuthData));
             }
         }
 

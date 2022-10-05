@@ -22,6 +22,7 @@ let walletConnection;
 let keyStore = new nearApi.keyStores.InMemoryKeyStore();
 beforeEach(() => {
     keyStore.clear();
+    localStorage.clear();
     nearFake = {
         config: {
             networkId: 'networkId',
@@ -187,7 +188,6 @@ it('can get the near-app appKeyPrefix', async () => {
 describe('can migrate from an existing appKeyPrefix successfully', () => {
     it('migrates to default_wallet_auth_key when no contract in near', async () => {
         const keyPair = nearApi.KeyPair.fromRandom('ed25519');
-        await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
         localStorage.setItem('undefined_wallet_auth_key', JSON.stringify({ accountId: 'near.account', allKeys: [keyPair.toString()] }));
         
         new nearApi.WalletConnection(nearFakeWithoutContract);
@@ -195,14 +195,35 @@ describe('can migrate from an existing appKeyPrefix successfully', () => {
         expect(localStorage.getItem('default_wallet_auth_key')).toEqual(JSON.stringify({ accountId: 'near.account', allKeys: [keyPair.toString()] }));
     });
 
+    it('merges deprecated data to default_wallet_auth_key when no contract in near', async () => {
+        const keyPair = nearApi.KeyPair.fromRandom('ed25519');
+        const existingKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+        localStorage.setItem('undefined_wallet_auth_key', JSON.stringify({ accountId: 'depdNear.account', allKeys: [keyPair.toString()] }));
+        localStorage.setItem('default_wallet_auth_key', JSON.stringify({ accountId: 'near.account', allKeys: [existingKeyPair.toString()] }));
+        
+        new nearApi.WalletConnection(nearFakeWithoutContract);
+        expect(localStorage.getItem('undefined_wallet_auth_key')).toBeNull();
+        expect(localStorage.getItem('default_wallet_auth_key')).toEqual(JSON.stringify({ accountId: 'near.account', allKeys: [keyPair.toString(), existingKeyPair.toString()] }));
+    });
+
     it('migrates to contractId_wallet_auth_key when contract exists in near', async () => {
         const keyPair = nearApi.KeyPair.fromRandom('ed25519');
-        await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
         localStorage.setItem('undefined_wallet_auth_key', JSON.stringify({accountId: 'near.account', allKeys: [keyPair.toString()]}));
         
         new nearApi.WalletConnection(nearFake);
         expect(localStorage.getItem('undefined_wallet_auth_key')).toBeNull();
         expect(localStorage.getItem('contractId_wallet_auth_key')).toEqual(JSON.stringify({accountId: 'near.account', allKeys: [keyPair.toString()]}));
+    });
+
+    it('merges deprecated data to contractId_wallet_auth_key when contract exists in near', async () => {
+        const keyPair = nearApi.KeyPair.fromRandom('ed25519');
+        const existingKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+        localStorage.setItem('undefined_wallet_auth_key', JSON.stringify({accountId: 'depdNear.account', allKeys: [keyPair.toString()]}));
+        localStorage.setItem('contractId_wallet_auth_key', JSON.stringify({accountId: 'near.account', allKeys: [existingKeyPair.toString()]}));
+        
+        new nearApi.WalletConnection(nearFake);
+        expect(localStorage.getItem('undefined_wallet_auth_key')).toBeNull();
+        expect(localStorage.getItem('contractId_wallet_auth_key')).toEqual(JSON.stringify({accountId: 'near.account', allKeys: [keyPair.toString(), existingKeyPair.toString()]}));
     });
 });
 
@@ -217,7 +238,7 @@ it('Promise until complete sign in', async () => {
     expect(await newWalletConn.isSignedInAsync()).toEqual(true);
     expect(await keyStore.getKey('networkId', 'near2.account')).toEqual(keyPair);
     expect(localStorage.getItem('promise_on_complete_signin_wallet_auth_key')).toBeTruthy();
-    expect(history).toEqual([
+    expect(history.slice(1)).toEqual([
         [{}, 'documentTitle', 'http://example.com/location']
     ]);
 });
