@@ -7,6 +7,12 @@ import { AccessKey, Action, addKey, createAccount, deleteAccount, deleteKey, dep
 import { TransactionSender } from './transaction_sender';
 import { PublicKey } from './utils';
 
+type TransactionBuilderConfig = {
+    connection: Connection;
+    senderId: string;
+    receiverId: string;
+}
+
 /**
  * Transaction Builder class. Initialized to an account that will sign the final transaction
  */
@@ -18,7 +24,7 @@ export class TransactionBuilder extends TransactionSender {
     readonly actions: Action[];
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView };
 
-    constructor(connection: Connection, senderId: string, receiverId: string) {
+    constructor({ connection, senderId, receiverId }: TransactionBuilderConfig) {
         super(connection, senderId);
         this.receiverId = receiverId;
         this.connection = connection;
@@ -28,48 +34,48 @@ export class TransactionBuilder extends TransactionSender {
     }
 
     addKey(publicKey: string | PublicKey, accessKey: AccessKey = fullAccessKey()): this {
-        this.actions.push(addKey(PublicKey.from(publicKey), accessKey));
+        this.addAction(addKey(PublicKey.from(publicKey), accessKey));
         return this;
     }
 
     createAccount(): this {
-        this.actions.push(createAccount());
+        this.addAction(createAccount());
         return this;
     }
 
     deleteAccount(beneficiaryId: string): this {
-        this.actions.push(deleteAccount(beneficiaryId));
+        this.addAction(deleteAccount(beneficiaryId));
         return this;
     }
 
     deleteKey(publicKey: string | PublicKey): this {
-        this.actions.push(deleteKey(PublicKey.from(publicKey)));
+        this.addAction(deleteKey(PublicKey.from(publicKey)));
         return this;
     }
 
     deployContract(code: Uint8Array | Buffer): this {
-        this.actions.push(deployContract(code));
+        this.addAction(deployContract(code));
         return this;
     }
 
     functionCall({ methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, stringify }: Omit<FunctionCallOptions, 'contractId' | 'jsContract'>): this {
-        this.actions.push(
+        this.addAction(
             functionCall(methodName, args, gas, attachedDeposit, stringify),
         );
         return this;
     }
 
     stake(amount: BN, publicKey: PublicKey | string): this {
-        this.actions.push(stake(amount, PublicKey.from(publicKey)));
+        this.addAction(stake(amount, PublicKey.from(publicKey)));
         return this;
     }
 
     transfer(amount: BN): this {
-        this.actions.push(transfer(amount));
+        this.addAction(transfer(amount));
         return this;
     }
 
-    push(action: Action): this {
+    addAction(action: Action): this {
         this.actions.push(action);
         return this;
     }

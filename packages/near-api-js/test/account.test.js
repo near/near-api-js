@@ -98,7 +98,7 @@ test('multiple parallel transactions', async () => {
 test('multiple parallel TransactionBuilder transactions', async () => {
     const PARALLEL_NUMBER = 5;
     await Promise.all([...Array(PARALLEL_NUMBER).keys()].map(async (_, i) => {
-        const builder = new TransactionBuilder(workingAccount.connection, workingAccount.accountId, workingAccount.accountId);
+        const builder = new TransactionBuilder({ connection: workingAccount.connection, senderId: workingAccount.accountId, receiverId: workingAccount.accountId });
         // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
         // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
         await builder.transfer(new BN(i)).signAndSend();
