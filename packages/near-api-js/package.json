@@ -7,9 +7,9 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "homepage": "https://github.com/near/near-api-js",
-    "main": "lib/index.js",
-    "browser": "lib/browser-index.js",
-    "types": "lib/index.d.ts",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
     "dependencies": {
         "bn.js": "5.2.1",
         "borsh": "^0.7.0",
@@ -21,6 +21,7 @@
         "mustache": "^4.0.0",
         "node-fetch": "^2.6.1",
         "text-encoding-utf-8": "^1.0.2",
+        "tsup": "^6.2.3",
         "tweetnacl": "^1.0.1"
     },
     "devDependencies": {
@@ -48,7 +49,7 @@
         "browserify": "browserify browser-exports.js -i node-fetch -i http -i https -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
         "compile": "tsc -p ./tsconfig.json",
         "dev": "pnpm compile -w",
-        "build": "pnpm compile && pnpm browserify",
+        "build": "tsup src/index.ts --format esm,cjs --dts",
         "test": "jest test",
         "lint": "concurrently \"pnpm:lint:*(!fix)\"",
         "lint:src": "eslint --ext .ts src",
