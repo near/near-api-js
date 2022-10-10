@@ -1,3 +1,4 @@
+const BN = require('bn.js');
 const chalk = require('chalk');
 const { connect, keyStores, utils } = require('near-api-js');
 const os = require('os');
@@ -17,19 +18,17 @@ async function calculateGas({ accountId, contractId, keyStore, maxGas, methodNam
     const { totalGasBurned, totalTokensBurned } = receipts_outcome.reduce(
         (acc, receipt) => {
             acc.totalGasBurned += receipt.outcome.gas_burnt;
-            acc.totalTokensBurned += utils.format.formatNearAmount(receipt.outcome.tokens_burnt);
+            acc.totalTokensBurned = acc.totalTokensBurned.add(new BN(receipt.outcome.tokens_burnt));
             return acc;
         },
         {
             totalGasBurned: transaction_outcome.outcome.gas_burnt,
-            totalTokensBurned: utils.format.formatNearAmount(
-                transaction_outcome.outcome.tokens_burnt
-            ),
+            totalTokensBurned: new BN(transaction_outcome.outcome.tokens_burnt),
         }
     );
 
     return {
-        totalTokensBurned,
+        totalTokensBurned: utils.format.formatNearAmount(totalTokensBurned),
         totalGasBurned,
     };
 }
