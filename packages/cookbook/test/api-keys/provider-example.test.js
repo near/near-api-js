@@ -1,14 +1,13 @@
 const { getNetworkStatusWithApiKey } = require('../../src/api-keys/provider-example');
-const { buildTestKeyStore } = require('../utils');
+const { RPC_ENDPOINT_URL } = require('../utils');
 
 describe('getNetworkStatusWithApiKey', () => {
-    let keyStore;
+    it('gets network status', async () => {
+        const { chain_id } = await getNetworkStatusWithApiKey({
+            apiKey: 'TEST_API_KEY',
+            nodeUrl: RPC_ENDPOINT_URL,
+        });
 
-    beforeAll(async () => {
-        keyStore = await buildTestKeyStore();
-    });
-
-    it('noop', () => {
-        expect(1).toBe(1);
+        expect(chain_id).toBe('localnet');
     });
 });

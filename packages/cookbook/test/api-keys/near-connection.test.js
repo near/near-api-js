@@ -1,14 +1,15 @@
 const { getAccountStateWithApiKey } = require('../../src/api-keys/near-connection');
-const { buildTestKeyStore } = require('../utils');
+const { NETWORK_ID, RPC_ENDPOINT_URL } = require('../utils');
 
 describe('getAccountStateWithApiKey', () => {
-    let keyStore;
+    it('gets network status', async () => {
+        const { block_height } = await getAccountStateWithApiKey({
+            accountId: 'near',
+            apiKey: 'TEST_API_KEY',
+            networkId: NETWORK_ID,
+            nodeUrl: RPC_ENDPOINT_URL,
+        });
 
-    beforeAll(async () => {
-        keyStore = await buildTestKeyStore();
-    });
-
-    it('noop', () => {
-        expect(1).toBe(1);
+        expect(block_height).toBeGreaterThan(0);
     });
 });

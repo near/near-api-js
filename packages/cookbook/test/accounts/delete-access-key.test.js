@@ -1,14 +1,37 @@
+const { KeyPair } = require('near-api-js');
+
 const { deleteAccessKey } = require('../../src/accounts/access-keys/delete-access-key');
-const { buildTestKeyStore } = require('../utils');
+const { createTestAccount } = require('../utils');
 
 describe('deleteAccessKey', () => {
-    let keyStore;
+    let account, keyStore, networkId, nodeUrl;
 
     beforeAll(async () => {
-        keyStore = await buildTestKeyStore();
+        ({
+            account,
+            keyStore,
+            networkId,
+            nodeUrl,
+        } = await createTestAccount());
     });
 
-    it('noop', () => {
-        expect(1).toBe(1);
+    it('creates function call access key', async () => {
+        const keyPair = KeyPair.fromRandom('ed25519');
+        const publicKey = keyPair.publicKey.toString();
+        await account.addKey(publicKey);
+
+        let accessKeys = await account.getAccessKeys();
+        expect(accessKeys.map(({ public_key }) => public_key)).toContain(publicKey);
+
+        await deleteAccessKey({
+            accountId: account.accountId,
+            keyStore,
+            networkId,
+            nodeUrl,
+            publicKey,
+        });
+
+        accessKeys = await account.getAccessKeys();
+        expect(accessKeys.map(({ public_key }) => public_key)).not.toContain(publicKey);
     });
 });

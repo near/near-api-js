@@ -1,14 +1,27 @@
 const { createFullAccessKey } = require('../../src/accounts/access-keys/create-full-access-key');
-const { buildKeyStore } = require('../utils');
+const { createTestAccount } = require('../utils');
 
 describe('createFullAccessKey', () => {
-    let keyStore;
+    let account, keyStore, networkId, nodeUrl;
 
     beforeAll(async () => {
-        keyStore = await buildKeyStore();
+        ({
+            account,
+            keyStore,
+            networkId,
+            nodeUrl,
+        } = await createTestAccount());
     });
 
-    it('creates full access key', () => {
-        expect(1).toBe(1);
+    it('creates full access key', async () => {
+        const publicKey = await createFullAccessKey({
+            accountId: account.accountId,
+            keyStore,
+            networkId,
+            nodeUrl,
+        });
+
+        const accessKeys = await account.getAccessKeys();
+        expect(accessKeys.map(({ public_key }) => public_key)).toContain(publicKey);
     });
 });

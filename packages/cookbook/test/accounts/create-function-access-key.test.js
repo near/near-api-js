@@ -1,14 +1,27 @@
 const { addFunctionAccessKey } = require('../../src/accounts/access-keys/create-function-access-key');
-const { buildTestKeyStore } = require('../utils');
+const { createTestAccount } = require('../utils');
 
 describe('addFunctionAccessKey', () => {
-    let keyStore;
+    let account, keyStore, networkId, nodeUrl;
 
     beforeAll(async () => {
-        keyStore = await buildTestKeyStore();
+        ({
+            account,
+            keyStore,
+            networkId,
+            nodeUrl,
+        } = await createTestAccount());
     });
 
-    it('noop', () => {
-        expect(1).toBe(1);
+    it('creates function call access key', async () => {
+        const publicKey = await addFunctionAccessKey({
+            accountId: account.accountId,
+            keyStore,
+            networkId,
+            nodeUrl,
+        });
+
+        const accessKeys = await account.getAccessKeys();
+        expect(accessKeys.map(({ public_key }) => public_key)).toContain(publicKey);
     });
 });

@@ -1,14 +1,24 @@
 const { getTransactionStatus } = require('../../src/transactions/get-tx-status');
-const { buildTestKeyStore } = require('../utils');
+const { deployGuestbook } = require('../utils');
 
 describe('getTransactionStatus', () => {
-    let keyStore;
+    let account, nodeUrl, transaction;
 
     beforeAll(async () => {
-        keyStore = await buildTestKeyStore();
+        ({
+            account,
+            nodeUrl,
+            transaction,
+        } = await deployGuestbook());
     });
 
-    it('noop', () => {
-        expect(1).toBe(1);
+    it('gets transaction status', async () => {
+        const transactionStatus = await getTransactionStatus({
+            accountId: account.accountId,
+            nodeUrl,
+            txHash: transaction.hash,
+        });
+
+        expect(transactionStatus.transaction.hash).toBe(transaction.hash);
     });
 });

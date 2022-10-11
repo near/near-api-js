@@ -1,14 +1,31 @@
+const fs = require('fs');
+const path = require('path');
+
 const { sendTransactions } = require('../../src/transactions/batch-transactions');
-const { buildTestKeyStore } = require('../utils');
+const { createTestAccount } = require('../utils');
 
 describe('sendTransactions', () => {
-    let keyStore;
+    let account, keyStore, networkId, nodeUrl;
 
     beforeAll(async () => {
-        keyStore = await buildTestKeyStore();
+        ({
+            account,
+            keyStore,
+            networkId,
+            nodeUrl,
+        } = await createTestAccount());
     });
 
-    it('noop', () => {
-        expect(1).toBe(1);
+    it('batches transactions', async () => {
+        const response = await sendTransactions({
+            contractName: account.accountId,
+            contractWasm: fs.readFileSync(path.join(__dirname, '../../assets/staking_pool_factory.wasm')),
+            keyStore,
+            networkId,
+            nodeUrl,
+            whitelistAccountId: 'whitelisted-account.test.near'
+        });
+
+        expect(response.receipts_outcome.length).toBe(2);
     });
 });

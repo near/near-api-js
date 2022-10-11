@@ -1,14 +1,37 @@
 const { getState } = require('../../src/utils/get-state');
-const { buildTestKeyStore } = require('../utils');
+const { deployGuestbook } = require('../utils');
 
 describe('getState', () => {
-    let keyStore;
+    let account, nodeUrl;
 
     beforeAll(async () => {
-        keyStore = await buildTestKeyStore();
+        ({
+            account,
+            nodeUrl,
+        } = await deployGuestbook());
     });
 
-    it('noop', () => {
-        expect(1).toBe(1);
+    it('calls view method', async () => {
+        const emptyMessages = await getState({
+            contractName: account.accountId,
+            methodName: 'getMessages',
+            nodeUrl: nodeUrl,
+        });
+
+        await account.functionCall({
+            accountId: 'test.near',
+            contractId: account.accountId,
+            methodName: 'addMessage',
+            args: { text: 'yes' },
+        });
+
+        const singleMessage = await getState({
+            contractName: account.accountId,
+            methodName: 'getMessages',
+            nodeUrl: nodeUrl,
+        });
+
+        expect(emptyMessages.length).toBe(0);
+        expect(singleMessage.length).toBe(1);
     });
 });
