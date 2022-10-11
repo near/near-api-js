@@ -22,7 +22,7 @@ async function buildLocalnetKeyStore() {
 
 async function createTestAccount() {
     const keyStore = await buildLocalnetKeyStore();
-    const newAccountId = `${(new Date()).valueOf()}-${Math.ceil(Math.random()) * 1000000000}.test.near`;
+    const newAccountId = `${(new Date()).valueOf()}-${Math.ceil(Math.random() * 1000000000)}.test.near`;
     const keyPair = KeyPair.fromRandom('ed25519');
     await keyStore.setKey(NETWORK_ID, newAccountId, keyPair);
 
