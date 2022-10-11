@@ -1,11 +1,8 @@
-const { connect, keyStores } = require('near-api-js');
-const os = require('os');
-const path = require('path');
+const { connect } = require('near-api-js');
 
-async function getAccountStateWithApiKey({ accountId, apiKey, keyStore, networkId, nodeUrl }) {
+async function getAccountStateWithApiKey({ accountId, apiKey, networkId, nodeUrl }) {
     const near = await connect({
         headers: { 'x-api-key': apiKey },
-        keyStore,
         networkId,
         nodeUrl,
     });
@@ -24,11 +21,7 @@ if (require.main === module) {
         const networkId = 'testnet';
         const nodeUrl = 'https://rpc.testnet.near.org';
 
-        const CREDENTIALS_DIR = '.near-credentials';
-        const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-
-        const state = await getAccountStateWithApiKey({ accountId, apiKey, keyStore, networkId, nodeUrl });
+        const state = await getAccountStateWithApiKey({ accountId, apiKey, networkId, nodeUrl });
         console.log({ state });
     }());
 }

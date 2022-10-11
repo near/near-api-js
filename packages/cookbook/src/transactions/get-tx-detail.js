@@ -1,9 +1,7 @@
-const { connect, keyStores } = require('near-api-js');
-const os = require('os');
-const path = require('path');
+const { connect } = require('near-api-js');
 
-async function getTransactions({ accountId, endBlock, keyStore, networkId, nodeUrl, startBlock }) {
-    const near = await connect({ keyStore, networkId, nodeUrl });
+async function getTransactions({ accountId, endBlock, networkId, nodeUrl, startBlock }) {
+    const near = await connect({ networkId, nodeUrl });
 
     // creates an array of block hashes for given range
     const blocks = [];
@@ -56,14 +54,9 @@ if (require.main === module) {
         const nodeUrl = 'https://archival-rpc.testnet.near.org';
         const startBlock = 'GZ8vKdcgsavkEndkDWHCjuhyqSR2TGnp9VDZbTzd6ufG'; // block hash of query start (oldest block)
 
-        const CREDENTIALS_DIR = '.near-credentials';
-        const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-
         const response = await getTransactions({
             accountId: contractName,
             endBlock,
-            keyStore,
             networkId,
             nodeUrl,
             startBlock,
