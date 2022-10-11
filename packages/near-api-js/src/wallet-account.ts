@@ -84,7 +84,10 @@ export class WalletConnection {
     /** @hidden */
     _completeSignInPromise: Promise<void>;
 
-    constructor(near: Near, appKeyPrefix: string | null) {
+    constructor(near: Near, appKeyPrefix: string) {
+        if(typeof(appKeyPrefix) != 'string') {
+            throw new Error('Please define a clear appKeyPrefix for this WalletConnection instance as the second argument to the constructor');
+        }
         if(typeof window === 'undefined') {
             return new Proxy(this, {
                 get(target, property) {
@@ -108,7 +111,6 @@ export class WalletConnection {
         const authData = JSON.parse(window.localStorage.getItem(authDataKey));
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
-        appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
         this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
         this._authData = authData || { allKeys: [] };
         this._authDataKey = authDataKey;
