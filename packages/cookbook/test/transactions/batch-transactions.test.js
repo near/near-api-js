@@ -19,7 +19,7 @@ describe('sendTransactions', () => {
     it('batches transactions', async () => {
         const response = await sendTransactions({
             contractName: account.accountId,
-            contractWasm: fs.readFileSync(path.join(__dirname, '../../assets/staking_pool_factory.wasm')),
+            contractWasm: fs.readFileSync(path.join(__dirname, '../../contracts/staking_pool_factory.wasm')),
             keyStore,
             networkId,
             nodeUrl,

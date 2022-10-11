@@ -16,7 +16,7 @@ module.exports = {
 if (require.main === module) {
     (async function () {
         const accountId = 'near-example.testnet';
-        const contractWasm = fs.readFileSync(path.join(__dirname, '../../assets/status_message.wasm'));
+        const contractWasm = fs.readFileSync(path.join(__dirname, '../../contracts/status_message.wasm'));
         const networkId = 'testnet';
         const nodeUrl = 'https://rpc.testnet.near.org';
 

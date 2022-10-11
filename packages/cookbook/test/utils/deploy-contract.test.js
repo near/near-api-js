@@ -19,7 +19,7 @@ describe('deployContract', () => {
     it('contract is deployed', async () => {
         await deployContract({
             accountId: account.accountId,
-            contractWasm: fs.readFileSync(path.join(__dirname, '../../assets/guestbook.wasm')),
+            contractWasm: fs.readFileSync(path.join(__dirname, '../../contracts/guestbook.wasm')),
             keyStore,
             networkId,
             nodeUrl,
