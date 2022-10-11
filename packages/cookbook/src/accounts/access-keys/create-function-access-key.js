@@ -17,6 +17,8 @@ async function addFunctionAccessKey({ accountId, keyStore, networkId, nodeUrl })
         'example_method',       // methods this key is allowed to call (optional)
         new BN(2500000000000)        // allowance key can use to call methods (optional)
     );
+
+    return publicKey;
 }
 
 module.exports = {
@@ -33,6 +35,7 @@ if (require.main === module) {
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
         const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
-        await addFunctionAccessKey({ accountId, keyStore, networkId, nodeUrl });
+        const publicKey = await addFunctionAccessKey({ accountId, keyStore, networkId, nodeUrl });
+        console.log(`Added function call access key ${publicKey} to ${accountId}.`);
     }());
 }

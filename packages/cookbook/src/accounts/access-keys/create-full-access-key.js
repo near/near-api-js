@@ -11,6 +11,8 @@ async function createFullAccessKey({ accountId, keyStore, networkId, nodeUrl }) 
 
     await keyStore.setKey(networkId, publicKey, keyPair);
     await account.addKey(publicKey);
+
+    return publicKey;
 }
 
 module.exports = {
@@ -27,11 +29,13 @@ if (require.main === module) {
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
         const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
-        await createFullAccessKey({
+        const publicKey = await createFullAccessKey({
             accountId,
             keyStore,
             networkId,
             nodeUrl,
         });
+
+        console.log(`Added full access key ${publicKey} to ${accountId}.`);
     }());
 }
