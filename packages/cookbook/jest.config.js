@@ -1,4 +1,5 @@
 module.exports = {
     testEnvironment: 'node',
-    collectCoverage: true
+    collectCoverage: true,
+    testTimeout: 60000,
 };
