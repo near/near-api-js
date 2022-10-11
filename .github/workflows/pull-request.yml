@@ -30,6 +30,7 @@ jobs:
         sudo apt install kurtosis-cli=0.49.9
         kurtosis config init send-metrics
         kurtosis engine start
+        kurtosis module exec kurtosistech/near-kurtosis-module
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v2.2.2
