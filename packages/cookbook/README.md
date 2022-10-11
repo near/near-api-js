@@ -45,3 +45,10 @@ Example:
 ```bash
 node utils/get-state
 ```
+
+
+## Testing
+The integration test suite for cookbook uses Kurtosis to run a `localnet`
+chain for RPC requests. See the [installation](https://docs.kurtosis.com/install)
+and [quickstart](https://docs.kurtosis.com/quickstart) documentation for
+setup.
