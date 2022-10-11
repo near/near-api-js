@@ -13,9 +13,23 @@ jobs:
   checks:
     runs-on: ubuntu-latest
 
+    services:
+      kurtosis-localnet:
+        image: kurtosistech/near-kurtosis-module:0.5.31
+        ports:
+          - 8332:8332
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
+    - name: Setup Kurtosis
+      run: |
+        echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+        sudo apt update
+        sudo apt install kurtosis-cli=0.49.9
+        kurtosis config init send-metrics
+        kurtosis engine start
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v2.2.2
