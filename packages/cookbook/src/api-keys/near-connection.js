@@ -19,8 +19,8 @@ module.exports = {
 
 if (require.main === module) {
     (async function () {
-        const accountId = '<Replace this string with existing account ID>';
-        const apiKey = '<Replace this string with your API KEY>';
+        const accountId = 'test.testnet';
+        const apiKey = 'REPLACE_WITH_REAL_API_KEY';
         const networkId = 'testnet';
         const nodeUrl = 'https://rpc.testnet.near.org';
 

@@ -15,8 +15,8 @@ module.exports = {
 
 if (require.main === module) {
     (async function () {
-        const apiKey = '<Replace this string with your API KEY>';
-        const nodeUrl = '<Replace this string with your RPC server URL>';
+        const apiKey = 'REPLACE_WITH_REAL_API_KEY';
+        const nodeUrl = 'https://rpc.testnet.near.org';
 
         const status = await getNetworkStatusWithApiKey({ apiKey, nodeUrl });
         console.log({ status });
