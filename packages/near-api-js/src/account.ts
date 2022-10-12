@@ -1,6 +1,8 @@
 import BN from 'bn.js';
 
 import {
+    Action,
+    SignedTransaction,
     transfer,
     createAccount,
     deployContract,
@@ -11,7 +13,7 @@ import {
     deleteKey,
     stake,
     deleteAccount,
-    stringifyJsonOrBytes
+    stringifyJsonOrBytes,
 } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import {
@@ -22,7 +24,7 @@ import {
     AccessKeyList,
     AccessKeyInfoView,
     FunctionCallPermissionView,
-    BlockReference
+    BlockReference, AccessKeyView
 } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
@@ -194,7 +196,8 @@ export class Account {
      */
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
         const accessKey = fullAccessKey();
-        await this.signAndSendTransaction({
+        await this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: contractId,
             actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]
         });
@@ -207,7 +210,8 @@ export class Account {
      * @param amount Amount to send in yoctoⓃ
      */
     async sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId,
             actions: [transfer(amount)]
         });
@@ -219,7 +223,8 @@ export class Account {
      */
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         const accessKey = fullAccessKey();
-        return this.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: newAccountId,
             actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]
         });
@@ -232,7 +237,8 @@ export class Account {
         if (!process.env['NEAR_NO_LOGS']) {
             console.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
         }
-        return this.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: this.accountId,
             actions: [deleteAccount(beneficiaryId)]
         });
@@ -242,7 +248,8 @@ export class Account {
      * @param data The compiled contract code
      */
     async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: this.accountId,
             actions: [deployContract(data)]
         });
@@ -269,7 +276,8 @@ export class Account {
             functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
         }
 
-        return this.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: jsContract ? this.connection.jsvmAccountId: contractId,
             // eslint-disable-next-line prefer-spread
             actions: [functionCall.apply(void 0, functionCallArgs)],
@@ -299,7 +307,8 @@ export class Account {
         } else {
             accessKey = functionCallAccessKey(contractId, methodNames, amount);
         }
-        return this.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: this.accountId,
             actions: [addKey(PublicKey.from(publicKey), accessKey)]
         });
@@ -310,7 +319,8 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: this.accountId,
             actions: [deleteKey(PublicKey.from(publicKey))]
         });
@@ -323,7 +333,8 @@ export class Account {
      * @param amount The account to stake in yoctoⓃ
      */
     async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: this.accountId,
             actions: [stake(amount, PublicKey.from(publicKey))]
         });
@@ -371,7 +382,7 @@ export class Account {
         if(jsContract){
             encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
         } else{
-            encodedArgs =  stringify(args);
+            encodedArgs = stringify(args);
         }
 
         const result = await this.connection.provider.query<CodeResult>({
