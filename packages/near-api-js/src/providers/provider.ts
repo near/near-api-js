@@ -315,6 +315,7 @@ export interface AccessKeyWithPublicKey {
 export interface QueryResponseKind {
     block_height: BlockHeight;
     block_hash: BlockHash;
+    error: Error;
 }
 
 export interface AccountView extends QueryResponseKind {
