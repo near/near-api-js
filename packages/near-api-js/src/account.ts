@@ -26,6 +26,7 @@ import {
 } from './providers/provider';
 import { Connection } from './connection';
 import { PublicKey } from './utils/key_pair';
+import { printLogs } from './utils/logging';
 import { PositionalArgsError } from './utils/errors';
 import { printLogs } from './utils/logging';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
