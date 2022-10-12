@@ -552,4 +552,28 @@ export class Account {
             receiverId: typeof receiver === 'string' ? receiver : receiver.accountId,
         });
     }
+
+    // TODO deprecate these
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
+        return this.sender.findAccessKey({ signerId: this.accountId });
+    }
+
+    protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
+        return this.sender.signTransaction({ signerId: this.accountId, receiverId, actions });
+    }
+
+    protected async signAndSendTransaction({
+        receiverId,
+        actions,
+        returnError,
+    }: { receiverId: string, actions: Action[], returnError?: boolean }): Promise<FinalExecutionOutcome> {
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
+            receiverId,
+            actions,
+            returnError,
+        });
+    }
 }
