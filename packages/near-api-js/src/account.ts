@@ -226,7 +226,7 @@ export class Account {
             throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
         }
 
-        printTxOutcomeLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
+        printTxOutcomeLogsAndFailures({ contractId: (signedTx as SignedTransaction)?.transaction.receiverId, outcome: result });
 
         // Should be falsy if result.status.Failure is null
         if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object'  && result.status.Failure !== null) {
