@@ -1,36 +1,46 @@
 import BN from 'bn.js';
+
 import { FunctionCallOptions } from './account';
-import { Connection } from './connection';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
-import { AccessKeyView, FinalExecutionOutcome } from './providers/provider';
-import { AccessKey, Action, addKey, createAccount, deleteAccount, deleteKey, deployContract, fullAccessKey, functionCall, SignedTransaction, stake, transfer } from './transaction';
+import { FinalExecutionOutcome } from './providers/provider';
+import {
+    AccessKey,
+    Action,
+    addKey,
+    createAccount,
+    deleteAccount,
+    deleteKey,
+    deployContract,
+    fullAccessKey,
+    functionCall,
+    SignedTransaction,
+    stake,
+    transfer,
+} from './transaction';
 import { TransactionSender } from './transaction_sender';
 import { PublicKey } from './utils';
 
 type TransactionBuilderConfig = {
-    connection: Connection;
-    senderId: string;
     receiverId: string;
+    sender: TransactionSender;
+    senderId: string;
 }
 
 /**
  * Transaction Builder class. Initialized to an account that will sign the final transaction
  */
-export class TransactionBuilder extends TransactionSender {
+export class TransactionBuilder {
     readonly receiverId: string;
     readonly senderId: string;
-    readonly connection: Connection;
-
+    readonly sender: TransactionSender;
     readonly actions: Action[];
-    accessKeyByPublicKeyCache: { [key: string]: AccessKeyView };
 
-    constructor({ connection, senderId, receiverId }: TransactionBuilderConfig) {
-        super(connection, senderId);
+    constructor({ sender, senderId, receiverId }: TransactionBuilderConfig) {
         this.receiverId = receiverId;
-        this.connection = connection;
         this.senderId = senderId;
+        this.sender = sender;
+
         this.actions = [];
-        this.accessKeyByPublicKeyCache = {};
     }
 
     addKey(publicKey: string | PublicKey, accessKey: AccessKey = fullAccessKey()): this {
@@ -81,10 +91,18 @@ export class TransactionBuilder extends TransactionSender {
     }
 
     async signAndSend(): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({ receiverId: this.receiverId, actions: this.actions });
+        return this.sender.signAndSendTransaction({
+            signerId: this.senderId,
+            receiverId: this.receiverId,
+            actions: this.actions,
+        });
     }
 
     async sign(): Promise<[Uint8Array, SignedTransaction]> {
-        return this.signTransaction(this.receiverId, this.actions);
+        return this.sender.signTransaction({
+            signerId: this.senderId,
+            receiverId: this.receiverId,
+            actions: this.actions,
+        });
     }
 }

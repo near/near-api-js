@@ -536,9 +536,9 @@ export class Account {
 
     createTransaction(receiver: Account | string): TransactionBuilder {
         return new TransactionBuilder({
-            connection: this.connection,
+            sender: this.sender,
             senderId: this.accountId,
-            receiverId: typeof receiver === 'string' ? receiver : receiver.accountId
+            receiverId: typeof receiver === 'string' ? receiver : receiver.accountId,
         });
     }
 }
