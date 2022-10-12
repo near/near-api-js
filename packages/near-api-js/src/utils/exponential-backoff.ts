@@ -1,4 +1,4 @@
-export default async function exponentialBackoff(startWaitTime, retryNumber, waitBackoff, getResult) {
+export default async function exponentialBackoff(startWaitTime: number, retryNumber: number, waitBackoff: number, getResult: () => Promise<any>) {
     // TODO: jitter?
 
     let waitTime = startWaitTime;

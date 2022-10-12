@@ -365,7 +365,7 @@ export class Account {
     }
 
     /** @hidden */
-    private encodeJSContractArgs(contractId: string, method: string, args) {
+    private encodeJSContractArgs(contractId: string, method: string, args: string) {
         return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
     }
 

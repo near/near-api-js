@@ -1,3 +1,4 @@
+
 import fetch from 'node-fetch';
 import http from 'http';
 import https from 'https';
@@ -5,7 +6,7 @@ import https from 'https';
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });
 
-function agent(_parsedURL) {
+function agent(_parsedURL: URL) {
     if (_parsedURL.protocol === 'http:') {
         return httpAgent;
     } else {
@@ -13,7 +14,7 @@ function agent(_parsedURL) {
     }
 }
 
-export default function (resource, init) {
+export default function (resource: string, init: object) {
     return fetch(resource, {
         agent: agent(new URL(resource.toString())),
         ...init,

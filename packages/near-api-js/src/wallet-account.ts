@@ -10,6 +10,7 @@ import { Account, SignAndSendTransactionOptions } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
 import { FinalExecutionOutcome } from './providers';
+import { AccessKeyInfoView } from './providers/provider';
 import { InMemorySigner } from './signer';
 import { Transaction, Action, SCHEMA, createTransaction } from './transaction';
 import { KeyPair, PublicKey } from './utils';
@@ -94,12 +95,15 @@ export class WalletConnection {
                     if(property === 'getAccountId') {
                         return () => '';
                     }
-                    if(target[property] && typeof target[property] === 'function') {
+
+                    const targetProperty = (target as { [key: string | symbol]: any })[property];
+                    if (targetProperty && typeof targetProperty === 'function') {
                         return () => {
                             throw new Error('No window found in context, please ensure you are using WalletConnection on the browser');
                         };
                     }
-                    return target[property];
+
+                    return targetProperty;
                 }
             });
         }
@@ -343,7 +347,7 @@ export class ConnectedWalletAccount extends Account {
      * @param receiverId The NEAR account attempting to have access
      * @param actions The action(s) needed to be checked for access
      */
-    async accessKeyMatchesTransaction(accessKey, receiverId: string, actions: Action[]): Promise<boolean> {
+    async accessKeyMatchesTransaction(accessKey: AccessKeyInfoView, receiverId: string, actions: Action[]): Promise<boolean> {
         const { access_key: { permission } } = accessKey;
         if (permission === 'FullAccess') {
             return true;

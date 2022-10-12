@@ -5,10 +5,6 @@ import messages from '../res/error_messages.json';
 import { utils } from '../common-index';
 import { TypedError } from '../utils/errors';
 
-const mustacheHelpers = {
-    formatNear: () => (n, render) => utils.format.formatNearAmount(render(n))
-};
-
 export class ServerError extends TypedError {
 }
 
@@ -35,11 +31,12 @@ export function parseResultError(result: any): ServerTransactionError {
     return server_tx_error;
 }
 
-export function formatError(errorClassName: string, errorData): string {
-    if (typeof messages[errorClassName] === 'string') {
-        return Mustache.render(messages[errorClassName], {
+export function formatError(errorClassName: string, errorData: object): string {
+    const errorMessage = (messages as { [key: string]: any })[errorClassName];
+    if (typeof errorMessage === 'string') {
+        return Mustache.render(errorMessage, {
             ...errorData,
-            ...mustacheHelpers
+            formatNear: () => (n: number, render: (m: number) => string) => utils.format.formatNearAmount(render(n))
         });
     }
     return JSON.stringify(errorData);
@@ -52,7 +49,12 @@ export function formatError(errorClassName: string, errorData): string {
  * @param result An object used in recursion or called directly
  * @param typeName The human-readable error type name as defined in the JSON mapping
  */
-function walkSubtype(errorObj, schema, result, typeName) {
+function walkSubtype(
+    errorObj: { [key: string]: any },
+    schema: { [key: string]: { props: object } },
+    result: { [key: string]: object },
+    typeName: string
+): string {
     let error;
     let type;
     let errorTypeName;
@@ -73,6 +75,7 @@ function walkSubtype(errorObj, schema, result, typeName) {
             continue;
         }
     }
+
     if (error && type) {
         for (const prop of Object.keys(type.props)) {
             result[prop] = error[prop];
@@ -85,7 +88,7 @@ function walkSubtype(errorObj, schema, result, typeName) {
     }
 }
 
-export function getErrorTypeFromErrorMessage(errorMessage, errorType) {
+export function getErrorTypeFromErrorMessage(errorMessage: string, errorType: string) {
     // This function should be removed when JSON RPC starts returning typed errors.
     switch (true) {
         case /^account .*? does not exist while viewing$/.test(errorMessage):
@@ -107,7 +110,7 @@ export function getErrorTypeFromErrorMessage(errorMessage, errorType) {
  * Helper function determining if the argument is an object
  * @param n Value to check
  */
-function isObject(n) {
+function isObject(n: any) {
     return Object.prototype.toString.call(n) === '[object Object]';
 }
 
@@ -115,6 +118,6 @@ function isObject(n) {
  * Helper function determining if the argument is a string
  * @param n Value to check
  */
-function isString(n) {
+function isString(n: any) {
     return Object.prototype.toString.call(n) === '[object String]';
 }
