@@ -27,6 +27,8 @@ import { Near, NearConfig } from './near';
 import fetch from './utils/setup-node-fetch';
 import { logWarning } from './utils';
 
+/* TODO this is grandfathered in and will be removed as we migrate to packages */
+/* @ts-expect-error: the global fetch type is being narrowed here but it doesn't impact our current use */
 global.fetch = fetch;
 
 export interface ConnectConfig extends NearConfig {
