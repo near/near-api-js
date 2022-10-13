@@ -149,7 +149,7 @@ export class JsonRpcProvider extends Provider {
         if (result && result.error) {
             throw new TypedError(
                 `Querying failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`,
-                getErrorTypeFromErrorMessage(result.error, result.error.name)
+                getErrorTypeFromErrorMessage(result.error.toString(), result.error.name)
             );
         }
         return result;
