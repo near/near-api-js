@@ -9,6 +9,7 @@ import { Action, addKey, deleteKey, deployContract, fullAccessKey, functionCall,
 import { FinalExecutionOutcome, TypedError } from './providers';
 import { fetchJson } from './utils/web';
 import { FunctionCallPermissionView } from './providers/provider';
+import { TransactionSender } from './transaction_sender';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';
 export const MULTISIG_ALLOWANCE = new BN(parseNearAmount('1'));
@@ -51,15 +52,22 @@ const storageFallback = {
 export class AccountMultisig extends Account {
     public storage: any;
     public onAddRequestResult: (any) => any;
+    readonly sender: TransactionSender;
 
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId);
         this.storage = options.storage;
         this.onAddRequestResult = options.onAddRequestResult;
+
+        // TODO inject TransactionSender instance as constructor parameter
+        this.sender = new TransactionSender({ connection });
     }
 
+    /**
+     * @deprecated
+     */
     async signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
-        return super.signAndSendTransaction({ receiverId, actions });
+        return this.sender.signAndSendTransaction({ signerId: this.accountId, receiverId, actions });
     }
 
     async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
@@ -74,7 +82,8 @@ export class AccountMultisig extends Account {
 
         let result;
         try {
-            result = await super.signAndSendTransaction({
+            result = await this.sender.signAndSendTransaction({
+                signerId: accountId,
                 receiverId: accountId,
                 actions: [
                     functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
@@ -124,8 +133,10 @@ export class AccountMultisig extends Account {
 
         try {
             if(contractBytes) {
-                await super.signAndSendTransaction({
-                    receiverId: this.accountId, actions: [
+                await this.sender.signAndSendTransaction({
+                    signerId: this.accountId,
+                    receiverId: this.accountId,
+                    actions: [
                         deployContract(contractBytes),
                         functionCall('delete_request', { request_id: u32_max }, MULTISIG_GAS, MULTISIG_DEPOSIT)
                     ]
@@ -151,7 +162,8 @@ export class AccountMultisig extends Account {
     }
 
     deleteRequest(request_id) {
-        return super.signAndSendTransaction({
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
             receiverId: this.accountId,
             actions: [functionCall('delete_request', { request_id }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
         });
@@ -174,7 +186,8 @@ export class AccountMultisig extends Account {
                 continue;
             }
             try {
-                await super.signAndSendTransaction({
+                await this.sender.signAndSendTransaction({
+                    signerId: this.accountId,
                     receiverId: this.accountId,
                     actions: [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
                 });
@@ -222,6 +235,7 @@ export class Account2FA extends AccountMultisig {
     public verifyCode: verifyCodeFunction;
     public onConfirmResult: (any) => any;
     public helperUrl = 'https://helper.testnet.near.org';
+    readonly sender: TransactionSender;
 
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId, options);
@@ -231,6 +245,9 @@ export class Account2FA extends AccountMultisig {
         this.getCode = options.getCode || this.getCodeDefault;
         this.verifyCode = options.verifyCode || this.verifyCodeDefault;
         this.onConfirmResult = options.onConfirmResult;
+
+        // TODO inject TransactionSender instance as constructor parameter
+        this.sender = new TransactionSender({ connection });
     }
 
     /**
@@ -278,9 +295,17 @@ export class Account2FA extends AccountMultisig {
         const { stateStatus: multisigStateStatus } = await this.checkMultisigCodeAndStateStatus(contractBytes);
         switch (multisigStateStatus) {
             case MultisigStateStatus.STATE_NOT_INITIALIZED:
-                return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
+                return await this.sender.signAndSendTransaction({
+                    signerId: accountId,
+                    receiverId: accountId,
+                    actions: newFunctionCallActionBatch,
+                });
             case MultisigStateStatus.VALID_STATE:
-                return await super.signAndSendTransactionWithAccount(accountId, actions);
+                return await this.sender.signAndSendTransaction({
+                    signerId: accountId,
+                    receiverId: accountId,
+                    actions,
+                });
             case MultisigStateStatus.INVALID_STATE:
                 throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
             default:
@@ -302,13 +327,17 @@ export class Account2FA extends AccountMultisig {
             deployContract(contractBytes)
         ];
 
-        const accessKeyInfo = await this.findAccessKey(this.accountId, actions);
+        const accessKeyInfo = await this.sender.findAccessKey({ signerId: this.accountId });
 
         if(accessKeyInfo && accessKeyInfo.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
             throw new TypedError('No full access key found in keystore. Unable to bypass multisig', 'NoFAKFound');
         }
 
-        return this.signAndSendTransactionWithAccount(this.accountId, actions);
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
+            receiverId: this.accountId,
+            actions,
+        });
     }
 
     async get2faDisableCleanupActions(cleanupContractBytes: Uint8Array) {
