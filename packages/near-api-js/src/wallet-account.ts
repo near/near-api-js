@@ -17,6 +17,7 @@ import { baseDecode } from 'borsh';
 import { Connection } from './connection';
 import { serialize } from 'borsh';
 import BN from 'bn.js';
+import { TransactionSender } from './transaction_sender';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -283,10 +284,14 @@ export class WalletConnection {
  */
 export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
+    readonly sender: TransactionSender;
 
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
         super(connection, accountId);
         this.walletConnection = walletConnection;
+
+        // TODO inject TransactionSender instance as constructor parameter
+        this.sender = new TransactionSender({ connection });
     }
 
     // Overriding Account methods
@@ -304,7 +309,7 @@ export class ConnectedWalletAccount extends Account {
 
         if (localKey && localKey.toString() === accessKey.public_key) {
             try {
-                return await super.signAndSendTransaction({ receiverId, actions });
+                return await this.sender.signAndSendTransaction({ signerId: this.accountId, receiverId, actions });
             } catch (e) {
                 if (e.type === 'NotEnoughAllowance') {
                     accessKey = await this.accessKeyForTransaction(receiverId, actions);
