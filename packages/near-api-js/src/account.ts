@@ -3,7 +3,6 @@ import BN from 'bn.js';
 import {
     transfer,
     createAccount,
-    signTransaction,
     deployContract,
     addKey,
     functionCall,
@@ -16,12 +15,11 @@ import {
     SignedTransaction,
     stringifyJsonOrBytes
 } from './transaction';
-import { FinalExecutionOutcome, TypedError, ErrorContext } from './providers';
+import { FinalExecutionOutcome } from './providers';
 import {
     ViewStateResult,
     AccountView,
     AccessKeyView,
-    AccessKeyViewRaw,
     CodeResult,
     AccessKeyList,
     AccessKeyInfoView,
@@ -29,23 +27,11 @@ import {
     BlockReference
 } from './providers/provider';
 import { Connection } from './connection';
-import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
-import { logWarning, PositionalArgsError } from './utils/errors';
-import { printLogs, printLogsAndFailures } from './utils/logging';
-import { parseResultError } from './utils/rpc_errors';
+import { PositionalArgsError } from './utils/errors';
+import { printLogs } from './utils/logging';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
-
-import exponentialBackoff from './utils/exponential-backoff';
-
-// Default number of retries with different nonce before giving up on a transaction.
-const TX_NONCE_RETRY_NUMBER = 12;
-
-// Default wait until next retry in millis.
-const TX_NONCE_RETRY_WAIT = 500;
-
-// Exponential back off for waiting to retry.
-const TX_NONCE_RETRY_WAIT_BACKOFF = 1.5;
+import { TransactionSender } from './transaction_sender';
 
 export interface AccountBalance {
     total: string;
@@ -153,10 +139,14 @@ function bytesJsonStringify(input: any): Buffer {
 export class Account {
     readonly connection: Connection;
     readonly accountId: string;
+    readonly sender: TransactionSender;
 
     constructor(connection: Connection, accountId: string) {
         this.connection = connection;
         this.accountId = accountId;
+
+        // TODO inject TransactionSender instance as constructor parameter
+        this.sender = new TransactionSender({ connection });
     }
 
     /**
@@ -178,19 +168,11 @@ export class Account {
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
-        const accessKeyInfo = await this.findAccessKey(receiverId, actions);
-        if (!accessKeyInfo) {
-            throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair exists for this account`, 'KeyNotFound');
-        }
-        const { accessKey } = accessKeyInfo;
-
-        const block = await this.connection.provider.block({ finality: 'final' });
-        const blockHash = block.header.hash;
-
-        const nonce = accessKey.nonce.add(new BN(1));
-        return await signTransaction(
-            receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
-        );
+        return this.sender.signTransaction({
+            signerId: this.accountId,
+            receiverId,
+            actions,
+        });
     }
 
     /**
@@ -198,55 +180,16 @@ export class Account {
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
     async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
-        let txHash, signedTx;
-        // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
-        const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
-            [txHash, signedTx] = await this.signTransaction(receiverId, actions);
-            const publicKey = signedTx.transaction.publicKey;
-
-            try {
-                return await this.connection.provider.sendTransaction(signedTx);
-            } catch (error) {
-                if (error.type === 'InvalidNonce') {
-                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
-                    delete this.accessKeyByPublicKeyCache[publicKey.toString()];
-                    return null;
-                }
-                if (error.type === 'Expired') {
-                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
-                    return null;
-                }
-
-                error.context = new ErrorContext(baseEncode(txHash));
-                throw error;
-            }
+        return this.sender.signAndSendTransaction({
+            signerId: this.accountId,
+            receiverId,
+            actions,
+            returnError,
         });
-        if (!result) {
-            // TODO: This should have different code actually, as means "transaction not submitted for sure"
-            throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
-        }
-
-        printLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
-
-        // Should be falsy if result.status.Failure is null
-        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object'  && result.status.Failure !== null) {
-            // if error data has error_message and error_type properties, we consider that node returned an error in the old format
-            if (result.status.Failure.error_message && result.status.Failure.error_type) {
-                throw new TypedError(
-                    `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
-                    result.status.Failure.error_type);
-            } else {
-                throw parseResultError(result);
-            }
-        }
-        // TODO: if Tx is Unknown or Started.
-        return result;
     }
 
-    /** @hidden */
-    accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
-
     /**
+     * @deprecated use {@link transaction_sender!TransactionSender} method
      * Finds the {@link providers/provider!AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
@@ -257,47 +200,7 @@ export class Account {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
-        // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
-        const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
-        if (!publicKey) {
-            throw new TypedError(`no matching key pair found in ${this.connection.signer}`, 'PublicKeyNotFound');
-        }
-
-        const cachedAccessKey = this.accessKeyByPublicKeyCache[publicKey.toString()];
-        if (cachedAccessKey !== undefined) {
-            return { publicKey, accessKey: cachedAccessKey };
-        }
-
-        try {
-            const rawAccessKey = await this.connection.provider.query<AccessKeyViewRaw>({
-                request_type: 'view_access_key',
-                account_id: this.accountId,
-                public_key: publicKey.toString(),
-                finality: 'optimistic'
-            });
-
-            // store nonce as BN to preserve precision on big number
-            const accessKey = {
-                ...rawAccessKey,
-                nonce: new BN(rawAccessKey.nonce),
-            };
-            // this function can be called multiple times and retrieve the same access key
-            // this checks to see if the access key was already retrieved and cached while
-            // the above network call was in flight. To keep nonce values in line, we return
-            // the cached access key.
-            if (this.accessKeyByPublicKeyCache[publicKey.toString()]) {
-                return { publicKey, accessKey: this.accessKeyByPublicKeyCache[publicKey.toString()] };
-            }
-
-            this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
-            return { publicKey, accessKey };
-        } catch (e) {
-            if (e.type == 'AccessKeyDoesNotExist') {
-                return null;
-            }
-
-            throw e;
-        }
+        return this.sender.findAccessKey({ signerId: this.accountId });
     }
 
     /**
