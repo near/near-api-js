@@ -32,7 +32,7 @@ import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { logWarning, PositionalArgsError } from './utils/errors';
-import { printLogs, printLogsAndFailures } from './utils/logging';
+import { printTxOutcomeLogs, printTxOutcomeLogsAndFailures } from './utils/logging';
 import { parseResultError } from './utils/rpc_errors';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 
@@ -226,7 +226,7 @@ export class Account {
             throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
         }
 
-        printLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
+        printTxOutcomeLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
 
         // Should be falsy if result.status.Failure is null
         if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object'  && result.status.Failure !== null) {
@@ -499,7 +499,7 @@ export class Account {
         });
 
         if (result.logs) {
-            printLogs({ contractId, logs: result.logs });
+            printTxOutcomeLogs({ contractId, logs: result.logs });
         }
 
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));

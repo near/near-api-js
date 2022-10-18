@@ -10,7 +10,7 @@ const SUPPRESS_LOGGING = !!process.env.NEAR_NO_LOGS;
  * @param params.outcome the query execution response
  * @param params.suppressLogging disables console output when `true`
  */
-export function printLogsAndFailures({
+export function printTxOutcomeLogsAndFailures({
     contractId,
     outcome,
     suppressLogging = SUPPRESS_LOGGING,
@@ -37,7 +37,7 @@ export function printLogsAndFailures({
 
     for (const result of flatLogs) {
         console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
-        printLogs({
+        printTxOutcomeLogs({
             contractId,
             logs: result.logs,
             prefix: '\t',
@@ -56,7 +56,7 @@ export function printLogsAndFailures({
  * @param params.logs log output from a query execution response
  * @param params.suppressLogging disables console output when `true`
  */
-export function printLogs({
+export function printTxOutcomeLogs({
     contractId,
     logs,
     prefix = '',
