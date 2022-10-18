@@ -188,6 +188,6 @@ export class TransactionSender {
             actions: [
                 functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
             ]
-        })
+        });
     }
 }
