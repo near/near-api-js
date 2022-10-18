@@ -3,6 +3,13 @@ import { parseRpcError } from './rpc_errors';
 
 const SUPPRESS_LOGGING = !!process.env.NEAR_NO_LOGS;
 
+/**
+ * Parse and print details from a query execution response
+ * @param params
+ * @param params.contractId ID of the account/contract which made the query
+ * @param params.outcome the query execution response
+ * @param params.suppressLogging disables console output when `true`
+ */
 export function printLogsAndFailures({
     contractId,
     outcome,
@@ -42,6 +49,13 @@ export function printLogsAndFailures({
     }
 }
 
+/**
+ * Format and print log output from a query execution response
+ * @param params
+ * @param params.contractId ID of the account/contract which made the query
+ * @param params.logs log output from a query execution response
+ * @param params.suppressLogging disables console output when `true`
+ */
 export function printLogs({
     contractId,
     logs,
