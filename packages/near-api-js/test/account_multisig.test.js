@@ -13,8 +13,8 @@ const {
     KeyPair,
     transactions: { functionCall },
     InMemorySigner,
-    multisig: { Account2FA, MULTISIG_GAS, MULTISIG_DEPOSIT },
-    utils: { format: { parseNearAmount } }
+    multisig: { Account2FA },
+    utils: { format: { parseNearAmount }, multisig: { MULTISIG_GAS, MULTISIG_DEPOSIT } }
 } = nearApi;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
@@ -127,6 +127,7 @@ describe('account2fa transactions', () => {
         sender = await getAccount2FA(sender);
         receiver = await getAccount2FA(receiver);
         const { amount: receiverAmount } = await receiver.state();
+        console.log(receiverAmount, 'receiverAmt');
         await sender.signAndSendTransaction({receiverId: receiver.accountId, actions: [transfer(new BN(parseNearAmount('1')))]});
         const state = await receiver.state();
         expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(new BN(receiverAmount).add(new BN(parseNearAmount('0.9'))).toString()));

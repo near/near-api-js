@@ -31,7 +31,7 @@ import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { printLogs } from './utils/logging';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
-import { TransactionSender } from './transaction_sender';
+import { SignAndSendTransactionOptions, TransactionSender } from './transaction_sender';
 
 export interface AccountBalance {
     total: string;
@@ -44,25 +44,6 @@ export interface AccountAuthorizedApp {
     contractId: string;
     amount: string;
     publicKey: string;
-}
-
-/**
- * Options used to initiate sining and sending transactions
- */
-export interface SignAndSendTransactionOptions {
-    receiverId: string;
-    actions: Action[];
-    /**
-     * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
-     */
-    walletMeta?: string;
-    /**
-     * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
-     */
-    walletCallbackUrl?: string;
-    returnError?: boolean;
 }
 
 /**
@@ -179,7 +160,7 @@ export class Account {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions, returnError }: Omit<SignAndSendTransactionOptions, 'signerId'>): Promise<FinalExecutionOutcome> {
         return this.sender.signAndSendTransaction({
             signerId: this.accountId,
             receiverId,

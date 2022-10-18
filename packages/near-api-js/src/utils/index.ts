@@ -5,6 +5,8 @@ import * as web from './web';
 import * as enums from './enums';
 import * as format from './format';
 import * as rpc_errors from './rpc_errors';
+import * as logging from './logging';
+import * as multisig from './multisig'
 
 import { PublicKey, KeyPair, KeyPairEd25519 } from './key_pair';
 import { logWarning } from './errors';
@@ -20,4 +22,6 @@ export {
     KeyPairEd25519,
     rpc_errors,
     logWarning,
+    logging,
+    multisig
 };

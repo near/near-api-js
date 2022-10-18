@@ -1,22 +1,18 @@
 'use strict';
 
 import BN from 'bn.js';
-import { Account, SignAndSendTransactionOptions } from './account';
+import { Account } from './account';
 import { Connection } from './connection';
-import { parseNearAmount } from './utils/format';
 import { PublicKey } from './utils/key_pair';
 import { Action, addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } from './transaction';
 import { FinalExecutionOutcome, TypedError } from './providers';
 import { fetchJson } from './utils/web';
 import { FunctionCallPermissionView } from './providers/provider';
-import { TransactionSender } from './transaction_sender';
+import { SignAndSendTransactionOptions, TransactionSender } from './transaction_sender';
+import { MULTISIG_CHANGE_METHODS, MULTISIG_DEPOSIT, MULTISIG_GAS } from './utils/multisig';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';
-export const MULTISIG_ALLOWANCE = new BN(parseNearAmount('1'));
 // TODO: Different gas value for different requests (can reduce gas usage dramatically)
-export const MULTISIG_GAS = new BN('100000000000000');
-export const MULTISIG_DEPOSIT = new BN('0');
-export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
 
 type sendCodeFunction = () => Promise<any>;
@@ -70,24 +66,16 @@ export class AccountMultisig extends Account {
         return this.sender.signAndSendTransaction({ signerId: this.accountId, receiverId, actions });
     }
 
-    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions }: Omit<SignAndSendTransactionOptions, 'signerId'>): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
-
-        const args = Buffer.from(JSON.stringify({
-            request: {
-                receiver_id: receiverId,
-                actions: convertActions(actions, accountId, receiverId)
-            }
-        }));
 
         let result;
         try {
-            result = await this.sender.signAndSendTransaction({
+            result = await this.sender.signAndSendMultisigTransaction({
                 signerId: accountId,
-                receiverId: accountId,
-                actions: [
-                    functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
-                ]
+                multisigAccountId: accountId,
+                receiverId,
+                actions
             });
         } catch (e) {
             if (e.toString().includes('Account has too many active requests. Confirm or delete some')) {
@@ -235,7 +223,6 @@ export class Account2FA extends AccountMultisig {
     public verifyCode: verifyCodeFunction;
     public onConfirmResult: (any) => any;
     public helperUrl = 'https://helper.testnet.near.org';
-    readonly sender: TransactionSender;
 
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId, options);
@@ -245,16 +232,13 @@ export class Account2FA extends AccountMultisig {
         this.getCode = options.getCode || this.getCodeDefault;
         this.verifyCode = options.verifyCode || this.verifyCodeDefault;
         this.onConfirmResult = options.onConfirmResult;
-
-        // TODO inject TransactionSender instance as constructor parameter
-        this.sender = new TransactionSender({ connection });
     }
 
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions }: Omit<SignAndSendTransactionOptions, 'signerId'>): Promise<FinalExecutionOutcome> {
         await super.signAndSendTransaction({ receiverId, actions });
         // TODO: Should following override onRequestResult in superclass instead of doing custom signAndSendTransaction?
         await this.sendCode();
@@ -495,38 +479,3 @@ export class Account2FA extends AccountMultisig {
 
 // helpers
 const toPK = (pk) => PublicKey.from(pk);
-const convertPKForContract = (pk) => pk.toString().replace('ed25519:', '');
-
-const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
-    const type = a.enum;
-    const { gas, publicKey, methodName, args, deposit, accessKey, code } = a[type];
-    const action = {
-        type: type[0].toUpperCase() + type.substr(1),
-        gas: (gas && gas.toString()) || undefined,
-        public_key: (publicKey && convertPKForContract(publicKey)) || undefined,
-        method_name: methodName,
-        args: (args && Buffer.from(args).toString('base64')) || undefined,
-        code: (code && Buffer.from(code).toString('base64')) || undefined,
-        amount: (deposit && deposit.toString()) || undefined,
-        deposit: (deposit && deposit.toString()) || '0',
-        permission: undefined,
-    };
-    if (accessKey) {
-        if (receiverId === accountId && accessKey.permission.enum !== 'fullAccess') {
-            action.permission = {
-                receiver_id: accountId,
-                allowance: MULTISIG_ALLOWANCE.toString(),
-                method_names: MULTISIG_CHANGE_METHODS,
-            };
-        }
-        if (accessKey.permission.enum === 'functionCall') {
-            const { receiverId: receiver_id, methodNames: method_names, allowance } = accessKey.permission.functionCall;
-            action.permission = {
-                receiver_id,
-                allowance: (allowance && allowance.toString()) || undefined,
-                method_names
-            };
-        }
-    }
-    return action;
-});
