@@ -6,7 +6,7 @@
  * 
  * @module walletAccount
  */
-import { Account, SignAndSendTransactionOptions } from './account';
+import { Account } from './account';
 import { Near } from './near';
 import { KeyStore } from './key_stores';
 import { FinalExecutionOutcome } from './providers';
@@ -17,7 +17,7 @@ import { baseDecode } from 'borsh';
 import { Connection } from './connection';
 import { serialize } from 'borsh';
 import BN from 'bn.js';
-import { TransactionSender } from './transaction_sender';
+import { SignAndSendTransactionOptions, TransactionSender } from './transaction_sender';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -300,7 +300,7 @@ export class ConnectedWalletAccount extends Account {
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection.requestSignTransactions}
      */
-    async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: Omit<SignAndSendTransactionOptions, 'signerId'>): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
