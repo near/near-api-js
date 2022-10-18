@@ -195,8 +195,7 @@ export class Account {
      */
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
         const accessKey = fullAccessKey();
-        await this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        await this.signAndSendTransaction({
             receiverId: contractId,
             actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]
         });
@@ -209,8 +208,7 @@ export class Account {
      * @param amount Amount to send in yoctoⓃ
      */
     async sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome> {
-        return this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        return this.signAndSendTransaction({
             receiverId,
             actions: [transfer(amount)]
         });
@@ -222,8 +220,7 @@ export class Account {
      */
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         const accessKey = fullAccessKey();
-        return this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        return this.signAndSendTransaction({
             receiverId: newAccountId,
             actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]
         });
@@ -236,8 +233,7 @@ export class Account {
         if (!process.env['NEAR_NO_LOGS']) {
             console.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
         }
-        return this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteAccount(beneficiaryId)]
         });
@@ -247,8 +243,7 @@ export class Account {
      * @param data The compiled contract code
      */
     async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
-        return this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deployContract(data)]
         });
@@ -275,8 +270,7 @@ export class Account {
             functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
         }
 
-        return this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        return this.signAndSendTransaction({
             receiverId: jsContract ? this.connection.jsvmAccountId: contractId,
             // eslint-disable-next-line prefer-spread
             actions: [functionCall.apply(void 0, functionCallArgs)],
@@ -306,8 +300,7 @@ export class Account {
         } else {
             accessKey = functionCallAccessKey(contractId, methodNames, amount);
         }
-        return this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [addKey(PublicKey.from(publicKey), accessKey)]
         });
@@ -318,8 +311,7 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
-        return this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteKey(PublicKey.from(publicKey))]
         });
@@ -332,8 +324,7 @@ export class Account {
      * @param amount The account to stake in yoctoⓃ
      */
     async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
-        return this.sender.signAndSendTransaction({
-            signerId: this.accountId,
+        return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [stake(amount, PublicKey.from(publicKey))]
         });
