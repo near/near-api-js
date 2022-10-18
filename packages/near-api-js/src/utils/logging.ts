@@ -8,14 +8,12 @@ const SUPPRESS_LOGGING = !!process.env.NEAR_NO_LOGS;
  * @param params
  * @param params.contractId ID of the account/contract which made the query
  * @param params.outcome the query execution response
- * @param params.suppressLogging disables console output when `true`
  */
 export function printTxOutcomeLogsAndFailures({
     contractId,
     outcome,
-    suppressLogging = SUPPRESS_LOGGING,
-}: { contractId: string, outcome: FinalExecutionOutcome, suppressLogging?: boolean }) {
-    if (suppressLogging) {
+}: { contractId: string, outcome: FinalExecutionOutcome }) {
+    if (SUPPRESS_LOGGING) {
         return;
     }
 
@@ -54,15 +52,13 @@ export function printTxOutcomeLogsAndFailures({
  * @param params
  * @param params.contractId ID of the account/contract which made the query
  * @param params.logs log output from a query execution response
- * @param params.suppressLogging disables console output when `true`
  */
 export function printTxOutcomeLogs({
     contractId,
     logs,
     prefix = '',
-    suppressLogging = SUPPRESS_LOGGING,
-}: { contractId: string, logs: string[], prefix?: string, suppressLogging?: boolean }) {
-    if (suppressLogging) {
+}: { contractId: string, logs: string[], prefix?: string }) {
+    if (SUPPRESS_LOGGING) {
         return;
     }
 
