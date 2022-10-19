@@ -52,6 +52,7 @@ export function printTxOutcomeLogsAndFailures({
  * @param params
  * @param params.contractId ID of the account/contract which made the query
  * @param params.logs log output from a query execution response
+ * @param params.prefix string to append to the beginning of each log
  */
 export function printTxOutcomeLogs({
     contractId,
