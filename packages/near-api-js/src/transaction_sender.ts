@@ -19,23 +19,13 @@ const TX_NONCE_RETRY_WAIT = 500;
 // Exponential back off for waiting to retry.
 const TX_NONCE_RETRY_WAIT_BACKOFF = 1.5;
 
-/**
- * Options used to initiate sining and sending transactions
- */
-export interface SignAndSendTransactionOptions {
+interface UnsignedTransaction {
     signerId: string;
     receiverId: string;
     actions: Action[];
-    /**
-     * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
-     */
-    walletMeta?: string;
-    /**
-     * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
-     */
-    walletCallbackUrl?: string;
+}
+
+interface SendTransactionOptions extends UnsignedTransaction {
     returnError?: boolean;
 }
 
@@ -53,7 +43,7 @@ export class TransactionSender {
      * @param actions list of actions to perform as part of the transaction
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    async signTransaction({ signerId, receiverId, actions }: { signerId: string, receiverId: string, actions: Action[] }): Promise<[Uint8Array, SignedTransaction]> {
+    async signTransaction({ signerId, receiverId, actions }: UnsignedTransaction): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey({ signerId });
         if (!accessKeyInfo) {
             throw new TypedError(`Can not sign transactions for account ${signerId} on network ${this.connection.networkId}, no matching key pair exists for this account`, 'KeyNotFound');
@@ -73,7 +63,7 @@ export class TransactionSender {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    async signAndSendTransaction({ signerId, receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ signerId, receiverId, actions, returnError }: SendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
