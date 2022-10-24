@@ -9,7 +9,7 @@ import { FinalExecutionOutcome, TypedError } from './providers';
 import { fetchJson } from './utils/web';
 import { FunctionCallPermissionView } from './providers/provider';
 import { SignAndSendTransactionOptions, TransactionSender } from './transaction_sender';
-import { MULTISIG_CHANGE_METHODS, MULTISIG_DEPOSIT, MULTISIG_GAS } from './utils/multisig';
+import { convertActionsForMultisig, MULTISIG_CHANGE_METHODS, MULTISIG_DEPOSIT, MULTISIG_GAS } from './utils/multisig';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';
 // TODO: Different gas value for different requests (can reduce gas usage dramatically)
@@ -69,13 +69,21 @@ export class AccountMultisig extends Account {
     async signAndSendTransaction({ receiverId, actions }: Omit<SignAndSendTransactionOptions, 'signerId'>): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
+        const args = Buffer.from(JSON.stringify({
+            request: {
+                receiver_id: receiverId,
+                actions: convertActionsForMultisig(actions, accountId, receiverId)
+            }
+        }));
+
         let result;
         try {
-            result = await this.sender.signAndSendMultisigTransaction({
+            result = await this.sender.signAndSendTransaction({
                 signerId: accountId,
-                multisigAccountId: accountId,
-                receiverId,
-                actions
+                receiverId: accountId,
+                actions: [
+                    functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
+                ]
             });
         } catch (e) {
             if (e.toString().includes('Account has too many active requests. Confirm or delete some')) {

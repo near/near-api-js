@@ -3,13 +3,12 @@ import { baseDecode, baseEncode } from 'borsh';
 import { Connection } from './connection';
 import { ErrorContext, TypedError } from './providers';
 import { AccessKeyView, AccessKeyViewRaw, FinalExecutionOutcome } from './providers/provider';
-import { Action, functionCall, SignedTransaction, signTransaction } from './transaction';
+import { Action, SignedTransaction, signTransaction } from './transaction';
 import { logWarning } from './utils/errors';
 import { PublicKey } from './utils/key_pair';
 import { printLogsAndFailures } from './utils/logging';
 import exponentialBackoff from './utils/exponential-backoff';
 import { parseResultError } from './utils/rpc_errors';
-import { convertActionsForMultisig, MULTISIG_DEPOSIT, MULTISIG_GAS } from './utils/multisig';
 
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
@@ -172,22 +171,5 @@ export class TransactionSender {
 
             throw e;
         }
-    }
-
-    signAndSendMultisigTransaction({ signerId, multisigAccountId, receiverId, actions }: SignAndSendTransactionOptions & { multisigAccountId: string }) {
-        const args = Buffer.from(JSON.stringify({
-            request: {
-                receiver_id: receiverId,
-                actions: convertActionsForMultisig(actions, signerId, receiverId)
-            }
-        }));
-
-        return this.signAndSendTransaction({
-            signerId,
-            receiverId: multisigAccountId,
-            actions: [
-                functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
-            ]
-        });
     }
 }
