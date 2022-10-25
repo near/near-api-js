@@ -397,6 +397,18 @@ export class Account2FA extends AccountMultisig {
     }
 
     /**
+     * Returns `false` if multisig cannot be disabled by calling disable() directly
+     * i.e. account has too many LAKs to delete and re-create as FAKs for a single transaction
+     */
+    async canDisableMultisig() {
+        const keys = await this.get2faLimitedAccessKeys();
+
+        // there are max 4 actions required to disable 2FA on top of the key conversion (2 actions per key)
+        // (100 - 4) / 2 = 48 = LAK_CONVERSION_LIMIT - 2
+        return keys.length <= (LAK_CONVERSION_LIMIT - 2);
+    }
+
+    /**
      * Converts multisig LAKs (excluding the active key in the wallet, provided here as the
      * `signingPublicKey` argument) back to FAKs when there are too many key conversions to be
      * executed within the same transaction.
