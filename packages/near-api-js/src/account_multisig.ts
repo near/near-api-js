@@ -17,6 +17,7 @@ export const MULTISIG_GAS = new BN('100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
+const LAK_CONVERSION_LIMIT = 50;
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
@@ -393,6 +394,45 @@ export class Account2FA extends AccountMultisig {
             receiverId: this.accountId,
             actions
         });
+    }
+
+    /**
+     * Converts multisig LAKs (excluding the active key in the wallet, provided here as the
+     * `signingPublicKey` argument) back to FAKs when there are too many key conversions to be
+     * executed within the same transaction.
+     *
+     * Note that this undermines the security provided by 2FA by converting existing multisig LAKs into FAKs
+     * capable of bypassing the 2FA prompt when signing transactions outside the wallet (transactions signed
+     * in the wallet will continue to require 2FA approval). This method should only be used to convert LAKs
+     * as a way to make 2FA disabling possible.
+     *
+     * To be deprecated after 2FA migration; this addresses a specific issue with multisig deployed via wallet.
+     * @param signingPublicKey the public key used to sign transactions in the wallet
+     */
+    async batchConvertKeys(signingPublicKey: string) {
+        await this.validateMultisigState();
+
+        let batch = 0;
+        const keysToConvert = (await this.get2faLimitedAccessKeys())
+            .filter(({ public_key }) => public_key !== signingPublicKey);
+
+        while (batch < keysToConvert.length) {
+            const conversionActions = keysToConvert
+                .slice(batch, batch + LAK_CONVERSION_LIMIT)
+                .reduce((conversionActions: Action[], { public_key }) => {
+                    conversionActions.push(deleteKey(PublicKey.from(public_key)));
+                    conversionActions.push(addKey(PublicKey.from(public_key), fullAccessKey()));
+
+                    return conversionActions;
+                }, [] as Action[]);
+
+            await this.signAndSendTransaction({
+                receiverId: this.accountId,
+                actions: conversionActions
+            });
+
+            batch += LAK_CONVERSION_LIMIT;
+        }
     }
 
     async sendCodeDefault() {
