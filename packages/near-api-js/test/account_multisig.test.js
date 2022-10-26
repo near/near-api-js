@@ -13,13 +13,17 @@ const {
     KeyPair,
     transactions: { functionCall },
     InMemorySigner,
-    multisig: { Account2FA, MULTISIG_GAS, MULTISIG_DEPOSIT },
+    multisig: { Account2FA, MULTISIG_CHANGE_METHODS, MULTISIG_GAS, MULTISIG_DEPOSIT },
     utils: { format: { parseNearAmount } }
 } = nearApi;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
-const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) => ({ publicKey, kind: 'phone' })) => {
+const getAccount2FA = async (
+    account,
+    keyMapping = ({ public_key: publicKey }) => ({ publicKey, kind: 'phone' }),
+    deployContract = true
+) => {
     // modifiers to functions replaces contract helper (CH)
     const { accountId } = account;
     const keys = await account.getAccessKeys();
@@ -49,9 +53,19 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     account2fa.getRecoveryMethods = () => ({
         data: keys.map(keyMapping)
     });
-    await account2fa.deployMultisig([...fs.readFileSync('./test/data/multisig.wasm')]);
+    if (deployContract) {
+        await account2fa.deployMultisig([...fs.readFileSync('./test/data/multisig.wasm')]);
+    }
     return account2fa;
 };
+
+function mock2faLimitedAccessKeys(keysToReturn) {
+    return new Array(keysToReturn)
+        .fill()
+        .map(() => ({
+            public_key: KeyPair.fromRandom('ed25519').publicKey.toString(),
+        }));
+}
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
@@ -131,5 +145,99 @@ describe('account2fa transactions', () => {
         const state = await receiver.state();
         expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(new BN(receiverAmount).add(new BN(parseNearAmount('0.9'))).toString()));
     });
-        
+
+});
+
+describe('2fa batch key conversion', () => {
+    let sender;
+    beforeAll(async () => {
+        sender = await testUtils.createAccount(nearjs);
+        sender = await getAccount2FA(sender);
+    });
+
+    beforeEach(async () => {
+        sender = await getAccount2FA(sender, undefined, false);
+    });
+
+    test('get2faLimitedAccessKeys filters out full access keys', async() => {
+        sender.getAccessKeys = async () => [{
+            access_key: { permission: 'FullAccess' },
+            public_key: KeyPair.fromRandom('ed25519').publicKey.toString(),
+        }];
+
+        expect(await sender.get2faLimitedAccessKeys()).toHaveLength(0);
+    });
+
+    test('get2faLimitedAccessKeys filters out LAKs with only the `confirm` method', async() => {
+        sender.getAccessKeys = async () => [{
+            access_key: {
+                permission: {
+                    FunctionCall: {
+                        method_names: ['confirm'],
+                        receiver_id: sender.accountId,
+                    },
+                },
+            },
+            public_key: KeyPair.fromRandom('ed25519').publicKey.toString(),
+        }];
+
+        expect(await sender.get2faLimitedAccessKeys()).toHaveLength(0);
+    });
+
+    test('get2faLimitedAccessKeys includes LAKs for requesting multisig signing', async() => {
+        sender.getAccessKeys = async () => [{
+            access_key: {
+                permission: {
+                    FunctionCall: {
+                        method_names: MULTISIG_CHANGE_METHODS,
+                        receiver_id: sender.accountId,
+                    },
+                },
+            },
+            public_key: KeyPair.fromRandom('ed25519').publicKey.toString(),
+        }];
+
+        expect(await sender.get2faLimitedAccessKeys()).toHaveLength(1);
+    });
+
+    test('canDisableMultisig returns true for accounts with fewer than 48 LAKs to convert', async() => {
+        await Promise.all([0, 1, 2, 48].map(async (n) => {
+            sender.get2faLimitedAccessKeys = async () => mock2faLimitedAccessKeys(n);
+            expect(await sender.canDisableMultisig()).toEqual(true);
+        }));
+    });
+
+    test('canDisableMultisig returns false for accounts with 48 or more LAKs to convert', async() => {
+        await Promise.all([49, 100].map(async (n) => {
+            sender.get2faLimitedAccessKeys = async () => mock2faLimitedAccessKeys(n);
+            expect(await sender.canDisableMultisig()).toEqual(false);
+        }));
+    });
+
+    test('batchConvertKeys signs the expected number of transactions', async() => {
+        const batches = [
+            { numberOfLaks: 1, numberOfBatches: 0 }, // one key means it's the one doing signing and so is omitted
+            { numberOfLaks: 2, numberOfBatches: 1 },
+            { numberOfLaks: 50, numberOfBatches: 1 },
+            { numberOfLaks: 51, numberOfBatches: 1 },
+            { numberOfLaks: 99, numberOfBatches: 2 },
+            { numberOfLaks: 102, numberOfBatches: 3 },
+        ];
+
+        await Promise.all(batches.map(async ({ numberOfLaks, numberOfBatches }) => {
+            let batchesSigned = 0;
+            const laks = mock2faLimitedAccessKeys(numberOfLaks);
+            const account = {
+                ...sender,
+                validateMultisigState: async () => {},
+                get2faLimitedAccessKeys: async () => laks,
+                signAndSendTransaction: async () => batchesSigned++,
+            };
+            account.batchConvertKeys = sender.batchConvertKeys.bind(account);
+
+            const signingPublicKey = (await account.get2faLimitedAccessKeys())[0];
+            await account.batchConvertKeys(signingPublicKey.public_key);
+            expect(batchesSigned).toEqual(numberOfBatches);
+        }));
+    });
 });
