@@ -161,20 +161,17 @@ export class WalletConnection {
     }
 
     /**
-     * Redirects current page to the wallet authentication page.
-     * @param options An optional options object
-     * @param options.contractId The NEAR account where the contract is deployed
-     * @param options.successUrl URL to redirect upon success. Default: current url
-     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     * Returns the sign in url for the wallet.
+     * @see {@link requestSignIn} For accepted options.
      *
      * @example
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
-     * // redirects to the NEAR Wallet
-     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * // returns the url to the NEAR Wallet
+     * const signInLink = await wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
-    async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
+    async requestSignInLink({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
@@ -196,13 +193,33 @@ export class WalletConnection {
             });
         }
 
+        return newUrl.toString();
+    }
+
+    /**
+     * Redirects current page to the wallet authentication page.
+     * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
+     * @param options.successUrl URL to redirect upon success. Default: current url
+     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     *
+     * @example
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * // redirects to the NEAR Wallet
+     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * ```
+     */
+    async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
+        const newUrl = await this.requestSignInLink({ contractId, methodNames, successUrl, failureUrl });
+
         window.location.assign(newUrl.toString());
     }
 
     /**
-     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
+     * Returns the url (to NEAR wallet) for the user to quickly sign for a transaction or batch of transactions.
      */
-    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+    async requestSignTransactionsLink({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<string> {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
@@ -212,6 +229,15 @@ export class WalletConnection {
             .join(','));
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
         if (meta) newUrl.searchParams.set('meta', meta);
+
+        return newUrl.toString();
+    }
+
+    /**
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
+     */
+    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+        const newUrl = await this.requestSignTransactionsLink({ transactions, meta, callbackUrl });
 
         window.location.assign(newUrl.toString());
     }
