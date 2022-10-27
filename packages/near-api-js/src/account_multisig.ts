@@ -422,6 +422,10 @@ export class Account2FA extends AccountMultisig {
      * @param signingPublicKey the public key used to sign transactions in the wallet
      */
     async batchConvertKeys(signingPublicKey: string) {
+        if (!signingPublicKey || !PublicKey.fromString(signingPublicKey)) {
+            throw new Error('invalid public key');
+        }
+
         await this.validateMultisigState();
 
         let batch = 0;

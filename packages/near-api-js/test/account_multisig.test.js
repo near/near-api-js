@@ -214,6 +214,20 @@ describe('2fa batch key conversion', () => {
         }));
     });
 
+    test('batchConvertKeys throws an exception for empty or invalid signing keys', async() => {
+        await expect(async () => {
+            await sender.batchConvertKeys();
+        }).rejects.toBeTruthy();
+
+        await expect(async () => {
+            await sender.batchConvertKeys('');
+        }).rejects.toBeTruthy();
+
+        await expect(async () => {
+            await sender.batchConvertKeys('ed25519:123xyz');
+        }).rejects.toBeTruthy();
+    });
+
     test('batchConvertKeys signs the expected number of transactions', async() => {
         const batches = [
             { numberOfLaks: 1, numberOfBatches: 0 }, // one key means it's the one doing signing and so is omitted
