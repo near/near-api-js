@@ -157,6 +157,7 @@ describe('2fa batch key conversion', () => {
 
     beforeEach(async () => {
         sender = await getAccount2FA(sender, undefined, false);
+        sender.disable = async () => {};
     });
 
     test('get2faLimitedAccessKeys filters out full access keys', async() => {
@@ -200,58 +201,61 @@ describe('2fa batch key conversion', () => {
         expect(await sender.get2faLimitedAccessKeys()).toHaveLength(1);
     });
 
-    test('canDisableMultisig returns true for accounts with fewer than 48 LAKs to convert', async() => {
+    test('isConversionRequiredForDisable returns false for accounts with fewer than 48 LAKs to convert', async() => {
         await Promise.all([0, 1, 2, 48].map(async (n) => {
             sender.get2faLimitedAccessKeys = async () => mock2faLimitedAccessKeys(n);
-            expect(await sender.canDisableMultisig()).toEqual(true);
+            expect(await sender.isConversionRequiredForDisable()).toEqual(false);
         }));
     });
 
-    test('canDisableMultisig returns false for accounts with 48 or more LAKs to convert', async() => {
+    test('isConversionRequiredForDisable returns true for accounts with 48 or more LAKs to convert', async() => {
         await Promise.all([49, 100].map(async (n) => {
             sender.get2faLimitedAccessKeys = async () => mock2faLimitedAccessKeys(n);
-            expect(await sender.canDisableMultisig()).toEqual(false);
+            expect(await sender.isConversionRequiredForDisable()).toEqual(true);
         }));
     });
 
-    test('batchConvertKeys throws an exception for empty or invalid signing keys', async() => {
+    test('batchConvertKeysAndDisable throws an exception for empty signing keys', async() => {
         await expect(async () => {
-            await sender.batchConvertKeys();
+            await sender.batchConvertKeysAndDisable({});
         }).rejects.toBeTruthy();
 
         await expect(async () => {
-            await sender.batchConvertKeys('');
-        }).rejects.toBeTruthy();
-
-        await expect(async () => {
-            await sender.batchConvertKeys('ed25519:123xyz');
+            await sender.batchConvertKeysAndDisable({ signingPublicKey: '' });
         }).rejects.toBeTruthy();
     });
 
-    test('batchConvertKeys signs the expected number of transactions', async() => {
+    test('batchConvertKeysAndDisable signs the expected number of transactions', async() => {
         const batches = [
-            { numberOfLaks: 1, numberOfBatches: 0 }, // one key means it's the one doing signing and so is omitted
-            { numberOfLaks: 2, numberOfBatches: 1 },
-            { numberOfLaks: 50, numberOfBatches: 1 },
-            { numberOfLaks: 51, numberOfBatches: 1 },
+            // no batches for cardinality <= 48 since these can be disabled directly
+            { numberOfLaks: 1, numberOfBatches: 0 },
+            { numberOfLaks: 48, numberOfBatches: 0 },
+            { numberOfLaks: 49, numberOfBatches: 1 },
+            { numberOfLaks: 98, numberOfBatches: 1 },
             { numberOfLaks: 99, numberOfBatches: 2 },
-            { numberOfLaks: 102, numberOfBatches: 3 },
         ];
 
         await Promise.all(batches.map(async ({ numberOfLaks, numberOfBatches }) => {
             let batchesSigned = 0;
+            let disable2faCalled = false;
             const laks = mock2faLimitedAccessKeys(numberOfLaks);
             const account = {
                 ...sender,
                 validateMultisigState: async () => {},
                 get2faLimitedAccessKeys: async () => laks,
                 signAndSendTransaction: async () => batchesSigned++,
+                disable: async () => disable2faCalled = true,
             };
-            account.batchConvertKeys = sender.batchConvertKeys.bind(account);
+            account.batchConvertKeysAndDisable = sender.batchConvertKeysAndDisable.bind(account);
 
             const signingPublicKey = (await account.get2faLimitedAccessKeys())[0];
-            await account.batchConvertKeys(signingPublicKey.public_key);
+            await account.batchConvertKeysAndDisable({
+                signingPublicKey: signingPublicKey.public_key,
+                contractBytes: [],
+                cleanupContractBytes: [],
+            });
             expect(batchesSigned).toEqual(numberOfBatches);
+            expect(disable2faCalled).toBe(true);
         }));
     });
 });

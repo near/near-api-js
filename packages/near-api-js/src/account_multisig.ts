@@ -17,7 +17,8 @@ export const MULTISIG_GAS = new BN('100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
-const LAK_CONVERSION_LIMIT = 50;
+const LAK_CONVERSION_BATCH_SIZE = 50; // number of LAKs that can be converted (deleted + re-created) in one transaction
+const LAK_DISABLE_THRESHOLD = 48; // maximum number of LAKs that can be converted by the `delete` method
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
@@ -400,12 +401,10 @@ export class Account2FA extends AccountMultisig {
      * Returns `false` if multisig cannot be disabled by calling disable() directly
      * i.e. account has too many LAKs to delete and re-create as FAKs for a single transaction
      */
-    async canDisableMultisig() {
+    async isConversionRequiredForDisable() {
         const keys = await this.get2faLimitedAccessKeys();
 
-        // there are max 4 actions required to disable 2FA on top of the key conversion (2 actions per key)
-        // (100 - 4) / 2 = 48 = LAK_CONVERSION_LIMIT - 2
-        return keys.length <= (LAK_CONVERSION_LIMIT - 2);
+        return keys.length > LAK_DISABLE_THRESHOLD;
     }
 
     /**
@@ -420,21 +419,28 @@ export class Account2FA extends AccountMultisig {
      *
      * To be deprecated after 2FA migration; this addresses a specific issue with multisig deployed via wallet.
      * @param signingPublicKey the public key used to sign transactions in the wallet
+     * @param [contractBytes]{@link https://github.com/near/near-wallet/blob/master/packages/frontend/src/wasm/main.wasm?raw=true}
+     * @param [cleanupContractBytes]{@link https://github.com/near/core-contracts/blob/master/state-cleanup/res/state_cleanup.wasm?raw=true}
      */
-    async batchConvertKeys(signingPublicKey: string) {
-        if (!signingPublicKey || !PublicKey.fromString(signingPublicKey)) {
-            throw new Error('invalid public key');
+    async batchConvertKeysAndDisable({ signingPublicKey, contractBytes, cleanupContractBytes }: {
+        signingPublicKey: string,
+        contractBytes: Uint8Array,
+        cleanupContractBytes: Uint8Array,
+    }) {
+        if (!signingPublicKey) {
+            throw new Error('the public key used to sign multisig transactions must be provided');
         }
 
         await this.validateMultisigState();
 
-        let batch = 0;
-        const keysToConvert = (await this.get2faLimitedAccessKeys())
+        let converted = 0;
+        const accessKeys = await this.get2faLimitedAccessKeys();
+        const keysToConvert = accessKeys
             .filter(({ public_key }) => public_key !== signingPublicKey);
 
-        while (batch < keysToConvert.length) {
+        while (converted < (accessKeys.length - LAK_DISABLE_THRESHOLD)) {
             const conversionActions = keysToConvert
-                .slice(batch, batch + LAK_CONVERSION_LIMIT)
+                .slice(converted, converted + LAK_CONVERSION_BATCH_SIZE)
                 .reduce((conversionActions: Action[], { public_key }) => {
                     conversionActions.push(deleteKey(PublicKey.from(public_key)));
                     conversionActions.push(addKey(PublicKey.from(public_key), fullAccessKey()));
@@ -447,8 +453,10 @@ export class Account2FA extends AccountMultisig {
                 actions: conversionActions
             });
 
-            batch += LAK_CONVERSION_LIMIT;
+            converted += LAK_CONVERSION_BATCH_SIZE;
         }
+
+        return this.disable(contractBytes, cleanupContractBytes);
     }
 
     async sendCodeDefault() {
