@@ -47,7 +47,7 @@ export interface Wallet {
     // signOut(params: SignOutParams): Promise<void>;
     signTransaction(params: SignTransactionParams): Promise<SignedTransaction>;
     // signTransactions(params: SignTransactionsParams): Promise<Array<transactions.SignedTransaction>>;
-    // disconnect(): Promise<void>;
+    disconnect(): Promise<void>;
     on<EventName extends keyof Events>(
         event: EventName,
         callback: (params: Events[EventName]) => void
