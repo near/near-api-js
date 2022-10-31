@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import depd from 'depd';
+
 import {
     transfer,
     createAccount,
@@ -32,8 +32,8 @@ import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { logWarning, PositionalArgsError } from './utils/errors';
-import { parseRpcError, parseResultError } from './utils/rpc_errors';
-import { ServerError } from './utils/rpc_errors';
+import { printTxOutcomeLogs, printTxOutcomeLogsAndFailures } from './utils/logging';
+import { parseResultError } from './utils/rpc_errors';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 
 import exponentialBackoff from './utils/exponential-backoff';
@@ -91,7 +91,7 @@ export interface FunctionCallOptions {
     /**
      * named arguments to pass the method `{ messageText: 'my message' }`
      */
-    args: object;
+    args?: object;
     /** max amount of gas that method call can use */
     gas?: BN;
     /** amount of NEAR (in yoctoNEAR) to send together with the call */
@@ -123,10 +123,16 @@ export interface ViewFunctionCallOptions extends FunctionCallOptions {
     blockQuery?: BlockReference; 
 }
 
-interface ReceiptLogWithFailure {
-    receiptIds: [string];
-    logs: [string];
-    failure: ServerError;
+interface StakedBalance {
+    validatorId: string;
+    amount?: string;
+    error?: string;
+}
+
+interface ActiveDelegatedStakeBalance {
+    stakedValidators: StakedBalance[];
+    failedValidators: StakedBalance[];
+    total: BN | string;
 }
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
@@ -165,28 +171,6 @@ export class Account {
         });
     }
 
-    /** @hidden */
-    private printLogsAndFailures(contractId: string, results: [ReceiptLogWithFailure]) {
-        if (!process.env['NEAR_NO_LOGS']) {
-            for (const result of results) {
-                console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
-                this.printLogs(contractId, result.logs, '\t');
-                if (result.failure) {
-                    console.warn(`\tFailure [${contractId}]: ${result.failure}`);
-                }
-            }
-        }
-    }
-
-    /** @hidden */
-    private printLogs(contractId: string, logs: string[], prefix = '') {
-        if (!process.env['NEAR_NO_LOGS']) {
-            for (const log of logs) {
-                console.log(`${prefix}Log [${contractId}]: ${log}`);
-            }
-        }
-    }
-
     /**
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
@@ -213,7 +197,7 @@ export class Account {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    protected async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -242,17 +226,7 @@ export class Account {
             throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
         }
 
-        const flatLogs = [result.transaction_outcome, ...result.receipts_outcome].reduce((acc, it) => {
-            if (it.outcome.logs.length ||
-                (typeof it.outcome.status === 'object' && typeof it.outcome.status.Failure === 'object')) {
-                return acc.concat({
-                    'receiptIds': it.outcome.receipt_ids,
-                    'logs': it.outcome.logs,
-                    'failure': typeof it.outcome.status.Failure != 'undefined' ? parseRpcError(it.outcome.status.Failure) : null
-                });
-            } else return acc;
-        }, []);
-        this.printLogsAndFailures(signedTx.transaction.receiverId, flatLogs);
+        printTxOutcomeLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
 
         // Should be falsy if result.status.Failure is null
         if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object'  && result.status.Failure !== null) {
@@ -487,43 +461,20 @@ export class Account {
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
      *
-     * @param contractId NEAR account where the contract is deployed
-     * @param methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
-     * @param args Any arguments to the view contract method, wrapped in JSON
-     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
-     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
-     * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
-     * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     * @param viewFunctionCallOptions.contractId NEAR account where the contract is deployed
+     * @param viewFunctionCallOptions.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
+     * @param viewFunctionCallOptions.args Any arguments to the view contract method, wrapped in JSON
+     * @param viewFunctionCallOptions.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param viewFunctionCallOptions.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param viewFunctionCallOptions.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     * @param viewFunctionCallOptions.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
 
-    async viewFunction(...restArgs: any) {
-        if (typeof restArgs[0] === 'string') {
-            const contractId = restArgs[0];
-            const methodName = restArgs[1];
-            const args = restArgs[2];
-            const options = restArgs[3];
-            return await this.viewFunctionV1(contractId, methodName, args, options);
-        } else {
-            return await this.viewFunctionV2(restArgs[0]);
-        }
-    }
-
-    async viewFunctionV1(
-        contractId: string,
-        methodName: string,
-        args: any = {},
-        { parse = parseJsonFromRawResponse, stringify = bytesJsonStringify, jsContract=false, blockQuery = { finality: 'optimistic' } }: { parse?: (response: Uint8Array) => any; stringify?: (input: any) => Buffer; blockQuery?: BlockReference; jsContract?: boolean } = {}
-    ): Promise<any> {
-        const deprecate = depd('Account.viewFunction(contractId, methodName, args, options)');
-        deprecate('use `Account.viewFunction(ViewFunctionCallOptions)` instead');
-        return this.viewFunctionV2({ contractId, methodName, args, parse, stringify, jsContract, blockQuery });
-    }
-
-    async viewFunctionV2({
+    async viewFunction({
         contractId,
         methodName,
-        args,
+        args = {},
         parse = parseJsonFromRawResponse,
         stringify = bytesJsonStringify,
         jsContract = false,
@@ -548,7 +499,7 @@ export class Account {
         });
 
         if (result.logs) {
-            this.printLogs(contractId, result.logs);
+            printTxOutcomeLogs({ contractId, logs: result.logs });
         }
 
         return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
@@ -629,6 +580,73 @@ export class Account {
             stateStaked: stateStaked.toString(),
             staked: staked.toString(),
             available: availableBalance.toString()
+        };
+    }
+
+    /**
+     * Returns the NEAR tokens balance and validators of a given account that is delegated to the staking pools that are part of the validators set in the current epoch.
+     * 
+     * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
+     * @returns {Promise<ActiveDelegatedStakeBalance>}
+     */
+    async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance>  {
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = block.header.hash;
+        const epochId = block.header.epoch_id;
+        const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(epochId);
+        const pools:Set<string> = new Set();
+        [...current_validators, ...next_validators, ...current_proposals]
+            .forEach((validator) => pools.add(validator.account_id));
+
+        const uniquePools = [...pools];
+        const promises = uniquePools
+            .map((validator) => (
+                this.viewFunction({
+                    contractId: validator,
+                    methodName: 'get_account_total_balance',
+                    args: { account_id: this.accountId },
+                    blockQuery: { blockId: blockHash }
+                })
+            ));
+
+        const results = await Promise.allSettled(promises);
+
+        const hasTimeoutError = results.some((result) => {
+            if (result.status === 'rejected' && result.reason.type === 'TimeoutError') {
+                return true;
+            }
+            return false;
+        });
+
+        // When RPC is down and return timeout error, throw error
+        if (hasTimeoutError) {
+            throw new Error('Failed to get delegated stake balance');
+        }
+        const summary = results.reduce((result, state, index) => {
+            const validatorId = uniquePools[index];
+            if (state.status === 'fulfilled') {
+                const currentBN = new BN(state.value);
+                if (!currentBN.isZero()) {
+                    return {
+                        ...result,
+                        stakedValidators: [...result.stakedValidators, { validatorId, amount: currentBN.toString() }],
+                        total: result.total.add(currentBN),
+                    };
+                }
+            }
+            if (state.status === 'rejected') {
+                return {
+                    ...result,
+                    failedValidators: [...result.failedValidators, { validatorId, error: state.reason }],
+                };
+            }
+            return result;
+        },
+        { stakedValidators: [], failedValidators: [], total: new BN(0) });
+
+        return {
+            ...summary,
+            total: summary.total.toString(),
         };
     }
 }

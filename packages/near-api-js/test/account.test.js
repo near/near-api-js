@@ -1,8 +1,10 @@
 
 const { Account, Contract, providers } = require('../src/index');
 const testUtils  = require('./test-utils');
+const { TypedError } = require('../src/utils/errors');
 const fs = require('fs');
 const BN = require('bn.js');
+const { transfer } = require('../src/transaction');
 
 let nearjs;
 let workingAccount;
@@ -41,6 +43,15 @@ test('send money', async() => {
     const receiver = await testUtils.createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
     await sender.sendMoney(receiver.accountId, new BN(10000));
+    const state = await receiver.state();
+    expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
+});
+
+test('send money through signAndSendTransaction', async() => {
+    const sender = await testUtils.createAccount(nearjs);
+    const receiver = await testUtils.createAccount(nearjs);
+    const { amount: receiverAmount } = await receiver.state();
+    await sender.signAndSendTransaction({receiverId: receiver.accountId, actions: [transfer(new BN(10000))]});
     const state = await receiver.state();
     expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
 });
@@ -142,10 +153,11 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via account', async() => {
-        const result = await workingAccount.viewFunction(
+        const result = await workingAccount.viewFunction({
             contractId,
-            'hello', // this is the function defined in hello.wasm file that we are calling
-            {name: 'trex'});
+            methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
+            args: {name: 'trex'}
+        });
         expect(result).toEqual('hello trex');
 
         const setCallValue = testUtils.generateUniqueString('setCallPrefix');
@@ -155,7 +167,10 @@ describe('with deploy contract', () => {
             args: { value: setCallValue }
         });
         expect(providers.getTransactionLastResult(result2)).toEqual(setCallValue);
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue);
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue'
+        })).toEqual(setCallValue);
     });
 
     test('view contract state', async() => {
@@ -172,12 +187,12 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via account with custom parser', async() => {
-        const result = await workingAccount.viewFunction(
+        const result = await workingAccount.viewFunction({
             contractId,
-            'hello', // this is the function defined in hello.wasm file that we are calling
-            {name: 'trex'},
-            { parse: x => JSON.parse(x.toString()).replace('trex', 'friend') }
-        );
+            methodName:'hello', // this is the function defined in hello.wasm file that we are calling
+            args: {name: 'trex'},
+            parse: x => JSON.parse(x.toString()).replace('trex', 'friend')
+        });
         expect(result).toEqual('hello friend');
     });
 
@@ -197,22 +212,31 @@ describe('with deploy contract', () => {
         expect(result1).toEqual(setCallValue1);
         expect(await contract.getValue()).toEqual(setCallValue1);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { finality: 'optimistic' }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { finality: 'optimistic' },
         })).toEqual(setCallValue1);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue1);
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue'
+        })).toEqual(setCallValue1);
 
         const block1 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
         const blockHash1 = block1.header.hash;
         const blockIndex1 = block1.header.height;
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockHash1 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockHash1 },
         })).toEqual(setCallValue1);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockIndex1 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockIndex1 },
         })).toEqual(setCallValue1);
 
         const setCallValue2 = testUtils.generateUniqueString('setCallPrefix');
@@ -220,31 +244,44 @@ describe('with deploy contract', () => {
         expect(result2).toEqual(setCallValue2);
         expect(await contract.getValue()).toEqual(setCallValue2);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { finality: 'optimistic' }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { finality: 'optimistic' },
         })).toEqual(setCallValue2);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {})).toEqual(setCallValue2);
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue'
+        })).toEqual(setCallValue2);
 
         // Old blockHash should still be value #1
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockHash1 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockHash1 },
         })).toEqual(setCallValue1);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockIndex1 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockIndex1 },
         })).toEqual(setCallValue1);
 
         const block2 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
         const blockHash2 = block2.header.hash;
         const blockIndex2 = block2.header.height;
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockHash2 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockHash2 },
         })).toEqual(setCallValue2);
 
-        expect(await workingAccount.viewFunction(contractId, 'getValue', {}, {
-            blockQuery: { blockId: blockIndex2 }
+        expect(await workingAccount.viewFunction({
+            contractId,
+            methodName: 'getValue',
+            blockQuery: { blockId: blockIndex2 },
         })).toEqual(setCallValue2);
     });
 
@@ -306,5 +343,127 @@ describe('with deploy contract', () => {
             args: { name: 'trex' },
         });
         expect(result).toEqual('hello trex');
+    });
+
+    test('get total stake balance and validator responses', async() => {
+        const CUSTOM_ERROR = new TypedError('Querying failed: wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: AccountId("invalid_account_id") })).', 'UntypedError');
+        const mockConnection = {
+            ...nearjs.connection,
+            provider: {
+                ...nearjs.connection.provider,
+                validators: () => ({
+                    current_validators: [
+                        {
+                            account_id: 'testing1.pool.f863973.m0',
+                            is_slashed: false,
+                            num_expected_blocks: 7,
+                            num_expected_chunks: 19,
+                            num_produced_blocks: 7,
+                            num_produced_chunks: 18,
+                            public_key: 'ed25519:5QzHuNZ4stznMwf3xbDfYGUbjVt8w48q8hinDRmVx41z',
+                            shards: [ 1 ],
+                            stake: '73527610191458905577047103204'
+                        },
+                        {
+                            account_id: 'testing2.pool.f863973.m0',
+                            is_slashed: false,
+                            num_expected_blocks: 4,
+                            num_expected_chunks: 22,
+                            num_produced_blocks: 4,
+                            num_produced_chunks: 20,
+                            public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
+                            shards: [ 2 ],
+                            stake: '74531922534760985104659653178'
+                        },
+                        {
+                            account_id: 'invalid_account_id',
+                            is_slashed: false,
+                            num_expected_blocks: 4,
+                            num_expected_chunks: 22,
+                            num_produced_blocks: 4,
+                            num_produced_chunks: 20,
+                            public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
+                            shards: [ 2 ],
+                            stake: '0'
+                        },
+                    ],
+                    next_validators: [],
+                    current_proposals: [],
+                }),
+            },
+        };
+
+        const account = new Account(mockConnection, 'test.near');
+        // mock internal functions that are being used on getActiveDelegatedStakeBalance
+        account.viewFunction = async ({ methodName, ...args}) => {
+            if (methodName === 'get_account_total_balance') {
+                // getActiveDelegatedStakeBalance sums stake from active validators and ignores throws
+                if (args.contractId === 'invalid_account_id') {
+                    throw CUSTOM_ERROR;
+                }
+                return Promise.resolve('10000');
+            } else {
+                return await account.viewFunction({ methodName, ...args });
+            }
+        };
+        account.connection.provider.block = async () => {
+            return Promise.resolve({ header: { hash: 'dontcare' } });
+        };
+        const result = await account.getActiveDelegatedStakeBalance();
+        expect(result).toEqual({
+            stakedValidators: [{ validatorId: 'testing1.pool.f863973.m0', amount: '10000'}, { validatorId: 'testing2.pool.f863973.m0', amount: '10000'}],
+            failedValidators: [{ validatorId: 'invalid_account_id', error: CUSTOM_ERROR}],
+            total: '20000'
+        });
+    });
+    test('Fail to get total stake balance upon timeout error', async () => {
+        const ERROR_MESSAGE = 'Failed to get delegated stake balance';
+        const CUSTOM_ERROR = new TypedError('RPC DOWN', 'TimeoutError');
+        const mockConnection = {
+            ...nearjs.connection,
+            provider: {
+                ...nearjs.connection.provider,
+                validators: () => ({
+                    current_validators: [
+                        {
+                            account_id: 'timeout_account_id',
+                            is_slashed: false,
+                            num_expected_blocks: 4,
+                            num_expected_chunks: 22,
+                            num_produced_blocks: 4,
+                            num_produced_chunks: 20,
+                            public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
+                            shards: [ 2 ],
+                            stake: '0'
+                        },
+                    ],
+                    next_validators: [],
+                    current_proposals: [],
+                }),
+            },
+        };
+
+        const account = new Account(mockConnection, 'test.near');
+        // mock internal functions that are being used on getActiveDelegatedStakeBalance
+        account.viewFunction = async ({ methodName, ...args}) => {
+            if (methodName === 'get_account_total_balance') {
+                // getActiveDelegatedStakeBalance sums stake from active validators and ignores throws
+                if (args.contractId === 'timeout_account_id') {
+                    throw CUSTOM_ERROR;
+                }
+                return Promise.resolve('10000');
+            } else {
+                return await account.viewFunction({ methodName, ...args });
+            }
+        };
+        account.connection.provider.block = async () => {
+            return Promise.resolve({ header: { hash: 'dontcare' } });
+        };
+
+        try {
+            await account.getActiveDelegatedStakeBalance();
+        } catch(e) {
+            expect(e).toEqual(new Error(ERROR_MESSAGE));
+        }
     });
 });

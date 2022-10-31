@@ -1,5 +1,6 @@
 #IDE
 .idea
+.vscode
 
 storage
 node_modules
@@ -20,3 +21,5 @@ lib/
 
 # Generated test files
 test-keys/
+
+.turbo

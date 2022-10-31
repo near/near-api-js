@@ -22,34 +22,23 @@ Collection of common use cases for [`near-api-js`](https://github.com/near/near-
 
 -   [NEAR Account](https://docs.near.org/docs/develop/basics/create-account)
 -   [Node.js](https://nodejs.org/en/download/package-manager/)
--   [npm](https://www.npmjs.com/get-npm) or [Yarn](https://yarnpkg.com/getting-started/install)
+-   [pnpm](https://pnpm.io/installation)
 
 ## Setup
 
-1. Navigate to the root directory
+1. Install dependencies
 
 ```bash
-cd ../..
+pnpm install
 ```
 
-2. Install dependencies
+2. Navigate to the cookbook directory
 
 ```bash
-yarn
+cd packages/cookbook
 ```
 
-3. Navigate back to the cookbook directory
-
-```bash
-cd examples/cookbook
-```
-4. Install local dependencies
-
-```bash
-yarn
-```
-
-5. Run Commands
+3. Run Commands
 
 Example:
 

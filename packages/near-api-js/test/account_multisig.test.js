@@ -4,6 +4,7 @@ const fs = require('fs');
 const BN = require('bn.js');
 const testUtils  = require('./test-utils');
 const semver = require('semver');
+const { transfer } = require('../src/transaction');
 
 let nearjs;
 let startFromVersion;
@@ -119,5 +120,16 @@ describe('account2fa transactions', () => {
         const state = await receiver.state();
         expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(new BN(receiverAmount).add(new BN(parseNearAmount('0.9'))).toString()));
     });
-    
+
+    test('send money through signAndSendTransaction', async() => {
+        let sender = await testUtils.createAccount(nearjs);
+        let receiver = await testUtils.createAccount(nearjs);
+        sender = await getAccount2FA(sender);
+        receiver = await getAccount2FA(receiver);
+        const { amount: receiverAmount } = await receiver.state();
+        await sender.signAndSendTransaction({receiverId: receiver.accountId, actions: [transfer(new BN(parseNearAmount('1')))]});
+        const state = await receiver.state();
+        expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(new BN(receiverAmount).add(new BN(parseNearAmount('0.9'))).toString()));
+    });
+        
 });

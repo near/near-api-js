@@ -99,7 +99,12 @@ export class Contract {
                     if (ignored.length || !(isObject(args) || isUint8Array(args)) || !isObject(options)) {
                         throw new PositionalArgsError();
                     }
-                    return this.account.viewFunction(this.contractId, methodName, args, options);
+                    return this.account.viewFunction({
+                        contractId: this.contractId,
+                        methodName,
+                        args,
+                        ...options,
+                    });
                 })
             });
         });

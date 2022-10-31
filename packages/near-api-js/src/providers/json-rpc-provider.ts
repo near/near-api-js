@@ -28,7 +28,7 @@ import { ConnectionInfo, fetchJson } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
 import { baseEncode } from 'borsh';
 import exponentialBackoff from '../utils/exponential-backoff';
-import { parseRpcError } from '../utils/rpc_errors';
+import { parseRpcError, getErrorTypeFromErrorMessage } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
 /** @hidden */
@@ -147,7 +147,10 @@ export class JsonRpcProvider extends Provider {
             result = await this.sendJsonRpc<T>('query', [path, data]);
         }
         if (result && result.error) {
-            throw new TypedError(`Querying failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`, result.error.name);
+            throw new TypedError(
+                `Querying failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`,
+                getErrorTypeFromErrorMessage(result.error, result.error.name)
+            );
         }
         return result;
     }
@@ -344,7 +347,7 @@ export class JsonRpcProvider extends Provider {
                             throw new TypedError(errorMessage, 'TimeoutError');
                         }
 
-                        throw new TypedError(errorMessage, response.error.name);
+                        throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data, response.error.name));
                     }
                 }
                 // Success when response.error is not exist

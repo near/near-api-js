@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    environment: NPM
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Create Release Pull Request or Publish to NPM
+        uses: changesets/action@v1
+        with:
+          publish: pnpm release
+          commit: "chore(release): publish packages"
+          title: "Publish packages"
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

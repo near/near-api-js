@@ -62,7 +62,7 @@ export class AccountMultisig extends Account {
         return super.signAndSendTransaction({ receiverId, actions });
     }
 
-    protected async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
         const args = Buffer.from(JSON.stringify({
@@ -189,7 +189,10 @@ export class AccountMultisig extends Account {
     async getRequestIds(): Promise<string[]> {
         // TODO: Read requests from state to allow filtering by expiration time
         // TODO: https://github.com/near/core-contracts/blob/305d1db4f4f2cf5ce4c1ef3479f7544957381f11/multisig/src/lib.rs#L84
-        return this.viewFunction(this.accountId, 'list_request_ids');
+        return this.viewFunction({
+            contractId: this.accountId,
+            methodName: 'list_request_ids',
+        });
     }
 
     getRequest() {
@@ -234,7 +237,7 @@ export class Account2FA extends AccountMultisig {
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    protected async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         await super.signAndSendTransaction({ receiverId, actions });
         // TODO: Should following override onRequestResult in superclass instead of doing custom signAndSendTransaction?
         await this.sendCode();

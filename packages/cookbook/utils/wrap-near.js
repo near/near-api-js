@@ -41,11 +41,11 @@ async function wrapNear(accountId, wrapAmount) {
   ];
 
   // check if storage has been paid (the account has a wNEAR account)
-  const storage = await account.viewFunction(
-    WRAP_NEAR_CONTRACT_ID,
-    "storage_balance_of",
-    { account_id: accountId }
-  );
+  const storage = await account.viewFunction({
+    contractId: WRAP_NEAR_CONTRACT_ID,
+    methodName: "storage_balance_of",
+    args: { account_id: accountId },
+  });
 
   // if storage hasn't been paid, pay for storage (create an account)
   if (!storage) {
