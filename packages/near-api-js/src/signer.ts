@@ -2,6 +2,7 @@ import sha256 from 'js-sha256';
 import { Signature, KeyPair, PublicKey } from './utils/key_pair';
 import { KeyStore } from './key_stores/keystore';
 import { InMemoryKeyStore } from './key_stores/in_memory_key_store';
+import { Wallet } from './providers';
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
@@ -103,3 +104,53 @@ export class InMemorySigner extends Signer {
         return `InMemorySigner(${this.keyStore})`;
     }
 }
+
+/**
+ * Signs using NEAR injected wallet.
+ */
+export class InjectedWalletSigner extends Signer {
+    readonly wallet: Wallet;
+
+    /**
+     * @param wallet The wallet interface (NEP408 standards)
+     */
+    constructor(wallet: Wallet) {
+        super();
+        this.wallet = wallet;
+    }
+
+    createKey(): Promise<PublicKey> {
+        throw new Error('Method not implemented.');
+    }
+
+    /**
+     * Gets the existing public key in the wallet for a given account
+     * @param accountId The NEAR account to assign a public key to
+     * @returns {Promise<PublicKey>} Returns the public key or null if not found
+     */
+    async getPublicKey(accountId: string): Promise<PublicKey> {
+        if (!this.wallet.connected) {
+            throw new Error('Extension wallet is not connected.');
+        }
+        const account = this.wallet.accounts.find((a) => a.accountId === accountId);
+        return account.publicKey;
+    }
+
+    /**
+     * Signs a message using wallet API
+     * @param message A message to be signed, typically a serialized transaction
+     * @param accountId the NEAR account signing the message
+     * @returns {Promise<Signature>}
+     */
+    async signMessage(message: Uint8Array, accountId: string): Promise<Signature> {
+        if (!this.wallet.connected) {
+            throw new Error('Extension wallet is not connected.');
+        }
+        return await this.wallet.signMessage(message, accountId);
+    }
+
+    toString(): string {
+        return `InjectedWalletSigner(${this.wallet.id})`;
+    }
+}
+
