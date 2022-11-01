@@ -243,19 +243,17 @@ export class WalletConnection {
     }
 
     /**
-     * @hidden
-     * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
+     * Complete sign in for a given account id and public key.
+     * To be invoked by the developer in case you used {@link requestSignInLink} and you grabbed the callback manually.
+     * Parameters should come in the callback url from the wallet.
      */
-    async _completeSignInWithAccessKey() {
-        const currentUrl = new URL(window.location.href);
-        const publicKey = currentUrl.searchParams.get('public_key') || '';
-        const allKeys = (currentUrl.searchParams.get('all_keys') || '').split(',');
-        const accountId = currentUrl.searchParams.get('account_id') || '';
+    async completeSignInWithAccessKeyLink(publicKey: string, allKeys: string, accountId: string) {
+        const allKeysArr = allKeys.split(',');
         // TODO: Handle errors during login
         if (accountId) {
             const authData = {
                 accountId,
-                allKeys
+                allKeysArr
             };
             window.localStorage.setItem(this._authDataKey, JSON.stringify(authData));
             if (publicKey) {
@@ -263,6 +261,24 @@ export class WalletConnection {
             }
             this._authData = authData;
         }
+    }
+
+    /**
+     * @hidden
+     * Complete sign in for a given account id and public key. To be invoked by the app when getting a callback from the wallet.
+     */
+    async _completeSignInWithAccessKey() {
+        const currentUrl = new URL(window.location.href);
+        const publicKey = currentUrl.searchParams.get('public_key') || '';
+        const allKeys = currentUrl.searchParams.get('all_keys') || '';
+        const accountId = currentUrl.searchParams.get('account_id') || '';
+
+        await this.completeSignInWithAccessKeyLink(
+            publicKey,
+            allKeys,
+            accountId
+        );
+
         currentUrl.searchParams.delete('public_key');
         currentUrl.searchParams.delete('all_keys');
         currentUrl.searchParams.delete('account_id');
