@@ -1,6 +1,8 @@
 import BN from 'bn.js';
 
 import {
+    Action,
+    SignedTransaction,
     transfer,
     createAccount,
     deployContract,
@@ -11,9 +13,7 @@ import {
     deleteKey,
     stake,
     deleteAccount,
-    Action,
-    SignedTransaction,
-    stringifyJsonOrBytes
+    stringifyJsonOrBytes,
 } from './transaction';
 import { FinalExecutionOutcome } from './providers';
 import {
@@ -32,6 +32,7 @@ import { PositionalArgsError } from './utils/errors';
 import { printLogs } from './utils/logging';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 import { SignAndSendTransactionOptions, TransactionSender } from './transaction_sender';
+import { TransactionBuilder } from './transaction_builder';
 
 export interface AccountBalance {
     total: string;
@@ -371,7 +372,7 @@ export class Account {
         if(jsContract){
             encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
         } else{
-            encodedArgs =  stringify(args);
+            encodedArgs = stringify(args);
         }
 
         const result = await this.connection.provider.query<CodeResult>({
@@ -532,5 +533,13 @@ export class Account {
             ...summary,
             total: summary.total.toString(),
         };
+    }
+
+    createTransaction(receiver: Account | string): TransactionBuilder {
+        return new TransactionBuilder({
+            sender: this.sender,
+            senderId: this.accountId,
+            receiverId: typeof receiver === 'string' ? receiver : receiver.accountId,
+        });
     }
 }

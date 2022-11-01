@@ -5,6 +5,8 @@ const { TypedError } = require('../src/utils/errors');
 const fs = require('fs');
 const BN = require('bn.js');
 const { transfer } = require('../src/transaction');
+const { TransactionBuilder } = require('../src/transaction_builder');
+const { TransactionSender } = require('../src/transaction_sender');
 
 let nearjs;
 let workingAccount;
@@ -38,6 +40,17 @@ test('create account and then view account returns the created account', async (
     expect(state.amount).toEqual(newAmount.toString());
 });
 
+test('create account with TransactionBuilder and then view account returns the created account', async () => {
+    const newAccountName = testUtils.generateUniqueString('test');
+    const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
+    const { amount } = await workingAccount.state();
+    const newAmount = new BN(amount).div(new BN(10));
+    await workingAccount.createTransaction(newAccountName).createAccount().addKey(newAccountPublicKey).transfer(newAmount).signAndSend();
+    const newAccount = new Account(nearjs.connection, newAccountName);
+    const state = await newAccount.state();
+    expect(state.amount).toEqual(newAmount.toString());
+});
+
 test('send money', async() => {
     const sender = await testUtils.createAccount(nearjs);
     const receiver = await testUtils.createAccount(nearjs);
@@ -52,6 +65,15 @@ test('send money through signAndSendTransaction', async() => {
     const receiver = await testUtils.createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
     await sender.signAndSendTransaction({receiverId: receiver.accountId, actions: [transfer(new BN(10000))]});
+    const state = await receiver.state();
+    expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
+});
+
+test('send money through TransactionBuilder', async() => {
+    const sender = await testUtils.createAccount(nearjs);
+    const receiver = await testUtils.createAccount(nearjs);
+    const { amount: receiverAmount } = await receiver.state();
+    await sender.createTransaction(receiver).transfer(new BN(10000)).signAndSend();
     const state = await receiver.state();
     expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
 });
@@ -71,6 +93,16 @@ test('multiple parallel transactions', async () => {
         // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
         // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
         await account.sendMoney(account.accountId, new BN(i));
+    }));
+});
+
+test('multiple parallel TransactionBuilder transactions', async () => {
+    const PARALLEL_NUMBER = 5;
+    await Promise.all([...Array(PARALLEL_NUMBER).keys()].map(async (_, i) => {
+        const builder = new TransactionBuilder({ sender: new TransactionSender({ connection: workingAccount.connection }), senderId: workingAccount.accountId, receiverId: workingAccount.accountId });
+        // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
+        // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
+        await builder.transfer(new BN(i)).signAndSend();
     }));
 });
 
@@ -171,6 +203,27 @@ describe('with deploy contract', () => {
             contractId,
             methodName: 'getValue'
         })).toEqual(setCallValue);
+    });
+
+    test('make function calls via TransactionBuilder', async () => {
+        const result = await workingAccount.viewFunction({
+            contractId,
+            methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
+            args: { name: 'trex' }
+        });
+        expect(result).toEqual('hello trex');
+
+        const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+        const result2 = await workingAccount
+            .createTransaction(contractId)
+            .functionCall({ methodName: 'setValue', args: { value: setCallValue } })
+            .signAndSend();
+        expect(providers.getTransactionLastResult(result2)).toEqual(
+            setCallValue
+        );
+        expect(
+            await workingAccount.viewFunction({ contractId, methodName: 'getValue' })
+        ).toEqual(setCallValue);
     });
 
     test('view contract state', async() => {
