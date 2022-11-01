@@ -161,20 +161,17 @@ export class WalletConnection {
     }
 
     /**
-     * Redirects current page to the wallet authentication page.
-     * @param options An optional options object
-     * @param options.contractId The NEAR account where the contract is deployed
-     * @param options.successUrl URL to redirect upon success. Default: current url
-     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     * Returns the sign in url for the wallet.
+     * @see {@link requestSignIn} For accepted options.
      *
      * @example
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
-     * // redirects to the NEAR Wallet
-     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * // returns the url to the NEAR Wallet
+     * const signInLink = await wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
-    async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
+    async requestSignInLink({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
@@ -196,13 +193,33 @@ export class WalletConnection {
             });
         }
 
+        return newUrl.toString();
+    }
+
+    /**
+     * Redirects current page to the wallet authentication page.
+     * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
+     * @param options.successUrl URL to redirect upon success. Default: current url
+     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     *
+     * @example
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * // redirects to the NEAR Wallet
+     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * ```
+     */
+    async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
+        const newUrl = await this.requestSignInLink({ contractId, methodNames, successUrl, failureUrl });
+
         window.location.assign(newUrl.toString());
     }
 
     /**
-     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
+     * Returns the url (to NEAR wallet) for the user to quickly sign for a transaction or batch of transactions.
      */
-    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+    async requestSignTransactionsLink({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<string> {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
@@ -213,7 +230,37 @@ export class WalletConnection {
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
         if (meta) newUrl.searchParams.set('meta', meta);
 
+        return newUrl.toString();
+    }
+
+    /**
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
+     */
+    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+        const newUrl = await this.requestSignTransactionsLink({ transactions, meta, callbackUrl });
+
         window.location.assign(newUrl.toString());
+    }
+
+    /**
+     * Complete sign in for a given account id and public key.
+     * To be invoked by the developer in case you used {@link requestSignInLink} and you grabbed the callback manually.
+     * Parameters should come in the callback url from the wallet.
+     */
+    async completeSignInWithAccessKeyLink(publicKey: string, allKeys: string, accountId: string) {
+        const allKeysArr = allKeys.split(',');
+        // TODO: Handle errors during login
+        if (accountId) {
+            const authData = {
+                accountId,
+                allKeysArr
+            };
+            window.localStorage.setItem(this._authDataKey, JSON.stringify(authData));
+            if (publicKey) {
+                await this._moveKeyFromTempToPermanent(accountId, publicKey);
+            }
+            this._authData = authData;
+        }
     }
 
     /**
@@ -223,20 +270,15 @@ export class WalletConnection {
     async _completeSignInWithAccessKey() {
         const currentUrl = new URL(window.location.href);
         const publicKey = currentUrl.searchParams.get('public_key') || '';
-        const allKeys = (currentUrl.searchParams.get('all_keys') || '').split(',');
+        const allKeys = currentUrl.searchParams.get('all_keys') || '';
         const accountId = currentUrl.searchParams.get('account_id') || '';
-        // TODO: Handle errors during login
-        if (accountId) {
-            const authData = {
-                accountId,
-                allKeys
-            };
-            window.localStorage.setItem(this._authDataKey, JSON.stringify(authData));
-            if (publicKey) {
-                await this._moveKeyFromTempToPermanent(accountId, publicKey);
-            }
-            this._authData = authData;
-        }
+
+        await this.completeSignInWithAccessKeyLink(
+            publicKey,
+            allKeys,
+            accountId
+        );
+
         currentUrl.searchParams.delete('public_key');
         currentUrl.searchParams.delete('all_keys');
         currentUrl.searchParams.delete('account_id');
