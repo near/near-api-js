@@ -157,7 +157,7 @@ export class WalletConnection {
      * ```
      */
     getAccountId() {
-        return this._authData.accountId || '';
+        return this._authData.accountId || null;
     }
 
     /**
