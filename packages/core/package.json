@@ -1,0 +1,22 @@
+{
+  "name": "@near-js/core",
+  "version": "0.0.1",
+  "description": "Core dependencies for the NEAR JavaScript API",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "pnpm compile",
+    "compile": "tsc -p tsconfig.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bn.js": "5.2.1",
+    "borsh": "^0.7.0",
+    "js-sha256": "^0.9.0",
+    "tweetnacl": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14"
+  }
+}
