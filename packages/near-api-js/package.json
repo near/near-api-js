@@ -11,6 +11,7 @@
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
     "dependencies": {
+        "@near-js/core": "workspace:*",
         "ajv": "^8.11.2",
         "ajv-formats": "^2.1.1",
         "bn.js": "5.2.1",

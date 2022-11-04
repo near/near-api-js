@@ -40,8 +40,24 @@ importers:
       homedir: 0.6.0
       near-api-js: link:../near-api-js
 
+  packages/core:
+    specifiers:
+      '@types/node': ^18.7.14
+      bn.js: 5.2.1
+      borsh: ^0.7.0
+      js-sha256: ^0.9.0
+      tweetnacl: ^1.0.1
+    dependencies:
+      bn.js: 5.2.1
+      borsh: 0.7.0
+      js-sha256: 0.9.0
+      tweetnacl: 1.0.3
+    devDependencies:
+      '@types/node': 18.7.14
+
   packages/near-api-js:
     specifiers:
+      '@near-js/core': workspace:*
       '@types/bn.js': ^5.1.0
       '@types/http-errors': ^1.6.1
       '@types/node': ^18.7.14
@@ -73,6 +89,7 @@ importers:
       tweetnacl: ^1.0.1
       uglifyify: ^5.0.1
     dependencies:
+      '@near-js/core': link:../core
       ajv: 8.11.2
       ajv-formats: 2.1.1_ajv@8.11.2
       bn.js: 5.2.1
