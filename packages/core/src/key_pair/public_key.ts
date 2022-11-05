@@ -1,15 +1,8 @@
 import { baseEncode, baseDecode } from 'borsh';
 import nacl from 'tweetnacl';
 
+import { Assignable } from '../types';
 import { KeyType } from './constants';
-
-abstract class Assignable {
-    constructor(properties: any) {
-        Object.keys(properties).map((key: any) => {
-            (this as any)[key] = properties[key];
-        });
-    }
-}
 
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
