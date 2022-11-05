@@ -10,6 +10,8 @@ export {
     stake,
     stringifyJsonOrBytes,
     transfer,
+} from './action_creators';
+export {
     Action,
     AccessKey,
     AccessKeyPermission,
@@ -23,10 +25,7 @@ export {
     FunctionCallPermission,
     Stake,
     Transfer,
-    SCHEMA,
-    createTransaction,
-    signTransaction,
-    TransactionSignature as Signature,
-    SignedTransaction,
-    Transaction
-} from '@near-js/core';
+} from './actions';
+export { SCHEMA } from './schema';
+export { signTransaction } from './sign';
+export { createTransaction, Signature as TransactionSignature, SignedTransaction, Transaction } from './transaction';
