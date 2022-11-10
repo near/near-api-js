@@ -28,7 +28,7 @@ import { ConnectionInfo, fetchJson } from '../utils/web';
 import { TypedError, ErrorContext } from '../utils/errors';
 import { baseEncode } from 'borsh';
 import exponentialBackoff from '../utils/exponential-backoff';
-import { parseRpcError, getErrorTypeFromErrorMessage } from '../utils/rpc_errors';
+import { parseRpcError, getErrorTypeFromErrorMessage, ServerError, formatError } from '../utils/rpc_errors';
 import { SignedTransaction } from '../transaction';
 
 /** @hidden */
@@ -348,6 +348,11 @@ export class JsonRpcProvider extends Provider {
                         }
 
                         throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data, response.error.name));
+                    }
+                } else if (typeof response.result?.error === 'string') {
+                    const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
+                    if (errorType) {
+                        throw new ServerError(formatError(errorType, { method }), errorType);
                     }
                 }
                 // Success when response.error is not exist
