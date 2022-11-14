@@ -4,7 +4,8 @@ export {
     LightClientBlockLiteView,
     LightClientProof,
     LightClientProofRequest,
-
+} from './light_client';
+export {
     AccessKeyWithPublicKey,
     BlockHash,
     BlockChange,
@@ -32,9 +33,10 @@ export {
     ShardId,
     SyncInfo,
     TotalWeight,
-    ProviderTransaction as Transaction,
-    Provider,
-
+    Transaction as ProviderTransaction,
+} from './protocol';
+export { Provider } from './provider';
+export {
     CallFunctionRequest,
     RpcQueryRequest,
     ViewAccessKeyListRequest,
@@ -42,7 +44,8 @@ export {
     ViewAccountRequest,
     ViewCodeRequest,
     ViewStateRequest,
-
+} from './request';
+export {
     AccessKeyInfoView,
     AccessKeyList,
     AccessKeyView,
@@ -62,10 +65,11 @@ export {
     FunctionCallPermissionView,
     QueryResponseKind,
     ViewStateResult,
-    getTransactionLastResult,
-
+} from './response';
+export { getTransactionLastResult } from './utils'
+export {
     CurrentEpochValidatorInfo,
     EpochValidatorInfo,
     NextEpochValidatorInfo,
     ValidatorStakeView,
-} from '@near-js/core';
+} from './validator';
