@@ -1,4 +1,8 @@
-import { PublicKey } from '../key_pair';
+import BN from 'bn.js';
+import { deserialize, serialize } from 'borsh';
+
+import { KeyType, PublicKey } from '../key_pair';
+import { Assignable } from '../types';
 import {
     Action,
     AccessKey,
@@ -14,7 +18,41 @@ import {
     Stake,
     Transfer,
 } from './actions';
-import { Signature, SignedTransaction, Transaction } from './transaction';
+
+export class Signature extends Assignable {
+    keyType: KeyType;
+    data: Uint8Array;
+}
+
+export class Transaction extends Assignable {
+    signerId: string;
+    publicKey: PublicKey;
+    nonce: BN;
+    receiverId: string;
+    actions: Action[];
+    blockHash: Uint8Array;
+
+    encode(): Uint8Array {
+        return serialize(SCHEMA, this);
+    }
+
+    static decode(bytes: Buffer): Transaction {
+        return deserialize(SCHEMA, Transaction, bytes);
+    }
+}
+
+export class SignedTransaction extends Assignable {
+    transaction: Transaction;
+    signature: Signature;
+
+    encode(): Uint8Array {
+        return serialize(SCHEMA, this);
+    }
+
+    static decode(bytes: Buffer): SignedTransaction {
+        return deserialize(SCHEMA, SignedTransaction, bytes);
+    }
+}
 
 type Class<T = any> = new (...args: any[]) => T;
 

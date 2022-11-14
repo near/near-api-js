@@ -3,9 +3,9 @@ import BN from 'bn.js';
 import { serialize } from 'borsh';
 
 import { Action } from './actions';
-import { SCHEMA } from './schema';
+import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema';
 import { Signer } from '../signer';
-import { createTransaction, Signature, SignedTransaction, Transaction } from './transaction';
+import { createTransaction } from './transaction';
 
 /**
  * Signs a given transaction from an account with given keys, applied to the given network
