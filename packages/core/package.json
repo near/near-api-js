@@ -14,6 +14,7 @@
     "bn.js": "5.2.1",
     "borsh": "^0.7.0",
     "js-sha256": "^0.9.0",
+    "mustache": "^4.0.0",
     "tweetnacl": "^1.0.1"
   },
   "devDependencies": {
