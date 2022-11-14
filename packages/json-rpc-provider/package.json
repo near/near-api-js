@@ -1,0 +1,27 @@
+{
+  "name": "@near-js/json-rpc-provider",
+  "version": "0.0.1",
+  "description": "Client for communicating with the NEAR RPC using JSON-RPC",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "pnpm compile",
+    "compile": "tsc -p tsconfig.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@near-js/core": "workspace:*",
+    "bn.js": "5.2.1",
+    "borsh": "^0.7.0",
+    "http-errors": "^1.7.2",
+    "js-sha256": "^0.9.0",
+    "tweetnacl": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14"
+  },
+  "optionalDependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
