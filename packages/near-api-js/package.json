@@ -12,6 +12,7 @@
     "types": "lib/index.d.ts",
     "dependencies": {
         "@near-js/core": "workspace:*",
+        "@near-js/json-rpc-provider": "workspace:*",
         "bn.js": "5.2.1",
         "borsh": "^0.7.0",
         "bs58": "^4.0.0",
