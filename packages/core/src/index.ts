@@ -1,3 +1,4 @@
+export * from './errors';
 export * from './format';
 export * from './key_pair';
 export * from './key_store';
