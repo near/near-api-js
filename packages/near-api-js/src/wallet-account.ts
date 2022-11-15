@@ -186,8 +186,8 @@ export class WalletConnection {
 
             newUrl.searchParams.set('contract_id', contractId);
             const accessKey = KeyPair.fromRandom('ed25519');
-            newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
-            await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
+            newUrl.searchParams.set('public_key', (await accessKey.getPublicKey()).toString());
+            await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + await accessKey.getPublicKey(), accessKey);
         }
 
         if (methodNames) {

@@ -66,10 +66,10 @@ export class PublicKey extends Assignable {
 }
 
 export abstract class KeyPair {
-    abstract sign(message: Uint8Array): Signature;
-    abstract verify(message: Uint8Array, signature: Uint8Array): boolean;
-    abstract toString(): string;
-    abstract getPublicKey(): PublicKey;
+    abstract sign(message: Uint8Array): Promise<Signature>;
+    abstract verify(message: Uint8Array, signature: Uint8Array): Promise<boolean>;
+    abstract toString(): Promise<string>;
+    abstract getPublicKey(): Promise<PublicKey>;
 
     /**
      * @param curve Name of elliptical curve, case-insensitive
@@ -132,20 +132,20 @@ export class KeyPairEd25519 extends KeyPair {
         return new KeyPairEd25519(base_encode(newKeyPair.secretKey));
     }
 
-    sign(message: Uint8Array): Signature {
+    sign(message: Uint8Array): Promise<Signature> {
         const signature = nacl.sign.detached(message, base_decode(this.secretKey));
-        return { signature, publicKey: this.publicKey };
+        return Promise.resolve({ signature, publicKey: this.publicKey });
     }
 
-    verify(message: Uint8Array, signature: Uint8Array): boolean {
-        return this.publicKey.verify(message, signature);
+    verify(message: Uint8Array, signature: Uint8Array): Promise<boolean> {
+        return Promise.resolve(this.publicKey.verify(message, signature));
     }
 
-    toString(): string {
-        return `ed25519:${this.secretKey}`;
+    toString(): Promise<string> {
+        return Promise.resolve(`ed25519:${this.secretKey}`);
     }
 
-    getPublicKey(): PublicKey {
-        return this.publicKey;
+    getPublicKey(): Promise<PublicKey> {
+        return Promise.resolve(this.publicKey);
     }
 }

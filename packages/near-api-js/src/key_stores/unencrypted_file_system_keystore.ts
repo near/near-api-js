@@ -98,7 +98,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
      */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
         await ensureDir(`${this.keyDir}/${networkId}`);
-        const content: AccountInfo = { account_id: accountId, public_key: keyPair.getPublicKey().toString(), private_key: keyPair.toString() };
+        const content: AccountInfo = { account_id: accountId, public_key: (await keyPair.getPublicKey()).toString(), private_key: await keyPair.toString() };
         await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content), { mode: 0o600 });
     }
 

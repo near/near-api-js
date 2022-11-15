@@ -44,7 +44,7 @@ export class InMemoryKeyStore extends KeyStore {
      * @param keyPair The key pair to store in local storage
      */    
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        this.keys[`${accountId}:${networkId}`] = keyPair.toString();
+        this.keys[`${accountId}:${networkId}`] = await keyPair.toString();
     }
 
     /**
