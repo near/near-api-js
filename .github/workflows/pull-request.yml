@@ -37,5 +37,8 @@ jobs:
     - name: Lint
       run: pnpm lint
 
+    - name: Error Schema
+      run: cd packages/near-api-js && node fetch-error-schema.js && git diff --exit-code
+
     - name: Test
       run: pnpm test
