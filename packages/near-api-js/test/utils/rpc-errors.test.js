@@ -16,7 +16,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type === 'AccountAlreadyExists').toBe(true);
+        expect(error.type).toBe('AccountAlreadyExists');
         expect(error.index).toBe(1);
         expect(error.account_id).toBe('bob.near');
         expect(formatError(error.type, error)).toBe('Can\'t create a new account bob.near, because it already exists');
@@ -36,7 +36,7 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type === 'ReceiverMismatch').toBe(true);
+        expect(error.type).toBe('ReceiverMismatch');
         expect(error.ak_receiver).toBe('test.near');
         expect(error.tx_receiver).toBe('bob.near');
         expect(formatError(error.type, error)).toBe(
@@ -57,9 +57,9 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type === 'InvalidIteratorIndex').toBe(true);
-        expect(error.iterator_index).toBe(42);
-        expect(formatError(error.type, error)).toBe('Iterator index 42 does not exist');
+        expect(error.type).toBe('ActionError');
+        expect(error.message).toBe(`{"kind":{"FunctionCallError":{"HostError":{"InvalidIteratorIndex":{"iterator_index":42}}}}}`);
+        expect(error.message.includes('InvalidIteratorIndex')).toBe(true);
     });
 
     test('test ActionError::FunctionCallError::GasLimitExceeded error', async () => {
@@ -74,15 +74,15 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error.type === 'GasLimitExceeded').toBe(true);
-
-        expect(formatError(error.type, error)).toBe('Exceeded the maximum amount of gas allowed to burn per contract');
+        expect(error.type).toBe('ActionError');
+        console.log(error.message);
+        expect(error.message).toBe('{"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"HostError":"GasLimitExceeded"}}}}');
     });
 
     test('test parse error object', async () => {
         const errorStr = '{"status":{"Failure":{"ActionError":{"index":0,"kind":{"FunctionCallError":{"EvmError":"ArgumentParseError"}}}}},"transaction":{"signer_id":"test.near","public_key":"ed25519:D5HVgBE8KgXkSirDE4UQ8qwieaLAR4wDDEgrPRtbbNep","nonce":110,"receiver_id":"evm","actions":[{"FunctionCall":{"method_name":"transfer","args":"888ZO7SvECKvfSCJ832LrnFXuF/QKrSGztwAAA==","gas":300000000000000,"deposit":"0"}}],"signature":"ed25519:7JtWQ2Ux63ixaKy7bTDJuRTWnv6XtgE84ejFMMjYGKdv2mLqPiCfkMqbAPt5xwLWwFdKjJniTcxWZe7FdiRWpWv","hash":"E1QorKKEh1WLJwRQSQ1pdzQN3f8yeFsQQ8CbJjnz1ZQe"},"transaction_outcome":{"proof":[],"block_hash":"HXXBPjGp65KaFtam7Xr67B8pZVGujZMZvTmVW6Fy9tXf","id":"E1QorKKEh1WLJwRQSQ1pdzQN3f8yeFsQQ8CbJjnz1ZQe","outcome":{"logs":[],"receipt_ids":["ZsKetkrZQGVTtmXr2jALgNjzcRqpoQQsk9HdLmFafeL"],"gas_burnt":2428001493624,"tokens_burnt":"2428001493624000000000","executor_id":"test.near","status":{"SuccessReceiptId":"ZsKetkrZQGVTtmXr2jALgNjzcRqpoQQsk9HdLmFafeL"}}},"receipts_outcome":[{"proof":[],"block_hash":"H6fQCVpxBDv9y2QtmTVHoxHibJvamVsHau7fDi7AmFa2","id":"ZsKetkrZQGVTtmXr2jALgNjzcRqpoQQsk9HdLmFafeL","outcome":{"logs":[],"receipt_ids":["DgRyf1Wv3ZYLFvM8b67k2yZjdmnyUUJtRkTxAwoFi3qD"],"gas_burnt":2428001493624,"tokens_burnt":"2428001493624000000000","executor_id":"evm","status":{"Failure":{"ActionError":{"index":0,"kind":{"FunctionCallError":{"EvmError":"ArgumentParseError"}}}}}}},{"proof":[],"block_hash":"9qNVA235L9XdZ8rZLBAPRNBbiGPyNnMUfpbi9WxbRdbB","id":"DgRyf1Wv3ZYLFvM8b67k2yZjdmnyUUJtRkTxAwoFi3qD","outcome":{"logs":[],"receipt_ids":[],"gas_burnt":0,"tokens_burnt":"0","executor_id":"test.near","status":{"SuccessValue":""}}}]}';
         const error = parseRpcError(JSON.parse(errorStr).status.Failure);
-        expect(error).toEqual(new ServerError('{"index":0,"kind":{"EvmError":"ArgumentParseError"}}'));
+        expect(error).toEqual(new ServerError('{"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"EvmError":"ArgumentParseError"}}}}'));
     });
 
     test('test getErrorTypeFromErrorMessage', () => {
