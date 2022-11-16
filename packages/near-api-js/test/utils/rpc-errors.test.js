@@ -58,7 +58,7 @@ describe('rpc-errors', () => {
         };
         let error = parseRpcError(rpc_error);
         expect(error.type).toBe('ActionError');
-        expect(error.message).toBe(`{"kind":{"FunctionCallError":{"HostError":{"InvalidIteratorIndex":{"iterator_index":42}}}}}`);
+        expect(error.message).toBe('{"kind":{"FunctionCallError":{"HostError":{"InvalidIteratorIndex":{"iterator_index":42}}}}}');
         expect(error.message.includes('InvalidIteratorIndex')).toBe(true);
     });
 
