@@ -65,6 +65,6 @@ test('JSON RPC Error: AccountDoesNotExist', withProvider(async (provider) => {
     } catch (e) {
         const errorType = 'AccountDoesNotExist';
         expect(e.type).toEqual(errorType);
-        expect(e.message).toEqual(`[-32000] Server error: account ${accountName} does not exist while viewing`);
+        expect(e.message.split(' ').slice(0, 5)).toEqual(ERRORS_JSON[errorType].split(' ').slice(0, 5));
     }
 }));

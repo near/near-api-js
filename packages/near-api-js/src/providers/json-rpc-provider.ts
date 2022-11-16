@@ -347,7 +347,8 @@ export class JsonRpcProvider extends Provider {
                             throw new TypedError(errorMessage, 'TimeoutError');
                         }
 
-                        throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data, response.error.name));
+                        const errorType = getErrorTypeFromErrorMessage(response.error.data, response.error.name);
+                        throw new TypedError(formatError(errorType, params) || errorMessage, errorType);
                     }
                 } else if (typeof response.result?.error === 'string') {
                     const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
