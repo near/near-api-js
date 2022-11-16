@@ -37,8 +37,5 @@ jobs:
     - name: Lint
       run: pnpm lint
 
-    - name: Error Schema
-      run: node fetch-error-schema.js && git diff --exit-code
-
     - name: Test
       run: pnpm test
