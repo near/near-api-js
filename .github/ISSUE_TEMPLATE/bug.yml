@@ -20,6 +20,7 @@ body:
         - A repro repository to inspect the code
         - An url to see the problem live (if possible)
 
+
   - type: checkboxes
     attributes:
       label: Have you read the Contributing Guidelines on issues?
@@ -59,6 +60,7 @@ body:
         - You might figure out the issues yourself as you work on extracting it.
 
         Thanks for helping us help you!
+
 
   - type: textarea
     attributes:
@@ -101,6 +103,7 @@ body:
         - NEAR JavaScript API version used:
         - Frontend framework (if applicable):
         - Relevant dependencies (if applicable):
+
 
   - type: checkboxes
     attributes:
