@@ -1,12 +1,24 @@
-## Motivation
-Describe the issue or enhancement, why it's required, and link existing issues if necessary.
+<!--
+Thank you for sending the PR! We appreciate you spending the time to work on these changes.
+You can learn more about contributing to NEAR JavaScript API here: https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md
+Happy contributing!
+-->
 
-## Description
-Describe the changes made in this PR. How does it solve the above?
+## Pre-flight checklist
 
-## Checklist
-- [ ] Read the [contributing](https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md) guidelines
+- [ ] I have read the [Contributing Guidelines on pull requests](https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md).
 - [ ] Commit messages follow the [conventional commits](https://www.conventionalcommits.org/) spec
-- [ ] Performed a self-review of the PR
-- [ ] Added automated tests
-- [ ] Manually tested the change
+- [ ] **If this is a code change**: I have written unit tests.
+- [ ] **If this is a new API or substantial change**: the PR has an accompanying issue (closes #0000) and the maintainers have approved on my working plan.
+
+## Motivation
+
+<!-- Help us understand your motivation by explaining why you decided to make this change. Does this fix a bug? Does it close an issue? -->
+
+## Test Plan
+
+<!-- Write your test plan here. If you changed any code, please provide us with clear instructions on how you verified your changes work. -->
+
+## Related issues/PRs
+
+<!-- If you haven't already, link to issues/PRs that are related to this change. This helps us develop the context and keep a rich repo history. If this PR is a continuation of a past PR's work, link to that PR. If the PR addresses part of the problem in a meta-issue, mention that issue. -->
