@@ -18,12 +18,12 @@ body:
         - label: I have read the [Contributing Guidelines on issues](https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md).
           required: true
 
-#  - type: textarea
-#    attributes:
-#      label: Description
-#      description: A clear and concise description of what the feature is.
-#    validations:
-#      required: true
+  - type: textarea
+    attributes:
+      label: Description
+      description: A clear and concise description of what the feature is.
+    validations:
+      required: true
 #
 #  - type: input
 #    attributes:
