@@ -11,60 +11,60 @@ body:
         - The design does not have to be perfect, we'll discuss it and fix it if needed.
         - For a more "casual" feature request, consider using GitHub Discussions instead: https://github.com/near/near-api-js/discussions/categories/ideas
 
-  - type: checkboxes
-    attributes:
-      label: Have you read the Contributing Guidelines on issues?
-      options:
-        label: I have read the [Contributing Guidelines on issues](https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md).
-        required: true
-
-  - type: textarea
-    attributes:
-      label: Description
-      description: A clear and concise description of what the feature is.
-    validations:
-      required: true
-
-  - type: input
-    attributes:
-      label: Has this been requested on GitHub Discussions?
-      description: Please post the [discussion](https://github.com/near/near-api-js/discussions/categories/ideas) link, it is helpful to see how much interest there is for this feature.
-
-  - type: textarea
-    attributes:
-      label: Motivation
-      description: Please outline the motivation for the proposal and why it should be implemented. Has this been requested by a lot of users?
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: API design
-      description: |
-        Please describe how NEAR JavaScript API users will enable and configure this feature, and what it will look like.
-
-        Please explain in an exhaustive way what are the config/plugin options and their respective effects. You can use https://excalidraw.com/ to create simple diagrams and charts if needed.
-
-        > **What happens if you skip this step?** This issue may be closed without any in-depth discussion. Your feature request is just an idea for now, please use the discussions board for that: https://github.com/near/near-api-js/discussions/categories/ideas
-
-  - type: textarea
-    attributes:
-      label: Have you tried building it?
-      description: |
-        Please explain how you tried to build the feature by yourself, and how successful it was.
-
-        We expect you to put your own work in this feature, particularly if it is not requested by a lot of users.
-        If you can't build it yourself for technical reasons, please explain why. We are willing to help you, and eventually providing new APIs to make it possible.
-        
-          > **What happens if you skip this step?** This issue may be closed without any in-depth discussion. Your feature request is just an idea for now, please use the discussions board for that: https://github.com/near/near-api-js/discussions/categories/ideas
-
-  - type: checkboxes
-    attributes:
-      label: Self-service
-      description: |
-        If you answered the question above as "no" because you feel like you could contribute directly to our repo, please check the box below. This would tell us and other people looking for contributions that someone's working on it.
-        If you do check this box, please send a pull request within 7 days after a maintainer's approval so we can still delegate this to someone else.
-
-        Note that for feature issues, we still require you to fully fill out this form and reach consensus with the maintainers on API design before rushing to implement it, so that you don't waste your time.
-      options:
-        label: I'd be willing to contribute this feature to NEAR JavaScript API myself.
+#  - type: checkboxes
+#    attributes:
+#      label: Have you read the Contributing Guidelines on issues?
+#      options:
+#        label: I have read the [Contributing Guidelines on issues](https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md).
+#        required: true
+#
+#  - type: textarea
+#    attributes:
+#      label: Description
+#      description: A clear and concise description of what the feature is.
+#    validations:
+#      required: true
+#
+#  - type: input
+#    attributes:
+#      label: Has this been requested on GitHub Discussions?
+#      description: Please post the [discussion](https://github.com/near/near-api-js/discussions/categories/ideas) link, it is helpful to see how much interest there is for this feature.
+#
+#  - type: textarea
+#    attributes:
+#      label: Motivation
+#      description: Please outline the motivation for the proposal and why it should be implemented. Has this been requested by a lot of users?
+#    validations:
+#      required: true
+#
+#  - type: textarea
+#    attributes:
+#      label: API design
+#      description: |
+#        Please describe how NEAR JavaScript API users will enable and configure this feature, and what it will look like.
+#
+#        Please explain in an exhaustive way what are the config/plugin options and their respective effects. You can use https://excalidraw.com/ to create simple diagrams and charts if needed.
+#
+#        > **What happens if you skip this step?** This issue may be closed without any in-depth discussion. Your feature request is just an idea for now, please use the discussions board for that: https://github.com/near/near-api-js/discussions/categories/ideas
+#
+#  - type: textarea
+#    attributes:
+#      label: Have you tried building it?
+#      description: |
+#        Please explain how you tried to build the feature by yourself, and how successful it was.
+#
+#        We expect you to put your own work in this feature, particularly if it is not requested by a lot of users.
+#        If you can't build it yourself for technical reasons, please explain why. We are willing to help you, and eventually providing new APIs to make it possible.
+#
+#          > **What happens if you skip this step?** This issue may be closed without any in-depth discussion. Your feature request is just an idea for now, please use the discussions board for that: https://github.com/near/near-api-js/discussions/categories/ideas
+#
+#  - type: checkboxes
+#    attributes:
+#      label: Self-service
+#      description: |
+#        If you answered the question above as "no" because you feel like you could contribute directly to our repo, please check the box below. This would tell us and other people looking for contributions that someone's working on it.
+#        If you do check this box, please send a pull request within 7 days after a maintainer's approval so we can still delegate this to someone else.
+#
+#        Note that for feature issues, we still require you to fully fill out this form and reach consensus with the maintainers on API design before rushing to implement it, so that you don't waste your time.
+#      options:
+#        label: I'd be willing to contribute this feature to NEAR JavaScript API myself.
