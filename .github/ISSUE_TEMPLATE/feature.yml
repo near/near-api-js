@@ -1,6 +1,6 @@
 name: 💅 Feature design / RFC
 description: Submit a detailed feature request with a concrete proposal, including an exhaustive API design
-labels: [feature, 'status: needs triage']
+labels: [ feature, 'status: needs triage' ]
 body:
   - type: markdown
     attributes:
@@ -55,7 +55,7 @@ body:
 
         We expect you to put your own work in this feature, particularly if it is not requested by a lot of users.
         If you can't build it yourself for technical reasons, please explain why. We are willing to help you, and eventually providing new APIs to make it possible.
-          
+        
           > **What happens if you skip this step?** This issue may be closed without any in-depth discussion. Your feature request is just an idea for now, please use the discussions board for that: https://github.com/near/near-api-js/discussions/categories/ideas
 
   - type: checkboxes
@@ -67,4 +67,4 @@ body:
 
         Note that for feature issues, we still require you to fully fill out this form and reach consensus with the maintainers on API design before rushing to implement it, so that you don't waste your time.
       options:
-        - label: I'd be willing to contribute this feature to NEAR JavaScript API myself.
+        label: I'd be willing to contribute this feature to NEAR JavaScript API myself.
