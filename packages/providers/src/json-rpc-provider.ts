@@ -22,11 +22,13 @@ import {
     NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
-    SignedTransaction,
     TypedError,
     getErrorTypeFromErrorMessage,
     parseRpcError,
 } from '@near-js/core';
+import {
+    SignedTransaction,
+} from '@near-js/transactions';
 import { baseEncode } from 'borsh';
 
 import { exponentialBackoff } from './exponential-backoff';

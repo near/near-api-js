@@ -1,8 +1,8 @@
+import { Signer } from '@near-js/core';
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
 import { serialize } from 'borsh';
 
-import { Signer } from '../signer';
 import { Action } from './actions';
 import { createTransaction } from './create_transaction';
 import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema';

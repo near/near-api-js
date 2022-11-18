@@ -1,6 +1,6 @@
+import { PublicKey } from '@near-js/core';
 import BN from 'bn.js';
 
-import { PublicKey } from '../key_pair';
 import { Action } from './actions';
 import { Transaction } from './schema';
 

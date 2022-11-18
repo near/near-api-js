@@ -1,6 +1,6 @@
+import { PublicKey } from '@near-js/core';
 import BN from 'bn.js';
 
-import { PublicKey } from '../key_pair';
 import {
     AccessKey,
     AccessKeyPermission,
@@ -18,25 +18,32 @@ import {
 } from './actions';
 
 export function fullAccessKey(): AccessKey {
-    return new AccessKey({ permission: new AccessKeyPermission({fullAccess: new FullAccessPermission({})}) });
+    return new AccessKey({
+        permission: new AccessKeyPermission({
+            fullAccess: new FullAccessPermission({}),
+        })
+    });
 }
 
 export function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
-    return new AccessKey({ permission: new AccessKeyPermission({functionCall: new FunctionCallPermission({receiverId, allowance, methodNames})})});
+    return new AccessKey({
+        permission: new AccessKeyPermission({
+            functionCall: new FunctionCallPermission({ receiverId, allowance, methodNames }),
+        })
+    });
 }
 
 export function createAccount(): Action {
-    return new Action({createAccount: new CreateAccount({}) });
+    return new Action({ createAccount: new CreateAccount({}) });
 }
 
 export function deployContract(code: Uint8Array): Action {
-    return new Action({ deployContract: new DeployContract({code}) });
+    return new Action({ deployContract: new DeployContract({ code }) });
 }
 
 export function stringifyJsonOrBytes(args: any): Buffer {
     const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
-    const serializedArgs = isUint8Array ? args : Buffer.from(JSON.stringify(args));
-    return serializedArgs;
+    return isUint8Array ? args : Buffer.from(JSON.stringify(args));
 }
 
 /**
@@ -54,25 +61,33 @@ export function functionCall(methodName: string, args: Uint8Array | object, gas:
     if(jsContract){
         return new Action({ functionCall: new FunctionCall({ methodName, args, gas, deposit }) });
     }
-    return new Action({ functionCall: new FunctionCall({ methodName, args: stringify(args), gas, deposit }) });
+
+    return new Action({
+        functionCall: new FunctionCall({
+            methodName,
+            args: stringify(args),
+            gas,
+            deposit,
+        }),
+    });
 }
 
 export function transfer(deposit: BN): Action {
-    return new Action({transfer: new Transfer({ deposit }) });
+    return new Action({ transfer: new Transfer({ deposit }) });
 }
 
 export function stake(stake: BN, publicKey: PublicKey): Action {
-    return new Action({stake: new Stake({ stake, publicKey }) });
+    return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 
 export function addKey(publicKey: PublicKey, accessKey: AccessKey): Action {
-    return new Action({addKey: new AddKey({ publicKey, accessKey}) });
+    return new Action({ addKey: new AddKey({ publicKey, accessKey}) });
 }
 
 export function deleteKey(publicKey: PublicKey): Action {
-    return new Action({deleteKey: new DeleteKey({ publicKey }) });
+    return new Action({ deleteKey: new DeleteKey({ publicKey }) });
 }
 
 export function deleteAccount(beneficiaryId: string): Action {
-    return new Action({deleteAccount: new DeleteAccount({ beneficiaryId }) });
+    return new Action({ deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
