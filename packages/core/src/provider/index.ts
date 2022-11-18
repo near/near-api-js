@@ -35,7 +35,6 @@ export {
     TotalWeight,
     Transaction as ProviderTransaction,
 } from './protocol';
-export { Provider } from './provider';
 export {
     CallFunctionRequest,
     RpcQueryRequest,

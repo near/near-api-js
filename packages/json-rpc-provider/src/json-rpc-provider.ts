@@ -21,7 +21,6 @@ import {
     LightClientProofRequest,
     NearProtocolConfig,
     NodeStatusResult,
-    Provider,
     QueryResponseKind,
     SignedTransaction,
     TypedError,
@@ -31,6 +30,7 @@ import {
 import { baseEncode } from 'borsh';
 
 import { exponentialBackoff } from './exponential-backoff';
+import { Provider } from './provider';
 import { ConnectionInfo, fetchJson } from './web';
 
 /** @hidden */
