@@ -20,9 +20,11 @@ import {
     NodeStatusResult,
     QueryResponseKind,
     RpcQueryRequest,
-    SignedTransaction,
     EpochValidatorInfo,
 } from '@near-js/core';
+import {
+    SignedTransaction,
+} from '@near-js/transactions';
 
 /** @hidden */
 export abstract class Provider {

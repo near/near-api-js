@@ -13,6 +13,7 @@
     "dependencies": {
         "@near-js/core": "workspace:*",
         "@near-js/providers": "workspace:*",
+        "@near-js/transactions": "workspace:*",
         "bn.js": "5.2.1",
         "borsh": "^0.7.0",
         "bs58": "^4.0.0",

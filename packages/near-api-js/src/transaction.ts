@@ -26,7 +26,7 @@ export {
     SCHEMA,
     createTransaction,
     signTransaction,
-    TransactionSignature as Signature,
+    Signature,
     SignedTransaction,
-    Transaction
-} from '@near-js/core';
+    Transaction,
+} from '@near-js/transactions';
