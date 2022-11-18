@@ -13,6 +13,7 @@
     "dependencies": {
         "@near-js/core": "workspace:*",
         "@near-js/providers": "workspace:*",
+        "@near-js/transactions": "workspace:*",
         "ajv": "^8.11.2",
         "ajv-formats": "^2.1.1",
         "bn.js": "5.2.1",

@@ -1,8 +1,7 @@
+import { Assignable, KeyType, PublicKey } from '@near-js/core';
 import BN from 'bn.js';
 import { deserialize, serialize } from 'borsh';
 
-import { KeyType, PublicKey } from '../key_pair';
-import { Assignable } from '../types';
 import {
     Action,
     AccessKey,

@@ -78,32 +78,11 @@ importers:
     devDependencies:
       '@types/node': 18.7.14
 
-  packages/providers:
-    specifiers:
-      '@near-js/core': workspace:*
-      '@types/node': ^18.7.14
-      bn.js: 5.2.1
-      borsh: ^0.7.0
-      http-errors: ^1.7.2
-      js-sha256: ^0.9.0
-      node-fetch: ^2.6.1
-      tweetnacl: ^1.0.1
-    dependencies:
-      '@near-js/core': link:../core
-      bn.js: 5.2.1
-      borsh: 0.7.0
-      http-errors: 1.8.1
-      js-sha256: 0.9.0
-      tweetnacl: 1.0.3
-    optionalDependencies:
-      node-fetch: 2.6.7
-    devDependencies:
-      '@types/node': 18.7.14
-
   packages/near-api-js:
     specifiers:
       '@near-js/core': workspace:*
       '@near-js/providers': workspace:*
+      '@near-js/transactions': workspace:*
       '@types/bn.js': ^5.1.0
       '@types/http-errors': ^1.6.1
       '@types/node': ^18.7.14
@@ -137,6 +116,7 @@ importers:
     dependencies:
       '@near-js/core': link:../core
       '@near-js/providers': link:../providers
+      '@near-js/transactions': link:../transactions
       ajv: 8.11.2
       ajv-formats: 2.1.1_ajv@8.11.2
       bn.js: 5.2.1
@@ -168,6 +148,49 @@ importers:
       semver: 7.3.8
       ts-jest: 26.5.6_jest@26.6.3
       uglifyify: 5.0.2
+
+  packages/providers:
+    specifiers:
+      '@near-js/core': workspace:*
+      '@near-js/transactions': workspace:*
+      '@types/node': ^18.7.14
+      bn.js: 5.2.1
+      borsh: ^0.7.0
+      http-errors: ^1.7.2
+      js-sha256: ^0.9.0
+      node-fetch: ^2.6.1
+      tweetnacl: ^1.0.1
+    dependencies:
+      '@near-js/core': link:../core
+      '@near-js/transactions': link:../transactions
+      bn.js: 5.2.1
+      borsh: 0.7.0
+      http-errors: 1.8.1
+      js-sha256: 0.9.0
+      tweetnacl: 1.0.3
+    optionalDependencies:
+      node-fetch: 2.6.7
+    devDependencies:
+      '@types/node': 18.7.14
+
+  packages/transactions:
+    specifiers:
+      '@near-js/core': workspace:*
+      '@types/node': ^18.7.14
+      bn.js: 5.2.1
+      borsh: ^0.7.0
+      js-sha256: ^0.9.0
+      mustache: ^4.0.0
+      tweetnacl: ^1.0.1
+    dependencies:
+      '@near-js/core': link:../core
+      bn.js: 5.2.1
+      borsh: 0.7.0
+      js-sha256: 0.9.0
+      mustache: 4.2.0
+      tweetnacl: 1.0.3
+    devDependencies:
+      '@types/node': 18.7.14
 
 packages:
 

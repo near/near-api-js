@@ -1,7 +1,5 @@
+import { Assignable, PublicKey } from '@near-js/core';
 import BN from 'bn.js';
-
-import { Assignable } from '../types';
-import { PublicKey } from '../key_pair';
 
 abstract class Enum {
     enum: string;
