@@ -33,7 +33,6 @@ export {
     SyncInfo,
     TotalWeight,
     ProviderTransaction as Transaction,
-    Provider,
 
     CallFunctionRequest,
     RpcQueryRequest,
@@ -69,3 +68,6 @@ export {
     NextEpochValidatorInfo,
     ValidatorStakeView,
 } from '@near-js/core';
+export {
+    Provider,
+} from '@near-js/json-rpc-provider';

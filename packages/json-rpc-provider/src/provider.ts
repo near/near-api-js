@@ -3,7 +3,6 @@
  * @module
  */
 
-import { LightClientProof, LightClientProofRequest } from './light_client';
 import {
     AccessKeyWithPublicKey,
     BlockChangeResult,
@@ -13,14 +12,17 @@ import {
     ChangeResult,
     ChunkId,
     ChunkResult,
+    FinalExecutionOutcome,
     GasPrice,
+    LightClientProof,
+    LightClientProofRequest,
     NearProtocolConfig,
     NodeStatusResult,
-} from './protocol';
-import { RpcQueryRequest } from './request';
-import { FinalExecutionOutcome, QueryResponseKind } from './response';
-import { SignedTransaction } from '../transaction';
-import { EpochValidatorInfo } from "./validator";
+    QueryResponseKind,
+    RpcQueryRequest,
+    SignedTransaction,
+    EpochValidatorInfo,
+} from '@near-js/core';
 
 /** @hidden */
 export abstract class Provider {
