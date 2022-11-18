@@ -33,7 +33,7 @@ import { baseEncode } from 'borsh';
 
 import { exponentialBackoff } from './exponential-backoff';
 import { Provider } from './provider';
-import { ConnectionInfo, fetchJson } from './web';
+import { ConnectionInfo, fetchJson } from './fetch_json';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
