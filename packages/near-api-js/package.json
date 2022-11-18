@@ -12,6 +12,7 @@
     "types": "lib/index.d.ts",
     "dependencies": {
         "@near-js/client-core": "workspace:*",
+        "@near-js/client-node": "workspace:*",
         "@near-js/providers": "workspace:*",
         "@near-js/transactions": "workspace:*",
         "bn.js": "5.2.1",
