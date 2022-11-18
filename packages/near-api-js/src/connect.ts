@@ -21,7 +21,7 @@
  * ```
  * @module connect
  */
-import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
+import { readKeyFile } from '@near-js/client-node';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 import { Near, NearConfig } from './near';
 import fetch from './utils/setup-node-fetch';
