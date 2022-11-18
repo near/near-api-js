@@ -1,6 +1,6 @@
 const { fetchJson } = require('../lib');
 
-describe('web', () => {
+describe('fetchJson', () => {
     test('string parameter in fetchJson', async () => {
         const RPC_URL = 'https://rpc.testnet.near.org';
         const statusRequest = {
