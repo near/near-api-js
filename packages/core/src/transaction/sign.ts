@@ -2,10 +2,10 @@ import sha256 from 'js-sha256';
 import BN from 'bn.js';
 import { serialize } from 'borsh';
 
-import { Action } from './actions';
-import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema';
 import { Signer } from '../signer';
-import { createTransaction } from './transaction';
+import { Action } from './actions';
+import { createTransaction } from './create_transaction';
+import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema';
 
 /**
  * Signs a given transaction from an account with given keys, applied to the given network
