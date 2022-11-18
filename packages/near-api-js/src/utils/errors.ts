@@ -4,4 +4,4 @@ export {
     PositionalArgsError,
     TypedError,
     logWarning,
-} from '@near-js/core';
+} from '@near-js/client-core';

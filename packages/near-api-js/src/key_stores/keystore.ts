@@ -1,1 +1,1 @@
-export { KeyStore } from '@near-js/core';
+export { KeyStore } from '@near-js/client-core';

@@ -67,7 +67,7 @@ export {
     EpochValidatorInfo,
     NextEpochValidatorInfo,
     ValidatorStakeView,
-} from '@near-js/core';
+} from '@near-js/client-core';
 export {
     Provider,
 } from '@near-js/providers';

@@ -1,1 +1,1 @@
-export { InMemoryKeyStore } from '@near-js/core';
+export { InMemoryKeyStore } from '@near-js/client-core';
