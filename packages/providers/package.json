@@ -1,7 +1,7 @@
 {
-  "name": "@near-js/json-rpc-provider",
+  "name": "@near-js/providers",
   "version": "0.0.1",
-  "description": "Client for communicating with the NEAR RPC using JSON-RPC",
+  "description": "Library of implementations for interfacing with the NEAR blockchain",
   "main": "lib/index.js",
   "scripts": {
     "build": "pnpm compile",
