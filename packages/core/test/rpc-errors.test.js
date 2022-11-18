@@ -1,10 +1,5 @@
-const nearApi = require('../../src/index');
-const { ServerError } = require('../../src/utils/rpc_errors');
-const {
-    parseRpcError,
-    formatError,
-    getErrorTypeFromErrorMessage
-} = nearApi.utils.rpc_errors;
+const { formatError, getErrorTypeFromErrorMessage, parseRpcError, ServerError } = require('../lib');
+
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {
         let rpc_error = {
