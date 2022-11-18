@@ -70,4 +70,4 @@ export {
 } from '@near-js/core';
 export {
     Provider,
-} from '@near-js/json-rpc-provider';
+} from '@near-js/providers';
