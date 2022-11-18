@@ -1,6 +1,6 @@
 import {
     TypedError,
-} from '@near-js/core';
+} from '@near-js/client-core';
 import createError from 'http-errors';
 
 import { exponentialBackoff } from './exponential-backoff';

@@ -21,7 +21,7 @@ import {
     QueryResponseKind,
     RpcQueryRequest,
     EpochValidatorInfo,
-} from '@near-js/core';
+} from '@near-js/client-core';
 import {
     SignedTransaction,
 } from '@near-js/transactions';

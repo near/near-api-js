@@ -4,4 +4,4 @@ export {
     parseResultError,
     formatError,
     getErrorTypeFromErrorMessage,
-} from '@near-js/core';
+} from '@near-js/client-core';

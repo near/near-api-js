@@ -51,17 +51,7 @@ importers:
     devDependencies:
       '@types/node': 18.11.15
 
-  packages/cookbook:
-    specifiers:
-      chalk: ^4.1.1
-      homedir: ^0.6.0
-      near-api-js: workspace:*
-    dependencies:
-      chalk: 4.1.2
-      homedir: 0.6.0
-      near-api-js: link:../near-api-js
-
-  packages/core:
+  packages/client-core:
     specifiers:
       '@types/node': ^18.7.14
       bn.js: 5.2.1
@@ -82,9 +72,19 @@ importers:
       jest: 26.6.3
       ts-jest: 26.5.6_jest@26.6.3
 
+  packages/cookbook:
+    specifiers:
+      chalk: ^4.1.1
+      homedir: ^0.6.0
+      near-api-js: workspace:*
+    dependencies:
+      chalk: 4.1.2
+      homedir: 0.6.0
+      near-api-js: link:../near-api-js
+
   packages/near-api-js:
     specifiers:
-      '@near-js/core': workspace:*
+      '@near-js/client-core': workspace:*
       '@near-js/providers': workspace:*
       '@near-js/transactions': workspace:*
       '@types/bn.js': ^5.1.0
@@ -118,7 +118,7 @@ importers:
       tweetnacl: ^1.0.1
       uglifyify: ^5.0.1
     dependencies:
-      '@near-js/core': link:../core
+      '@near-js/client-core': link:../client-core
       '@near-js/providers': link:../providers
       '@near-js/transactions': link:../transactions
       ajv: 8.11.2
@@ -155,7 +155,7 @@ importers:
 
   packages/providers:
     specifiers:
-      '@near-js/core': workspace:*
+      '@near-js/client-core': workspace:*
       '@near-js/transactions': workspace:*
       '@types/node': ^18.7.14
       bn.js: 5.2.1
@@ -167,7 +167,7 @@ importers:
       ts-jest: ^26.5.6
       tweetnacl: ^1.0.1
     dependencies:
-      '@near-js/core': link:../core
+      '@near-js/client-core': link:../client-core
       '@near-js/transactions': link:../transactions
       bn.js: 5.2.1
       borsh: 0.7.0
@@ -183,7 +183,7 @@ importers:
 
   packages/transactions:
     specifiers:
-      '@near-js/core': workspace:*
+      '@near-js/client-core': workspace:*
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
@@ -191,7 +191,7 @@ importers:
       mustache: ^4.0.0
       tweetnacl: ^1.0.1
     dependencies:
-      '@near-js/core': link:../core
+      '@near-js/client-core': link:../client-core
       bn.js: 5.2.1
       borsh: 0.7.0
       js-sha256: 0.9.0
