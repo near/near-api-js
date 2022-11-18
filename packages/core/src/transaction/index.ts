@@ -26,6 +26,6 @@ export {
     Stake,
     Transfer,
 } from './actions';
+export { createTransaction } from './create_transaction';
 export { SCHEMA, Signature as TransactionSignature, SignedTransaction, Transaction } from './schema';
 export { signTransaction } from './sign';
-export { createTransaction } from './transaction';
