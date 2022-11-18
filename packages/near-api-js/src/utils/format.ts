@@ -3,4 +3,4 @@ export {
     NEAR_NOMINATION_EXP,
     formatNearAmount,
     parseNearAmount,
-} from '@near-js/core';
+} from '@near-js/client-core';

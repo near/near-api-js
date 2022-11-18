@@ -4,6 +4,6 @@ export {
     KeyType,
     PublicKey,
     Signature,
-} from '@near-js/core';
+} from '@near-js/client-core';
 
 export type Arrayish = string | ArrayLike<number>;

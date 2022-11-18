@@ -25,7 +25,7 @@ import {
     TypedError,
     getErrorTypeFromErrorMessage,
     parseRpcError,
-} from '@near-js/core';
+} from '@near-js/client-core';
 import {
     SignedTransaction,
 } from '@near-js/transactions';

@@ -1,4 +1,4 @@
-import { PublicKey } from '@near-js/core';
+import { PublicKey } from '@near-js/client-core';
 import BN from 'bn.js';
 
 import {

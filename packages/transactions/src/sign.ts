@@ -1,4 +1,4 @@
-import { Signer } from '@near-js/core';
+import { Signer } from '@near-js/client-core';
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
 import { serialize } from 'borsh';

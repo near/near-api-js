@@ -1,7 +1,7 @@
 {
-  "name": "@near-js/core",
+  "name": "@near-js/client-core",
   "version": "0.0.1",
-  "description": "Core dependencies for the NEAR JavaScript API",
+  "description": "Core dependencies for the NEAR API JavaScript client",
   "main": "lib/index.js",
   "scripts": {
     "build": "pnpm compile",
