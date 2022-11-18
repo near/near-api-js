@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "pnpm compile",
-    "compile": "tsc -p tsconfig.json"
+    "compile": "tsc -p tsconfig.json",
+    "test": "jest test"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,9 @@
     "tweetnacl": "^1.0.1"
   },
   "devDependencies": {
-    "@types/node": "^18.7.14"
+    "@types/node": "^18.7.14",
+    "jest": "^26.0.1",
+    "ts-jest": "^26.5.6"
   },
   "optionalDependencies": {
     "node-fetch": "^2.6.1"

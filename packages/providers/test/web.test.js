@@ -1,5 +1,4 @@
-const nearApi = require('../../src/index');
-const { web } = nearApi.utils;
+const { fetchJson } = require('../lib');
 
 describe('web', () => {
     test('string parameter in fetchJson', async () => {
@@ -10,7 +9,7 @@ describe('web', () => {
             'method': 'status',
             'params': []
         };
-        const result = await web.fetchJson(RPC_URL, JSON.stringify(statusRequest));
+        const result = await fetchJson(RPC_URL, JSON.stringify(statusRequest));
         expect(result.result.chain_id).toBe('testnet');
     });
     test('object parameter in fetchJson', async () => {
@@ -21,7 +20,7 @@ describe('web', () => {
             'method': 'status',
             'params': []
         };
-        const result = await web.fetchJson(connection, JSON.stringify(statusRequest));
+        const result = await fetchJson(connection, JSON.stringify(statusRequest));
         expect(result.result.chain_id).toBe('testnet');
     });
 });
