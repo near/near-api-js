@@ -64,7 +64,6 @@
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "pnpm rimraf lib",
-        "prepare": "pnpm build",
         "bundlewatch": "bundlewatch"
     },
     "bundlewatch": {
