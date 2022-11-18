@@ -45,8 +45,10 @@ importers:
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
+      jest: ^26.0.1
       js-sha256: ^0.9.0
       mustache: ^4.0.0
+      ts-jest: ^26.5.6
       tweetnacl: ^1.0.1
     dependencies:
       bn.js: 5.2.1
@@ -56,6 +58,8 @@ importers:
       tweetnacl: 1.0.3
     devDependencies:
       '@types/node': 18.7.14
+      jest: 26.6.3
+      ts-jest: 26.5.6_jest@26.6.3
 
   packages/near-api-js:
     specifiers:
@@ -7453,6 +7457,7 @@ packages:
 
   /w3c-hr-time/1.0.2:
     resolution: {integrity: sha512-z8P5DvDNjKDoFIHK7q8r8lackT6l+jo/Ye3HOle7l9nICP9lf1Ci25fy9vHd0JOWewkIFzXIEig3TdKT7JQ5fQ==}
+    deprecated: Use your platform's native performance.now() and performance.timeOrigin.
     dependencies:
       browser-process-hrtime: 1.0.0
     dev: true

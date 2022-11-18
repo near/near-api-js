@@ -1,6 +1,4 @@
-// Unit tests for simple util code
-
-const nearApi = require('../../src/index');
+const { formatNearAmount, parseNearAmount } = require('../lib');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
@@ -28,7 +26,7 @@ test.each`
     ${'1000100000000000000000000000000'} | ${undefined} | ${'1,000,100'}
     ${'910000000000000000000000'}        | ${0}         | ${'1'}
 `('formatNearAmount($balance, $fracDigits) returns $expected', ({ balance, fracDigits, expected }) => {
-    expect(nearApi.utils.format.formatNearAmount(balance, fracDigits)).toEqual(expected);
+    expect(formatNearAmount(balance, fracDigits)).toEqual(expected);
 });
 
 test.each`
@@ -49,12 +47,12 @@ test.each`
     ${'000000.000001'}                | ${'1000000000000000000'}
     ${'1,000,000.1'}                  | ${'1000000100000000000000000000000'}
 `('parseNearAmount($amt) returns $expected', ({ amt, expected }) => {
-    expect(nearApi.utils.format.parseNearAmount(amt)).toStrictEqual(expected);
+    expect(parseNearAmount(amt)).toStrictEqual(expected);
 });
 
 test('parseNearAmount fails when parsing values with ≥25 decimal places', () => {
     expect(() => {
-        nearApi.utils.format.parseNearAmount('0.0000080990999998370878871');
+        parseNearAmount('0.0000080990999998370878871');
     }).toThrowError(
         'Cannot parse \'0.0000080990999998370878871\' as NEAR amount'
     );
