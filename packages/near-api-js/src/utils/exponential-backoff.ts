@@ -1,3 +1,3 @@
-import { exponentialBackoff } from '@near-js/json-rpc-provider';
+import { exponentialBackoff } from '@near-js/providers';
 
 export default exponentialBackoff;

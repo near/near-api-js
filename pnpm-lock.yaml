@@ -78,7 +78,7 @@ importers:
     devDependencies:
       '@types/node': 18.7.14
 
-  packages/json-rpc-provider:
+  packages/providers:
     specifiers:
       '@near-js/core': workspace:*
       '@types/node': ^18.7.14
@@ -103,7 +103,7 @@ importers:
   packages/near-api-js:
     specifiers:
       '@near-js/core': workspace:*
-      '@near-js/json-rpc-provider': workspace:*
+      '@near-js/providers': workspace:*
       '@types/bn.js': ^5.1.0
       '@types/http-errors': ^1.6.1
       '@types/node': ^18.7.14
@@ -136,7 +136,7 @@ importers:
       uglifyify: ^5.0.1
     dependencies:
       '@near-js/core': link:../core
-      '@near-js/json-rpc-provider': link:../json-rpc-provider
+      '@near-js/providers': link:../providers
       ajv: 8.11.2
       ajv-formats: 2.1.1_ajv@8.11.2
       bn.js: 5.2.1

@@ -1,1 +1,1 @@
-export { fetchJson } from '@near-js/json-rpc-provider';
+export { fetchJson } from '@near-js/providers';
