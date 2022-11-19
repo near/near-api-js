@@ -1,0 +1,23 @@
+{
+  "name": "@near-js/client-browser",
+  "version": "0.0.1",
+  "description": "Dependencies for the NEAR API JavaScript client in the browser",
+  "main": "lib/index.js",
+  "scripts": {
+    "browserify": "browserify browser-exports.js -o dist/near-api-js.js && browserify browser-exports.js -i node-fetch -g uglifyify -o dist/near-api-js.min.js",
+    "build": "pnpm compile && pnpm browserify",
+    "compile": "tsc -p tsconfig.json",
+    "test": "jest test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@near-js/client-core": "workspace:*",
+    "error-polyfill": "^0.1.3"
+  },
+  "devDependencies": {
+    "browserify": "^16.2.3",
+    "uglifyify": "^5.0.1"
+  }
+}
