@@ -79,5 +79,8 @@
         "dist",
         "browser-exports.js"
     ],
-    "author": "NEAR Inc"
+    "author": "NEAR Inc",
+    "optionalDependencies": {
+        "form-data": "^4.0.0"
+    }
 }
