@@ -1,42 +1,27 @@
-name: 🐛 Bug Report
+name: Bug Report
 description: Submit a bug report to help us improve
 labels: [bug, 'status: needs triage']
 body:
   - type: markdown
     attributes:
       value: |
-        ## Please help us help you!
-
         Before filing your issue, ask yourself:
         - Is this clearly a NEAR JavScript API defect?
         - Do I have basic ideas about where it goes wrong? (For example, if there are stack traces, are they pointing to one file?)
-        - Could it be because of my own mistakes?
 
-        **The GitHub issue tracker is not a support forum**. If you are not sure whether it could be your mistakes, ask in the [Discord server](https://near.chat) or [GitHub discussions](https://github.com/near/near-api-js/discussions) first. The quickest way to verify whether it's a NEAR JavaScript API defect is through a **reproduction**, starting with a fresh project and making changes until the bug is reproduced.
-
-        Make the bug obvious. Ideally, we should be able to understand it without running any code.
-
-        Bugs are fixed faster if you include:
-        - A repro repository to inspect the code
-        - An url to see the problem live (if possible)
-
-
-  - type: checkboxes
-    attributes:
-      label: Have you read the Contributing Guidelines on issues?
-      options:
-        - label: I have read the [Contributing Guidelines on issues](https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md).
-          required: true
+        **Please don't use issues for just questions**. For support please use our other channels - the [Discord server](https://near.chat) or [GitHub discussions](https://github.com/near/near-api-js/discussions).
+        
+        The quickest way to verify whether it's a NEAR JavaScript API defect is through a **reproduction**, starting with a fresh project and making changes until the bug is reproduced.
 
   - type: checkboxes
     attributes:
       label: Prerequisites
-      description: Please check the following items before creating a issue. This way we know you've done these steps first.
+      description: Please check the following items before creating a issue, these are basic sanity checks to make sure that the problem isn't something too obvious.
       options:
         - label: I'm using the latest version of `near-api-js`.
           required: true
         - label: I have tried to start with a fresh project and reproduce the defect with minimal code changes.
-        - label: I have read the console error message carefully (if applicable).
+        - label: I have read the console error messages carefully (if applicable).
 
   - type: textarea
     attributes:
@@ -49,23 +34,12 @@ body:
     attributes:
       label: Reproducible demo
       description: |
-        Paste the link to an example repo, and exact instructions to reproduce the issue.
-
-        > **What happens if you skip this step?** Someone will read your bug report, and maybe will be able to help you, but it’s unlikely that it will get much attention from the team. Eventually, the issue will likely get closed in favor of issues that have reproducible demos.
-
-        Please remember that:
-
-        - Issues without reproducible demos have a low priority.
-        - The person fixing the bug would have to do that anyway. Please be respectful of their time.
-        - You might figure out the issues yourself as you work on extracting it.
-
-        Thanks for helping us help you!
-
+        (Optional) Paste the link to an example repo.
 
   - type: textarea
     attributes:
       label: Steps to reproduce
-      description: Write down the steps to reproduce the bug. You should start with a fresh project, or your git repository linked above.
+      description: Write down the steps to reproduce the bug.
       placeholder: |
         1. Step 1...
         2. Step 2...
@@ -77,7 +51,7 @@ body:
     attributes:
       label: Expected behavior
       description: |
-        How did you expect your project to behave? It’s fine if you’re not sure your understanding is correct. Write down what you thought would happen.
+        How did you expect your project to behave? If you’re unsure, write down what you thought would happen.
       placeholder: Write what you thought would happen.
     validations:
       required: true
@@ -87,10 +61,8 @@ body:
       label: Actual behavior
       description: |
         Did something go wrong? Is something broken, or not behaving as you expected?
-        Describe this section in detail, and attach screenshots if possible. Don't only say "it doesn't work"!
-        Please submit exhaustive and complete log messages (we also need the error stack-traces, not just the message).
-        > Please read error messages carefully: it often tells you exactly what you are doing wrong.
-      placeholder: Write what happened. Add full console log messages and screenshots, if applicable.
+        Describe this section in detail. Please submit complete log messages with the stack traces.
+      placeholder: Write what happened with any error messages.
     validations:
       required: true
 
@@ -99,17 +71,15 @@ body:
       label: Your environment
       description: Include as many relevant details about the environment you experienced the bug in.
       value: |
-        - Public source code:
         - NEAR JavaScript API version used:
         - Frontend framework (if applicable):
         - Relevant dependencies (if applicable):
-
 
   - type: checkboxes
     attributes:
       label: Self-service
       description: |
-        If you feel like you could contribute to this issue, please check the box below. This would tell us and other people looking for contributions that someone's working on it.
+        If you feel like you could contribute to this issue, please check the box below.
         If you do check this box, please send a pull request within 7 days so we can still delegate this to someone else.
       options:
         - label: I'd be willing to fix this bug myself.
