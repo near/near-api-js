@@ -99,15 +99,14 @@ So that you can start contributing straight away.
 
 We appreciate the time and effort you invested! 🙏 We will do our best to work with you and get the PR looked at.
 
-Working on your first Pull Request? You can learn how from this free video series:
-
-[**How to Contribute to an Open Source Project on GitHub**](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
+> Working on your first-ever Pull Request? You can learn how from this free video series:
+> [**How to Contribute to an Open Source Project on GitHub**](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
 
 Please make sure the following is done when submitting a pull request:
 
 1. **Keep your PR small.** Small pull requests (~300 lines of diff) are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
 2. **Use descriptive titles.** It is recommended to follow semantic commit conventions: https://www.conventionalcommits.org/en/v1.0.0/
-3. **Test your changes.** Include unit tests for any public API you 
+3. **Test your changes.** Include unit tests for any public API you touch.
 
 All pull requests should be opened against the `master` branch.
 
@@ -116,12 +115,12 @@ All pull requests should be opened against the `master` branch.
 Each time we publish a version of the package we also publish a version of the [TypeDocs](https://docs.near.org/tools/near-api-js/reference).
 
 - If you touch the public API please make sure the TypeDocs reflect your changes well.
-- If you just want to fix the TypeDocs for current version, let us know in the PR and we'll publish your fix.
+- If you just want to fix the TypeDocs for current version, let us know in the PR, and we'll publish your fix onto the current TypeDocs.
 - For past versions of the library - we accept TypeDocs fixes only if they are significant (for example security-related warnings and edge-cases, or things that are fundamentally wrong).
 
 ### Tests
 
-Please include unit tests for any public api you add or touch. We use [Jest](https://jestjs.io/) for that.
+Please include unit tests for any public api you add or touch. We use [Jest](https://jestjs.io/) for tests.
 
 ### What Happens Next?
 
