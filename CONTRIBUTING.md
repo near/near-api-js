@@ -36,7 +36,7 @@ If you want to ask a question please use the following resources available for y
 
 There are many ways to contribute to this project, and many of them do not involve writing any code. Here's a few ideas to get started:
 
-- Simply start using the library. Go through the [user guide](https://docs.near.org/tools/near-api-js/quick-reference). Does everything work as expected? If not, we're always looking for improvements. Let us know by [opening an issue](#issues).
+- Simply start using the library. Go through the [user guide](https://docs.near.org/tools/near-api-js/quick-reference). Does everything work as expected? If not, we're always looking for improvements. Let us know on [GitHub Discussions](https://github.com/near/near-api-js/discussions).
 - Look through the [open issues](https://github.com/near/near-api-js/issues). Provide workarounds or ask for clarification.
 - If you find an issue you would like to fix, [open a pull request](#pull-requests). Issues tagged as [_Good first issue_](https://github.com/near/near-api-js/labels/good_first_issue) are a good place to get started.
 - Take a look at the [enhancements requested](https://github.com/near/near-api-js/labels/enhancement) by others in the community and consider opening a pull request if you see something you want to work on.
@@ -111,9 +111,13 @@ Please make sure the following is done when submitting a pull request:
 
 All pull requests should be opened against the `master` branch.
 
-### Versioned Docs
+### Versioned TypeDocs
 
-**TBD**
+Each time we publish a version of the package we also publish a version of the [TypeDocs](https://docs.near.org/tools/near-api-js/reference).
+
+- If you touch the public API please make sure the TypeDocs reflect your changes well.
+- If you just want to fix the TypeDocs for current version, let us know in the PR and we'll publish your fix.
+- For past versions of the library - we accept TypeDocs fixes only if they are significant (for example security-related warnings and edge-cases, or things that are fundamentally wrong).
 
 ### Tests
 
