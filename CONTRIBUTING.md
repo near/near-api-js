@@ -17,12 +17,10 @@ We take community contributions very seriously, as we understand you invest prec
 - [I Have a Question](#i-have-a-question)
 - [Get Involved](#get-involved)
 - [Our Development Process](#our-development-process)
-- [Issues](#issues)
-  - [New features and enhancements](#new-features-and-enhancements)
-  - [Claiming issues](#claiming-issues)
 - [Development](#development)
   - [Pull Requests](#pull-requests)
   - [Tests](#tests)
+  - [Versioned Docs](#versioned-docs)
   - [What Happens Next?](#what-happens-next)
 
 ## I Have a Question
