@@ -97,7 +97,7 @@ So that you can start contributing straight away.
 
 ## Pull Requests
 
-So you have decided to contribute code back to upstream by opening a pull request. You've invested a good chunk of time, and we appreciate it. We will do our best to work with you and get the PR looked at.
+We appreciate the time and effort you invested! 🙏 We will do our best to work with you and get the PR looked at.
 
 Working on your first Pull Request? You can learn how from this free video series:
 
