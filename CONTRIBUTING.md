@@ -63,7 +63,7 @@ Our core team works directly in the public repo, and pull requests are checked b
 
 **Bugs**: If you would like to report a problem use the [bug report](https://github.com/near/near-api-js/issues/new?assignees=&template=bug.yml) issue template.
 
-**Security Bugs**: _TBD_
+**Security Bugs**: To report security issues in this project please send an email to [security@near.org](mailto:security@near.org)
 
 **New features and enhancements**:
 
