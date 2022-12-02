@@ -8,6 +8,11 @@ export {
     ViewFunctionCallOptions,
 } from './account';
 export { Account2FA } from './account_2fa';
+export {
+    AccountCreator,
+    LocalAccountCreator,
+    UrlAccountCreator,
+} from './account_creator';
 export { AccountMultisig } from './account_multisig';
 export { Connection } from './connection';
 export {
