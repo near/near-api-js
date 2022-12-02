@@ -83,7 +83,7 @@ export interface NearConfig {
  * ```
  */
 export class Near {
-    readonly config: NearConfig;
+    readonly config: any;
     readonly connection: Connection;
     readonly accountCreator: AccountCreator;
 
