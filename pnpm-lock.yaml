@@ -94,6 +94,23 @@ importers:
     devDependencies:
       '@types/node': 18.7.14
 
+  packages/connected-wallet:
+    specifiers:
+      '@near-js/accounts': workspace:*
+      '@near-js/client-core': workspace:*
+      '@near-js/transactions': workspace:*
+      '@types/node': ^18.7.14
+      bn.js: 5.2.1
+      borsh: ^0.7.0
+    dependencies:
+      '@near-js/accounts': link:../accounts
+      '@near-js/client-core': link:../client-core
+      '@near-js/transactions': link:../transactions
+      bn.js: 5.2.1
+      borsh: 0.7.0
+    devDependencies:
+      '@types/node': 18.7.14
+
   packages/cookbook:
     specifiers:
       chalk: ^4.1.1
@@ -110,6 +127,7 @@ importers:
       '@near-js/client-browser': workspace:*
       '@near-js/client-core': workspace:*
       '@near-js/client-node': workspace:*
+      '@near-js/connected-wallet': workspace:*
       '@near-js/providers': workspace:*
       '@near-js/transactions': workspace:*
       '@types/bn.js': ^5.1.0
@@ -144,6 +162,7 @@ importers:
       '@near-js/client-browser': link:../client-browser
       '@near-js/client-core': link:../client-core
       '@near-js/client-node': link:../client-node
+      '@near-js/connected-wallet': link:../connected-wallet
       '@near-js/providers': link:../providers
       '@near-js/transactions': link:../transactions
       bn.js: 5.2.1

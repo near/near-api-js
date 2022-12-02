@@ -15,6 +15,7 @@
         "@near-js/client-browser": "workspace:*",
         "@near-js/client-core": "workspace:*",
         "@near-js/client-node": "workspace:*",
+        "@near-js/connected-wallet": "workspace:*",
         "@near-js/providers": "workspace:*",
         "@near-js/transactions": "workspace:*",
         "bn.js": "5.2.1",
