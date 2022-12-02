@@ -1,1 +1,1 @@
-export { BrowserLocalStorageKeyStore } from '@near-js/client-browser';
+export { BrowserLocalStorageKeyStore } from '@near-js/browser-keystore-localstorage';
