@@ -1,0 +1,26 @@
+{
+  "name": "@near-js/accounts",
+  "version": "0.0.1",
+  "description": "Classes encapsulating account-specific functionality",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "pnpm compile",
+    "compile": "tsc -p tsconfig.json",
+    "test": "jest test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@near-js/client-core": "workspace:*",
+    "@near-js/providers": "workspace:*",
+    "@near-js/transactions": "workspace:*",
+    "bn.js": "5.2.1",
+    "borsh": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14",
+    "jest": "^26.0.1",
+    "ts-jest": "^26.5.6"
+  }
+}
