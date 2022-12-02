@@ -1,0 +1,24 @@
+{
+  "name": "@near-js/connected-wallet",
+  "version": "0.0.1",
+  "description": "Dependencies for the NEAR API JavaScript client in the browser",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "pnpm compile",
+    "compile": "tsc -p tsconfig.json",
+    "test": "jest test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@near-js/accounts": "workspace:*",
+    "@near-js/client-core": "workspace:*",
+    "@near-js/transactions": "workspace:*",
+    "bn.js": "5.2.1",
+    "borsh": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14"
+  }
+}
