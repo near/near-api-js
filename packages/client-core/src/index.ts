@@ -7,3 +7,4 @@ export * from './logging';
 export * from './provider';
 export * from './signer';
 export * from './types';
+export * from './validators';
