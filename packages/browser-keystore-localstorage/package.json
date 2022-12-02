@@ -1,0 +1,18 @@
+{
+  "name": "@near-js/browser-keystore-localstorage",
+  "version": "0.0.1",
+  "description": "KeyStore implementation for working with keys in browser LocalStorage",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "pnpm compile",
+    "compile": "tsc -p tsconfig.json",
+    "test": "jest test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@near-js/client-core": "workspace:*",
+    "error-polyfill": "^0.1.3"
+  }
+}
