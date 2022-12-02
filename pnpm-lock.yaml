@@ -75,10 +75,8 @@ importers:
   packages/browser-keystore-localstorage:
     specifiers:
       '@near-js/client-core': workspace:*
-      error-polyfill: ^0.1.3
     dependencies:
       '@near-js/client-core': link:../client-core
-      error-polyfill: 0.1.3
 
   packages/client-core:
     specifiers:
