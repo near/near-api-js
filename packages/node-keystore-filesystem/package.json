@@ -1,7 +1,7 @@
 {
-  "name": "@near-js/client-node",
+  "name": "@near-js/node-keystore-filesystem",
   "version": "0.0.1",
-  "description": "Dependencies for the NEAR API JavaScript client in NodeJS",
+  "description": "KeyStore implementation for working with keys in the local filesystem",
   "main": "lib/index.js",
   "scripts": {
     "build": "pnpm compile",
