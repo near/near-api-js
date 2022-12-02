@@ -62,6 +62,7 @@ importers:
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
+      depd: ^2.0.0
       jest: ^26.0.1
       js-sha256: ^0.9.0
       mustache: ^4.0.0
@@ -70,6 +71,7 @@ importers:
     dependencies:
       bn.js: 5.2.1
       borsh: 0.7.0
+      depd: 2.0.0
       js-sha256: 0.9.0
       mustache: 4.2.0
       tweetnacl: 1.0.3
