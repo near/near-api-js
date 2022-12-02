@@ -30,6 +30,27 @@ importers:
       turbo: 1.6.3
       typescript: 4.9.4
 
+  packages/accounts:
+    specifiers:
+      '@near-js/client-core': workspace:*
+      '@near-js/providers': workspace:*
+      '@near-js/transactions': workspace:*
+      '@types/node': ^18.7.14
+      bn.js: 5.2.1
+      borsh: ^0.7.0
+      jest: ^26.0.1
+      ts-jest: ^26.5.6
+    dependencies:
+      '@near-js/client-core': link:../client-core
+      '@near-js/providers': link:../providers
+      '@near-js/transactions': link:../transactions
+      bn.js: 5.2.1
+      borsh: 0.7.0
+    devDependencies:
+      '@types/node': 18.7.14
+      jest: 26.6.3
+      ts-jest: 26.5.6_jest@26.6.3
+
   packages/biometric-ed25519:
     specifiers:
       '@aws-crypto/sha256-js': ^4.0.0
@@ -106,6 +127,7 @@ importers:
 
   packages/near-api-js:
     specifiers:
+      '@near-js/accounts': workspace:*
       '@near-js/client-browser': workspace:*
       '@near-js/client-core': workspace:*
       '@near-js/client-node': workspace:*
@@ -142,6 +164,7 @@ importers:
       tweetnacl: ^1.0.1
       uglifyify: ^5.0.1
     dependencies:
+      '@near-js/accounts': link:../accounts
       '@near-js/client-browser': link:../client-browser
       '@near-js/client-core': link:../client-core
       '@near-js/client-node': link:../client-node
@@ -5908,6 +5931,7 @@ packages:
   /node-fetch/2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
     engines: {node: 4.x || >=6.0.0}
+    requiresBuild: true
     peerDependencies:
       encoding: ^0.1.0
     peerDependenciesMeta:
