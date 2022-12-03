@@ -1,5 +1,5 @@
 {
-  "name": "@near-js/connected-wallet",
+  "name": "@near-js/wallet-account",
   "version": "0.0.1",
   "description": "Dependencies for the NEAR API JavaScript client in the browser",
   "main": "lib/index.js",

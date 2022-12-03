@@ -38,6 +38,7 @@ importers:
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
+      depd: ^2.0.0
       jest: ^26.0.1
       ts-jest: ^26.5.6
     dependencies:
@@ -46,6 +47,7 @@ importers:
       '@near-js/transactions': link:../transactions
       bn.js: 5.2.1
       borsh: 0.7.0
+      depd: 2.0.0
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
@@ -101,23 +103,6 @@ importers:
       jest: 26.6.3
       ts-jest: 26.5.6_jest@26.6.3
 
-  packages/connected-wallet:
-    specifiers:
-      '@near-js/accounts': workspace:*
-      '@near-js/client-core': workspace:*
-      '@near-js/transactions': workspace:*
-      '@types/node': ^18.7.14
-      bn.js: 5.2.1
-      borsh: ^0.7.0
-    dependencies:
-      '@near-js/accounts': link:../accounts
-      '@near-js/client-core': link:../client-core
-      '@near-js/transactions': link:../transactions
-      bn.js: 5.2.1
-      borsh: 0.7.0
-    devDependencies:
-      '@types/node': 18.7.14
-
   packages/cookbook:
     specifiers:
       chalk: ^4.1.1
@@ -133,10 +118,10 @@ importers:
       '@near-js/accounts': workspace:*
       '@near-js/browser-keystore-localstorage': workspace:*
       '@near-js/client-core': workspace:*
-      '@near-js/connected-wallet': workspace:*
       '@near-js/node-keystore-filesystem': workspace:*
       '@near-js/providers': workspace:*
       '@near-js/transactions': workspace:*
+      '@near-js/wallet-account': workspace:*
       '@types/bn.js': ^5.1.0
       '@types/http-errors': ^1.6.1
       '@types/node': ^18.7.14
@@ -168,10 +153,10 @@ importers:
       '@near-js/accounts': link:../accounts
       '@near-js/browser-keystore-localstorage': link:../browser-keystore-localstorage
       '@near-js/client-core': link:../client-core
-      '@near-js/connected-wallet': link:../connected-wallet
       '@near-js/node-keystore-filesystem': link:../node-keystore-filesystem
       '@near-js/providers': link:../providers
       '@near-js/transactions': link:../transactions
+      '@near-js/wallet-account': link:../wallet-account
       ajv: 8.11.2
       ajv-formats: 2.1.1_ajv@8.11.2
       bn.js: 5.2.1
@@ -254,6 +239,23 @@ importers:
       js-sha256: 0.9.0
       mustache: 4.2.0
       tweetnacl: 1.0.3
+    devDependencies:
+      '@types/node': 18.7.14
+
+  packages/wallet-account:
+    specifiers:
+      '@near-js/accounts': workspace:*
+      '@near-js/client-core': workspace:*
+      '@near-js/transactions': workspace:*
+      '@types/node': ^18.7.14
+      bn.js: 5.2.1
+      borsh: ^0.7.0
+    dependencies:
+      '@near-js/accounts': link:../accounts
+      '@near-js/client-core': link:../client-core
+      '@near-js/transactions': link:../transactions
+      bn.js: 5.2.1
+      borsh: 0.7.0
     devDependencies:
       '@types/node': 18.7.14
 
