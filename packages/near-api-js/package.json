@@ -14,7 +14,7 @@
         "@near-js/accounts": "workspace:*",
         "@near-js/browser-keystore-localstorage": "workspace:*",
         "@near-js/client-core": "workspace:*",
-        "@near-js/connected-wallet": "workspace:*",
+        "@near-js/wallet-account": "workspace:*",
         "@near-js/node-keystore-filesystem": "workspace:*",
         "@near-js/providers": "workspace:*",
         "@near-js/transactions": "workspace:*",
