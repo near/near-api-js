@@ -24,6 +24,10 @@ export {
     MULTISIG_CONFIRM_METHODS,
 } from './constants';
 export {
+    Contract,
+    ContractMethods,
+} from './contract';
+export {
     MultisigDeleteRequestRejectionError,
     MultisigStateStatus,
 } from './types';
