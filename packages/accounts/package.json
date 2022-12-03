@@ -16,7 +16,8 @@
     "@near-js/providers": "workspace:*",
     "@near-js/transactions": "workspace:*",
     "bn.js": "5.2.1",
-    "borsh": "^0.7.0"
+    "borsh": "^0.7.0",
+    "depd": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.7.14",
