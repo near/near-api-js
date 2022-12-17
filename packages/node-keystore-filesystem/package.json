@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",
-    "test": "jest test"
+    "test": "jest test --passWithNoTests"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,8 @@
     "@near-js/client-core": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^18.7.14"
+    "@types/node": "^18.7.14",
+    "jest": "^26.0.1",
+    "ts-jest": "^26.5.6"
   }
 }
