@@ -1,10 +1,10 @@
-
-const { Account, Contract, providers } = require('../src/index');
-const testUtils  = require('./test-utils');
-const { TypedError } = require('../src/utils/errors');
-const fs = require('fs');
+const { getTransactionLastResult, TypedError } = require('@near-js/client-core');
+const { transfer } = require('@near-js/transactions');
 const BN = require('bn.js');
-const { transfer } = require('../src/transaction');
+const fs = require('fs');
+
+const { Account, Contract } = require('../lib');
+const testUtils  = require('./test-utils');
 
 let nearjs;
 let workingAccount;
@@ -166,7 +166,7 @@ describe('with deploy contract', () => {
             methodName: 'setValue',
             args: { value: setCallValue }
         });
-        expect(providers.getTransactionLastResult(result2)).toEqual(setCallValue);
+        expect(getTransactionLastResult(result2)).toEqual(setCallValue);
         expect(await workingAccount.viewFunction({
             contractId,
             methodName: 'getValue'
@@ -181,7 +181,7 @@ describe('with deploy contract', () => {
             args: { value: setCallValue }
         });
 
-        const contractAccount = await nearjs.account(contractId);
+        const contractAccount = new Account(nearjs.connection, contractId);
         const state = (await contractAccount.viewState('')).map(({ key, value }) => [key.toString('utf-8'), value.toString('utf-8')]);
         expect(state).toEqual([['name', setCallValue]]);
     });
