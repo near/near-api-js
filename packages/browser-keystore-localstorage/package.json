@@ -6,12 +6,16 @@
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",
-    "test": "jest test"
+    "test": "jest test --passWithNoTests"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@near-js/client-core": "workspace:*"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1",
+    "ts-jest": "^26.5.6"
   }
 }

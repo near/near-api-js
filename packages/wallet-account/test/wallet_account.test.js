@@ -1,6 +1,11 @@
-const url = require('url');
-const localStorage = require('localstorage-memory');
+const { InMemoryKeyStore, InMemorySigner, KeyPair, PublicKey } = require('@near-js/client-core');
+const { createTransaction, functionCall, SCHEMA, Transaction, transfer } = require('@near-js/transactions');
 const BN = require('bn.js');
+const { baseDecode, deserialize } = require('borsh');
+const localStorage = require('localstorage-memory');
+const url = require('url');
+
+const { WalletConnection } = require('../lib/wallet_account');
 
 // If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -13,12 +18,11 @@ global.window = {
 global.document = {
     title: 'documentTitle'
 };
-const nearApi = require('../src/index');
 
 let history;
 let nearFake;
 let walletConnection;
-let keyStore = new nearApi.keyStores.InMemoryKeyStore();
+let keyStore = new InMemoryKeyStore();
 beforeEach(() => {
     keyStore.clear();
     nearFake = {
@@ -29,7 +33,7 @@ beforeEach(() => {
         },
         connection: {
             networkId: 'networkId',
-            signer: new nearApi.InMemorySigner(keyStore)
+            signer: new InMemorySigner(keyStore)
         },
         account() {
             return {
@@ -50,7 +54,7 @@ beforeEach(() => {
             replaceState: (state, title, url) => history.push([state, title, url])
         }
     });
-    walletConnection = new nearApi.WalletConnection(nearFake);
+    walletConnection = new WalletConnection(nearFake);
 });
 
 it('not signed in by default', () => {
@@ -70,26 +74,26 @@ describe('fails gracefully on the server side (without window)', () => {
     });
 
     it('does not throw on instantiation', () => {
-        expect(() => new nearApi.WalletConnection(nearFake)).not.toThrowError();
+        expect(() => new WalletConnection(nearFake)).not.toThrowError();
     });
 
     it('returns an empty string as accountId', () => {
-        const serverWalletConnection = new nearApi.WalletConnection(nearFake);
+        const serverWalletConnection = new WalletConnection(nearFake);
         expect(serverWalletConnection.getAccountId()).toEqual('');
     });
 
     it('returns false as isSignedIn', () => {
-        const serverWalletConnection = new nearApi.WalletConnection(nearFake);
+        const serverWalletConnection = new WalletConnection(nearFake);
         expect(serverWalletConnection.isSignedIn()).toEqual(false);
     });
 
     it('throws explicit error when calling other methods on the instance', () => {
-        const serverWalletConnection = new nearApi.WalletConnection(nearFake);
+        const serverWalletConnection = new WalletConnection(nearFake);
         expect(() => serverWalletConnection.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail')).toThrow(/please ensure you are using WalletConnection on the browser/);
     });
 
     it('can access other props on the instance', () => {
-        const serverWalletConnection = new nearApi.WalletConnection(nearFake);
+        const serverWalletConnection = new WalletConnection(nearFake);
         expect(serverWalletConnection['randomValue']).toEqual(undefined);
     });
 });
@@ -147,7 +151,7 @@ it('can request sign in with methodNames', async () => {
 });
 
 it('can complete sign in', async () => {
-    const keyPair = nearApi.KeyPair.fromRandom('ed25519');
+    const keyPair = KeyPair.fromRandom('ed25519');
     global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
     await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
 
@@ -161,11 +165,11 @@ it('can complete sign in', async () => {
 });
 
 it('Promise until complete sign in', async () => {
-    const keyPair = nearApi.KeyPair.fromRandom('ed25519');
+    const keyPair = KeyPair.fromRandom('ed25519');
     global.window.location.href = `http://example.com/location?account_id=near2.account&public_key=${keyPair.publicKey}`;
     await keyStore.setKey('networkId', 'pending_key' + keyPair.publicKey, keyPair);
 
-    const newWalletConn = new nearApi.WalletConnection(nearFake, 'promise_on_complete_signin');
+    const newWalletConn = new WalletConnection(nearFake, 'promise_on_complete_signin');
 
     expect(newWalletConn.isSignedIn()).toEqual(false);
     expect(await newWalletConn.isSignedInAsync()).toEqual(true);
@@ -177,14 +181,14 @@ it('Promise until complete sign in', async () => {
 });
 
 const BLOCK_HASH = '244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM';
-const blockHash = nearApi.utils.serialize.base_decode(BLOCK_HASH);
+const blockHash = baseDecode(BLOCK_HASH);
 function createTransferTx() {
     const actions = [
-        nearApi.transactions.transfer(1),
+        transfer(1),
     ];
-    return nearApi.transactions.createTransaction(
+    return createTransaction(
         'test.near',
-        nearApi.utils.PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
+        PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
         'whatever.near',
         1,
         actions,
@@ -237,9 +241,9 @@ function parseTransactionsFromUrl(urlToParse, callbackUrl = 'http://example.com/
         }
     });
     const transactions = parsedUrl.query.transactions.split(',')
-        .map(txBase64 => nearApi.utils.serialize.deserialize(
-            nearApi.transactions.SCHEMA,
-            nearApi.transactions.Transaction,
+        .map(txBase64 => deserialize(
+            SCHEMA,
+            Transaction,
             Buffer.from(txBase64, 'base64')));
     return transactions;
 }
@@ -284,7 +288,7 @@ function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
 }
 
 describe('requests transaction signing automatically when there is no local key', () => {
-    const keyPair = nearApi.KeyPair.fromRandom('ed25519');
+    const keyPair = KeyPair.fromRandom('ed25519');
     let transactions;
     beforeEach(() => {
         setupWalletConnectionForSigning({
@@ -303,7 +307,7 @@ describe('requests transaction signing automatically when there is no local key'
         try {
             await walletConnection.account().signAndSendTransaction({
                 receiverId: 'receiver.near',
-                actions: [nearApi.transactions.transfer(1)],
+                actions: [transfer(1)],
                 walletCallbackUrl: 'http://callback.com/callback'
             });
             fail('expected to throw');
@@ -333,8 +337,8 @@ describe('requests transaction signing automatically when there is no local key'
 
 describe('requests transaction signing automatically when function call has attached deposit', () => {
     beforeEach(async() => {
-        const localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
-        const walletKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+        const localKeyPair = KeyPair.fromRandom('ed25519');
+        const walletKeyPair = KeyPair.fromRandom('ed25519');
         setupWalletConnectionForSigning({
             allKeys: [ walletKeyPair.publicKey.toString() ],
             accountAccessKeys: [{
@@ -364,7 +368,7 @@ describe('requests transaction signing automatically when function call has atta
         try {
             await walletConnection.account().signAndSendTransaction({
                 receiverId: 'receiver.near',
-                actions: [nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))],
+                actions: [functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))],
                 walletCallbackUrl: 'http://example.com/after',
                 walletMeta: 'someStuff'
             });
@@ -380,8 +384,8 @@ describe('requests transaction signing automatically when function call has atta
 
 describe('requests transaction signing with 2fa access key', () => {
     beforeEach(async () => {
-        let localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
-        let walletKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+        let localKeyPair = KeyPair.fromRandom('ed25519');
+        let walletKeyPair = KeyPair.fromRandom('ed25519');
         setupWalletConnectionForSigning({
             allKeys: [ walletKeyPair.publicKey.toString() ],
             accountAccessKeys: [{
@@ -405,7 +409,7 @@ describe('requests transaction signing with 2fa access key', () => {
         try {
             const res = await walletConnection.account().signAndSendTransaction({
                 receiverId: 'receiver.near',
-                actions: [nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))]
+                actions: [functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))]
             });
 
             // multisig access key is accepted res is object representing transaction, populated upon wallet redirect to app
@@ -419,8 +423,8 @@ describe('requests transaction signing with 2fa access key', () => {
 
 describe('fails requests transaction signing without 2fa access key', () => {
     beforeEach(async () => {
-        const localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
-        const walletKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+        const localKeyPair = KeyPair.fromRandom('ed25519');
+        const walletKeyPair = KeyPair.fromRandom('ed25519');
         setupWalletConnectionForSigning({
             allKeys: [ walletKeyPair.publicKey.toString() ],
             accountAccessKeys: [{
@@ -444,7 +448,7 @@ describe('fails requests transaction signing without 2fa access key', () => {
         return expect(
             walletConnection.account().signAndSendTransaction({
                 receiverId: 'receiver.near',
-                actions: [nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))]
+                actions: [functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))]
             })
         ).rejects.toThrow('Cannot find matching key for transaction sent to receiver.near');
     });
@@ -452,7 +456,7 @@ describe('fails requests transaction signing without 2fa access key', () => {
 
 describe('can sign transaction locally when function call has no attached deposit', () => {
     beforeEach(async () => {
-        const localKeyPair = nearApi.KeyPair.fromRandom('ed25519');
+        const localKeyPair = KeyPair.fromRandom('ed25519');
         setupWalletConnectionForSigning({
             allKeys: [ /* no keys in wallet needed */ ],
             accountAccessKeys: [{
@@ -473,9 +477,9 @@ describe('can sign transaction locally when function call has no attached deposi
     });
 
     it.each([
-        nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0')),
-        nearApi.transactions.functionCall('someMethod', new Uint8Array(), new BN('1')),
-        nearApi.transactions.functionCall('someMethod', new Uint8Array())
+        functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0')),
+        functionCall('someMethod', new Uint8Array(), new BN('1')),
+        functionCall('someMethod', new Uint8Array())
     ])('V2', async (functionCall) => {
         await walletConnection.account().signAndSendTransaction({
             receiverId: 'receiver.near',

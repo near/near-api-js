@@ -1,4 +1,5 @@
-const nearApi = require('../src/index');
+const { KeyPair } = require('@near-js/client-core');
+
 const testUtils = require('./test-utils');
 
 let nearjs;
@@ -19,7 +20,7 @@ beforeEach(async () => {
 });
 
 test('make function call using access key', async() => {
-    const keyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
+    const keyPair = KeyPair.fromRandom('ed25519');
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '2000000000000000000000000');
 
     // Override in the key store the workingAccount key to the given access key.
@@ -30,7 +31,7 @@ test('make function call using access key', async() => {
 });
 
 test('remove access key no longer works', async() => {
-    const keyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
+    const keyPair = KeyPair.fromRandom('ed25519');
     let publicKey = keyPair.getPublicKey();
     await workingAccount.addKey(publicKey, contractId, '', 400000);
     await workingAccount.deleteKey(publicKey);
@@ -46,11 +47,11 @@ test('remove access key no longer works', async() => {
 });
 
 test('view account details after adding access keys', async() => {
-    const keyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
+    const keyPair = KeyPair.fromRandom('ed25519');
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 1000000000);
 
     const contract2 = await testUtils.deployContract(workingAccount, testUtils.generateUniqueString('test_contract2'));
-    const keyPair2 = nearApi.utils.KeyPair.fromRandom('ed25519');
+    const keyPair2 = KeyPair.fromRandom('ed25519');
     await workingAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', 2000000000);
 
     const details = await workingAccount.getAccountDetails();
@@ -71,7 +72,7 @@ test('view account details after adding access keys', async() => {
 });
 
 test('loading account after adding a full key', async() => {
-    const keyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
+    const keyPair = KeyPair.fromRandom('ed25519');
     // wallet calls this with an empty string for contract id and method
     await workingAccount.addKey(keyPair.getPublicKey(), '', '');
 

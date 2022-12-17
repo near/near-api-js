@@ -1,21 +1,15 @@
 /* global BigInt */
-const nearApi = require('../src/index');
-const fs = require('fs');
+const { InMemorySigner, KeyPair, parseNearAmount } = require('@near-js/client-core');
+const { functionCall, transfer } = require('@near-js/transactions');
 const BN = require('bn.js');
-const testUtils  = require('./test-utils');
+const fs = require('fs');
 const semver = require('semver');
-const { transfer } = require('../src/transaction');
+
+const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS } = require('../lib');
+const testUtils  = require('./test-utils');
 
 let nearjs;
 let startFromVersion;
-
-const {
-    KeyPair,
-    transactions: { functionCall },
-    InMemorySigner,
-    multisig: { Account2FA, MULTISIG_GAS, MULTISIG_DEPOSIT },
-    utils: { format: { parseNearAmount } }
-} = nearApi;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
@@ -49,7 +43,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     account2fa.getRecoveryMethods = () => ({
         data: keys.map(keyMapping)
     });
-    await account2fa.deployMultisig([...fs.readFileSync('./test/data/multisig.wasm')]);
+    await account2fa.deployMultisig([...fs.readFileSync('./test/wasm/multisig.wasm')]);
     return account2fa;
 };
 
