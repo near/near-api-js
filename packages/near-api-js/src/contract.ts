@@ -1,8 +1,11 @@
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import BN from 'bn.js';
 import depd from 'depd';
+import { AbiFunction, AbiFunctionKind, AbiJsonParameter, AbiRoot, AbiSerializationType } from 'near-abi';
 import { Account } from './account';
 import { getTransactionLastResult } from './providers';
-import { PositionalArgsError, ArgumentTypeError } from './utils/errors';
+import { PositionalArgsError, ArgumentTypeError, UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError } from './utils/errors';
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
@@ -11,6 +14,27 @@ function nameFunction(name: string, body: (args?: any[]) => any) {
             return body(...args);
         }
     }[name];
+}
+
+function validateArguments(args: object, params: AbiJsonParameter[], ajv: Ajv, abi: AbiRoot) {
+    if (isObject(args)) {
+        for (const p of params) {
+            const arg = args[p.name];
+            const typeSchema = p.type_schema;
+            typeSchema.definitions = abi.body.root_schema.definitions;
+            const validate = ajv.compile(typeSchema);
+            if (!validate(arg)) {
+                throw new ArgumentSchemaError(p.name, validate.errors);
+            }
+        }
+        // Check there are no extra unknown arguments passed
+        for (const argName of Object.keys(args)) {
+            const param = params.find((p) => p.name === argName);
+            if (!param) {
+                throw new UnknownArgumentError(argName, params.map((p) => p.name));
+            }
+        }
+    }
 }
 
 const isUint8Array = (x: any) =>
@@ -42,6 +66,11 @@ export interface ContractMethods {
      * @see {@link account!Account#viewFunction}
      */
     viewMethods: string[];
+
+    /**
+     * ABI defining this contract's interface.
+     */
+    abi: AbiRoot;
 }
 
 /**
@@ -90,45 +119,92 @@ export class Contract {
     constructor(account: Account, contractId: string, options: ContractMethods) {
         this.account = account;
         this.contractId = contractId;
-        const { viewMethods = [], changeMethods = [] } = options;
-        viewMethods.forEach((methodName) => {
-            Object.defineProperty(this, methodName, {
+        const { viewMethods = [], changeMethods = [], abi: abiRoot } = options;
+
+        let viewMethodsWithAbi = viewMethods.map((name) => ({ name, abi: null as AbiFunction }));
+        let changeMethodsWithAbi = changeMethods.map((name) => ({ name, abi: null }));
+        if (abiRoot) {
+            const abiViewMethods = abiRoot.body.functions
+                .filter((m) => m.kind === AbiFunctionKind.View)
+                .map((m) => ({ name: m.name, abi: m }));
+            const abiChangeMethods = abiRoot.body.functions
+                .filter((methodAbi) => methodAbi.kind === AbiFunctionKind.Call)
+                .map((methodAbi) => ({ name: methodAbi.name, abi: methodAbi }));
+            viewMethodsWithAbi = viewMethodsWithAbi.concat(abiViewMethods);
+            changeMethodsWithAbi = changeMethodsWithAbi.concat(abiChangeMethods);
+        }
+
+        // Strict mode is disabled for now as it complains about unknown formats. We need to
+        // figure out if we want to support a fixed set of formats. `uint32` and `uint64`
+        // are added explicitly just to reduce the amount of warnings as these are very popular
+        // types.
+        const ajv = new Ajv({
+            strictSchema: false,
+            formats: {
+                uint32: true,
+                uint64: true
+            }
+        });
+        addFormats(ajv);
+
+        viewMethodsWithAbi.forEach(({ name, abi }) => {
+            Object.defineProperty(this, name, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(methodName, async (args: object = {}, options = {}, ...ignored) => {
+                value: nameFunction(name, async (args: object = {}, options = {}, ...ignored) => {
                     if (ignored.length || !(isObject(args) || isUint8Array(args)) || !isObject(options)) {
                         throw new PositionalArgsError();
                     }
+
+                    if (abi) {
+                        if (abi.params && abi.params.serialization_type !== AbiSerializationType.Json) {
+                            throw new UnsupportedSerializationError(abi.name, abi.params.serialization_type);
+                        }
+
+                        if (abi.result && abi.result.serialization_type !== AbiSerializationType.Json) {
+                            throw new UnsupportedSerializationError(abi.name, abi.params.serialization_type);
+                        }
+
+                        // Safe cast as we have asserted that root ABI contains exclusively JSON parameters
+                        const params = abi ? abi.params.args as AbiJsonParameter[] : [];
+                        validateArguments(args, params, ajv, abiRoot);
+                    }
+
                     return this.account.viewFunction({
                         contractId: this.contractId,
-                        methodName,
+                        methodName: name,
                         args,
                         ...options,
                     });
                 })
             });
         });
-        changeMethods.forEach((methodName) => {
-            Object.defineProperty(this, methodName, {
+        changeMethodsWithAbi.forEach(({ name, abi }) => {
+            Object.defineProperty(this, name, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(methodName, async (...args: any[]) => {
+                value: nameFunction(name, async (...args: any[]) => {
                     if (args.length && (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))) {
                         throw new PositionalArgsError();
                     }
 
-                    if(args.length > 1 || !(args[0] && args[0].args)) {
+                    if (args.length > 1 || !(args[0] && args[0].args)) {
                         const deprecate = depd('contract.methodName(args, gas, amount)');
                         deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
-                        return this._changeMethod({
-                            methodName,
+                        args[0] = {
                             args: args[0],
                             gas: args[1],
                             amount: args[2]
-                        });
+                        };
                     }
 
-                    return this._changeMethod({ methodName, ...args[0] });
+                    if (abi) {
+                        // Safe cast as we have asserted that root ABI contains exclusively JSON parameters
+                        const params = abi.params.args as AbiJsonParameter[];
+                        validateArguments(args[0].args, params, ajv, abiRoot);
+                    }
+
+                    return this._changeMethod({ methodName: name, ...args[0] });
                 })
             });
         });

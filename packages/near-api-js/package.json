@@ -11,6 +11,8 @@
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
     "dependencies": {
+        "ajv": "^8.11.2",
+        "ajv-formats": "^2.1.1",
         "bn.js": "5.2.1",
         "borsh": "^0.7.0",
         "bs58": "^4.0.0",
@@ -19,6 +21,7 @@
         "http-errors": "^1.7.2",
         "js-sha256": "^0.9.0",
         "mustache": "^4.0.0",
+        "near-abi": "git@github.com:near/near-abi-js.git",
         "node-fetch": "^2.6.1",
         "text-encoding-utf-8": "^1.0.2",
         "tweetnacl": "^1.0.1"
