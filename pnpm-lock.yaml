@@ -63,7 +63,7 @@ importers:
       js-sha256: ^0.9.0
       localstorage-memory: ^1.0.3
       mustache: ^4.0.0
-      near-abi: git@github.com:near/near-abi-js.git
+      near-abi: 0.1.1
       near-hello: ^0.5.1
       node-fetch: ^2.6.1
       rimraf: ^3.0.0
@@ -83,7 +83,7 @@ importers:
       http-errors: 1.8.1
       js-sha256: 0.9.0
       mustache: 4.2.0
-      near-abi: github.com/near/near-abi-js/21fc06476116346c622f05321ce93f8755625e97
+      near-abi: 0.1.1
       node-fetch: 2.6.7
       text-encoding-utf-8: 1.0.2
       tweetnacl: 1.0.3
@@ -5604,6 +5604,12 @@ packages:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
 
+  /near-abi/0.1.1:
+    resolution: {integrity: sha512-RVDI8O+KVxRpC3KycJ1bpfVj9Zv+xvq9PlW1yIFl46GhrnLw83/72HqHGjGDjQ8DtltkcpSjY9X3YIGZ+1QyzQ==}
+    dependencies:
+      '@types/json-schema': 7.0.11
+    dev: false
+
   /near-hello/0.5.1:
     resolution: {integrity: sha512-k7S8VFyESWgkKYDso99B4XbxAdo0VX9b3+GAaO5PvMgQjNr/6o09PHRywg/NkBQpf+ZYj7nNpJcyrNJGQsvA3w==}
     dev: true
@@ -7706,11 +7712,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  github.com/near/near-abi-js/21fc06476116346c622f05321ce93f8755625e97:
-    resolution: {tarball: https://codeload.github.com/near/near-abi-js/tar.gz/21fc06476116346c622f05321ce93f8755625e97}
-    name: near-abi
-    version: 0.1.0
-    dependencies:
-      '@types/json-schema': 7.0.11
-    dev: false
