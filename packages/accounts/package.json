@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.7.14",
+    "bs58": "^4.0.0",
     "jest": "^26.0.1",
     "near-hello": "^0.5.1",
     "ts-jest": "^26.5.6"
