@@ -1,4 +1,5 @@
 const BN = require('bn.js');
+
 const testUtils = require('./test-utils');
 
 let nearjs;
