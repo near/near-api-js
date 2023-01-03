@@ -11,7 +11,6 @@ const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
     changeMethods: ['setValue', 'callPromise']
 };
-const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multisig.wasm';
 // Length of a random account. Set to 40 because in the protocol minimal allowed top-level account length should be at
 // least 32.
 const RANDOM_ACCOUNT_LENGTH = 40;
@@ -46,62 +45,11 @@ async function createAccount(near) {
     return account;
 }
 
-async function createAccountMultisig(near, options) {
-    const newAccountName = generateUniqueString('test');
-    const newPublicKey = await near.connection.signer.createKey(newAccountName, networkId);
-    await near.createAccount(newAccountName, newPublicKey);
-    // add a confirm key for multisig (contract helper sim)
-
-    try {
-        const confirmKeyPair = nearApi.utils.KeyPair.fromRandom('ed25519');
-        const { publicKey } = confirmKeyPair;
-        // const account = new nearApi.Account(near.connection, newAccountName);
-        // await account.addKey(publicKey, account.accountId, nearApi.multisig.MULTISIG_CONFIRM_METHODS, '0')
-        // create multisig account instance and deploy contract
-        const accountMultisig = new nearApi.multisig.AccountMultisig(near.connection, newAccountName, options);
-        accountMultisig.useConfirmKey = async () => {
-            await near.connection.signer.setKey(networkId, options.masterAccount, confirmKeyPair);
-        };
-        accountMultisig.getRecoveryMethods = () => ({ data: [] });
-        accountMultisig.postSignedJson = async (path) => {
-            switch (path) {
-            case '/2fa/getAccessKey': return { publicKey };
-            }
-        };
-        await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
-        return accountMultisig;
-    } catch (e) {
-        console.log(e);
-    }
-}
-
 async function deployContract(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = [...(await fs.readFile(HELLO_WASM_PATH))];
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
     return new nearApi.Contract(workingAccount, contractId, HELLO_WASM_METHODS);
-}
-
-function sleep(time) {
-    return new Promise(function (resolve) {
-        setTimeout(resolve, time);
-    });
-}
-
-function waitFor(fn) {
-    const _waitFor = async (count = 10) => {
-        try {
-            return await fn();
-        } catch (e) {
-            if (count > 0) {
-                await sleep(500);
-                return _waitFor(count - 1);
-            }
-            else throw e;
-        }
-    };
-
-    return _waitFor();
 }
 
 async function ensureDir(dirpath) {
@@ -117,11 +65,6 @@ module.exports = {
     networkId,
     generateUniqueString,
     createAccount,
-    createAccountMultisig,
     deployContract,
-    sleep,
-    waitFor,
     ensureDir,
-    HELLO_WASM_PATH,
-    HELLO_WASM_BALANCE,
 };
