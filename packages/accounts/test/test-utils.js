@@ -89,6 +89,28 @@ async function deployContract(workingAccount, contractId) {
     return new Contract(workingAccount, contractId, HELLO_WASM_METHODS);
 }
 
+function sleep(time) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, time);
+    });
+}
+
+function waitFor(fn) {
+    const _waitFor = async (count = 10) => {
+        try {
+            return await fn();
+        } catch (e) {
+            if (count > 0) {
+                await sleep(500);
+                return _waitFor(count - 1);
+            }
+            else throw e;
+        }
+    };
+
+    return _waitFor();
+}
+
 module.exports = {
     setUpTestConnection,
     networkId,
@@ -98,4 +120,6 @@ module.exports = {
     deployContract,
     HELLO_WASM_PATH,
     HELLO_WASM_BALANCE,
+    sleep,
+    waitFor,
 };
