@@ -38,6 +38,7 @@ importers:
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
+      bs58: ^4.0.0
       depd: ^2.0.0
       jest: ^26.0.1
       near-hello: ^0.5.1
@@ -51,6 +52,7 @@ importers:
       depd: 2.0.0
     devDependencies:
       '@types/node': 18.7.14
+      bs58: 4.0.1
       jest: 26.6.3
       near-hello: 0.5.1
       ts-jest: 26.5.6_jest@26.6.3
