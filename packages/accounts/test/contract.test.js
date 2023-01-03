@@ -1,5 +1,6 @@
-const { Contract } = require('../src/contract');
-const { PositionalArgsError } = require('../src/utils/errors');
+const { PositionalArgsError } = require('@near-js/client-core');
+
+const { Contract } = require('../lib');
 
 const account = {
     viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery}) {
