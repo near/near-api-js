@@ -16,9 +16,7 @@
     "@near-js/transactions": "workspace:*",
     "bn.js": "5.2.1",
     "borsh": "^0.7.0",
-    "http-errors": "^1.7.2",
-    "js-sha256": "^0.9.0",
-    "tweetnacl": "^1.0.1"
+    "http-errors": "^1.7.2"
   },
   "devDependencies": {
     "@types/node": "^18.7.14",
