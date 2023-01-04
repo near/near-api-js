@@ -12,15 +12,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@near-js/client-core": "workspace:*",
     "@near-js/transactions": "workspace:*",
     "@near-js/types": "workspace:*",
+    "@near-js/utils": "workspace:*",
     "bn.js": "5.2.1",
     "borsh": "^0.7.0",
     "http-errors": "^1.7.2"
   },
   "devDependencies": {
-    "@types/node": "^18.7.14",
+    "@types/node": "^18.11.18",
     "jest": "^26.0.1",
     "ts-jest": "^26.5.6",
     "typescript": "^4.9.4"

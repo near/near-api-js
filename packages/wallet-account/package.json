@@ -13,17 +13,17 @@
   "license": "ISC",
   "dependencies": {
     "@near-js/accounts": "workspace:*",
-    "@near-js/client-core": "workspace:*",
     "@near-js/keypairs": "workspace:*",
     "@near-js/keystores": "workspace:*",
     "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",
     "@near-js/types": "workspace:*",
+    "@near-js/utils": "workspace:*",
     "bn.js": "5.2.1",
     "borsh": "^0.7.0"
   },
   "devDependencies": {
-    "@types/node": "^18.7.14",
+    "@types/node": "^18.11.18",
     "jest": "^26.0.1",
     "localstorage-memory": "^1.0.3",
     "ts-jest": "^26.5.6",

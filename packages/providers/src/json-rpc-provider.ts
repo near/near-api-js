@@ -8,7 +8,7 @@
 import {
     getErrorTypeFromErrorMessage,
     parseRpcError,
-} from '@near-js/client-core';
+} from '@near-js/utils';
 import {
     AccessKeyWithPublicKey,
     BlockId,

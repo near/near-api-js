@@ -1,4 +1,4 @@
-const { getTransactionLastResult } = require('@near-js/client-core');
+const { getTransactionLastResult } = require('@near-js/utils');
 
 const { JsonRpcProvider } = require('../lib');
 

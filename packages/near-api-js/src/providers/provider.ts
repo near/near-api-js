@@ -1,5 +1,5 @@
 
-export { getTransactionLastResult } from '@near-js/client-core';
+export { getTransactionLastResult } from '@near-js/utils';
 export { Provider } from '@near-js/providers';
 export {
     IdType,

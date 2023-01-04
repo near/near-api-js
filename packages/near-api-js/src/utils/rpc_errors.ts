@@ -4,4 +4,4 @@ export {
     formatError,
     getErrorTypeFromErrorMessage,
     ServerError,
-} from '@near-js/client-core';
+} from '@near-js/utils';

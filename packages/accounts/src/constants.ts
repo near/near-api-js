@@ -1,4 +1,4 @@
-import { parseNearAmount } from '@near-js/client-core';
+import { parseNearAmount } from '@near-js/utils';
 import BN from 'bn.js';
 
 export const MULTISIG_STORAGE_KEY = '__multisigRequest';

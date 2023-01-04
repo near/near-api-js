@@ -1,1 +1,1 @@
-export { printTxOutcomeLogs, printTxOutcomeLogsAndFailures } from '@near-js/client-core';
+export { printTxOutcomeLogs, printTxOutcomeLogsAndFailures } from '@near-js/utils';
