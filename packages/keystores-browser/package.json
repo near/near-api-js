@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",
-    "test": "jest test --passWithNoTests"
+    "test": "jest test"
   },
   "keywords": [],
   "author": "",
