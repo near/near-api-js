@@ -9,7 +9,8 @@
     "preinstall": "npx only-allow pnpm",
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "lint": "turbo run lint",
+    "lint": "concurrently \"turbo run lint:ts\" \"turbo run lint:js\"",
+    "lint:fix": "concurrently \"turbo run lint:ts:fix\" \"turbo run lint:js:fix\"",
     "test": "turbo run test",
     "release": "changeset publish",
     "prepare": "husky install"
@@ -19,13 +20,14 @@
     "@changesets/cli": "^2.24.4",
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "typescript": "^4.7.4",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "commitlint": "^17.0.3",
+    "concurrently": "^7.6.0",
     "eslint": "^8.20.0",
     "husky": "^7.0.4",
     "rimraf": "^3.0.2",
-    "turbo": "^1.4.5"
+    "turbo": "^1.4.5",
+    "typescript": "^4.7.4"
   }
 }

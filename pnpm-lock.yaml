@@ -11,6 +11,7 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.31.0
       '@typescript-eslint/parser': ^5.31.0
       commitlint: ^17.0.3
+      concurrently: ^7.6.0
       eslint: ^8.20.0
       husky: ^7.0.4
       rimraf: ^3.0.2
@@ -24,6 +25,7 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.46.1_imrg37k3svwu377c6q7gkarwmi
       '@typescript-eslint/parser': 5.46.1_ha6vam6werchizxrnqvarmz2zu
       commitlint: 17.3.0
+      concurrently: 7.6.0
       eslint: 8.29.0
       husky: 7.0.4
       rimraf: 3.0.2

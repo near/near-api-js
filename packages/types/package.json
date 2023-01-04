@@ -5,7 +5,9 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "pnpm compile",
-    "compile": "tsc -p tsconfig.json"
+    "compile": "tsc -p tsconfig.json",
+    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
+    "lint:fix": "eslint **/*.ts"
   },
   "keywords": [],
   "author": "",
