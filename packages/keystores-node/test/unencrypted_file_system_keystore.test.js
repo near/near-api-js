@@ -1,13 +1,11 @@
-
-const rimraf  = require('util').promisify(require('rimraf'));
-
-const nearApi = require('../../src/index');
-const UnencryptedFileSystemKeyStore = nearApi.keyStores.UnencryptedFileSystemKeyStore;
-const KeyPair = nearApi.utils.KeyPairEd25519;
+const { KeyPairEd25519 } = require('@near-js/keypairs');
 const fs = require('fs').promises;
 const path = require('path');
+const rimraf  = require('util').promisify(require('rimraf'));
 
-const KEYSTORE_PATH = '../test-keys';
+const { UnencryptedFileSystemKeyStore } = require('../lib');
+
+const KEYSTORE_PATH = '../../test-keys';
 
 describe('Unencrypted file system keystore', () => {
     let ctx = {};
@@ -29,7 +27,7 @@ describe('Unencrypted file system keystore', () => {
     });
 
     it('test public key exists', async () => {
-        const key1 = KeyPair.fromRandom();
+        const key1 = KeyPairEd25519.fromRandom();
         await ctx.keyStore.setKey('network', 'account', key1);
         const keyFilePath = ctx.keyStore.getKeyFilePath('network', 'account');
         const content = await fs.readFile(keyFilePath);

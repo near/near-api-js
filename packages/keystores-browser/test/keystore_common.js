@@ -1,11 +1,8 @@
-
-const nearApi = require('../../src/index');
-
-const KeyPair = nearApi.utils.KeyPairEd25519;
+const { KeyPairEd25519 } = require('@near-js/keypairs');
 
 const NETWORK_ID_SINGLE_KEY = 'singlekeynetworkid';
 const ACCOUNT_ID_SINGLE_KEY = 'singlekey_accountid';
-const KEYPAIR_SINGLE_KEY = new KeyPair('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
+const KEYPAIR_SINGLE_KEY = new KeyPairEd25519('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
 
 module.exports.shouldStoreAndRetriveKeys = ctx => {
     beforeEach(async () => {
@@ -41,8 +38,8 @@ module.exports.shouldStoreAndRetriveKeys = ctx => {
         const networkId = 'twoKeyNetwork';
         const accountId1 = 'acc1';
         const accountId2 = 'acc2';
-        const key1Expected = KeyPair.fromRandom();
-        const key2Expected = KeyPair.fromRandom();
+        const key1Expected = KeyPairEd25519.fromRandom();
+        const key2Expected = KeyPairEd25519.fromRandom();
         await ctx.keyStore.setKey(networkId, accountId1, key1Expected);
         await ctx.keyStore.setKey(networkId, accountId2, key2Expected);
         const key1 = await ctx.keyStore.getKey(networkId, accountId1);

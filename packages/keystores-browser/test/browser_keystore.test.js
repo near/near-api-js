@@ -1,6 +1,4 @@
-const nearApi = require('../../src/index');
-
-const BrowserLocalStorageKeyStore = nearApi.keyStores.BrowserLocalStorageKeyStore;
+const { BrowserLocalStorageKeyStore } = require('../lib');
 
 describe('Browser keystore', () => {
     let ctx = {};
