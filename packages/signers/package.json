@@ -1,0 +1,24 @@
+{
+  "name": "@near-js/signers",
+  "version": "0.0.1",
+  "description": "Core dependencies for the NEAR API JavaScript client",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "pnpm compile",
+    "compile": "tsc -p tsconfig.json",
+    "test": "jest test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@near-js/keypairs": "workspace:*",
+    "@near-js/keystores": "workspace:*",
+    "js-sha256": "^0.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14",
+    "jest": "^26.0.1",
+    "ts-jest": "^26.5.6"
+  }
+}

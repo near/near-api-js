@@ -13,13 +13,17 @@
   "license": "ISC",
   "dependencies": {
     "@near-js/client-core": "workspace:*",
+    "@near-js/keypairs": "workspace:*",
     "@near-js/providers": "workspace:*",
+    "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",
+    "@near-js/types": "workspace:*",
     "bn.js": "5.2.1",
     "borsh": "^0.7.0",
     "depd": "^2.0.0"
   },
   "devDependencies": {
+    "@near-js/keystores": "workspace:*",
     "@types/node": "^18.7.14",
     "bs58": "^4.0.0",
     "jest": "^26.0.1",

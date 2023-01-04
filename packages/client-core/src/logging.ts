@@ -1,5 +1,6 @@
+import { FinalExecutionOutcome } from '@near-js/types';
+
 import { parseRpcError } from './errors';
-import { FinalExecutionOutcome } from './provider';
 
 const SUPPRESS_LOGGING = !!process.env.NEAR_NO_LOGS;
 

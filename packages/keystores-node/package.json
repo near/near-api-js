@@ -1,5 +1,5 @@
 {
-  "name": "@near-js/node-keystore-filesystem",
+  "name": "@near-js/keystores-node",
   "version": "0.0.1",
   "description": "KeyStore implementation for working with keys in the local filesystem",
   "main": "lib/index.js",
@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@near-js/client-core": "workspace:*"
+    "@near-js/keypairs": "workspace:*",
+    "@near-js/keystores": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^18.7.14",

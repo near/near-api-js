@@ -1,4 +1,6 @@
-const { InMemoryKeyStore, InMemorySigner } = require('../lib');
+const { InMemoryKeyStore } = require('@near-js/keystores');
+
+const { InMemorySigner } = require('../lib');
 
 test('test no key', async() => {
     const signer = new InMemorySigner(new InMemoryKeyStore());

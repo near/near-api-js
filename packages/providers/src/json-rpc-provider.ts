@@ -6,6 +6,10 @@
  * @see {@link providers/provider | providers} for a list of request and response types
  */
 import {
+    getErrorTypeFromErrorMessage,
+    parseRpcError,
+} from '@near-js/client-core';
+import {
     AccessKeyWithPublicKey,
     BlockId,
     BlockReference,
@@ -23,9 +27,7 @@ import {
     NodeStatusResult,
     QueryResponseKind,
     TypedError,
-    getErrorTypeFromErrorMessage,
-    parseRpcError,
-} from '@near-js/client-core';
+} from '@near-js/types';
 import {
     SignedTransaction,
 } from '@near-js/transactions';

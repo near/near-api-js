@@ -1,4 +1,4 @@
-const { PositionalArgsError } = require('@near-js/client-core');
+const { PositionalArgsError } = require('@near-js/types');
 
 const { Contract } = require('../lib');
 
