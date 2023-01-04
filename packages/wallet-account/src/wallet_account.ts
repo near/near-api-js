@@ -11,16 +11,11 @@ import {
     Connection,
     SignAndSendTransactionOptions,
 } from '@near-js/accounts';
-import {
-    FinalExecutionOutcome,
-    InMemorySigner,
-    KeyPair,
-    KeyStore,
-    PublicKey,
-} from '@near-js/client-core';
-import {
-    Transaction, Action, SCHEMA, createTransaction
-} from '@near-js/transactions';
+import { KeyPair, PublicKey } from '@near-js/keypairs';
+import { KeyStore } from '@near-js/keystores';
+import { InMemorySigner } from '@near-js/signers';
+import { FinalExecutionOutcome } from '@near-js/types';
+import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
 import BN from 'bn.js';
 import { baseDecode, serialize } from 'borsh';
 

@@ -1,7 +1,7 @@
+import { Assignable } from '@near-js/types';
 import { baseEncode, baseDecode } from 'borsh';
 import nacl from 'tweetnacl';
 
-import { Assignable } from '../types';
 import { KeyType } from './constants';
 
 function key_type_to_str(keyType: KeyType): string {

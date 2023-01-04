@@ -1,4 +1,5 @@
-const { InMemoryKeyStore, KeyPair } = require('@near-js/client-core');
+const { KeyPair } = require('@near-js/keypairs');
+const { InMemoryKeyStore } = require('@near-js/keystores');
 const BN = require('bn.js');
 const fs = require('fs').promises;
 

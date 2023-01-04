@@ -1,6 +1,4 @@
-import {
-    TypedError,
-} from '@near-js/client-core';
+import { TypedError } from '@near-js/types';
 import createError from 'http-errors';
 
 import { exponentialBackoff } from './exponential-backoff';

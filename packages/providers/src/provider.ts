@@ -3,6 +3,7 @@
  * @module
  */
 
+import { SignedTransaction } from '@near-js/transactions';
 import {
     AccessKeyWithPublicKey,
     BlockChangeResult,
@@ -21,10 +22,7 @@ import {
     QueryResponseKind,
     RpcQueryRequest,
     EpochValidatorInfo,
-} from '@near-js/client-core';
-import {
-    SignedTransaction,
-} from '@near-js/transactions';
+} from '@near-js/types';
 
 /** @hidden */
 export abstract class Provider {

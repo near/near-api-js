@@ -12,6 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "@near-js/client-core": "workspace:*",
+    "@near-js/keypairs": "workspace:*",
+    "@near-js/signers": "workspace:*",
+    "@near-js/types": "workspace:*",
     "bn.js": "5.2.1",
     "borsh": "^0.7.0",
     "js-sha256": "^0.9.0"

@@ -1,4 +1,5 @@
-import { Assignable, KeyType, PublicKey } from '@near-js/client-core';
+import { KeyType, PublicKey } from '@near-js/keypairs';
+import { Assignable } from '@near-js/types';
 import BN from 'bn.js';
 import { deserialize, serialize } from 'borsh';
 

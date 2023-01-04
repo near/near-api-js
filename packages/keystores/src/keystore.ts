@@ -1,4 +1,4 @@
-import { KeyPair } from '../key_pair';
+import { KeyPair } from '@near-js/keypairs';
 
 /**
  * KeyStores are passed to {@link near!Near} via {@link near!NearConfig}

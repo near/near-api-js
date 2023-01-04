@@ -33,8 +33,12 @@ importers:
   packages/accounts:
     specifiers:
       '@near-js/client-core': workspace:*
+      '@near-js/keypairs': workspace:*
+      '@near-js/keystores': workspace:*
       '@near-js/providers': workspace:*
+      '@near-js/signers': workspace:*
       '@near-js/transactions': workspace:*
+      '@near-js/types': workspace:*
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
@@ -45,31 +49,25 @@ importers:
       ts-jest: ^26.5.6
     dependencies:
       '@near-js/client-core': link:../client-core
+      '@near-js/keypairs': link:../keypairs
       '@near-js/providers': link:../providers
+      '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions
+      '@near-js/types': link:../types
       bn.js: 5.2.1
       borsh: 0.7.0
       depd: 2.0.0
     devDependencies:
+      '@near-js/keystores': link:../keystores
       '@types/node': 18.7.14
       bs58: 4.0.1
       jest: 26.6.3
       near-hello: 0.5.1
       ts-jest: 26.5.6_jest@26.6.3
 
-  packages/browser-keystore-localstorage:
-    specifiers:
-      '@near-js/client-core': workspace:*
-      jest: ^26.0.1
-      ts-jest: ^26.5.6
-    dependencies:
-      '@near-js/client-core': link:../client-core
-    devDependencies:
-      jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
-
   packages/client-core:
     specifiers:
+      '@near-js/types': workspace:*
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
@@ -80,6 +78,7 @@ importers:
       ts-jest: ^26.5.6
       tweetnacl: ^1.0.1
     dependencies:
+      '@near-js/types': link:../types
       bn.js: 5.2.1
       borsh: 0.7.0
       depd: 2.0.0
@@ -101,14 +100,80 @@ importers:
       homedir: 0.6.0
       near-api-js: link:../near-api-js
 
+  packages/keypairs:
+    specifiers:
+      '@near-js/types': workspace:*
+      '@types/node': ^18.7.14
+      bn.js: 5.2.1
+      borsh: ^0.7.0
+      jest: ^26.0.1
+      ts-jest: ^26.5.6
+      tweetnacl: ^1.0.1
+    dependencies:
+      '@near-js/types': link:../types
+      bn.js: 5.2.1
+      borsh: 0.7.0
+      tweetnacl: 1.0.3
+    devDependencies:
+      '@types/node': 18.7.14
+      jest: 26.6.3
+      ts-jest: 26.5.6_jest@26.6.3
+
+  packages/keystores:
+    specifiers:
+      '@near-js/keypairs': workspace:*
+      '@near-js/types': workspace:*
+      '@types/node': ^18.7.14
+      jest: ^26.0.1
+      ts-jest: ^26.5.6
+    dependencies:
+      '@near-js/keypairs': link:../keypairs
+      '@near-js/types': link:../types
+    devDependencies:
+      '@types/node': 18.7.14
+      jest: 26.6.3
+      ts-jest: 26.5.6_jest@26.6.3
+
+  packages/keystores-browser:
+    specifiers:
+      '@near-js/keypairs': workspace:*
+      '@near-js/keystores': workspace:*
+      jest: ^26.0.1
+      ts-jest: ^26.5.6
+    dependencies:
+      '@near-js/keypairs': link:../keypairs
+      '@near-js/keystores': link:../keystores
+    devDependencies:
+      jest: 26.6.3
+      ts-jest: 26.5.6_jest@26.6.3
+
+  packages/keystores-node:
+    specifiers:
+      '@near-js/keypairs': workspace:*
+      '@near-js/keystores': workspace:*
+      '@types/node': ^18.7.14
+      jest: ^26.0.1
+      ts-jest: ^26.5.6
+    dependencies:
+      '@near-js/keypairs': link:../keypairs
+      '@near-js/keystores': link:../keystores
+    devDependencies:
+      '@types/node': 18.7.14
+      jest: 26.6.3
+      ts-jest: 26.5.6_jest@26.6.3
+
   packages/near-api-js:
     specifiers:
       '@near-js/accounts': workspace:*
-      '@near-js/browser-keystore-localstorage': workspace:*
       '@near-js/client-core': workspace:*
-      '@near-js/node-keystore-filesystem': workspace:*
+      '@near-js/keypairs': workspace:*
+      '@near-js/keystores': workspace:*
+      '@near-js/keystores-browser': workspace:*
+      '@near-js/keystores-node': workspace:*
       '@near-js/providers': workspace:*
+      '@near-js/signers': workspace:*
       '@near-js/transactions': workspace:*
+      '@near-js/types': workspace:*
       '@near-js/wallet-account': workspace:*
       '@types/bn.js': ^5.1.0
       '@types/http-errors': ^1.6.1
@@ -136,11 +201,15 @@ importers:
       uglifyify: ^5.0.1
     dependencies:
       '@near-js/accounts': link:../accounts
-      '@near-js/browser-keystore-localstorage': link:../browser-keystore-localstorage
       '@near-js/client-core': link:../client-core
-      '@near-js/node-keystore-filesystem': link:../node-keystore-filesystem
+      '@near-js/keypairs': link:../keypairs
+      '@near-js/keystores': link:../keystores
+      '@near-js/keystores-browser': link:../keystores-browser
+      '@near-js/keystores-node': link:../keystores-node
       '@near-js/providers': link:../providers
+      '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions
+      '@near-js/types': link:../types
       '@near-js/wallet-account': link:../wallet-account
       bn.js: 5.2.1
       borsh: 0.7.0
@@ -168,23 +237,11 @@ importers:
       ts-jest: 26.5.6_jest@26.6.3
       uglifyify: 5.0.2
 
-  packages/node-keystore-filesystem:
-    specifiers:
-      '@near-js/client-core': workspace:*
-      '@types/node': ^18.7.14
-      jest: ^26.0.1
-      ts-jest: ^26.5.6
-    dependencies:
-      '@near-js/client-core': link:../client-core
-    devDependencies:
-      '@types/node': 18.7.14
-      jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
-
   packages/providers:
     specifiers:
       '@near-js/client-core': workspace:*
       '@near-js/transactions': workspace:*
+      '@near-js/types': workspace:*
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
@@ -195,6 +252,7 @@ importers:
     dependencies:
       '@near-js/client-core': link:../client-core
       '@near-js/transactions': link:../transactions
+      '@near-js/types': link:../types
       bn.js: 5.2.1
       borsh: 0.7.0
       http-errors: 1.8.1
@@ -205,9 +263,29 @@ importers:
       jest: 26.6.3
       ts-jest: 26.5.6_jest@26.6.3
 
+  packages/signers:
+    specifiers:
+      '@near-js/keypairs': workspace:*
+      '@near-js/keystores': workspace:*
+      '@types/node': ^18.7.14
+      jest: ^26.0.1
+      js-sha256: ^0.9.0
+      ts-jest: ^26.5.6
+    dependencies:
+      '@near-js/keypairs': link:../keypairs
+      '@near-js/keystores': link:../keystores
+      js-sha256: 0.9.0
+    devDependencies:
+      '@types/node': 18.7.14
+      jest: 26.6.3
+      ts-jest: 26.5.6_jest@26.6.3
+
   packages/transactions:
     specifiers:
       '@near-js/client-core': workspace:*
+      '@near-js/keypairs': workspace:*
+      '@near-js/signers': workspace:*
+      '@near-js/types': workspace:*
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
@@ -216,9 +294,25 @@ importers:
       ts-jest: ^26.5.6
     dependencies:
       '@near-js/client-core': link:../client-core
+      '@near-js/keypairs': link:../keypairs
+      '@near-js/signers': link:../signers
+      '@near-js/types': link:../types
       bn.js: 5.2.1
       borsh: 0.7.0
       js-sha256: 0.9.0
+    devDependencies:
+      '@types/node': 18.7.14
+      jest: 26.6.3
+      ts-jest: 26.5.6_jest@26.6.3
+
+  packages/types:
+    specifiers:
+      '@types/node': ^18.7.14
+      bn.js: 5.2.1
+      jest: ^26.0.1
+      ts-jest: ^26.5.6
+    dependencies:
+      bn.js: 5.2.1
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
@@ -228,7 +322,11 @@ importers:
     specifiers:
       '@near-js/accounts': workspace:*
       '@near-js/client-core': workspace:*
+      '@near-js/keypairs': workspace:*
+      '@near-js/keystores': workspace:*
+      '@near-js/signers': workspace:*
       '@near-js/transactions': workspace:*
+      '@near-js/types': workspace:*
       '@types/node': ^18.7.14
       bn.js: 5.2.1
       borsh: ^0.7.0
@@ -238,7 +336,11 @@ importers:
     dependencies:
       '@near-js/accounts': link:../accounts
       '@near-js/client-core': link:../client-core
+      '@near-js/keypairs': link:../keypairs
+      '@near-js/keystores': link:../keystores
+      '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions
+      '@near-js/types': link:../types
       bn.js: 5.2.1
       borsh: 0.7.0
     devDependencies:

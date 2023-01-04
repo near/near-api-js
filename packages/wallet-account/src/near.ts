@@ -14,11 +14,9 @@ import {
     LocalAccountCreator,
     UrlAccountCreator,
 } from '@near-js/accounts';
-import {
-    KeyStore,
-    PublicKey,
-    Signer,
-} from '@near-js/client-core';
+import { PublicKey } from '@near-js/keypairs';
+import { KeyStore } from '@near-js/keystores';
+import { Signer } from '@near-js/signers';
 import BN from 'bn.js';
 
 export interface NearConfig {

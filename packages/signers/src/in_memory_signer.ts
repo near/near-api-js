@@ -1,8 +1,8 @@
+import { KeyPair, PublicKey, Signature } from '@near-js/keypairs';
+import { InMemoryKeyStore, KeyStore } from '@near-js/keystores';
 import sha256 from 'js-sha256';
 
 import { Signer } from './signer';
-import { KeyPair, PublicKey, Signature } from '../key_pair';
-import { InMemoryKeyStore, KeyStore } from '../key_store';
 
 /**
  * Signs using in memory key store.

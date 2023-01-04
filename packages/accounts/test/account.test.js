@@ -1,5 +1,6 @@
-const { getTransactionLastResult, TypedError } = require('@near-js/client-core');
+const { getTransactionLastResult } = require('@near-js/client-core');
 const { transfer } = require('@near-js/transactions');
+const { TypedError } = require('@near-js/types');
 const BN = require('bn.js');
 const fs = require('fs');
 

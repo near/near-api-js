@@ -1,0 +1,25 @@
+{
+  "name": "@near-js/keypairs",
+  "version": "0.0.1",
+  "description": "Abstractions around NEAR-compatible elliptical curves and cryptographic keys",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "pnpm compile",
+    "compile": "tsc -p tsconfig.json",
+    "test": "jest test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@near-js/types": "workspace:*",
+    "bn.js": "5.2.1",
+    "borsh": "^0.7.0",
+    "tweetnacl": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14",
+    "jest": "^26.0.1",
+    "ts-jest": "^26.5.6"
+  }
+}

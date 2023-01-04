@@ -1,5 +1,12 @@
 import BN from 'bn.js';
 
+import {
+    logWarning,
+    parseResultError,
+    DEFAULT_FUNCTION_CALL_GAS,
+    printTxOutcomeLogs,
+    printTxOutcomeLogsAndFailures,
+} from '@near-js/client-core';
 import { exponentialBackoff } from '@near-js/providers';
 import {
     transfer,
@@ -17,14 +24,9 @@ import {
     SignedTransaction,
     stringifyJsonOrBytes
 } from '@near-js/transactions';
+import { PublicKey } from '@near-js/keypairs';
 import {
-    PublicKey,
-    logWarning,
     PositionalArgsError,
-    parseResultError,
-    DEFAULT_FUNCTION_CALL_GAS,
-    printTxOutcomeLogs,
-    printTxOutcomeLogsAndFailures,
     FinalExecutionOutcome,
     TypedError,
     ErrorContext,
@@ -37,7 +39,7 @@ import {
     AccessKeyInfoView,
     FunctionCallPermissionView,
     BlockReference,
-} from '@near-js/client-core';
+} from '@near-js/types';
 import { baseDecode, baseEncode } from 'borsh';
 
 import { Connection } from './connection';

@@ -65,7 +65,6 @@ export {
     QueryResponseKind,
     ViewStateResult,
 } from './response';
-export { getTransactionLastResult } from './utils'
 export {
     CurrentEpochValidatorInfo,
     EpochValidatorInfo,
