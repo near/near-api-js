@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@near-js/types": "workspace:*",
     "bn.js": "5.2.1",
     "borsh": "^0.7.0",
     "depd": "^2.0.0",

@@ -1,4 +1,4 @@
-import { Signer, InMemorySigner } from '@near-js/client-core';
+import { Signer, InMemorySigner } from '@near-js/signers';
 import { Provider, JsonRpcProvider } from '@near-js/providers';
 
 /**

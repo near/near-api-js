@@ -1,7 +1,7 @@
+export { logWarning } from '@near-js/client-core';
 export {
     ArgumentTypeError,
     ErrorContext,
     PositionalArgsError,
     TypedError,
-    logWarning,
-} from '@near-js/client-core';
+} from '@near-js/types';

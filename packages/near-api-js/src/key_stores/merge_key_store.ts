@@ -1,1 +1,1 @@
-export { MergeKeyStore } from '@near-js/client-core';
+export { MergeKeyStore } from '@near-js/keystores';

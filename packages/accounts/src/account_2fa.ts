@@ -1,6 +1,7 @@
 'use strict';
 
-import { PublicKey, FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/client-core';
+import { PublicKey } from '@near-js/keypairs';
+import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { fetchJson } from '@near-js/providers';
 import { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } from '@near-js/transactions';
 import BN from 'bn.js';

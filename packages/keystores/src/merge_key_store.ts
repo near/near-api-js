@@ -1,4 +1,4 @@
-import { KeyPair } from '../key_pair';
+import { KeyPair } from '@near-js/keypairs';
 import { KeyStore } from './keystore';
 
 /**

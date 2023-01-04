@@ -1,4 +1,5 @@
-import { KeyPair, KeyStore } from '@near-js/client-core';
+import { KeyPair } from '@near-js/keypairs';
+import { KeyStore } from '@near-js/keystores';
 
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 

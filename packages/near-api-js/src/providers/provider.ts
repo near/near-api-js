@@ -1,4 +1,6 @@
 
+export { getTransactionLastResult } from '@near-js/client-core';
+export { Provider } from '@near-js/providers';
 export {
     IdType,
     LightClientBlockLiteView,
@@ -61,13 +63,9 @@ export {
     FunctionCallPermissionView,
     QueryResponseKind,
     ViewStateResult,
-    getTransactionLastResult,
 
     CurrentEpochValidatorInfo,
     EpochValidatorInfo,
     NextEpochValidatorInfo,
     ValidatorStakeView,
-} from '@near-js/client-core';
-export {
-    Provider,
-} from '@near-js/providers';
+} from '@near-js/types';

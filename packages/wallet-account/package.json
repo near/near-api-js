@@ -14,7 +14,11 @@
   "dependencies": {
     "@near-js/accounts": "workspace:*",
     "@near-js/client-core": "workspace:*",
+    "@near-js/keypairs": "workspace:*",
+    "@near-js/keystores": "workspace:*",
+    "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",
+    "@near-js/types": "workspace:*",
     "bn.js": "5.2.1",
     "borsh": "^0.7.0"
   },

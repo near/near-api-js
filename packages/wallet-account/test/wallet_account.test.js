@@ -1,4 +1,6 @@
-const { InMemoryKeyStore, InMemorySigner, KeyPair, PublicKey } = require('@near-js/client-core');
+const { KeyPair, PublicKey } = require('@near-js/keypairs');
+const { InMemoryKeyStore } = require('@near-js/keystores');
+const { InMemorySigner } = require('@near-js/signers');
 const { createTransaction, functionCall, SCHEMA, Transaction, transfer } = require('@near-js/transactions');
 const BN = require('bn.js');
 const { baseDecode, deserialize } = require('borsh');

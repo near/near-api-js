@@ -1,7 +1,7 @@
 'use strict';
 
-import { FinalExecutionOutcome } from '@near-js/client-core';
 import { Action, deployContract, functionCall } from '@near-js/transactions';
+import { FinalExecutionOutcome } from '@near-js/types';
 
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';

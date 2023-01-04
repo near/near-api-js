@@ -1,5 +1,7 @@
 /* global BigInt */
-const { InMemorySigner, KeyPair, parseNearAmount } = require('@near-js/client-core');
+const { parseNearAmount } = require('@near-js/client-core');
+const { KeyPair } = require('@near-js/keypairs');
+const { InMemorySigner } = require('@near-js/signers');
 const { functionCall, transfer } = require('@near-js/transactions');
 const BN = require('bn.js');
 const fs = require('fs');
