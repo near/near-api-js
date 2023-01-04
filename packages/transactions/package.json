@@ -5,7 +5,12 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "pnpm compile",
-    "compile": "tsc -p tsconfig.json"
+    "compile": "tsc -p tsconfig.json",
+    "lint:js": "eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc",
+    "lint:js:fix": "eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc --fix",
+    "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
+    "lint:ts:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc --fix",
+    "test": "jest test"
   },
   "keywords": [],
   "author": "",

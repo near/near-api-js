@@ -13,6 +13,22 @@
       "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"],
       "outputs": []
     },
+    "lint:js": {
+      "inputs": ["test/**/*.js"],
+      "outputs": []
+    },
+    "lint:js:fix": {
+      "inputs": ["test/**/*.js"],
+      "outputs": []
+    },
+    "lint:ts": {
+        "inputs": ["src/**/*.ts"],
+        "outputs": []
+    },
+    "lint:ts:fix": {
+        "inputs": ["src/**/*.ts"],
+        "outputs": []
+    },
     "clean": {
       "outputs": [],
       "cache": false
