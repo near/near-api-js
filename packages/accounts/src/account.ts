@@ -6,7 +6,7 @@ import {
     DEFAULT_FUNCTION_CALL_GAS,
     printTxOutcomeLogs,
     printTxOutcomeLogsAndFailures,
-} from '@near-js/client-core';
+} from '@near-js/utils';
 import { exponentialBackoff } from '@near-js/providers';
 import {
     transfer,

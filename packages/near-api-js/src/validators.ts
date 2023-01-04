@@ -3,4 +3,4 @@ export {
     findSeatPrice,
     ChangedValidatorInfo,
     EpochValidatorsDiff,
-} from '@near-js/client-core';
+} from '@near-js/utils';

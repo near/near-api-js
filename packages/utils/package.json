@@ -1,7 +1,7 @@
 {
-  "name": "@near-js/client-core",
+  "name": "@near-js/utils",
   "version": "0.0.1",
-  "description": "Core dependencies for the NEAR API JavaScript client",
+  "description": "Common methods and constants for the NEAR API JavaScript client",
   "main": "lib/index.js",
   "scripts": {
     "build": "pnpm compile",
@@ -14,14 +14,11 @@
   "dependencies": {
     "@near-js/types": "workspace:*",
     "bn.js": "5.2.1",
-    "borsh": "^0.7.0",
     "depd": "^2.0.0",
-    "js-sha256": "^0.9.0",
-    "mustache": "^4.0.0",
-    "tweetnacl": "^1.0.1"
+    "mustache": "^4.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.7.14",
+    "@types/node": "^18.11.18",
     "jest": "^26.0.1",
     "ts-jest": "^26.5.6",
     "typescript": "^4.9.4"

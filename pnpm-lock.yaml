@@ -32,14 +32,14 @@ importers:
 
   packages/accounts:
     specifiers:
-      '@near-js/client-core': workspace:*
       '@near-js/keypairs': workspace:*
       '@near-js/keystores': workspace:*
       '@near-js/providers': workspace:*
       '@near-js/signers': workspace:*
       '@near-js/transactions': workspace:*
       '@near-js/types': workspace:*
-      '@types/node': ^18.7.14
+      '@near-js/utils': workspace:*
+      '@types/node': ^18.11.18
       bn.js: 5.2.1
       borsh: ^0.7.0
       bs58: ^4.0.0
@@ -49,48 +49,21 @@ importers:
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/client-core': link:../client-core
       '@near-js/keypairs': link:../keypairs
       '@near-js/providers': link:../providers
       '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions
       '@near-js/types': link:../types
+      '@near-js/utils': link:../utils
       bn.js: 5.2.1
       borsh: 0.7.0
       depd: 2.0.0
     devDependencies:
       '@near-js/keystores': link:../keystores
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
       bs58: 4.0.1
       jest: 26.6.3
       near-hello: 0.5.1
-      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
-      typescript: 4.9.4
-
-  packages/client-core:
-    specifiers:
-      '@near-js/types': workspace:*
-      '@types/node': ^18.7.14
-      bn.js: 5.2.1
-      borsh: ^0.7.0
-      depd: ^2.0.0
-      jest: ^26.0.1
-      js-sha256: ^0.9.0
-      mustache: ^4.0.0
-      ts-jest: ^26.5.6
-      tweetnacl: ^1.0.1
-      typescript: ^4.9.4
-    dependencies:
-      '@near-js/types': link:../types
-      bn.js: 5.2.1
-      borsh: 0.7.0
-      depd: 2.0.0
-      js-sha256: 0.9.0
-      mustache: 4.2.0
-      tweetnacl: 1.0.3
-    devDependencies:
-      '@types/node': 18.7.14
-      jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
       typescript: 4.9.4
 
@@ -107,7 +80,7 @@ importers:
   packages/keypairs:
     specifiers:
       '@near-js/types': workspace:*
-      '@types/node': ^18.7.14
+      '@types/node': ^18.11.18
       bn.js: 5.2.1
       borsh: ^0.7.0
       jest: ^26.0.1
@@ -120,7 +93,7 @@ importers:
       borsh: 0.7.0
       tweetnacl: 1.0.3
     devDependencies:
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
       typescript: 4.9.4
@@ -129,7 +102,7 @@ importers:
     specifiers:
       '@near-js/keypairs': workspace:*
       '@near-js/types': workspace:*
-      '@types/node': ^18.7.14
+      '@types/node': ^18.11.18
       jest: ^26.0.1
       ts-jest: ^26.5.6
       typescript: ^4.9.4
@@ -137,7 +110,7 @@ importers:
       '@near-js/keypairs': link:../keypairs
       '@near-js/types': link:../types
     devDependencies:
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
       typescript: 4.9.4
@@ -161,7 +134,7 @@ importers:
     specifiers:
       '@near-js/keypairs': workspace:*
       '@near-js/keystores': workspace:*
-      '@types/node': ^18.7.14
+      '@types/node': ^18.11.18
       jest: ^26.0.1
       ts-jest: ^26.5.6
       typescript: ^4.9.4
@@ -169,7 +142,7 @@ importers:
       '@near-js/keypairs': link:../keypairs
       '@near-js/keystores': link:../keystores
     devDependencies:
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
       typescript: 4.9.4
@@ -177,7 +150,6 @@ importers:
   packages/near-api-js:
     specifiers:
       '@near-js/accounts': workspace:*
-      '@near-js/client-core': workspace:*
       '@near-js/keypairs': workspace:*
       '@near-js/keystores': workspace:*
       '@near-js/keystores-browser': workspace:*
@@ -186,10 +158,11 @@ importers:
       '@near-js/signers': workspace:*
       '@near-js/transactions': workspace:*
       '@near-js/types': workspace:*
+      '@near-js/utils': workspace:*
       '@near-js/wallet-account': workspace:*
       '@types/bn.js': ^5.1.0
       '@types/http-errors': ^1.6.1
-      '@types/node': ^18.7.14
+      '@types/node': ^18.11.18
       ajv: ^8.11.2
       ajv-formats: ^2.1.1
       bn.js: 5.2.1
@@ -216,7 +189,6 @@ importers:
       uglifyify: ^5.0.1
     dependencies:
       '@near-js/accounts': link:../accounts
-      '@near-js/client-core': link:../client-core
       '@near-js/keypairs': link:../keypairs
       '@near-js/keystores': link:../keystores
       '@near-js/keystores-browser': link:../keystores-browser
@@ -225,6 +197,7 @@ importers:
       '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions
       '@near-js/types': link:../types
+      '@near-js/utils': link:../utils
       '@near-js/wallet-account': link:../wallet-account
       ajv: 8.11.2
       ajv-formats: 2.1.1_ajv@8.11.2
@@ -239,7 +212,7 @@ importers:
     devDependencies:
       '@types/bn.js': 5.1.1
       '@types/http-errors': 1.8.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       browserify: 16.5.2
       bs58: 4.0.1
       bundlewatch: 0.3.3
@@ -257,10 +230,10 @@ importers:
 
   packages/providers:
     specifiers:
-      '@near-js/client-core': workspace:*
       '@near-js/transactions': workspace:*
       '@near-js/types': workspace:*
-      '@types/node': ^18.7.14
+      '@near-js/utils': workspace:*
+      '@types/node': ^18.11.18
       bn.js: 5.2.1
       borsh: ^0.7.0
       http-errors: ^1.7.2
@@ -269,16 +242,16 @@ importers:
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/client-core': link:../client-core
       '@near-js/transactions': link:../transactions
       '@near-js/types': link:../types
+      '@near-js/utils': link:../utils
       bn.js: 5.2.1
       borsh: 0.7.0
       http-errors: 1.8.1
     optionalDependencies:
       node-fetch: 2.6.7
     devDependencies:
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
       typescript: 4.9.4
@@ -287,7 +260,7 @@ importers:
     specifiers:
       '@near-js/keypairs': workspace:*
       '@near-js/keystores': workspace:*
-      '@types/node': ^18.7.14
+      '@types/node': ^18.11.18
       jest: ^26.0.1
       js-sha256: ^0.9.0
       ts-jest: ^26.5.6
@@ -297,18 +270,18 @@ importers:
       '@near-js/keystores': link:../keystores
       js-sha256: 0.9.0
     devDependencies:
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
       typescript: 4.9.4
 
   packages/transactions:
     specifiers:
-      '@near-js/client-core': workspace:*
       '@near-js/keypairs': workspace:*
       '@near-js/signers': workspace:*
       '@near-js/types': workspace:*
-      '@types/node': ^18.7.14
+      '@near-js/utils': workspace:*
+      '@types/node': ^18.11.18
       bn.js: 5.2.1
       borsh: ^0.7.0
       jest: ^26.0.1
@@ -316,22 +289,22 @@ importers:
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/client-core': link:../client-core
       '@near-js/keypairs': link:../keypairs
       '@near-js/signers': link:../signers
       '@near-js/types': link:../types
+      '@near-js/utils': link:../utils
       bn.js: 5.2.1
       borsh: 0.7.0
       js-sha256: 0.9.0
     devDependencies:
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
       typescript: 4.9.4
 
   packages/types:
     specifiers:
-      '@types/node': ^18.7.14
+      '@types/node': ^18.11.18
       bn.js: 5.2.1
       jest: ^26.0.1
       ts-jest: ^26.5.6
@@ -339,7 +312,28 @@ importers:
     dependencies:
       bn.js: 5.2.1
     devDependencies:
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
+      jest: 26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
+
+  packages/utils:
+    specifiers:
+      '@near-js/types': workspace:*
+      '@types/node': ^18.11.18
+      bn.js: 5.2.1
+      depd: ^2.0.0
+      jest: ^26.0.1
+      mustache: ^4.0.0
+      ts-jest: ^26.5.6
+      typescript: ^4.9.4
+    dependencies:
+      '@near-js/types': link:../types
+      bn.js: 5.2.1
+      depd: 2.0.0
+      mustache: 4.2.0
+    devDependencies:
+      '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
       typescript: 4.9.4
@@ -347,13 +341,13 @@ importers:
   packages/wallet-account:
     specifiers:
       '@near-js/accounts': workspace:*
-      '@near-js/client-core': workspace:*
       '@near-js/keypairs': workspace:*
       '@near-js/keystores': workspace:*
       '@near-js/signers': workspace:*
       '@near-js/transactions': workspace:*
       '@near-js/types': workspace:*
-      '@types/node': ^18.7.14
+      '@near-js/utils': workspace:*
+      '@types/node': ^18.11.18
       bn.js: 5.2.1
       borsh: ^0.7.0
       jest: ^26.0.1
@@ -362,16 +356,16 @@ importers:
       typescript: ^4.9.4
     dependencies:
       '@near-js/accounts': link:../accounts
-      '@near-js/client-core': link:../client-core
       '@near-js/keypairs': link:../keypairs
       '@near-js/keystores': link:../keystores
       '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions
       '@near-js/types': link:../types
+      '@near-js/utils': link:../utils
       bn.js: 5.2.1
       borsh: 0.7.0
     devDependencies:
-      '@types/node': 18.7.14
+      '@types/node': 18.11.18
       jest: 26.6.3
       localstorage-memory: 1.0.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
@@ -1179,7 +1173,7 @@ packages:
     engines: {node: '>= 10.14.2'}
     dependencies:
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       chalk: 4.1.2
       jest-message-util: 26.6.2
       jest-util: 26.6.2
@@ -1195,7 +1189,7 @@ packages:
       '@jest/test-result': 26.6.2
       '@jest/transform': 26.6.2
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       exit: 0.1.2
@@ -1232,7 +1226,7 @@ packages:
     dependencies:
       '@jest/fake-timers': 26.6.2
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       jest-mock: 26.6.2
     dev: true
 
@@ -1242,7 +1236,7 @@ packages:
     dependencies:
       '@jest/types': 26.6.2
       '@sinonjs/fake-timers': 6.0.1
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       jest-message-util: 26.6.2
       jest-mock: 26.6.2
       jest-util: 26.6.2
@@ -1356,7 +1350,7 @@ packages:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       '@types/yargs': 15.0.14
       chalk: 4.1.2
     dev: true
@@ -1636,7 +1630,7 @@ packages:
   /@types/bn.js/5.1.1:
     resolution: {integrity: sha512-qNrYbZqMx0uJAfKnKclPh+dTwK33KfLHYqtyODwd5HnXOjnkhc4qgn3BrK6RWyGZm5+sIFE7Q7Vz6QQtJB7w7g==}
     dependencies:
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
     dev: true
 
   /@types/cacheable-request/6.0.3:
@@ -1644,14 +1638,14 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.1
       '@types/keyv': 3.1.4
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       '@types/responselike': 1.0.0
     dev: true
 
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
     dependencies:
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
     dev: true
 
   /@types/http-cache-semantics/4.0.1:
@@ -1690,7 +1684,7 @@ packages:
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
     dev: true
 
   /@types/minimist/1.2.2:
@@ -1705,8 +1699,8 @@ packages:
     resolution: {integrity: sha512-hcU9AIQVHmPnmjRK+XUUYlILlr9pQrsqSrwov/JK1pnf3GTQowVBhx54FbvM0AU/VXGH4i3+vgXS5EguR7fysA==}
     dev: true
 
-  /@types/node/18.11.15:
-    resolution: {integrity: sha512-VkhBbVo2+2oozlkdHXLrb3zjsRkpdnaU2bXmX8Wgle3PUi569eLRaHGlgETQHR7lLL1w7GiG3h9SnePhxNDecw==}
+  /@types/node/18.11.18:
+    resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -1724,7 +1718,7 @@ packages:
   /@types/responselike/1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
     dependencies:
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
     dev: true
 
   /@types/semver/6.2.3:
@@ -4873,7 +4867,7 @@ packages:
       '@jest/environment': 26.6.2
       '@jest/fake-timers': 26.6.2
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       jest-mock: 26.6.2
       jest-util: 26.6.2
       jsdom: 16.7.0
@@ -4891,7 +4885,7 @@ packages:
       '@jest/environment': 26.6.2
       '@jest/fake-timers': 26.6.2
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       jest-mock: 26.6.2
       jest-util: 26.6.2
     dev: true
@@ -4907,7 +4901,7 @@ packages:
     dependencies:
       '@jest/types': 26.6.2
       '@types/graceful-fs': 4.1.5
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.10
@@ -4933,7 +4927,7 @@ packages:
       '@jest/source-map': 26.6.2
       '@jest/test-result': 26.6.2
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       chalk: 4.1.2
       co: 4.6.0
       expect: 26.6.2
@@ -4992,7 +4986,7 @@ packages:
     engines: {node: '>= 10.14.2'}
     dependencies:
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
     dev: true
 
   /jest-pnp-resolver/1.2.3_jest-resolve@26.6.2:
@@ -5045,7 +5039,7 @@ packages:
       '@jest/environment': 26.6.2
       '@jest/test-result': 26.6.2
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       chalk: 4.1.2
       emittery: 0.7.2
       exit: 0.1.2
@@ -5113,7 +5107,7 @@ packages:
     resolution: {integrity: sha512-S5wqyz0DXnNJPd/xfIzZ5Xnp1HrJWBczg8mMfMpN78OJ5eDxXyf+Ygld9wX1DnUWbIbhM1YDY95NjR4CBXkb2g==}
     engines: {node: '>= 10.14.2'}
     dependencies:
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       graceful-fs: 4.2.10
     dev: true
 
@@ -5146,7 +5140,7 @@ packages:
     engines: {node: '>= 10.14.2'}
     dependencies:
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       chalk: 4.1.2
       graceful-fs: 4.2.10
       is-ci: 2.0.0
@@ -5171,7 +5165,7 @@ packages:
     dependencies:
       '@jest/test-result': 26.6.2
       '@jest/types': 26.6.2
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       jest-util: 26.6.2
@@ -5182,7 +5176,7 @@ packages:
     resolution: {integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 18.11.15
+      '@types/node': 18.11.18
       merge-stream: 2.0.0
       supports-color: 7.2.0
     dev: true

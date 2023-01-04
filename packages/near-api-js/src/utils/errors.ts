@@ -1,4 +1,4 @@
-export { logWarning } from '@near-js/client-core';
+export { logWarning } from '@near-js/utils';
 export {
     ArgumentTypeError,
     ErrorContext,

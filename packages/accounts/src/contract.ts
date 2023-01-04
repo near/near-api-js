@@ -1,4 +1,4 @@
-import { getTransactionLastResult } from '@near-js/client-core';
+import { getTransactionLastResult } from '@near-js/utils';
 import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
 import BN from 'bn.js';
 import depd from 'depd';

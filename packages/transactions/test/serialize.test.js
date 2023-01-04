@@ -1,4 +1,4 @@
-const { Assignable, InMemoryKeyStore, InMemorySigner, KeyPair, PublicKey } = require('@near-js/client-core');
+const { Assignable, InMemoryKeyStore, InMemorySigner, KeyPair, PublicKey } = require('@near-js/utils');
 const fs = require('fs');
 const BN = require('bn.js');
 const { baseDecode, baseEncode, deserialize, serialize } = require('borsh');
