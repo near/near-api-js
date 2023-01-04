@@ -47,6 +47,7 @@ importers:
       jest: ^26.0.1
       near-hello: ^0.5.1
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       '@near-js/client-core': link:../client-core
       '@near-js/keypairs': link:../keypairs
@@ -63,7 +64,8 @@ importers:
       bs58: 4.0.1
       jest: 26.6.3
       near-hello: 0.5.1
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/client-core:
     specifiers:
@@ -77,6 +79,7 @@ importers:
       mustache: ^4.0.0
       ts-jest: ^26.5.6
       tweetnacl: ^1.0.1
+      typescript: ^4.9.4
     dependencies:
       '@near-js/types': link:../types
       bn.js: 5.2.1
@@ -88,7 +91,8 @@ importers:
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/cookbook:
     specifiers:
@@ -109,6 +113,7 @@ importers:
       jest: ^26.0.1
       ts-jest: ^26.5.6
       tweetnacl: ^1.0.1
+      typescript: ^4.9.4
     dependencies:
       '@near-js/types': link:../types
       bn.js: 5.2.1
@@ -117,7 +122,8 @@ importers:
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/keystores:
     specifiers:
@@ -126,13 +132,15 @@ importers:
       '@types/node': ^18.7.14
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       '@near-js/keypairs': link:../keypairs
       '@near-js/types': link:../types
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/keystores-browser:
     specifiers:
@@ -140,12 +148,14 @@ importers:
       '@near-js/keystores': workspace:*
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       '@near-js/keypairs': link:../keypairs
       '@near-js/keystores': link:../keystores
     devDependencies:
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/keystores-node:
     specifiers:
@@ -154,13 +164,15 @@ importers:
       '@types/node': ^18.7.14
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       '@near-js/keypairs': link:../keypairs
       '@near-js/keystores': link:../keystores
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/near-api-js:
     specifiers:
@@ -255,6 +267,7 @@ importers:
       jest: ^26.0.1
       node-fetch: ^2.6.1
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       '@near-js/client-core': link:../client-core
       '@near-js/transactions': link:../transactions
@@ -267,7 +280,8 @@ importers:
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/signers:
     specifiers:
@@ -277,6 +291,7 @@ importers:
       jest: ^26.0.1
       js-sha256: ^0.9.0
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       '@near-js/keypairs': link:../keypairs
       '@near-js/keystores': link:../keystores
@@ -284,7 +299,8 @@ importers:
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/transactions:
     specifiers:
@@ -298,6 +314,7 @@ importers:
       jest: ^26.0.1
       js-sha256: ^0.9.0
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       '@near-js/client-core': link:../client-core
       '@near-js/keypairs': link:../keypairs
@@ -309,7 +326,8 @@ importers:
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/types:
     specifiers:
@@ -317,12 +335,14 @@ importers:
       bn.js: 5.2.1
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       bn.js: 5.2.1
     devDependencies:
       '@types/node': 18.7.14
       jest: 26.6.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
   packages/wallet-account:
     specifiers:
@@ -339,6 +359,7 @@ importers:
       jest: ^26.0.1
       localstorage-memory: ^1.0.3
       ts-jest: ^26.5.6
+      typescript: ^4.9.4
     dependencies:
       '@near-js/accounts': link:../accounts
       '@near-js/client-core': link:../client-core
@@ -353,7 +374,8 @@ importers:
       '@types/node': 18.7.14
       jest: 26.6.3
       localstorage-memory: 1.0.3
-      ts-jest: 26.5.6_jest@26.6.3
+      ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      typescript: 4.9.4
 
 packages:
 
@@ -7353,6 +7375,28 @@ packages:
       make-error: 1.3.6
       mkdirp: 1.0.4
       semver: 7.3.8
+      yargs-parser: 20.2.9
+    dev: true
+
+  /ts-jest/26.5.6_vxa7amr3o4p5wmsiameezakoli:
+    resolution: {integrity: sha512-rua+rCP8DxpA8b4DQD/6X2HQS8Zy/xzViVYfEs2OQu68tkCuKLV0Md8pmX55+W24uRIyAsf/BajRfxOs+R2MKA==}
+    engines: {node: '>= 10'}
+    hasBin: true
+    peerDependencies:
+      jest: '>=26 <27'
+      typescript: '>=3.8 <5.0'
+    dependencies:
+      bs-logger: 0.2.6
+      buffer-from: 1.1.2
+      fast-json-stable-stringify: 2.1.0
+      jest: 26.6.3
+      jest-util: 26.6.2
+      json5: 2.2.1
+      lodash: 4.17.21
+      make-error: 1.3.6
+      mkdirp: 1.0.4
+      semver: 7.3.7
+      typescript: 4.9.4
       yargs-parser: 20.2.9
     dev: true
 
