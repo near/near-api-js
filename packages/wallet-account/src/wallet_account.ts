@@ -88,8 +88,12 @@ export class WalletConnection {
     /** @hidden */
     _completeSignInPromise: Promise<void>;
 
-    constructor(near: Near, appKeyPrefix: string | null) {
-        if(typeof window === 'undefined') {
+    constructor(near: Near, appKeyPrefix: string) {
+        if (typeof(appKeyPrefix) !== 'string') {
+            throw new Error('Please define a clear appKeyPrefix for this WalletConnection instance as the second argument to the constructor');
+        }
+
+        if (typeof window === 'undefined') {
             return new Proxy(this, {
                 get(target, property) {
                     if(property === 'isSignedIn') {
