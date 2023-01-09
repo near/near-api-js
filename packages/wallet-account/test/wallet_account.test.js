@@ -66,10 +66,10 @@ it('not signed in by default', () => {
 });
 
 it('throws if non string appKeyPrefix', () => {
-    expect(() => new nearApi.WalletConnection(nearFake)).toThrow(/appKeyPrefix/);
-    expect(() => new nearApi.WalletConnection(nearFake, 1)).toThrow(/appKeyPrefix/);
-    expect(() => new nearApi.WalletConnection(nearFake, null)).toThrow(/appKeyPrefix/);
-    expect(() => new nearApi.WalletConnection(nearFake, undefined)).toThrow(/appKeyPrefix/);
+    expect(() => new WalletConnection(nearFake)).toThrow(/appKeyPrefix/);
+    expect(() => new WalletConnection(nearFake, 1)).toThrow(/appKeyPrefix/);
+    expect(() => new WalletConnection(nearFake, null)).toThrow(/appKeyPrefix/);
+    expect(() => new WalletConnection(nearFake, undefined)).toThrow(/appKeyPrefix/);
 });
 
 describe('fails gracefully on the server side (without window)', () => {
@@ -89,10 +89,10 @@ describe('fails gracefully on the server side (without window)', () => {
     });
 
     it('throws if non string appKeyPrefix in server context', () => {
-        expect(() => new nearApi.WalletConnection(nearFake)).toThrow(/appKeyPrefix/);
-        expect(() => new nearApi.WalletConnection(nearFake, 1)).toThrow(/appKeyPrefix/);
-        expect(() => new nearApi.WalletConnection(nearFake, null)).toThrow(/appKeyPrefix/);
-        expect(() => new nearApi.WalletConnection(nearFake, undefined)).toThrow(/appKeyPrefix/);
+        expect(() => new WalletConnection(nearFake)).toThrow(/appKeyPrefix/);
+        expect(() => new WalletConnection(nearFake, 1)).toThrow(/appKeyPrefix/);
+        expect(() => new WalletConnection(nearFake, null)).toThrow(/appKeyPrefix/);
+        expect(() => new WalletConnection(nearFake, undefined)).toThrow(/appKeyPrefix/);
     });
 
     it('returns an empty string as accountId', () => {
