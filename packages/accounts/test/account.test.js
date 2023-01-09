@@ -1,5 +1,5 @@
 const { getTransactionLastResult } = require('@near-js/utils');
-const { transfer } = require('@near-js/transactions');
+const { actionCreators } = require('@near-js/transactions');
 const { TypedError } = require('@near-js/types');
 const BN = require('bn.js');
 const fs = require('fs');
@@ -52,7 +52,10 @@ test('send money through signAndSendTransaction', async() => {
     const sender = await testUtils.createAccount(nearjs);
     const receiver = await testUtils.createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
-    await sender.signAndSendTransaction({receiverId: receiver.accountId, actions: [transfer(new BN(10000))]});
+    await sender.signAndSendTransaction({
+        receiverId: receiver.accountId,
+        actions: [actionCreators.transfer(new BN(10000))],
+    });
     const state = await receiver.state();
     expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
 });

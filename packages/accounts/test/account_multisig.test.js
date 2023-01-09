@@ -2,13 +2,15 @@
 const { parseNearAmount } = require('@near-js/utils');
 const { KeyPair } = require('@near-js/keypairs');
 const { InMemorySigner } = require('@near-js/signers');
-const { functionCall, transfer } = require('@near-js/transactions');
+const { actionCreators } = require('@near-js/transactions');
 const BN = require('bn.js');
 const fs = require('fs');
 const semver = require('semver');
 
 const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS } = require('../lib');
 const testUtils  = require('./test-utils');
+
+const { functionCall, transfer } = actionCreators;
 
 let nearjs;
 let startFromVersion;

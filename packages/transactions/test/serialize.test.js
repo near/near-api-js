@@ -7,21 +7,25 @@ const BN = require('bn.js');
 const { baseDecode, baseEncode, deserialize, serialize } = require('borsh');
 
 const {
+    actionCreators,
+    createTransaction,
+    SCHEMA,
+    signTransaction,
+    SignedTransaction,
+    Transaction,
+} = require('../lib');
+
+const {
     addKey,
     createAccount,
-    createTransaction,
     deleteAccount,
     deleteKey,
     deployContract,
     functionCall,
     functionCallAccessKey,
-    SCHEMA,
-    signTransaction,
-    SignedTransaction,
     stake,
-    Transaction,
     transfer,
-} = require('../lib');
+} = actionCreators;
 
 class Test extends Assignable {
 }

@@ -1,6 +1,8 @@
 const BN = require('bn.js');
 
-const { functionCall } = require('../lib');
+const { actionCreators } = require('../lib');
+
+const { functionCall } = actionCreators;
 
 test('functionCall with already serialized args', () => {
     const serializedArgs = Buffer.from('{}');

@@ -1,6 +1,6 @@
 'use strict';
 
-import { Action, deployContract, functionCall } from '@near-js/transactions';
+import { Action, actionCreators } from '@near-js/transactions';
 import { FinalExecutionOutcome } from '@near-js/types';
 
 import { Account, SignAndSendTransactionOptions } from './account';
@@ -13,6 +13,8 @@ import {
     MULTISIG_STORAGE_KEY,
 } from './constants';
 import { MultisigDeleteRequestRejectionError, MultisigStateStatus } from './types';
+
+const { deployContract, functionCall } = actionCreators;
 
 enum MultisigCodeStatus {
     INVALID_CODE,

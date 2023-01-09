@@ -17,7 +17,7 @@ import {
     Transfer,
 } from './actions';
 
-export function fullAccessKey(): AccessKey {
+function fullAccessKey(): AccessKey {
     return new AccessKey({
         permission: new AccessKeyPermission({
             fullAccess: new FullAccessPermission({}),
@@ -25,7 +25,7 @@ export function fullAccessKey(): AccessKey {
     });
 }
 
-export function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
+function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
     return new AccessKey({
         permission: new AccessKeyPermission({
             functionCall: new FunctionCallPermission({ receiverId, allowance, methodNames }),
@@ -33,11 +33,11 @@ export function functionCallAccessKey(receiverId: string, methodNames: string[],
     });
 }
 
-export function createAccount(): Action {
+function createAccount(): Action {
     return new Action({ createAccount: new CreateAccount({}) });
 }
 
-export function deployContract(code: Uint8Array): Action {
+function deployContract(code: Uint8Array): Action {
     return new Action({ deployContract: new DeployContract({ code }) });
 }
 
@@ -57,7 +57,7 @@ export function stringifyJsonOrBytes(args: any): Buffer {
  * @param stringify Convert input arguments into bytes array.
  * @param jsContract  Is contract from JS SDK, skips stringification of arguments.
  */
-export function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify = stringifyJsonOrBytes, jsContract = false): Action {
+function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify = stringifyJsonOrBytes, jsContract = false): Action {
     if(jsContract){
         return new Action({ functionCall: new FunctionCall({ methodName, args, gas, deposit }) });
     }
@@ -72,22 +72,35 @@ export function functionCall(methodName: string, args: Uint8Array | object, gas:
     });
 }
 
-export function transfer(deposit: BN): Action {
+function transfer(deposit: BN): Action {
     return new Action({ transfer: new Transfer({ deposit }) });
 }
 
-export function stake(stake: BN, publicKey: PublicKey): Action {
+function stake(stake: BN, publicKey: PublicKey): Action {
     return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 
-export function addKey(publicKey: PublicKey, accessKey: AccessKey): Action {
+function addKey(publicKey: PublicKey, accessKey: AccessKey): Action {
     return new Action({ addKey: new AddKey({ publicKey, accessKey}) });
 }
 
-export function deleteKey(publicKey: PublicKey): Action {
+function deleteKey(publicKey: PublicKey): Action {
     return new Action({ deleteKey: new DeleteKey({ publicKey }) });
 }
 
-export function deleteAccount(beneficiaryId: string): Action {
+function deleteAccount(beneficiaryId: string): Action {
     return new Action({ deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
+
+export const actionCreators = {
+    addKey,
+    createAccount,
+    deleteAccount,
+    deleteKey,
+    deployContract,
+    fullAccessKey,
+    functionCall,
+    functionCallAccessKey,
+    stake,
+    transfer,
+};

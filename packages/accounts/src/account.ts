@@ -9,18 +9,9 @@ import {
 } from '@near-js/utils';
 import { exponentialBackoff } from '@near-js/providers';
 import {
-    transfer,
-    createAccount,
-    signTransaction,
-    deployContract,
-    addKey,
-    functionCall,
-    fullAccessKey,
-    functionCallAccessKey,
-    deleteKey,
-    stake,
-    deleteAccount,
+    actionCreators,
     Action,
+    signTransaction,
     SignedTransaction,
     stringifyJsonOrBytes
 } from '@near-js/transactions';
@@ -43,6 +34,19 @@ import {
 import { baseDecode, baseEncode } from 'borsh';
 
 import { Connection } from './connection';
+
+const {
+    addKey,
+    createAccount,
+    deleteAccount,
+    deleteKey,
+    deployContract,
+    fullAccessKey,
+    functionCall,
+    functionCallAccessKey,
+    stake,
+    transfer,
+} = actionCreators;
 
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
