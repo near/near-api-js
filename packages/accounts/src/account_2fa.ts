@@ -3,7 +3,7 @@
 import { PublicKey } from '@near-js/keypairs';
 import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { fetchJson } from '@near-js/providers';
-import { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } from '@near-js/transactions';
+import { actionCreators } from '@near-js/transactions';
 import BN from 'bn.js';
 
 import { SignAndSendTransactionOptions } from './account';
@@ -16,6 +16,8 @@ import {
     MULTISIG_GAS,
 } from './constants';
 import { MultisigStateStatus } from './types';
+
+const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;

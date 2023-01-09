@@ -1,13 +1,15 @@
 const { KeyPair, PublicKey } = require('@near-js/keypairs');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const { InMemorySigner } = require('@near-js/signers');
-const { createTransaction, functionCall, SCHEMA, Transaction, transfer } = require('@near-js/transactions');
+const { actionCreators, createTransaction, SCHEMA, Transaction } = require('@near-js/transactions');
 const BN = require('bn.js');
 const { baseDecode, deserialize } = require('borsh');
 const localStorage = require('localstorage-memory');
 const url = require('url');
 
 const { WalletConnection } = require('../lib/wallet_account');
+
+const { functionCall, transfer } = actionCreators;
 
 // If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
