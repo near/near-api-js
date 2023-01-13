@@ -1,4 +1,4 @@
-const { KeyPair } = require('@near-js/keypairs');
+const { KeyPair } = require('@near-js/crypto');
 
 const testUtils = require('./test-utils');
 

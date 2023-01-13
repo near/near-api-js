@@ -1,4 +1,4 @@
-const { KeyPairEd25519 } = require('@near-js/keypairs');
+const { KeyPairEd25519 } = require('@near-js/crypto');
 
 const NETWORK_ID_SINGLE_KEY = 'singlekeynetworkid';
 const ACCOUNT_ID_SINGLE_KEY = 'singlekey_accountid';

@@ -1,4 +1,4 @@
-const { KeyPair } = require('@near-js/keypairs');
+const { KeyPair } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const BN = require('bn.js');
 const fs = require('fs').promises;

@@ -15,7 +15,7 @@ import {
     SignedTransaction,
     stringifyJsonOrBytes
 } from '@near-js/transactions';
-import { PublicKey } from '@near-js/keypairs';
+import { PublicKey } from '@near-js/crypto';
 import {
     PositionalArgsError,
     FinalExecutionOutcome,

@@ -16,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@near-js/keypairs": "workspace:*",
+    "@near-js/crypto": "workspace:*",
     "@near-js/providers": "workspace:*",
     "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",

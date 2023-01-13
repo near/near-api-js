@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@near-js/accounts": "workspace:*",
-    "@near-js/keypairs": "workspace:*",
+    "@near-js/crypto": "workspace:*",
     "@near-js/keystores": "workspace:*",
     "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",

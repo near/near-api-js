@@ -1,4 +1,4 @@
-import { PublicKey } from '@near-js/keypairs';
+import { PublicKey } from '@near-js/crypto';
 import { fetchJson } from '@near-js/providers';
 import BN from 'bn.js';
 

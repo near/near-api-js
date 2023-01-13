@@ -34,7 +34,7 @@ importers:
 
   packages/accounts:
     specifiers:
-      '@near-js/keypairs': workspace:*
+      '@near-js/crypto': workspace:*
       '@near-js/keystores': workspace:*
       '@near-js/providers': workspace:*
       '@near-js/signers': workspace:*
@@ -51,7 +51,7 @@ importers:
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/keypairs': link:../keypairs
+      '@near-js/crypto': link:../crypto
       '@near-js/providers': link:../providers
       '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions
@@ -100,7 +100,7 @@ importers:
       homedir: 0.6.0
       near-api-js: link:../near-api-js
 
-  packages/keypairs:
+  packages/crypto:
     specifiers:
       '@near-js/types': workspace:*
       '@types/node': ^18.11.18
@@ -123,14 +123,14 @@ importers:
 
   packages/keystores:
     specifiers:
-      '@near-js/keypairs': workspace:*
+      '@near-js/crypto': workspace:*
       '@near-js/types': workspace:*
       '@types/node': ^18.11.18
       jest: ^26.0.1
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/keypairs': link:../keypairs
+      '@near-js/crypto': link:../crypto
       '@near-js/types': link:../types
     devDependencies:
       '@types/node': 18.11.18
@@ -140,13 +140,13 @@ importers:
 
   packages/keystores-browser:
     specifiers:
-      '@near-js/keypairs': workspace:*
+      '@near-js/crypto': workspace:*
       '@near-js/keystores': workspace:*
       jest: ^26.0.1
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/keypairs': link:../keypairs
+      '@near-js/crypto': link:../crypto
       '@near-js/keystores': link:../keystores
     devDependencies:
       jest: 26.6.3
@@ -155,14 +155,14 @@ importers:
 
   packages/keystores-node:
     specifiers:
-      '@near-js/keypairs': workspace:*
+      '@near-js/crypto': workspace:*
       '@near-js/keystores': workspace:*
       '@types/node': ^18.11.18
       jest: ^26.0.1
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/keypairs': link:../keypairs
+      '@near-js/crypto': link:../crypto
       '@near-js/keystores': link:../keystores
     devDependencies:
       '@types/node': 18.11.18
@@ -173,7 +173,7 @@ importers:
   packages/near-api-js:
     specifiers:
       '@near-js/accounts': workspace:*
-      '@near-js/keypairs': workspace:*
+      '@near-js/crypto': workspace:*
       '@near-js/keystores': workspace:*
       '@near-js/keystores-browser': workspace:*
       '@near-js/keystores-node': workspace:*
@@ -212,7 +212,7 @@ importers:
       uglifyify: ^5.0.1
     dependencies:
       '@near-js/accounts': link:../accounts
-      '@near-js/keypairs': link:../keypairs
+      '@near-js/crypto': link:../crypto
       '@near-js/keystores': link:../keystores
       '@near-js/keystores-browser': link:../keystores-browser
       '@near-js/keystores-node': link:../keystores-node
@@ -281,7 +281,7 @@ importers:
 
   packages/signers:
     specifiers:
-      '@near-js/keypairs': workspace:*
+      '@near-js/crypto': workspace:*
       '@near-js/keystores': workspace:*
       '@types/node': ^18.11.18
       jest: ^26.0.1
@@ -289,7 +289,7 @@ importers:
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/keypairs': link:../keypairs
+      '@near-js/crypto': link:../crypto
       '@near-js/keystores': link:../keystores
       js-sha256: 0.9.0
     devDependencies:
@@ -300,7 +300,7 @@ importers:
 
   packages/transactions:
     specifiers:
-      '@near-js/keypairs': workspace:*
+      '@near-js/crypto': workspace:*
       '@near-js/keystores': workspace:*
       '@near-js/signers': workspace:*
       '@near-js/types': workspace:*
@@ -313,7 +313,7 @@ importers:
       ts-jest: ^26.5.6
       typescript: ^4.9.4
     dependencies:
-      '@near-js/keypairs': link:../keypairs
+      '@near-js/crypto': link:../crypto
       '@near-js/signers': link:../signers
       '@near-js/types': link:../types
       '@near-js/utils': link:../utils
@@ -366,7 +366,7 @@ importers:
   packages/wallet-account:
     specifiers:
       '@near-js/accounts': workspace:*
-      '@near-js/keypairs': workspace:*
+      '@near-js/crypto': workspace:*
       '@near-js/keystores': workspace:*
       '@near-js/signers': workspace:*
       '@near-js/transactions': workspace:*
@@ -381,7 +381,7 @@ importers:
       typescript: ^4.9.4
     dependencies:
       '@near-js/accounts': link:../accounts
-      '@near-js/keypairs': link:../keypairs
+      '@near-js/crypto': link:../crypto
       '@near-js/keystores': link:../keystores
       '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions

@@ -4,6 +4,6 @@ export {
     KeyType,
     PublicKey,
     Signature,
-} from '@near-js/keypairs';
+} from '@near-js/crypto';
 
 export type Arrayish = string | ArrayLike<number>;
