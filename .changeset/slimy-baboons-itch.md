@@ -1,7 +1,7 @@
 ---
-"near-api-js": minor
+"near-api-js": major
 "@near-js/accounts": patch
-"@near-js/keypairs": patch
+"@near-js/crypto": patch
 "@near-js/keystores": patch
 "@near-js/keystores-browser": patch
 "@near-js/keystores-node": patch
