@@ -12,7 +12,7 @@
     "types": "lib/index.d.ts",
     "dependencies": {
         "@near-js/accounts": "workspace:*",
-        "@near-js/keypairs": "workspace:*",
+        "@near-js/crypto": "workspace:*",
         "@near-js/keystores": "workspace:*",
         "@near-js/keystores-browser": "workspace:*",
         "@near-js/keystores-node": "workspace:*",

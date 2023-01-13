@@ -14,7 +14,7 @@ import {
     LocalAccountCreator,
     UrlAccountCreator,
 } from '@near-js/accounts';
-import { PublicKey } from '@near-js/keypairs';
+import { PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { Signer } from '@near-js/signers';
 import BN from 'bn.js';

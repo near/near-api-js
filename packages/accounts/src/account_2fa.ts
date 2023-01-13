@@ -1,6 +1,6 @@
 'use strict';
 
-import { PublicKey } from '@near-js/keypairs';
+import { PublicKey } from '@near-js/crypto';
 import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { fetchJson } from '@near-js/providers';
 import { actionCreators } from '@near-js/transactions';

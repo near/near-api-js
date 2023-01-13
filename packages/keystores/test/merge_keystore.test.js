@@ -1,4 +1,4 @@
-const { KeyPairEd25519 } = require('@near-js/keypairs');
+const { KeyPairEd25519 } = require('@near-js/crypto');
 
 const { InMemoryKeyStore, MergeKeyStore } = require('../lib');
 

@@ -1,4 +1,4 @@
-import { Signature, PublicKey } from '@near-js/keypairs';
+import { Signature, PublicKey } from '@near-js/crypto';
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.

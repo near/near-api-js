@@ -1,4 +1,4 @@
-const { KeyPair, PublicKey } = require('@near-js/keypairs');
+const { KeyPair, PublicKey } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const { InMemorySigner } = require('@near-js/signers');
 const { Assignable } = require('@near-js/types');

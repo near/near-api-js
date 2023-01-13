@@ -1,4 +1,4 @@
-import { KeyPair, PublicKey, Signature } from '@near-js/keypairs';
+import { KeyPair, PublicKey, Signature } from '@near-js/crypto';
 import { InMemoryKeyStore, KeyStore } from '@near-js/keystores';
 import sha256 from 'js-sha256';
 
