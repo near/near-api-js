@@ -110,30 +110,15 @@ describe('add', () => {
     });
 
     test('throws ArgumentSchemaError if required argument was not supplied', async () => {
-        try {
-            await contract.add({});
-            throw new Error('Calling contract.add({}) worked. It shouldn\'t have worked.');
-        } catch (e) {
-            if (!(e instanceof ArgumentSchemaError)) throw e;
-        }
+        await expect(contract.add({})).rejects.toBeInstanceOf(ArgumentSchemaError);
     });
 
     test('throws ArgumentSchemaError if argument has unexpected type', async () => {
-        try {
-            await contract.add({ a: 1, b: [3, 4] });
-            throw new Error('Calling contract.add({ a: 1, b: [3, 4] }) worked. It shouldn\'t have worked.');
-        } catch (e) {
-            if (!(e instanceof ArgumentSchemaError)) throw e;
-        }
+        await expect(contract.add({ a: 1, b: [3, 4] })).rejects.toBeInstanceOf(ArgumentSchemaError);
     });
 
     test('throws UnknownArgumentError if unknown argument was supplied', async () => {
-        try {
-            await contract.add({ a: [1, 2], b: [3, 4], c: 5 });
-            throw new Error('Calling contract.add({ a: [1, 2], b: [3, 4], c: 5 }) worked. It shouldn\'t have worked.');
-        } catch (e) {
-            if (!(e instanceof UnknownArgumentError)) throw e;
-        }
+        await expect(contract.add({ a: [1, 2], b: [3, 4], c: 5 })).rejects.toBeInstanceOf(UnknownArgumentError);
     });
 });
 
@@ -144,37 +129,21 @@ describe('add_call', () => {
     });
 
     test('throws ArgumentSchemaError if required argument was not supplied', async () => {
-        try {
-            await contract.add_call({ args: {} });
-            throw new Error('Calling contract.add_call({}) worked. It shouldn\'t have worked.');
-        } catch (e) {
-            if (!(e instanceof ArgumentSchemaError)) throw e;
-        }
+        await expect(contract.add_call({ args: {} })).rejects.toBeInstanceOf(ArgumentSchemaError);
     });
 
     test('throws ArgumentSchemaError if argument has unexpected type', async () => {
-        try {
-            await contract.add_call({ args: { a: 1, b: [3, 4] } });
-            throw new Error('Calling contract.add_call({ a: 1, b: [3, 4] }) worked. It shouldn\'t have worked.');
-        } catch (e) {
-            if (!(e instanceof ArgumentSchemaError)) throw e;
-        }
+        await expect(contract.add_call({ args: { a: 1, b: [3, 4] } })).rejects.toBeInstanceOf(ArgumentSchemaError);
     });
 
     test('throws UnknownArgumentError if unknown argument was supplied', async () => {
-        try {
-            await contract.add_call({ args: { a: [1, 2], b: [3, 4], c: 5 } });
-            throw new Error('Calling contract.add_call({ a: [1, 2], b: [3, 4], c: 5 }) worked. It shouldn\'t have worked.');
-        } catch (e) {
-            if (!(e instanceof UnknownArgumentError)) throw e;
-        }
+        await expect(contract.add_call({ args: { a: [1, 2], b: [3, 4], c: 5 } })).rejects.toBeInstanceOf(UnknownArgumentError);
     });
 });
 
 describe('Contract constructor', () => {
     test('throws UnsupportedSerializationError when ABI has borsh serialization', async () => {
-        try {
-            let rawAbi = `{
+        let rawAbi = `{
                 "schema_version": "0.3.0",
                 "body": {
                   "functions": [
@@ -201,11 +170,7 @@ describe('Contract constructor', () => {
                   }
                 }
               }`;
-            const contract = new Contract(account, 'contractId', { abi: JSON.parse(rawAbi) });
-            await contract.add({ a: 1 });
-            throw new Error('Calling contract.add({ a: [1, 2], b: [3, 4], c: 5 }) worked. It shouldn\'t have worked.');
-        } catch (e) {
-            if (!(e instanceof UnsupportedSerializationError)) throw e;
-        }
+        const contract = new Contract(account, 'contractId', { abi: JSON.parse(rawAbi) });
+        await expect(contract.add({ a: 1 })).rejects.toBeInstanceOf(UnsupportedSerializationError);
     });
 });
