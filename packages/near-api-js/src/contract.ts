@@ -17,24 +17,40 @@ function nameFunction(name: string, body: (args?: any[]) => any) {
 }
 
 function validateArguments(args: object, params: AbiJsonParameter[], ajv: Ajv, abi: AbiRoot) {
-    if (isObject(args)) {
-        for (const p of params) {
-            const arg = args[p.name];
-            const typeSchema = p.type_schema;
-            typeSchema.definitions = abi.body.root_schema.definitions;
-            const validate = ajv.compile(typeSchema);
-            if (!validate(arg)) {
-                throw new ArgumentSchemaError(p.name, validate.errors);
-            }
-        }
-        // Check there are no extra unknown arguments passed
-        for (const argName of Object.keys(args)) {
-            const param = params.find((p) => p.name === argName);
-            if (!param) {
-                throw new UnknownArgumentError(argName, params.map((p) => p.name));
-            }
+    if (!isObject(args)) return;
+
+    for (const p of params) {
+        const arg = args[p.name];
+        const typeSchema = p.type_schema;
+        typeSchema.definitions = abi.body.root_schema.definitions;
+        const validate = ajv.compile(typeSchema);
+        if (!validate(arg)) {
+            throw new ArgumentSchemaError(p.name, validate.errors);
         }
     }
+    // Check there are no extra unknown arguments passed
+    for (const argName of Object.keys(args)) {
+        const param = params.find((p) => p.name === argName);
+        if (!param) {
+            throw new UnknownArgumentError(argName, params.map((p) => p.name));
+        }
+    }
+}
+
+function createAjv() {
+    // Strict mode is disabled for now as it complains about unknown formats. We need to
+    // figure out if we want to support a fixed set of formats. `uint32` and `uint64`
+    // are added explicitly just to reduce the amount of warnings as these are very popular
+    // types.
+    const ajv = new Ajv({
+        strictSchema: false,
+        formats: {
+            uint32: true,
+            uint64: true
+        }
+    });
+    addFormats(ajv);
+    return ajv;
 }
 
 const isUint8Array = (x: any) =>
@@ -134,19 +150,7 @@ export class Contract {
             changeMethodsWithAbi = changeMethodsWithAbi.concat(abiChangeMethods);
         }
 
-        // Strict mode is disabled for now as it complains about unknown formats. We need to
-        // figure out if we want to support a fixed set of formats. `uint32` and `uint64`
-        // are added explicitly just to reduce the amount of warnings as these are very popular
-        // types.
-        const ajv = new Ajv({
-            strictSchema: false,
-            formats: {
-                uint32: true,
-                uint64: true
-            }
-        });
-        addFormats(ajv);
-
+        const ajv = createAjv();
         viewMethodsWithAbi.forEach(({ name, abi }) => {
             Object.defineProperty(this, name, {
                 writable: false,
@@ -157,17 +161,15 @@ export class Contract {
                     }
 
                     if (abi) {
-                        if (abi.params && abi.params.serialization_type !== AbiSerializationType.Json) {
+                        if (abi.params?.serialization_type !== AbiSerializationType.Json) {
                             throw new UnsupportedSerializationError(abi.name, abi.params.serialization_type);
                         }
 
-                        if (abi.result && abi.result.serialization_type !== AbiSerializationType.Json) {
+                        if (abi.result?.serialization_type !== AbiSerializationType.Json) {
                             throw new UnsupportedSerializationError(abi.name, abi.params.serialization_type);
                         }
 
-                        // Safe cast as we have asserted that root ABI contains exclusively JSON parameters
-                        const params = abi ? abi.params.args as AbiJsonParameter[] : [];
-                        validateArguments(args, params, ajv, abiRoot);
+                        validateArguments(args, abi.params?.args, ajv, abiRoot);
                     }
 
                     return this.account.viewFunction({
