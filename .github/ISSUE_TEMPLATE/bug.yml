@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Before filing your issue, ask yourself:
-        - Is this clearly a NEAR JavScript API defect?
+        - Is this clearly a NEAR JavaScript API defect?
         - Do I have basic ideas about where it goes wrong? (For example, if there are stack traces, are they pointing to one file?)
 
         **Please don't use issues for just questions**. For support please use our other channels - the [Discord server](https://near.chat) or [GitHub discussions](https://github.com/near/near-api-js/discussions).
