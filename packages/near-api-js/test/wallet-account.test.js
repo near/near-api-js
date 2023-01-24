@@ -50,11 +50,18 @@ beforeEach(() => {
             replaceState: (state, title, url) => history.push([state, title, url])
         }
     });
-    walletConnection = new nearApi.WalletConnection(nearFake);
+    walletConnection = new nearApi.WalletConnection(nearFake, '');
 });
 
 it('not signed in by default', () => {
     expect(walletConnection.isSignedIn()).not.toBeTruthy();
+});
+
+it('throws if non string appKeyPrefix', () => {
+    expect(() => new nearApi.WalletConnection(nearFake)).toThrow(/appKeyPrefix/);
+    expect(() => new nearApi.WalletConnection(nearFake, 1)).toThrow(/appKeyPrefix/);
+    expect(() => new nearApi.WalletConnection(nearFake, null)).toThrow(/appKeyPrefix/);
+    expect(() => new nearApi.WalletConnection(nearFake, undefined)).toThrow(/appKeyPrefix/);
 });
 
 describe('fails gracefully on the server side (without window)', () => {
@@ -70,26 +77,33 @@ describe('fails gracefully on the server side (without window)', () => {
     });
 
     it('does not throw on instantiation', () => {
-        expect(() => new nearApi.WalletConnection(nearFake)).not.toThrowError();
+        expect(() => new nearApi.WalletConnection(nearFake, '')).not.toThrowError();
+    });
+
+    it('throws if non string appKeyPrefix in server context', () => {
+        expect(() => new nearApi.WalletConnection(nearFake)).toThrow(/appKeyPrefix/);
+        expect(() => new nearApi.WalletConnection(nearFake, 1)).toThrow(/appKeyPrefix/);
+        expect(() => new nearApi.WalletConnection(nearFake, null)).toThrow(/appKeyPrefix/);
+        expect(() => new nearApi.WalletConnection(nearFake, undefined)).toThrow(/appKeyPrefix/);
     });
 
     it('returns an empty string as accountId', () => {
-        const serverWalletConnection = new nearApi.WalletConnection(nearFake);
+        const serverWalletConnection = new nearApi.WalletConnection(nearFake, '');
         expect(serverWalletConnection.getAccountId()).toEqual('');
     });
 
     it('returns false as isSignedIn', () => {
-        const serverWalletConnection = new nearApi.WalletConnection(nearFake);
+        const serverWalletConnection = new nearApi.WalletConnection(nearFake, '');
         expect(serverWalletConnection.isSignedIn()).toEqual(false);
     });
 
     it('throws explicit error when calling other methods on the instance', () => {
-        const serverWalletConnection = new nearApi.WalletConnection(nearFake);
+        const serverWalletConnection = new nearApi.WalletConnection(nearFake, '');
         expect(() => serverWalletConnection.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail')).toThrow(/please ensure you are using WalletConnection on the browser/);
     });
 
     it('can access other props on the instance', () => {
-        const serverWalletConnection = new nearApi.WalletConnection(nearFake);
+        const serverWalletConnection = new nearApi.WalletConnection(nearFake, '');
         expect(serverWalletConnection['randomValue']).toEqual(undefined);
     });
 });
