@@ -52,3 +52,9 @@ export class ArgumentSchemaError extends Error {
         super(`Argument '${argName}' does not conform to the specified ABI schema: '${JSON.stringify(errors)}'`);
     }
 }
+
+export class ConflictingOptions extends Error {
+    constructor() {
+        super('Conflicting contract method options have been passed. You can either specify ABI or a list of view/call methods.');
+    }
+}

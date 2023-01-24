@@ -2,10 +2,10 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import BN from 'bn.js';
 import depd from 'depd';
-import { AbiFunction, AbiFunctionKind, AbiJsonParameter, AbiRoot, AbiSerializationType } from 'near-abi';
+import { AbiFunction, AbiFunctionKind, AbiRoot, AbiSerializationType } from 'near-abi';
 import { Account } from './account';
 import { getTransactionLastResult } from './providers';
-import { PositionalArgsError, ArgumentTypeError, UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError } from './utils/errors';
+import { PositionalArgsError, ArgumentTypeError, UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './utils/errors';
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
@@ -16,13 +16,22 @@ function nameFunction(name: string, body: (args?: any[]) => any) {
     }[name];
 }
 
-function validateArguments(args: object, params: AbiJsonParameter[], ajv: Ajv, abi: AbiRoot) {
+function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abiRoot: AbiRoot) {
     if (!isObject(args)) return;
 
+    if (abiFunction.params?.serialization_type !== AbiSerializationType.Json) {
+        throw new UnsupportedSerializationError(abiFunction.name, abiFunction.params.serialization_type);
+    }
+
+    if (abiFunction.result?.serialization_type !== AbiSerializationType.Json) {
+        throw new UnsupportedSerializationError(abiFunction.name, abiFunction.params.serialization_type);
+    }
+
+    const params = abiFunction.params.args;
     for (const p of params) {
         const arg = args[p.name];
         const typeSchema = p.type_schema;
-        typeSchema.definitions = abi.body.root_schema.definitions;
+        typeSchema.definitions = abiRoot.body.root_schema.definitions;
         const validate = ajv.compile(typeSchema);
         if (!validate(arg)) {
             throw new ArgumentSchemaError(p.name, validate.errors);
@@ -138,16 +147,17 @@ export class Contract {
         const { viewMethods = [], changeMethods = [], abi: abiRoot } = options;
 
         let viewMethodsWithAbi = viewMethods.map((name) => ({ name, abi: null as AbiFunction }));
-        let changeMethodsWithAbi = changeMethods.map((name) => ({ name, abi: null }));
+        let changeMethodsWithAbi = changeMethods.map((name) => ({ name, abi: null as AbiFunction }));
         if (abiRoot) {
-            const abiViewMethods = abiRoot.body.functions
+            if (viewMethodsWithAbi.length > 0 || changeMethodsWithAbi.length > 0) {
+                throw new ConflictingOptions();
+            }
+            viewMethodsWithAbi = abiRoot.body.functions
                 .filter((m) => m.kind === AbiFunctionKind.View)
                 .map((m) => ({ name: m.name, abi: m }));
-            const abiChangeMethods = abiRoot.body.functions
+            changeMethodsWithAbi = abiRoot.body.functions
                 .filter((methodAbi) => methodAbi.kind === AbiFunctionKind.Call)
                 .map((methodAbi) => ({ name: methodAbi.name, abi: methodAbi }));
-            viewMethodsWithAbi = viewMethodsWithAbi.concat(abiViewMethods);
-            changeMethodsWithAbi = changeMethodsWithAbi.concat(abiChangeMethods);
         }
 
         const ajv = createAjv();
@@ -161,15 +171,7 @@ export class Contract {
                     }
 
                     if (abi) {
-                        if (abi.params?.serialization_type !== AbiSerializationType.Json) {
-                            throw new UnsupportedSerializationError(abi.name, abi.params.serialization_type);
-                        }
-
-                        if (abi.result?.serialization_type !== AbiSerializationType.Json) {
-                            throw new UnsupportedSerializationError(abi.name, abi.params.serialization_type);
-                        }
-
-                        validateArguments(args, abi.params?.args, ajv, abiRoot);
+                        validateArguments(args, abi, ajv, abiRoot);
                     }
 
                     return this.account.viewFunction({
@@ -201,9 +203,7 @@ export class Contract {
                     }
 
                     if (abi) {
-                        // Safe cast as we have asserted that root ABI contains exclusively JSON parameters
-                        const params = abi.params.args as AbiJsonParameter[];
-                        validateArguments(args[0].args, params, ajv, abiRoot);
+                        validateArguments(args[0].args, abi, ajv, abiRoot);
                     }
 
                     return this._changeMethod({ methodName: name, ...args[0] });
