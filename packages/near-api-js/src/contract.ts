@@ -19,15 +19,15 @@ function nameFunction(name: string, body: (args?: any[]) => any) {
 function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abiRoot: AbiRoot) {
     if (!isObject(args)) return;
 
-    if (abiFunction.params?.serialization_type !== AbiSerializationType.Json) {
+    if (abiFunction.params && abiFunction.params.serialization_type !== AbiSerializationType.Json) {
         throw new UnsupportedSerializationError(abiFunction.name, abiFunction.params.serialization_type);
     }
 
-    if (abiFunction.result?.serialization_type !== AbiSerializationType.Json) {
-        throw new UnsupportedSerializationError(abiFunction.name, abiFunction.params.serialization_type);
+    if (abiFunction.result && abiFunction.result.serialization_type !== AbiSerializationType.Json) {
+        throw new UnsupportedSerializationError(abiFunction.name, abiFunction.result.serialization_type);
     }
 
-    const params = abiFunction.params.args;
+    const params = abiFunction.params?.args || [];
     for (const p of params) {
         const arg = args[p.name];
         const typeSchema = p.type_schema;

@@ -60,6 +60,10 @@ let rawAbi = `{
             "$ref": "#/definitions/Pair"
           }
         }
+      },
+      {
+        "name": "empty_call",
+        "kind": "call"
       }
     ],
     "root_schema": {
@@ -138,6 +142,12 @@ describe('add_call', () => {
 
     test('throws UnknownArgumentError if unknown argument was supplied', async () => {
         await expect(contract.add_call({ args: { a: [1, 2], b: [3, 4], c: 5 } })).rejects.toBeInstanceOf(UnknownArgumentError);
+    });
+});
+
+describe('empty_call', () => {
+    test('can be called successfully', async () => {
+        await contract.empty_call({});
     });
 });
 
