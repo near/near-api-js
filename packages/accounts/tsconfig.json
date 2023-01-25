@@ -1,6 +1,7 @@
 {
     "extends": "../../tsconfig.node.json",
     "compilerOptions": {
+        "preserveSymlinks": false,
         "outDir": "./lib",
     },
     "files": [

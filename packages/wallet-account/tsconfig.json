@@ -1,6 +1,7 @@
 {
     "extends": "../../tsconfig.browser.json",
     "compilerOptions": {
+        "preserveSymlinks": false,
         "outDir": "./lib",
     },
     "files": [
