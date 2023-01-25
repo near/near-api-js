@@ -12,7 +12,7 @@
         "alwaysStrict": true,
         "outDir": "./lib",
         "declaration": true,
-        "preserveSymlinks": true,
+        "preserveSymlinks": false,
         "preserveWatchOutput": true,
         "pretty": false,
         "forceConsistentCasingInFileNames": true,
