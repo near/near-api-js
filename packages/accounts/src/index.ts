@@ -28,6 +28,12 @@ export {
     ContractMethods,
 } from './contract';
 export {
+    ArgumentSchemaError,
+    ConflictingOptions,
+    UnknownArgumentError,
+    UnsupportedSerializationError,
+} from './errors';
+export {
     MultisigDeleteRequestRejectionError,
     MultisigStateStatus,
 } from './types';

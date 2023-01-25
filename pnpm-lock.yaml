@@ -42,11 +42,14 @@ importers:
       '@near-js/types': workspace:*
       '@near-js/utils': workspace:*
       '@types/node': ^18.11.18
+      ajv: ^8.11.2
+      ajv-formats: ^2.1.1
       bn.js: 5.2.1
       borsh: ^0.7.0
       bs58: ^4.0.0
       depd: ^2.0.0
       jest: ^26.0.1
+      near-abi: 0.1.1
       near-hello: ^0.5.1
       ts-jest: ^26.5.6
       typescript: ^4.9.4
@@ -57,9 +60,12 @@ importers:
       '@near-js/transactions': link:../transactions
       '@near-js/types': link:../types
       '@near-js/utils': link:../utils
+      ajv: 8.11.2
+      ajv-formats: 2.1.1_ajv@8.11.2
       bn.js: 5.2.1
       borsh: 0.7.0
       depd: 2.0.0
+      near-abi: 0.1.1
     devDependencies:
       '@near-js/keystores': link:../keystores
       '@types/node': 18.11.18
