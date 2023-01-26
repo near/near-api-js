@@ -4,7 +4,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["src/**/*.ts", "test/**/*.js"],
-      "outputs": ["dist/"]
+      "outputs": ["dist/**", "lib/**"]
     },
     "test": {
       /* TODO remove once near-api-js tests are removed or packages/accounts/tests gets its own set of keys */
