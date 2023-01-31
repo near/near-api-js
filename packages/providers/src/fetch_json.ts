@@ -1,8 +1,9 @@
 import { TypedError } from '@near-js/types';
+import { logWarning } from '@near-js/utils';
 import createError from 'http-errors';
 
-import { exponentialBackoff } from './exponential-backoff';
-import nodeFetch from './fetch';
+import { exponentialBackoff } from './exponential-backoff.js';
+import nodeFetch from './fetch.js';
 
 const START_WAIT_TIME_MS = 1000;
 const BACKOFF_MULTIPLIER = 1.5;
@@ -16,8 +17,6 @@ export interface ConnectionInfo {
     timeout?: number;
     headers?: { [key: string]: string | number };
 }
-
-const logWarning = (...args) => !process.env['NEAR_NO_LOGS'] && console.warn(...args);
 
 export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
     let connectionInfo: ConnectionInfo = { url: null };

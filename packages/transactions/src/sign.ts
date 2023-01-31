@@ -1,5 +1,5 @@
 import { Signer } from '@near-js/signers';
-import sha256 from 'js-sha256';
+import { sha256 } from 'js-sha256';
 import BN from 'bn.js';
 import { serialize } from 'borsh';
 
@@ -16,7 +16,7 @@ import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema.js';
  */
 async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const message = serialize(SCHEMA, transaction);
-    const hash = new Uint8Array(sha256.sha256.array(message));
+    const hash = new Uint8Array(sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);
     const signedTx = new SignedTransaction({
         transaction,

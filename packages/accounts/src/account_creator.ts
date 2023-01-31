@@ -2,8 +2,8 @@ import { PublicKey } from '@near-js/crypto';
 import { fetchJson } from '@near-js/providers';
 import BN from 'bn.js';
 
-import { Connection } from './connection.js'
-import { Account } from './account.js'
+import { Connection } from './connection.js';
+import { Account } from './account.js';
 
 /**
  * Account creator provides an interface for implementations to actually create accounts

@@ -1,5 +1,5 @@
 {
-    "extends": "../../tsconfig.node.json",
+    "extends": "tsconfig/node.json",
     "compilerOptions": {
         "preserveSymlinks": false,
         "outDir": "./lib/cjs",

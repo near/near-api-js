@@ -52,6 +52,7 @@ importers:
       near-abi: 0.1.1
       near-hello: ^0.5.1
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/crypto': link:../crypto
@@ -73,6 +74,7 @@ importers:
       jest: 26.6.3
       near-hello: 0.5.1
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
   packages/cookbook:
@@ -93,6 +95,7 @@ importers:
       borsh: ^0.7.0
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       tweetnacl: ^1.0.1
       typescript: ^4.9.4
     dependencies:
@@ -113,6 +116,7 @@ importers:
       '@types/node': ^18.11.18
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/crypto': link:../crypto
@@ -121,6 +125,7 @@ importers:
       '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
   packages/keystores-browser:
@@ -129,6 +134,7 @@ importers:
       '@near-js/keystores': workspace:*
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/crypto': link:../crypto
@@ -136,6 +142,7 @@ importers:
     devDependencies:
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
   packages/keystores-node:
@@ -145,6 +152,7 @@ importers:
       '@types/node': ^18.11.18
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/crypto': link:../crypto
@@ -153,6 +161,7 @@ importers:
       '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
   packages/near-api-js:
@@ -248,6 +257,7 @@ importers:
       jest: ^26.0.1
       node-fetch: ^2.6.1
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/transactions': link:../transactions
@@ -262,6 +272,7 @@ importers:
       '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
   packages/signers:
@@ -272,6 +283,7 @@ importers:
       jest: ^26.0.1
       js-sha256: ^0.9.0
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/crypto': link:../crypto
@@ -281,6 +293,7 @@ importers:
       '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
   packages/transactions:
@@ -296,6 +309,7 @@ importers:
       jest: ^26.0.1
       js-sha256: ^0.9.0
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/crypto': link:../crypto
@@ -310,7 +324,11 @@ importers:
       '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
+
+  packages/tsconfig:
+    specifiers: {}
 
   packages/types:
     specifiers:
@@ -318,6 +336,7 @@ importers:
       bn.js: 5.2.1
       jest: ^26.0.1
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       bn.js: 5.2.1
@@ -325,6 +344,7 @@ importers:
       '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
   packages/utils:
@@ -336,6 +356,7 @@ importers:
       jest: ^26.0.1
       mustache: ^4.0.0
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/types': link:../types
@@ -346,6 +367,7 @@ importers:
       '@types/node': 18.11.18
       jest: 26.6.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
   packages/wallet-account:
@@ -363,6 +385,7 @@ importers:
       jest: ^26.0.1
       localstorage-memory: ^1.0.3
       ts-jest: ^26.5.6
+      tsconfig: workspace:*
       typescript: ^4.9.4
     dependencies:
       '@near-js/accounts': link:../accounts
@@ -379,6 +402,7 @@ importers:
       jest: 26.6.3
       localstorage-memory: 1.0.3
       ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
+      tsconfig: link:../tsconfig
       typescript: 4.9.4
 
 packages:

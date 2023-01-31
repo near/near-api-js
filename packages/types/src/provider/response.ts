@@ -5,7 +5,7 @@
 
 import BN from 'bn.js';
 
-import { BlockHash, BlockHeight, MerklePath } from './protocol';
+import { BlockHash, BlockHeight, MerklePath } from './protocol.js';
 
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',

@@ -15,6 +15,6 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "experimentalDecorators": true,
-        "resolveJsonModule": true,
+        "resolveJsonModule": true
     }
 }

@@ -2,10 +2,12 @@
   "name": "@near-js/utils",
   "version": "0.0.1",
   "description": "Common methods and constants for the NEAR API JavaScript client",
-  "main": "lib/index.js",
+  "main": "lib/esm/index.js",
+  "type": "module",
+  "browser": "./lib/cjs/index.js",
   "scripts": {
     "build": "pnpm compile",
-    "compile": "tsc -p tsconfig.json",
+    "compile": "concurrently \"tsc -p tsconfig.cjs.json\" \"tsc -p tsconfig.esm.json\"",
     "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
     "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc && eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc --fix --no-error-on-unmatched-pattern",
     "test": "jest test"
@@ -23,6 +25,14 @@
     "@types/node": "^18.11.18",
     "jest": "^26.0.1",
     "ts-jest": "^26.5.6",
+    "tsconfig": "workspace:*",
     "typescript": "^4.9.4"
-  }
+  },
+  "exports": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+  },
+  "files": [
+      "lib"
+  ]
 }

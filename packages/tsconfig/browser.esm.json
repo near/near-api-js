@@ -1,0 +1,11 @@
+{
+    "extends": "./browser.json",
+    "compilerOptions": {
+        "lib": [
+            "es2015",
+            "esnext",
+            "dom"
+        ],
+        "module": "es2022"
+    }
+}

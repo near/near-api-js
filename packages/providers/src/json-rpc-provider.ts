@@ -33,9 +33,9 @@ import {
 } from '@near-js/transactions';
 import { baseEncode } from 'borsh';
 
-import { exponentialBackoff } from './exponential-backoff';
-import { Provider } from './provider';
-import { ConnectionInfo, fetchJson } from './fetch_json';
+import { exponentialBackoff } from './exponential-backoff.js';
+import { Provider } from './provider.js';
+import { ConnectionInfo, fetchJson } from './fetch_json.js';
 
 /** @hidden */
 // Default number of retries before giving up on a request.

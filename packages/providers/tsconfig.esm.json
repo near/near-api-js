@@ -1,7 +1,10 @@
 {
     "extends": "tsconfig/esm.json",
     "compilerOptions": {
-        "preserveSymlinks": false,
+        "lib": [
+            "esnext",
+            "dom"
+        ],
         "outDir": "./lib/esm",
     },
     "files": [

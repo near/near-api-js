@@ -1,7 +1,7 @@
 import { TypedError } from '@near-js/types';
 import Mustache from 'mustache';
 
-import { formatNearAmount } from '../format';
+import { formatNearAmount } from '../format.js';
 import messages from './error_messages.json';
 import schema from './rpc_error_schema.json';
 
