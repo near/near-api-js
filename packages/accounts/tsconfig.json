@@ -2,7 +2,7 @@
     "extends": "../../tsconfig.node.json",
     "compilerOptions": {
         "preserveSymlinks": false,
-        "outDir": "./lib",
+        "outDir": "./lib/cjs",
     },
     "files": [
         "src/index.ts"

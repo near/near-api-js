@@ -1,5 +1,4 @@
-const { Contract } = require('../src/contract');
-const { ArgumentSchemaError, UnknownArgumentError, UnsupportedSerializationError } = require('../src/errors');
+const { ArgumentSchemaError, Contract, UnknownArgumentError, UnsupportedSerializationError } = require('../lib/cjs');
 
 let rawAbi = `{
   "schema_version": "0.3.0",

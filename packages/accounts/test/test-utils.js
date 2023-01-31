@@ -3,7 +3,7 @@ const { InMemoryKeyStore } = require('@near-js/keystores');
 const BN = require('bn.js');
 const fs = require('fs').promises;
 
-const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = require('../lib');
+const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = require('../lib/cjs');
 
 const networkId = 'unittest';
 

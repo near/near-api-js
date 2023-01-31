@@ -33,7 +33,7 @@ import {
 } from '@near-js/types';
 import { baseDecode, baseEncode } from 'borsh';
 
-import { Connection } from './connection';
+import { Connection } from './connection.js'
 
 const {
     addKey,

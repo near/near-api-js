@@ -4,7 +4,7 @@ const { TypedError } = require('@near-js/types');
 const BN = require('bn.js');
 const fs = require('fs');
 
-const { Account, Contract } = require('../lib');
+const { Account, Contract } = require('../lib/cjs');
 const testUtils  = require('./test-utils');
 
 let nearjs;

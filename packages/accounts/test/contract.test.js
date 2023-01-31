@@ -1,6 +1,6 @@
 const { PositionalArgsError } = require('@near-js/types');
 
-const { Contract } = require('../lib');
+const { Contract } = require('../lib/cjs');
 
 const account = {
     viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery}) {

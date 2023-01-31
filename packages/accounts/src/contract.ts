@@ -6,9 +6,8 @@ import BN from 'bn.js';
 import depd from 'depd';
 import { AbiFunction, AbiFunctionKind, AbiRoot, AbiSerializationType } from 'near-abi';
 
-import { Account } from './account';
-import { UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './errors';
-
+import { Account } from './account.js'
+import { UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './errors.js'
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
@@ -19,6 +18,7 @@ function nameFunction(name: string, body: (args?: any[]) => any) {
     }[name];
 }
 
+// @ts-ignore (TS2709: Cannot use namespace 'Ajv' as a type)
 function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abiRoot: AbiRoot) {
     if (!isObject(args)) return;
 
@@ -54,6 +54,7 @@ function createAjv() {
     // figure out if we want to support a fixed set of formats. `uint32` and `uint64`
     // are added explicitly just to reduce the amount of warnings as these are very popular
     // types.
+    // @ts-ignore (TS2351: This expression is not constructable)
     const ajv = new Ajv({
         strictSchema: false,
         formats: {
@@ -61,6 +62,7 @@ function createAjv() {
             uint64: true
         }
     });
+    // @ts-ignore (TS2349: This expression is not callable)
     addFormats(ajv);
     return ajv;
 }

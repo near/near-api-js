@@ -6,16 +6,16 @@ import { fetchJson } from '@near-js/providers';
 import { actionCreators } from '@near-js/transactions';
 import BN from 'bn.js';
 
-import { SignAndSendTransactionOptions } from './account';
-import { AccountMultisig } from './account_multisig';
-import { Connection } from './connection';
+import { SignAndSendTransactionOptions } from './account.js'
+import { AccountMultisig } from './account_multisig.js'
+import { Connection } from './connection.js'
 import {
     MULTISIG_CHANGE_METHODS,
     MULTISIG_CONFIRM_METHODS,
     MULTISIG_DEPOSIT,
     MULTISIG_GAS,
-} from './constants';
-import { MultisigStateStatus } from './types';
+} from './constants.js';
+import { MultisigStateStatus } from './types.js'
 
 const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
 

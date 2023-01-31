@@ -3,16 +3,16 @@
 import { Action, actionCreators } from '@near-js/transactions';
 import { FinalExecutionOutcome } from '@near-js/types';
 
-import { Account, SignAndSendTransactionOptions } from './account';
-import { Connection } from './connection';
+import { Account, SignAndSendTransactionOptions } from './account.js'
+import { Connection } from './connection.js'
 import {
     MULTISIG_ALLOWANCE,
     MULTISIG_CHANGE_METHODS,
     MULTISIG_DEPOSIT,
     MULTISIG_GAS,
     MULTISIG_STORAGE_KEY,
-} from './constants';
-import { MultisigDeleteRequestRejectionError, MultisigStateStatus } from './types';
+} from './constants.js';
+import { MultisigDeleteRequestRejectionError, MultisigStateStatus } from './types.js'
 
 const { deployContract, functionCall } = actionCreators;
 

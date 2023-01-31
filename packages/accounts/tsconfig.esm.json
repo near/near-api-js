@@ -1,0 +1,12 @@
+{
+    "extends": "../../tsconfig.esm.json",
+    "compilerOptions": {
+        "module": "node16",
+        "moduleResolution": "node16",
+        "preserveSymlinks": false,
+        "outDir": "./lib/esm",
+    },
+    "files": [
+        "src/index.ts"
+    ]
+}

@@ -7,7 +7,7 @@ const BN = require('bn.js');
 const fs = require('fs');
 const semver = require('semver');
 
-const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS } = require('../lib');
+const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS } = require('../lib/cjs');
 const testUtils  = require('./test-utils');
 
 const { functionCall, transfer } = actionCreators;
