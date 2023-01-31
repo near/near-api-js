@@ -42,7 +42,11 @@ export class Connection {
         this.networkId = networkId;
         this.provider = provider;
         this.signer = signer;
-        this.jsvmAccountId = jsvmAccountId; 
+        this.jsvmAccountId = jsvmAccountId;
+    }
+
+    getConnection(): Connection {
+        return this;
     }
 
     /**

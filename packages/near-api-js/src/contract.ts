@@ -6,6 +6,24 @@ import { AbiFunction, AbiFunctionKind, AbiRoot, AbiSerializationType } from 'nea
 import { Account } from './account';
 import { getTransactionLastResult } from './providers';
 import { PositionalArgsError, ArgumentTypeError, UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './utils/errors';
+import { Connection } from './connection';
+import { viewFunction } from './utils/view-function';
+
+function isAccount(connection: Account | Connection): connection is Account {
+    return 'connection' in connection;
+}
+
+function isContractMethods(options: ContractMethods | ViewContractMethods): options is ContractMethods {
+    return 'changeMethods' in options;
+}
+
+function isFullContract (options: ViewContractOptions | FullContractOptions): options is FullContractOptions {
+    return 'account' in options;
+}
+
+function isViewContract (options: ViewContractOptions | FullContractOptions): options is ViewContractOptions {
+    return 'connection' in options;
+}
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
@@ -80,15 +98,14 @@ interface ChangeMethodOptions {
 export interface ContractMethods {
     /**
      * Methods that change state. These methods cost gas and require a signed transaction.
-     * 
+     *
      * @see {@link account!Account.functionCall}
      */
     changeMethods: string[];
 
     /**
      * View methods do not require a signed transaction.
-     * 
-     * @see {@link account!Account#viewFunction}
+     *
      */
     viewMethods: string[];
 
@@ -98,14 +115,40 @@ export interface ContractMethods {
     abi: AbiRoot;
 }
 
+export interface ViewContractMethods {
+    /**
+     * View methods do not require a signed transaction.
+     *
+     */
+    viewMethods: string[];
+
+    /**
+     * ABI defining this contract's interface.
+     */
+    abi: AbiRoot;
+}
+
+interface ViewContractOptions {
+    connection: Connection;
+    contractId: string;
+    viewContractMethods: ViewContractMethods;
+}
+
+interface FullContractOptions {
+    account: Account;
+    contractId: string;
+    contractMethods: ContractMethods;
+}
+
+// TBD add create method and view contract example
 /**
  * Defines a smart contract on NEAR including the change (mutable) and view (non-mutable) methods
- * 
+ *
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#contract](https://docs.near.org/tools/near-api-js/quick-reference#contract)
  * @example
  * ```js
  * import { Contract } from 'near-api-js';
- * 
+ *
  * async function contractExample() {
  *   const methodOptions = {
  *     viewMethods: ['getMessageByAccountId'],
@@ -116,12 +159,12 @@ export interface ContractMethods {
  *     'contract-id.testnet',
  *     methodOptions
  *   );
- * 
+ *
  *   // use a contract view method
  *   const messages = await contract.getMessages({
  *     accountId: 'example-account.testnet'
  *   });
- * 
+ *
  *   // use a contract change method
  *   await contract.addMessage({
  *      meta: 'some info',
@@ -134,32 +177,10 @@ export interface ContractMethods {
  */
 export class Contract {
     readonly account: Account;
+    readonly connection: Connection;
     readonly contractId: string;
 
-    /**
-     * @param account NEAR account to sign change method transactions
-     * @param contractId NEAR account id where the contract is deployed
-     * @param options NEAR smart contract methods that your application will use. These will be available as `contract.methodName`
-     */
-    constructor(account: Account, contractId: string, options: ContractMethods) {
-        this.account = account;
-        this.contractId = contractId;
-        const { viewMethods = [], changeMethods = [], abi: abiRoot } = options;
-
-        let viewMethodsWithAbi = viewMethods.map((name) => ({ name, abi: null as AbiFunction }));
-        let changeMethodsWithAbi = changeMethods.map((name) => ({ name, abi: null as AbiFunction }));
-        if (abiRoot) {
-            if (viewMethodsWithAbi.length > 0 || changeMethodsWithAbi.length > 0) {
-                throw new ConflictingOptions();
-            }
-            viewMethodsWithAbi = abiRoot.body.functions
-                .filter((m) => m.kind === AbiFunctionKind.View)
-                .map((m) => ({ name: m.name, abi: m }));
-            changeMethodsWithAbi = abiRoot.body.functions
-                .filter((methodAbi) => methodAbi.kind === AbiFunctionKind.Call)
-                .map((methodAbi) => ({ name: methodAbi.name, abi: methodAbi }));
-        }
-
+    private createViewMethods (viewMethodsWithAbi: { name: string; abi: AbiFunction }[], abiRoot): Ajv {
         const ajv = createAjv();
         viewMethodsWithAbi.forEach(({ name, abi }) => {
             Object.defineProperty(this, name, {
@@ -174,7 +195,8 @@ export class Contract {
                         validateArguments(args, abi, ajv, abiRoot);
                     }
 
-                    return this.account.viewFunction({
+                    return viewFunction({
+                        connection: this.connection,
                         contractId: this.contractId,
                         methodName: name,
                         args,
@@ -183,33 +205,87 @@ export class Contract {
                 })
             });
         });
-        changeMethodsWithAbi.forEach(({ name, abi }) => {
-            Object.defineProperty(this, name, {
-                writable: false,
-                enumerable: true,
-                value: nameFunction(name, async (...args: any[]) => {
-                    if (args.length && (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))) {
-                        throw new PositionalArgsError();
-                    }
 
-                    if (args.length > 1 || !(args[0] && args[0].args)) {
-                        const deprecate = depd('contract.methodName(args, gas, amount)');
-                        deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
-                        args[0] = {
-                            args: args[0],
-                            gas: args[1],
-                            amount: args[2]
-                        };
-                    }
+        return ajv;
+    }
 
-                    if (abi) {
-                        validateArguments(args[0].args, abi, ajv, abiRoot);
-                    }
+    constructor(connection: Account | Connection, contractId: string, options: ContractMethods | ViewContractMethods) {
+        this.contractId = contractId;
+        if (!isAccount(connection) && !isContractMethods(options)) {
+            this.connection = connection;
+            const { viewMethods = [], abi: abiRoot } = options;
 
-                    return this._changeMethod({ methodName: name, ...args[0] });
-                })
+            let viewMethodsWithAbi = viewMethods.map((name) => ({ name, abi: null as AbiFunction }));
+            if (abiRoot) {
+                if (viewMethodsWithAbi.length > 0) {
+                    throw new ConflictingOptions();
+                }
+                viewMethodsWithAbi = abiRoot.body.functions
+                    .filter((m) => m.kind === AbiFunctionKind.View)
+                    .map((m) => ({ name: m.name, abi: m }));
+            }
+            this.createViewMethods(viewMethodsWithAbi, abiRoot);
+        } else if (isAccount(connection) && isContractMethods(options)) {
+            this.account = connection;
+            const { viewMethods = [], changeMethods = [], abi: abiRoot } = options;
+
+            let viewMethodsWithAbi = viewMethods.map((name) => ({ name, abi: null as AbiFunction }));
+            let changeMethodsWithAbi = changeMethods.map((name) => ({ name, abi: null as AbiFunction }));
+            if (abiRoot) {
+                if (viewMethodsWithAbi.length > 0 || changeMethodsWithAbi.length > 0) {
+                    throw new ConflictingOptions();
+                }
+                viewMethodsWithAbi = abiRoot.body.functions
+                    .filter((m) => m.kind === AbiFunctionKind.View)
+                    .map((m) => ({ name: m.name, abi: m }));
+                changeMethodsWithAbi = abiRoot.body.functions
+                    .filter((methodAbi) => methodAbi.kind === AbiFunctionKind.Call)
+                    .map((methodAbi) => ({ name: methodAbi.name, abi: methodAbi }));
+            }
+
+            const ajv = this.createViewMethods(viewMethodsWithAbi, abiRoot);
+            changeMethodsWithAbi.forEach(({ name, abi }) => {
+                Object.defineProperty(this, name, {
+                    writable: false,
+                    enumerable: true,
+                    value: nameFunction(name, async (...args: any[]) => {
+                        if (args.length && (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))) {
+                            throw new PositionalArgsError();
+                        }
+
+                        if (args.length > 1 || !(args[0] && args[0].args)) {
+                            const deprecate = depd('contract.methodName(args, gas, amount)');
+                            deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
+                            args[0] = {
+                                args: args[0],
+                                gas: args[1],
+                                amount: args[2]
+                            };
+                        }
+
+                        if (abi) {
+                            validateArguments(args[0].args, abi, ajv, abiRoot);
+                        }
+
+                        return this._changeMethod({ methodName: name, ...args[0] });
+                    })
+                });
             });
-        });
+        }
+    }
+
+    static create (options: ViewContractOptions | FullContractOptions): Contract {
+        const isFullContractValue = isFullContract(options);
+        if (isFullContractValue && options.account && options.contractMethods) {
+            return new Contract(options.account, options.contractId, options.contractMethods);
+        }
+
+        const isViewContractValue = isViewContract(options);
+        if (isViewContractValue && options.connection && options.viewContractMethods) {
+            return new Contract(options.connection, options.contractId, options.viewContractMethods);
+        } else {
+            throw new Error('You should pass correct types for contract create method');
+        }
     }
 
     private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl }: ChangeMethodOptions) {

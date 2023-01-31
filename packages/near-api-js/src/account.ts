@@ -22,7 +22,6 @@ import {
     AccountView,
     AccessKeyView,
     AccessKeyViewRaw,
-    CodeResult,
     AccessKeyList,
     AccessKeyInfoView,
     FunctionCallPermissionView,
@@ -32,11 +31,12 @@ import { Connection } from './connection';
 import { baseDecode, baseEncode } from 'borsh';
 import { PublicKey } from './utils/key_pair';
 import { logWarning, PositionalArgsError } from './utils/errors';
-import { printTxOutcomeLogs, printTxOutcomeLogsAndFailures } from './utils/logging';
+import { printTxOutcomeLogsAndFailures } from './utils/logging';
 import { parseResultError } from './utils/rpc_errors';
 import { DEFAULT_FUNCTION_CALL_GAS } from './constants';
 
 import exponentialBackoff from './utils/exponential-backoff';
+import { viewFunction } from './utils/view-function';
 
 // Default number of retries with different nonce before giving up on a transaction.
 const TX_NONCE_RETRY_NUMBER = 12;
@@ -118,10 +118,6 @@ export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     */
     walletCallbackUrl?: string;
 }
-export interface ViewFunctionCallOptions extends FunctionCallOptions { 
-    parse?: (response: Uint8Array) => any; 
-    blockQuery?: BlockReference; 
-}
 
 interface StakedBalance {
     validatorId: string;
@@ -133,14 +129,6 @@ interface ActiveDelegatedStakeBalance {
     stakedValidators: StakedBalance[];
     failedValidators: StakedBalance[];
     total: BN | string;
-}
-
-function parseJsonFromRawResponse(response: Uint8Array): any {
-    return JSON.parse(Buffer.from(response).toString());
-}
-
-function bytesJsonStringify(input: any): Buffer {
-    return Buffer.from(JSON.stringify(input));
 }
 
 /**
@@ -458,54 +446,6 @@ export class Account {
     }
 
     /**
-     * Invoke a contract view function using the RPC API.
-     * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
-     *
-     * @param viewFunctionCallOptions.contractId NEAR account where the contract is deployed
-     * @param viewFunctionCallOptions.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
-     * @param viewFunctionCallOptions.args Any arguments to the view contract method, wrapped in JSON
-     * @param viewFunctionCallOptions.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
-     * @param viewFunctionCallOptions.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
-     * @param viewFunctionCallOptions.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
-     * @param viewFunctionCallOptions.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
-     * @returns {Promise<any>}
-     */
-
-    async viewFunction({
-        contractId,
-        methodName,
-        args = {},
-        parse = parseJsonFromRawResponse,
-        stringify = bytesJsonStringify,
-        jsContract = false,
-        blockQuery = { finality: 'optimistic' }
-    }: ViewFunctionCallOptions): Promise<any> {
-        let encodedArgs;
-        
-        this.validateArgs(args);
-    
-        if(jsContract){
-            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
-        } else{
-            encodedArgs =  stringify(args);
-        }
-
-        const result = await this.connection.provider.query<CodeResult>({
-            request_type: 'call_function',
-            ...blockQuery,
-            account_id: jsContract ? this.connection.jsvmAccountId : contractId,
-            method_name: jsContract ? 'view_js_contract'  : methodName,
-            args_base64: encodedArgs.toString('base64')
-        });
-
-        if (result.logs) {
-            printTxOutcomeLogs({ contractId, logs: result.logs });
-        }
-
-        return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
-    }
-
-    /**
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
      * Pass an empty string for prefix if you would like to return the entire state.
      * @see [https://docs.near.org/api/rpc/contracts#view-contract-state](https://docs.near.org/api/rpc/contracts#view-contract-state)
@@ -585,7 +525,7 @@ export class Account {
 
     /**
      * Returns the NEAR tokens balance and validators of a given account that is delegated to the staking pools that are part of the validators set in the current epoch.
-     * 
+     *
      * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
@@ -601,7 +541,8 @@ export class Account {
         const uniquePools = [...pools];
         const promises = uniquePools
             .map((validator) => (
-                this.viewFunction({
+                viewFunction({
+                    connection: this.connection,
                     contractId: validator,
                     methodName: 'get_account_total_balance',
                     args: { account_id: this.accountId },
