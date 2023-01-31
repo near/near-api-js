@@ -2,7 +2,7 @@ import { FinalExecutionOutcome } from '@near-js/types';
 
 import { parseRpcError } from './errors/index.js';
 
-const SUPPRESS_LOGGING = !!process.env.NEAR_NO_LOGS;
+const SUPPRESS_LOGGING = typeof process !== 'undefined' && !!process.env.NEAR_NO_LOGS;
 
 /**
  * Parse and print details from a query execution response
