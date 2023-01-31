@@ -17,7 +17,7 @@ import {
     FunctionCallPermission,
     Stake,
     Transfer,
-} from './actions';
+} from './actions.js';
 
 export class Signature extends Assignable {
     keyType: KeyType;

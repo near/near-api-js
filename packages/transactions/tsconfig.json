@@ -1,7 +1,7 @@
 {
     "extends": "../../tsconfig.node.json",
     "compilerOptions": {
-        "outDir": "./lib",
+        "outDir": "./lib/cjs",
     },
     "files": [
         "src/index.ts"
