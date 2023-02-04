@@ -1,19 +1,19 @@
-const { KeyPair, PublicKey } = require('@near-js/crypto');
-const { InMemoryKeyStore } = require('@near-js/keystores');
-const { InMemorySigner } = require('@near-js/signers');
-const { Assignable } = require('@near-js/types');
-const fs = require('fs');
-const BN = require('bn.js');
-const { baseDecode, baseEncode, deserialize, serialize } = require('borsh');
+import { KeyPair, PublicKey } from '@near-js/crypto';
+import { InMemoryKeyStore } from '@near-js/keystores';
+import { InMemorySigner } from '@near-js/signers';
+import { Assignable } from '@near-js/types';
+import fs from 'fs';
+import BN from 'bn.js';
+import { baseDecode, baseEncode, deserialize, serialize } from 'borsh';
 
-const {
+import {
     actionCreators,
     createTransaction,
     SCHEMA,
     signTransaction,
     SignedTransaction,
     Transaction,
-} = require('../lib');
+} from '../lib/esm';
 
 const {
     addKey,

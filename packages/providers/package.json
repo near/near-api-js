@@ -12,7 +12,7 @@
     "lint:js:fix": "eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc --fix",
     "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
     "lint:ts:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc --fix",
-    "test": "jest test"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest test"
   },
   "keywords": [],
   "author": "",

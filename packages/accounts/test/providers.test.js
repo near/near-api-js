@@ -1,8 +1,8 @@
-const { JsonRpcProvider } = require('@near-js/providers');
-const BN = require('bn.js');
-const base58 = require('bs58');
+import { JsonRpcProvider } from '@near-js/providers';
+import BN from 'bn.js';
+import base58 from 'bs58';
 
-const testUtils = require('./test-utils');
+import testUtils from './test-utils.js';
 
 jest.setTimeout(20000);
 

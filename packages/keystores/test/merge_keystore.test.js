@@ -1,6 +1,7 @@
-const { KeyPairEd25519 } = require('@near-js/crypto');
+import { KeyPairEd25519 } from '@near-js/crypto';
 
-const { InMemoryKeyStore, MergeKeyStore } = require('../lib');
+import { InMemoryKeyStore, MergeKeyStore } from '../lib/esm';
+import { shouldStoreAndRetrieveKeys } from './keystore_common.js';
 
 describe('Merge keystore', () => {
     let ctx = {};
@@ -31,5 +32,5 @@ describe('Merge keystore', () => {
         expect(await ctx.stores[1].getAccounts('network')).toHaveLength(0);
     });
 
-    require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
+    shouldStoreAndRetrieveKeys(ctx);
 });

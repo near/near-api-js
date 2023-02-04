@@ -1,14 +1,14 @@
 /* global BigInt */
-const { parseNearAmount } = require('@near-js/utils');
-const { KeyPair } = require('@near-js/crypto');
-const { InMemorySigner } = require('@near-js/signers');
-const { actionCreators } = require('@near-js/transactions');
-const BN = require('bn.js');
-const fs = require('fs');
-const semver = require('semver');
+import { parseNearAmount } from '@near-js/utils';
+import { KeyPair } from '@near-js/crypto';
+import { InMemorySigner } from '@near-js/signers';
+import { actionCreators } from '@near-js/transactions';
+import BN from 'bn.js';
+import fs from 'fs';
+import semver from 'semver';
 
-const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS } = require('../lib/cjs');
-const testUtils  = require('./test-utils');
+import { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS } from '../lib/esm';
+import testUtils  from './test-utils.js';
 
 const { functionCall, transfer } = actionCreators;
 

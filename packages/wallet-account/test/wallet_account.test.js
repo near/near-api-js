@@ -1,13 +1,13 @@
-const { KeyPair, PublicKey } = require('@near-js/crypto');
-const { InMemoryKeyStore } = require('@near-js/keystores');
-const { InMemorySigner } = require('@near-js/signers');
-const { actionCreators, createTransaction, SCHEMA, Transaction } = require('@near-js/transactions');
-const BN = require('bn.js');
-const { baseDecode, deserialize } = require('borsh');
-const localStorage = require('localstorage-memory');
-const url = require('url');
+import { KeyPair, PublicKey } from '@near-js/crypto';
+import { InMemoryKeyStore } from '@near-js/keystores';
+import { InMemorySigner } from '@near-js/signers';
+import { actionCreators, createTransaction, SCHEMA, Transaction } from '@near-js/transactions';
+import BN from 'bn.js';
+import { baseDecode, deserialize } from 'borsh';
+import localStorage from 'localstorage-memory';
+import url from 'url';
 
-const { WalletConnection } = require('../lib/wallet_account');
+import { WalletConnection } from '../lib/wallet_account';
 
 const { functionCall, transfer } = actionCreators;
 

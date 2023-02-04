@@ -1,6 +1,6 @@
-const { InMemoryKeyStore } = require('@near-js/keystores');
+import { InMemoryKeyStore } from '@near-js/keystores';
 
-const { InMemorySigner } = require('../lib');
+import { InMemorySigner } from '../lib/esm';
 
 test('test no key', async() => {
     const signer = new InMemorySigner(new InMemoryKeyStore());

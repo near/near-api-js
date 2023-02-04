@@ -1,4 +1,4 @@
-const { formatError, getErrorTypeFromErrorMessage, parseRpcError, ServerError } = require('../lib');
+import { formatError, getErrorTypeFromErrorMessage, parseRpcError, ServerError } from '../lib/esm';
 
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {

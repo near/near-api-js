@@ -1,4 +1,4 @@
-module.exports = function getConfig(env) {
+export default function getConfig(env) {
     switch (env) {
         case 'production':
         case 'mainnet':
@@ -41,4 +41,4 @@ module.exports = function getConfig(env) {
         default:
             throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
     }
-};
+}

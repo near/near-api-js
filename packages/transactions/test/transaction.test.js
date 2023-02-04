@@ -1,6 +1,6 @@
-const BN = require('bn.js');
+import BN from 'bn.js';
 
-const { actionCreators } = require('../lib');
+import { actionCreators } from '../lib/esm';
 
 const { functionCall } = actionCreators;
 

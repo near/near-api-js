@@ -1,6 +1,7 @@
-const { PositionalArgsError } = require('@near-js/types');
+import { jest } from '@jest/globals';
+import { PositionalArgsError } from '@near-js/types';
 
-const { Contract } = require('../lib/cjs');
+import { Contract } from '../lib/esm';
 
 const account = {
     viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery}) {

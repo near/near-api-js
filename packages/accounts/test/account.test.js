@@ -1,11 +1,11 @@
-const { getTransactionLastResult } = require('@near-js/utils');
-const { actionCreators } = require('@near-js/transactions');
-const { TypedError } = require('@near-js/types');
-const BN = require('bn.js');
-const fs = require('fs');
+import { getTransactionLastResult } from '@near-js/utils';
+import { actionCreators } from '@near-js/transactions';
+import { TypedError } from '@near-js/types';
+import BN from 'bn.js';
+import fs from 'fs';
 
-const { Account, Contract } = require('../lib/cjs');
-const testUtils  = require('./test-utils');
+import { Account, Contract } from '../lib/esm';
+import testUtils  from './test-utils.js';
 
 let nearjs;
 let workingAccount;

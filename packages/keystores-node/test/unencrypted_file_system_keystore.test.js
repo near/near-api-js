@@ -1,10 +1,13 @@
-const { KeyPairEd25519 } = require('@near-js/crypto');
-const fs = require('fs').promises;
-const path = require('path');
-const rimraf  = require('util').promisify(require('rimraf'));
+import { KeyPairEd25519 } from '@near-js/crypto';
+import { promises as fs } from 'fs';
+import path from 'path';
+import rimrafPkg from 'rimraf';
+import { promisify } from 'util';
 
-const { UnencryptedFileSystemKeyStore } = require('../lib');
+import { UnencryptedFileSystemKeyStore } from '../lib/esm';
+import { shouldStoreAndRetrieveKeys } from './keystore_common.js';
 
+const rimraf = promisify(rimrafPkg);
 const KEYSTORE_PATH = '../../test-keys';
 
 describe('Unencrypted file system keystore', () => {
@@ -20,7 +23,7 @@ describe('Unencrypted file system keystore', () => {
         ctx.keyStore = new UnencryptedFileSystemKeyStore(KEYSTORE_PATH);
     });
 
-    require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
+    shouldStoreAndRetrieveKeys(ctx);
 
     it('test path resolve', async() => {
         expect(ctx.keyStore.keyDir).toEqual(path.join(process.cwd(), KEYSTORE_PATH));

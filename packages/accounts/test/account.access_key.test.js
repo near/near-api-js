@@ -1,6 +1,6 @@
-const { KeyPair } = require('@near-js/crypto');
+import { KeyPair } from '@near-js/crypto';
 
-const testUtils = require('./test-utils');
+import testUtils from './test-utils.js';
 
 let nearjs;
 let workingAccount;

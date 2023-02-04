@@ -1,9 +1,9 @@
-const { KeyPair } = require('@near-js/crypto');
-const { InMemoryKeyStore } = require('@near-js/keystores');
-const BN = require('bn.js');
-const fs = require('fs').promises;
+import { KeyPair } from '@near-js/crypto';
+import { InMemoryKeyStore } from '@near-js/keystores';
+import BN from 'bn.js';
+import { promises as fs } from 'fs';
 
-const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = require('../lib/cjs');
+import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../lib/esm';
 
 const networkId = 'unittest';
 

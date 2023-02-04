@@ -1,6 +1,7 @@
-const { getTransactionLastResult } = require('@near-js/utils');
+import { jest } from '@jest/globals';
+import { getTransactionLastResult } from '@near-js/utils';
 
-const { JsonRpcProvider } = require('../lib');
+import { JsonRpcProvider } from '../lib/esm';
 
 jest.setTimeout(20000);
 

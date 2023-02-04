@@ -1,4 +1,4 @@
-const { formatNearAmount, parseNearAmount } = require('../lib');
+import { formatNearAmount, parseNearAmount } from '../lib/esm';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 

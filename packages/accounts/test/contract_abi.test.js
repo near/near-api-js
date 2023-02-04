@@ -1,4 +1,4 @@
-const { ArgumentSchemaError, Contract, UnknownArgumentError, UnsupportedSerializationError } = require('../lib/cjs');
+import { ArgumentSchemaError, Contract, UnknownArgumentError, UnsupportedSerializationError } from '../lib/esm';
 
 let rawAbi = `{
   "schema_version": "0.3.0",

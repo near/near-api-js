@@ -1,6 +1,6 @@
-const BN = require('bn.js');
+import BN from 'bn.js';
 
-const { diffEpochValidators, findSeatPrice } = require('../lib');
+import { diffEpochValidators, findSeatPrice } from '../lib/esm';
 
 test('find seat price', async () => {
     expect(findSeatPrice(
