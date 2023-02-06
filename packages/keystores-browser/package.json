@@ -22,6 +22,7 @@
     "@near-js/keystores": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "^18.11.18",
     "jest": "^26.0.1",
     "localstorage-memory": "^1.0.3",
     "ts-jest": "^26.5.6",
