@@ -1,9 +1,11 @@
-import { Fido2Lib } from "fido2-lib";
-import { base64 } from "@hexagon/base64";
+// import { Fido2Lib } from "fido2-lib";
+import base64 from "@hexagon/base64";
 
-class Fido2 {
+export class Fido2 {
   constructor() { }
   async init(rpId, rpName, rpIcon, timeout) {
+      const { Fido2Lib } = await import("fido2-lib");
+    //   const { Fido2Lib } = await import("https://deno.land/x/fido2@3.3.5/dist/main.js");
       this.f2l = new Fido2Lib({
           timeout,
           rpId,
@@ -58,4 +60,4 @@ class Fido2 {
   }
 }
 
-module.exports = Fido2;
+// module.exports = Fido2;

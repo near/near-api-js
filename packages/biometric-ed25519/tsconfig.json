@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "lib": [
         "es2015",
         "esnext",
@@ -10,7 +10,7 @@
     "target": "es2015",
     "moduleResolution": "node",
     "alwaysStrict": true,
-    "outDir": "src",
+    "outDir": "./lib",
     "declaration": true,
     "preserveSymlinks": false,
     "preserveWatchOutput": true,
@@ -22,8 +22,15 @@
     "noUnusedLocals": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
+    "allowJs": true
 },
 "files": [
-    "src/index.ts"
+  "src/index.d.ts",
+  "src/index.ts",
+  "src/fido2.js",
+  "src/utils.ts",
+  "node_modules"
+//   "node_modules/@hexagon/base64/dist/base64.min.js",
+//   "node_modules/fido2-lib/dist/main.js"
 ],
 }
