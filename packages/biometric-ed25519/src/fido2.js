@@ -1,63 +1,62 @@
-// import { Fido2Lib } from "fido2-lib";
 import base64 from "@hexagon/base64";
 
 export class Fido2 {
-  constructor() { }
-  async init(rpId, rpName, rpIcon, timeout) {
-      const { Fido2Lib } = await import("fido2-lib");
-    //   const { Fido2Lib } = await import("https://deno.land/x/fido2@3.3.5/dist/main.js");
-      this.f2l = new Fido2Lib({
-          timeout,
-          rpId,
-          rpName,
-          challengeSize: 128,
-          attestation: "none",
-          cryptoParams: [-8, -7],
-          authenticatorAttachment: "platform",
-          authenticatorRequireResidentKey: true,
-          authenticatorUserVerification: "discouraged"
-      })
-  }
+    async init(rpId, rpName, timeout) {
+        // TODO: fix the way import fido2-lib works later
+        const { Fido2Lib } = await import("https://deno.land/x/fido2@3.3.5/dist/main.js");
+        this.f2l = new Fido2Lib({
+            timeout,
+            rpId,
+            rpName,
+            challengeSize: 128,
+            attestation: "none",
+            cryptoParams: [-8, -7],
+            authenticatorAttachment: "platform",
+            authenticatorRequireResidentKey: true,
+            authenticatorUserVerification: "discouraged"
+        });
+    }
 
-  async registration(username, displayName, id) {
-      let registrationOptions = await this.f2l.attestationOptions();
+    async registration(username, displayName, id) {
+        const registrationOptions = await this.f2l.attestationOptions();
+        const user = {
+            id: id,
+            name: username,
+            displayName: displayName
+        };
+        const challenge = base64.fromArrayBuffer(registrationOptions.challenge, true);
 
-      // make sure to add registrationOptions.user.id
-      registrationOptions.user = {
-          id: id,
-          name: username,
-          displayName: displayName
-      };
+        return {
+            ...registrationOptions,
+            user,
+            status: "ok",
+            challenge
+        };
+    }
 
-      registrationOptions.status = "ok";
+    async attestation(clientAttestationResponse, origin, challenge) {
+        const attestationExpectations = {
+            challenge: challenge,
+            origin: origin,
+            factor: "either"
+        };
+        const regResult = await this.f2l.attestationResult(clientAttestationResponse, attestationExpectations);
+        return regResult;
+    }
 
-      registrationOptions.challenge = base64.fromArrayBuffer(registrationOptions.challenge, true);
+    async login() {
+        const assertionOptions = await this.f2l.assertionOptions();
+        const challenge = base64.fromArrayBuffer(assertionOptions.challenge, true);
 
-      return registrationOptions;
-  }
+        return {
+            ...assertionOptions,
+            attestation: 'direct',
+            challenge,
+            status: 'ok',
+        };
+    }
 
-  async attestation(clientAttestationResponse, origin, challenge) {
-      let attestationExpectations = {
-          challenge: challenge,
-          origin: origin,
-          factor: "either"
-      };
-      let regResult = await this.f2l.attestationResult(clientAttestationResponse, attestationExpectations); // will throw on error
-      return regResult;
-  }
-
-  async login() {
-      let assertionOptions = await this.f2l.assertionOptions();
-      assertionOptions.attestation = 'direct';
-      assertionOptions.challenge = base64.fromArrayBuffer(assertionOptions.challenge, true);
-      assertionOptions.status = "ok";
-      return assertionOptions;
-  }
-
-  async assertion(assertionResult, expectedAssertionResult) {
-      let authnResult = await this.f2l.assertionResult(assertionResult, expectedAssertionResult); // will throw on error
-      return authnResult;
-  }
-}
-
-// module.exports = Fido2;
+    async assertion(assertionResult, expectedAssertionResult) {
+        return await this.f2l.assertionResult(assertionResult, expectedAssertionResult);
+    }
+};

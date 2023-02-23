@@ -1,4 +1,9 @@
 import base64 from "@hexagon/base64";
+import { ec as EC } from "elliptic";
+import { createHash } from "crypto";
+import { PublicKey } from "near-api-js/lib/utils";
+
+const USER_NAME_MAX_LENGTH = 25;
 
 export const cleanName = (name: string): string | Error => {
   try {
@@ -9,13 +14,93 @@ export const cleanName = (name: string): string | Error => {
 };
 
 export const preformatMakeCredReq = (makeCredReq) => {
-  makeCredReq.challenge = base64.toArrayBuffer(makeCredReq.challenge,true);
-  makeCredReq.user.id = base64.toArrayBuffer(makeCredReq.user.id,true);
+  const challenge = base64.toArrayBuffer(makeCredReq.challenge,true);
+  const userId = base64.toArrayBuffer(makeCredReq.user.id,true);
 
-  // Decode id of each excludeCredentials
-  if (makeCredReq.excludeCredentials) {
-      makeCredReq.excludeCredentials = makeCredReq.excludeCredentials.map((e) => { return { id: base64.toArrayBuffer(e.id, true), type: e.type };});
+  return {
+    ...makeCredReq,
+    challenge,
+    user: {
+        ...makeCredReq.user,
+        id: userId,
+    },
+    ...(makeCredReq.excludeCredentials ? { excludeCredentials:  makeCredReq.excludeCredentials.map((e) => { return { id: base64.toArrayBuffer(e.id, true), type: e.type }})} : {})
+  }
+};
+
+export const get64BytePublicKeyFromPEM = (publicKey: PublicKey) => {
+  var prefix = '\n';
+  const publicKeyBase64 = publicKey.toString().split(prefix)
+  return base64.toArrayBuffer(`${publicKeyBase64[1]}${publicKeyBase64[2]}`).slice(27);
+};
+
+export const getCleanName = (name: string): string => {
+  if (!name) {
+    throw new Error("username is required");
+  }
+  const cleanUserName = cleanName(name);
+  if (!cleanUserName || typeof cleanUserName !== 'string') {
+    throw new Error("Invalid username");
+  };
+  if (typeof cleanUserName === 'string' && cleanUserName.length > USER_NAME_MAX_LENGTH) {
+    throw new Error("username should be less than 25 characters");
+  }
+  return cleanUserName;
+};
+
+export const preformatGetAssertReq = (getAssert) => {
+  getAssert.challenge = base64.toArrayBuffer(getAssert.challenge,true);
+    
+	// Allow any credential, this will be handled later
+	for(let allowCred of getAssert.allowCredentials) {
+		allowCred.id = base64.toArrayBuffer(allowCred.id,true);
+	}
+
+	return getAssert;
+};
+
+
+export const publicKeyCredentialToJSON = (pubKeyCred) => {
+  if(pubKeyCred instanceof Array) {
+      let arr = [];
+      for(let i of pubKeyCred)
+          arr.push(publicKeyCredentialToJSON(i));
+
+      return arr;
   }
 
-  return makeCredReq;
+  if(pubKeyCred instanceof ArrayBuffer) {
+      return base64.fromArrayBuffer(pubKeyCred,true);
+  }
+
+  if(pubKeyCred instanceof Object) {
+      let obj = {};
+
+      for (let key in pubKeyCred) {
+          obj[key] = publicKeyCredentialToJSON(pubKeyCred[key]);
+      }
+
+      return obj;
+  }
+
+  return pubKeyCred;
+};
+
+export const recoverPublicKey1 = (r, s, message, recovery) => {
+  const ec = new EC("p256");
+  const sigObj = { r: r, s: s }
+
+  if (recovery !== 0 && recovery !== 1) {
+      throw new Error('Invalid recovery parameter');
+  }
+  const h = createHash('sha256').update(message).digest();
+  let Q, P;
+  try {
+      Q = ec.recoverPubKey(h, sigObj, 0);
+      P = ec.recoverPubKey(h, sigObj, 1);
+  } catch (err) {
+      throw err;
+  }
+  let publicKeys = [Buffer.from(new Uint8Array(Buffer.from(Q.encode(true, false))).subarray(1, 65)), Buffer.from(new Uint8Array(Buffer.from(P.encode(true, false))).subarray(1, 65))]
+  return publicKeys;
 };
