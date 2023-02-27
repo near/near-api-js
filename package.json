@@ -5,7 +5,6 @@
     "node": ">=16.14.0",
     "pnpm": ">=7"
   },
-  "version": "1.1.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "turbo run build",
