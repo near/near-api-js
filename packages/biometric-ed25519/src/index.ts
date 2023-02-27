@@ -3,7 +3,6 @@ import { eddsa as EDDSA } from "elliptic";
 import { createHash } from "crypto";
 import { Buffer } from "buffer";
 import asn1 from "asn1-parser";
-import base64url from "base64url";
 import { KeyPair } from "near-api-js";
 import { base_encode } from "near-api-js/lib/utils/serialize";
 import { getCleanName, preformatMakeCredReq, get64BytePublicKeyFromPEM, preformatGetAssertReq, publicKeyCredentialToJSON, recoverPublicKey1 } from "./utils";
@@ -66,8 +65,11 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
       //@ts-ignore
       const parser = asn1?.ASN1?.parse || window?.ASN1?.parse;
       const rAndS = parser(new Uint8Array(signature));
-      const clientDataJSONHash = createHash('sha256').update((base64url.toBuffer(getAssertionResponse.response.clientDataJSON))).digest();
-      const authenticatorAndClientDataJSONHash = Buffer.concat([(base64url.toBuffer(getAssertionResponse.response.authenticatorData)), clientDataJSONHash]);
+      const clientDataJSONHash = createHash('sha256').update(
+        Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.clientDataJSON, true)))
+      ).digest();
+      const AuthenticatiorDataJSONHash = Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)))
+      const authenticatorAndClientDataJSONHash = Buffer.concat([AuthenticatiorDataJSONHash, clientDataJSONHash]);
     
       const correctPKs = recoverPublicKey1(rAndS.children[0].value, rAndS.children[1].value, authenticatorAndClientDataJSONHash, 0);
       const ed = new EDDSA("ed25519");

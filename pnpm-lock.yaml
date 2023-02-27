@@ -35,7 +35,6 @@ importers:
       '@hexagon/base64': ^1.1.26
       '@types/node': ^18.7.14
       asn1-parser: ^1.1.8
-      base64url: ^3.0.1
       buffer: ^6.0.3
       crypto: ^1.0.1
       elliptic: ^6.5.4
@@ -44,7 +43,6 @@ importers:
     dependencies:
       '@hexagon/base64': 1.1.26
       asn1-parser: 1.1.8
-      base64url: 3.0.1
       buffer: 6.0.3
       crypto: 1.0.1
       elliptic: 6.5.4
@@ -2062,11 +2060,6 @@ packages:
 
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
-
-  /base64url/3.0.1:
-    resolution: {integrity: sha512-ir1UPr3dkwexU7FdV8qBBbNDRUhMmIekYMFZfi+C/sLNnRESKPl23nB9b2pltqfOQNnGzsDdId90AEtG5tCx4A==}
-    engines: {node: '>=6.0.0'}
-    dev: false
 
   /before-after-hook/2.2.3:
     resolution: {integrity: sha512-NzUnlZexiaH/46WDhANlyR2bXRopNg4F/zuSA3OpZnllCUgRaOF2znDioDWrmbNVsuZk6l9pMquQB38cfBZwkQ==}

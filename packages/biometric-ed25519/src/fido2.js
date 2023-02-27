@@ -1,9 +1,8 @@
 import base64 from "@hexagon/base64";
+import { Fido2Lib } from "fido2-lib/dist/main.js";
 
 export class Fido2 {
     async init(rpId, rpName, timeout) {
-        // TODO: fix the way import fido2-lib works later
-        const { Fido2Lib } = await import("https://deno.land/x/fido2@3.3.5/dist/main.js");
         this.f2l = new Fido2Lib({
             timeout,
             rpId,

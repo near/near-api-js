@@ -10,20 +10,20 @@
 
   
 
-The easiest way to use NEAR Web 3 Authentication is to install the [`biometric-ed25519`](https://www.npmjs.com/package/near-api-js) package from the NPM registry.
+The easiest way to use NEAR Web 3 Authentication is to install the [`biometric-ed25519`](https://www.npmjs.com/package/@near-js/biometric-ed25519) package from the NPM registry.
   
 
 ```bash
 
 # Using Yarn
 
-yarn add near-api-js
+yarn add @near-js/biometric-ed25519 
 
   
 
 # Using NPM.
 
-npm install near-api-js
+npm install @near-js/biometric-ed25519 
 
 ```
 
