@@ -5,7 +5,7 @@ import { Buffer } from "buffer";
 import asn1 from "asn1-parser";
 import { KeyPair } from "near-api-js";
 import { base_encode } from "near-api-js/lib/utils/serialize";
-import { getCleanName, preformatMakeCredReq, get64BytePublicKeyFromPEM, preformatGetAssertReq, publicKeyCredentialToJSON, recoverPublicKey1 } from "./utils";
+import { getCleanName, preformatMakeCredReq, get64BytePublicKeyFromPEM, preformatGetAssertReq, publicKeyCredentialToJSON, recoverPublicKey } from "./utils";
 import { Fido2 } from "./fido2";
 import { AssertionResponse } from "./index.d";
 
@@ -15,7 +15,11 @@ const RP_ID = location.hostname;
 
 const f2l: Fido2 = new Fido2();
 const init: () => Promise<void> = async () => {
-  await f2l.init(RP_ID, RP_NAME, CHALLENGE_TIMEOUT_MS);
+  await f2l.init({
+    rpId: RP_ID,
+    rpName: RP_NAME,
+    timeout: CHALLENGE_TIMEOUT_MS,
+  });
 };
 
 if (window && !window.Buffer) {
@@ -29,12 +33,20 @@ export const createKey = async (username: string): Promise<KeyPair>  => {
   }
 
   const id = base64.fromString(cleanUserName, true);
-  const challengeMakeCred = await f2l.registration(cleanUserName, cleanUserName, id);
+  const challengeMakeCred = await f2l.registration({
+    username: cleanUserName,
+    displayName: cleanUserName,
+    id,
+  });
   const publicKey = preformatMakeCredReq(challengeMakeCred);
 
   return navigator.credentials.create({ publicKey })
     .then(async (res) => {
-      const result = await f2l.attestation(res, origin, challengeMakeCred.challenge);
+      const result = await f2l.attestation({
+        clientAttestationResponse: res,
+        origin,
+        challenge: challengeMakeCred.challenge
+      });
       const publicKey = result.authnrData.get("credentialPublicKeyPem");
       const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
       const ed = new EDDSA("ed25519");
@@ -71,7 +83,7 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
       const AuthenticatiorDataJSONHash = Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)))
       const authenticatorAndClientDataJSONHash = Buffer.concat([AuthenticatiorDataJSONHash, clientDataJSONHash]);
     
-      const correctPKs = recoverPublicKey1(rAndS.children[0].value, rAndS.children[1].value, authenticatorAndClientDataJSONHash, 0);
+      const correctPKs = recoverPublicKey(rAndS.children[0].value, rAndS.children[1].value, authenticatorAndClientDataJSONHash, 0);
       const ed = new EDDSA("ed25519");
       const firstED = ed.keyFromSecret(createHash('sha256').update(correctPKs[0]).digest());
       const secondED = ed.keyFromSecret(createHash('sha256').update(correctPKs[1]).digest());

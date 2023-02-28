@@ -5,7 +5,7 @@ import { PublicKey } from "near-api-js/lib/utils";
 
 const USER_NAME_MAX_LENGTH = 25;
 
-export const cleanName = (name: string): string | Error => {
+export const cleanName = (name: string): string => {
   try {
     return name.toString();
   } catch (e) {
@@ -86,9 +86,9 @@ export const publicKeyCredentialToJSON = (pubKeyCred) => {
   return pubKeyCred;
 };
 
-export const recoverPublicKey1 = (r, s, message, recovery) => {
+export const recoverPublicKey = (r, s, message, recovery) => {
   const ec = new EC("p256");
-  const sigObj = { r: r, s: s }
+  const sigObj = { r, s };
 
   if (recovery !== 0 && recovery !== 1) {
       throw new Error('Invalid recovery parameter');

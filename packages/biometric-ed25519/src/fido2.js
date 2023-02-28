@@ -2,7 +2,7 @@ import base64 from "@hexagon/base64";
 import { Fido2Lib } from "fido2-lib/dist/main.js";
 
 export class Fido2 {
-    async init(rpId, rpName, timeout) {
+    async init({ rpId, rpName, timeout }) {
         this.f2l = new Fido2Lib({
             timeout,
             rpId,
@@ -16,7 +16,7 @@ export class Fido2 {
         });
     }
 
-    async registration(username, displayName, id) {
+    async registration({ username, displayName, id }) {
         const registrationOptions = await this.f2l.attestationOptions();
         const user = {
             id: id,
@@ -33,7 +33,7 @@ export class Fido2 {
         };
     }
 
-    async attestation(clientAttestationResponse, origin, challenge) {
+    async attestation({ clientAttestationResponse, origin, challenge }) {
         const attestationExpectations = {
             challenge: challenge,
             origin: origin,
@@ -53,9 +53,5 @@ export class Fido2 {
             challenge,
             status: 'ok',
         };
-    }
-
-    async assertion(assertionResult, expectedAssertionResult) {
-        return await this.f2l.assertionResult(assertionResult, expectedAssertionResult);
     }
 };
