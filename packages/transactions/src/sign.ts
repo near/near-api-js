@@ -1,11 +1,12 @@
 import { Signer } from '@near-js/signers';
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
-import { serialize } from 'borsh';
 
 import { Action } from './actions';
 import { createTransaction } from './create_transaction';
-import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema';
+import { encodeTransaction } from './serialization';
+import { Signature } from './signature';
+import { SignedTransaction, Transaction } from './transaction';
 
 /**
  * Signs a given transaction from an account with given keys, applied to the given network
@@ -15,7 +16,7 @@ import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema';
  * @param networkId The targeted network. (ex. default, betanet, etc…)
  */
 async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
-    const message = serialize(SCHEMA, transaction);
+    const message = encodeTransaction(transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);
     const signedTx = new SignedTransaction({

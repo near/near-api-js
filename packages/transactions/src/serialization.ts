@@ -1,6 +1,4 @@
-import { KeyType, PublicKey } from '@near-js/crypto';
-import { Assignable } from '@near-js/types';
-import BN from 'bn.js';
+import { PublicKey } from '@near-js/crypto';
 import { deserialize, serialize } from 'borsh';
 
 import {
@@ -18,40 +16,27 @@ import {
     Stake,
     Transfer,
 } from './actions';
+import { Signature } from './signature';
+import { SignedTransaction, Transaction } from './transaction';
 
-export class Signature extends Assignable {
-    keyType: KeyType;
-    data: Uint8Array;
+export function encodeTransaction(transaction: Transaction | SignedTransaction) {
+    return serialize(SCHEMA, transaction);
 }
 
-export class Transaction extends Assignable {
-    signerId: string;
-    publicKey: PublicKey;
-    nonce: BN;
-    receiverId: string;
-    actions: Action[];
-    blockHash: Uint8Array;
-
-    encode(): Uint8Array {
-        return serialize(SCHEMA, this);
-    }
-
-    static decode(bytes: Buffer): Transaction {
-        return deserialize(SCHEMA, Transaction, bytes);
-    }
+/**
+ * Borsh-decode a Transaction instance from a buffer
+ * @param bytes Buffer data to be decoded
+ */
+export function decodeTransaction(bytes: Buffer) {
+    return deserialize(SCHEMA, Transaction, bytes);
 }
 
-export class SignedTransaction extends Assignable {
-    transaction: Transaction;
-    signature: Signature;
-
-    encode(): Uint8Array {
-        return serialize(SCHEMA, this);
-    }
-
-    static decode(bytes: Buffer): SignedTransaction {
-        return deserialize(SCHEMA, SignedTransaction, bytes);
-    }
+/**
+ * Borsh-decode a SignedTransaction instance from a buffer
+ * @param bytes Buffer data to be decoded
+ */
+export function decodeSignedTransaction(bytes: Buffer) {
+    return deserialize(SCHEMA, SignedTransaction, bytes);
 }
 
 type Class<T = any> = new (...args: any[]) => T;
