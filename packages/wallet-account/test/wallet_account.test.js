@@ -7,7 +7,7 @@ import { baseDecode, deserialize } from 'borsh';
 import localStorage from 'localstorage-memory';
 import url from 'url';
 
-import { WalletConnection } from '../lib/wallet_account';
+import { WalletConnection } from '../lib/esm';
 
 const { functionCall, transfer } = actionCreators;
 

@@ -4,6 +4,7 @@ import BN from 'bn.js';
 import { promises as fs } from 'fs';
 
 import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../lib/esm';
+import getConfig from './config.js';
 
 const networkId = 'unittest';
 
@@ -20,7 +21,7 @@ const RANDOM_ACCOUNT_LENGTH = 40;
 
 async function setUpTestConnection() {
     const keyStore = new InMemoryKeyStore();
-    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
+    const config = Object.assign(getConfig(process.env.NODE_ENV || 'test'), {
         networkId,
         keyStore
     });
@@ -112,7 +113,7 @@ function waitFor(fn) {
     return _waitFor();
 }
 
-module.exports = {
+export default {
     setUpTestConnection,
     networkId,
     generateUniqueString,
