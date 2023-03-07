@@ -1,9 +1,10 @@
-const { KeyPair } = require('@near-js/crypto');
-const { InMemoryKeyStore } = require('@near-js/keystores');
-const BN = require('bn.js');
-const fs = require('fs').promises;
+import { KeyPair } from '@near-js/crypto';
+import { InMemoryKeyStore } from '@near-js/keystores';
+import BN from 'bn.js';
+import { promises as fs } from 'fs';
 
-const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = require('../lib');
+import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../lib/esm';
+import getConfig from './config.js';
 
 const networkId = 'unittest';
 
@@ -20,7 +21,7 @@ const RANDOM_ACCOUNT_LENGTH = 40;
 
 async function setUpTestConnection() {
     const keyStore = new InMemoryKeyStore();
-    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
+    const config = Object.assign(getConfig(process.env.NODE_ENV || 'test'), {
         networkId,
         keyStore
     });
@@ -112,7 +113,7 @@ function waitFor(fn) {
     return _waitFor();
 }
 
-module.exports = {
+export default {
     setUpTestConnection,
     networkId,
     generateUniqueString,

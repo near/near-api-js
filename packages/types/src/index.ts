@@ -1,3 +1,3 @@
-export * from './assignable';
-export * from './errors';
-export * from './provider';
+export * from './assignable.js';
+export * from './errors.js';
+export * from './provider/index.js';

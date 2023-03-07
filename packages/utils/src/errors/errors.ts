@@ -1,5 +1,5 @@
 export function logWarning(...args: any[]): void {
-    if (!process.env['NEAR_NO_LOGS']){
+    if (typeof process !== 'undefined' && !process.env['NEAR_NO_LOGS']) {
         console.warn(...args);
     }
 }

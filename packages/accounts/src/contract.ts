@@ -6,9 +6,8 @@ import BN from 'bn.js';
 import depd from 'depd';
 import { AbiFunction, AbiFunctionKind, AbiRoot, AbiSerializationType } from 'near-abi';
 
-import { Account } from './account';
-import { UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './errors';
-
+import { Account } from './account.js';
+import { UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './errors.js';
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {

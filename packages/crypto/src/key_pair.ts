@@ -1,5 +1,5 @@
-import { KeyPairBase } from './key_pair_base';
-import { KeyPairEd25519 } from './key_pair_ed25519';
+import { KeyPairBase } from './key_pair_base.js';
+import { KeyPairEd25519 } from './key_pair_ed25519.js';
 
 export abstract class KeyPair extends KeyPairBase {
     /**

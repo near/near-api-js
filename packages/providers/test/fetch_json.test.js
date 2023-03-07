@@ -1,4 +1,4 @@
-const { fetchJson } = require('../lib');
+import { fetchJson } from '../lib/esm';
 
 describe('fetchJson', () => {
     test('string parameter in fetchJson', async () => {

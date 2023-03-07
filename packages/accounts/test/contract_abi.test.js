@@ -1,5 +1,4 @@
-const { Contract } = require('../src/contract');
-const { ArgumentSchemaError, UnknownArgumentError, UnsupportedSerializationError } = require('../src/errors');
+import { ArgumentSchemaError, Contract, UnknownArgumentError, UnsupportedSerializationError } from '../lib/esm';
 
 let rawAbi = `{
   "schema_version": "0.3.0",

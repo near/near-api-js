@@ -1,4 +1,4 @@
-import { PublicKey } from './public_key';
+import { PublicKey } from './public_key.js';
 
 export interface Signature {
     signature: Uint8Array;

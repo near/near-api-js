@@ -15,7 +15,7 @@ import {
     FunctionCallPermission,
     Stake,
     Transfer,
-} from './actions';
+} from './actions.js';
 
 function fullAccessKey(): AccessKey {
     return new AccessKey({

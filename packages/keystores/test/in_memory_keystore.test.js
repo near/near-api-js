@@ -1,4 +1,5 @@
-const { InMemoryKeyStore } = require('../lib');
+import { InMemoryKeyStore } from '../lib/esm';
+import { shouldStoreAndRetrieveKeys } from './keystore_common.js';
 
 describe('In-memory keystore', () => {
     let ctx = {};
@@ -7,5 +8,5 @@ describe('In-memory keystore', () => {
         ctx.keyStore = new InMemoryKeyStore();
     });
 
-    require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
+    shouldStoreAndRetrieveKeys(ctx);
 });

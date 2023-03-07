@@ -1,10 +1,10 @@
-const { KeyPairEd25519 } = require('@near-js/crypto');
+import { KeyPairEd25519 } from '@near-js/crypto';
 
 const NETWORK_ID_SINGLE_KEY = 'singlekeynetworkid';
 const ACCOUNT_ID_SINGLE_KEY = 'singlekey_accountid';
 const KEYPAIR_SINGLE_KEY = new KeyPairEd25519('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
 
-module.exports.shouldStoreAndRetriveKeys = ctx => {
+export const shouldStoreAndRetrieveKeys = ctx => {
     beforeEach(async () => {
         await ctx.keyStore.clear();
         await ctx.keyStore.setKey(NETWORK_ID_SINGLE_KEY, ACCOUNT_ID_SINGLE_KEY, KEYPAIR_SINGLE_KEY);

@@ -1,6 +1,6 @@
-const BN = require('bn.js');
+import BN from 'bn.js';
 
-const testUtils = require('./test-utils');
+import testUtils from './test-utils.js';
 
 let nearjs;
 let workingAccount;

@@ -1,0 +1,10 @@
+{
+    "extends": "tsconfig/browser.esm.json",
+    "compilerOptions": {
+        "outDir": "./lib/esm",
+        "preserveSymlinks": false
+    },
+    "files": [
+        "src/index.ts"
+    ]
+}

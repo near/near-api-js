@@ -2,7 +2,7 @@ import { KeyPair, PublicKey, Signature } from '@near-js/crypto';
 import { InMemoryKeyStore, KeyStore } from '@near-js/keystores';
 import sha256 from 'js-sha256';
 
-import { Signer } from './signer';
+import { Signer } from './signer.js';
 
 /**
  * Signs using in memory key store.

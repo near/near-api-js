@@ -19,7 +19,7 @@ import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transac
 import BN from 'bn.js';
 import { baseDecode, serialize } from 'borsh';
 
-import { Near } from './near';
+import { Near } from './near.js';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';

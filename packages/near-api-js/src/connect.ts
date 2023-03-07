@@ -56,7 +56,7 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                     keyPathStore,
                     config.keyStore
                 ], { writeKeyStoreIndex: 1 });
-                if (!process.env['NEAR_NO_LOGS']) {
+                if (typeof process !== 'undefined' && !process.env['NEAR_NO_LOGS']) {
                     console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
                 }
             }

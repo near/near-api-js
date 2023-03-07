@@ -1,13 +1,15 @@
-const { JsonRpcProvider } = require('@near-js/providers');
-const BN = require('bn.js');
-const base58 = require('bs58');
+import { jest } from '@jest/globals';
+import { JsonRpcProvider } from '@near-js/providers';
+import BN from 'bn.js';
+import base58 from 'bs58';
 
-const testUtils = require('./test-utils');
+import getConfig from './config.js';
+import testUtils from './test-utils.js';
 
 jest.setTimeout(20000);
 
 const withProvider = (fn) => {
-    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
+    const config = Object.assign(getConfig(process.env.NODE_ENV || 'test'));
     const provider = new JsonRpcProvider(config.nodeUrl);
     return () => fn(provider);
 };

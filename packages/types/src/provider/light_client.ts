@@ -3,8 +3,8 @@
  * @module
  */
 
-import { BlockHeaderInnerLiteView, MerklePath } from './protocol';
-import { ExecutionOutcomeWithIdView } from './response';
+import { BlockHeaderInnerLiteView, MerklePath } from './protocol.js';
+import { ExecutionOutcomeWithIdView } from './response.js';
 
 export interface LightClientBlockLiteView {
     prev_block_hash: string;

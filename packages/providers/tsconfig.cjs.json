@@ -1,0 +1,14 @@
+{
+    "extends": "tsconfig/node.json",
+    "compilerOptions": {
+        "lib": [
+            "es2015",
+            "esnext",
+            "dom"
+        ],
+        "outDir": "./lib/cjs",
+    },
+    "files": [
+        "src/index.ts"
+    ]
+}

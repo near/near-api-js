@@ -1,7 +1,7 @@
-const { baseEncode } = require('borsh');
-const { sha256 } = require('js-sha256');
+import { baseEncode } from 'borsh';
+import { sha256 } from 'js-sha256';
 
-const { KeyPair, KeyPairEd25519, PublicKey } = require('../lib');
+import { KeyPair, KeyPairEd25519, PublicKey } from '../lib/esm';
 
 test('test sign and verify', async () => {
     const keyPair = new KeyPairEd25519('26x56YPzPDro5t2smQfGcYAPy3j7R2jB2NUb7xKbAGK23B6x4WNQPh3twb6oDksFov5X8ts5CtntUNbpQpAKFdbR');

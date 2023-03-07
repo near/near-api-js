@@ -1,8 +1,24 @@
 import { TypedError } from '@near-js/types';
+import { logWarning } from '@near-js/utils';
 import createError from 'http-errors';
 
-import { exponentialBackoff } from './exponential-backoff';
-import nodeFetch from './fetch';
+import { exponentialBackoff } from './exponential-backoff.js';
+
+async function resolveFetch() {
+    if (typeof fetch !== 'undefined') {
+        return fetch;
+    }
+
+    if (typeof global !== 'undefined' && global.fetch) {
+        return global.fetch;
+    }
+
+    try {
+        return (await import('./fetch.js')).default;
+    } catch {
+        return () => undefined;
+    }
+}
 
 const START_WAIT_TIME_MS = 1000;
 const BACKOFF_MULTIPLIER = 1.5;
@@ -17,8 +33,6 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-const logWarning = (...args) => !process.env['NEAR_NO_LOGS'] && console.warn(...args);
-
 export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
     let connectionInfo: ConnectionInfo = { url: null };
     if (typeof (connectionInfoOrUrl) === 'string') {
@@ -29,7 +43,8 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
 
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {
-            const response = await (global.fetch || nodeFetch)(connectionInfo.url, {
+            const fnFetch = await resolveFetch();
+            const response = await fnFetch(connectionInfo.url, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
                 headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
