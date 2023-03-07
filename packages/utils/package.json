@@ -8,8 +8,10 @@
   "scripts": {
     "build": "pnpm compile",
     "compile": "concurrently \"tsc -p tsconfig.cjs.json\" \"tsc -p tsconfig.esm.json\"",
+    "lint:js": "eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc",
+    "lint:js:fix": "eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc --fix",
     "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
-    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc && eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc --fix --no-error-on-unmatched-pattern",
+    "lint:ts:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc --fix",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest test"
   },
   "keywords": [],

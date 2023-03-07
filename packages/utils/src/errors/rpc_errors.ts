@@ -2,8 +2,9 @@ import { TypedError } from '@near-js/types';
 import Mustache from 'mustache';
 
 import { formatNearAmount } from '../format.js';
-import messages from './error_messages.json';
-import schema from './rpc_error_schema.json';
+// TODO get JSON files working with CJS and ESM
+import messages from './error_messages.js';
+import schema from './rpc_error_schema.js';
 
 const mustacheHelpers = {
     formatNear: () => (n, render) => formatNearAmount(render(n))
