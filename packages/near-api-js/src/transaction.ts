@@ -1,10 +1,10 @@
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
-import { Enum, Assignable } from './utils/enums';
-import { serialize, deserialize } from 'borsh';
-import { KeyType, PublicKey } from './utils/key_pair';
-import { Signer } from './signer';
+import {Assignable, Enum} from './utils/enums';
+import {deserialize, serialize} from 'borsh';
+import {KeyType, PublicKey} from './utils/key_pair';
+import {Signer} from './signer';
 
 export class FunctionCallPermission extends Assignable {
     allowance?: BN;
@@ -52,8 +52,7 @@ export function deployContract(code: Uint8Array): Action {
 
 export function stringifyJsonOrBytes(args: any): Buffer {
     const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
-    const serializedArgs = isUint8Array ? args : Buffer.from(JSON.stringify(args));
-    return serializedArgs;
+    return isUint8Array ? Buffer.from(args) : Buffer.from(JSON.stringify(args));
 }
 
 /**
