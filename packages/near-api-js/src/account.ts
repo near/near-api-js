@@ -89,9 +89,9 @@ export interface FunctionCallOptions {
     /** The name of the method to invoke */
     methodName: string;
     /**
-     * named arguments to pass the method `{ messageText: 'my message' }`
+     * Json arguments like `{ "message": "my message" }` or raw byte stream arguments
      */
-    args?: object;
+    args?: Uint8Array | object;
     /** max amount of gas that method call can use */
     gas?: BN;
     /** amount of NEAR (in yoctoNEAR) to send together with the call */
@@ -137,10 +137,6 @@ interface ActiveDelegatedStakeBalance {
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());
-}
-
-function bytesJsonStringify(input: any): Buffer {
-    return Buffer.from(JSON.stringify(input));
 }
 
 /**
@@ -476,18 +472,18 @@ export class Account {
         methodName,
         args = {},
         parse = parseJsonFromRawResponse,
-        stringify = bytesJsonStringify,
+        stringify = stringifyJsonOrBytes,
         jsContract = false,
         blockQuery = { finality: 'optimistic' }
     }: ViewFunctionCallOptions): Promise<any> {
-        let encodedArgs;
+        let encodedArgs: Buffer;
         
         this.validateArgs(args);
     
         if(jsContract){
             encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
         } else{
-            encodedArgs =  stringify(args);
+            encodedArgs = stringify(args);
         }
 
         const result = await this.connection.provider.query<CodeResult>({
