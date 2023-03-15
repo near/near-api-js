@@ -1,6 +1,6 @@
 import base64 from "@hexagon/base64";
 import { ec as EC } from "elliptic";
-import { createHash } from "crypto";
+import { createHash } from "crypto-browserify";
 import { PublicKey } from "near-api-js/lib/utils";
 
 const USER_NAME_MAX_LENGTH = 25;

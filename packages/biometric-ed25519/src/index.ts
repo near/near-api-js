@@ -1,6 +1,6 @@
 import base64 from "@hexagon/base64";
 import { eddsa as EDDSA } from "elliptic";
-import { createHash } from "crypto";
+import { createHash } from "crypto-browserify";
 import { Buffer } from "buffer";
 import asn1 from "asn1-parser";
 import { KeyPair } from "near-api-js";
