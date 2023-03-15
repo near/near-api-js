@@ -1,7 +1,7 @@
 {
   "name": "@near-js/biometric-ed25519",
   "description": "JavaScript library to handle webauthn and biometric keys",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
