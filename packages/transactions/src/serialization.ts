@@ -18,8 +18,22 @@ import {
     Transfer,
 } from './actions';
 import { DelegateAction } from './delegated';
+import { DelegateActionPrefix } from './prefix';
 import { Signature } from './signature';
 import { SignedTransaction, Transaction } from './transaction';
+
+/**
+ * Borsh-encode a delegate action for inclusion as an action within a meta transaction
+ * NB per NEP-461 this requires a Borsh-serialized prefix specific to delegate actions, ensuring
+ *  signed delegate actions may never be identical to signed transactions with the same fields
+ * @param delegateAction Delegate action to be signed by the meta transaction sender
+ */
+export function encodeDelegateAction(delegateAction: DelegateAction) {
+    return new Uint8Array([
+        ...serialize(SCHEMA, new DelegateActionPrefix()),
+        ...serialize(SCHEMA, delegateAction),
+    ]);
+}
 
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
     return serialize(SCHEMA, transaction);
@@ -123,6 +137,9 @@ export const SCHEMA = new Map<Class, any>([
         ['nonce', 'u64'],
         ['maxBlockHeight', 'u64'],
         ['publicKey', PublicKey],
+    ]}],
+    [DelegateActionPrefix, { kind: 'struct', fields: [
+        ['prefix', 'u32'],
     ]}],
     [SignedDelegate, { kind: 'struct', fields: [
         ['delegateAction', DelegateAction],

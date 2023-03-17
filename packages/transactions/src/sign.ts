@@ -2,11 +2,26 @@ import { Signer } from '@near-js/signers';
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
 
-import { Action } from './actions';
+import { Action, SignedDelegate } from './actions';
 import { createTransaction } from './create_transaction';
-import { encodeTransaction } from './serialization';
+import type { DelegateAction } from './delegated.js';
+import { encodeDelegateAction, encodeTransaction } from './serialization';
 import { Signature } from './signature';
 import { SignedTransaction, Transaction } from './transaction';
+
+interface MessageSigner {
+    sign(message: Uint8Array): Promise<Uint8Array>;
+}
+
+interface SignDelegateOptions {
+    delegateAction: DelegateAction;
+    signer: MessageSigner;
+}
+
+export interface SignedDelegateWithHash {
+    hash: Uint8Array;
+    signedDelegateAction: SignedDelegate;
+}
 
 /**
  * Signs a given transaction from an account with given keys, applied to the given network
@@ -38,4 +53,27 @@ export async function signTransaction(...args): Promise<[Uint8Array, SignedTrans
         const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
         return signTransactionObject(transaction, signer, accountId, networkId);
     }
+}
+
+/**
+ * Sign a delegate action
+ * @params.delegateAction Delegate action to be signed by the meta transaction sender
+ * @params.signer Signer instance for the meta transaction sender
+ */
+export async function signDelegateAction({ delegateAction, signer }: SignDelegateOptions): Promise<SignedDelegateWithHash> {
+    const message = encodeDelegateAction(delegateAction);
+    const signature = await signer.sign(message);
+
+    const signedDelegateAction = new SignedDelegate({
+        delegateAction,
+        signature: new Signature({
+            keyType: delegateAction.publicKey.keyType,
+            data: signature,
+        }),
+    });
+
+    return {
+        hash: new Uint8Array(sha256.array(message)),
+        signedDelegateAction,
+    };
 }
