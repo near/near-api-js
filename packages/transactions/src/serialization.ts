@@ -13,9 +13,11 @@ import {
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
+    SignedDelegate,
     Stake,
     Transfer,
 } from './actions';
+import { DelegateAction } from './delegated';
 import { Signature } from './signature';
 import { SignedTransaction, Transaction } from './transaction';
 
@@ -85,6 +87,7 @@ export const SCHEMA = new Map<Class, any>([
         ['addKey', AddKey],
         ['deleteKey', DeleteKey],
         ['deleteAccount', DeleteAccount],
+        ['signedDelegate', DeleteAccount],
     ]}],
     [CreateAccount, { kind: 'struct', fields: [] }],
     [DeployContract, { kind: 'struct', fields: [
@@ -112,5 +115,17 @@ export const SCHEMA = new Map<Class, any>([
     ]}],
     [DeleteAccount, { kind: 'struct', fields: [
         ['beneficiaryId', 'string']
+    ]}],
+    [DelegateAction, { kind: 'struct', fields: [
+        ['senderId', 'string'],
+        ['receiverId', 'string'],
+        ['actions', [Action]],
+        ['nonce', 'u64'],
+        ['maxBlockHeight', 'u64'],
+        ['publicKey', PublicKey],
+    ]}],
+    [SignedDelegate, { kind: 'struct', fields: [
+        ['delegateAction', DelegateAction],
+        ['signature', Signature],
     ]}],
 ]);
