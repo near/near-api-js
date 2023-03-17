@@ -2,6 +2,9 @@ import { PublicKey } from '@near-js/crypto';
 import { Assignable } from '@near-js/types';
 import BN from 'bn.js';
 
+import { DelegateAction } from './delegated.js';
+import { Signature } from './signature.js';
+
 abstract class Enum {
     enum: string;
 
@@ -43,6 +46,7 @@ export class Stake extends IAction { stake: BN; publicKey: PublicKey; }
 export class AddKey extends IAction { publicKey: PublicKey; accessKey: AccessKey; }
 export class DeleteKey extends IAction { publicKey: PublicKey; }
 export class DeleteAccount extends IAction { beneficiaryId: string; }
+export class SignedDelegate extends IAction { delegateAction: DelegateAction; signature: Signature; }
 
 /**
  * Contains a list of the valid transaction Actions available with this API
@@ -57,4 +61,5 @@ export class Action extends Enum {
     addKey: AddKey;
     deleteKey: DeleteKey;
     deleteAccount: DeleteAccount;
+    signedDelegate: SignedDelegate;
 }
