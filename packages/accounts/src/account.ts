@@ -1,21 +1,16 @@
-import BN from 'bn.js';
-
-import {
-    logWarning,
-    parseResultError,
-    DEFAULT_FUNCTION_CALL_GAS,
-    printTxOutcomeLogs,
-    printTxOutcomeLogsAndFailures,
-} from '@near-js/utils';
+import { PublicKey } from '@near-js/crypto';
 import { exponentialBackoff } from '@near-js/providers';
 import {
     actionCreators,
     Action,
+    buildDelegateAction,
+    NonDelegateAction,
+    signDelegateAction,
     signTransaction,
+    SignedDelegate,
     SignedTransaction,
-    stringifyJsonOrBytes
+    stringifyJsonOrBytes,
 } from '@near-js/transactions';
-import { PublicKey } from '@near-js/crypto';
 import {
     PositionalArgsError,
     FinalExecutionOutcome,
@@ -31,6 +26,14 @@ import {
     FunctionCallPermissionView,
     BlockReference,
 } from '@near-js/types';
+import {
+    logWarning,
+    parseResultError,
+    DEFAULT_FUNCTION_CALL_GAS,
+    printTxOutcomeLogs,
+    printTxOutcomeLogsAndFailures,
+} from '@near-js/utils';
+import BN from 'bn.js';
 import { baseDecode, baseEncode } from 'borsh';
 
 import { Connection } from './connection';
@@ -44,6 +47,7 @@ const {
     fullAccessKey,
     functionCall,
     functionCallAccessKey,
+    signedDelegate: signedDelegateAction,
     stake,
     transfer,
 } = actionCreators;
@@ -143,6 +147,14 @@ interface ActiveDelegatedStakeBalance {
     stakedValidators: StakedBalance[];
     failedValidators: StakedBalance[];
     total: BN | string;
+}
+
+// by default expire meta transactions 600 blocks after the current block height
+const DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL = 600;
+interface SignedDelegateOptions {
+    actions: NonDelegateAction[];
+    blockHeightTtl: number;
+    receiverId: string;
 }
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
@@ -453,6 +465,66 @@ export class Account {
             receiverId: this.accountId,
             actions: [stake(amount, PublicKey.from(publicKey))]
         });
+    }
+
+    /**
+     * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
+     *
+     * @param actions Actions to be included in the meta transaction
+     * @param blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
+     * @param receiverId Receiver account of the meta transaction
+     */
+    async signedDelegate({
+         actions,
+         blockHeightTtl = DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL,
+         receiverId,
+     }: SignedDelegateOptions): Promise<SignedDelegate> {
+        const { provider, signer } = this.connection;
+        const { header } = await provider.block({ finality: 'final' });
+        const { publicKey } = await this.findAccessKey(null, null);
+
+        const delegateAction = buildDelegateAction({
+            actions,
+            maxBlockHeight: new BN(header.height).add(new BN(blockHeightTtl)),
+            nonce: await this.getSigningNonce(),
+            publicKey,
+            receiverId,
+            senderId: this.accountId,
+        });
+
+        const { signedDelegateAction } = await signDelegateAction({
+            delegateAction,
+            signer: {
+                sign: async (message) => {
+                    const { signature } = await signer.signMessage(
+                        message,
+                        delegateAction.senderId,
+                        this.connection.networkId
+                    );
+
+                    return signature;
+                },
+            }
+        });
+
+        return signedDelegateAction;
+    }
+
+    /**
+     * Sign and send a meta transaction, consisting of a single signed delegate action, on behalf of a sender (i.e. as a meta transaction relayer)
+     *
+     * @param signedDelegate SignedDelegate action to wrap in the meta transaction
+     */
+    async signAndSendMetaTransaction(signedDelegate: SignedDelegate): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction({
+            actions: [signedDelegateAction(signedDelegate)],
+            receiverId: signedDelegate.delegateAction.senderId,
+        });
+    }
+
+    private async getSigningNonce(): BN {
+        const { accessKey: { nonce } } = await this.findAccessKey(null, null);
+        return new BN(nonce).add(new BN(1));
     }
 
     /** @hidden */
