@@ -1,5 +1,3 @@
-'use strict';
-
 import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from '@near-js/types';
 import BN from 'bn.js';
 import depd from 'depd';

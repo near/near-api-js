@@ -1,5 +1,3 @@
-'use strict';
-
 import { Action, actionCreators } from '@near-js/transactions';
 import { FinalExecutionOutcome } from '@near-js/types';
 
