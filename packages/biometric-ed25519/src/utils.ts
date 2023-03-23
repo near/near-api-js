@@ -1,6 +1,6 @@
 import base64 from "@hexagon/base64";
 import { ec as EC } from "elliptic";
-import { createHash } from "crypto";
+import { Sha256 } from "@aws-crypto/sha256-js";
 import { PublicKey } from "near-api-js/lib/utils";
 
 const USER_NAME_MAX_LENGTH = 25;
@@ -86,14 +86,16 @@ export const publicKeyCredentialToJSON = (pubKeyCred) => {
   return pubKeyCred;
 };
 
-export const recoverPublicKey = (r, s, message, recovery) => {
+export const recoverPublicKey = async (r, s, message, recovery) => {
   const ec = new EC("p256");
   const sigObj = { r, s };
 
   if (recovery !== 0 && recovery !== 1) {
       throw new Error('Invalid recovery parameter');
   }
-  const h = createHash('sha256').update(message).digest();
+  const hash = new Sha256();
+  hash.update(message);
+  const h = await hash.digest();
   let Q, P;
   try {
       Q = ec.recoverPubKey(h, sigObj, 0);

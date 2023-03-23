@@ -1,6 +1,6 @@
 import base64 from "@hexagon/base64";
 import { eddsa as EDDSA } from "elliptic";
-import { createHash } from "crypto";
+import { Sha256 } from "@aws-crypto/sha256-js";
 import { Buffer } from "buffer";
 import asn1 from "asn1-parser";
 import { KeyPair } from "near-api-js";
@@ -50,9 +50,11 @@ export const createKey = async (username: string): Promise<KeyPair>  => {
       const publicKey = result.authnrData.get("credentialPublicKeyPem");
       const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
       const ed = new EDDSA("ed25519");
-      const key = ed.keyFromSecret(createHash('sha256').update(Buffer.from(publicKeyBytes)).digest());
+      const edSha256 = new Sha256();
+      edSha256.update(Buffer.from(publicKeyBytes));
+      const key = ed.keyFromSecret(await edSha256.digest());
       return KeyPair.fromString(base_encode(new Uint8Array(Buffer.concat([key.getSecret(), Buffer.from(key.getPublic())]))));
-    });
+    })
 };
 
 // Ecrecover returns two possible public keys for a given signature
@@ -77,16 +79,23 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
       //@ts-ignore
       const parser = asn1?.ASN1?.parse || window?.ASN1?.parse;
       const rAndS = parser(new Uint8Array(signature));
-      const clientDataJSONHash = createHash('sha256').update(
+      const clientDataSha256 = new Sha256();
+      clientDataSha256.update(
         Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.clientDataJSON, true)))
-      ).digest();
+      );
+      const clientDataJSONHash = await clientDataSha256.digest();
       const AuthenticatiorDataJSONHash = Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)))
       const authenticatorAndClientDataJSONHash = Buffer.concat([AuthenticatiorDataJSONHash, clientDataJSONHash]);
     
       const correctPKs = recoverPublicKey(rAndS.children[0].value, rAndS.children[1].value, authenticatorAndClientDataJSONHash, 0);
       const ed = new EDDSA("ed25519");
-      const firstED = ed.keyFromSecret(createHash('sha256').update(correctPKs[0]).digest());
-      const secondED = ed.keyFromSecret(createHash('sha256').update(correctPKs[1]).digest());
+      const firstEdSha256 = new Sha256();
+      firstEdSha256.update(Buffer.from(correctPKs[0]));
+      const secondEdSha256 = new Sha256();
+      secondEdSha256.update(Buffer.from(correctPKs[1]));
+
+      const firstED = ed.keyFromSecret(await firstEdSha256.digest());
+      const secondED = ed.keyFromSecret(await secondEdSha256.digest());
       const firstKeyPair = KeyPair.fromString(base_encode(new Uint8Array(Buffer.concat([firstED.getSecret(), Buffer.from(firstED.getPublic())]))));
       const secondKeyPair = KeyPair.fromString(base_encode(new Uint8Array(Buffer.concat([secondED.getSecret(), Buffer.from(secondED.getPublic())]))));
       return [firstKeyPair, secondKeyPair];
