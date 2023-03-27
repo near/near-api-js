@@ -14,6 +14,7 @@ import { Signer } from './signer';
 import { PublicKey } from './utils/key_pair';
 import { AccountCreator, LocalAccountCreator, UrlAccountCreator } from './account_creator';
 import { KeyStore } from './key_stores';
+import { Wallet } from './providers';
 
 export interface NearConfig {
     /** Holds {@link utils/key_pair!KeyPair | KeyPairs} for signing transactions */
@@ -67,6 +68,12 @@ export interface NearConfig {
      * JVSM account ID for NEAR JS SDK
      */
     jsvmAccountId?: string;
+
+    /**
+     * NEAR extension wallet API. Can be used to create a WalletRpcProvider.
+     * @see [https://github.com/near/NEPs/pull/408](https://github.com/near/NEPs/pull/408)
+     */
+     wallet?: Wallet;
 }
 
 /**
@@ -83,12 +90,22 @@ export class Near {
 
     constructor(config: NearConfig) {
         this.config = config;
-        this.connection = Connection.fromConfig({
-            networkId: config.networkId,
-            provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
-            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore },
-            jsvmAccountId: config.jsvmAccountId || `jsvm.${config.networkId}`
-        });
+
+        if (config.wallet) {
+            this.connection = Connection.fromConfig({
+                networkId: config.networkId,
+                provider: { type: 'WalletRpcProvider', args: { url: config.nodeUrl, wallet: config.wallet } },
+                signer: config.signer || { type: 'InjectedWalletSigner', wallet: config.wallet },
+                jsvmAccountId: config.jsvmAccountId || `jsvm.${config.networkId}`
+            });
+        } else {
+            this.connection = Connection.fromConfig({
+                networkId: config.networkId,
+                provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
+                signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore },
+                jsvmAccountId: config.jsvmAccountId || `jsvm.${config.networkId}`
+            });
+        }
         
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
