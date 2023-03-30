@@ -48,6 +48,20 @@ Follow next steps:
 2. Fetch new schema: `node fetch_error_schema.js`
 3. `pnpm build` to update `lib/**.js` files
 
+
+## Packages
+
+- [accounts](https://github.com/near/near-api-js/tree/master/packages/accounts) account creation & management
+- [keypairs](https://github.com/near/near-api-js/tree/master/packages/keypairs) cryptographic key pairs & signing
+- [keystores](https://github.com/near/near-api-js/tree/master/packages/keystores) general-purpose key persistence & management
+- [keystores-browser](https://github.com/near/near-api-js/tree/master/packages/keystores-browser) browser keystores
+- [keystores-node](https://github.com/near/near-api-js/tree/master/packages/keystores-node) NodeJS keystores
+- [providers](https://github.com/near/near-api-js/tree/master/packages/providers) RPC interaction
+- [transactions](https://github.com/near/near-api-js/tree/master/packages/transactions) transaction composition & signing
+- [types](https://github.com/near/near-api-js/tree/master/packages/types) common types
+- [utils](https://github.com/near/near-api-js/tree/master/packages/types) common methods
+- [wallet-account](https://github.com/near/near-api-js/tree/master/packages/wallet-account) accounts in browser-based wallets
+
 ## License
 
 This repository is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
