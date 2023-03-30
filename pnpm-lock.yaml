@@ -77,20 +77,22 @@ importers:
     specifiers:
       '@aws-crypto/sha256-js': ^4.0.0
       '@hexagon/base64': ^1.1.26
+      '@near-js/crypto': workspace:*
       '@types/node': ^18.7.14
       asn1-parser: ^1.1.8
+      borsh: ^0.7.0
       buffer: ^6.0.3
       elliptic: ^6.5.4
       fido2-lib: 3.3.4
-      near-api-js: workspace:*
     dependencies:
       '@aws-crypto/sha256-js': 4.0.0
       '@hexagon/base64': 1.1.26
+      '@near-js/crypto': link:../crypto
       asn1-parser: 1.1.8
+      borsh: 0.7.0
       buffer: 6.0.3
       elliptic: 6.5.4
       fido2-lib: 3.3.4
-      near-api-js: link:../near-api-js
     devDependencies:
       '@types/node': 18.11.18
 

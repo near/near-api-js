@@ -3,8 +3,8 @@ import { eddsa as EDDSA } from "elliptic";
 import { Sha256 } from "@aws-crypto/sha256-js";
 import { Buffer } from "buffer";
 import asn1 from "asn1-parser";
-import { KeyPair } from "near-api-js";
-import { base_encode } from "near-api-js/lib/utils/serialize";
+import { KeyPair } from "@near-js/crypto";
+import { baseEncode } from "borsh";
 import { getCleanName, preformatMakeCredReq, get64BytePublicKeyFromPEM, preformatGetAssertReq, publicKeyCredentialToJSON, recoverPublicKey } from "./utils";
 import { Fido2 } from "./fido2";
 import { AssertionResponse } from "./index.d";
@@ -53,7 +53,7 @@ export const createKey = async (username: string): Promise<KeyPair>  => {
       const edSha256 = new Sha256();
       edSha256.update(Buffer.from(publicKeyBytes));
       const key = ed.keyFromSecret(await edSha256.digest());
-      return KeyPair.fromString(base_encode(new Uint8Array(Buffer.concat([key.getSecret(), Buffer.from(key.getPublic())]))));
+      return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([key.getSecret(), Buffer.from(key.getPublic())]))));
     })
 };
 
@@ -96,8 +96,8 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
 
       const firstED = ed.keyFromSecret(await firstEdSha256.digest());
       const secondED = ed.keyFromSecret(await secondEdSha256.digest());
-      const firstKeyPair = KeyPair.fromString(base_encode(new Uint8Array(Buffer.concat([firstED.getSecret(), Buffer.from(firstED.getPublic())]))));
-      const secondKeyPair = KeyPair.fromString(base_encode(new Uint8Array(Buffer.concat([secondED.getSecret(), Buffer.from(secondED.getPublic())]))));
+      const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([firstED.getSecret(), Buffer.from(firstED.getPublic())]))));
+      const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([secondED.getSecret(), Buffer.from(secondED.getPublic())]))));
       return [firstKeyPair, secondKeyPair];
     });
 };
