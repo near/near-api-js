@@ -73,7 +73,7 @@ export async function signDelegateAction({ delegateAction, signer }: SignDelegat
     });
 
     return {
-        hash: new Uint8Array(sha256.array(message)),
+        hash: new Uint8Array(sha256.sha256.array(message)),
         signedDelegateAction,
     };
 }
