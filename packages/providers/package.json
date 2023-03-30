@@ -31,5 +31,8 @@
   },
   "optionalDependencies": {
     "node-fetch": "^2.6.1"
-  }
+  },
+  "files": [
+      "lib"
+  ]
 }
