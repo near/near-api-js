@@ -1,5 +1,11 @@
 # near-api-js
 
+## 2.0.1
+
+### Patch Changes
+
+- [#1087](https://github.com/near/near-api-js/pull/1087) [`4f9e3d4d`](https://github.com/near/near-api-js/commit/4f9e3d4d978adc4a073e0ae2cdba69c3e1600201) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Use new packages in @near-js/biometric-ed25519
+
 ## 2.0.0
 
 ### Major Changes
