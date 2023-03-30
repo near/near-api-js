@@ -475,10 +475,10 @@ export class Account {
      * @param receiverId Receiver account of the meta transaction
      */
     async signedDelegate({
-         actions,
-         blockHeightTtl = DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL,
-         receiverId,
-     }: SignedDelegateOptions): Promise<SignedDelegate> {
+        actions,
+        blockHeightTtl = DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL,
+        receiverId,
+    }: SignedDelegateOptions): Promise<SignedDelegate> {
         const { provider, signer } = this.connection;
         const { header } = await provider.block({ finality: 'final' });
         const { publicKey } = await this.findAccessKey(null, null);
