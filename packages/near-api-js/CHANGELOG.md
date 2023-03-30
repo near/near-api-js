@@ -1,5 +1,11 @@
 # near-api-js
 
+## 2.0.4
+
+### Patch Changes
+
+- [#1093](https://github.com/near/near-api-js/pull/1093) [`94311587`](https://github.com/near/near-api-js/commit/94311587ece172fb3e4d009ca0ecbfe9cea4447a) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Publish repackaging
+
 ## 2.0.3
 
 ### Patch Changes
