@@ -1,7 +1,7 @@
 import base64 from "@hexagon/base64";
 import { ec as EC } from "elliptic";
 import { Sha256 } from "@aws-crypto/sha256-js";
-import { PublicKey } from "near-api-js/lib/utils";
+import { PublicKey } from "@near-js/crypto";
 
 const USER_NAME_MAX_LENGTH = 25;
 
