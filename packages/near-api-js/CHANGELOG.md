@@ -1,5 +1,11 @@
 # near-api-js
 
+## 2.0.2
+
+### Patch Changes
+
+- [#1089](https://github.com/near/near-api-js/pull/1089) [`c1ffd501`](https://github.com/near/near-api-js/commit/c1ffd5016cd9bbc285c5ec2b63ff4403e675338e) Thanks [@andy-haynes](https://github.com/andy-haynes)! - CI update
+
 ## 2.0.1
 
 ### Patch Changes
