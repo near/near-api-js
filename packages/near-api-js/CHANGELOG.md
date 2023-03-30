@@ -1,5 +1,22 @@
 # near-api-js
 
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`ca458cac`](https://github.com/near/near-api-js/commit/ca458cac683fab614b77eb5daa160e03b0640350)]:
+  - @near-js/accounts@0.0.2
+  - @near-js/crypto@0.0.2
+  - @near-js/keystores@0.0.2
+  - @near-js/keystores-browser@0.0.2
+  - @near-js/keystores-node@0.0.2
+  - @near-js/providers@0.0.2
+  - @near-js/signers@0.0.2
+  - @near-js/transactions@0.0.2
+  - @near-js/types@0.0.2
+  - @near-js/utils@0.0.2
+  - @near-js/wallet-account@0.0.2
+
 ## 2.0.2
 
 ### Patch Changes
