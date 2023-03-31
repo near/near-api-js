@@ -3,15 +3,33 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"],
-      "outputs": ["dist/"]
+      "inputs": ["src/**/*.ts", "test/**/*.js"],
+      "outputs": ["dist/**", "lib/**"]
     },
     "test": {
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"]
+      /* TODO remove once near-api-js tests are removed or packages/accounts/tests gets its own set of keys */
+      "dependsOn": ["^test"],
+      "inputs": ["src/**/*.ts", "test/**/*.js"]
     },
     "lint": {
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"],
+      "inputs": ["src/**/*.ts", "test/**/*.js"],
       "outputs": []
+    },
+    "lint:js": {
+      "inputs": ["test/**/*.js"],
+      "outputs": []
+    },
+    "lint:js:fix": {
+      "inputs": ["test/**/*.js"],
+      "outputs": []
+    },
+    "lint:ts": {
+        "inputs": ["src/**/*.ts"],
+        "outputs": []
+    },
+    "lint:ts:fix": {
+        "inputs": ["src/**/*.ts"],
+        "outputs": []
     },
     "clean": {
       "outputs": [],

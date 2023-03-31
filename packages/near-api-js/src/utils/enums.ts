@@ -1,3 +1,5 @@
+export { Assignable } from '@near-js/types';
+
 /** @hidden @module */
 export abstract class Enum {
     enum: string;
@@ -9,14 +11,6 @@ export abstract class Enum {
         Object.keys(properties).map((key: string) => {
             (this as any)[key] = properties[key];
             this.enum = key;
-        });
-    }
-}
-
-export abstract class Assignable {
-    constructor(properties: any) {
-        Object.keys(properties).map((key: any) => {
-            (this as any)[key] = properties[key];
         });
     }
 }
