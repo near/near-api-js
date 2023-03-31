@@ -1,0 +1,33 @@
+{
+  "version": "2.0.2",
+  "compilerOptions": {
+    "lib": [
+      "es5",
+      "es2015.promise",
+      "dom",
+      "es2015"
+    ],
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "outDir": "lib",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "sourceMap": true,
+    "allowJs": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "files": [
+    "src/index.d.ts",
+    "src/index.ts",
+    "src/fido2.js",
+    "src/utils.ts"
+  ]
+}

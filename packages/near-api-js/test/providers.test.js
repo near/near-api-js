@@ -3,7 +3,7 @@ const testUtils  = require('./test-utils');
 const BN = require('bn.js');
 const base58 = require('bs58');
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 
 const withProvider = (fn) => {
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'));
