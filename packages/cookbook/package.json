@@ -9,7 +9,7 @@
     "scripts": {
       "lint": "eslint --ext .js .",
       "lint:fix": "pnpm lint --fix",
-      "test": "jest test"
+      "test": "if ! lsof -Pi :8332 -sTCP:LISTEN -t >/dev/null; then echo 'no processes listening on local RPC endpoint, aborting tests' && exit 1; fi && jest test"
     },
     "dependencies": {
       "@near-js/accounts": "workspace:*",
