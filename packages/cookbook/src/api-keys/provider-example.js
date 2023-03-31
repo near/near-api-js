@@ -1,7 +1,7 @@
-const { providers } = require('near-api-js');
+const { JsonRpcProvider } = require('@near-js/providers');
 
 async function getNetworkStatusWithApiKey({ apiKey, nodeUrl }) {
-    const provider = new providers.JsonRpcProvider({
+    const provider = new JsonRpcProvider({
         url: nodeUrl,
         headers: { 'x-api-key': apiKey },
     });

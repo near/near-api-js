@@ -1,13 +1,13 @@
-const { connect } = require('near-api-js');
+const { JsonRpcProvider } = require('@near-js/providers');
 
-async function getTransactions({ accountId, endBlock, networkId, nodeUrl, startBlock }) {
-    const near = await connect({ networkId, nodeUrl });
+async function getTransactions({ accountId, endBlock, nodeUrl, startBlock }) {
+    const provider = new JsonRpcProvider({ url: nodeUrl });
 
     // creates an array of block hashes for given range
     const blocks = [];
     let blockHash = endBlock;
     do {
-        const currentBlock = await near.connection.provider.block({ blockId: blockHash });
+        const currentBlock = await provider.block({ blockId: blockHash });
         blocks.push(currentBlock);
         blockHash = currentBlock.header.prev_hash;
         console.log('working...', blockHash);
@@ -20,7 +20,7 @@ async function getTransactions({ accountId, endBlock, networkId, nodeUrl, startB
 
     //returns chunk details based from the array of hashes
     const chunkDetails = await Promise.all(
-        chunkHashes.map((chunk) => near.connection.provider.chunk(chunk))
+        chunkHashes.map((chunk) => provider.chunk(chunk))
     );
 
     // checks chunk details for transactions
@@ -50,14 +50,12 @@ if (require.main === module) {
     (async function () {
         const contractName = 'relayer.ropsten.testnet'; // contract/account ID you want to find transactions details for
         const endBlock = '8aEcKhF7N1Jyw84e6vHW6Hzp3Ep7mSXJ6Rvnsy5qGJPF'; // block hash of query end (newest block)
-        const networkId = 'testnet';
         const nodeUrl = 'https://archival-rpc.testnet.near.org';
         const startBlock = 'GZ8vKdcgsavkEndkDWHCjuhyqSR2TGnp9VDZbTzd6ufG'; // block hash of query start (oldest block)
 
         const response = await getTransactions({
             accountId: contractName,
             endBlock,
-            networkId,
             nodeUrl,
             startBlock,
         });

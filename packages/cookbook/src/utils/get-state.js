@@ -1,11 +1,9 @@
 // demonstrates how to query the state without setting 
 // up an account. (View methods only)
-const { providers } = require('near-api-js');
+const { JsonRpcProvider } = require('@near-js/providers');
 
 async function getState({ contractName, methodName, nodeUrl }) {
-    const provider = new providers.JsonRpcProvider({
-        url: nodeUrl,
-    });
+    const provider = new JsonRpcProvider({ url: nodeUrl });
 
     const rawResult = await provider.query({
         request_type: 'call_function',

@@ -99,25 +99,35 @@ importers:
   packages/cookbook:
     specifiers:
       '@near-js/accounts': workspace:*
+      '@near-js/crypto': workspace:*
+      '@near-js/keystores': workspace:*
+      '@near-js/keystores-browser': workspace:*
       '@near-js/keystores-node': workspace:*
       '@near-js/providers': workspace:*
       '@near-js/signers': workspace:*
       '@near-js/transactions': workspace:*
+      '@near-js/types': workspace:*
+      '@near-js/utils': workspace:*
+      '@near-js/wallet-account': workspace:*
       bn.js: 5.2.1
       chalk: ^4.1.1
       homedir: ^0.6.0
       jest: ^26.0.1
-      near-api-js: workspace:*
     dependencies:
       '@near-js/accounts': link:../accounts
+      '@near-js/crypto': link:../crypto
+      '@near-js/keystores': link:../keystores
+      '@near-js/keystores-browser': link:../keystores-browser
       '@near-js/keystores-node': link:../keystores-node
       '@near-js/providers': link:../providers
       '@near-js/signers': link:../signers
       '@near-js/transactions': link:../transactions
+      '@near-js/types': link:../types
+      '@near-js/utils': link:../utils
+      '@near-js/wallet-account': link:../wallet-account
       bn.js: 5.2.1
       chalk: 4.1.2
       homedir: 0.6.0
-      near-api-js: link:../near-api-js
     devDependencies:
       jest: 26.6.3
 

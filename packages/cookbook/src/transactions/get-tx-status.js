@@ -1,10 +1,7 @@
-const { providers } = require('near-api-js');
+const { JsonRpcProvider } = require('@near-js/providers');
 
 async function getTransactionStatus({ accountId, nodeUrl, txHash }) {
-    const provider = new providers.JsonRpcProvider({
-        url: nodeUrl,
-    });
-
+    const provider = new JsonRpcProvider({ url: nodeUrl });
     return provider.txStatus(txHash, accountId);
 }
 

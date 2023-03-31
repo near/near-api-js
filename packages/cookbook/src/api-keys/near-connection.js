@@ -1,12 +1,15 @@
-const { connect } = require('near-api-js');
+const { Account } = require('@near-js/accounts');
+const { JsonRpcProvider } = require('@near-js/providers');
 
 async function getAccountStateWithApiKey({ accountId, apiKey, networkId, nodeUrl }) {
-    const near = await connect({
-        headers: { 'x-api-key': apiKey },
+    const account = new Account({
         networkId,
-        nodeUrl,
-    });
-    const account = await near.account(accountId);
+        provider: new JsonRpcProvider({
+            headers: { 'x-api-key': apiKey },
+            url: nodeUrl,
+        }),
+    }, accountId);
+
     return account.state();
 }
 

@@ -1,5 +1,5 @@
 const BN = require('bn.js');
-const { utils } = require('near-api-js');
+const { formatNearAmount } = require('@near-js/utils');
 
 const { calculateGas } = require('../../src/utils/calculate-gas');
 const { deployGuestbook } = require('../utils');
@@ -32,7 +32,7 @@ describe('calculateGas', () => {
             depositAmount: '0',
         });
 
-        const gasBurnedDecimal = parseFloat(utils.format.formatNearAmount((new BN(totalGasBurned)).toString()));
+        const gasBurnedDecimal = parseFloat(formatNearAmount((new BN(totalGasBurned)).toString()));
         const tokensBurnedDecimal = parseFloat(totalTokensBurned);
 
         expect(gasBurnedDecimal).toBeLessThan(Math.pow(10, -11));

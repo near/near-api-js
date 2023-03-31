@@ -1,20 +1,24 @@
+const { Account } = require('@near-js/accounts');
+const { InMemorySigner } = require('@near-js/signers');
+const { KeyPair } = require('@near-js/crypto');
+const { InMemoryKeyStore } = require('@near-js/keystores');
+const { JsonRpcProvider } = require('@near-js/providers');
+const { parseNearAmount } = require('@near-js/utils');
 const BN = require('bn.js');
 const fs = require('fs');
-const { Account, InMemorySigner, KeyPair, keyStores, providers, utils } = require('near-api-js');
 const path = require('path');
 
-const { JsonRpcProvider } = providers;
 const RPC_ENDPOINT_URL = 'http://localhost:8332';
 const NETWORK_ID = 'localnet';
 
 async function buildLocalnetKeyStore() {
-    const keyStore = new keyStores.InMemoryKeyStore();
+    const keyStore = new InMemoryKeyStore();
 
     // full accessKey on ci-testnet, dedicated rpc for tests.
     await keyStore.setKey(
         NETWORK_ID,
         'test.near',
-        utils.KeyPair.fromString('ed25519:2ykcMLiM7vCmsSECcgfmUzihBtNdBv7v2CxNi94sNt4R8ar4xsrMMYvtsSNGQDfSRhNWXEnZvgx2wzS9ViBiS9jW')
+        KeyPair.fromString('ed25519:2ykcMLiM7vCmsSECcgfmUzihBtNdBv7v2CxNi94sNt4R8ar4xsrMMYvtsSNGQDfSRhNWXEnZvgx2wzS9ViBiS9jW')
     );
 
     return keyStore;
@@ -41,7 +45,7 @@ async function createTestAccount() {
     await rootAccount.createAccount(
         newAccountId,
         publicKey,
-        new BN(utils.format.parseNearAmount('5'))
+        new BN(parseNearAmount('5'))
     );
 
     return {

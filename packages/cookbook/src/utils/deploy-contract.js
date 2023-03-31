@@ -1,11 +1,17 @@
+const { Account } = require('@near-js/accounts');
+const { JsonRpcProvider } = require('@near-js/providers');
+const { InMemorySigner } = require('@near-js/signers');
 const fs = require('fs');
-const { keyStores, connect } = require('near-api-js');
 const os = require('os');
 const path = require('path');
 
 async function deployContract({ accountId, contractWasm, keyStore, networkId, nodeUrl }) {
-    const near = await connect({ keyStore, networkId, nodeUrl });
-    const account = await near.account(accountId);
+    const account = new Account({
+        networkId,
+        provider: new JsonRpcProvider({ url: nodeUrl }),
+        signer: new InMemorySigner(keyStore),
+    }, accountId);
+
     return account.deployContract(contractWasm);
 }
 
@@ -22,7 +28,7 @@ if (require.main === module) {
 
         const CREDENTIALS_DIR = '.near-credentials';
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+        const keyStore = new UnencryptedFileSystemKeyStore(credentialsPath);
 
         const deployment = await deployContract({ accountId, contractWasm, keyStore, networkId, nodeUrl });
         console.log({ deployment });

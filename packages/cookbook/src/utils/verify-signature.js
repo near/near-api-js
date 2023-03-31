@@ -1,4 +1,4 @@
-const { keyStores } = require('near-api-js');
+const { UnencryptedFileSystemKeyStore } = require('@near-js/keystores-node');
 const os = require('os');
 const path = require('path');
 
@@ -20,7 +20,7 @@ if (require.main === module) {
 
         const CREDENTIALS_DIR = '.near-credentials';
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+        const keyStore = new UnencryptedFileSystemKeyStore(credentialsPath);
 
         const isValid = await verifySignature({ accountId, keyStore, message, networkId });
         console.log({ isValid });

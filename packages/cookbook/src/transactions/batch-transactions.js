@@ -1,18 +1,27 @@
+const { Account } = require('@near-js/accounts');
+const { UnencryptedFileSystemKeyStore } = require('@near-js/keystores-node');
+const { JsonRpcProvider } = require('@near-js/providers');
+const { InMemorySigner } = require('@near-js/signers');
+const { actionCreators } = require('@near-js/transactions');
 const BN = require('bn.js');
 const fs = require('fs');
-const { connect, transactions, keyStores } = require('near-api-js');
 const os = require('os');
 const path = require('path');
 
+const { deployContract, functionCall } = actionCreators;
+
 async function sendTransactions({ contractName, contractWasm, keyStore, networkId, nodeUrl, whitelistAccountId }) {
-    const near = await connect({ keyStore, networkId, nodeUrl });
-    const account = await near.account(contractName);
+    const account = new Account({
+        networkId,
+        provider: new JsonRpcProvider({ url: nodeUrl }),
+        signer: new InMemorySigner(keyStore),
+    }, contractName);
 
     return account.signAndSendTransaction({
         receiverId: contractName,
         actions: [
-            transactions.deployContract(contractWasm),
-            transactions.functionCall(
+            deployContract(contractWasm),
+            functionCall(
                 'new',
                 Buffer.from(JSON.stringify({
                     staking_pool_whitelist_account_id: whitelistAccountId,
@@ -38,7 +47,7 @@ if (require.main === module) {
 
         const CREDENTIALS_DIR = '.near-credentials';
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+        const keyStore = new UnencryptedFileSystemKeyStore(credentialsPath);
 
         const outcome = await sendTransactions({
             contractName,

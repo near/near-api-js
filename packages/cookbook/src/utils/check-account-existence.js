@@ -1,9 +1,7 @@
-const { providers } = require('near-api-js');
+const { JsonRpcProvider } = require('@near-js/providers');
 
 async function accountExists({ accountId, nodeUrl }) {
-    const provider = new providers.JsonRpcProvider({
-        url: nodeUrl,
-    });
+    const provider = new JsonRpcProvider({ url: nodeUrl });
 
     try {
         await provider.query({

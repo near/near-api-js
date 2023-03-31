@@ -1,4 +1,4 @@
-const { DEFAULT_FUNCTION_CALL_GAS } = require('near-api-js');
+const { DEFAULT_FUNCTION_CALL_GAS } = require('@near-js/utils');
 
 const { getTransactions } = require('../../src/transactions/get-tx-detail');
 const { deployGuestbook } = require('../utils');

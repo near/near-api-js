@@ -1,18 +1,26 @@
+const { Account } = require('@near-js/accounts');
+const { UnencryptedFileSystemKeyStore } = require('@near-js/keystores-node');
+const { JsonRpcProvider } = require('@near-js/providers');
+const { formatNearAmount, parseNearAmount } = require('@near-js/utils');
 const BN = require('bn.js');
 const chalk = require('chalk');
-const { connect, keyStores, utils } = require('near-api-js');
 const os = require('os');
 const path = require('path');
+const { InMemorySigner } = require('@near-js/signers');
 
 async function calculateGas({ accountId, contractId, keyStore, maxGas, methodName, networkId, nodeUrl, args, depositAmount }) {
-    const near = await connect({ keyStore, networkId, nodeUrl });
-    const account = await near.account(accountId);
+    const account = new Account({
+        networkId,
+        provider: new JsonRpcProvider({ url: nodeUrl }),
+        signer: new InMemorySigner(keyStore),
+    }, accountId);
+
     const { receipts_outcome, transaction_outcome } = await account.functionCall({
         contractId,
         methodName,
         args,
         gas: maxGas,
-        attachedDeposit: utils.format.parseNearAmount(depositAmount),
+        attachedDeposit: parseNearAmount(depositAmount),
     });
 
     const { totalGasBurned, totalTokensBurned } = receipts_outcome.reduce(
@@ -28,7 +36,7 @@ async function calculateGas({ accountId, contractId, keyStore, maxGas, methodNam
     );
 
     return {
-        totalTokensBurned: utils.format.formatNearAmount(totalTokensBurned),
+        totalTokensBurned: formatNearAmount(totalTokensBurned),
         totalGasBurned,
     };
 }
@@ -52,7 +60,7 @@ if (require.main === module) {
 
         const CREDENTIALS_DIR = '.near-credentials';
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR, 'testnet');
-        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+        const keyStore = new UnencryptedFileSystemKeyStore(credentialsPath);
 
         const {
             totalGasBurned,

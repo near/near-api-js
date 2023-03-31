@@ -1,4 +1,4 @@
-const { KeyPair } = require('near-api-js');
+const { KeyPair } = require('@near-js/crypto');
 
 const { deleteAccessKey } = require('../../src/accounts/access-keys/delete-access-key');
 const { createTestAccount } = require('../utils');

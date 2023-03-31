@@ -1,18 +1,28 @@
+const { Account } = require('@near-js/accounts');
+const { UnencryptedFileSystemKeyStore } = require('@near-js/keystores-node');
+const { JsonRpcProvider } = require('@near-js/providers');
+const { InMemorySigner } = require('@near-js/signers');
+const { actionCreators } = require('@near-js/transactions');
+const { DEFAULT_FUNCTION_CALL_GAS, parseNearAmount } = require('@near-js/utils');
 const BN = require('bn.js');
-const { connect, keyStores, transactions, utils, DEFAULT_FUNCTION_CALL_GAS } = require('near-api-js');
 const os = require('os');
 const path = require('path');
 
+const { functionCall } = actionCreators;
+
 async function wrapNear({ accountId, keyStore, networkId, nodeUrl, wrapAmount, wrapContractId }) {
-    const near = await connect({ keyStore, networkId, nodeUrl });
-    const account = await near.account(accountId);
+    const account = new Account({
+        networkId,
+        provider: new JsonRpcProvider({ url: nodeUrl }),
+        signer: new InMemorySigner(keyStore),
+    }, accountId);
 
     const actions = [
-        transactions.functionCall(
+        functionCall(
             'near_deposit', // contract method to deposit NEAR for wNEAR
             {},
             DEFAULT_FUNCTION_CALL_GAS, // attached gas
-            new BN(utils.format.parseNearAmount(wrapAmount)) // amount of NEAR to deposit and wrap
+            new BN(parseNearAmount(wrapAmount)) // amount of NEAR to deposit and wrap
         ),
     ];
 
@@ -26,11 +36,11 @@ async function wrapNear({ accountId, keyStore, networkId, nodeUrl, wrapAmount, w
     // if storage hasn't been paid, pay for storage (create an account)
     if (!storage) {
         actions.unshift(
-            transactions.functionCall(
+            functionCall(
                 'storage_deposit', // method to create an account
                 {},
                 DEFAULT_FUNCTION_CALL_GAS, // attached gas
-                new BN(utils.format.parseNearAmount('0.00125')) // account creation costs 0.00125 NEAR for storage
+                new BN(parseNearAmount('0.00125')) // account creation costs 0.00125 NEAR for storage
             )
         );
     }
@@ -67,7 +77,7 @@ if (require.main === module) {
 
         const CREDENTIALS_DIR = '.near-credentials';
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+        const keyStore = new UnencryptedFileSystemKeyStore(credentialsPath);
 
         await wrapNear({ accountId, keyStore, networkId, nodeUrl, wrapAmount, wrapContractId });
     }());

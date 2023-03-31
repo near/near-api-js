@@ -1,13 +1,21 @@
-const { connect, KeyPair, keyStores, utils } = require('near-api-js');
+const { Account } = require('@near-js/accounts');
+const { KeyPair } = require('@near-js/crypto');
+const { UnencryptedFileSystemKeyStore } = require('@near-js/keystores-node');
+const { JsonRpcProvider } = require('@near-js/providers');
+const { parseNearAmount } = require('@near-js/utils');
 const os = require('os');
 const path = require('path');
+const { InMemorySigner } = require('@near-js/signers');
 
 async function createAccount({ amount, creatorAccountId, keyStore, networkId, newAccountId, nodeUrl }) {
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.publicKey.toString();
 
-    const near = await connect({ keyStore, networkId, nodeUrl });
-    const creatorAccount = await near.account(creatorAccountId);
+    const creatorAccount = new Account({
+        networkId,
+        provider: new JsonRpcProvider({ url: nodeUrl }),
+        signer: new InMemorySigner(keyStore),
+    }, creatorAccountId);
 
     await keyStore.setKey(networkId, newAccountId, keyPair);
 
@@ -19,7 +27,7 @@ async function createAccount({ amount, creatorAccountId, keyStore, networkId, ne
             new_public_key: publicKey,
         },
         gas: '300000000000000',
-        attachedDeposit: utils.format.parseNearAmount(amount),
+        attachedDeposit: parseNearAmount(amount),
     });
 }
 
@@ -48,7 +56,7 @@ if (require.main === module) {
 
         const CREDENTIALS_DIR = '.near-credentials';
         const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR);
-        const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+        const keyStore = new UnencryptedFileSystemKeyStore(credentialsPath);
 
         await createAccount({
             amount: process.argv[5],
