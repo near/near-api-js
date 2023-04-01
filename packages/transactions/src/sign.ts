@@ -5,9 +5,8 @@ import BN from 'bn.js';
 import { Action, SignedDelegate } from './actions';
 import { createTransaction } from './create_transaction';
 import type { DelegateAction } from './delegated.js';
-import { encodeDelegateAction, encodeTransaction } from './serialization';
+import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema';
 import { Signature } from './signature';
-import { SignedTransaction, Transaction } from './transaction';
 
 interface MessageSigner {
     sign(message: Uint8Array): Promise<Uint8Array>;

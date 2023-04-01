@@ -4,7 +4,7 @@ import { baseDecode } from 'borsh';
 
 import { actionCreators } from './action_creators';
 import { SignedDelegate } from './actions';
-import { Transaction } from './transaction';
+import { Transaction } from './schema';
 
 const { signedDelegate: signedDelegateAction } = actionCreators;
 

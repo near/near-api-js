@@ -1,5 +1,7 @@
 import { PublicKey } from '@near-js/crypto';
+import { Assignable } from '@near-js/types';
 import { deserialize, serialize } from 'borsh';
+import BN from 'bn.js';
 
 import {
     Action,
@@ -20,7 +22,6 @@ import {
 import { DelegateAction } from './delegated';
 import { DelegateActionPrefix } from './prefix';
 import { Signature } from './signature';
-import { SignedTransaction, Transaction } from './transaction';
 
 /**
  * Borsh-encode a delegate action for inclusion as an action within a meta transaction
@@ -53,6 +54,36 @@ export function decodeTransaction(bytes: Buffer) {
  */
 export function decodeSignedTransaction(bytes: Buffer) {
     return deserialize(SCHEMA, SignedTransaction, bytes);
+}
+
+export class Transaction extends Assignable {
+    signerId: string;
+    publicKey: PublicKey;
+    nonce: BN;
+    receiverId: string;
+    actions: Action[];
+    blockHash: Uint8Array;
+
+    encode() {
+        return encodeTransaction(this);
+    }
+
+    static decode(bytes: Buffer) {
+        return decodeTransaction(bytes);
+    }
+}
+
+export class SignedTransaction extends Assignable {
+    transaction: Transaction;
+    signature: Signature;
+
+    encode() {
+        return encodeTransaction(this);
+    }
+
+    static decode(bytes: Buffer) {
+        return decodeSignedTransaction(bytes);
+    }
 }
 
 type Class<T = any> = new (...args: any[]) => T;
