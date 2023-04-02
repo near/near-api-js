@@ -98,7 +98,7 @@ export interface ContractMethods {
     /**
      * ABI defining this contract's interface.
      */
-    abi: AbiRoot;
+    abi?: AbiRoot;
 }
 
 /**
