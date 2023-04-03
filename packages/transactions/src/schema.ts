@@ -36,6 +36,14 @@ export function encodeDelegateAction(delegateAction: DelegateAction) {
     ]);
 }
 
+/**
+ * Borsh-encode a signed delegate for validation and execution by a relayer
+ * @param signedDelegate Signed delegate to be executed in a meta transaction
+ */
+export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
+    return serialize(SCHEMA, signedDelegate);
+}
+
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
     return serialize(SCHEMA, transaction);
 }
