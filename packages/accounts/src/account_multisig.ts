@@ -137,7 +137,7 @@ export class AccountMultisig extends Account {
     async deleteAllRequests() {
         const request_ids = await this.getRequestIds();
         if(request_ids.length) {
-            await Promise.allSettled(request_ids.map((id) => this.deleteRequest(id).catch(e => e)));
+            await Promise.allSettled(request_ids.map((id) => this.deleteRequest(id)));
         }
     }
 
