@@ -32,13 +32,31 @@ jobs:
       - name: Build Packages
         run: pnpm build
 
-      - name: Create Release Pull Request or Publish to NPM
+      - name: Create Release Pull Request
+        if: steps.changesets.outputs.hasChangesets == 'true'
         uses: changesets/action@v1
         with:
           publish: pnpm release
           commit: "chore(release): publish packages"
           title: "Publish packages"
           createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Publish @near-js to NPM
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        uses: changesets/action@v1
+        with:
+            publish: pnpm --filter=!near-api-js release
+        env:
+            GITHUB_TOKEN: ${{ github.token }}
+            NPM_TOKEN: ${{ secrets.NEARJS_NPM_TOKEN }}
+
+      - name: Publish near-api-js to NPM
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        uses: changesets/action@v1
+        with:
+          publish: pnpm --filter near-api-js release
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
