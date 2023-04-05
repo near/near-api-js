@@ -17,6 +17,8 @@ import {
     GasPrice,
     LightClientProof,
     LightClientProofRequest,
+    NextLightClientBlockRequest,
+    NextLightClientBlockResponse,
     NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
@@ -42,6 +44,7 @@ export abstract class Provider {
     abstract validators(blockId: BlockId | null): Promise<EpochValidatorInfo>;
     abstract experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
     abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
+    abstract nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse>;
     abstract gasPrice(blockId: BlockId): Promise<GasPrice>;
     abstract accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     abstract singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;

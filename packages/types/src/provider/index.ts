@@ -4,6 +4,8 @@ export {
     LightClientBlockLiteView,
     LightClientProof,
     LightClientProofRequest,
+    NextLightClientBlockRequest,
+    NextLightClientBlockResponse,
 } from './light_client';
 export {
     AccessKeyWithPublicKey,

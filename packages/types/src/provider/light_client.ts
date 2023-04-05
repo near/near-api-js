@@ -5,6 +5,7 @@
 
 import { BlockHeaderInnerLiteView, MerklePath } from './protocol';
 import { ExecutionOutcomeWithIdView } from './response';
+import { ValidatorStakeView } from './validator';
 
 export interface LightClientBlockLiteView {
     prev_block_hash: string;
@@ -31,4 +32,17 @@ export interface LightClientProofRequest {
     sender_id?: string;
     receipt_id?: string;
     receiver_id?: string;
+}
+
+export interface NextLightClientBlockResponse {
+    prev_block_hash: string;
+    next_block_inner_hash: string;
+    inner_lite: BlockHeaderInnerLiteView;
+    inner_rest_hash: string;
+    next_bps?: ValidatorStakeView[];
+    approvals_after_next: (string | null)[];
+}
+
+export interface NextLightClientBlockRequest {
+    last_block_hash: string;
 }

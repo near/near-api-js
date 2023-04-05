@@ -23,6 +23,8 @@ import {
     GasPrice,
     LightClientProof,
     LightClientProofRequest,
+    NextLightClientBlockRequest,
+    NextLightClientBlockResponse,
     NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
@@ -219,6 +221,17 @@ export class JsonRpcProvider extends Provider {
      */
     async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
         return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
+    }
+
+    /**
+     * Returns the next light client block as far in the future as possible from the last known hash
+     * to still be able to validate from that hash. This will either return the last block of the
+     * next epoch, or the last final known block.
+     * 
+     * @see [https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
+     */
+    async nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse> {
+        return await this.sendJsonRpc('next_light_client_block', request);
     }
 
     /**
