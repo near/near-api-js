@@ -148,6 +148,31 @@ test('json rpc gas price', withProvider(async (provider) => {
     expect(response3.gas_price).toMatch(positiveIntegerRegex);
 }));
 
+test('json rpc get next light client block', withProvider(async (provider) => {
+    const stat = await provider.status();
+
+    // Get block in at least the last epoch (epoch duration 43,200 blocks on mainnet and testnet)
+    const height = stat.sync_info.latest_block_height;
+    const protocolConfig = await provider.experimental_protocolConfig({ finality: 'final' });
+
+    // NOTE: This will underflow if the network used has not produced an epoch yet. If a new network
+    // config is required, can retrieve a block a few height behind (1+buffer for indexing). If run
+    // on a fresh network, would need to wait for blocks to be produced and indexed.
+    const prevEpochHeight = height - protocolConfig.epoch_length;
+    const prevBlock = await provider.block({ blockId: prevEpochHeight });
+    const nextBlock = await provider.nextLightClientBlock({ last_block_hash: prevBlock.header.hash });
+    // Greater than or equal check because a block could have been produced during the test.
+    // There is a buffer of 10 given to the height, because this seems to be lagging behind the
+    // latest finalized block by a few seconds. This delay might just be due to slow or delayed
+    // indexing in a node's db. If this fails in the future, we can increase the buffer.
+    expect(nextBlock.inner_lite.height).toBeGreaterThanOrEqual(height - 10);
+    expect(nextBlock.inner_lite.height).toBeGreaterThan(prevEpochHeight);
+    expect('prev_block_hash' in nextBlock).toBeTruthy();
+    expect('next_block_inner_hash' in nextBlock).toBeTruthy();
+    expect('inner_rest_hash' in nextBlock).toBeTruthy();
+    expect('approvals_after_next' in nextBlock).toBeTruthy();
+}));
+
 test('JsonRpc connection object exist without connectionInfo provided', async () => {
     const provider = new JsonRpcProvider();
     expect(provider.connection).toStrictEqual({ url: '' });

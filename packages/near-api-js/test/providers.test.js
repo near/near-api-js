@@ -295,41 +295,6 @@ test('json rpc light client proof', async () => {
     await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
 });
 
-test('json rpc get next light client block', withProvider(async (provider) => {
-    const stat = await provider.status();
-
-    // Get block in at least the last epoch (epoch duration 43,200 blocks on mainnet and testnet)
-    const height = stat.sync_info.latest_block_height;
-    const protocolConfig = await provider.experimental_protocolConfig({ finality: 'final' });
-
-    if (height < protocolConfig.epoch_length) {
-        // Not enough blocks to query one from last epoch, query current and assert that it returns
-        // empty. This may have a race condition where the query overlaps a new block being produced
-        let res = await provider.nextLightClientBlock({ last_block_hash: stat.sync_info.latest_block_hash });
-        if (res) {
-            // It's possible that the first epoch ended during this test (edge case),
-            // ensure that requesting with this new epoch will return the empty result
-            res = await provider.nextLightClientBlock({ last_block_hash: res.next_block_inner_hash });
-        }
-        expect(res).toStrictEqual({});
-        return;
-    }
-
-    const prevEpochHeight = height - protocolConfig.epoch_length;
-    const prevBlock = await provider.block({ blockId: prevEpochHeight });
-    const nextBlock = await provider.nextLightClientBlock({ last_block_hash: prevBlock.header.hash });
-    // Greater than or equal check because a block could have been produced during the test.
-    // There is a buffer of 10 given to the height, because this seems to be lagging behind the
-    // latest finalized block by a few seconds. This delay might just be due to slow or delayed
-    // indexing in a node's db. If this fails in the future, we can increase the buffer.
-    expect(nextBlock.inner_lite.height).toBeGreaterThanOrEqual(height - 10);
-    expect(nextBlock.inner_lite.height).toBeGreaterThan(prevEpochHeight);
-    expect('prev_block_hash' in nextBlock).toBeTruthy();
-    expect('next_block_inner_hash' in nextBlock).toBeTruthy();
-    expect('inner_rest_hash' in nextBlock).toBeTruthy();
-    expect('approvals_after_next' in nextBlock).toBeTruthy();
-}));
-
 test('json rpc fetch protocol config', withProvider(async (provider) => {
     const status = await provider.status();
     const blockHeight = status.sync_info.latest_block_height;
