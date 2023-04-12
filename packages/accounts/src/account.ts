@@ -531,18 +531,6 @@ export class Account {
         return fetchJson(relayerUrl, JSON.stringify(Array.from(encodeSignedDelegate(signedDelegate))));
     }
 
-    /**
-     * Sign and send a meta transaction, consisting of a single signed delegate action, on behalf of a sender (i.e. as a meta transaction relayer)
-     *
-     * @param signedDelegate SignedDelegate action to wrap in the meta transaction
-     */
-    async signAndSendMetaTransaction(signedDelegate: SignedDelegate): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
-            actions: [signedDelegateAction(signedDelegate)],
-            receiverId: signedDelegate.delegateAction.senderId,
-        });
-    }
-
     private async getSigningNonce(): BN {
         const { accessKey: { nonce } } = await this.findAccessKey(null, null);
         return new BN(nonce).add(new BN(1));

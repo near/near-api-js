@@ -7,17 +7,18 @@ const BN = require('bn.js');
 const os = require('os');
 const path = require('path');
 
-const { transfer } = actionCreators;
+const { signedDelegate, transfer } = actionCreators;
 
 async function sendNearViaMetaTransaction({ amount, receiverId, senderAccount, signingAccount }) {
-    const signedDelegate = await senderAccount.signedDelegate({
+    const delegate = await senderAccount.signedDelegate({
         actions: [transfer(amount)],
         receiverId,
     });
 
-    const executionOutcome = await signingAccount.signAndSendMetaTransaction(signedDelegate);
-    console.log(executionOutcome);
-    return executionOutcome;
+    return signingAccount.signAndSendTransaction({
+        actions: [signedDelegate(delegate)],
+        receiverId: delegate.delegateAction.senderId,
+    });
 }
 
 module.exports = {
@@ -49,11 +50,11 @@ if (require.main === module) {
             signer: new InMemorySigner(new UnencryptedFileSystemKeyStore(credentialsPath))
         }, SIGNER_ACCOUNT_ID);
 
-        await sendNearViaMetaTransaction({
+        console.log(await sendNearViaMetaTransaction({
             amount: new BN('1000000000'),
             receiverId: RECEIVER_ACCOUNT_ID,
             senderAccount,
             signingAccount,
-        });
+        }));
     }());
 }
