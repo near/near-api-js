@@ -6,6 +6,8 @@ export {
     LightClientBlockLiteView,
     LightClientProof,
     LightClientProofRequest,
+    NextLightClientBlockRequest,
+    NextLightClientBlockResponse,
 
     AccessKeyWithPublicKey,
     BlockHash,
