@@ -148,8 +148,6 @@ interface ActiveDelegatedStakeBalance {
     total: BN | string;
 }
 
-// by default expire meta transactions 600 blocks after the current block height
-const DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL = 600;
 interface SignedDelegateOptions {
     actions: NonDelegateAction[];
     blockHeightTtl: number;
@@ -475,7 +473,7 @@ export class Account {
      */
     async signedDelegate({
         actions,
-        blockHeightTtl = DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL,
+        blockHeightTtl,
         receiverId,
     }: SignedDelegateOptions): Promise<SignedDelegate> {
         const { provider, signer } = this.connection;
