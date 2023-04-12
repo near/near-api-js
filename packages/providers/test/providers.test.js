@@ -58,7 +58,7 @@ test('json rpc fetch validators info', withProvider(async (provider) => {
     expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
 }));
 
-test('json rpc query with block_id', withProvider(async(provider) => {
+test('json rpc query with block_id', withProvider(async (provider) => {
     const stat = await provider.status();
     let block_id = stat.sync_info.latest_block_height - 1;
 
@@ -97,7 +97,7 @@ test('json rpc query view_account', withProvider(async (provider) => {
     });
 }));
 
-test('final tx result', async() => {
+test('final tx result', async () => {
     const result = {
         status: { SuccessValue: 'e30=' },
         transaction: { id: '11111', outcome: { status: { SuccessReceiptId: '11112' }, logs: [], receipt_ids: ['11112'], gas_burnt: 1 } },
@@ -109,7 +109,7 @@ test('final tx result', async() => {
     expect(getTransactionLastResult(result)).toEqual({});
 });
 
-test('final tx result with null', async() => {
+test('final tx result with null', async () => {
     const result = {
         status: 'Failure',
         transaction: { id: '11111', outcome: { status: { SuccessReceiptId: '11112' }, logs: [], receipt_ids: ['11112'], gas_burnt: 1 } },
@@ -161,6 +161,10 @@ test('json rpc get next light client block', withProvider(async (provider) => {
     const prevEpochHeight = height - protocolConfig.epoch_length;
     const prevBlock = await provider.block({ blockId: prevEpochHeight });
     const nextBlock = await provider.nextLightClientBlock({ last_block_hash: prevBlock.header.hash });
+    expect('inner_lite' in nextBlock).toBeTruthy();
+    // Verify that requesting from previous epoch includes the set of new block producers.
+    expect('next_bps' in nextBlock).toBeTruthy();
+
     // Greater than or equal check because a block could have been produced during the test.
     // There is a buffer of 10 given to the height, because this seems to be lagging behind the
     // latest finalized block by a few seconds. This delay might just be due to slow or delayed
