@@ -177,6 +177,7 @@ export interface BlockHeaderInnerLiteView {
     prev_state_root: string;
     outcome_root: string;
     timestamp: number;
+    timestamp_nanosec: string;
     next_bp_hash: string;
     block_merkle_root: string;
 }
