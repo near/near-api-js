@@ -270,6 +270,7 @@ test('json rpc light client proof', async() => {
     expect('prev_block_hash' in lightClientProof.block_header_lite).toBe(true);
     expect('inner_rest_hash' in lightClientProof.block_header_lite).toBe(true);
     expect('inner_lite' in lightClientProof.block_header_lite).toBe(true);
+    expect('timestamp_nanosec' in lightClientProof.block_header_lite.inner_lite).toBe(true);
     expect(lightClientProof.outcome_proof.id).toEqual(executionOutcome.transaction_outcome.id);
     expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
     expect(lightClientProof.outcome_root_proof).toEqual([]);

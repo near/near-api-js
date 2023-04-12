@@ -12,7 +12,7 @@ const withProvider = (fn) => {
     return () => fn(provider);
 };
 
-test('txStatus with string hash and buffer hash', withProvider(async(provider) => {
+test('txStatus with string hash and buffer hash', withProvider(async (provider) => {
     const near = await testUtils.setUpTestConnection();
     const sender = await testUtils.createAccount(near);
     const receiver = await testUtils.createAccount(near);
@@ -24,7 +24,7 @@ test('txStatus with string hash and buffer hash', withProvider(async(provider) =
     expect(responseWithUint8Array).toMatchObject(outcome);
 }));
 
-test('txStatusReciept with string hash and buffer hash', withProvider(async(provider) => {
+test('txStatusReciept with string hash and buffer hash', withProvider(async (provider) => {
     const near = await testUtils.setUpTestConnection();
     const sender = await testUtils.createAccount(near);
     const receiver = await testUtils.createAccount(near);
@@ -49,9 +49,9 @@ test('json rpc query view_state', withProvider(async (provider) => {
     const account = await testUtils.createAccount(near);
     const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
 
-    await contract.setValue({ args: { value: 'hello' }});
+    await contract.setValue({ args: { value: 'hello' } });
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'view_state',
             finality: 'final',
@@ -74,7 +74,7 @@ test('json rpc query view_code', withProvider(async (provider) => {
     const account = await testUtils.createAccount(near);
     const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'view_code',
             finality: 'final',
@@ -95,9 +95,9 @@ test('json rpc query call_function', withProvider(async (provider) => {
     const account = await testUtils.createAccount(near);
     const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
 
-    await contract.setValue({ args: { value: 'hello' }});
+    await contract.setValue({ args: { value: 'hello' } });
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'call_function',
             finality: 'final',
@@ -122,7 +122,7 @@ test('json rpc query call_function', withProvider(async (provider) => {
     });
 }));
 
-test('json rpc light client proof', async() => {
+test('json rpc light client proof', async () => {
     const near = await testUtils.setUpTestConnection();
     const workingAccount = await testUtils.createAccount(near);
     const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, new BN(10000));
@@ -158,6 +158,7 @@ test('json rpc light client proof', async() => {
     expect('prev_block_hash' in lightClientProof.block_header_lite).toBe(true);
     expect('inner_rest_hash' in lightClientProof.block_header_lite).toBe(true);
     expect('inner_lite' in lightClientProof.block_header_lite).toBe(true);
+    expect('timestamp_nanosec' in lightClientProof.block_header_lite.inner_lite).toBe(true);
     expect(lightClientProof.outcome_proof.id).toEqual(executionOutcome.transaction_outcome.id);
     expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
     expect(lightClientProof.outcome_root_proof).toEqual([]);
