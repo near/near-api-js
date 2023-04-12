@@ -17,7 +17,7 @@ import {
     Stake,
     Transfer,
 } from './actions';
-import { DelegateAction } from './delegated';
+import { DelegateAction } from './delegate';
 import { Signature } from './signature';
 
 function fullAccessKey(): AccessKey {

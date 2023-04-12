@@ -19,7 +19,7 @@ import {
     Stake,
     Transfer,
 } from './actions';
-import { DelegateAction } from './delegated';
+import { DelegateAction } from './delegate';
 import { DelegateActionPrefix } from './prefix';
 import { Signature } from './signature';
 
