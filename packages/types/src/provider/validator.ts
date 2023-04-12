@@ -24,6 +24,7 @@ export interface ValidatorStakeView {
     account_id: string;
     public_key: string;
     stake: string;
+    validator_stake_struct_version: string;
 }
 
 export interface EpochValidatorInfo {
