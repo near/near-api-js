@@ -1,10 +1,9 @@
 import { PublicKey } from '@near-js/crypto';
-import { exponentialBackoff, fetchJson } from '@near-js/providers';
+import { exponentialBackoff } from '@near-js/providers';
 import {
     actionCreators,
     Action,
     buildDelegateAction,
-    encodeSignedDelegate,
     NonDelegateAction,
     signDelegateAction,
     signTransaction,
@@ -26,7 +25,6 @@ import {
     AccessKeyInfoView,
     FunctionCallPermissionView,
     BlockReference,
-    FinalExecutionStatus,
 } from '@near-js/types';
 import {
     logWarning,
@@ -49,7 +47,6 @@ const {
     fullAccessKey,
     functionCall,
     functionCallAccessKey,
-    signedDelegate: signedDelegateAction,
     stake,
     transfer,
 } = actionCreators;
@@ -510,25 +507,6 @@ export class Account {
         });
 
         return signedDelegateAction;
-    }
-
-    /**
-     * Compose, sign, and submit (to relayer) a set of actions to be executed in a meta transaction
-     *
-     * @param actions Actions to be included in the meta transaction
-     * @param blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
-     * @param receiverId Receiver account of the meta transaction
-     * @param relayerUrl Relayer URL endpoint responsible for building and executing meta transactions
-     * @param signedDelegate SignedDelegate instance containing the information and verification required for relayer execution of meta transactions
-     */
-    async signAndSendSignedDelegate({
-        actions,
-        blockHeightTtl,
-        receiverId,
-        relayerUrl,
-    }: { relayerUrl: string } & SignedDelegateOptions): Promise<FinalExecutionStatus> {
-        const signedDelegate = await this.signedDelegate({ actions, blockHeightTtl, receiverId });
-        return fetchJson(relayerUrl, JSON.stringify(Array.from(encodeSignedDelegate(signedDelegate))));
     }
 
     private async getSigningNonce(): BN {

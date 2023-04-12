@@ -1,8 +1,8 @@
 const { Account } = require('@near-js/accounts');
 const { UnencryptedFileSystemKeyStore } = require('@near-js/keystores-node');
-const { JsonRpcProvider } = require('@near-js/providers');
+const { JsonRpcProvider, fetchJson } = require('@near-js/providers');
 const { InMemorySigner } = require('@near-js/signers');
-const { actionCreators } = require('@near-js/transactions');
+const { actionCreators, encodeSignedDelegate } = require('@near-js/transactions');
 const BN = require('bn.js');
 const os = require('os');
 const path = require('path');
@@ -10,14 +10,16 @@ const path = require('path');
 const { transfer } = actionCreators;
 
 async function sendNearThroughRelayer({ amount, receiverId, senderAccount }) {
-    const response = await senderAccount.signAndSendSignedDelegate({
+    const signedDelegate = await senderAccount.signedDelegate({
         actions: [transfer(amount)],
-        receiverId,
-        relayerUrl: 'https://relayer.org/relay',
+        blockHeightTtl: 60,
+        receiverId
     });
 
-    console.log(response);
-    return response;
+    return fetchJson(
+        'https://relayer.org/relay',
+        JSON.stringify(Array.from(encodeSignedDelegate(signedDelegate)))
+    );
 }
 
 module.exports = {
@@ -41,10 +43,10 @@ if (require.main === module) {
             signer: new InMemorySigner(new UnencryptedFileSystemKeyStore(credentialsPath))
         }, SENDER_ACCOUNT_ID);
 
-        await sendNearThroughRelayer({
+        console.log(await sendNearThroughRelayer({
             amount: new BN('1000000000'),
             receiverId: RECEIVER_ACCOUNT_ID,
             senderAccount,
-        });
+        }));
     }());
 }
