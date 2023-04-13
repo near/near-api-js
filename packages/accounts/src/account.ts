@@ -478,12 +478,12 @@ export class Account {
     }: SignedDelegateOptions): Promise<SignedDelegate> {
         const { provider, signer } = this.connection;
         const { header } = await provider.block({ finality: 'final' });
-        const { publicKey } = await this.findAccessKey(null, null);
+        const { accessKey, publicKey } = await this.findAccessKey(null, null);
 
         const delegateAction = buildDelegateAction({
             actions,
             maxBlockHeight: new BN(header.height).add(new BN(blockHeightTtl)),
-            nonce: await this.getSigningNonce(),
+            nonce: new BN(accessKey.nonce).add(new BN(1)),
             publicKey,
             receiverId,
             senderId: this.accountId,
@@ -505,11 +505,6 @@ export class Account {
         });
 
         return signedDelegateAction;
-    }
-
-    private async getSigningNonce(): BN {
-        const { accessKey: { nonce } } = await this.findAccessKey(null, null);
-        return new BN(nonce).add(new BN(1));
     }
 
     /** @hidden */
