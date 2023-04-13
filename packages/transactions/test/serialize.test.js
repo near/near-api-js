@@ -9,10 +9,11 @@ const { baseDecode, baseEncode, deserialize, serialize } = require('borsh');
 const {
     actionCreators,
     createTransaction,
+    decodeSignedTransaction,
+    decodeTransaction,
+    encodeTransaction,
     SCHEMA,
     signTransaction,
-    SignedTransaction,
-    Transaction,
 } = require('../lib');
 
 const {
@@ -80,11 +81,11 @@ function createTransferTx() {
 test('serialize transfer tx', async() => {
     const transaction = createTransferTx();
 
-    const serialized = transaction.encode();
+    const serialized = encodeTransaction(transaction);
     expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
 
-    const deserialized = Transaction.decode(serialized);
-    expect(deserialized.encode()).toEqual(serialized);
+    const deserialized = decodeTransaction(serialized);
+    expect(encodeTransaction(deserialized)).toEqual(serialized);
 });
 
 async function createKeyStore() {
@@ -96,11 +97,11 @@ async function createKeyStore() {
 
 async function verifySignedTransferTx(signedTx) {
     expect(Buffer.from(signedTx.signature.data).toString('base64')).toEqual('lpqDMyGG7pdV5IOTJVJYBuGJo9LSu0tHYOlEQ+l+HE8i3u7wBZqOlxMQDtpuGRRNp+ig735TmyBwi6HY0CG9AQ==');
-    const serialized = signedTx.encode();
+    const serialized = encodeTransaction(signedTx);
     expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef601000000030100000000000000000000000000000000969a83332186ee9755e4839325525806e189a3d2d2bb4b4760e94443e97e1c4f22deeef0059a8e9713100eda6e19144da7e8a0ef7e539b20708ba1d8d021bd01');
     
-    const deserialized = SignedTransaction.decode(serialized);
-    expect(deserialized.encode()).toEqual(serialized);
+    const deserialized = decodeSignedTransaction(serialized);
+    expect(encodeTransaction(deserialized)).toEqual(serialized);
 }
 
 test('serialize and sign transfer tx', async() => {
@@ -152,10 +153,10 @@ describe('serialize and deserialize on different types of nonce', () => {
             1,
             actions,
             blockHash);
-        const serialized = transaction.encode();
+        const serialized = encodeTransaction(transaction);
         expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
-        const deserialized = Transaction.decode(serialized);
-        expect(deserialized.encode()).toEqual(serialized);
+        const deserialized = decodeTransaction(serialized);
+        expect(encodeTransaction(deserialized)).toEqual(serialized);
         expect(deserialized.nonce.toString()).toEqual(targetNonce.toString());
         
     });
@@ -167,10 +168,10 @@ describe('serialize and deserialize on different types of nonce', () => {
             '1',
             actions,
             blockHash);
-        const serialized = transaction.encode();
+        const serialized = encodeTransaction(transaction);
         expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
-        const deserialized = Transaction.decode(serialized);
-        expect(deserialized.encode()).toEqual(serialized);
+        const deserialized = decodeTransaction(serialized);
+        expect(encodeTransaction(deserialized)).toEqual(serialized);
         expect(deserialized.nonce.toString()).toEqual(targetNonce.toString());
     });
     test('BN typed nonce', async() => {
@@ -181,10 +182,10 @@ describe('serialize and deserialize on different types of nonce', () => {
             new BN(1),
             actions,
             blockHash);
-        const serialized = transaction.encode();
+        const serialized = encodeTransaction(transaction);
         expect(serialized.toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
-        const deserialized = Transaction.decode(serialized);
-        expect(deserialized.encode()).toEqual(serialized);
+        const deserialized = decodeTransaction(serialized);
+        expect(encodeTransaction(deserialized)).toEqual(serialized);
         expect(deserialized.nonce.toString()).toEqual(targetNonce.toString());
     });
 });

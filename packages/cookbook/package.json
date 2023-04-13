@@ -7,6 +7,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@near-js/accounts": "workspace:*",
+    "@near-js/keystores-node": "workspace:*",
+    "@near-js/providers": "workspace:*",
+    "@near-js/signers": "workspace:*",
+    "@near-js/transactions": "workspace:*",
+    "bn.js": "5.2.1",
     "chalk": "^4.1.1",
     "homedir": "^0.6.0",
     "near-api-js": "workspace:*"

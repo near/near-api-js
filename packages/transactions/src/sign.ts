@@ -1,11 +1,26 @@
 import { Signer } from '@near-js/signers';
 import sha256 from 'js-sha256';
 import BN from 'bn.js';
-import { serialize } from 'borsh';
 
-import { Action } from './actions';
+import { Action, SignedDelegate } from './actions';
 import { createTransaction } from './create_transaction';
-import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema';
+import type { DelegateAction } from './delegate';
+import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema';
+import { Signature } from './signature';
+
+interface MessageSigner {
+    sign(message: Uint8Array): Promise<Uint8Array>;
+}
+
+interface SignDelegateOptions {
+    delegateAction: DelegateAction;
+    signer: MessageSigner;
+}
+
+export interface SignedDelegateWithHash {
+    hash: Uint8Array;
+    signedDelegateAction: SignedDelegate;
+}
 
 /**
  * Signs a given transaction from an account with given keys, applied to the given network
@@ -15,7 +30,7 @@ import { SCHEMA, Signature, SignedTransaction, Transaction } from './schema';
  * @param networkId The targeted network. (ex. default, betanet, etc…)
  */
 async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
-    const message = serialize(SCHEMA, transaction);
+    const message = encodeTransaction(transaction);
     const hash = new Uint8Array(sha256.sha256.array(message));
     const signature = await signer.signMessage(message, accountId, networkId);
     const signedTx = new SignedTransaction({
@@ -37,4 +52,27 @@ export async function signTransaction(...args): Promise<[Uint8Array, SignedTrans
         const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
         return signTransactionObject(transaction, signer, accountId, networkId);
     }
+}
+
+/**
+ * Sign a delegate action
+ * @params.delegateAction Delegate action to be signed by the meta transaction sender
+ * @params.signer Signer instance for the meta transaction sender
+ */
+export async function signDelegateAction({ delegateAction, signer }: SignDelegateOptions): Promise<SignedDelegateWithHash> {
+    const message = encodeDelegateAction(delegateAction);
+    const signature = await signer.sign(message);
+
+    const signedDelegateAction = new SignedDelegate({
+        delegateAction,
+        signature: new Signature({
+            keyType: delegateAction.publicKey.keyType,
+            data: signature,
+        }),
+    });
+
+    return {
+        hash: new Uint8Array(sha256.sha256.array(message)),
+        signedDelegateAction,
+    };
 }

@@ -1,21 +1,16 @@
-import BN from 'bn.js';
-
-import {
-    logWarning,
-    parseResultError,
-    DEFAULT_FUNCTION_CALL_GAS,
-    printTxOutcomeLogs,
-    printTxOutcomeLogsAndFailures,
-} from '@near-js/utils';
+import { PublicKey } from '@near-js/crypto';
 import { exponentialBackoff } from '@near-js/providers';
 import {
     actionCreators,
     Action,
+    buildDelegateAction,
+    IAction,
+    signDelegateAction,
     signTransaction,
+    SignedDelegate,
     SignedTransaction,
-    stringifyJsonOrBytes
+    stringifyJsonOrBytes,
 } from '@near-js/transactions';
-import { PublicKey } from '@near-js/crypto';
 import {
     PositionalArgsError,
     FinalExecutionOutcome,
@@ -31,6 +26,14 @@ import {
     FunctionCallPermissionView,
     BlockReference,
 } from '@near-js/types';
+import {
+    logWarning,
+    parseResultError,
+    DEFAULT_FUNCTION_CALL_GAS,
+    printTxOutcomeLogs,
+    printTxOutcomeLogsAndFailures,
+} from '@near-js/utils';
+import BN from 'bn.js';
 import { baseDecode, baseEncode } from 'borsh';
 
 import { Connection } from './connection';
@@ -143,6 +146,12 @@ interface ActiveDelegatedStakeBalance {
     stakedValidators: StakedBalance[];
     failedValidators: StakedBalance[];
     total: BN | string;
+}
+
+interface SignedDelegateOptions {
+    actions: IAction[];
+    blockHeightTtl: number;
+    receiverId: string;
 }
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
@@ -453,6 +462,49 @@ export class Account {
             receiverId: this.accountId,
             actions: [stake(amount, PublicKey.from(publicKey))]
         });
+    }
+
+    /**
+     * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
+     *
+     * @param actions Actions to be included in the meta transaction
+     * @param blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
+     * @param receiverId Receiver account of the meta transaction
+     */
+    async signedDelegate({
+        actions,
+        blockHeightTtl,
+        receiverId,
+    }: SignedDelegateOptions): Promise<SignedDelegate> {
+        const { provider, signer } = this.connection;
+        const { header } = await provider.block({ finality: 'final' });
+        const { accessKey, publicKey } = await this.findAccessKey(null, null);
+
+        const delegateAction = buildDelegateAction({
+            actions,
+            maxBlockHeight: new BN(header.height).add(new BN(blockHeightTtl)),
+            nonce: new BN(accessKey.nonce).add(new BN(1)),
+            publicKey,
+            receiverId,
+            senderId: this.accountId,
+        });
+
+        const { signedDelegateAction } = await signDelegateAction({
+            delegateAction,
+            signer: {
+                sign: async (message) => {
+                    const { signature } = await signer.signMessage(
+                        message,
+                        delegateAction.senderId,
+                        this.connection.networkId
+                    );
+
+                    return signature;
+                },
+            }
+        });
+
+        return signedDelegateAction;
     }
 
     /** @hidden */

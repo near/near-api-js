@@ -1,7 +1,7 @@
-import { KeyType, PublicKey } from '@near-js/crypto';
+import { PublicKey } from '@near-js/crypto';
 import { Assignable } from '@near-js/types';
-import BN from 'bn.js';
 import { deserialize, serialize } from 'borsh';
+import BN from 'bn.js';
 
 import {
     Action,
@@ -15,13 +15,53 @@ import {
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
+    SignedDelegate,
     Stake,
     Transfer,
 } from './actions';
+import { DelegateAction } from './delegate';
+import { DelegateActionPrefix } from './prefix';
+import { Signature } from './signature';
 
-export class Signature extends Assignable {
-    keyType: KeyType;
-    data: Uint8Array;
+/**
+ * Borsh-encode a delegate action for inclusion as an action within a meta transaction
+ * NB per NEP-461 this requires a Borsh-serialized prefix specific to delegate actions, ensuring
+ *  signed delegate actions may never be identical to signed transactions with the same fields
+ * @param delegateAction Delegate action to be signed by the meta transaction sender
+ */
+export function encodeDelegateAction(delegateAction: DelegateAction) {
+    return new Uint8Array([
+        ...serialize(SCHEMA, new DelegateActionPrefix()),
+        ...serialize(SCHEMA, delegateAction),
+    ]);
+}
+
+/**
+ * Borsh-encode a signed delegate for validation and execution by a relayer
+ * @param signedDelegate Signed delegate to be executed in a meta transaction
+ */
+export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
+    return serialize(SCHEMA, signedDelegate);
+}
+
+export function encodeTransaction(transaction: Transaction | SignedTransaction) {
+    return serialize(SCHEMA, transaction);
+}
+
+/**
+ * Borsh-decode a Transaction instance from a buffer
+ * @param bytes Buffer data to be decoded
+ */
+export function decodeTransaction(bytes: Buffer) {
+    return deserialize(SCHEMA, Transaction, bytes);
+}
+
+/**
+ * Borsh-decode a SignedTransaction instance from a buffer
+ * @param bytes Buffer data to be decoded
+ */
+export function decodeSignedTransaction(bytes: Buffer) {
+    return deserialize(SCHEMA, SignedTransaction, bytes);
 }
 
 export class Transaction extends Assignable {
@@ -32,12 +72,12 @@ export class Transaction extends Assignable {
     actions: Action[];
     blockHash: Uint8Array;
 
-    encode(): Uint8Array {
-        return serialize(SCHEMA, this);
+    encode() {
+        return encodeTransaction(this);
     }
 
-    static decode(bytes: Buffer): Transaction {
-        return deserialize(SCHEMA, Transaction, bytes);
+    static decode(bytes: Buffer) {
+        return decodeTransaction(bytes);
     }
 }
 
@@ -45,12 +85,12 @@ export class SignedTransaction extends Assignable {
     transaction: Transaction;
     signature: Signature;
 
-    encode(): Uint8Array {
-        return serialize(SCHEMA, this);
+    encode() {
+        return encodeTransaction(this);
     }
 
-    static decode(bytes: Buffer): SignedTransaction {
-        return deserialize(SCHEMA, SignedTransaction, bytes);
+    static decode(bytes: Buffer) {
+        return decodeSignedTransaction(bytes);
     }
 }
 
@@ -100,6 +140,7 @@ export const SCHEMA = new Map<Class, any>([
         ['addKey', AddKey],
         ['deleteKey', DeleteKey],
         ['deleteAccount', DeleteAccount],
+        ['signedDelegate', SignedDelegate],
     ]}],
     [CreateAccount, { kind: 'struct', fields: [] }],
     [DeployContract, { kind: 'struct', fields: [
@@ -127,5 +168,20 @@ export const SCHEMA = new Map<Class, any>([
     ]}],
     [DeleteAccount, { kind: 'struct', fields: [
         ['beneficiaryId', 'string']
+    ]}],
+    [DelegateAction, { kind: 'struct', fields: [
+        ['senderId', 'string'],
+        ['receiverId', 'string'],
+        ['actions', [Action]],
+        ['nonce', 'u64'],
+        ['maxBlockHeight', 'u64'],
+        ['publicKey', PublicKey],
+    ]}],
+    [DelegateActionPrefix, { kind: 'struct', fields: [
+        ['prefix', 'u32'],
+    ]}],
+    [SignedDelegate, { kind: 'struct', fields: [
+        ['delegateAction', DelegateAction],
+        ['signature', Signature],
     ]}],
 ]);

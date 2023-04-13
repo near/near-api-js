@@ -13,9 +13,12 @@ import {
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
+    SignedDelegate,
     Stake,
     Transfer,
 } from './actions';
+import { DelegateAction } from './delegate';
+import { Signature } from './signature';
 
 function fullAccessKey(): AccessKey {
     return new AccessKey({
@@ -92,6 +95,10 @@ function deleteAccount(beneficiaryId: string): Action {
     return new Action({ deleteAccount: new DeleteAccount({ beneficiaryId }) });
 }
 
+function signedDelegate({ delegateAction, signature }: { delegateAction: DelegateAction, signature: Signature }): Action {
+    return new Action({ signedDelegate: new SignedDelegate({ delegateAction, signature }) });
+}
+
 export const actionCreators = {
     addKey,
     createAccount,
@@ -101,6 +108,7 @@ export const actionCreators = {
     fullAccessKey,
     functionCall,
     functionCallAccessKey,
+    signedDelegate,
     stake,
     transfer,
 };
