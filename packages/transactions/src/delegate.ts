@@ -28,7 +28,7 @@ export class DelegateAction extends Assignable {
     receiverId: string;
     actions: Array<NonDelegateAction>;
     nonce: BN;
-    maxBlockHeight: number;
+    maxBlockHeight: BN;
     publicKey: PublicKey;
 }
 
