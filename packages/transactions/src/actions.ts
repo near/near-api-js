@@ -2,8 +2,8 @@ import { PublicKey } from '@near-js/crypto';
 import { Assignable } from '@near-js/types';
 import BN from 'bn.js';
 
-import { DelegateAction } from './delegate.js';
-import { Signature } from './signature.js';
+import { DelegateAction } from './delegate';
+import { Signature } from './signature';
 
 abstract class Enum {
     enum: string;

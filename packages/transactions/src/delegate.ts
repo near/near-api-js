@@ -11,7 +11,7 @@ import {
     AddKey,
     DeleteKey,
     DeleteAccount,
-} from './actions.js';
+} from './actions';
 
 export type NonDelegateAction =
     AddKey

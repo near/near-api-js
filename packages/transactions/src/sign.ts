@@ -4,7 +4,7 @@ import BN from 'bn.js';
 
 import { Action, SignedDelegate } from './actions';
 import { createTransaction } from './create_transaction';
-import type { DelegateAction } from './delegate.js';
+import type { DelegateAction } from './delegate';
 import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema';
 import { Signature } from './signature';
 
