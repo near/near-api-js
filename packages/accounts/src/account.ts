@@ -4,7 +4,7 @@ import {
     actionCreators,
     Action,
     buildDelegateAction,
-    NonDelegateAction,
+    IAction,
     signDelegateAction,
     signTransaction,
     SignedDelegate,
@@ -149,7 +149,7 @@ interface ActiveDelegatedStakeBalance {
 }
 
 interface SignedDelegateOptions {
-    actions: NonDelegateAction[];
+    actions: IAction[];
     blockHeightTtl: number;
     receiverId: string;
 }
