@@ -12,6 +12,7 @@ const { signedDelegate, transfer } = actionCreators;
 async function sendNearViaMetaTransaction({ amount, receiverId, senderAccount, signingAccount }) {
     const delegate = await senderAccount.signedDelegate({
         actions: [transfer(amount)],
+        blockHeightTtl: 60,
         receiverId,
     });
 
