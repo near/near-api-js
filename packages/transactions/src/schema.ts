@@ -140,7 +140,7 @@ export const SCHEMA = new Map<Class, any>([
         ['addKey', AddKey],
         ['deleteKey', DeleteKey],
         ['deleteAccount', DeleteAccount],
-        ['signedDelegate', DeleteAccount],
+        ['signedDelegate', SignedDelegate],
     ]}],
     [CreateAccount, { kind: 'struct', fields: [] }],
     [DeployContract, { kind: 'struct', fields: [
