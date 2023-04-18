@@ -2,7 +2,6 @@ import { TypedError } from '@near-js/types';
 import createError from 'http-errors';
 
 import { exponentialBackoff } from './exponential-backoff';
-import nodeFetch from './fetch';
 
 const START_WAIT_TIME_MS = 1000;
 const BACKOFF_MULTIPLIER = 1.5;
@@ -29,7 +28,11 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
 
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {
-            const response = await (global.fetch || nodeFetch)(connectionInfo.url, {
+            if (!global.fetch) {
+                global.fetch = (await import('./fetch')).default;
+            }
+
+            const response = await global.fetch(connectionInfo.url, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
                 headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
