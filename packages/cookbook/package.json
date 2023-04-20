@@ -1,20 +1,33 @@
 {
-  "name": "@near-js/cookbook",
-  "private": true,
-  "version": "1.0.7",
-  "description": "",
-  "main": "main.js",
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@near-js/accounts": "workspace:*",
-    "@near-js/keystores-node": "workspace:*",
-    "@near-js/providers": "workspace:*",
-    "@near-js/signers": "workspace:*",
-    "@near-js/transactions": "workspace:*",
-    "bn.js": "5.2.1",
-    "chalk": "^4.1.1",
-    "homedir": "^0.6.0",
-    "near-api-js": "workspace:*"
-  }
+    "name": "@near-js/cookbook",
+    "private": true,
+    "version": "1.0.7",
+    "description": "",
+    "main": "main.js",
+    "author": "",
+    "license": "ISC",
+    "scripts": {
+      "lint": "eslint --ext .js .",
+      "lint:fix": "pnpm lint --fix",
+      "test": "if ! lsof -Pi :8332 -sTCP:LISTEN -t >/dev/null; then echo 'no processes listening on local RPC endpoint, aborting tests' && exit 1; fi && jest test"
+    },
+    "dependencies": {
+      "@near-js/accounts": "workspace:*",
+      "@near-js/crypto": "workspace:*",
+      "@near-js/keystores": "workspace:*",
+      "@near-js/keystores-browser": "workspace:*",
+      "@near-js/keystores-node": "workspace:*",
+      "@near-js/providers": "workspace:*",
+      "@near-js/signers": "workspace:*",
+      "@near-js/transactions": "workspace:*",
+      "@near-js/types": "workspace:*",
+      "@near-js/utils": "workspace:*",
+      "@near-js/wallet-account": "workspace:*",
+      "bn.js": "5.2.1",
+      "chalk": "^4.1.1",
+      "homedir": "^0.6.0"
+    },
+    "devDependencies": {
+      "jest": "^26.0.1"
+    }
 }
