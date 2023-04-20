@@ -1,5 +1,11 @@
 # @near-js/providers
 
+## 0.0.4
+
+### Patch Changes
+
+- [#1111](https://github.com/near/near-api-js/pull/1111) [`d6d53ab1`](https://github.com/near/near-api-js/commit/d6d53ab1b90e3d4041080dd4a6e22d24900c1ca5) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Only fall back on `node-fetch` when global.fetch is `undefined`
+
 ## 0.0.3
 
 ### Patch Changes

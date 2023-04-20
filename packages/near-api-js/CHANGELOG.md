@@ -1,5 +1,14 @@
 # near-api-js
 
+## 2.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`d6d53ab1`](https://github.com/near/near-api-js/commit/d6d53ab1b90e3d4041080dd4a6e22d24900c1ca5)]:
+  - @near-js/providers@0.0.4
+  - @near-js/accounts@0.1.1
+  - @near-js/wallet-account@0.0.4
+
 ## 2.1.0
 
 ### Minor Changes
