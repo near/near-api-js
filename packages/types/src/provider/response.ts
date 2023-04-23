@@ -3,14 +3,14 @@
  * @module
  */
 
-import BN from "bn.js";
+import BN from 'bn.js';
 
-import { BlockHash, BlockHeight, MerklePath } from "./protocol";
+import { BlockHash, BlockHeight, MerklePath } from './protocol';
 
 export enum ExecutionStatusBasic {
-    Unknown = "Unknown",
-    Pending = "Pending",
-    Failure = "Failure",
+    Unknown = 'Unknown',
+    Pending = 'Pending',
+    Failure = 'Failure',
 }
 
 export interface ExecutionStatus {
@@ -20,9 +20,9 @@ export interface ExecutionStatus {
 }
 
 export enum FinalExecutionStatusBasic {
-    NotStarted = "NotStarted",
-    Started = "Started",
-    Failure = "Failure",
+    NotStarted = 'NotStarted',
+    Started = 'Started',
+    Failure = 'Failure',
 }
 
 export interface ExecutionError {
@@ -107,11 +107,11 @@ export interface FunctionCallPermissionView {
 
 export interface AccessKeyViewRaw extends QueryResponseKind {
     nonce: number;
-    permission: "FullAccess" | FunctionCallPermissionView;
+    permission: 'FullAccess' | FunctionCallPermissionView;
 }
 export interface AccessKeyView extends QueryResponseKind {
     nonce: BN;
-    permission: "FullAccess" | FunctionCallPermissionView;
+    permission: 'FullAccess' | FunctionCallPermissionView;
 }
 
 export interface AccessKeyInfoView {
