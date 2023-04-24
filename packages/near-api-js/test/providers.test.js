@@ -1,7 +1,8 @@
 const nearApi = require('../src/index');
-const testUtils  = require('./test-utils');
+const testUtils = require('./test-utils');
 const BN = require('bn.js');
 const base58 = require('bs58');
+const { lightClient } = require('../src/index');
 
 jest.setTimeout(30000);
 
@@ -61,7 +62,7 @@ test('json rpc fetch validators info', withProvider(async (provider) => {
     expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
 }));
 
-test('txStatus with string hash and buffer hash', withProvider(async(provider) => {
+test('txStatus with string hash and buffer hash', withProvider(async (provider) => {
     const near = await testUtils.setUpTestConnection();
     const sender = await testUtils.createAccount(near);
     const receiver = await testUtils.createAccount(near);
@@ -73,7 +74,7 @@ test('txStatus with string hash and buffer hash', withProvider(async(provider) =
     expect(responseWithUint8Array).toMatchObject(outcome);
 }));
 
-test('txStatusReciept with string hash and buffer hash', withProvider(async(provider) => {
+test('txStatusReciept with string hash and buffer hash', withProvider(async (provider) => {
     const near = await testUtils.setUpTestConnection();
     const sender = await testUtils.createAccount(near);
     const receiver = await testUtils.createAccount(near);
@@ -86,7 +87,7 @@ test('txStatusReciept with string hash and buffer hash', withProvider(async(prov
     expect(responseWithUint8Array).toMatchObject(reciepts);
 }));
 
-test('json rpc query with block_id', withProvider(async(provider) => {
+test('json rpc query with block_id', withProvider(async (provider) => {
     const stat = await provider.status();
     let block_id = stat.sync_info.latest_block_height - 1;
 
@@ -121,7 +122,7 @@ test('json rpc query view_state', withProvider(async (provider) => {
 
     await contract.setValue({ args: { value: 'hello' } });
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'view_state',
             finality: 'final',
@@ -162,7 +163,7 @@ test('json rpc query view_code', withProvider(async (provider) => {
     const account = await testUtils.createAccount(near);
     const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'view_code',
             finality: 'final',
@@ -185,7 +186,7 @@ test('json rpc query call_function', withProvider(async (provider) => {
 
     await contract.setValue({ args: { value: 'hello' } });
 
-    return testUtils.waitFor(async() => {
+    return testUtils.waitFor(async () => {
         const response = await provider.query({
             request_type: 'call_function',
             finality: 'final',
@@ -210,7 +211,7 @@ test('json rpc query call_function', withProvider(async (provider) => {
     });
 }));
 
-test('final tx result', async() => {
+test('final tx result', async () => {
     const result = {
         status: { SuccessValue: 'e30=' },
         transaction: { id: '11111', outcome: { status: { SuccessReceiptId: '11112' }, logs: [], receipt_ids: ['11112'], gas_burnt: 1 } },
@@ -222,7 +223,7 @@ test('final tx result', async() => {
     expect(nearApi.providers.getTransactionLastResult(result)).toEqual({});
 });
 
-test('final tx result with null', async() => {
+test('final tx result with null', async () => {
     const result = {
         status: 'Failure',
         transaction: { id: '11111', outcome: { status: { SuccessReceiptId: '11112' }, logs: [], receipt_ids: ['11112'], gas_burnt: 1 } },
@@ -234,7 +235,7 @@ test('final tx result with null', async() => {
     expect(nearApi.providers.getTransactionLastResult(result)).toEqual(null);
 });
 
-test('json rpc light client proof', async() => {
+test('json rpc light client proof', async () => {
     const near = await testUtils.setUpTestConnection();
     const workingAccount = await testUtils.createAccount(near);
     const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, new BN(10000));
@@ -260,6 +261,7 @@ test('json rpc light client proof', async() => {
 
     const block = await provider.block({ blockId: finalizedStatus.sync_info.latest_block_hash });
     const lightClientHead = block.header.last_final_block;
+    const finalBlock = await provider.block({ blockId: lightClientHead });
     let lightClientRequest = {
         type: 'transaction',
         light_client_head: lightClientHead,
@@ -275,6 +277,9 @@ test('json rpc light client proof', async() => {
     expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
     expect(lightClientProof.outcome_root_proof).toEqual([]);
     expect(lightClientProof.block_proof.length).toBeGreaterThan(0);
+
+    // Validate the proof against the finalized block
+    lightClient.validateExecutionProof(lightClientProof, base58.decode(finalBlock.header.block_merkle_root));
 
     // pass nonexistent hash for light client head will fail
     lightClientRequest = {
@@ -295,6 +300,38 @@ test('json rpc light client proof', async() => {
 
     await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
 });
+
+test('json rpc get next light client block with validation', withProvider(async (provider) => {
+    const stat = await provider.status();
+
+    // Get block in at least the last epoch (epoch duration 43,200 blocks on mainnet and testnet)
+    const height = stat.sync_info.latest_block_height;
+    const protocolConfig = await provider.experimental_protocolConfig({ finality: 'final' });
+
+    // NOTE: This will underflow if the network used has not produced an epoch yet. If a new network
+    // config is required, can retrieve a block a few height behind (1+buffer for indexing). If run
+    // on a fresh network, would need to wait for blocks to be produced and indexed.
+    const firstBlockHeight = height - protocolConfig.epoch_length * 2;
+    const firstBlock = await provider.block({ blockId: firstBlockHeight });
+    const prevBlock = await provider.nextLightClientBlock({ last_block_hash: firstBlock.header.hash });
+    const nextBlock = await provider.nextLightClientBlock({ last_block_hash: base58.encode(lightClient.computeBlockHash(prevBlock)) });
+    expect('inner_lite' in nextBlock).toBeTruthy();
+    // Verify that requesting from previous epoch includes the set of new block producers.
+    expect('next_bps' in nextBlock).toBeTruthy();
+
+    // Greater than or equal check because a block could have been produced during the test.
+    // There is a buffer of 10 given to the height, because this seems to be lagging behind the
+    // latest finalized block by a few seconds. This delay might just be due to slow or delayed
+    // indexing in a node's db. If this fails in the future, we can increase the buffer.
+    expect(nextBlock.inner_lite.height).toBeGreaterThanOrEqual(height - 10);
+    expect(nextBlock.inner_lite.height).toBeGreaterThan(prevBlock.inner_lite.height);
+    expect('prev_block_hash' in nextBlock).toBeTruthy();
+    expect('next_block_inner_hash' in nextBlock).toBeTruthy();
+    expect('inner_rest_hash' in nextBlock).toBeTruthy();
+    expect('approvals_after_next' in nextBlock).toBeTruthy();
+
+    lightClient.validateLightClientBlock(prevBlock, prevBlock.next_bps, nextBlock);
+}));
 
 test('json rpc fetch protocol config', withProvider(async (provider) => {
     const status = await provider.status();
