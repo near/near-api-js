@@ -223,6 +223,12 @@ function combineHash(h1: Uint8Array, h2: Uint8Array): Buffer {
     return hash.digest();
 }
 
+/**
+ * Computes the block hash given a `LightClientBlockLiteView`. Unlike the regular block header,
+ * the hash has to be calculated since it is not included in the response.
+ *
+ * @param block The block to compute the hash for.
+ */
 export function computeBlockHash(block: LightClientBlockLiteView): Buffer {
     const header = block.inner_lite;
     const borshHeader = new BorshBlockHeaderInnerLite({
@@ -245,6 +251,14 @@ export function computeBlockHash(block: LightClientBlockLiteView): Buffer {
     return finalHash;
 }
 
+/**
+ * Validates a light client block response from the RPC against the last known block and block
+ * producer set.
+ *
+ * @param lastKnownBlock The last light client block retrieved. This must be the block at the epoch before newBlock.
+ * @param currentBlockProducers The block producer set for the epoch of the last known block.
+ * @param newBlock The new block to validate.
+ */
 export function validateLightClientBlock(
     lastKnownBlock: LightClientBlockLiteView,
     currentBlockProducers: ValidatorStakeView[],
@@ -481,31 +495,38 @@ function computeOutcomeRoot(
     return computeRoot(shardRootHash, outcomeRootProof);
 }
 
+/**
+ * Validates the execution proof returned from the RPC. This will validate that the proof itself,
+ * and ensure that the block merkle root matches the one passed in.
+ *
+ * @param proof The proof given by the RPC.
+ * @param blockMerkleRoot The block merkle root for the block that was used to generate the proof.
+ */
 export function validateExecutionProof(
     proof: LightClientProof,
-    merkleRoot: Uint8Array
+    blockMerkleRoot: Uint8Array
 ) {
     // Execution outcome root verification
-    const blockOutcomeRoot = computeOutcomeRoot(
+    const computedOutcomeRoot = computeOutcomeRoot(
         proof.outcome_proof,
         proof.outcome_root_proof
     );
     const proofRoot = proof.block_header_lite.inner_lite.outcome_root;
-    if (!blockOutcomeRoot.equals(bs58.decode(proofRoot))) {
+    if (!computedOutcomeRoot.equals(bs58.decode(proofRoot))) {
         throw new Error(
             `Block outcome root (${bs58.encode(
-                blockOutcomeRoot
+                computedOutcomeRoot
             )}) doesn't match proof (${proofRoot})}`
         );
     }
 
     // Block merkle root verification
-    const blockMerkleRoot = computeMerkleRoot(proof);
-    if (!blockMerkleRoot.equals(merkleRoot)) {
+    const computedBlockRoot = computeMerkleRoot(proof);
+    if (!computedBlockRoot.equals(blockMerkleRoot)) {
         throw new Error(
             `Block merkle root (${bs58.encode(
-                blockMerkleRoot
-            )}) doesn't match proof (${bs58.encode(merkleRoot)})}`
+                computedBlockRoot
+            )}) doesn't match proof (${bs58.encode(blockMerkleRoot)})}`
         );
     }
 }
