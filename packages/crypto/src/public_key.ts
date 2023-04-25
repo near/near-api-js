@@ -48,7 +48,7 @@ export class PublicKey extends Assignable {
         if(decodedPublicKey.length !== nacl.box.publicKeyLength) {
             throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${nacl.box.publicKeyLength}`);
         }
-        return new PublicKey({ keyType, data: decodedPublicKey })
+        return new PublicKey({ keyType, data: decodedPublicKey });
     }
 
     toString(): string {
