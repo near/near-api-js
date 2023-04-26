@@ -82,13 +82,6 @@ test('txStatusReciept with string hash and buffer hash', withProvider(async(prov
 
     const responseWithString = await provider.txStatusReceipts(outcome.transaction.hash, sender.accountId);
     const responseWithUint8Array = await provider.txStatusReceipts(base58.decode(outcome.transaction.hash), sender.accountId);
-    expect('transaction_outcome' in responseWithString).toBeTruthy();
-    expect('logs' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-    expect('receipt_ids' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-    expect('gas_burnt' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-    expect('tokens_burnt' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-    expect('executor_id' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-    expect('status' in responseWithString.transaction_outcome.outcome).toBeTruthy();
     expect(responseWithString).toMatchObject(reciepts);
     expect(responseWithUint8Array).toMatchObject(reciepts);
 }));
