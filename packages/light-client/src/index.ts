@@ -269,6 +269,12 @@ export function computeBlockHash(block: LightClientBlockLiteView): Buffer {
     return finalHash;
 }
 
+export interface ValidateLightClientBlockParams {
+    lastKnownBlock: LightClientBlockLiteView;
+    currentBlockProducers: ValidatorStakeView[];
+    newBlock: NextLightClientBlockResponse;
+}
+
 /**
  * Validates a light client block response from the RPC against the last known block and block
  * producer set.
@@ -277,11 +283,11 @@ export function computeBlockHash(block: LightClientBlockLiteView): Buffer {
  * @param currentBlockProducers The block producer set for the epoch of the last known block.
  * @param newBlock The new block to validate.
  */
-export function validateLightClientBlock(
-    lastKnownBlock: LightClientBlockLiteView,
-    currentBlockProducers: ValidatorStakeView[],
-    newBlock: NextLightClientBlockResponse
-) {
+export function validateLightClientBlock({
+    lastKnownBlock,
+    currentBlockProducers,
+    newBlock,
+}: ValidateLightClientBlockParams) {
     // Numbers for each step references the spec:
     // https://github.com/near/NEPs/blob/c7d72138117ed0ab86629a27d1f84e9cce80848f/specs/ChainSpec/LightClient.md
     const newBlockHash = computeBlockHash(lastKnownBlock);
@@ -510,6 +516,11 @@ function computeOutcomeRoot(
     return computeRoot(shardRootHash, outcomeRootProof);
 }
 
+export interface ValidateExecutionProofParams {
+    proof: LightClientProof;
+    blockMerkleRoot: Uint8Array;
+}
+
 /**
  * Validates the execution proof returned from the RPC. This will validate that the proof itself,
  * and ensure that the block merkle root matches the one passed in.
@@ -517,10 +528,10 @@ function computeOutcomeRoot(
  * @param proof The proof given by the RPC.
  * @param blockMerkleRoot The block merkle root for the block that was used to generate the proof.
  */
-export function validateExecutionProof(
-    proof: LightClientProof,
-    blockMerkleRoot: Uint8Array
-) {
+export function validateExecutionProof({
+    proof,
+    blockMerkleRoot,
+}: ValidateExecutionProofParams) {
     // Execution outcome root verification
     const computedOutcomeRoot = computeOutcomeRoot(
         proof.outcome_proof,
