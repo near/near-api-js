@@ -1,5 +1,4 @@
 ---
-"near-api-js": patch
 "@near-js/types": patch
 ---
 
