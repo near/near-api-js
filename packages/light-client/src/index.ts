@@ -290,14 +290,15 @@ export function validateLightClientBlock(
         newBlockHash
     );
 
-    // (1)
+    // (1) Verify that the block height is greater than the last known block.
     if (newBlock.inner_lite.height <= lastKnownBlock.inner_lite.height) {
         throw new Error(
             "New block must be at least the height of the last known block"
         );
     }
 
-    // (2)
+    // (2) Verify that the new block is in the same epoch or in the next epoch known to the last
+    // known block.
     if (
         newBlock.inner_lite.epoch_id !== lastKnownBlock.inner_lite.epoch_id &&
         newBlock.inner_lite.epoch_id !== lastKnownBlock.inner_lite.next_epoch_id
@@ -315,6 +316,8 @@ export function validateLightClientBlock(
     }
 
     // (4) and (5)
+    // (4) `approvals_after_next` contains valid signatures on the block producer approval messages.
+    // (5) The signatures present represent more than 2/3 of the total stake.
     const totalStake = new BN(0);
     const approvedStake = new BN(0);
 
@@ -348,17 +351,19 @@ export function validateLightClientBlock(
         publicKey.verify(approvalMessage, signature);
     }
 
-    // (5)
+    // (5) Calculates the 2/3 threshold and checks that the approved stake accumulated above
+    // exceeds it.
     const threshold = totalStake.mul(new BN(2)).div(new BN(3));
     if (approvedStake <= threshold) {
         throw new Error("Approved stake does not exceed the 2/3 threshold");
     }
 
-    // (6)
+    // (6) Verify that if the new block is in the next epoch, the hash of the next block producers
+    // equals the `next_bp_hash` provided in that block.
     if (
         newBlock.inner_lite.epoch_id === lastKnownBlock.inner_lite.next_epoch_id
     ) {
-        // (3)
+        // (3) If the block is in a new epoch, then `next_bps` must be present.
         if (!newBlock.next_bps) {
             throw new Error(
                 "New block must include next block producers if a new epoch starts"
