@@ -1,5 +1,5 @@
 const { JsonRpcProvider } = require('@near-js/providers');
-const { validateLightClientBlock, computeBlockHash } = require("../src/index");
+const { validateLightClientBlock, computeBlockHash } = require('../src/index');
 const base58 = require('bs58');
 
 jest.setTimeout(20000);

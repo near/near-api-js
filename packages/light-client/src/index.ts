@@ -1,5 +1,5 @@
-import bs58 from "bs58";
-import { sha256 } from "js-sha256";
+import bs58 from 'bs58';
+import { sha256 } from 'js-sha256';
 import {
     BlockHeaderInnerLiteView,
     ExecutionOutcomeWithIdView,
@@ -10,11 +10,11 @@ import {
     MerklePath,
     NextLightClientBlockResponse,
     ValidatorStakeView,
-} from "@near-js/types";
-import { Assignable } from "@near-js/types";
-import { PublicKey } from "@near-js/crypto";
-import BN from "bn.js";
-import { serialize } from "borsh";
+} from '@near-js/types';
+import { Assignable } from '@near-js/types';
+import { PublicKey } from '@near-js/crypto';
+import BN from 'bn.js';
+import { serialize } from 'borsh';
 
 // TODO this abstract class exists in NAJ and seems unused. It is also copied in the transactions
 // TODO ..package. This should probably exist in utils and shared.
@@ -23,7 +23,7 @@ abstract class Enum {
 
     constructor(properties: any) {
         if (Object.keys(properties).length !== 1) {
-            throw new Error("Enum can only take single value");
+            throw new Error('Enum can only take single value');
         }
         Object.keys(properties).map((key: string) => {
             (this as any)[key] = properties[key];
@@ -34,7 +34,7 @@ abstract class Enum {
 
 // TODO: refactor this into separate files
 
-const ED_PREFIX = "ed25519:";
+const ED_PREFIX = 'ed25519:';
 
 class BorshBlockHeaderInnerLite extends Assignable {
     height: BN;
@@ -96,100 +96,100 @@ const SCHEMA = new Map<Class, any>([
     [
         BorshBlockHeaderInnerLite,
         {
-            kind: "struct",
+            kind: 'struct',
             fields: [
-                ["height", "u64"],
-                ["epoch_id", [32]],
-                ["next_epoch_id", [32]],
-                ["prev_state_root", [32]],
-                ["outcome_root", [32]],
-                ["timestamp", "u64"],
-                ["next_bp_hash", [32]],
-                ["block_merkle_root", [32]],
+                ['height', 'u64'],
+                ['epoch_id', [32]],
+                ['next_epoch_id', [32]],
+                ['prev_state_root', [32]],
+                ['outcome_root', [32]],
+                ['timestamp', 'u64'],
+                ['next_bp_hash', [32]],
+                ['block_merkle_root', [32]],
             ],
         },
     ],
     [
         BorshApprovalInner,
         {
-            kind: "enum",
-            field: "enum",
+            kind: 'enum',
+            field: 'enum',
             values: [
-                ["endorsement", [32]],
-                ["skip", "u64"],
+                ['endorsement', [32]],
+                ['skip', 'u64'],
             ],
         },
     ],
     [
         BorshValidatorStakeViewV1,
         {
-            kind: "struct",
+            kind: 'struct',
             fields: [
-                ["account_id", "string"],
-                ["public_key", PublicKey],
-                ["stake", "u128"],
+                ['account_id', 'string'],
+                ['public_key', PublicKey],
+                ['stake', 'u128'],
             ],
         },
     ],
     [
         BorshValidatorStakeView,
         {
-            kind: "enum",
-            field: "enum",
-            values: [["v1", BorshValidatorStakeViewV1]],
+            kind: 'enum',
+            field: 'enum',
+            values: [['v1', BorshValidatorStakeViewV1]],
         },
     ],
     [
         BorshValidatorStakeViewWrapper,
         {
-            kind: "struct",
-            fields: [["bps", [BorshValidatorStakeView]]],
+            kind: 'struct',
+            fields: [['bps', [BorshValidatorStakeView]]],
         },
     ],
     [
         BorshEmpty,
         {
-            kind: "struct",
+            kind: 'struct',
             fields: [],
         },
     ],
     [
         BorshCryptoHash,
         {
-            kind: "struct",
-            fields: [["hash", [32]]],
+            kind: 'struct',
+            fields: [['hash', [32]]],
         },
     ],
     [
         BorshCryptoHashes,
         {
-            kind: "struct",
-            fields: [["hashes", [[32]]]],
+            kind: 'struct',
+            fields: [['hashes', [[32]]]],
         },
     ],
     [
         BorshPartialExecutionStatus,
         {
-            kind: "enum",
-            field: "enum",
+            kind: 'enum',
+            field: 'enum',
             values: [
-                ["unknown", BorshEmpty],
-                ["failure", BorshEmpty],
-                ["successValue", ["u8"]],
-                ["successReceiptId", [32]],
+                ['unknown', BorshEmpty],
+                ['failure', BorshEmpty],
+                ['successValue', ['u8']],
+                ['successReceiptId', [32]],
             ],
         },
     ],
     [
         BorshPartialExecutionOutcome,
         {
-            kind: "struct",
+            kind: 'struct',
             fields: [
-                ["receiptIds", [[32]]],
-                ["gasBurnt", "u64"],
-                ["tokensBurnt", "u128"],
-                ["executorId", "string"],
-                ["status", BorshPartialExecutionStatus],
+                ['receiptIds', [[32]]],
+                ['gasBurnt', 'u64'],
+                ['tokensBurnt', 'u128'],
+                ['executorId', 'string'],
+                ['status', BorshPartialExecutionStatus],
             ],
         },
     ],
@@ -197,10 +197,10 @@ const SCHEMA = new Map<Class, any>([
     [
         PublicKey,
         {
-            kind: "struct",
+            kind: 'struct',
             fields: [
-                ["keyType", "u8"],
-                ["data", [32]],
+                ['keyType', 'u8'],
+                ['data', [32]],
             ],
         },
     ],
@@ -214,7 +214,7 @@ function hashBlockProducers(bps: ValidatorStakeView[]): Buffer {
             );
             if (version !== 1) {
                 throw new Error(
-                    "Only version 1 of the validator stake struct is supported"
+                    'Only version 1 of the validator stake struct is supported'
                 );
             }
         }
@@ -299,7 +299,7 @@ export function validateLightClientBlock({
     // (1) Verify that the block height is greater than the last known block.
     if (newBlock.inner_lite.height <= lastKnownBlock.inner_lite.height) {
         throw new Error(
-            "New block must be at least the height of the last known block"
+            'New block must be at least the height of the last known block'
         );
     }
 
@@ -310,14 +310,14 @@ export function validateLightClientBlock({
         newBlock.inner_lite.epoch_id !== lastKnownBlock.inner_lite.next_epoch_id
     ) {
         throw new Error(
-            "New block must either be in the same epoch or the next epoch from the last known block"
+            'New block must either be in the same epoch or the next epoch from the last known block'
         );
     }
 
     const blockProducers: ValidatorStakeView[] = currentBlockProducers;
     if (newBlock.approvals_after_next.length < blockProducers.length) {
         throw new Error(
-            "Number of approvals for next epoch must be at least the number of current block producers"
+            'Number of approvals for next epoch must be at least the number of current block producers'
         );
     }
 
@@ -348,7 +348,7 @@ export function validateLightClientBlock({
         );
 
         const approvalHeight: BN = new BN(newBlock.inner_lite.height + 2);
-        const approvalHeightLe = approvalHeight.toArrayLike(Buffer, "le", 8);
+        const approvalHeightLe = approvalHeight.toArrayLike(Buffer, 'le', 8);
         const approvalMessage = new Uint8Array([
             ...approvalEndorsement,
             ...approvalHeightLe,
@@ -361,7 +361,7 @@ export function validateLightClientBlock({
     // exceeds it.
     const threshold = totalStake.mul(new BN(2)).div(new BN(3));
     if (approvedStake <= threshold) {
-        throw new Error("Approved stake does not exceed the 2/3 threshold");
+        throw new Error('Approved stake does not exceed the 2/3 threshold');
     }
 
     // (6) Verify that if the new block is in the next epoch, the hash of the next block producers
@@ -372,21 +372,21 @@ export function validateLightClientBlock({
         // (3) If the block is in a new epoch, then `next_bps` must be present.
         if (!newBlock.next_bps) {
             throw new Error(
-                "New block must include next block producers if a new epoch starts"
+                'New block must include next block producers if a new epoch starts'
             );
         }
 
         const bpsHash = hashBlockProducers(newBlock.next_bps);
 
         if (!bpsHash.equals(bs58.decode(newBlock.inner_lite.next_bp_hash))) {
-            throw new Error("Next block producers hash doesn't match");
+            throw new Error('Next block producers hash doesn\'t match');
         }
     }
 }
 
 function blockHeaderInnerLiteHash(data: BlockHeaderInnerLiteView): Buffer {
     const hash = sha256.create();
-    hash.update(new BN(data.height).toArrayLike(Buffer, "le", 8));
+    hash.update(new BN(data.height).toArrayLike(Buffer, 'le', 8));
     hash.update(bs58.decode(data.epoch_id));
     hash.update(bs58.decode(data.next_epoch_id));
     hash.update(bs58.decode(data.prev_state_root));
@@ -394,7 +394,7 @@ function blockHeaderInnerLiteHash(data: BlockHeaderInnerLiteView): Buffer {
     hash.update(
         new BN(data.timestamp_nanosec || data.timestamp).toArrayLike(
             Buffer,
-            "le",
+            'le',
             8
         )
     );
@@ -405,7 +405,7 @@ function blockHeaderInnerLiteHash(data: BlockHeaderInnerLiteView): Buffer {
 
 function computeRoot(node: Buffer, proof: MerklePath): Buffer {
     proof.forEach((step) => {
-        if (step.direction == "Left") {
+        if (step.direction == 'Left') {
             node = combineHash(bs58.decode(step.hash), node);
         } else {
             node = combineHash(node, bs58.decode(step.hash));
@@ -443,14 +443,14 @@ function computeOutcomeRoot(
         status: ExecutionStatus | ExecutionStatusBasic
     ): BorshPartialExecutionStatus => {
         if (status === ExecutionStatusBasic.Pending) {
-            throw new Error("Pending status is not supported");
+            throw new Error('Pending status is not supported');
         } else if (status === ExecutionStatusBasic.Unknown) {
             return new BorshPartialExecutionStatus({
                 unknown: new BorshEmpty({}),
             });
         } else if (
             status === ExecutionStatusBasic.Failure ||
-            "Failure" in status
+            'Failure' in status
         ) {
             return new BorshPartialExecutionStatus({
                 failure: new BorshEmpty({}),
@@ -460,7 +460,7 @@ function computeOutcomeRoot(
             status.SuccessValue !== null
         ) {
             return new BorshPartialExecutionStatus({
-                successValue: Buffer.from(status.SuccessValue, "base64"),
+                successValue: Buffer.from(status.SuccessValue, 'base64'),
             });
         } else if (
             status.SuccessReceiptId !== undefined &&
