@@ -1,0 +1,58 @@
+{
+  "block_header_lite": {
+      "inner_lite": {
+          "block_merkle_root": "4a2WszqBELxvAofktYKEyBbWd5nmk6d7cVVQjpw6n1Du",
+          "epoch_id": "97xWJUp824sUqU1yDRafh4s8skEPbuQFH8vZCNjt42rW",
+          "height": 93700916,
+          "next_bp_hash": "Ac4KGViamyvyDpr24WbRicbBXsX5QJBDWCPNQFBwewT6",
+          "next_epoch_id": "FXat5DZJXpbvDxRgmVzNWvs2d912qEecDLpQE5MVnvvN",
+          "outcome_root": "CiNqbgEuJYYnzBakmRTe96QtWrLQHCYDtTXGSnuftwPD",
+          "prev_state_root": "Aok5ArFiAnvQXF3JAwpP8cR1osVjqZNqdgcVqpiNhiEB",
+          "timestamp": 1656592785165079445,
+          "timestamp_nanosec": "1656592785165079445"
+      },
+      "inner_rest_hash": "GA98ZMw2NpAx8nywwuYWgjRojhFXDeCGabcmAocFKsCp",
+      "prev_block_hash": "DVoSRXYr6Jv9txKV9dRrG9CtBSosTZbiNHq2FrWKuXcd"
+  },
+  "block_proof": [],
+  "outcome_proof": {
+      "block_hash": "9no8PifBxHHaQKeFuCKuXsqjp5UkkvGKBtMsyuJ5nwLp",
+      "id": "FKTMosGgNGiDZtk7mTj94oXjwDWqWSNbUBCMrntqzi6Q",
+      "outcome": {
+          "executor_id": "relay.aurora",
+          "gas_burnt": 2428249682298,
+          "logs": [],
+          "metadata": {
+              "gas_profile": null,
+              "version": 1
+          },
+          "receipt_ids": [
+              "HG6KENeJALh3csgmNFwMazonwo7c4hBddW3uQeuGJT3p"
+          ],
+          "status": {
+              "SuccessReceiptId": "HG6KENeJALh3csgmNFwMazonwo7c4hBddW3uQeuGJT3p"
+          },
+          "tokens_burnt": "242824968229800000000"
+      },
+      "proof": [
+          {
+              "direction": "Right",
+              "hash": "EtB1m4bgTioP5ErdbLSGR3xxtMTH5YEUtELE9YBGxwdp"
+          },
+          {
+              "direction": "Right",
+              "hash": "6MqdtZgQiMzFDgDiG7uP4kYsehJohSbSRfmkGV6oiuja"
+          }
+      ]
+  },
+  "outcome_root_proof": [
+      {
+          "direction": "Left",
+          "hash": "AEp6nNheh3aw11fU2fcydbPsLoNpcxHSERbk8XvaprSc"
+      },
+      {
+          "direction": "Left",
+          "hash": "9iXnsvK56hm1DDegqom4vJBRQ3iKmM6HF1b1FY57bVjV"
+      }
+  ]
+}

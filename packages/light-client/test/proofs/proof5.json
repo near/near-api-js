@@ -1,0 +1,69 @@
+{
+    "outcome_proof": {
+        "proof": [],
+        "block_hash": "836bGij79WLpoGTJfMS7wHyeNDzcrR6Fjcnv7k5s35Zs",
+        "id": "C7bVNak4z9JQgXrQLS5ZAotqyJHCfD8ntgHorMaLVCFN",
+        "outcome": {
+            "logs": [],
+            "receipt_ids": [
+                "Bt88L3Zw5HiKd21VQJHBtPMqNk62CEbomD6zzJRQrFrG"
+            ],
+            "gas_burnt": 4328442536275,
+            "tokens_burnt": "4328442536275000000000",
+            "executor_id": "nearfuntoken",
+            "status": {
+                "SuccessValue": "AQAAAAAAAAAAAAAAAAAAAOyL4aVjA2QpLlbQESno7oqVeNfY"
+            }
+        }
+    },
+    "outcome_root_proof": [],
+    "block_header_lite": {
+        "prev_block_hash": "3Ygc9DBL6L3eZkfqjC39yoqpLdtrFa73v1Pij8WaLMXP",
+        "inner_rest_hash": "CDu5ma6FyugzXNJFgZLvrqJ6QchmnEsuC9ybjx8uf4Ve",
+        "inner_lite": {
+            "height": 382,
+            "epoch_id": "JAHuDz5JnQ8AR2bsX8iYjRMR6GUh66qsa4ikUCkmJVKF",
+            "next_epoch_id": "3eBVUeAYLVNQCQGiQLX7m4VSdYr8L17m5ZtMoHLtsJTi",
+            "prev_state_root": "GctVMceieDngovPKdnGwza1pDjX3L6c4XB9Gg72QdtUr",
+            "outcome_root": "9gu8iYjW89gw9HC2Y3gh74mt8h1i6WXkxGyHyGRQnXgD",
+            "timestamp": 1595963616139902200,
+            "timestamp_nanosec": "1595963616139902322",
+            "next_bp_hash": "HV5FPYQ9sPbB6MrtKcpjyiTfpLRMRqH8YLL2VQ9FrGU4",
+            "block_merkle_root": "CxbeXAcVWyygiQzojvHER832pxrZ9KLcSZNF7rLnkN1T"
+        }
+    },
+    "block_proof": [
+        {
+            "hash": "3fzvjNT4ZHrMwXg5nweVoEsLrRfHwXcb7Q5bEKpsfEHo",
+            "direction": "Right"
+        },
+        {
+            "hash": "5vMJodboQKRgrtFb2pGaKDfHC5kAPTxKtnHoxVNm2oAk",
+            "direction": "Left"
+        },
+        {
+            "hash": "7xgpkyrDo61vUTzZz2jjF4HogGrUsaTG4fo26jUj3p83",
+            "direction": "Left"
+        },
+        {
+            "hash": "8nTpPqjbLKadmGszN4WffFscYAfEYPq796nprPNXUAjn",
+            "direction": "Left"
+        },
+        {
+            "hash": "G5XQf9jzSuwmHGqJfoapDjZBkeQ7mBH7vS8dGfusRQqG",
+            "direction": "Left"
+        },
+        {
+            "hash": "HdNY8yxMyZM2nxxV3XF5FbbiR6J5AoA2CxNbyYWEe4aG",
+            "direction": "Left"
+        },
+        {
+            "hash": "76idRjn59X54cnSKUxqUtRygeqzaxDsCE7frJ57avbT9",
+            "direction": "Left"
+        },
+        {
+            "hash": "ArxmcYkRzQaKEPGTFE4mySbzPu6qPQ7X5gtbNEiWtKb6",
+            "direction": "Left"
+        }
+    ]
+}
