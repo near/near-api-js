@@ -1,0 +1,19 @@
+{
+  "name": "@near-js/iframe-rpc",
+  "version": "0.0.1",
+  "description": "IFrame RPC client/server implementation",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json"
+  },
+  "keywords": [],
+  "author": "Pagoda",
+  "license": "ISC",
+  "dependencies": {
+    "events": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.1"
+  }
+}
