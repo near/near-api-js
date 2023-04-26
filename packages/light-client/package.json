@@ -1,0 +1,34 @@
+{
+    "name": "@near-js/light-client",
+    "version": "0.0.1",
+    "description": "TypeScript API for NEAR light client verification",
+    "main": "lib/index.js",
+    "scripts": {
+        "build": "pnpm compile",
+        "compile": "tsc -p tsconfig.json",
+        "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
+        "lint:fix": "eslint **/*.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bn.js": "5.2.1",
+        "@near-js/crypto": "workspace:*",
+        "@near-js/types": "workspace:*",
+        "@near-js/providers": "workspace:*",
+        "@near-js/utils": "workspace:*",
+        "bs58": "^4.0.0",
+        "borsh": "^0.7.0",
+        "js-sha256": "^0.9.0"
+    },
+    "devDependencies": {
+        "@types/node": "^18.11.18",
+        "jest": "^26.0.1",
+        "ts-jest": "^26.5.6",
+        "typescript": "^4.9.4"
+    },
+    "files": [
+        "lib"
+    ]
+}
