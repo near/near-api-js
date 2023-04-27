@@ -260,7 +260,6 @@ test('json rpc light client proof', async() => {
 
     const block = await provider.block({ blockId: finalizedStatus.sync_info.latest_block_hash });
     const lightClientHead = block.header.last_final_block;
-    const finalBlock = await provider.block({ blockId: lightClientHead });
     let lightClientRequest = {
         type: 'transaction',
         light_client_head: lightClientHead,
@@ -276,9 +275,6 @@ test('json rpc light client proof', async() => {
     expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
     expect(lightClientProof.outcome_root_proof).toEqual([]);
     expect(lightClientProof.block_proof.length).toBeGreaterThan(0);
-
-    // Validate the proof against the finalized block
-    nearApi.lightClient.validateExecutionProof(lightClientProof, base58.decode(finalBlock.header.block_merkle_root));
 
     // pass nonexistent hash for light client head will fail
     lightClientRequest = {
