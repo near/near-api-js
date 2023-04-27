@@ -16,9 +16,9 @@ import {
     BorshEmpty,
     BorshPartialExecutionOutcome,
     BorshPartialExecutionStatus,
-    combineHash,
     SCHEMA,
-} from './utils';
+} from './borsh';
+import { combineHash } from './utils';
 
 export interface ValidateExecutionProofParams {
     proof: LightClientProof;

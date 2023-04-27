@@ -1,12 +1,11 @@
+import { computeBlockHash, combineHash } from './utils';
 import {
-    computeBlockHash,
-    combineHash,
     SCHEMA,
     BorshApprovalInner,
     BorshValidatorStakeView,
     BorshValidatorStakeViewV1,
     BorshValidatorStakeViewWrapper,
-} from './utils';
+} from './borsh';
 import bs58 from 'bs58';
 import { sha256 } from 'js-sha256';
 import {
