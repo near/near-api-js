@@ -11,26 +11,10 @@ import {
     NextLightClientBlockResponse,
     ValidatorStakeView,
 } from '@near-js/types';
-import { Assignable } from '@near-js/types';
+import { Assignable, Enum } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
 import BN from 'bn.js';
 import { serialize } from 'borsh';
-
-// TODO this abstract class exists in NAJ and seems unused. It is also copied in the transactions
-// TODO ..package. This should probably exist in utils and shared.
-abstract class Enum {
-    enum: string;
-
-    constructor(properties: any) {
-        if (Object.keys(properties).length !== 1) {
-            throw new Error('Enum can only take single value');
-        }
-        Object.keys(properties).map((key: string) => {
-            (this as any)[key] = properties[key];
-            this.enum = key;
-        });
-    }
-}
 
 // TODO: refactor this into separate files
 

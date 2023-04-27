@@ -1,23 +1,9 @@
 import { PublicKey } from '@near-js/crypto';
-import { Assignable } from '@near-js/types';
+import { Assignable, Enum } from '@near-js/types';
 import BN from 'bn.js';
 
 import { DelegateAction } from './delegate';
 import { Signature } from './signature';
-
-abstract class Enum {
-    enum: string;
-
-    constructor(properties: any) {
-        if (Object.keys(properties).length !== 1) {
-            throw new Error('Enum can only take single value');
-        }
-        Object.keys(properties).map((key: string) => {
-            (this as any)[key] = properties[key];
-            this.enum = key;
-        });
-    }
-}
 
 export class FunctionCallPermission extends Assignable {
     allowance?: BN;
