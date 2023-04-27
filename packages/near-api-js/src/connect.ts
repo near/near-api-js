@@ -6,6 +6,7 @@
  * To sign transactions you can also pass:
  * 1. {@link ConnectConfig.keyStore}
  * 2. {@link ConnectConfig.keyPath}
+ * 3. {@link ConnectConfig.deps.keyStore} (deprecated, only for use in legacy applications)
  *
  * If all three are passed they are prioritize in that order.
  *
@@ -41,7 +42,7 @@ export interface ConnectConfig extends NearConfig {
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
     // Try to find extra key in `KeyPath` if provided.
-    if (config.keyPath && config.keyStore) {
+    if (config.keyPath && (config.keyStore ||  config.deps?.keyStore)) {
         try {
             const accountKeyFile = await readKeyFile(config.keyPath);
             if (accountKeyFile[0]) {
@@ -54,7 +55,7 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                 }
                 config.keyStore = new MergeKeyStore([
                     keyPathStore,
-                    config.keyStore
+                    config.keyStore || config.deps?.keyStore
                 ], { writeKeyStoreIndex: 1 });
                 if (!process.env['NEAR_NO_LOGS']) {
                     console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
