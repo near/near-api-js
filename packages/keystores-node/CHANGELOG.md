@@ -1,5 +1,13 @@
 # @near-js/keystores-node
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@0.0.4
+  - @near-js/keystores@0.0.4
+
 ## 0.0.3
 
 ### Patch Changes
