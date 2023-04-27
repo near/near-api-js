@@ -154,9 +154,8 @@ function computeOutcomeRoot(
         new BorshPartialExecutionOutcome({
             receiptIds: receiptIds,
             gasBurnt: new BN(outcomeWithId.outcome.gas_burnt),
-            // TODO update with types once https://github.com/near/near-api-js/pull/1113 comes in
-            tokensBurnt: new BN((outcomeWithId.outcome as any).tokens_burnt),
-            executorId: (outcomeWithId.outcome as any).executor_id,
+            tokensBurnt: new BN(outcomeWithId.outcome.tokens_burnt),
+            executorId: outcomeWithId.outcome.executor_id,
             status: borshStatus(outcomeWithId.outcome.status),
         });
     const serializedPartialOutcome = serialize(SCHEMA, partialExecOutcome);
