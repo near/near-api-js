@@ -87,7 +87,7 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
       const AuthenticatiorDataJSONHash = Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)))
       const authenticatorAndClientDataJSONHash = Buffer.concat([AuthenticatiorDataJSONHash, clientDataJSONHash]);
     
-      const correctPKs = recoverPublicKey(rAndS.children[0].value, rAndS.children[1].value, authenticatorAndClientDataJSONHash, 0);
+      const correctPKs = await recoverPublicKey(rAndS.children[0].value, rAndS.children[1].value, authenticatorAndClientDataJSONHash, 0);
       const ed = new EDDSA("ed25519");
       const firstEdSha256 = new Sha256();
       firstEdSha256.update(Buffer.from(correctPKs[0]));
