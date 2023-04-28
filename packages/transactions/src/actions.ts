@@ -28,8 +28,8 @@ export class FunctionCallPermission extends Assignable {
 export class FullAccessPermission extends Assignable {}
 
 export class AccessKeyPermission extends Enum {
-    functionCall: FunctionCallPermission;
-    fullAccess: FullAccessPermission;
+    functionCall?: FunctionCallPermission;
+    fullAccess?: FullAccessPermission;
 }
 
 export class AccessKey extends Assignable {
@@ -53,13 +53,13 @@ export class SignedDelegate extends IAction { delegateAction: DelegateAction; si
  * @see {@link https://nomicon.io/RuntimeSpec/Actions.html | Actions Spec}
  */
 export class Action extends Enum {
-    createAccount: CreateAccount;
-    deployContract: DeployContract;
-    functionCall: FunctionCall;
-    transfer: Transfer;
-    stake: Stake;
-    addKey: AddKey;
-    deleteKey: DeleteKey;
-    deleteAccount: DeleteAccount;
-    signedDelegate: SignedDelegate;
+    createAccount?: CreateAccount;
+    deployContract?: DeployContract;
+    functionCall?: FunctionCall;
+    transfer?: Transfer;
+    stake?: Stake;
+    addKey?: AddKey;
+    deleteKey?: DeleteKey;
+    deleteAccount?: DeleteAccount;
+    signedDelegate?: SignedDelegate;
 }
