@@ -1,5 +1,11 @@
 # @near-js/biometric-ed25519
 
+## 0.0.10
+
+### Patch Changes
+
+- [#1129](https://github.com/near/near-api-js/pull/1129) [`aeeda99c`](https://github.com/near/near-api-js/commit/aeeda99c435f95d1bd26046a3f480e84a8945c88) Thanks [@MaximusHaximus](https://github.com/MaximusHaximus)! - Remove account length limit
+
 ## 0.0.9
 
 ### Patch Changes
