@@ -1,5 +1,25 @@
 # @near-js/biometric-ed25519
 
+## 0.0.9
+
+### Patch Changes
+
+- [#1125](https://github.com/near/near-api-js/pull/1125) [`5808d3a7`](https://github.com/near/near-api-js/commit/5808d3a7cad6ebfe19e2e249eebca8387b9d7495) Thanks [@esaminu](https://github.com/esaminu)! - This PR fixes a bug with the getKeys method in the biometric-ed25519 package. This method is currently broken due to not awaiting an async function and trying to access undefined properties on the promise.
+
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@0.0.4
+
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@0.0.3
+
 ## 0.0.6
 
 ### Patch Changes

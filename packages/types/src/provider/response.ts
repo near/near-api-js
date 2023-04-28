@@ -44,6 +44,8 @@ export interface ExecutionOutcome {
     logs: string[];
     receipt_ids: string[];
     gas_burnt: number;
+    tokens_burnt: string;
+    executor_id: string;
     status: ExecutionStatus | ExecutionStatusBasic;
 }
 

@@ -1,5 +1,56 @@
 # near-api-js
 
+## 2.1.2
+
+### Patch Changes
+
+- [#1124](https://github.com/near/near-api-js/pull/1124) [`c1dcf3b8`](https://github.com/near/near-api-js/commit/c1dcf3b8207e7de358e1d711d55da938d5d9ff8d) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Allow use of legacy `deps.keyStore` path in NearConfig
+
+- Updated dependencies [[`bf81ddc1`](https://github.com/near/near-api-js/commit/bf81ddc11c958dece2244798bdfa6ab11e653940), [`c1dcf3b8`](https://github.com/near/near-api-js/commit/c1dcf3b8207e7de358e1d711d55da938d5d9ff8d)]:
+  - @near-js/types@0.0.4
+  - @near-js/wallet-account@0.0.5
+  - @near-js/accounts@0.1.2
+  - @near-js/crypto@0.0.4
+  - @near-js/keystores@0.0.4
+  - @near-js/providers@0.0.5
+  - @near-js/transactions@0.1.1
+  - @near-js/utils@0.0.4
+  - @near-js/keystores-browser@0.0.4
+  - @near-js/keystores-node@0.0.4
+  - @near-js/signers@0.0.4
+
+## 2.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`d6d53ab1`](https://github.com/near/near-api-js/commit/d6d53ab1b90e3d4041080dd4a6e22d24900c1ca5)]:
+  - @near-js/providers@0.0.4
+  - @near-js/accounts@0.1.1
+  - @near-js/wallet-account@0.0.4
+
+## 2.1.0
+
+### Minor Changes
+
+- [#1103](https://github.com/near/near-api-js/pull/1103) [`b713ae78`](https://github.com/near/near-api-js/commit/b713ae78969d530e7e69e21e315e3d3fdb5e68e9) Thanks [@austinabell](https://github.com/austinabell)! - Implement light client block retrieval and relevant types
+
+### Patch Changes
+
+- [#1106](https://github.com/near/near-api-js/pull/1106) [`bc53c32c`](https://github.com/near/near-api-js/commit/bc53c32c80694e6f22d9be97db44603591f0026b) Thanks [@austinabell](https://github.com/austinabell)! - Adds missing timestamp_nanosec field to light client proof header
+
+- Updated dependencies [[`b713ae78`](https://github.com/near/near-api-js/commit/b713ae78969d530e7e69e21e315e3d3fdb5e68e9), [`bc53c32c`](https://github.com/near/near-api-js/commit/bc53c32c80694e6f22d9be97db44603591f0026b), [`b7b6c6a1`](https://github.com/near/near-api-js/commit/b7b6c6a1448050f60f6498f799654204f1998b91), [`d97d2a6e`](https://github.com/near/near-api-js/commit/d97d2a6e891350cdea418da2af2b2971bdf0467e), [`4704ee77`](https://github.com/near/near-api-js/commit/4704ee7717d9e92e7729037368e7ace84a9c7f1c), [`8c6bf391`](https://github.com/near/near-api-js/commit/8c6bf391a01af9adb81cb8731c45bdb17f5291c0)]:
+  - @near-js/providers@0.0.3
+  - @near-js/types@0.0.3
+  - @near-js/accounts@0.1.0
+  - @near-js/transactions@0.1.0
+  - @near-js/crypto@0.0.3
+  - @near-js/keystores@0.0.3
+  - @near-js/utils@0.0.3
+  - @near-js/wallet-account@0.0.3
+  - @near-js/keystores-browser@0.0.3
+  - @near-js/keystores-node@0.0.3
+  - @near-js/signers@0.0.3
+
 ## 2.0.4
 
 ### Patch Changes
