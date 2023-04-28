@@ -1,5 +1,15 @@
 # @near-js/transactions
 
+## 0.2.0
+
+### Minor Changes
+
+- [#1128](https://github.com/near/near-api-js/pull/1128) [`e21ff896`](https://github.com/near/near-api-js/commit/e21ff89601c858fb703169e3bb53c6d96cff5342) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Compatiblity shim for NearSocial/VM
+
+### Patch Changes
+
+- [#1110](https://github.com/near/near-api-js/pull/1110) [`00b4d2ba`](https://github.com/near/near-api-js/commit/00b4d2ba3f9f3a1f90343e34cb9bde8cdb607ceb) Thanks [@austinabell](https://github.com/austinabell)! - Update enum fields to all be optional
+
 ## 0.1.1
 
 ### Patch Changes
