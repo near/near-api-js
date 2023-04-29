@@ -1,5 +1,36 @@
 # near-api-js
 
+## 2.1.3
+
+### Patch Changes
+
+- [#1128](https://github.com/near/near-api-js/pull/1128) [`e21ff896`](https://github.com/near/near-api-js/commit/e21ff89601c858fb703169e3bb53c6d96cff5342) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Compatiblity shim for NearSocial/VM
+
+- Updated dependencies [[`e21ff896`](https://github.com/near/near-api-js/commit/e21ff89601c858fb703169e3bb53c6d96cff5342), [`00b4d2ba`](https://github.com/near/near-api-js/commit/00b4d2ba3f9f3a1f90343e34cb9bde8cdb607ceb)]:
+  - @near-js/transactions@0.2.0
+  - @near-js/accounts@0.1.3
+  - @near-js/providers@0.0.6
+  - @near-js/wallet-account@0.0.6
+
+## 2.1.2
+
+### Patch Changes
+
+- [#1124](https://github.com/near/near-api-js/pull/1124) [`c1dcf3b8`](https://github.com/near/near-api-js/commit/c1dcf3b8207e7de358e1d711d55da938d5d9ff8d) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Allow use of legacy `deps.keyStore` path in NearConfig
+
+- Updated dependencies [[`bf81ddc1`](https://github.com/near/near-api-js/commit/bf81ddc11c958dece2244798bdfa6ab11e653940), [`c1dcf3b8`](https://github.com/near/near-api-js/commit/c1dcf3b8207e7de358e1d711d55da938d5d9ff8d)]:
+  - @near-js/types@0.0.4
+  - @near-js/wallet-account@0.0.5
+  - @near-js/accounts@0.1.2
+  - @near-js/crypto@0.0.4
+  - @near-js/keystores@0.0.4
+  - @near-js/providers@0.0.5
+  - @near-js/transactions@0.1.1
+  - @near-js/utils@0.0.4
+  - @near-js/keystores-browser@0.0.4
+  - @near-js/keystores-node@0.0.4
+  - @near-js/signers@0.0.4
+
 ## 2.1.1
 
 ### Patch Changes
