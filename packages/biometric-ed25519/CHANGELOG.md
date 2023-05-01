@@ -1,5 +1,11 @@
 # @near-js/biometric-ed25519
 
+## 0.0.11
+
+### Patch Changes
+
+- [#1132](https://github.com/near/near-api-js/pull/1132) [`f9b094ee`](https://github.com/near/near-api-js/commit/f9b094ee37b2ecee046ee5d6a8a4866ed580d8de) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Remove yarn.lock
+
 ## 0.0.10
 
 ### Patch Changes
