@@ -38,10 +38,10 @@ export function validateLightClientBlock({
 }: ValidateLightClientBlockParams) {
     // Numbers for each step references the spec:
     // https://github.com/near/NEPs/blob/c7d72138117ed0ab86629a27d1f84e9cce80848f/specs/ChainSpec/LightClient.md
-    const newBlockHash = computeBlockHash(lastKnownBlock);
-    const nextBlockHashDecoded = combineHash(
+    const currentBlockHash = computeBlockHash(newBlock);
+    const nextBlockHash = combineHash(
         bs58.decode(newBlock.next_block_inner_hash),
-        newBlockHash
+        currentBlockHash
     );
 
     // (1) Verify that the block height is greater than the last known block.
@@ -92,7 +92,7 @@ export function validateLightClientBlock({
 
         const approvalEndorsement = serialize(
             SCHEMA,
-            new BorshApprovalInner({ endorsement: nextBlockHashDecoded })
+            new BorshApprovalInner({ endorsement: nextBlockHash })
         );
 
         const approvalHeight: BN = new BN(newBlock.inner_lite.height + 2);
@@ -102,7 +102,9 @@ export function validateLightClientBlock({
             ...approvalHeightLe,
         ]);
 
-        publicKey.verify(approvalMessage, signature);
+        if (!publicKey.verify(approvalMessage, signature)) {
+            throw new Error(`Invalid approval message signature for validator ${blockProducers[i].account_id}`);
+        }
     }
 
     // (5) Calculates the 2/3 threshold and checks that the approved stake accumulated above
