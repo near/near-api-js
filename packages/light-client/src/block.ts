@@ -1,21 +1,21 @@
-import { computeBlockHash, combineHash } from './utils';
+import { computeBlockHash, combineHash } from "./utils";
 import {
     SCHEMA,
     BorshApprovalInner,
     BorshValidatorStakeView,
     BorshValidatorStakeViewV1,
     BorshValidatorStakeViewWrapper,
-} from './borsh';
-import bs58 from 'bs58';
-import { sha256 } from 'js-sha256';
+} from "./borsh";
+import bs58 from "bs58";
+import { sha256 } from "js-sha256";
 import {
     LightClientBlockLiteView,
     NextLightClientBlockResponse,
     ValidatorStakeView,
-} from '@near-js/types';
-import { PublicKey } from '@near-js/crypto';
-import BN from 'bn.js';
-import { serialize } from 'borsh';
+} from "@near-js/types";
+import { PublicKey } from "@near-js/crypto";
+import BN from "bn.js";
+import { serialize } from "borsh";
 
 export interface ValidateLightClientBlockParams {
     lastKnownBlock: LightClientBlockLiteView;
@@ -38,16 +38,10 @@ export function validateLightClientBlock({
 }: ValidateLightClientBlockParams) {
     // Numbers for each step references the spec:
     // https://github.com/near/NEPs/blob/c7d72138117ed0ab86629a27d1f84e9cce80848f/specs/ChainSpec/LightClient.md
-    const currentBlockHash = computeBlockHash(newBlock);
-    const nextBlockHash = combineHash(
-        bs58.decode(newBlock.next_block_inner_hash),
-        currentBlockHash
-    );
-
     // (1) Verify that the block height is greater than the last known block.
     if (newBlock.inner_lite.height <= lastKnownBlock.inner_lite.height) {
         throw new Error(
-            'New block must be at least the height of the last known block'
+            "New block must be at least the height of the last known block"
         );
     }
 
@@ -58,14 +52,14 @@ export function validateLightClientBlock({
         newBlock.inner_lite.epoch_id !== lastKnownBlock.inner_lite.next_epoch_id
     ) {
         throw new Error(
-            'New block must either be in the same epoch or the next epoch from the last known block'
+            "New block must either be in the same epoch or the next epoch from the last known block"
         );
     }
 
     const blockProducers: ValidatorStakeView[] = currentBlockProducers;
     if (newBlock.approvals_after_next.length < blockProducers.length) {
         throw new Error(
-            'Number of approvals for next epoch must be at least the number of current block producers'
+            "Number of approvals for next epoch must be at least the number of current block producers"
         );
     }
 
@@ -74,6 +68,12 @@ export function validateLightClientBlock({
     // (5) The signatures present represent more than 2/3 of the total stake.
     const totalStake = new BN(0);
     const approvedStake = new BN(0);
+
+    const currentBlockHash = computeBlockHash(newBlock);
+    const nextBlockHash = combineHash(
+        bs58.decode(newBlock.next_block_inner_hash),
+        currentBlockHash
+    );
 
     for (let i = 0; i < blockProducers.length; i++) {
         const approval = newBlock.approvals_after_next[i];
@@ -88,7 +88,7 @@ export function validateLightClientBlock({
         approvedStake.iadd(new BN(stake));
 
         const publicKey = PublicKey.fromString(blockProducers[i].public_key);
-        const signature = bs58.decode(approval.split(':')[1]);
+        const signature = bs58.decode(approval.split(":")[1]);
 
         const approvalEndorsement = serialize(
             SCHEMA,
@@ -96,14 +96,16 @@ export function validateLightClientBlock({
         );
 
         const approvalHeight: BN = new BN(newBlock.inner_lite.height + 2);
-        const approvalHeightLe = approvalHeight.toArrayLike(Buffer, 'le', 8);
+        const approvalHeightLe = approvalHeight.toArrayLike(Buffer, "le", 8);
         const approvalMessage = new Uint8Array([
             ...approvalEndorsement,
             ...approvalHeightLe,
         ]);
 
         if (!publicKey.verify(approvalMessage, signature)) {
-            throw new Error(`Invalid approval message signature for validator ${blockProducers[i].account_id}`);
+            throw new Error(
+                `Invalid approval message signature for validator ${blockProducers[i].account_id}`
+            );
         }
     }
 
@@ -111,7 +113,7 @@ export function validateLightClientBlock({
     // exceeds it.
     const threshold = totalStake.mul(new BN(2)).div(new BN(3));
     if (approvedStake <= threshold) {
-        throw new Error('Approved stake does not exceed the 2/3 threshold');
+        throw new Error("Approved stake does not exceed the 2/3 threshold");
     }
 
     // (6) Verify that if the new block is in the next epoch, the hash of the next block producers
@@ -122,14 +124,14 @@ export function validateLightClientBlock({
         // (3) If the block is in a new epoch, then `next_bps` must be present.
         if (!newBlock.next_bps) {
             throw new Error(
-                'New block must include next block producers if a new epoch starts'
+                "New block must include next block producers if a new epoch starts"
             );
         }
 
         const bpsHash = hashBlockProducers(newBlock.next_bps);
 
         if (!bpsHash.equals(bs58.decode(newBlock.inner_lite.next_bp_hash))) {
-            throw new Error('Next block producers hash doesn\'t match');
+            throw new Error("Next block producers hash doesn't match");
         }
     }
 }
@@ -142,7 +144,7 @@ function hashBlockProducers(bps: ValidatorStakeView[]): Buffer {
             );
             if (version !== 1) {
                 throw new Error(
-                    'Only version 1 of the validator stake struct is supported'
+                    "Only version 1 of the validator stake struct is supported"
                 );
             }
         }
