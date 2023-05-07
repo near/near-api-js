@@ -1,5 +1,27 @@
 # @near-js/accounts
 
+## 0.1.3
+
+### Patch Changes
+
+- [#1128](https://github.com/near/near-api-js/pull/1128) [`e21ff896`](https://github.com/near/near-api-js/commit/e21ff89601c858fb703169e3bb53c6d96cff5342) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Compatiblity shim for NearSocial/VM
+
+- Updated dependencies [[`e21ff896`](https://github.com/near/near-api-js/commit/e21ff89601c858fb703169e3bb53c6d96cff5342), [`00b4d2ba`](https://github.com/near/near-api-js/commit/00b4d2ba3f9f3a1f90343e34cb9bde8cdb607ceb)]:
+  - @near-js/transactions@0.2.0
+  - @near-js/providers@0.0.6
+
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`bf81ddc1`](https://github.com/near/near-api-js/commit/bf81ddc11c958dece2244798bdfa6ab11e653940)]:
+  - @near-js/types@0.0.4
+  - @near-js/crypto@0.0.4
+  - @near-js/providers@0.0.5
+  - @near-js/transactions@0.1.1
+  - @near-js/utils@0.0.4
+  - @near-js/signers@0.0.4
+
 ## 0.1.1
 
 ### Patch Changes

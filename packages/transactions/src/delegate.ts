@@ -2,12 +2,24 @@ import { PublicKey } from '@near-js/crypto';
 import { Assignable } from '@near-js/types';
 import BN from 'bn.js';
 
-import { IAction } from './actions';
+import { actionCreators } from './action_creators';
+import { Action } from './actions';
+
+const {
+    addKey,
+    createAccount,
+    deleteAccount,
+    deleteKey,
+    deployContract,
+    functionCall,
+    stake,
+    transfer,
+} = actionCreators;
 
 export class DelegateAction extends Assignable {
     senderId: string;
     receiverId: string;
-    actions: Array<IAction>;
+    actions: Array<Action>;
     nonce: BN;
     maxBlockHeight: BN;
     publicKey: PublicKey;
@@ -33,7 +45,53 @@ export function buildDelegateAction({
     return new DelegateAction({
         senderId,
         receiverId,
-        actions,
+        actions: actions.map((a) => {
+            // @ts-expect-error type workaround
+            if (!a.type && !a.params) {
+                return a;
+            }
+
+            // @ts-expect-error type workaround
+            switch (a.type) {
+                case 'AddKey': {
+                    // @ts-expect-error type workaround
+                    const { publicKey, accessKey } = a.params;
+                    return addKey(publicKey, accessKey);
+                }
+                case 'CreateAccount': {
+                    // @ts-expect-error type workaround
+                    return createAccount(a.params.createAccount);
+                }
+                case 'DeleteAccount': {
+                    // @ts-expect-error type workaround
+                    return deleteAccount(a.params.deleteAccount);
+                }
+                case 'DeleteKey': {
+                    // @ts-expect-error type workaround
+                    return deleteKey(a.params.publicKey);
+                }
+                case 'DeployContract': {
+                    // @ts-expect-error type workaround
+                    return deployContract(a.params.code);
+                }
+                case 'FunctionCall': {
+                    // @ts-expect-error type workaround
+                    const { methodName, args, gas, deposit } = a.params;
+                    return functionCall(methodName, args, gas, deposit);
+                }
+                case 'Stake': {
+                    // @ts-expect-error type workaround
+                    return stake(a.params.stake, a.params.publicKey);
+                }
+                case 'Transfer': {
+                    // @ts-expect-error type workaround
+                    const { deposit } = a.params;
+                    return transfer(deposit);
+                }
+            }
+
+            throw new Error('Unrecognized action');
+        }),
         nonce,
         maxBlockHeight,
         publicKey,

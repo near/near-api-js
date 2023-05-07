@@ -1,5 +1,11 @@
 # @near-js/types
 
+## 0.0.4
+
+### Patch Changes
+
+- [#1113](https://github.com/near/near-api-js/pull/1113) [`bf81ddc1`](https://github.com/near/near-api-js/commit/bf81ddc11c958dece2244798bdfa6ab11e653940) Thanks [@austinabell](https://github.com/austinabell)! - added tokens_burnt and executor_id fields to ExecutionOutcome JSON response
+
 ## 0.0.3
 
 ### Patch Changes
