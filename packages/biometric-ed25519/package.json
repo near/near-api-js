@@ -15,12 +15,14 @@
     "@hexagon/base64": "^1.1.26",
     "@near-js/crypto": "workspace:*",
     "asn1-parser": "^1.1.8",
+    "bn.js": "5.2.1",
     "borsh": "^0.7.0",
     "buffer": "^6.0.3",
     "elliptic": "^6.5.4",
     "fido2-lib": "3.3.4"
   },
   "devDependencies": {
+    "@aws-sdk/types": "^3.329.0",
     "@types/node": "^18.7.14"
   }
 }
