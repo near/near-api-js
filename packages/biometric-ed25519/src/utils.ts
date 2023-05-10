@@ -1,7 +1,7 @@
-import base64 from "@hexagon/base64";
-import {ec as EC} from "elliptic";
-import {Sha256} from "@aws-crypto/sha256-js";
-import {PublicKey} from "@near-js/crypto";
+import base64 from '@hexagon/base64';
+import { ec as EC } from 'elliptic';
+import { Sha256 } from '@aws-crypto/sha256-js';
+import { PublicKey } from '@near-js/crypto';
 
 export const preformatMakeCredReq = (makeCredReq) => {
     const challenge = base64.toArrayBuffer(makeCredReq.challenge, true);
@@ -16,21 +16,21 @@ export const preformatMakeCredReq = (makeCredReq) => {
         },
         ...(makeCredReq.excludeCredentials ? {
             excludeCredentials: makeCredReq.excludeCredentials.map((e) => {
-                return {id: base64.toArrayBuffer(e.id, true), type: e.type}
+                return { id: base64.toArrayBuffer(e.id, true), type: e.type };
             })
         } : {})
-    }
+    };
 };
 
 export const get64BytePublicKeyFromPEM = (publicKey: PublicKey) => {
     const prefix = '\n';
-    const publicKeyBase64 = publicKey.toString().split(prefix)
+    const publicKeyBase64 = publicKey.toString().split(prefix);
     return base64.toArrayBuffer(`${publicKeyBase64[1]}${publicKeyBase64[2]}`).slice(27);
 };
 
 export const validateUsername = (name: string): string => {
     if (!name) {
-        throw new Error("username is required");
+        throw new Error('username is required');
     }
     return name;
 };
@@ -74,8 +74,8 @@ export const publicKeyCredentialToJSON = (pubKeyCred) => {
 };
 
 export const recoverPublicKey = async (r, s, message, recovery) => {
-    const ec = new EC("p256");
-    const sigObj = {r, s};
+    const ec = new EC('p256');
+    const sigObj = { r, s };
 
     if (recovery !== 0 && recovery !== 1) {
         throw new Error('Invalid recovery parameter');
@@ -83,7 +83,7 @@ export const recoverPublicKey = async (r, s, message, recovery) => {
     const hash = new Sha256();
     hash.update(message);
     const h = await hash.digest();
-    const Q = ec.recoverPubKey(h, sigObj, 0)
+    const Q = ec.recoverPubKey(h, sigObj, 0);
     const P = ec.recoverPubKey(h, sigObj, 1);
     return [
         Buffer.from(new Uint8Array(Buffer.from(Q.encode(true, false))).subarray(1, 65)),

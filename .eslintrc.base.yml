@@ -21,6 +21,9 @@ rules:
     - error
     - always
   no-console: off
+  object-curly-spacing:
+    - error
+    - always
 globals:
   window: true
   fetch: true
