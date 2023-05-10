@@ -1,7 +1,9 @@
 import base64 from "@hexagon/base64";
-import { Fido2Lib } from "fido2-lib/dist/main.js";
+import { Fido2Lib } from "fido2-lib";
 
 export class Fido2 {
+    f2l: Fido2Lib;
+
     async init({ rpId, rpName, timeout }) {
         this.f2l = new Fido2Lib({
             timeout,
@@ -39,6 +41,8 @@ export class Fido2 {
             origin: origin,
             factor: "either"
         };
+
+        // @ts-expect-error `factor` is defined as a union of strings for which "either" is valid...
         const regResult = await this.f2l.attestationResult(clientAttestationResponse, attestationExpectations);
         return regResult;
     }
@@ -54,4 +58,4 @@ export class Fido2 {
             status: 'ok',
         };
     }
-};
+}
