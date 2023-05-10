@@ -18,19 +18,20 @@ import {AssertionResponse} from "./index.d";
 
 const CHALLENGE_TIMEOUT_MS = 90 * 1000;
 const RP_NAME = "NEAR_API_JS_WEBAUTHN";
-const RP_ID = location.hostname;
 
 const f2l: Fido2 = new Fido2();
 const init: () => Promise<void> = async () => {
     await f2l.init({
-        rpId: RP_ID,
+        rpId: location.hostname,
         rpName: RP_NAME,
         timeout: CHALLENGE_TIMEOUT_MS,
     });
 };
 
-if (window && !window.Buffer) {
-    window.Buffer = Buffer;
+function setBufferIfUndefined() {
+    if (window && !window.Buffer) {
+        window.Buffer = Buffer;
+    }
 }
 
 export const createKey = async (username: string): Promise<KeyPair> => {
@@ -47,6 +48,7 @@ export const createKey = async (username: string): Promise<KeyPair> => {
     });
     const publicKey = preformatMakeCredReq(challengeMakeCred);
 
+    setBufferIfUndefined();
     return navigator.credentials.create({publicKey})
         .then(async (res) => {
             const result = await f2l.attestation({
@@ -78,6 +80,7 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
     };
     const publicKey = preformatGetAssertReq(options);
 
+    setBufferIfUndefined();
     return navigator.credentials.get({publicKey})
         .then(async (response: Credential) => {
             const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(response);
