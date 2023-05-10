@@ -3,8 +3,6 @@ import {ec as EC} from "elliptic";
 import {Sha256} from "@aws-crypto/sha256-js";
 import {PublicKey} from "@near-js/crypto";
 
-const USER_NAME_MAX_LENGTH = 25;
-
 export const preformatMakeCredReq = (makeCredReq) => {
     const challenge = base64.toArrayBuffer(makeCredReq.challenge, true);
     const userId = base64.toArrayBuffer(makeCredReq.user.id, true);
