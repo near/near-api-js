@@ -1,5 +1,30 @@
 # @near-js/biometric-ed25519
 
+## 0.0.11
+
+### Patch Changes
+
+- [#1132](https://github.com/near/near-api-js/pull/1132) [`f9b094ee`](https://github.com/near/near-api-js/commit/f9b094ee37b2ecee046ee5d6a8a4866ed580d8de) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Remove yarn.lock
+
+## 0.0.10
+
+### Patch Changes
+
+- [#1129](https://github.com/near/near-api-js/pull/1129) [`aeeda99c`](https://github.com/near/near-api-js/commit/aeeda99c435f95d1bd26046a3f480e84a8945c88) Thanks [@MaximusHaximus](https://github.com/MaximusHaximus)! - Remove account length limit
+
+## 0.0.9
+
+### Patch Changes
+
+- [#1125](https://github.com/near/near-api-js/pull/1125) [`5808d3a7`](https://github.com/near/near-api-js/commit/5808d3a7cad6ebfe19e2e249eebca8387b9d7495) Thanks [@esaminu](https://github.com/esaminu)! - This PR fixes a bug with the getKeys method in the biometric-ed25519 package. This method is currently broken due to not awaiting an async function and trying to access undefined properties on the promise.
+
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@0.0.4
+
 ## 0.0.7
 
 ### Patch Changes
