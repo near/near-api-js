@@ -84,7 +84,7 @@ function stake(stake: BN, publicKey: PublicKey): Action {
 }
 
 function addKey(publicKey: PublicKey, accessKey: AccessKey): Action {
-    return new Action({ addKey: new AddKey({ publicKey, accessKey}) });
+    return new Action({ addKey: new AddKey({ publicKey, accessKey }) });
 }
 
 function deleteKey(publicKey: PublicKey): Action {

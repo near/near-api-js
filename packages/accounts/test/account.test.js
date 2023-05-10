@@ -160,7 +160,7 @@ describe('with deploy contract', () => {
         const result = await workingAccount.viewFunction({
             contractId,
             methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
-            args: {name: 'trex'}
+            args: { name: 'trex' }
         });
         expect(result).toEqual('hello trex');
 
@@ -194,7 +194,7 @@ describe('with deploy contract', () => {
         const result = await workingAccount.viewFunction({
             contractId,
             methodName:'hello', // this is the function defined in hello.wasm file that we are calling
-            args: {name: 'trex'},
+            args: { name: 'trex' },
             parse: x => JSON.parse(x.toString()).replace('trex', 'friend')
         });
         expect(result).toEqual('hello friend');
@@ -399,7 +399,7 @@ describe('with deploy contract', () => {
 
         const account = new Account(mockConnection, 'test.near');
         // mock internal functions that are being used on getActiveDelegatedStakeBalance
-        account.viewFunction = async ({ methodName, ...args}) => {
+        account.viewFunction = async ({ methodName, ...args }) => {
             if (methodName === 'get_account_total_balance') {
                 // getActiveDelegatedStakeBalance sums stake from active validators and ignores throws
                 if (args.contractId === 'invalid_account_id') {
@@ -415,8 +415,8 @@ describe('with deploy contract', () => {
         };
         const result = await account.getActiveDelegatedStakeBalance();
         expect(result).toEqual({
-            stakedValidators: [{ validatorId: 'testing1.pool.f863973.m0', amount: '10000'}, { validatorId: 'testing2.pool.f863973.m0', amount: '10000'}],
-            failedValidators: [{ validatorId: 'invalid_account_id', error: CUSTOM_ERROR}],
+            stakedValidators: [{ validatorId: 'testing1.pool.f863973.m0', amount: '10000' }, { validatorId: 'testing2.pool.f863973.m0', amount: '10000' }],
+            failedValidators: [{ validatorId: 'invalid_account_id', error: CUSTOM_ERROR }],
             total: '20000'
         });
     });
@@ -449,7 +449,7 @@ describe('with deploy contract', () => {
 
         const account = new Account(mockConnection, 'test.near');
         // mock internal functions that are being used on getActiveDelegatedStakeBalance
-        account.viewFunction = async ({ methodName, ...args}) => {
+        account.viewFunction = async ({ methodName, ...args }) => {
             if (methodName === 'get_account_total_balance') {
                 // getActiveDelegatedStakeBalance sums stake from active validators and ignores throws
                 if (args.contractId === 'timeout_account_id') {
