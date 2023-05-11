@@ -2,7 +2,7 @@ import { baseEncode, baseDecode } from 'borsh';
 import nacl from 'tweetnacl';
 
 import { KeyType } from './constants';
-import { KeyPairBase, Signature} from './key_pair_base';
+import { KeyPairBase, Signature } from './key_pair_base';
 import { PublicKey } from './public_key';
 
 /**

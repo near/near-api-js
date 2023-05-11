@@ -125,7 +125,7 @@ describe('account2fa transactions', () => {
         sender = await getAccount2FA(sender);
         receiver = await getAccount2FA(receiver);
         const { amount: receiverAmount } = await receiver.state();
-        await sender.signAndSendTransaction({receiverId: receiver.accountId, actions: [transfer(new BN(parseNearAmount('1')))]});
+        await sender.signAndSendTransaction({ receiverId: receiver.accountId, actions: [transfer(new BN(parseNearAmount('1')))] });
         const state = await receiver.state();
         expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(new BN(receiverAmount).add(new BN(parseNearAmount('0.9'))).toString()));
     });
