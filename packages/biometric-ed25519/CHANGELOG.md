@@ -1,5 +1,11 @@
 # @near-js/biometric-ed25519
 
+## 0.1.0
+
+### Minor Changes
+
+- [#1135](https://github.com/near/near-api-js/pull/1135) [`28be70e6`](https://github.com/near/near-api-js/commit/28be70e6d69aa807bde82eaee2ea8b3bda3d3f95) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Remove module-scoped globals and update build configuration
+
 ## 0.0.11
 
 ### Patch Changes

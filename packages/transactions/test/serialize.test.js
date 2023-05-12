@@ -32,8 +32,8 @@ class Test extends Assignable {
 }
 
 test('serialize object', async () => {
-    const value = new Test({ x: 255, y: 20, z: '123', q: [1, 2, 3]});
-    const schema = new Map([[Test, {kind: 'struct', fields: [['x', 'u8'], ['y', 'u64'], ['z', 'string'], ['q', [3]]] }]]);
+    const value = new Test({ x: 255, y: 20, z: '123', q: [1, 2, 3] });
+    const schema = new Map([[Test, { kind: 'struct', fields: [['x', 'u8'], ['y', 'u64'], ['z', 'string'], ['q', [3]]] }]]);
     let buf = serialize(schema, value);
     let new_value = deserialize(schema, Test, buf);
     expect(new_value.x).toEqual(255);
