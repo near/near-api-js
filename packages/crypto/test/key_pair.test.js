@@ -51,6 +51,5 @@ test('public key from too short string', async () => {
 test('public key from string', async () => {
     const validPublicKey = '0123456789ABCDEF0123456789ABCDEF';
     expect(() =>
-        PublicKey.fromString(baseEncode(validPublicKey))).not.toThrow(
-        `Invalid public key size (${validPublicKey.length}), must be 32`);
+        PublicKey.fromString(baseEncode(validPublicKey))).not.toThrow();
 });
