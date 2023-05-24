@@ -174,7 +174,7 @@ test('json rpc light client proof', async () => {
     expect(lightClientProof.block_proof.length).toBeGreaterThan(0);
 
     // Validate the proof against the finalized block
-    validateExecutionProof(lightClientProof, base58.decode(finalBlock.header.block_merkle_root));
+    validateExecutionProof({ proof: lightClientProof, blockMerkleRoot: base58.decode(finalBlock.header.block_merkle_root) });
 
     // pass nonexistent hash for light client head will fail
     lightClientRequest = {
