@@ -1,11 +1,13 @@
 {
   "name": "@near-js/biometric-ed25519",
   "description": "JavaScript library to handle webauthn and biometric keys",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc -p ./tsconfig.json"
+    "build": "tsc -p ./tsconfig.json",
+    "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
+    "lint:ts:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc --fix"
   },
   "keywords": [],
   "author": "Pagoda",
@@ -15,12 +17,14 @@
     "@hexagon/base64": "^1.1.26",
     "@near-js/crypto": "workspace:*",
     "asn1-parser": "^1.1.8",
+    "bn.js": "5.2.1",
     "borsh": "^0.7.0",
     "buffer": "^6.0.3",
     "elliptic": "^6.5.4",
     "fido2-lib": "3.3.4"
   },
   "devDependencies": {
+    "@aws-sdk/types": "^3.329.0",
     "@types/node": "^18.7.14"
   }
 }

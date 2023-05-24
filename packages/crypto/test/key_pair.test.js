@@ -40,3 +40,16 @@ test('convert to string', async () => {
     const keyPair2 = KeyPair.fromString(keyString);
     expect(keyPair2.toString()).toEqual(keyString);
 });
+
+test('public key from too short string', async () => {
+    const tooShortPublicKey = 'tooShortPublicKey';
+    expect(() =>
+        PublicKey.fromString(baseEncode(tooShortPublicKey))).toThrow(
+        `Invalid public key size (${tooShortPublicKey.length}), must be 32`);
+});
+
+test('public key from string', async () => {
+    const validPublicKey = '0123456789ABCDEF0123456789ABCDEF';
+    expect(() =>
+        PublicKey.fromString(baseEncode(validPublicKey))).not.toThrow();
+});
