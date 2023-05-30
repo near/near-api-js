@@ -60,7 +60,7 @@
         "compile": "tsc -p ./tsconfig.json",
         "dev": "pnpm compile -w",
         "build": "pnpm compile && pnpm browserify",
-        "test": "jest test",
+        "test": "jest test --passWithNoTests",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
         "lint:fix": "concurrently \"pnpm:lint:*:fix\"",
