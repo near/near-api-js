@@ -34,13 +34,21 @@ export class PublicKey extends Assignable {
 
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
+        let publicKey: string;
+        let keyType = KeyType.ED25519;
         if (parts.length === 1) {
-            return new PublicKey({ keyType: KeyType.ED25519, data: baseDecode(parts[0]) });
+            publicKey = parts[0];
         } else if (parts.length === 2) {
-            return new PublicKey({ keyType: str_to_key_type(parts[0]), data: baseDecode(parts[1]) });
+            publicKey = parts[1];
+            keyType = str_to_key_type(parts[0]);
         } else {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
+        const decodedPublicKey = baseDecode(publicKey);
+        if(decodedPublicKey.length !== nacl.box.publicKeyLength) {
+            throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${nacl.box.publicKeyLength}`);
+        }
+        return new PublicKey({ keyType, data: decodedPublicKey });
     }
 
     toString(): string {
