@@ -1,5 +1,12 @@
 # @near-js/providers
 
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/transactions@0.2.1
+
 ## 0.0.6
 
 ### Patch Changes
