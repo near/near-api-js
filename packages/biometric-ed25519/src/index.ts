@@ -112,3 +112,8 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
             return [firstKeyPair, secondKeyPair];
         });
 };
+
+// To check if current browser supports WebAuthn
+export const isPassKeyAvailable = async (): Promise<boolean> => {
+    return window.PublicKeyCredential?.isUserVerifyingPlatformAuthenticatorAvailable?.() || false;
+};
