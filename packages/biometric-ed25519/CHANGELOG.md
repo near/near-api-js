@@ -1,5 +1,16 @@
 # @near-js/biometric-ed25519
 
+## 0.2.0
+
+### Minor Changes
+
+- [#1139](https://github.com/near/near-api-js/pull/1139) [`60c65dd1`](https://github.com/near/near-api-js/commit/60c65dd1b8609551c270a5d53b9f70970aa1bcd8) Thanks [@hcho112](https://github.com/hcho112)! - Introducing a new util function, isPassKeyAvailable on biometric-ed25519 package
+
+### Patch Changes
+
+- Updated dependencies [[`40fa6465`](https://github.com/near/near-api-js/commit/40fa64654fdaf3b463122c35521a6f72282974f2)]:
+  - @near-js/crypto@0.0.5
+
 ## 0.1.0
 
 ### Minor Changes

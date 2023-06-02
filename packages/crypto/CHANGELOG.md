@@ -1,5 +1,11 @@
 # @near-js/crypto
 
+## 0.0.5
+
+### Patch Changes
+
+- [#1115](https://github.com/near/near-api-js/pull/1115) [`40fa6465`](https://github.com/near/near-api-js/commit/40fa64654fdaf3b463122c35521a6f72282974f2) Thanks [@isoldo](https://github.com/isoldo)! - Check length of decoded public key in PublicKey.fromString()
+
 ## 0.0.4
 
 ### Patch Changes

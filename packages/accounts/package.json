@@ -1,6 +1,6 @@
 {
   "name": "@near-js/accounts",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Classes encapsulating account-specific functionality",
   "main": "lib/index.js",
   "scripts": {

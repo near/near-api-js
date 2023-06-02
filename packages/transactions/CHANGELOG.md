@@ -1,5 +1,13 @@
 # @near-js/transactions
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`40fa6465`](https://github.com/near/near-api-js/commit/40fa64654fdaf3b463122c35521a6f72282974f2)]:
+  - @near-js/crypto@0.0.5
+  - @near-js/signers@0.0.5
+
 ## 0.2.0
 
 ### Minor Changes
