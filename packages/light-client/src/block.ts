@@ -139,10 +139,7 @@ export function validateLightClientBlock({
 function hashBlockProducers(bps: ValidatorStakeView[]): Buffer {
     const borshBps: BorshValidatorStakeView[] = bps.map((bp) => {
         if (bp.validator_stake_struct_version) {
-            const version = parseInt(
-                bp.validator_stake_struct_version.slice(1)
-            );
-            if (version !== 1) {
+            if (bp.validator_stake_struct_version !== 'V1') {
                 throw new Error(
                     'Only version 1 of the validator stake struct is supported'
                 );

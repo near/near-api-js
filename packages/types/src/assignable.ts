@@ -14,6 +14,9 @@ export abstract class Enum {
             throw new Error('Enum can only take single value');
         }
         Object.keys(properties).map((key: string) => {
+            if (key === 'enum') {
+                throw new Error('Enum can not take key named enum');
+            }
             (this as any)[key] = properties[key];
             this.enum = key;
         });
