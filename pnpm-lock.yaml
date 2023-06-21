@@ -85,7 +85,7 @@ importers:
       borsh: ^0.7.0
       buffer: ^6.0.3
       elliptic: ^6.5.4
-      fido2-lib: 3.3.4
+      fido2-lib: 3.4.1
     dependencies:
       '@aws-crypto/sha256-js': 4.0.0
       '@hexagon/base64': 1.1.26
@@ -95,7 +95,7 @@ importers:
       borsh: 0.7.0
       buffer: 6.0.3
       elliptic: 6.5.4
-      fido2-lib: 3.3.4
+      fido2-lib: 3.4.1
     devDependencies:
       '@aws-sdk/types': 3.329.0
       '@types/node': 18.16.1
@@ -1684,8 +1684,8 @@ packages:
       '@octokit/openapi-types': 12.11.0
     dev: true
 
-  /@peculiar/asn1-schema/2.3.3:
-    resolution: {integrity: sha512-6GptMYDMyWBHTUKndHaDsRZUO/XMSgIns2krxcm2L7SEExRHwawFvSwNBhqNPR9HJwv3MruAiF1bhN0we6j6GQ==}
+  /@peculiar/asn1-schema/2.3.6:
+    resolution: {integrity: sha512-izNRxPoaeJeg/AyH8hER6s+H7p4itk+03QCa4sbxI3lNdseQYCuxzgsuNK8bTXChtLTjpJz6NmXKA73qLa3rCA==}
     dependencies:
       asn1js: 3.0.5
       pvtsutils: 1.3.2
@@ -1699,15 +1699,15 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@peculiar/webcrypto/1.4.1:
-    resolution: {integrity: sha512-eK4C6WTNYxoI7JOabMoZICiyqRRtJB220bh0Mbj5RwRycleZf9BPyZoxsTvpP0FpmVS2aS13NKOuh5/tN3sIRw==}
+  /@peculiar/webcrypto/1.4.3:
+    resolution: {integrity: sha512-VtaY4spKTdN5LjJ04im/d/joXuvLbQdgy5Z4DXF4MFZhQ+MTrejbNMkfZBp1Bs3O5+bFqnJgyGdPuZQflvIa5A==}
     engines: {node: '>=10.12.0'}
     dependencies:
-      '@peculiar/asn1-schema': 2.3.3
+      '@peculiar/asn1-schema': 2.3.6
       '@peculiar/json-schema': 1.1.12
       pvtsutils: 1.3.2
       tslib: 2.5.0
-      webcrypto-core: 1.7.6
+      webcrypto-core: 1.7.7
     dev: false
 
   /@sindresorhus/is/4.6.0:
@@ -2778,8 +2778,8 @@ packages:
     dev: false
     optional: true
 
-  /cbor-x/1.4.1:
-    resolution: {integrity: sha512-qp6nM61RaamDJWsDGHzMIQ4+XBtg7/QIoBi5Lra4IDU65eP8lHcgkkJ9t2yIU8EvRThBfFCh6+S1Qkrmq93J3Q==}
+  /cbor-x/1.5.3:
+    resolution: {integrity: sha512-adrN0S67C7jY2hgqeGcw+Uj6iEGLQa5D/p6/9YNl5AaVIYJaJz/bARfWsP8UikBZWbhS27LN0DJK4531vo9ODw==}
     optionalDependencies:
       cbor-extract: 2.1.1
     dev: false
@@ -3961,17 +3961,17 @@ packages:
       bser: 2.1.1
     dev: true
 
-  /fido2-lib/3.3.4:
-    resolution: {integrity: sha512-r/darKZY1MQhGNi+H16CCj/02jMADAp0ni6dxR2mElYliIfdNImflKIzmNZ3sp4ZqcYGnjxrqOypyKdgjtknEA==}
+  /fido2-lib/3.4.1:
+    resolution: {integrity: sha512-efNrRbckp48AW7Q43o6gcp8/wnoBM7hwKikQntdiR2/NqVMPaCXFQs8kJ9wQqfv5V3PxZdg4kD9DpxdqYl6jxQ==}
     engines: {node: '>=10'}
     dependencies:
       '@hexagon/base64': 1.1.26
-      '@peculiar/webcrypto': 1.4.1
+      '@peculiar/webcrypto': 1.4.3
       asn1js: 3.0.5
-      cbor-x: 1.4.1
-      jose: 4.12.0
-      pkijs: 3.0.13
-      tldts: 5.7.109
+      cbor-x: 1.5.3
+      jose: 4.14.4
+      pkijs: 3.0.15
+      tldts: 6.0.8
     dev: false
 
   /file-entry-cache/6.0.1:
@@ -5421,8 +5421,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /jose/4.12.0:
-    resolution: {integrity: sha512-wW1u3cK81b+SFcHjGC8zw87yuyUweEFe0UJirrXEw1NasW00eF7sZjeG3SLBGz001ozxQ46Y9sofDvhBmWFtXQ==}
+  /jose/4.14.4:
+    resolution: {integrity: sha512-j8GhLiKmUAh+dsFXlX1aJCbt5KMibuKb+d7j1JaOJG6s2UjX1PQlW+OKB/sD4a/5ZYF4RcmYmLSndOoU3Lt/3g==}
     dev: false
 
   /js-sdsl/4.2.0:
@@ -6527,8 +6527,8 @@ packages:
       find-up: 4.1.0
     dev: true
 
-  /pkijs/3.0.13:
-    resolution: {integrity: sha512-a4uShsMDMZf0UpiNeedpARIN2TChjFn4xze7HE+Dm3lsX+o2MHcSm8Lf2Tt+f1le8FHbBevdWlcLO5boSW/9NQ==}
+  /pkijs/3.0.15:
+    resolution: {integrity: sha512-n7nAl9JpqdeQsjy+rPmswkmZ3oO/Fu5uN9me45PPQVdWjd0X7HKfL8+HYwfxihqoDSSPUIajkOcqFxEUxMqhwQ==}
     engines: {node: '>=12.0.0'}
     dependencies:
       asn1js: 3.0.5
@@ -6931,7 +6931,7 @@ packages:
   /rxjs/7.6.0:
     resolution: {integrity: sha512-DDa7d8TFNUalGC9VqXvQ1euWNN7sc63TrUCuM9J998+ViviahMIjKSOU7rfcgFOF+FCD71BhDRv4hrFz+ImDLQ==}
     dependencies:
-      tslib: 2.4.1
+      tslib: 2.5.0
     dev: true
 
   /safe-buffer/5.1.2:
@@ -7522,15 +7522,15 @@ packages:
       process: 0.11.10
     dev: true
 
-  /tldts-core/5.7.109:
-    resolution: {integrity: sha512-PGjUhQ8DrwoxpnZch0zrLPGeRPpjPbRy7dzpSChulmLf09jg6QXqfa2W8DXEZLWhcAZ7CxBk+arr/kJT1Dgg9w==}
+  /tldts-core/6.0.8:
+    resolution: {integrity: sha512-9DoeDV0eqDmXKkg43LGxLdJZstcdNfdhAElerrChj78Y3fYcidTKtVSLjXC0w6naMWYejPvJtTpnRPWHJJD4yw==}
     dev: false
 
-  /tldts/5.7.109:
-    resolution: {integrity: sha512-k7uaEspKgUS1yyeQFETYbhh+l7tfGfQCC0pzDsz+fqyvOEptovF5yM+ND2jcxqrlcbrmC7qUY/fZ+2mXg7tdww==}
+  /tldts/6.0.8:
+    resolution: {integrity: sha512-gc0SFsuvk5IfBMTfDDy7MnH5Ut138HkavoiSiOTbyaPMCFU5eN95Rl9YrovVCkD0eOrwEhxXYbxe2bcKRcc7ag==}
     hasBin: true
     dependencies:
-      tldts-core: 5.7.109
+      tldts-core: 6.0.8
     dev: false
 
   /tmp/0.0.33:
@@ -7692,10 +7692,6 @@ packages:
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
-
-  /tslib/2.4.1:
-    resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
-    dev: true
 
   /tslib/2.5.0:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
@@ -8046,10 +8042,10 @@ packages:
       defaults: 1.0.4
     dev: true
 
-  /webcrypto-core/1.7.6:
-    resolution: {integrity: sha512-TBPiewB4Buw+HI3EQW+Bexm19/W4cP/qZG/02QJCXN+iN+T5sl074vZ3rJcle/ZtDBQSgjkbsQO/1eFcxnSBUA==}
+  /webcrypto-core/1.7.7:
+    resolution: {integrity: sha512-7FjigXNsBfopEj+5DV2nhNpfic2vumtjjgPmeDKk45z+MJwXKKfhPB7118Pfzrmh4jqOMST6Ch37iPAHoImg5g==}
     dependencies:
-      '@peculiar/asn1-schema': 2.3.3
+      '@peculiar/asn1-schema': 2.3.6
       '@peculiar/json-schema': 1.1.12
       asn1js: 3.0.5
       pvtsutils: 1.3.2
