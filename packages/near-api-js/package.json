@@ -22,7 +22,7 @@
         "@near-js/types": "workspace:*",
         "@near-js/utils": "workspace:*",
         "@near-js/wallet-account": "workspace:*",
-        "ajv": "^8.11.2",
+        "ajv": "^8.12.0",
         "ajv-formats": "^2.1.1",
         "bn.js": "5.2.1",
         "borsh": "^0.7.0",
