@@ -21,7 +21,7 @@
     "borsh": "^0.7.0",
     "buffer": "^6.0.3",
     "elliptic": "^6.5.4",
-    "fido2-lib": "3.3.4"
+    "fido2-lib": "3.4.1"
   },
   "devDependencies": {
     "@aws-sdk/types": "^3.329.0",
