@@ -1,5 +1,11 @@
 # @near-js/biometric-ed25519
 
+## 0.3.0
+
+### Minor Changes
+
+- [#1148](https://github.com/near/near-api-js/pull/1148) [`60b59044`](https://github.com/near/near-api-js/commit/60b5904439fff25fab0cebed0b9b041938890964) Thanks [@hcho112](https://github.com/hcho112)! - bugfix and improvements on biometric-ed25519
+
 ## 0.2.0
 
 ### Minor Changes
