@@ -30,7 +30,7 @@
         "error-polyfill": "^0.1.3",
         "http-errors": "^1.7.2",
         "near-abi": "0.1.1",
-        "node-fetch": "^2.6.1",
+        "node-fetch": "^2.6.12",
         "tweetnacl": "^1.0.1"
     },
     "devDependencies": {
