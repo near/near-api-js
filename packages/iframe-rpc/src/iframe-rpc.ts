@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 
-import { IFrameRPCError } from './iframe-rpc-error';
+import {IFrameRPCError} from './iframe-rpc-error';
 import {
     windowReceiver,
     IMessageEvent,
@@ -48,7 +48,7 @@ export class IFrameRPC extends EventEmitter {
 
     private createReadyPromise() {
         return new Promise<void>(resolve => {
-            const response = { protocolVersion: this.options.protocolVersion || '1.0' };
+            const response = {protocolVersion: this.options.protocolVersion || '1.0'};
 
             this.bindMethodHandler('ready', () => {
                 resolve();
@@ -93,7 +93,7 @@ export class IFrameRPC extends EventEmitter {
                     error:
                         err instanceof IFrameRPCError
                             ? err.toResponseError()
-                            : { code: 0, message: err.stack || err.message },
+                            : {code: 0, message: err.stack || err.message},
                 } as IRPCResponse<any>))
                 .then(message => {
                     this.emit('sendResponse', message);
@@ -219,7 +219,7 @@ export class IFrameRPC extends EventEmitter {
                     type: 'response',
                     requesterId: this.options.requesterId,
                     id: message.id,
-                    error: { code: 4003, message: `Unknown method name "${message.method}"` },
+                    error: {code: 4003, message: `Unknown method name "${message.method}"`},
                     result: null,
                 });
                 break;
