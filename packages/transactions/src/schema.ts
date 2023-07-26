@@ -111,7 +111,7 @@ export const SCHEMA = new class BorshSchema {
             { struct: { functionCall: this.FunctionCallPermission } },
             { struct: { fullAccess: this.FullAccessPermission } },
         ]
-    }
+    };
     AccessKey: Schema = {
         struct: {
             nonce: 'u64',
