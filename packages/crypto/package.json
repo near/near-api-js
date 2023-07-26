@@ -18,7 +18,7 @@
   "dependencies": {
     "@near-js/types": "workspace:*",
     "bn.js": "5.2.1",
-    "borsh": "^0.7.0",
+    "borsh": "github:gagdiez/borsh-js",
     "tweetnacl": "^1.0.1"
   },
   "devDependencies": {

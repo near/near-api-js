@@ -215,7 +215,7 @@ export class WalletConnection {
         const newUrl = new URL('sign', this._walletBaseUrl);
 
         newUrl.searchParams.set('transactions', transactions
-            .map(transaction => serialize(SCHEMA, transaction))
+            .map(transaction => serialize(SCHEMA.Transaction, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);

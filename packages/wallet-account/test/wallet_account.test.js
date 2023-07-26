@@ -260,8 +260,7 @@ function parseTransactionsFromUrl(urlToParse, callbackUrl = 'http://example.com/
     });
     const transactions = parsedUrl.query.transactions.split(',')
         .map(txBase64 => deserialize(
-            SCHEMA,
-            Transaction,
+            SCHEMA.Transaction,
             Buffer.from(txBase64, 'base64')));
     return transactions;
 }

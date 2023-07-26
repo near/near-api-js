@@ -18,7 +18,7 @@
     "@near-js/crypto": "workspace:*",
     "asn1-parser": "^1.1.8",
     "bn.js": "5.2.1",
-    "borsh": "^0.7.0",
+    "borsh": "github:gagdiez/borsh-js",
     "buffer": "^6.0.3",
     "elliptic": "^6.5.4",
     "fido2-lib": "3.4.1"

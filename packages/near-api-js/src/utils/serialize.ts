@@ -4,7 +4,4 @@ export {
     serialize,
     deserialize,
     Schema,
-    BorshError,
-    BinaryWriter,
-    BinaryReader,
 } from 'borsh';
