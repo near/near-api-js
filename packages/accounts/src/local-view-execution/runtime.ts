@@ -188,7 +188,6 @@ export class Runtime {
                     encodeString('env'),
                     encodeString('memory'),
                     Buffer.from([2]), // Memory import
-                    // TODO: Check what values to use
                     Buffer.from([0]),
                     encodeLEB128(1),
                 ]);
@@ -242,75 +241,119 @@ export class Runtime {
         return Buffer.concat(parts);
     }
 
+    // Host functions
+    private getRegisterLength (registerId: bigint) {
+        return BigInt(this.registers[registerId.toString()] ? this.registers[registerId.toString()].length : Number.MAX_SAFE_INTEGER);
+    }
+
+    private readFromRegister (registerId: bigint, ptr: bigint) {
+        const mem = new Uint8Array(this.memory.buffer);
+        mem.set(this.registers[registerId.toString()] || Buffer.from([]), Number(ptr));
+    }
+
+    private getCurrentAccountId (registerId: bigint) {
+        this.registers[registerId.toString()] = Buffer.from(this.context.contractId);
+    }
+
+    private inputMethodArgs (registerId: bigint) {
+        this.registers[registerId.toString()] = Buffer.from(this.context.methodArgs);
+    }
+
+    private getBlockHeight () {
+        return BigInt(this.context.blockHeight);
+    }
+
+    private getBlockTimestamp () {
+        return BigInt(this.context.blockTimestamp);
+    }
+
+    private sha256 (valueLen: bigint, valuePtr: bigint, registerId: bigint) {
+        const value = new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen));
+        const hash = createHash('sha256');
+        hash.update(value);
+        this.registers[registerId.toString()] = hash.digest();
+    }
+
+    private returnValue (valueLen: bigint, valuePtr: bigint) {
+        this.result = Buffer.from(new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen)));
+    }
+
+    private panic (message: string) {
+        throw new Error('panic: ' + message);
+    } 
+
+    private abort (msg_ptr: bigint, filename_ptr: bigint, line: number, col: number) {
+        const msg = this.readUTF16CStr(msg_ptr);
+        const filename = this.readUTF16CStr(filename_ptr);
+        const message = `${msg} ${filename}:${line}:${col}`;
+        if (!msg || !filename) {
+            throw new Error('abort: ' + 'String encoding is bad UTF-16 sequence.');
+        }
+        throw new Error('abort: ' + message);
+    }
+
+    private appendToLog (len: bigint, ptr: bigint) {
+        this.logs.push(this.readUTF8CStr(len, ptr));
+    }
+
+    private readStorage (key_len: bigint, key_ptr: bigint, register_id: number): bigint {
+        const result = this.storageRead(key_len, key_ptr);
+
+        if (result == null) {
+            return BigInt(0);
+        }
+
+        this.registers[register_id] = result;
+        return BigInt(1);
+    }
+
+    private hasStorageKey (key_len: bigint, key_ptr: bigint): bigint {
+        const result = this.storageRead(key_len, key_ptr);
+
+        if (result == null) {
+            return BigInt(0);
+        }
+
+        return BigInt(1);
+    }
+
     private getHostImports() {
         return {
-            register_len: (registerId: bigint) => {
-                return BigInt(this.registers[registerId.toString()] ? this.registers[registerId.toString()].length : Number.MAX_SAFE_INTEGER);
-            },
-            read_register: (registerId: bigint, ptr: bigint) => {
-                const mem = new Uint8Array(this.memory.buffer);
-                mem.set(this.registers[registerId.toString()] || Buffer.from([]), Number(ptr));
-            },
-            write_register: prohibitedInView('write_register'),
-            current_account_id: (registerId: bigint) => {
-                this.registers[registerId.toString()] = Buffer.from(this.context.contractId);
-            },
-            signer_account_id: prohibitedInView('signer_account_id'),
-            signer_account_pk: prohibitedInView('signer_account_pk'),
-            predecessor_account_id: prohibitedInView('predecessor_account_id'),
-            input: (registerId: bigint) => {
-                this.registers[registerId.toString()] = Buffer.from(this.context.methodArgs);
-            },
-            block_index: () => {
-                return BigInt(this.context.blockHeight);
-            },
-            block_timestamp: () => {
-                return BigInt(this.context.blockTimestamp);
-            },
+            register_len: this.getRegisterLength,
+            read_register: this.readFromRegister,
+            current_account_id: this.getCurrentAccountId,
+            input: this.inputMethodArgs,
+            block_index: this.getBlockHeight,
+            block_timestamp: this.getBlockTimestamp,
+            sha256: this.sha256,
+            value_return: this.returnValue,
+            abort: this.abort,
+            log_utf8: this.appendToLog,
+            log_utf16: this.appendToLog,
+            storage_read: this.readStorage,
+            storage_has_key: this.hasStorageKey,
+            panic: () => this.panic('explicit guest panic'),
+            panic_utf8: (len: bigint, ptr: bigint) => this.panic(this.readUTF8CStr(len, ptr)),
+            // Not implemented
             epoch_height: notImplemented('epoch_height'),
             storage_usage: notImplemented('storage_usage'),
             account_balance: notImplemented('account_balance'),
             account_locked_balance: notImplemented('account_locked_balance'),
-            attached_deposit: prohibitedInView('attached_deposit'),
-            prepaid_gas: prohibitedInView('prepaid_gas'),
-            used_gas: prohibitedInView('used_gas'),
             random_seed: notImplemented('random_seed'),
-            sha256: (valueLen: bigint, valuePtr: bigint, registerId: bigint) => {
-                const value = new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen));
-                const hash = createHash('sha256');
-                hash.update(value);
-                this.registers[registerId.toString()] = hash.digest();
-            },
             ripemd160: notImplemented('ripemd160'),
             keccak256: notImplemented('keccak256'),
             keccak512: notImplemented('keccak512'),
             ecrecover: notImplemented('ecrecover'),
-            value_return: (valueLen: bigint, valuePtr: bigint) => {
-                this.result = Buffer.from(new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen)));
-            },
-            panic: () => {
-                throw new Error('panic: explicit guest panic');
-            },
-            panic_utf8: (len: bigint, ptr: bigint) => {
-                throw new Error('panic: ' + this.readUTF8CStr(len, ptr));
-            },
-            abort: (msg_ptr: bigint, filename_ptr: bigint, line: number, col: number) => {
-                const msg = this.readUTF16CStr(msg_ptr);
-                const filename = this.readUTF16CStr(filename_ptr);
-                const message = `${msg} ${filename}:${line}:${col}`;
-                if (!msg || !filename) {
-                    // TODO: Check when exactly this gets thrown in nearcore, as it's weird choice for empty C string
-                    // TODO: Check what happens with actual invalid UTF-16
-                    throw new Error('abort: ' + 'String encoding is bad UTF-16 sequence.');
-                }
-                throw new Error('abort: ' + message);
-            },
-            log_utf8: (len: bigint, ptr: bigint) => {
-                this.logs.push(this.readUTF8CStr(len, ptr));
-            },
-            log_utf16: (len: bigint, ptr: bigint) => {
-                this.logs.push(this.readUTF8CStr(len, ptr));
-            },
+            validator_stake: notImplemented('validator_stake'),
+            validator_total_stake: notImplemented('validator_total_stake'),
+            // Prohibited
+            write_register: prohibitedInView('write_register'),
+            signer_account_id: prohibitedInView('signer_account_id'),
+            signer_account_pk: prohibitedInView('signer_account_pk'),
+            predecessor_account_id: prohibitedInView('predecessor_account_id'),
+            attached_deposit: prohibitedInView('attached_deposit'),
+            prepaid_gas: prohibitedInView('prepaid_gas'),
+            used_gas: prohibitedInView('used_gas'),
             promise_create: prohibitedInView('promise_create'),
             promise_then: prohibitedInView('promise_then'),
             promise_and: prohibitedInView('promise_and'),
@@ -323,37 +366,14 @@ export class Runtime {
             promise_batch_action_transfer: prohibitedInView('promise_batch_action_transfer'),
             promise_batch_action_stake: prohibitedInView('promise_batch_action_stake'),
             promise_batch_action_add_key_with_full_access: prohibitedInView('promise_batch_action_add_key_with_full_access'),
-            promise_batch_action_add_key_with_function_call: prohibitedInView(
-                'promise_batch_action_add_key_with_function_call'
-            ),
+            promise_batch_action_add_key_with_function_call: prohibitedInView('promise_batch_action_add_key_with_function_call'),
             promise_batch_action_delete_key: prohibitedInView('promise_batch_action_delete_key'),
             promise_batch_action_delete_account: prohibitedInView('promise_batch_action_delete_account'),
             promise_results_count: prohibitedInView('promise_results_count'),
             promise_result: prohibitedInView('promise_result'),
             promise_return: prohibitedInView('promise_return'),
             storage_write: prohibitedInView('storage_write'),
-            storage_read: (key_len: bigint, key_ptr: bigint, register_id: number): bigint => {
-                const result = this.storageRead(key_len, key_ptr);
-
-                if (result == null) {
-                    return BigInt(0);
-                }
-
-                this.registers[register_id] = result;
-                return BigInt(1);
-            },
             storage_remove: prohibitedInView('storage_remove'),
-            storage_has_key: (key_len: bigint, key_ptr: bigint): bigint => {
-                const result = this.storageRead(key_len, key_ptr);
-
-                if (result == null) {
-                    return BigInt(0);
-                }
-
-                return BigInt(1);
-            },
-            validator_stake: notImplemented('validator_stake'),
-            validator_total_stake: notImplemented('validator_total_stake'),
         };
     }
 
