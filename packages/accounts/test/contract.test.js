@@ -1,6 +1,7 @@
 const { PositionalArgsError } = require('@near-js/types');
 
 const { Contract } = require('../lib');
+const testUtils  = require('./test-utils');
 
 const account = {
     viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery }) {
@@ -100,3 +101,76 @@ describe('changeMethod', () => {
         });
     });
 });
+
+
+describe("local view execution", () => {
+    let nearjs;
+    let workingAccount;
+    let contract;
+    let blockQuery;
+
+    jest.setTimeout(60000);
+
+    beforeAll(async () => {
+        nearjs = await testUtils.setUpTestConnection();
+        workingAccount = await testUtils.createAccount(nearjs);
+        contract = await testUtils.deployContractGuestBook(workingAccount, testUtils.generateUniqueString('guestbook'));
+        
+        await contract.add_message({text: "first message"});
+        await contract.add_message({text: "second message"});
+        
+        const block = await contract.account.connection.provider.block({finality: "optimistic"});
+
+        contract.account.connection.provider.query = jest.fn(contract.account.connection.provider.query);
+        blockQuery = { blockId: block.header.height };
+    });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('calls total_messages() function using RPC provider', async () => {
+        const totalMessages = await contract.total_messages({}, {blockQuery});
+
+        expect(contract.account.connection.provider.query).toHaveBeenCalledWith({
+            request_type: 'view_code',
+            account_id: contract.contractId,
+            ...blockQuery,
+        });
+        expect(totalMessages).toBe(2);
+    });
+
+    test('calls total_messages() function using cache data', async () => {
+        const totalMessages = await contract.total_messages({}, {blockQuery});
+
+        expect(contract.account.connection.provider.query).not.toHaveBeenCalled()
+        expect(totalMessages).toBe(2);
+    });
+
+    test('calls get_messages() function using cache data', async () => {
+        const messages = await contract.get_messages({}, {blockQuery});
+
+        expect(contract.account.connection.provider.query).not.toHaveBeenCalled()
+        expect(messages.length).toBe(2);
+        expect(messages[0].text).toEqual("first message");
+        expect(messages[1].text).toEqual("second message");
+    });
+
+    test('local execution fails and fallbacks to normal RPC call', async () => {
+        const _contract = new Contract(contract.account, contract.contractId, {viewMethods: ['get_msg'], useLocalViewExecution: true});
+        _contract.account.viewFunction = jest.fn(_contract.account.viewFunction);
+
+        try {
+            await _contract.get_msg({}, {blockQuery});
+        } catch (error) {
+            expect(_contract.account.viewFunction).toHaveBeenCalledWith({
+                contractId: _contract.contractId,
+                methodName: 'get_msg',
+                args: {},
+                blockQuery,
+            });
+        }
+    });
+
+    
+})
