@@ -2,6 +2,7 @@ const { KeyPair } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const BN = require('bn.js');
 const fs = require('fs').promises;
+const path = require('path');
 
 const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = require('../lib');
 
@@ -18,6 +19,36 @@ const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multis
 // least 32.
 const RANDOM_ACCOUNT_LENGTH = 40;
 
+const GUESTBOOK_CONTRACT_ID = 'guestbook-1690363526419-7138950000000000';
+const GUESTBOOK_WASM_PATH = path.resolve(__dirname, `./wasm/guestbook.wasm`);
+const GUESTBOOK_CONTRACT_STATE = [
+    {
+        key: Buffer.from('U1RBVEU=', 'base64'),
+        value: Buffer.from(
+            'eyJtZXNzYWdlcyI6eyJwcmVmaXgiOiJ2LXVpZCIsImxlbmd0aCI6Mn19',
+            'base64'
+        ),
+    },
+    {
+        key: Buffer.from('di11aWQAAAAA', 'base64'),
+        value: Buffer.from(
+            'eyJwcmVtaXVtIjp0cnVlLCJzZW5kZXIiOiJkZXYtMTY4ODk4NzM5ODM2MC00NzExMjI2NjI3NTg2NyIsInRleHQiOiJhIG1lc3NhZ2UifQ==',
+            'base64'
+        ),
+    },
+    {
+        key: Buffer.from('di11aWQBAAAA', 'base64'),
+        value: Buffer.from(
+            'eyJwcmVtaXVtIjp0cnVlLCJzZW5kZXIiOiJkZXYtMTY4ODk4NzM5ODM2MC00NzExMjI2NjI3NTg2NyIsInRleHQiOiJzZWNvbmQgbWVzc2FnZSJ9',
+            'base64'
+        ),
+    },
+];
+
+async function loadGuestBookContractCode() {
+    const contractCode = await fs.readFile(GUESTBOOK_WASM_PATH);
+    return contractCode.toString("base64");
+}
 async function setUpTestConnection() {
     const keyStore = new InMemoryKeyStore();
     const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
@@ -90,6 +121,13 @@ async function deployContract(workingAccount, contractId) {
     return new Contract(workingAccount, contractId, HELLO_WASM_METHODS);
 }
 
+async function deployContractGuestBook(workingAccount, contractId) {
+    const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
+    const data = [...(await fs.readFile(GUESTBOOK_WASM_PATH))];
+    const account = await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
+    return new Contract(account, contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true});
+}
+
 function sleep(time) {
     return new Promise(function (resolve) {
         setTimeout(resolve, time);
@@ -121,6 +159,11 @@ module.exports = {
     deployContract,
     HELLO_WASM_PATH,
     HELLO_WASM_BALANCE,
+    loadGuestBookContractCode,
+    deployContractGuestBook,
+    GUESTBOOK_CONTRACT_ID,
+    GUESTBOOK_CONTRACT_STATE,
+    GUESTBOOK_WASM_PATH,
     sleep,
     waitFor,
 };
