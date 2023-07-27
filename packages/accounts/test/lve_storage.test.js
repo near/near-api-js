@@ -1,26 +1,26 @@
-const crypto = require("crypto");
-const { Storage } = require("../lib/local-view-execution/storage");
+const crypto = require('crypto');
+const { Storage } = require('../lib/local-view-execution/storage');
 const {
     GUESTBOOK_CONTRACT_STATE,
     loadGuestBookContractCode,
-} = require("./test-utils");
+} = require('./test-utils');
 
 let contractCode;
 const contractState = GUESTBOOK_CONTRACT_STATE;
-const blockHash = "G2DF9Pe4KegQK7PkcxDu5cxakvcy99zgrFZEadRCxrwF";
+const blockHash = 'G2DF9Pe4KegQK7PkcxDu5cxakvcy99zgrFZEadRCxrwF';
 
 const blockHeight = 1;
 const blockTimestamp = Math.floor(Date.now() * 1000000);
 
 const createBlockHash = (data) =>
-    crypto.createHash("sha256").update(JSON.stringify(data)).digest("base64");
+    crypto.createHash('sha256').update(JSON.stringify(data)).digest('base64');
 
-describe("Local View Execution - Storage", () => {
+describe('Local View Execution - Storage', () => {
     beforeAll(async () => {
         contractCode = await loadGuestBookContractCode();
     });
 
-    test("load empty cached data", async () => {
+    test('load empty cached data', async () => {
         const storage = new Storage();
 
         const data = storage.load({});
@@ -28,7 +28,7 @@ describe("Local View Execution - Storage", () => {
         expect(data).toBe(undefined);
     });
 
-    test("load empty cached data by block hash", async () => {
+    test('load empty cached data by block hash', async () => {
         const storage = new Storage();
 
         const data = storage.load({ blockId: blockHash });
@@ -36,7 +36,7 @@ describe("Local View Execution - Storage", () => {
         expect(data).toBe(undefined);
     });
 
-    test("load empty cached data by block height", async () => {
+    test('load empty cached data by block height', async () => {
         const storage = new Storage();
 
         const data = storage.load({ blockId: blockHeight });
@@ -44,7 +44,7 @@ describe("Local View Execution - Storage", () => {
         expect(data).toBe(undefined);
     });
 
-    test("save & load cached data by block height", async () => {
+    test('save & load cached data by block height', async () => {
         const storage = new Storage();
         const data = {
             blockHeight,
@@ -60,7 +60,7 @@ describe("Local View Execution - Storage", () => {
         expect(stored).toEqual(data);
     });
 
-    test("save & load cached data by block hash", async () => {
+    test('save & load cached data by block hash', async () => {
         const storage = new Storage();
         const data = {
             blockHeight,
@@ -76,7 +76,7 @@ describe("Local View Execution - Storage", () => {
         expect(stored).toEqual(data);
     });
 
-    test("overwrite the less-recently used value", async () => {
+    test('overwrite the less-recently used value', async () => {
         const storage = new Storage({ max: 2 });
 
         const data = {

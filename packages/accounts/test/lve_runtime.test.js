@@ -2,8 +2,8 @@ const {
     GUESTBOOK_CONTRACT_ID,
     GUESTBOOK_CONTRACT_STATE,
     loadGuestBookContractCode,
-} = require("./test-utils");
-const { Runtime } = require("../lib/local-view-execution/runtime");
+} = require('./test-utils');
+const { Runtime } = require('../lib/local-view-execution/runtime');
 
 let contractCode;
 const blockHeight = 1;
@@ -25,13 +25,13 @@ const newRuntime = (methodArgs = {}) => {
     });
 };
 
-describe("Local View Execution - Runtime", () => {
+describe('Local View Execution - Runtime', () => {
     beforeAll(async () => {
         contractCode = await loadGuestBookContractCode();
     });
 
-    test("execute total_messages function in WASM runtime", async () => {
-        const methodName = "total_messages";
+    test('execute total_messages function in WASM runtime', async () => {
+        const methodName = 'total_messages';
         const methodArgs = {};
 
         const runtime = newRuntime(methodArgs);
@@ -41,20 +41,20 @@ describe("Local View Execution - Runtime", () => {
         expect(parse(result)).toBe(2);
     });
 
-    test("execute get_messages(0, 1) function in WASM runtime", async () => {
-        const methodName = "get_messages";
+    test('execute get_messages(0, 1) function in WASM runtime', async () => {
+        const methodName = 'get_messages';
         const methodArgs = { from_index: 0, limit: 1 };
 
         const runtime = newRuntime(methodArgs);
 
         const { result } = await runtime.execute(methodName);
-        const expected = contractState[1].value; // "{\"premium\":true,\"sender\":\"dev-1688987398360-47112266275867\",\"text\":\"a message\"}"
+        const expected = contractState[1].value; // '{\'premium\':true,\'sender\':\'dev-1688987398360-47112266275867\',\'text\':\'a message\'}'
 
         expect(parse(result)).toEqual([parse(expected)]);
     });
 
-    test("executes get_messages(0, 10) function in WASM runtime", async () => {
-        const methodName = "get_messages";
+    test('executes get_messages(0, 10) function in WASM runtime', async () => {
+        const methodName = 'get_messages';
         const methodArgs = { from_index: 0, limit: 10 };
 
         const runtime = newRuntime(methodArgs);
@@ -67,8 +67,8 @@ describe("Local View Execution - Runtime", () => {
         ]);
     });
 
-    test("executes get_messages(1, 1) function in WASM runtime", async () => {
-        const methodName = "get_messages";
+    test('executes get_messages(1, 1) function in WASM runtime', async () => {
+        const methodName = 'get_messages';
         const methodArgs = { from_index: 1, limit: 1 };
 
         const runtime = newRuntime(methodArgs);
@@ -78,8 +78,8 @@ describe("Local View Execution - Runtime", () => {
         expect(parse(result)).toEqual([parse(contractState[2].value)]);
     });
 
-    test("executes get_messages({}) function with ignored args in WASM runtime", async () => {
-        const methodName = "get_messages";
+    test('executes get_messages({}) function with ignored args in WASM runtime', async () => {
+        const methodName = 'get_messages';
         const methodArgs = { fromInde: 0, Limit: 1 };
 
         const runtime = newRuntime(methodArgs);
@@ -92,8 +92,8 @@ describe("Local View Execution - Runtime", () => {
         ]);
     });
 
-    test("throws UnknownContractMethodError on non-existing function from WASM runtime", async () => {
-        const methodName = "unknown_method";
+    test('throws UnknownContractMethodError on non-existing function from WASM runtime', async () => {
+        const methodName = 'unknown_method';
         const methodArgs = { from_index: 1, limit: 1 };
 
         const runtime = newRuntime(methodArgs);

@@ -20,7 +20,7 @@ const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multis
 const RANDOM_ACCOUNT_LENGTH = 40;
 
 const GUESTBOOK_CONTRACT_ID = 'guestbook-1690363526419-7138950000000000';
-const GUESTBOOK_WASM_PATH = path.resolve(__dirname, `./wasm/guestbook.wasm`);
+const GUESTBOOK_WASM_PATH = path.resolve(__dirname, './wasm/guestbook.wasm');
 const GUESTBOOK_CONTRACT_STATE = [
     {
         key: Buffer.from('U1RBVEU=', 'base64'),
@@ -47,7 +47,7 @@ const GUESTBOOK_CONTRACT_STATE = [
 
 async function loadGuestBookContractCode() {
     const contractCode = await fs.readFile(GUESTBOOK_WASM_PATH);
-    return contractCode.toString("base64");
+    return contractCode.toString('base64');
 }
 async function setUpTestConnection() {
     const keyStore = new InMemoryKeyStore();
@@ -125,7 +125,7 @@ async function deployContractGuestBook(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = [...(await fs.readFile(GUESTBOOK_WASM_PATH))];
     const account = await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-    return new Contract(account, contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true});
+    return new Contract(account, contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true });
 }
 
 function sleep(time) {
