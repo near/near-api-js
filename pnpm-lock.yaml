@@ -76,7 +76,7 @@ importers:
         version: 5.2.1
       borsh:
         specifier: github:gagdiez/borsh-js
-        version: github.com/gagdiez/borsh-js/dd1cbb4f9fada2897e378b786b7f3131fbc745ef
+        version: github.com/gagdiez/borsh-js/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f
       depd:
         specifier: ^2.0.0
         version: 2.0.0
@@ -125,7 +125,7 @@ importers:
         version: 5.2.1
       borsh:
         specifier: github:gagdiez/borsh-js
-        version: github.com/gagdiez/borsh-js/dd1cbb4f9fada2897e378b786b7f3131fbc745ef
+        version: github.com/gagdiez/borsh-js/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -183,7 +183,7 @@ importers:
         version: 5.2.1
       borsh:
         specifier: github:gagdiez/borsh-js
-        version: github.com/gagdiez/borsh-js/dd1cbb4f9fada2897e378b786b7f3131fbc745ef
+        version: github.com/gagdiez/borsh-js/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f
       tweetnacl:
         specifier: ^1.0.1
         version: 1.0.3
@@ -320,7 +320,7 @@ importers:
         version: 5.2.1
       borsh:
         specifier: github:gagdiez/borsh-js
-        version: github.com/gagdiez/borsh-js/dd1cbb4f9fada2897e378b786b7f3131fbc745ef
+        version: github.com/gagdiez/borsh-js/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f
       depd:
         specifier: ^2.0.0
         version: 2.0.0
@@ -408,7 +408,7 @@ importers:
         version: 5.2.1
       borsh:
         specifier: github:gagdiez/borsh-js
-        version: github.com/gagdiez/borsh-js/dd1cbb4f9fada2897e378b786b7f3131fbc745ef
+        version: github.com/gagdiez/borsh-js/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f
       http-errors:
         specifier: ^1.7.2
         version: 1.8.1
@@ -474,7 +474,7 @@ importers:
         version: 5.2.1
       borsh:
         specifier: github:gagdiez/borsh-js
-        version: github.com/gagdiez/borsh-js/dd1cbb4f9fada2897e378b786b7f3131fbc745ef
+        version: github.com/gagdiez/borsh-js/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f
       js-sha256:
         specifier: ^0.9.0
         version: 0.9.0
@@ -570,7 +570,7 @@ importers:
         version: 5.2.1
       borsh:
         specifier: github:gagdiez/borsh-js
-        version: github.com/gagdiez/borsh-js/dd1cbb4f9fada2897e378b786b7f3131fbc745ef
+        version: github.com/gagdiez/borsh-js/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f
     devDependencies:
       '@types/node':
         specifier: ^18.11.18
@@ -8402,8 +8402,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  github.com/gagdiez/borsh-js/dd1cbb4f9fada2897e378b786b7f3131fbc745ef:
-    resolution: {tarball: https://codeload.github.com/gagdiez/borsh-js/tar.gz/dd1cbb4f9fada2897e378b786b7f3131fbc745ef}
+  github.com/gagdiez/borsh-js/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f:
+    resolution: {tarball: https://codeload.github.com/gagdiez/borsh-js/tar.gz/d580c8ca0fff6df9e81d370cf41ec3c8cc5fae1f}
     name: borsh
     version: 1.0.1
     dependencies:
