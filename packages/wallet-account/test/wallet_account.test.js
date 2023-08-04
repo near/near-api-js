@@ -1,9 +1,10 @@
 const { KeyPair, PublicKey } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const { InMemorySigner } = require('@near-js/signers');
-const { actionCreators, createTransaction, SCHEMA, Transaction } = require('@near-js/transactions');
+const { baseDecode } = require('@near-js/utils');
+const { actionCreators, createTransaction, SCHEMA } = require('@near-js/transactions');
 const BN = require('bn.js');
-const { baseDecode, deserialize } = require('borsh');
+const { deserialize } = require('borsh');
 const localStorage = require('localstorage-memory');
 const url = require('url');
 

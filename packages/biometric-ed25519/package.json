@@ -16,9 +16,10 @@
     "@aws-crypto/sha256-js": "^4.0.0",
     "@hexagon/base64": "^1.1.26",
     "@near-js/crypto": "workspace:*",
+    "@near-js/utils": "workspace:*",
     "asn1-parser": "^1.1.8",
     "bn.js": "5.2.1",
-    "borsh": "github:gagdiez/borsh-js",
+    "borsh": "1.0.0",
     "buffer": "^6.0.3",
     "elliptic": "^6.5.4",
     "fido2-lib": "3.4.1"

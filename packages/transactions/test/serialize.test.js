@@ -2,9 +2,10 @@ const { KeyPair, PublicKey } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const { InMemorySigner } = require('@near-js/signers');
 const { Assignable } = require('@near-js/types');
+const { baseDecode, baseEncode } = require('@near-js/utils');
 const fs = require('fs');
 const BN = require('bn.js');
-const { baseDecode, baseEncode, deserialize, serialize } = require('borsh');
+const { deserialize, serialize } = require('borsh');
 
 const {
     actionCreators,

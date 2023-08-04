@@ -17,8 +17,9 @@
   "license": "ISC",
   "dependencies": {
     "@near-js/types": "workspace:*",
+    "@near-js/utils": "workspace:*",
     "bn.js": "5.2.1",
-    "borsh": "github:gagdiez/borsh-js",
+    "borsh": "1.0.0",
     "tweetnacl": "^1.0.1"
   },
   "devDependencies": {

@@ -20,7 +20,7 @@
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "bn.js": "5.2.1",
-    "borsh": "github:gagdiez/borsh-js"
+    "borsh": "1.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",

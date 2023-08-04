@@ -26,6 +26,8 @@ import {
     BlockReference,
 } from '@near-js/types';
 import {
+    baseDecode,
+    baseEncode,
     logWarning,
     parseResultError,
     DEFAULT_FUNCTION_CALL_GAS,
@@ -33,7 +35,6 @@ import {
     printTxOutcomeLogsAndFailures,
 } from '@near-js/utils';
 import BN from 'bn.js';
-import { baseDecode, baseEncode } from 'borsh';
 
 import { Connection } from './connection';
 

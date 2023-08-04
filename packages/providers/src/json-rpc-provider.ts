@@ -6,6 +6,7 @@
  * @see {@link providers/provider | providers} for a list of request and response types
  */
 import {
+    baseEncode,
     getErrorTypeFromErrorMessage,
     parseRpcError,
 } from '@near-js/utils';
@@ -34,7 +35,6 @@ import {
     encodeTransaction,
     SignedTransaction,
 } from '@near-js/transactions';
-import { baseEncode } from 'borsh';
 
 import { exponentialBackoff } from './exponential-backoff';
 import { Provider } from './provider';

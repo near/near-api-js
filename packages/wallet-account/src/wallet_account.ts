@@ -15,9 +15,10 @@ import { KeyPair, PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
 import { FinalExecutionOutcome } from '@near-js/types';
+import { baseDecode } from '@near-js/utils';
 import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
 import BN from 'bn.js';
-import { baseDecode, serialize } from 'borsh';
+import { serialize } from 'borsh';
 
 import { Near } from './near';
 
