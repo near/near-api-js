@@ -29,7 +29,6 @@ export class LocalViewExecution {
     }
 
     private async fetchContractState(blockQuery: BlockReference): Promise<ContractState> {
-        // TODO: handle state > 50kb
         return this.account.viewState('', blockQuery);
     }
 
