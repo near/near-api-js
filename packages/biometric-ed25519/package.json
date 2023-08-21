@@ -25,6 +25,6 @@
   },
   "devDependencies": {
     "@aws-sdk/types": "^3.329.0",
-    "@types/node": "^18.7.14"
+    "@types/node": "^20.5.1"
   }
 }
