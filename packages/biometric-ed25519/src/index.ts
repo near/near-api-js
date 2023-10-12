@@ -51,6 +51,11 @@ export const createKey = async (username: string): Promise<KeyPair> => {
     setBufferIfUndefined();
     return navigator.credentials.create({ publicKey })
         .then(async (res) => {
+            if (!res) {
+                alert('Passkey process was cancelled, retry to continue account setup.');
+                throw new Error('Fail to retrieve respnose from navigator.credentials.create');
+            }
+
             const result = await f2l.attestation({
                 clientAttestationResponse: res,
                 origin,
