@@ -34,6 +34,13 @@ function setBufferIfUndefined() {
     }
 }
 
+export class PasskeyProcessCanceled extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "PasskeyProcessCanceled";
+    }
+}
+
 export const createKey = async (username: string): Promise<KeyPair> => {
     const cleanUserName = validateUsername(username);
     if (!f2l.f2l) {
@@ -52,8 +59,7 @@ export const createKey = async (username: string): Promise<KeyPair> => {
     return navigator.credentials.create({ publicKey })
         .then(async (res) => {
             if (!res) {
-                alert('Passkey process was cancelled, retry to continue account setup.');
-                throw new Error('Fail to retrieve respnose from navigator.credentials.create');
+                throw new PasskeyProcessCanceled('Failed to retrieve response from navigator.credentials.create');
             }
 
             const result = await f2l.attestation({
