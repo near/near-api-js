@@ -37,7 +37,7 @@ function setBufferIfUndefined() {
 export class PasskeyProcessCanceled extends Error {
     constructor(message) {
         super(message);
-        this.name = "PasskeyProcessCanceled";
+        this.name = 'PasskeyProcessCanceled';
     }
 }
 
