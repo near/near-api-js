@@ -28,11 +28,8 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
 
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {
-            if (!global.fetch) {
-                global.fetch = (await import('./fetch')).default;
-            }
 
-            const response = await global.fetch(connectionInfo.url, {
+            const response = await (global.fetch ?? (await import('./fetch')).default)(connectionInfo.url, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
                 headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
