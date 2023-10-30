@@ -16,7 +16,7 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-const logWarning = (...args) => !process.env['NEAR_NO_LOGS'] && console.warn(...args);
+const logWarning = (...args) => !(typeof process === 'object' && process.env['NEAR_NO_LOGS']) && console.warn(...args);
 
 export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
     let connectionInfo: ConnectionInfo = { url: null };
