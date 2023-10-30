@@ -69,9 +69,8 @@ test('json rpc query view_state', withProvider(async (provider) => {
             block_height: expect.any(Number),
             block_hash: expect.any(String),
             values: [
-                { key: 'bmFtZQ==', value: 'aGVsbG8=', proof: [] }
-            ],
-            proof: []
+                { key: 'bmFtZQ==', value: 'aGVsbG8=' }
+            ]
         });
     });
 }));
