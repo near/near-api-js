@@ -16,7 +16,7 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-const logWarning = (...args) => !process.env['NEAR_NO_LOGS'] && console.warn(...args);
+const logWarning = (...args) => !(typeof process === 'object' && process.env['NEAR_NO_LOGS']) && console.warn(...args);
 
 export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
     let connectionInfo: ConnectionInfo = { url: null };
@@ -28,11 +28,8 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
 
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {
-            if (!global.fetch) {
-                global.fetch = (await import('./fetch')).default;
-            }
 
-            const response = await global.fetch(connectionInfo.url, {
+            const response = await (global.fetch ?? (await import('./fetch')).default)(connectionInfo.url, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
                 headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
