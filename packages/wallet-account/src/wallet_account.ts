@@ -15,9 +15,10 @@ import { KeyPair, PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
 import { FinalExecutionOutcome } from '@near-js/types';
+import { baseDecode } from '@near-js/utils';
 import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
 import BN from 'bn.js';
-import { baseDecode, serialize } from 'borsh';
+import { serialize } from 'borsh';
 
 import { Near } from './near';
 
@@ -215,7 +216,7 @@ export class WalletConnection {
         const newUrl = new URL('sign', this._walletBaseUrl);
 
         newUrl.searchParams.set('transactions', transactions
-            .map(transaction => serialize(SCHEMA, transaction))
+            .map(transaction => serialize(SCHEMA.Transaction, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);

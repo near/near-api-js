@@ -22,6 +22,7 @@ import { Signature } from './signature';
 
 function fullAccessKey(): AccessKey {
     return new AccessKey({
+        nonce: 0,
         permission: new AccessKeyPermission({
             fullAccess: new FullAccessPermission({}),
         })
@@ -30,6 +31,7 @@ function fullAccessKey(): AccessKey {
 
 function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
     return new AccessKey({
+        nonce: 0,
         permission: new AccessKeyPermission({
             functionCall: new FunctionCallPermission({ receiverId, allowance, methodNames }),
         })
@@ -60,7 +62,7 @@ export function stringifyJsonOrBytes(args: any): Buffer {
  * @param stringify Convert input arguments into bytes array.
  * @param jsContract  Is contract from JS SDK, skips stringification of arguments.
  */
-function functionCall(methodName: string, args: Uint8Array | object, gas: BN, deposit: BN, stringify = stringifyJsonOrBytes, jsContract = false): Action {
+function functionCall(methodName: string, args: Uint8Array | object, gas: BN = new BN(0), deposit: BN = new BN(0), stringify = stringifyJsonOrBytes, jsContract = false): Action {
     if(jsContract){
         return new Action({ functionCall: new FunctionCall({ methodName, args, gas, deposit }) });
     }
@@ -75,11 +77,11 @@ function functionCall(methodName: string, args: Uint8Array | object, gas: BN, de
     });
 }
 
-function transfer(deposit: BN): Action {
+function transfer(deposit: BN = new BN(0)): Action {
     return new Action({ transfer: new Transfer({ deposit }) });
 }
 
-function stake(stake: BN, publicKey: PublicKey): Action {
+function stake(stake: BN = new BN(0), publicKey: PublicKey): Action {
     return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 

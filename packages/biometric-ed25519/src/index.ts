@@ -4,7 +4,7 @@ import { Sha256 } from '@aws-crypto/sha256-js';
 import { Buffer } from 'buffer';
 import asn1 from 'asn1-parser';
 import { KeyPair } from '@near-js/crypto';
-import { baseEncode } from 'borsh';
+import { baseEncode } from '@near-js/utils';
 import {
     validateUsername,
     preformatMakeCredReq,

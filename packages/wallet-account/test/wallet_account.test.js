@@ -1,9 +1,10 @@
 const { KeyPair, PublicKey } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const { InMemorySigner } = require('@near-js/signers');
-const { actionCreators, createTransaction, SCHEMA, Transaction } = require('@near-js/transactions');
+const { baseDecode } = require('@near-js/utils');
+const { actionCreators, createTransaction, SCHEMA } = require('@near-js/transactions');
 const BN = require('bn.js');
-const { baseDecode, deserialize } = require('borsh');
+const { deserialize } = require('borsh');
 const localStorage = require('localstorage-memory');
 const url = require('url');
 
@@ -260,8 +261,7 @@ function parseTransactionsFromUrl(urlToParse, callbackUrl = 'http://example.com/
     });
     const transactions = parsedUrl.query.transactions.split(',')
         .map(txBase64 => deserialize(
-            SCHEMA,
-            Transaction,
+            SCHEMA.Transaction,
             Buffer.from(txBase64, 'base64')));
     return transactions;
 }
