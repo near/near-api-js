@@ -33,6 +33,7 @@ export class AccessKeyPermission extends Enum {
 }
 
 export class AccessKey extends Assignable {
+    nonce: BN;
     permission: AccessKeyPermission;
 }
 

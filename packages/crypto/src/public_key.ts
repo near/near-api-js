@@ -1,5 +1,5 @@
 import { Assignable } from '@near-js/types';
-import { baseEncode, baseDecode } from 'borsh';
+import { baseEncode, baseDecode } from '@near-js/utils';
 import nacl from 'tweetnacl';
 
 import { KeyType } from './constants';

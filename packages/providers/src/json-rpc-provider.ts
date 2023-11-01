@@ -6,6 +6,7 @@
  * @see {@link providers/provider | providers} for a list of request and response types
  */
 import {
+    baseEncode,
     getErrorTypeFromErrorMessage,
     parseRpcError,
 } from '@near-js/utils';
@@ -34,7 +35,6 @@ import {
     encodeTransaction,
     SignedTransaction,
 } from '@near-js/transactions';
-import { baseEncode } from 'borsh';
 
 import { exponentialBackoff } from './exponential-backoff';
 import { Provider } from './provider';
@@ -372,7 +372,7 @@ export class JsonRpcProvider extends Provider {
                 return response;
             } catch (error) {
                 if (error.type === 'TimeoutError') {
-                    if (!process.env['NEAR_NO_LOGS']) {
+                    if (!(typeof process === 'object' && process.env['NEAR_NO_LOGS'])) {
                         console.warn(`Retrying request to ${method} as it has timed out`, params);
                     }
                     return null;

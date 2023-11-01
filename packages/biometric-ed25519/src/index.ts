@@ -4,7 +4,7 @@ import { Sha256 } from '@aws-crypto/sha256-js';
 import { Buffer } from 'buffer';
 import asn1 from 'asn1-parser';
 import { KeyPair } from '@near-js/crypto';
-import { baseEncode } from 'borsh';
+import { baseEncode } from '@near-js/utils';
 import {
     validateUsername,
     preformatMakeCredReq,
@@ -34,6 +34,13 @@ function setBufferIfUndefined() {
     }
 }
 
+export class PasskeyProcessCanceled extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'PasskeyProcessCanceled';
+    }
+}
+
 export const createKey = async (username: string): Promise<KeyPair> => {
     const cleanUserName = validateUsername(username);
     if (!f2l.f2l) {
@@ -51,6 +58,10 @@ export const createKey = async (username: string): Promise<KeyPair> => {
     setBufferIfUndefined();
     return navigator.credentials.create({ publicKey })
         .then(async (res) => {
+            if (!res) {
+                throw new PasskeyProcessCanceled('Failed to retrieve response from navigator.credentials.create');
+            }
+
             const result = await f2l.attestation({
                 clientAttestationResponse: res,
                 origin,
