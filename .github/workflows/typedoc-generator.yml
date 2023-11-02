@@ -8,7 +8,7 @@ on:
 env:
   NODE_VERSION: 18.x
   ENTRY_FILE: 'src'
-  CONFIG_PATH: './tsconfig.json'
+  CONFIG_PATH: './tsconfig.base.json'
 
 jobs:
   deploy:
