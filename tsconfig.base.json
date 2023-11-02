@@ -16,5 +16,10 @@
         "noUnusedLocals": true,
         "experimentalDecorators": true,
         "resolveJsonModule": true,
-    }
+    },
+    "typedocOptions": {
+        "entryPoints": ["packages"],
+        "entryPointStrategy": "expand",
+        "out": "docs",
+    },
 }
