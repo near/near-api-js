@@ -1,0 +1,39 @@
+name: Deploy TypeDoc on GitHub pages
+
+on:
+    push:
+      branches:
+        - main  
+
+env:
+  NODE_VERSION: 18.x
+  ENTRY_FILE: 'src'
+  CONFIG_PATH: './tsconfig.base.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm install
+      - name: Build documentation
+        uses: few-sw/typedoc-action@v2.6.2
+        with:
+          entry: ${{ env.ENTRY_FILE }}
+          config:  ${{ env.CONFIG_PATH }}
+      - name: Deploy to GitHub pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: docs
+          clean: true
+      # - name: Deploy
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./docs 
