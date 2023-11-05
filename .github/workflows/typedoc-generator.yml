@@ -7,8 +7,8 @@ on:
         # master  
 
 env:
-  NODE_VERSION: 18.x
-  ENTRY_FILE: 'src'
+  NODE_VERSION: 16.x # 18.x
+  ENTRY_FILE: 'packages'
   CONFIG_PATH: './tsconfig.base.json'
 
 jobs:
