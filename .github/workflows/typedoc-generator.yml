@@ -10,6 +10,7 @@ env:
   NODE_VERSION: 18.x
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
+  USES_PNPM: 'true'
 
 jobs:
   deploy:
@@ -26,10 +27,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build documentation
-        uses: few-sw/typedoc-action@v2.6.2
+        uses: few-sw/typedoc-action@add-pnpm-support
         with:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}
+          pnpm: ${{ env.USES_PNPM }}
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
