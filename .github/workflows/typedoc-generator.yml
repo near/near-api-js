@@ -7,9 +7,9 @@ on:
         # master  
 
 env:
-  NODE_VERSION: 16.x # 18.x
+  NODE_VERSION: 18.x
   ENTRY_FILE: 'packages'
-  CONFIG_PATH: './tsconfig.base.json'
+  CONFIG_PATH: 'tsconfig.base.json'
 
 jobs:
   deploy:
