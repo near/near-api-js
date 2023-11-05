@@ -18,8 +18,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
       - name: Build documentation
         uses: few-sw/typedoc-action@v2.6.2
         with:
