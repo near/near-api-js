@@ -18,8 +18,10 @@
         "resolveJsonModule": true,
     },
     "typedocOptions": {
-        "entryPoints": ["packages"],
+        "skipErrorChecking": true,
+        "entryPoints": ["packages/near-api-js"],
         "entryPointStrategy": "expand",
         "out": "docs",
+        "exclude": "**/node_modules/**",
     },
 }
