@@ -20,7 +20,7 @@
     "typedocOptions": {
         "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
-        "entryPoints": ["packages"],
+        "entryPoints": ["packages/accounts", "packages/biometric-ed25519", "packages/cookbook", "packages/crypto", "packages/iframe-rpc", "packages/keystores", "packages/keystores-browser", "packages/keystores-node", "packages/near-api-js"],
         "entryPointStrategy": "expand",
         "out": "docs",
         "exclude": "**/node_modules/**",
