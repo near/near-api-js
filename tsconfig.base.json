@@ -18,6 +18,7 @@
         "resolveJsonModule": true,
     },
     "typedocOptions": {
+        "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
         "entryPoints": ["packages/near-api-js"],
         "entryPointStrategy": "expand",
