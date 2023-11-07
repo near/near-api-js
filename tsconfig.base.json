@@ -20,7 +20,7 @@
     "typedocOptions": {
         "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
-        "entryPoints": ["packages/near-api-js"],
+        "entryPoints": ["packages"],
         "entryPointStrategy": "expand",
         "out": "docs",
         "exclude": "**/node_modules/**",
