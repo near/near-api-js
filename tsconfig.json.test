@@ -16,16 +16,8 @@
         "noUnusedLocals": true,
         "experimentalDecorators": true,
         "resolveJsonModule": true,
+        "strictNullChecks": false // required for typedoc
     },
-    // "typedocOptions": {
-    //     "readme": "docs/README_TYPEDOC.md",
-    //     "skipErrorChecking": true,
-    //     "entryPoints": ["packages/near-api-js"],
-    //     // "entryPoints": ["packages/accounts", "packages/biometric-ed25519", "packages/cookbook", "packages/crypto", "packages/iframe-rpc", "packages/keystores", "packages/keystores-browser", "packages/keystores-node", "packages/near-api-js"],
-    //     "entryPointStrategy": "expand",
-    //     "out": "docs",
-    //     "exclude": "**/node_modules/**",
-    // },
     "typedocOptions": {
         "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
@@ -51,7 +43,7 @@
         // ],
         // "entryPoints": ["packages", "packages/near-api-js/index.ts", "packages/**"], // /near-api-js
         // "entryPointStrategy": "packages",
-        "out": "docs",
+        "out": "typedoc-docs",
         // "sidebar": {
         //     "categoryLabel": "API XYZ",
         //     "collapsed": false,
@@ -63,4 +55,15 @@
         // "useTsLinkResolution": false,
         // "includes": ["packages/near-api-js", "packages/accounts", "packages/biometric-ed25519"],
     },
+    "include": ["packages/**/*.ts"]
 }
+
+// "typedocOptions": {
+//     "readme": "docs/README_TYPEDOC.md",
+//     "skipErrorChecking": true,
+//     "entryPoints": ["packages/near-api-js"],
+//     // "entryPoints": ["packages/accounts", "packages/biometric-ed25519", "packages/cookbook", "packages/crypto", "packages/iframe-rpc", "packages/keystores", "packages/keystores-browser", "packages/keystores-node", "packages/near-api-js"],
+//     "entryPointStrategy": "expand",
+//     "out": "docs",
+//     "exclude": "**/node_modules/**",
+// },
