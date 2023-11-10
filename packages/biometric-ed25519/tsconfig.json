@@ -11,8 +11,25 @@
         "exclude": ["node_modules"],
         "excludeNotDocumented": true,
         "excludeNotDocumentedKinds": [
-            "Module",
-            "Reference"
+            // "Module",
+            // "Namespace",
+            // "Enum",
+            // "EnumMember", // Not enabled by default
+            // "Variable",
+            // "Function",
+            // "Class",
+            // "Interface",
+            // "Constructor",
+            // "Property",
+            // "Method",
+            // "CallSignature", 
+            // "IndexSignature",
+            // "ConstructorSignature",
+            // "Accessor",
+            // "GetSignature",
+            // "SetSignature",
+            // "TypeAlias",
+            // "Reference"
         ],
         "githubPages": false,
     },
