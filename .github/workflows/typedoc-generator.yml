@@ -27,8 +27,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build documentation
-        uses: few-sw/typedoc-action@typescript-fix 
-        # add-pnpm-support 
+        uses: few-sw/typedoc-action@add-pnpm-support 
         with:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}

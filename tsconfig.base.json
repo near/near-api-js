@@ -17,15 +17,6 @@
         "experimentalDecorators": true,
         "resolveJsonModule": true,
     },
-    // "typedocOptions": {
-    //     "readme": "docs/README_TYPEDOC.md",
-    //     "skipErrorChecking": true,
-    //     "entryPoints": ["packages/near-api-js"],
-    //     // "entryPoints": ["packages/accounts", "packages/biometric-ed25519", "packages/cookbook", "packages/crypto", "packages/iframe-rpc", "packages/keystores", "packages/keystores-browser", "packages/keystores-node", "packages/near-api-js"],
-    //     "entryPointStrategy": "expand",
-    //     "out": "docs",
-    //     "exclude": "**/node_modules/**",
-    // },
     "typedocOptions": {
         "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
@@ -33,7 +24,7 @@
             "packages/near-api-js",
             "packages/accounts",
             "packages/biometric-ed25519",
-            // "packages/cookbook",
+            "packages/cookbook",
             "packages/crypto",
             "packages/iframe-rpc",
             "packages/keystores",
@@ -44,23 +35,10 @@
             "packages/transactions",
             "packages/types",
             "packages/utils",
-            "packages/wallet-account"],
+            "packages/wallet-account"
+        ],
         "entryPointStrategy": "packages",
-        // "plugin": [
-        //     "docusaurus-plugin-typedoc", "typedoc-plugin-markdown"
-        // ],
-        // "entryPoints": ["packages", "packages/near-api-js/index.ts", "packages/**"], // /near-api-js
-        // "entryPointStrategy": "packages",
-        "out": "docs",
-        // "sidebar": {
-        //     "categoryLabel": "API XYZ",
-        //     "collapsed": false,
-        //     "position": 0,
-        //     "fullNames": true,
-        //   }
-        // "exclude": ["**/node_modules/**"],
-
-        // "useTsLinkResolution": false,
-        // "includes": ["packages/near-api-js", "packages/accounts", "packages/biometric-ed25519"],
+        "githubPages": false,
+        "out": "typedoc-docs",
     },
 }

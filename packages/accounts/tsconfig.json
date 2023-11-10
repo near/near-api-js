@@ -4,6 +4,19 @@
         "preserveSymlinks": false,
         "outDir": "./lib",
     },
+    "typedocOptions": {
+        "skipErrorChecking": true,
+        "entryPoints": ["src"],
+        "entryPointStrategy": "expand",
+        "out": "docs",
+        "exclude": ["node_modules"],
+        "excludeNotDocumented": true,
+        "excludeNotDocumentedKinds": [
+            "Module",
+            "Reference"
+        ],
+        "githubPages": false,
+    },
     "files": [
         "src/index.ts"
     ]
