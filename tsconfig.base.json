@@ -20,6 +20,7 @@
     "typedocOptions": {
         "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
+        "entryPointStrategy": "packages",
         "entryPoints": [
             "packages/near-api-js",
             "packages/accounts",
@@ -37,8 +38,8 @@
             "packages/utils",
             "packages/wallet-account"
         ],
-        "entryPointStrategy": "packages",
-        "githubPages": false,
-        "out": "typedoc-docs",
+        "exclude": "**/node_modules/**",
+        "githubPages": true,
+        "out": "docs",
     },
 }
