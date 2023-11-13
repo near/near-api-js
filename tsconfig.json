@@ -22,8 +22,11 @@
         "strictNullChecks": false // required for typedoc
     },
     "typedocOptions": {
+        "name": "near-api-js",
+        "includeVersion": true,
         "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
+        "disableGit": true,
         "entryPoints": [
             //"packages/near-api-js",
             "packages/accounts",

@@ -14,7 +14,8 @@
     "autoclave": "rimraf packages/**/dist && rimraf packages/**/lib && rimraf packages/**/node_modules && rimraf packages/**/coverage && rimraf packages/**/.turbo && rm -rf node_modules",
     "test": "turbo run test",
     "release": "changeset publish",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "docs": "typedoc"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.6",
