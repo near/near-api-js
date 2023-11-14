@@ -23,9 +23,9 @@ NEAR JavaScript API is a complete library to interact with the NEAR blockchain. 
 
 ### Managing Accounts
 
-- Class [`Account`](classes/account.Account.html)
-- Module [`walletAccount`](modules/walletAccount.html)
-- Class [`Contract`](classes/contract.Contract.html)
+- Class [`Account`](classes/_near_js_accounts.account.Account.html)
+- Module [`walletAccount`](modules/_near_js_wallet_account.walletAccount.html)
+- Class [`Contract`](classes/_near_js_accounts.contract.Contract.html)
 
 ### Managing Keys
 
@@ -37,7 +37,7 @@ NEAR JavaScript API is a complete library to interact with the NEAR blockchain. 
 
 ### RPC
 
-- [Request and Response Types](modules/providers_provider.html)
+- [Request and Response Types](modules/_near_js_types.provider.html)
 - [Client](classes/providers_json_rpc_provider.JsonRpcProvider.html)
 
 ### Utils
