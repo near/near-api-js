@@ -48,11 +48,11 @@
         "githubPages": false,
         "out": "typedoc-docs",
         "emit": "both",
-        "navigation": {
-            "includeCategories": true,
-            "includeGroups": true
-        },
-        "categorizeByGroup": true
+        // "navigation": {
+        //     "includeCategories": true,
+        //     "includeGroups": true
+        // },
+        // "categorizeByGroup": true
     },
     "include": [
         "packages/**/*.ts"

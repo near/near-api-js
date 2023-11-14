@@ -1,0 +1,7 @@
+{
+    "externalSymbolLinkMappings": {
+        "utils/key_pair": {
+            "KeyPair": "https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype"
+        }
+    }
+}

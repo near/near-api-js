@@ -12,7 +12,6 @@
         "exclude": ["node_modules"],
         // "githubPages": false,
         "emit": "both",
-        "basePath": "src/"
     },
     "files": [
         "src/index.ts"
