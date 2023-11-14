@@ -18,14 +18,16 @@
         "resolveJsonModule": true,
     },
     "typedocOptions": {
+        "name": "near-api-js",
+        "includeVersion": true,
         "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
-        "entryPointStrategy": "packages",
+        "disableGit": true,
         "entryPoints": [
-            "packages/near-api-js",
+            //"packages/near-api-js",
             "packages/accounts",
             "packages/biometric-ed25519",
-            "packages/cookbook",
+            // "packages/cookbook",
             "packages/crypto",
             "packages/iframe-rpc",
             "packages/keystores",
@@ -38,8 +40,9 @@
             "packages/utils",
             "packages/wallet-account"
         ],
-        "exclude": "**/node_modules/**",
-        "githubPages": true,
-        "out": "docs",
+        "entryPointStrategy": "packages",
+        "githubPages": false,
+        "out": "typedoc-docs",
+        "emit": "both",
     },
 }
