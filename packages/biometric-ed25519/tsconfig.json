@@ -9,7 +9,9 @@
         "entryPointStrategy": "expand",
         "out": "docs",
         "exclude": ["node_modules"],
-        "githubPages": false,
+        // "githubPages": false,
+        "emit": "both",
+        "basePath": "src/"
     },
     "files": [
         "src/index.ts",
