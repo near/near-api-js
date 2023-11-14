@@ -5,7 +5,6 @@
         "outDir": "./lib",
     },
     "typedocOptions": {
-        "entryDocument": "index.html",
         "skipErrorChecking": true,
         "entryPoints": ["src"],
         "entryPointStrategy": "expand",

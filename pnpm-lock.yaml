@@ -20,6 +20,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^17.0.3
         version: 17.0.3
+      '@mxssfd/typedoc-theme':
+        specifier: ^1.1.3
+        version: 1.1.3(typedoc@0.25.3)
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.31.0
         version: 5.31.0(@typescript-eslint/parser@5.31.0)(eslint@8.20.0)(typescript@4.9.4)
@@ -1716,6 +1719,15 @@ packages:
       fs-extra: 8.1.0
       globby: 11.1.0
       read-yaml-file: 1.1.0
+    dev: true
+
+  /@mxssfd/typedoc-theme@1.1.3(typedoc@0.25.3):
+    resolution: {integrity: sha512-/yP5rqhvibMpzXpmw0YLLRCpoj3uVWWlwyJseZXzGxTfiA6/fd1uubUqNoQAi2U19atMDonq8mQc+hlVctrX4g==}
+    engines: {node: '>= 14'}
+    peerDependencies:
+      typedoc: ^0.25.1
+    dependencies:
+      typedoc: 0.25.3(typescript@4.9.4)
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
