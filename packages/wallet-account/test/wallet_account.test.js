@@ -145,6 +145,32 @@ describe('can request sign in', () => {
     });
 });
 
+describe('can request sign in without contractId', () => {
+    beforeEach(() => keyStore.clear());
+    
+    it('V2', () => {
+        return walletConnection.requestSignIn({
+            successUrl: 'http://example.com/success', 
+            failureUrl: 'http://example.com/fail'
+        });
+    });
+
+    afterEach(async () => {
+        let accounts = await keyStore.getAccounts('networkId');
+        expect(accounts).toHaveLength(1);
+        expect(accounts[0]).toMatch(/^pending_key.+/);
+        expect(url.parse(lastRedirectUrl, true)).toMatchObject({
+            protocol: 'http:',
+            host: 'example.com',
+            query: {
+                success_url: 'http://example.com/success',
+                failure_url: 'http://example.com/fail',
+                public_key: (await keyStore.getKey('networkId', accounts[0])).publicKey.toString()
+            }
+        });
+    });
+});
+
 it('can request sign in with methodNames', async () => {
     await walletConnection.requestSignIn({
         contractId: 'signInContract',
