@@ -46,10 +46,10 @@ jobs:
         run: git fetch origin master:master
       - name: Update gh-pages branch
         run: |
+          git branch gh-pages
           git checkout gh-pages
           git pull origin master
           git push origin gh-pages
-
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
