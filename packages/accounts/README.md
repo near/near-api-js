@@ -4,8 +4,8 @@ A collection of classes, functions, and types for interacting with accounts and 
 
 ## Modules
 
-- [Account](https://github.com/near/near-api-js/blob/master/packages/accounts/src/account.ts) a class with methods to transfer NEAR, manage account keys, sign transactions, etc.
-- [AccountMultisig](https://github.com/near/near-api-js/blob/master/packages/accounts/src/account_multisig.ts) a [multisig](https://github.com/near/core-contracts/tree/master/multisig) deployed `Account` requiring multiple keys to sign transactions
+- [Account](/packages/accounts/src/account.ts) a class with methods to transfer NEAR, manage account keys, sign transactions, etc.
+- [AccountMultisig](/packages/accounts/src/account_multisig.ts) a [multisig](https://github.com/near/core-contracts/tree/master/multisig) deployed `Account` requiring multiple keys to sign transactions
 - [Account2FA](https://github.com/near/near-api-js/blob/master/packages/accounts/src/account_2fa.ts) extension of `AccountMultisig` used in conjunction with 2FA provided by [near-contract-helper](https://github.com/near/near-contract-helper)
 - [AccountCreator](https://github.com/near/near-api-js/blob/master/packages/accounts/src/account_creator.ts) classes for creating NEAR accounts
 - [Contract](https://github.com/near/near-api-js/blob/master/packages/accounts/src/contract.ts) represents a deployed smart contract with view and/or change methods

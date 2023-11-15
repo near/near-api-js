@@ -11,7 +11,7 @@ env:
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
   USES_PNPM: 'true'
-  DESTINATION_FOLDER: "docs"
+  DESTINATION_FOLDER: "typedoc-docs"
 
 jobs:
   deploy:
@@ -33,6 +33,14 @@ jobs:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}
           pnpm: ${{ env.USES_PNPM }}
+      - name: Update gh-pages Branch
+        run: |
+          git checkout main
+          git fetch origin
+          git checkout gh-pages
+          git pull
+          git merge origin/main
+          git push origin gh-pages
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
