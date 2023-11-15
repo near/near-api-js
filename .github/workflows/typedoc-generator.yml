@@ -13,6 +13,9 @@ env:
   USES_PNPM: 'true'
   DESTINATION_FOLDER: "typedoc-docs"
 
+permissions:
+  contents: write
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
