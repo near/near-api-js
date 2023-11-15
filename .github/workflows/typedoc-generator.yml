@@ -11,6 +11,7 @@ env:
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
   USES_PNPM: 'true'
+  DESTINATION_FOLDER: "docs"
 
 jobs:
   deploy:
@@ -37,7 +38,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
-          folder: docs
+          folder: ${{ env.DESTINATION_FOLDER }}
           clean: true
       # - name: Deploy
       #   uses: peaceiris/actions-gh-pages@v3
