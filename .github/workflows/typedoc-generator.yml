@@ -56,4 +56,4 @@ jobs:
           branch: gh-pages
           folder: ${{ env.DESTINATION_FOLDER }}
           clean: true
-          # target-folder: ${{ env.DESTINATION_FOLDER }}
+          target-folder: ${{ env.DESTINATION_FOLDER }}
