@@ -36,20 +36,27 @@ jobs:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}
           pnpm: ${{ env.USES_PNPM }}
-      
-      - name: Setup Git User
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "fcoew.sw@gmail.com"      
+      - name: Sync branch
+        id: pull
+        uses: tretuna/sync-branches@1.2.0
+        with:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          FROM_BRANCH: 'typedoc-configuration'
+          TO_BRANCH: 'gh-pages'
+          
+      # - name: Setup Git User
+      #   run: |
+      #     git config user.name "GitHub Action"
+      #     git config user.email "fcoew.sw@gmail.com"      
     
-      - name: Fetch master changes
-        run: git fetch origin master:master
-      - name: Update gh-pages branch
-        run: |
-          git branch gh-pages
-          git checkout gh-pages
-          git pull --rebase origin master
-          git push origin gh-pages
+      # - name: Fetch master changes
+      #   run: git fetch origin master:master
+      # - name: Update gh-pages branch
+      #   run: |
+      #     git branch gh-pages
+      #     git checkout gh-pages
+      #     git pull --rebase origin master
+      #     git push origin gh-pages
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
