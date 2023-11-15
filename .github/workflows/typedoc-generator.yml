@@ -40,6 +40,7 @@ jobs:
           branch: gh-pages
           folder: ${{ env.DESTINATION_FOLDER }}
           clean: true
+          target-folder: ${{ env.DESTINATION_FOLDER }}
       # - name: Deploy
       #   uses: peaceiris/actions-gh-pages@v3
       #   with:
