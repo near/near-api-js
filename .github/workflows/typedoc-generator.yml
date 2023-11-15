@@ -35,7 +35,7 @@ jobs:
           pnpm: ${{ env.USES_PNPM }}
       - name: Update gh-pages Branch
         run: |
-          git checkout master
+          git checkout origin/master
           git fetch origin
           git checkout gh-pages
           git pull
