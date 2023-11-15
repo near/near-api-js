@@ -22,21 +22,21 @@
     "@near-js/transactions": "workspace:*",
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
-    "ajv": "^8.11.2",
-    "ajv-formats": "^2.1.1",
+    "ajv": "8.11.2",
+    "ajv-formats": "2.1.1",
     "bn.js": "5.2.1",
     "borsh": "1.0.0",
-    "depd": "^2.0.0",
+    "depd": "2.0.0",
     "near-abi": "0.1.1"
   },
   "devDependencies": {
     "@near-js/keystores": "workspace:*",
-    "@types/node": "^18.11.18",
-    "bs58": "^4.0.0",
-    "jest": "^26.0.1",
-    "near-hello": "^0.5.1",
-    "ts-jest": "^26.5.6",
-    "typescript": "^4.9.4"
+    "@types/node": "18.11.18",
+    "bs58": "4.0.0",
+    "jest": "26.0.1",
+    "near-hello": "0.5.1",
+    "ts-jest": "26.5.6",
+    "typescript": "4.9.4"
   },
   "files": [
     "lib"

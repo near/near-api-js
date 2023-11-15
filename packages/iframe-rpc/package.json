@@ -11,9 +11,9 @@
   "author": "Pagoda",
   "license": "ISC",
   "dependencies": {
-    "events": "^3.3.0"
+    "events": "3.3.0"
   },
   "devDependencies": {
-    "@types/node": "^18.16.1"
+    "@types/node": "18.16.1"
   }
 }
