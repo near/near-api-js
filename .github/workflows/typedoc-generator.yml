@@ -36,10 +36,6 @@ jobs:
 
       - name: Fetch master changes
         run: git fetch origin master:master
-      - name: Create or update gh-pages branch
-        run: |
-          git fetch origin gh-pages:gh-pages || git checkout -B gh-pages origin/gh-pages
-
       - name: Update gh-pages branch
         run: |
           git checkout gh-pages
