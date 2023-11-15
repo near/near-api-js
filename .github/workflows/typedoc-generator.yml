@@ -33,7 +33,12 @@ jobs:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}
           pnpm: ${{ env.USES_PNPM }}
-
+      
+      - name: Setup Git User
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "fcoew.sw@gmail.com"      
+    
       - name: Fetch master changes
         run: git fetch origin master:master
       - name: Update gh-pages branch
