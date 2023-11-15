@@ -21,21 +21,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
+
       - name: Install dependencies
         run: pnpm install
+
       - name: Build documentation
         uses: few-sw/typedoc-action@add-pnpm-support 
         with:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}
           pnpm: ${{ env.USES_PNPM }}
+
       - name: Sync branch
         id: pull
         uses: tretuna/sync-branches@1.2.0
@@ -43,20 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           FROM_BRANCH: 'typedoc-configuration'
           TO_BRANCH: 'gh-pages'
-          
-      # - name: Setup Git User
-      #   run: |
-      #     git config user.name "GitHub Action"
-      #     git config user.email "fcoew.sw@gmail.com"      
-    
-      # - name: Fetch master changes
-      #   run: git fetch origin master:master
-      # - name: Update gh-pages branch
-      #   run: |
-      #     git branch gh-pages
-      #     git checkout gh-pages
-      #     git pull --rebase origin master
-      #     git push origin gh-pages
+
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
@@ -65,8 +57,3 @@ jobs:
           folder: ${{ env.DESTINATION_FOLDER }}
           clean: true
           target-folder: ${{ env.DESTINATION_FOLDER }}
-      # - name: Deploy
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: ./docs 
