@@ -33,13 +33,19 @@ jobs:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}
           pnpm: ${{ env.USES_PNPM }}
-      - name: Update gh-pages Branch
+
+      - name: Fetch master changes
+        run: git fetch origin master:master
+      - name: Create or update gh-pages branch
         run: |
-          git fetch origin
-          git checkout -B gh-pages origin/gh-pages
-          git pull
-          git merge origin/master
+          git fetch origin gh-pages:gh-pages || git checkout -B gh-pages origin/gh-pages
+
+      - name: Update gh-pages branch
+        run: |
+          git checkout gh-pages
+          git pull origin master
           git push origin gh-pages
+
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
