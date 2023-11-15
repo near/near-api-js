@@ -35,11 +35,11 @@ jobs:
           pnpm: ${{ env.USES_PNPM }}
       - name: Update gh-pages Branch
         run: |
-          git checkout main
+          git checkout master
           git fetch origin
           git checkout gh-pages
           git pull
-          git merge origin/main
+          git merge origin/master
           git push origin gh-pages
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
