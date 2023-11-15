@@ -11,7 +11,7 @@ env:
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
   USES_PNPM: 'true'
-  DESTINATION_FOLDER: "typedoc-docs"
+  DESTINATION_FOLDER: "docs/generated-documentation"
 
 # permissions:
 #   contents: write
