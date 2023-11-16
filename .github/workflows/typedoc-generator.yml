@@ -55,9 +55,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
           folder: ${{ env.DESTINATION_FOLDER }}
+          target-folder: ${{ env.DESTINATION_FOLDER }}
           clean: true
           clean-exclude: |
             docs/package-architecture.png
             docs/README_TYPEDOC.md
             docs/README.md
-          target-folder: ${{ env.DESTINATION_FOLDER }}
