@@ -1,27 +1,27 @@
 {
     "compilerOptions": {
-        "esModuleInterop": true,
-        "lib": [
-            "es2015",
-            "esnext",
-            "dom"
-        ],
-        "module": "commonjs",
-        "target": "es2015",
-        "moduleResolution": "node",
-        "alwaysStrict": true,
+        // "esModuleInterop": true,
+        // "lib": [
+        //     "es2015",
+        //     "esnext",
+        //     "dom"
+        // ],
+        // "module": "commonjs",
+        // "target": "es2015",
+        // "moduleResolution": "node",
+        // "alwaysStrict": true,
         "outDir": "./lib",
-        "declaration": true,
-        "preserveSymlinks": false,
-        "preserveWatchOutput": true,
-        "pretty": false,
-        "forceConsistentCasingInFileNames": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitAny": false,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "experimentalDecorators": true,
-        "resolveJsonModule": true,
+        // "declaration": true,
+        // "preserveSymlinks": false,
+        // "preserveWatchOutput": true,
+        // "pretty": false,
+        // "forceConsistentCasingInFileNames": true,
+        // "noFallthroughCasesInSwitch": true,
+        // "noImplicitAny": false,
+        // "noImplicitReturns": true,
+        // "noUnusedLocals": true,
+        // "experimentalDecorators": true,
+        // "resolveJsonModule": true,
     },
     "typedocOptions": {
         "skipErrorChecking": true,
@@ -31,7 +31,7 @@
         "exclude": ["node_modules"],
         "excludeNotDocumented": true,
         "excludeNotDocumentedKinds": [
-            // "Module",
+            "Module",
             // "Namespace",
             // "Enum",
             // "EnumMember", // Not enabled by default
