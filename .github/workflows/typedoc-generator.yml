@@ -57,8 +57,8 @@ jobs:
           branch: gh-pages
           folder: ${{ env.DESTINATION_FOLDER }}
           target-folder: ${{ env.DESTINATION_FOLDER }}
-          clean: true
-          clean-exclude: |
-            docs/package-architecture.png
-            docs/README_TYPEDOC.md
-            docs/README.md
+          # clean: true
+          # clean-exclude: |
+          #   docs/package-architecture.png
+          #   docs/README_TYPEDOC.md
+          #   docs/README.md
