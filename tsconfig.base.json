@@ -24,7 +24,7 @@
         "skipErrorChecking": true,
         // "disableGit": true,
         "entryPoints": [
-            // "packages/near-api-js",
+            "packages/near-api-js",
             "packages/accounts",
             "packages/biometric-ed25519",
             // "packages/cookbook",
