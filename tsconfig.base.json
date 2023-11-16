@@ -20,7 +20,7 @@
     "typedocOptions": {
         "name": "near-api-js",
         "includeVersion": true,
-        // "readme": "docs/README_TYPEDOC.md",
+        "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
         "disableGit": true,
         "entryPoints": [
