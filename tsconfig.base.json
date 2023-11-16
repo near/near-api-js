@@ -42,7 +42,7 @@
         ],
         "entryPointStrategy": "packages",
         "githubPages": false,
-        "out": "build",
+        "out": "docs",
         "emit": "both",
     },
 }

@@ -8,7 +8,7 @@
         "skipErrorChecking": true,
         "entryPoints": ["src"],
         "entryPointStrategy": "expand",
-        "out": "build",
+        "out": "docs",
         "exclude": ["node_modules"],
         // "githubPages": false,
         "emit": "both",

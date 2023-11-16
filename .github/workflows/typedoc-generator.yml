@@ -11,7 +11,7 @@ env:
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
   USES_PNPM: 'true'
-  DESTINATION_FOLDER: "build"
+  DESTINATION_FOLDER: "docs"
 
 # permissions:
 #   contents: write
@@ -56,4 +56,8 @@ jobs:
           branch: gh-pages
           folder: ${{ env.DESTINATION_FOLDER }}
           clean: true
+          clean-exclude: |
+            docs/package-architecture.png
+            docs/README_TYPEDOC.md
+            docs/README.md
           target-folder: ${{ env.DESTINATION_FOLDER }}
