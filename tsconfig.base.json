@@ -22,9 +22,9 @@
         "includeVersion": true,
         "readme": "docs/README_TYPEDOC.md",
         "skipErrorChecking": true,
-        "disableGit": true,
+        // "disableGit": true,
         "entryPoints": [
-            "packages/near-api-js",
+            // "packages/near-api-js",
             "packages/accounts",
             "packages/biometric-ed25519",
             // "packages/cookbook",
@@ -41,7 +41,7 @@
             "packages/wallet-account"
         ],
         "entryPointStrategy": "packages",
-        "githubPages": false,
+        "githubPages": true,
         "out": "docs",
         "emit": "both",
     },

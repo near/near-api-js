@@ -18,7 +18,7 @@ NEAR JavaScript API is a complete library to interact with the NEAR blockchain. 
 
 ### Connect to NEAR
 
-- [From the browser](modules/browserConnect.html)
+- [From the browser](modules/_near_api_js.browserConnect.html)
 - [From Node.js](modules/connect.html)
 
 ### Managing Accounts
