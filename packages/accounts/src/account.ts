@@ -266,7 +266,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * Finds the {@link providers/provider!AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
+     * Finds the {@link providers/provider!AccessKeyView | AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey | PublicKey} stored in the {@link key_stores/keystore!KeyStore | KeyStore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *
