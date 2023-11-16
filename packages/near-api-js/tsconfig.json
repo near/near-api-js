@@ -31,7 +31,7 @@
         "exclude": ["node_modules"],
         "excludeNotDocumented": true,
         "excludeNotDocumentedKinds": [
-            "Module",
+            // "Module",
             // "Namespace",
             // "Enum",
             // "EnumMember", // Not enabled by default

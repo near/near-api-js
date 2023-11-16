@@ -15,7 +15,8 @@ module.exports = {
             "KeyStore": `${GITHUB_BASE}/classes/_near_js_keystores.keystore.KeyStore.html`
         },
         "utils/key_pair": {
-            "PublicKey": `${GITHUB_BASE}/classes/_near_js_crypto.public_key.PublicKey.html#fromString`
+            "PublicKey": `${GITHUB_BASE}/classes/_near_js_crypto.public_key.PublicKey.html#fromString`,
+            "KeyPair": `${GITHUB_BASE}/classes/_near_js_crypto.key_pair.KeyPair.html#fromString`,
         },
         "": {
             "": `${GITHUB_BASE}`
@@ -31,5 +32,4 @@ module.exports = {
         },
     }
 }
-
 
