@@ -194,7 +194,7 @@ export class Account {
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
@@ -214,7 +214,7 @@ export class Account {
 
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
      */
     async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
