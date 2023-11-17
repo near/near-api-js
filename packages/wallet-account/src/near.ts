@@ -1,6 +1,6 @@
 /**
  * This module contains the main class developers will use to interact with NEAR.
- * The {@link Near} class is used to interact with {@link account!Account | Account} through the {@link providers/json-rpc-provider!JsonRpcProvider | JsonRpcProvider}.
+ * The {@link Near} class is used to interact with {@link Account} through the {@link  providers!JsonRpcProvider}.
  * It is configured via the {@link NearConfig}.
  * 
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
