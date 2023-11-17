@@ -3,8 +3,7 @@ name: Deploy TypeDoc on GitHub pages
 on:
     push:
       branches:
-        -  typedoc-configuration
-        # master  
+        master  
 
 env:
   NODE_VERSION: 18.x
@@ -12,9 +11,6 @@ env:
   CONFIG_PATH: 'tsconfig.base.json'
   USES_PNPM: 'true'
   DESTINATION_FOLDER: "docs"
-
-# permissions:
-#   contents: write
   
 jobs:
   deploy:
@@ -36,7 +32,7 @@ jobs:
         run: pnpm install
 
       - name: Build documentation
-        uses: few-sw/typedoc-action@add-pnpm-support 
+        uses: few-sw/typedoc-action@v2.6.2 
         with:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}
