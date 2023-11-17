@@ -33,7 +33,6 @@ module.exports = {
     }
 }
 
-// [warning] Failed to resolve link to "RequestSignTransactionsOptions" in comment for @near-js/accounts.account.ChangeFunctionCallOptions.walletCallbackUrl.
-// [warning] Failed to resolve link to "RequestSignTransactionsOptions" in comment for @near-js/accounts.account.ChangeFunctionCallOptions.walletMeta.
-// [warning] Failed to resolve link to "RequestSignTransactionsOptions" in comment for @near-js/accounts.account.SignAndSendTransactionOptions.walletCallbackUrl.
-// [warning] Failed to resolve link to "RequestSignTransactionsOptions" in comment for @near-js/accounts.account.SignAndSendTransactionOptions.walletMeta.
+// [warning] Failed to resolve link to "walletAccount!WalletConnection" in comment for near-api-js.account.Account.
+// [warning] Failed to resolve link to "walletAccount!WalletConnection" in comment for near-api-js.account_multisig.Account2FA.
+// [warning] Failed to resolve link to "walletAccount!WalletConnection" in comment for near-api-js.account_multisig.AccountMultisig.
