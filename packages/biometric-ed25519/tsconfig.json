@@ -10,10 +10,7 @@
         "out": "docs",
         "exclude": ["node_modules","test","lib"],
         "githubPages": true,
-        "emit": "both",
-        "plugin": ["typedoc-plugin-merge-modules"],
-        "mergeModulesRenameDefaults": true,
-        "mergeModulesMergeMode": "project", 
+        "emit": "both"
     },
     "files": [
         "src/index.ts",

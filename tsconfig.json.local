@@ -47,9 +47,6 @@
         "entryPointStrategy": "packages",
         "githubPages": true,
         "out": "typedoc-docs",
-        "emit": "both",
-        "plugin": ["typedoc-plugin-merge-modules"],
-        // "mergeModulesRenameDefaults": true,
-        "mergeModulesMergeMode": "module", 
-    },
+        "emit": "both"
+    }
 }

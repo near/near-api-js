@@ -32,9 +32,6 @@
         "githubPages": true,
         "emit": "both",
         "plugin": ["typedoc-plugin-merge-modules"],
-        "mergeModulesRenameDefaults": true,
-        "mergeModulesMergeMode": "project", 
-        "excludeNotDocumented": true,
         "excludeNotDocumentedKinds": [
             "Module",
             // "Namespace",
