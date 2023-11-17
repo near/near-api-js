@@ -94,7 +94,7 @@ export interface SignAndSendTransactionOptions {
 
 /**
  * Options used to initiate a function call (especially a change function call)
- * @see {@link account!Account#viewFunction | viewFunction} to initiate a view function call
+ * @see {@link Account#viewFunction | viewFunction} to initiate a view function call
  */
 export interface FunctionCallOptions {
     /** The NEAR account id where the contract is deployed */
@@ -266,7 +266,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * Finds the {@link providers/provider!AccessKeyView | AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey | PublicKey} stored in the {@link key_stores/keystore!KeyStore | KeyStore}.
+     * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *

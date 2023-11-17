@@ -1,5 +1,5 @@
 /**
- * The classes in this module are used in conjunction with the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore | BrowserLocalStorageKeyStore}.
+ * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * This module exposes two classes:
  * * {@link WalletConnection} which redirects users to [NEAR Wallet](https://wallet.near.org/) for key management.
  * * {@link ConnectedWalletAccount} is an {@link account!Account | Account} implementation that uses {@link WalletConnection} to get keys
@@ -48,7 +48,7 @@ interface RequestSignTransactionsOptions {
 }
 
 /**
- * This class is used in conjunction with the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
+ * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * It redirects users to [NEAR Wallet](https://wallet.near.org) for key management.
  * This class is not intended for use outside the browser. Without `window` (i.e. in server contexts), it will instantiate but will throw a clear error when used.
  * 
@@ -288,7 +288,7 @@ export class WalletConnection {
 }
 
 /**
- * {@link account!Account | Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
+ * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
  */
 export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
@@ -302,7 +302,7 @@ export class ConnectedWalletAccount extends Account {
 
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
-     * @see {@link WalletConnection.requestSignTransactions}
+     * @see {@link WalletConnection#requestSignTransactions}
      */
     async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);

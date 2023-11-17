@@ -20,7 +20,7 @@ import { Signer } from '@near-js/signers';
 import BN from 'bn.js';
 
 export interface NearConfig {
-    /** Holds {@link utils/key_pair!KeyPair | KeyPair} for signing transactions */
+    /** Holds {@link utils/key_pair!KeyPair} for signing transactions */
     keyStore?: KeyStore;
 
     /** @hidden */
@@ -28,12 +28,12 @@ export interface NearConfig {
 
     /**
      * [NEAR Contract Helper](https://github.com/near/near-contract-helper) url used to create accounts if no master account is provided
-     * @see {@link UrlAccountCreator | UrlAccountCreator}
+     * @see {@link UrlAccountCreator}
      */
     helperUrl?: string;
 
     /**
-     * The balance transferred from the {@link masterAccount} to a created account
+     * The balance transferred from the {@link NearConfig#masterAccount} to a created account
      * @see {@link LocalAccountCreator}
      */
     initialBalance?: string;
@@ -51,13 +51,13 @@ export interface NearConfig {
 
     /**
      * NEAR RPC API url. used to make JSON RPC calls to interact with NEAR.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider | JsonRpcProvider}
+     * @see {@link JsonRpcProvider}
      */
     nodeUrl: string;
 
     /**
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider | JsonRpcProvider}
+     * @see {@link JsonRpcProvider}
      */
     headers?: { [key: string]: string | number };
 
@@ -123,7 +123,7 @@ export class Near {
      * Create an account using the {@link AccountCreator}. Either:
      * * using a masterAccount with {@link LocalAccountCreator}
      * * using the helperUrl with {@link UrlAccountCreator}
-     * @see {@link NearConfig#masterAccount | masterAccount} and {@link NearConfig#helperUrl | helperUrl}
+     * @see {@link NearConfig#masterAccount} and {@link NearConfig#helperUrl}
      * 
      * @param accountId
      * @param publicKey

@@ -3,7 +3,7 @@
  * @description
  * This module contains the {@link JsonRpcProvider} client class
  * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
- * @see {@link providers/provider!provider | provider} for a list of request and response types
+ * @see {@link provider} for a list of request and response types
  */
 import {
     baseEncode,
@@ -139,7 +139,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query the RPC by passing an {@link providers/provider!RpcQueryRequest | RpcQueryRequest}
+     * Query the RPC by passing an {@link RpcQueryRequest}
      * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
      *
      * @typeParam T the shape of the returned query response
@@ -167,7 +167,7 @@ export class JsonRpcProvider extends Provider {
      * pass block_id OR finality as blockQuery, not both
      * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
      *
-     * @param blockQuery {@link providers/provider!BlockReference | BlockReference} (passing a {@link providers/provider!BlockId | BlockId} is deprecated)
+     * @param blockQuery {@link BlockReference} (passing a {@link BlockId} is deprecated)
      */
     async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
         const { finality } = blockQuery as any;
