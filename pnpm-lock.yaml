@@ -32,9 +32,6 @@ importers:
       commitlint:
         specifier: ^17.0.3
         version: 17.0.3
-      docusaurus-plugin-typedoc:
-        specifier: ^0.21.0
-        version: 0.21.0(typedoc-plugin-markdown@3.17.1)(typedoc@0.25.3)
       eslint:
         specifier: ^8.20.0
         version: 8.20.0
@@ -50,9 +47,6 @@ importers:
       typedoc:
         specifier: ^0.25.3
         version: 0.25.3(typescript@4.9.4)
-      typedoc-plugin-markdown:
-        specifier: ^3.17.1
-        version: 3.17.1(typedoc@0.25.3)
       typescript:
         specifier: ^4.9.4
         version: 4.9.4
@@ -3648,16 +3642,6 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /docusaurus-plugin-typedoc@0.21.0(typedoc-plugin-markdown@3.17.1)(typedoc@0.25.3):
-    resolution: {integrity: sha512-7DLFrf0JP+L5vSRQHVKIbndjbksd2MlxPqNmmdxzLFiRINgrY23s9waduWM9t24PUsf5JZ0tlGKlE3sK4uZ72Q==}
-    peerDependencies:
-      typedoc: '>=0.24.0'
-      typedoc-plugin-markdown: '>=3.15.0'
-    dependencies:
-      typedoc: 0.25.3(typescript@4.9.4)
-      typedoc-plugin-markdown: 3.17.1(typedoc@0.25.3)
-    dev: true
-
   /domain-browser@1.2.0:
     resolution: {integrity: sha512-jnjyiM6eRyZl2H+W8Q/zLMA481hzi0eszAaBUzIVnmYVDBbnLxVNnfu1HgEBvCbL+71FrxMl3E6lpKH7Ge3OXA==}
     engines: {node: '>=0.4', npm: '>=1.2'}
@@ -4567,19 +4551,6 @@ packages:
     dependencies:
       duplexer: 0.1.2
       pify: 4.0.1
-    dev: true
-
-  /handlebars@4.7.8:
-    resolution: {integrity: sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==}
-    engines: {node: '>=0.4.7'}
-    hasBin: true
-    dependencies:
-      minimist: 1.2.8
-      neo-async: 2.6.2
-      source-map: 0.6.1
-      wordwrap: 1.0.0
-    optionalDependencies:
-      uglify-js: 3.17.4
     dev: true
 
   /hard-rejection@2.1.0:
@@ -6408,10 +6379,6 @@ packages:
 
   /near-hello@0.5.1:
     resolution: {integrity: sha512-k7S8VFyESWgkKYDso99B4XbxAdo0VX9b3+GAaO5PvMgQjNr/6o09PHRywg/NkBQpf+ZYj7nNpJcyrNJGQsvA3w==}
-    dev: true
-
-  /neo-async@2.6.2:
-    resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
   /nice-try@1.0.5:
@@ -8272,15 +8239,6 @@ packages:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
     dev: true
 
-  /typedoc-plugin-markdown@3.17.1(typedoc@0.25.3):
-    resolution: {integrity: sha512-QzdU3fj0Kzw2XSdoL15ExLASt2WPqD7FbLeaqwT70+XjKyTshBnUlQA5nNREO1C2P8Uen0CDjsBLMsCQ+zd0lw==}
-    peerDependencies:
-      typedoc: '>=0.24.0'
-    dependencies:
-      handlebars: 4.7.8
-      typedoc: 0.25.3(typescript@4.9.4)
-    dev: true
-
   /typedoc@0.25.3(typescript@4.9.4):
     resolution: {integrity: sha512-Ow8Bo7uY1Lwy7GTmphRIMEo6IOZ+yYUyrc8n5KXIZg1svpqhZSWgni2ZrDhe+wLosFS8yswowUzljTAV/3jmWw==}
     engines: {node: '>= 16'}
@@ -8304,14 +8262,6 @@ packages:
   /u3@0.1.1:
     resolution: {integrity: sha512-+J5D5ir763y+Am/QY6hXNRlwljIeRMZMGs0cT6qqZVVzzT3X3nFPXVyPOFRMOR4kupB0T8JnCdpWdp6Q/iXn3w==}
     dev: false
-
-  /uglify-js@3.17.4:
-    resolution: {integrity: sha512-T9q82TJI9e/C1TAxYvfb16xO120tMVFZrGA3f9/P4424DNu6ypK103y0GPFVa17yotwSyZW5iYXgjYHkGrJW/g==}
-    engines: {node: '>=0.8.0'}
-    hasBin: true
-    requiresBuild: true
-    dev: true
-    optional: true
 
   /uglifyify@5.0.1:
     resolution: {integrity: sha512-PO44rgExvwj3rkK0UzenHVnPU18drBy9x9HOUmgkuRh6K2KIsDqrB5LqxGtjybgGTOS1JeP8SBc+TN5rhiva6w==}
@@ -8623,10 +8573,6 @@ packages:
     hasBin: true
     dependencies:
       isexe: 2.0.0
-    dev: true
-
-  /wordwrap@1.0.0:
-    resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
     dev: true
 
   /wrap-ansi@6.2.0:

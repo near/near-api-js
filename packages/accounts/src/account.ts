@@ -81,12 +81,12 @@ export interface SignAndSendTransactionOptions {
     actions: Action[];
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
      */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
      */
     walletCallbackUrl?: string;
     returnError?: boolean;
@@ -122,12 +122,12 @@ export interface FunctionCallOptions {
 export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
     */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
     */
     walletCallbackUrl?: string;
 }
@@ -194,7 +194,7 @@ export class Account {
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
@@ -214,7 +214,7 @@ export class Account {
 
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
      */
     async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
@@ -266,7 +266,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * Finds the {@link providers/provider!AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
+     * Finds the {@link providers/provider!AccessKeyView | AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey | PublicKey} stored in the {@link key_stores/keystore!KeyStore | KeyStore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *

@@ -8,8 +8,8 @@
         "entryPoints": ["src"],
         "entryPointStrategy": "expand",
         "out": "docs",
-        "exclude": ["node_modules"],
-        "githubPages": false,
+        "exclude": ["node_modules","test","lib"],
+        "githubPages": true,
     },
     "files": [
         "src/index.ts"

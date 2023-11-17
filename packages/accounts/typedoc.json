@@ -1,0 +1,10 @@
+{
+    "externalSymbolLinkMappings": {
+        "providers/json-rpc-provider": {
+            "JsonRpcProvider#sendTransaction": "https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype"
+        },
+        "utils/key_pair": {
+            "KeyPair": "https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype"
+        }
+    }
+}
