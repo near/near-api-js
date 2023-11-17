@@ -30,9 +30,9 @@ module.exports = {
         "key_stores/in_memory_key_store": { 
             "InMemoryKeyStore": `${GITHUB_BASE}/classes/_near_js_keystores.in_memory_key_store.InMemoryKeyStore.html`
         },
-        "key_stores/keystore": {
-            "KeyStore": `${GITHUB_BASE}/classes/_near_js_keystores.keystore.KeyStore.html`
-        },
+        // "key_stores/keystore": {
+        //     "KeyStore": `${GITHUB_BASE}/classes/_near_js_keystores.keystore.KeyStore.html`
+        // },
         "near": {
             "Near":`${GITHUB_BASE}/classes/_near_js_wallet_account.near.Near.html`,
             "NearConfig":`${GITHUB_BASE}/interfaces/_near_js_wallet_account.near.NearConfig.html`,
