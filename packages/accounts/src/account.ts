@@ -81,12 +81,12 @@ export interface SignAndSendTransactionOptions {
     actions: Action[];
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
      */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
      */
     walletCallbackUrl?: string;
     returnError?: boolean;
@@ -122,12 +122,12 @@ export interface FunctionCallOptions {
 export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
     */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
     */
     walletCallbackUrl?: string;
 }
