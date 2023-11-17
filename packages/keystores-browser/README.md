@@ -4,7 +4,7 @@ A collection of classes for managing keys in a web browser execution context.
 
 ## Modules
 
-- [BrowserLocalStorageKeyStore](src/browser_local_storage_key_store.ts) implementation of [KeyStore](../keystores/src/keystore.ts) storing unencrypted keys in browser LocalStorage 
+- [BrowserLocalStorageKeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores-browser/src/browser_local_storage_key_store.ts) implementation of [KeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores/src/keystore.ts) storing unencrypted keys in browser LocalStorage 
 
 # License
 

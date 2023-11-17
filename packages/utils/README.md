@@ -4,10 +4,10 @@ A collection of commonly-used functions and constants.
 
 ## Modules
 
-- [Format](src/format.ts) NEAR denomination formatting functions
-- [Logging](src/logging.ts) functions for printing formatted RPC output
-- [Provider](src/provider.ts) functions for parsing RPC output
-- [Validators](src/validators.ts) functions for querying blockchain validators
+- [Format](https://github.com/near/near-api-js/blob/master/packages/utils/src/format.ts) NEAR denomination formatting functions
+- [Logging](https://github.com/near/near-api-js/blob/master/packages/utils/src/logging.ts) functions for printing formatted RPC output
+- [Provider](https://github.com/near/near-api-js/blob/master/packages/utils/src/provider.ts) functions for parsing RPC output
+- [Validators](https://github.com/near/near-api-js/blob/master/packages/utils/src/validators.ts) functions for querying blockchain validators
 
 # License
 
