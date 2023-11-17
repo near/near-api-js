@@ -94,7 +94,7 @@ export interface SignAndSendTransactionOptions {
 
 /**
  * Options used to initiate a function call (especially a change function call)
- * @see {@link account!Account#viewFunction} to initiate a view function call
+ * @see {@link account!Account#viewFunction | viewFunction} to initiate a view function call
  */
 export interface FunctionCallOptions {
     /** The NEAR account id where the contract is deployed */
