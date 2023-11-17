@@ -28,19 +28,19 @@ export interface NearConfig {
 
     /**
      * [NEAR Contract Helper](https://github.com/near/near-contract-helper) url used to create accounts if no master account is provided
-     * @see {@link account_creator!UrlAccountCreator | UrlAccountCreator}
+     * @see {@link UrlAccountCreator | UrlAccountCreator}
      */
     helperUrl?: string;
 
     /**
      * The balance transferred from the {@link masterAccount} to a created account
-     * @see {@link account_creator!LocalAccountCreator | LocalAccountCreator}
+     * @see {@link LocalAccountCreator | LocalAccountCreator}
      */
     initialBalance?: string;
 
     /**
      * The account to use when creating new accounts
-     * @see {@link account_creator!LocalAccountCreator | LocalAccountCreator}
+     * @see {@link LocalAccountCreator | LocalAccountCreator}
      */
     masterAccount?: string;
 
