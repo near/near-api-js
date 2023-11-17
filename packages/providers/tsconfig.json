@@ -10,6 +10,9 @@
         "out": "docs",
         "exclude": ["node_modules","test","lib"],
         "githubPages": true,
+        "plugin": ["typedoc-plugin-merge-modules"],
+        "mergeModulesRenameDefaults": true,
+        "mergeModulesMergeMode": "project", 
     },
     "files": [
         "src/index.ts"

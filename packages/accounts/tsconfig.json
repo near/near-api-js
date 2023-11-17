@@ -12,6 +12,9 @@
         "exclude": ["node_modules","test","lib"],
         "githubPages": true,
         "emit": "both",
+        "plugin": ["typedoc-plugin-merge-modules"],
+        "mergeModulesRenameDefaults": true,
+        "mergeModulesMergeMode": "project", 
     },
     "files": [
         "src/index.ts"
