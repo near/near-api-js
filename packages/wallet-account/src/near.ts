@@ -20,7 +20,7 @@ import { Signer } from '@near-js/signers';
 import BN from 'bn.js';
 
 export interface NearConfig {
-    /** Holds {@link utils/key_pair!KeyPair} for signing transactions */
+    /** Holds {@link KeyPair} for signing transactions */
     keyStore?: KeyStore;
 
     /** @hidden */
@@ -45,7 +45,7 @@ export interface NearConfig {
     masterAccount?: string;
 
     /**
-     * {@link utils/key_pair!KeyPair} are stored in a {@link KeyStore} under the `networkId` namespace.
+     * {@link KeyPair} are stored in a {@link KeyStore} under the `networkId` namespace.
      */
     networkId: string;
 

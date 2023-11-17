@@ -163,9 +163,9 @@ function bytesJsonStringify(input: any): Buffer {
 }
 
 /**
- * This class provides common account related RPC calls including signing transactions with a {@link utils/key_pair!KeyPair | KeyPair}.
+ * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
  *
- * @hint Use {@link walletAccount!WalletConnection | WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore | BrowserLocalStorageKeyStore}.
+ * @hint Use {@link WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link BrowserLocalStorageKeyStore}.
  * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
  * @see [Account Spec](https://nomicon.io/DataStructures/Account.html)
  */
