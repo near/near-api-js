@@ -47,6 +47,7 @@
         "entryPointStrategy": "packages",
         "githubPages": true,
         "out": "typedoc-docs",
-        "emit": "both"
+        "emit": "both",
+        "excludePrivate": true
     }
 }
