@@ -41,7 +41,7 @@
             "packages/wallet-account"
         ],
         "entryPointStrategy": "packages",
-        "githubPages": true,
+        "githubPages": false,
         "out": "docs",
         "emit": "both",
     },

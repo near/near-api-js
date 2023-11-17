@@ -94,7 +94,7 @@ export interface SignAndSendTransactionOptions {
 
 /**
  * Options used to initiate a function call (especially a change function call)
- * @see {@link account:Account#viewFunction} to initiate a view function call
+ * @see {@link account!Account#viewFunction} to initiate a view function call
  */
 export interface FunctionCallOptions {
     /** The NEAR account id where the contract is deployed */
@@ -165,7 +165,7 @@ function bytesJsonStringify(input: any): Buffer {
 /**
  * This class provides common account related RPC calls including signing transactions with a {@link utils/key_pair!KeyPair | KeyPair}.
  *
- * @hint Use {@link walletAccount:WalletConnection | WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link key_stores/browser_local_storage_key_store:BrowserLocalStorageKeyStore | BrowserLocalStorageKeyStore}.
+ * @hint Use {@link walletAccount!WalletConnection | WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore | BrowserLocalStorageKeyStore}.
  * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
  * @see [Account Spec](https://nomicon.io/DataStructures/Account.html)
  */
@@ -194,7 +194,7 @@ export class Account {
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
-     * @see {@link "providers/json-rpc-provider":JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
@@ -214,7 +214,7 @@ export class Account {
 
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link "providers/json-rpc-provider".JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
      */
     async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
@@ -266,7 +266,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * Finds the {@link "providers/provider"!AccessKeyView | AccessKeyView} associated with the accounts {@link "utils/key_pair":PublicKey | PublicKey} stored in the {@link key_stores/keystore:KeyStore | KeyStore}.
+     * Finds the {@link providers/provider!AccessKeyView | AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey | PublicKey} stored in the {@link key_stores/keystore!KeyStore | KeyStore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *

@@ -22,7 +22,7 @@
             "Module",
             "Reference"
         ],
-        "githubPages": true,
+        "githubPages": false,
     },
     "include": [
         "**/*.js",
