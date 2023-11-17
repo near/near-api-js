@@ -31,6 +31,9 @@
         "exclude": ["node_modules","lib","test"],
         "githubPages": true,
         "emit": "both",
+        "validation": {
+            "notExported": false
+        }
         // "excludeNotDocumentedKinds": [
         //     // "Module",
         //     // "Namespace",
