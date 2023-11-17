@@ -81,12 +81,12 @@ export interface SignAndSendTransactionOptions {
     actions: Action[];
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
      */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
      */
     walletCallbackUrl?: string;
     returnError?: boolean;
@@ -94,7 +94,7 @@ export interface SignAndSendTransactionOptions {
 
 /**
  * Options used to initiate a function call (especially a change function call)
- * @see {@link account!Account#viewFunction} to initiate a view function call
+ * @see {@link Account#viewFunction | viewFunction} to initiate a view function call
  */
 export interface FunctionCallOptions {
     /** The NEAR account id where the contract is deployed */
@@ -122,12 +122,12 @@ export interface FunctionCallOptions {
 export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
     */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
     */
     walletCallbackUrl?: string;
 }
@@ -163,9 +163,9 @@ function bytesJsonStringify(input: any): Buffer {
 }
 
 /**
- * This class provides common account related RPC calls including signing transactions with a {@link utils/key_pair!KeyPair}.
+ * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
  *
- * @hint Use {@link walletAccount!WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
+ * @hint Use {@link WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link BrowserLocalStorageKeyStore}.
  * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
  * @see [Account Spec](https://nomicon.io/DataStructures/Account.html)
  */
@@ -194,7 +194,7 @@ export class Account {
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
@@ -214,7 +214,7 @@ export class Account {
 
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
      */
     async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
@@ -266,7 +266,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * Finds the {@link providers/provider!AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
+     * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *

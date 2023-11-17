@@ -14,7 +14,8 @@
     "autoclave": "rimraf packages/**/dist && rimraf packages/**/lib && rimraf packages/**/node_modules && rimraf packages/**/coverage && rimraf packages/**/.turbo && rm -rf node_modules",
     "test": "turbo run test",
     "release": "changeset publish",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "docs": "typedoc --tsconfig tsconfig.local-test.json"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.6",
@@ -28,7 +29,7 @@
     "husky": "^7.0.4",
     "rimraf": "^3.0.2",
     "turbo": "^1.4.5",
-    "typescript": "^4.9.4",
-    "typedoc": "^0.25.3"
+    "typedoc": "^0.25.3",
+    "typescript": "^4.9.4"
   }
 }

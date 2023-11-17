@@ -2,6 +2,18 @@
     "extends": "../../tsconfig.browser.json",
     "compilerOptions": {
         "outDir": "./lib",
+    }, 
+    "typedocOptions": {
+        "skipErrorChecking": true,
+        "entryPoints": ["src"],
+        "entryPointStrategy": "expand",
+        "out": "docs",
+        "exclude": ["node_modules","test","lib"],
+        "githubPages": true,
+        "emit": "both",
+        "validation": {
+            "notExported": false
+        }
     },
     "files": [
         "src/index.ts",

@@ -3,37 +3,58 @@ name: Deploy TypeDoc on GitHub pages
 on:
     push:
       branches:
-        - master  
+        master  
 
 env:
   NODE_VERSION: 18.x
-  ENTRY_FILE: 'src'
-  CONFIG_PATH: './tsconfig.base.json'
-
+  ENTRY_FILE: 'packages'
+  CONFIG_PATH: 'tsconfig.base.json'
+  USES_PNPM: 'true'
+  DESTINATION_FOLDER: "docs"
+  
 jobs:
   deploy:
+    concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
+
       - name: Build documentation
-        uses: few-sw/typedoc-action@v2.6.2
+        uses: few-sw/typedoc-action@v2.6.2 
         with:
           entry: ${{ env.ENTRY_FILE }}
           config:  ${{ env.CONFIG_PATH }}
+          pnpm: ${{ env.USES_PNPM }}
+
+      # - name: Sync branch
+      #   id: pull
+      #   uses: tretuna/sync-branches@1.2.0
+      #   with:
+      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      #     FROM_BRANCH: 'typedoc-configuration'
+      #     TO_BRANCH: 'gh-pages'
+
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
-          folder: docs
+          folder: ${{ env.DESTINATION_FOLDER }}
           clean: true
-      # - name: Deploy
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: ./docs 
+          # target-folder: ${{ env.DESTINATION_FOLDER }}
+          # clean-exclude: |
+          #   docs/package-architecture.png
+          #   docs/README_TYPEDOC.md
+          #   docs/README.md

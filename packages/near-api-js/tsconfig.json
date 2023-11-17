@@ -23,6 +23,39 @@
         "experimentalDecorators": true,
         "resolveJsonModule": true,
     },
+    "typedocOptions": {
+        "skipErrorChecking": true,
+        "entryPoints": ["src"],
+        "entryPointStrategy": "expand",
+        "out": "docs",
+        "exclude": ["node_modules","lib","test"],
+        "githubPages": true,
+        "emit": "both",
+        "validation": {
+            "notExported": false
+        }
+        // "excludeNotDocumentedKinds": [
+        //     // "Module",
+        //     // "Namespace",
+        //     // "Enum",
+        //     // "EnumMember", // Not enabled by default
+        //     // "Variable",
+        //     // "Function",
+        //     // "Class",
+        //     // "Interface",
+        //     // "Constructor",
+        //     // "Property",
+        //     // "Method",
+        //     // "CallSignature", 
+        //     // "IndexSignature",
+        //     // "ConstructorSignature",
+        //     // "Accessor",
+        //     // "GetSignature",
+        //     // "SetSignature",
+        //     // "TypeAlias",
+        //     // "Reference"
+        // ],
+    },
     "files": [
         "src/index.ts",
         "src/browser-index.ts",

@@ -1,5 +1,8 @@
 {
     "compilerOptions": {
+        "outDir": "dist",
+        "allowJs": true,
+        "checkJs": true,
         "esModuleInterop": true,
         "module": "commonjs",
         "target": "es2015",
@@ -16,6 +19,7 @@
         "noUnusedLocals": true,
         "experimentalDecorators": true,
         "resolveJsonModule": true,
+        "strictNullChecks": false // required for typedoc
     },
     "typedocOptions": {
         "name": "near-api-js",
@@ -42,7 +46,11 @@
         ],
         "entryPointStrategy": "packages",
         "githubPages": true,
-        "out": "docs",
+        "out": "typedoc-docs",
         "emit": "both",
-    },
+        "validation": {
+            "notExported": false
+        }
+        // "excludePrivate": true
+    }
 }

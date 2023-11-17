@@ -84,14 +84,14 @@ export interface ContractMethods {
     /**
      * Methods that change state. These methods cost gas and require a signed transaction.
      *
-     * @see {@link account!Account.functionCall}
+     * @see {@link Account#functionCall}
      */
     changeMethods: string[];
 
     /**
      * View methods do not require a signed transaction.
      *
-     * @see {@link account!Account#viewFunction}
+     * @see {@link Account#viewFunction}
      */
     viewMethods: string[];
 
