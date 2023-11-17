@@ -1,6 +1,6 @@
 /**
  * This module contains the main class developers will use to interact with NEAR.
- * The {@link Near} class is used to interact with {@link Account} through the {@link  providers!JsonRpcProvider}.
+ * The {@link Near} class is used to interact with {@link Account} through the {@link providers!JsonRpcProvider}.
  * It is configured via the {@link NearConfig}.
  * 
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
@@ -34,18 +34,18 @@ export interface NearConfig {
 
     /**
      * The balance transferred from the {@link masterAccount} to a created account
-     * @see {@link LocalAccountCreator | LocalAccountCreator}
+     * @see {@link LocalAccountCreator}
      */
     initialBalance?: string;
 
     /**
      * The account to use when creating new accounts
-     * @see {@link LocalAccountCreator | LocalAccountCreator}
+     * @see {@link LocalAccountCreator}
      */
     masterAccount?: string;
 
     /**
-     * {@link utils/key_pair!KeyPair | KeyPair} are stored in a {@link key_stores/keystore!KeyStore} under the `networkId` namespace.
+     * {@link utils/key_pair!KeyPair} are stored in a {@link KeyStore} under the `networkId` namespace.
      */
     networkId: string;
 
@@ -120,10 +120,10 @@ export class Near {
     }
 
     /**
-     * Create an account using the {@link account_creator!AccountCreator | AccountCreator}. Either:
-     * * using a masterAccount with {@link account_creator!LocalAccountCreator | LocalAccountCreator}
-     * * using the helperUrl with {@link account_creator!UrlAccountCreator | UrlAccountCreator}
-     * @see {@link NearConfig.masterAccount} and {@link NearConfig.helperUrl}
+     * Create an account using the {@link AccountCreator}. Either:
+     * * using a masterAccount with {@link LocalAccountCreator}
+     * * using the helperUrl with {@link UrlAccountCreator}
+     * @see {@link NearConfig#masterAccount | masterAccount} and {@link NearConfig#helperUrl | helperUrl}
      * 
      * @param accountId
      * @param publicKey
