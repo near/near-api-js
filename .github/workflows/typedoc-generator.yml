@@ -36,13 +36,11 @@ jobs:
         run: pnpm install
 
       - name: Build documentation
-        run: pnpm docs 
-
-      # uses: few-sw/typedoc-action@add-pnpm-support 
-      #   with:
-      #     entry: ${{ env.ENTRY_FILE }}
-      #     config:  ${{ env.CONFIG_PATH }}
-      #     pnpm: ${{ env.USES_PNPM }}
+        uses: few-sw/typedoc-action@add-pnpm-support 
+        with:
+          entry: ${{ env.ENTRY_FILE }}
+          config:  ${{ env.CONFIG_PATH }}
+          pnpm: ${{ env.USES_PNPM }}
 
       # - name: Sync branch
       #   id: pull
