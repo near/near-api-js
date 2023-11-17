@@ -1,13 +1,13 @@
 /**
  * Connect to NEAR using the provided configuration.
  *
- * {@link ConnectConfig.networkId} and {@link ConnectConfig.nodeUrl} are required.
+ * {@link browserConnect!ConnectConfig.networkId | ConnectConfig.networkId} and {@link browserConnect!ConnectConfig.nodeUrl | ConnectConfig.nodeUrl} are required.
  *
- * To sign transactions you can also pass: {@link ConnectConfig.keyStore}
+ * To sign transactions you can also pass: {@link browserConnect!ConnectConfig.keyStore | ConnectConfig.keyStore}
  *
  * Both are passed they are prioritize in that order.
  *
- * @see {@link ConnectConfig}
+ * @see {@link browserConnect!ConnectConfig | ConnectConfig}
  * @example
  * ```js
  * async function initNear() {

@@ -1,8 +1,8 @@
 /**
- * The classes in this module are used in conjunction with the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
+ * The classes in this module are used in conjunction with the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore | BrowserLocalStorageKeyStore}.
  * This module exposes two classes:
  * * {@link WalletConnection} which redirects users to [NEAR Wallet](https://wallet.near.org/) for key management.
- * * {@link ConnectedWalletAccount} is an {@link account!Account} implementation that uses {@link WalletConnection} to get keys
+ * * {@link ConnectedWalletAccount} is an {@link account!Account | Account} implementation that uses {@link WalletConnection} to get keys
  * 
  * @module walletAccount
  */
@@ -288,7 +288,7 @@ export class WalletConnection {
 }
 
 /**
- * {@link account!Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
+ * {@link account!Account | Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
  */
 export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;

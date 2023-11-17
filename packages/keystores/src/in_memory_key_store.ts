@@ -71,7 +71,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Removes all {@link utils/key_pair!KeyPair} from in-memory storage
+     * Removes all {@link utils/key_pair!KeyPair | KeyPair} from in-memory storage
      */
     async clear(): Promise<void> {
         this.keys = {};

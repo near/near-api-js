@@ -1,16 +1,16 @@
 /**
  * Connect to NEAR using the provided configuration.
  *
- * {@link ConnectConfig.networkId} and {@link ConnectConfig.nodeUrl} are required.
+ * {@link Connect!ConnectConfig.networkId | ConnectConfig.networkId} and {@link Connect!ConnectConfig.nodeUrl | ConnectConfig.nodeUrl} are required.
  *
  * To sign transactions you can also pass:
- * 1. {@link ConnectConfig.keyStore}
- * 2. {@link ConnectConfig.keyPath}
- * 3. {@link ConnectConfig.deps.keyStore} (deprecated, only for use in legacy applications)
+ * 1. {@link Connect!ConnectConfig.keyStore | ConnectConfig.keyStore}
+ * 2. {@link Connect!ConnectConfig.keyPath | ConnectConfig.keyPath}
+ * 3. {@link Connect!ConnectConfig.deps.keyStore | ConnectConfig.deps.keyStore} (deprecated, only for use in legacy applications)
  *
  * If all three are passed they are prioritize in that order.
  *
- * @see {@link ConnectConfig}
+ * @see {@link Connect!ConnectConfig | ConnectConfig}
  * @example
  * ```js
  * async function initNear() {
@@ -29,7 +29,7 @@ import { logWarning } from './utils';
 
 export interface ConnectConfig extends NearConfig {
     /**
-     * Initialize an {@link key_stores/in_memory_key_store!InMemoryKeyStore} by reading the file at keyPath.
+     * Initialize an {@link key_stores/in_memory_key_store!InMemoryKeyStore | InMemoryKeyStore} by reading the file at keyPath.
      */
     keyPath?: string;
 }

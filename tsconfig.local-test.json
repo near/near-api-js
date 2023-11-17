@@ -48,6 +48,6 @@
         "githubPages": true,
         "out": "typedoc-docs",
         "emit": "both",
-        "excludePrivate": true
+        // "excludePrivate": true
     }
 }
