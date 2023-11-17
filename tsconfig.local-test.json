@@ -45,7 +45,7 @@
             "packages/wallet-account"
         ],
         "entryPointStrategy": "packages",
-        "githubPages": false,
+        "githubPages": true,
         "out": "typedoc-docs",
         "emit": "both",
         "validation": {

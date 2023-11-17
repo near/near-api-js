@@ -9,7 +9,7 @@
         "entryPointStrategy": "expand",
         "out": "docs",
         "exclude": ["node_modules","test","lib"],
-        "githubPages": false,
+        "githubPages": true,
         "validation": {
             "notExported": false
         }
