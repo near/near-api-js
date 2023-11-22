@@ -35,7 +35,7 @@ module.exports = function getConfig(env) {
         case 'ci':
             return {
                 networkId: 'shared-test',
-                nodeUrl: 'https://rpc.ci-testnet.near.org',
+                nodeUrl: 'https://rpc.testnet.near.org',
                 masterAccount: 'test.near',
             };
         default:

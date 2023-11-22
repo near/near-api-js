@@ -5,7 +5,7 @@ const { JsonRpcProvider } = require('../lib');
 jest.setTimeout(20000);
 
 const withProvider = (fn) => {
-    return () => fn(new JsonRpcProvider({ url: 'https://rpc.ci-testnet.near.org' }));
+    return () => fn(new JsonRpcProvider({ url: 'https://rpc.testnet.near.org' }));
 };
 
 test('json rpc fetch node status', withProvider(async (provider) => {
@@ -183,7 +183,7 @@ test('JsonRpc connection object exist without connectionInfo provided', async ()
 });
 
 test('near json rpc fetch node status', async () => {
-    const provider = new JsonRpcProvider({ url: 'https://rpc.ci-testnet.near.org' });
+    const provider = new JsonRpcProvider({ url: 'https://rpc.testnet.near.org' });
     let response = await provider.status();
     expect(response.chain_id).toBeTruthy();
 });
