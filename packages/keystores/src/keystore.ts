@@ -1,10 +1,9 @@
 import { KeyPair } from '@near-js/crypto';
 
 /**
- * KeyStores are passed to {@link Near} via {@link NearConfig}
- * and are used by the {@link InMemorySigner | InMemorySigner} to sign transactions.
+ * KeyStores are passed to {@link "@near-js/wallet-account".near.Near | Near} via {@link "@near-js/wallet-account".near.NearConfig | NearConfig}
+ * and are used by the {@link "@near-js/signers".in_memory_signer.InMemorySigner | InMemorySigner} to sign transactions.
  * 
- * @see {@link connect }
  */
 export abstract class KeyStore {
     abstract setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void>;

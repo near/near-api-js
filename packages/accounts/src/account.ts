@@ -131,9 +131,9 @@ export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     */
     walletCallbackUrl?: string;
 }
-export interface ViewFunctionCallOptions extends FunctionCallOptions { 
-    parse?: (response: Uint8Array) => any; 
-    blockQuery?: BlockReference; 
+export interface ViewFunctionCallOptions extends FunctionCallOptions {
+    parse?: (response: Uint8Array) => any;
+    blockQuery?: BlockReference;
 }
 
 interface StakedBalance {
@@ -163,11 +163,7 @@ function bytesJsonStringify(input: any): Buffer {
 }
 
 /**
- * This class provides common account related RPC calls including signing transactions with a {@link KeyPair}.
- *
- * @hint Use {@link WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link BrowserLocalStorageKeyStore}.
- * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
- * @see [Account Spec](https://nomicon.io/DataStructures/Account.html)
+ * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
  */
 export class Account {
     readonly connection: Connection;
@@ -194,7 +190,7 @@ export class Account {
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider.sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
@@ -214,7 +210,7 @@ export class Account {
 
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider_sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider }
      */
     async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
@@ -248,7 +244,7 @@ export class Account {
         printTxOutcomeLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
 
         // Should be falsy if result.status.Failure is null
-        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object'  && result.status.Failure !== null) {
+        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object' && result.status.Failure !== null) {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
                 throw new TypedError(
@@ -266,7 +262,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
+     * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link "@near-js/keystores".keystore.KeyStore | Keystore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *
@@ -396,16 +392,16 @@ export class Account {
         this.validateArgs(args);
         let functionCallArgs;
 
-        if(jsContract){
-            const encodedArgs = this.encodeJSContractArgs( contractId, methodName, JSON.stringify(args) );
-            functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true ];
-        } else{
+        if (jsContract) {
+            const encodedArgs = this.encodeJSContractArgs(contractId, methodName, JSON.stringify(args));
+            functionCallArgs = ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true];
+        } else {
             const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
             functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
         }
 
         return this.signAndSendTransaction({
-            receiverId: jsContract ? this.connection.jsvmAccountId: contractId,
+            receiverId: jsContract ? this.connection.jsvmAccountId : contractId,
             // eslint-disable-next-line prefer-spread
             actions: [functionCall.apply(void 0, functionCallArgs)],
             walletMeta,
@@ -543,20 +539,20 @@ export class Account {
         blockQuery = { finality: 'optimistic' }
     }: ViewFunctionCallOptions): Promise<any> {
         let encodedArgs;
-        
+
         this.validateArgs(args);
-    
-        if(jsContract){
-            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
-        } else{
-            encodedArgs =  stringify(args);
+
+        if (jsContract) {
+            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length > 0 ? JSON.stringify(args) : '');
+        } else {
+            encodedArgs = stringify(args);
         }
 
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
             ...blockQuery,
             account_id: jsContract ? this.connection.jsvmAccountId : contractId,
-            method_name: jsContract ? 'view_js_contract'  : methodName,
+            method_name: jsContract ? 'view_js_contract' : methodName,
             args_base64: encodedArgs.toString('base64')
         });
 
@@ -575,7 +571,7 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
+    async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' }): Promise<Array<{ key: Buffer; value: Buffer }>> {
         const { values } = await this.connection.provider.query<ViewStateResult>({
             request_type: 'view_state',
             ...blockQuery,
@@ -651,12 +647,12 @@ export class Account {
      * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
-    async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance>  {
+    async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance> {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
         const epochId = block.header.epoch_id;
         const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(epochId);
-        const pools:Set<string> = new Set();
+        const pools: Set<string> = new Set();
         [...current_validators, ...next_validators, ...current_proposals]
             .forEach((validator) => pools.add(validator.account_id));
 
@@ -704,7 +700,7 @@ export class Account {
             }
             return result;
         },
-        { stakedValidators: [], failedValidators: [], total: new BN(0) });
+            { stakedValidators: [], failedValidators: [], total: new BN(0) });
 
         return {
             ...summary,

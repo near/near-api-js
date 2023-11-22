@@ -38,14 +38,6 @@ jobs:
           config:  ${{ env.CONFIG_PATH }}
           pnpm: ${{ env.USES_PNPM }}
 
-      # - name: Sync branch
-      #   id: pull
-      #   uses: tretuna/sync-branches@1.2.0
-      #   with:
-      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      #     FROM_BRANCH: 'typedoc-configuration'
-      #     TO_BRANCH: 'gh-pages'
-
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
@@ -53,8 +45,3 @@ jobs:
           branch: gh-pages
           folder: ${{ env.DESTINATION_FOLDER }}
           clean: true
-          # target-folder: ${{ env.DESTINATION_FOLDER }}
-          # clean-exclude: |
-          #   docs/package-architecture.png
-          #   docs/README_TYPEDOC.md
-          #   docs/README.md

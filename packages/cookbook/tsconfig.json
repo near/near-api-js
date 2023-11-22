@@ -4,26 +4,6 @@
         "allowJs": true,
         "outDir": "./dist",
       },
-    "typedocOptions": {
-        "skipErrorChecking": true,
-        "entryPoints": [
-            "accounts",
-            "api-keys",
-            "transactions",
-            "utils"
-        ],
-        "entryPointStrategy": "expand",
-        "out": "docs",
-        "exclude": [
-            "node_modules"
-        ],
-        "excludeNotDocumented": true,
-        "excludeNotDocumentedKinds": [
-            "Module",
-            "Reference"
-        ],
-        "githubPages": true,
-    },
     "include": [
         "**/*.js",
         "**/*.ts"

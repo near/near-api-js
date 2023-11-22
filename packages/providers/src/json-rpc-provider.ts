@@ -3,7 +3,7 @@
  * @description
  * This module contains the {@link JsonRpcProvider} client class
  * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
- * @see {@link provider} for a list of request and response types
+ * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
 import {
     baseEncode,
@@ -139,7 +139,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query the RPC by passing an {@link RpcQueryRequest}
+     * Query the RPC by passing an {@link "@near-js/types".provider/request.RpcQueryRequest | RpcQueryRequest }
      * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
      *
      * @typeParam T the shape of the returned query response
