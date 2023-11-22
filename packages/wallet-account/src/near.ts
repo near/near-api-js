@@ -1,6 +1,6 @@
 /**
  * This module contains the main class developers will use to interact with NEAR.
- * The {@link Near} class is used to interact with {@link Account} through the {@link providers!JsonRpcProvider}.
+ * The {@link Near} class is used to interact with {@link "@near-js/accounts".account.Account | Account} through the {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}.
  * It is configured via the {@link NearConfig}.
  * 
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
@@ -20,7 +20,7 @@ import { Signer } from '@near-js/signers';
 import BN from 'bn.js';
 
 export interface NearConfig {
-    /** Holds {@link KeyPair} for signing transactions */
+    /** Holds {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} for signing transactions */
     keyStore?: KeyStore;
 
     /** @hidden */
@@ -45,19 +45,19 @@ export interface NearConfig {
     masterAccount?: string;
 
     /**
-     * {@link KeyPair} are stored in a {@link KeyStore} under the `networkId` namespace.
+     * {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} are stored in a {@link KeyStore} under the `networkId` namespace.
      */
     networkId: string;
 
     /**
      * NEAR RPC API url. used to make JSON RPC calls to interact with NEAR.
-     * @see {@link JsonRpcProvider}
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}
      */
     nodeUrl: string;
 
     /**
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
-     * @see {@link JsonRpcProvider}
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}
      */
     headers?: { [key: string]: string | number };
 

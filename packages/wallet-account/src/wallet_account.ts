@@ -1,8 +1,7 @@
 /**
- * The classes in this module are used in conjunction with the {@link BrowserLocalStorageKeyStore}.
  * This module exposes two classes:
  * * {@link WalletConnection} which redirects users to [NEAR Wallet](https://wallet.near.org/) for key management.
- * * {@link ConnectedWalletAccount} is an {@link account!Account | Account} implementation that uses {@link WalletConnection} to get keys
+ * * {@link ConnectedWalletAccount} is an {@link "@near-js/accounts".account.Account | Account} implementation that uses {@link WalletConnection} to get keys
  * 
  * @module walletAccount
  */
@@ -48,8 +47,6 @@ interface RequestSignTransactionsOptions {
 }
 
 /**
- * This class is used in conjunction with the {@link BrowserLocalStorageKeyStore}.
- * It redirects users to [NEAR Wallet](https://wallet.near.org) for key management.
  * This class is not intended for use outside the browser. Without `window` (i.e. in server contexts), it will instantiate but will throw a clear error when used.
  * 
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#wallet](https://docs.near.org/tools/near-api-js/quick-reference#wallet)
@@ -343,7 +340,7 @@ export class ConnectedWalletAccount extends Account {
         });
 
         // TODO: Aggregate multiple transaction request with "debounce".
-        // TODO: Introduce TrasactionQueue which also can be used to watch for status?
+        // TODO: Introduce TransactionQueue which also can be used to watch for status?
     }
 
     /**

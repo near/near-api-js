@@ -15,7 +15,7 @@
     "test": "turbo run test",
     "release": "changeset publish",
     "prepare": "husky install",
-    "docs": "typedoc --tsconfig tsconfig.local-test.json"
+    "docs": "typedoc"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.6",

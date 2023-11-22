@@ -30,7 +30,6 @@ NEAR JavaScript API is a complete library to interact with the NEAR blockchain. 
 ### Managing Keys
 
 - Module [`utils/key_pair`](modules/near_api_js.utils_key_pair.html)
-- Class [`BrowserLocalStorageKeyStore`](classes/near_api_js.key_stores_browser_local_storage_key_store.BrowserLocalStorageKeyStore.html)
 - Class [`InMemoryKeyStore`](classes/_near_js_keystores.in_memory_key_store.InMemoryKeyStore.html)
 - Class [`UnencryptedFileSystemKeyStore`](classes/_near_js_keystores_node.unencrypted_file_system_keystore.UnencryptedFileSystemKeyStore.html)
 - Class [`MergeKeyStore`](classes/_near_js_keystores.merge_key_store.MergeKeyStore.html)
