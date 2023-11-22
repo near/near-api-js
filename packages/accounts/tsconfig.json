@@ -3,6 +3,7 @@
     "compilerOptions": {
         "preserveSymlinks": false,
         "outDir": "./lib",
+        "lib": ["es2021", "DOM"]
     },
     "typedocOptions": {
         "skipErrorChecking": true,

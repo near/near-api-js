@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: false
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -83,6 +79,9 @@ importers:
       depd:
         specifier: ^2.0.0
         version: 2.0.0
+      lru_map:
+        specifier: ^0.4.1
+        version: 0.4.1
       near-abi:
         specifier: 0.1.1
         version: 0.1.1
@@ -98,7 +97,7 @@ importers:
         version: 4.0.0
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       near-hello:
         specifier: ^0.5.1
         version: 0.5.1
@@ -202,7 +201,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -234,7 +233,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -253,7 +252,7 @@ importers:
     devDependencies:
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -275,7 +274,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -381,7 +380,7 @@ importers:
         version: 2.0.0
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       localstorage-memory:
         specifier: ^1.0.3
         version: 1.0.3
@@ -431,7 +430,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -456,7 +455,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -496,7 +495,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -515,7 +514,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -546,7 +545,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: ^26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -589,7 +588,7 @@ importers:
         version: 18.16.1
       jest:
         specifier: ^26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       localstorage-memory:
         specifier: ^1.0.3
         version: 1.0.3
@@ -1471,7 +1470,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /@jest/core@26.6.3:
+  /@jest/core@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-xvV1kKbhfUqFVuZ8Cyo+JPpipAHHAV3kcDBftiduK8EICXmTFddryy3P7NfZt8Pv37rA9nEJBKCCkglCPt/Xjw==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -1486,14 +1485,14 @@ packages:
       exit: 0.1.2
       graceful-fs: 4.2.11
       jest-changed-files: 26.6.2
-      jest-config: 26.6.3
+      jest-config: 26.6.3(ts-node@10.9.1)
       jest-haste-map: 26.6.2
       jest-message-util: 26.6.2
       jest-regex-util: 26.0.0
       jest-resolve: 26.6.2
       jest-resolve-dependencies: 26.6.3
-      jest-runner: 26.6.3
-      jest-runtime: 26.6.3
+      jest-runner: 26.6.3(ts-node@10.9.1)
+      jest-runtime: 26.6.3(ts-node@10.9.1)
       jest-snapshot: 26.6.2
       jest-util: 26.6.2
       jest-validate: 26.6.2
@@ -1595,15 +1594,15 @@ packages:
       collect-v8-coverage: 1.0.2
     dev: true
 
-  /@jest/test-sequencer@26.6.3:
+  /@jest/test-sequencer@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-YHlVIjP5nfEyjlrSr8t/YdNfU/1XEt7c5b4OxcXCjyRhjzLYu/rO69/WHPuYcbCWkz8kAeZVZp2N2+IOLLEPGw==}
     engines: {node: '>= 10.14.2'}
     dependencies:
       '@jest/test-result': 26.6.2
       graceful-fs: 4.2.11
       jest-haste-map: 26.6.2
-      jest-runner: 26.6.3
-      jest-runtime: 26.6.3
+      jest-runner: 26.6.3(ts-node@10.9.1)
+      jest-runtime: 26.6.3(ts-node@10.9.1)
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -5253,12 +5252,12 @@ packages:
       throat: 5.0.0
     dev: true
 
-  /jest-cli@26.6.3:
+  /jest-cli@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-GF9noBSa9t08pSyl3CY4frMrqp+aQXFGFkf5hEPbh/pIUFYWMK6ZLTfbmadxJVcJrdRoChlWQsA2VkJcDFK8hg==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
     dependencies:
-      '@jest/core': 26.6.3
+      '@jest/core': 26.6.3(ts-node@10.9.1)
       '@jest/test-result': 26.6.2
       '@jest/types': 26.6.2
       chalk: 4.1.2
@@ -5266,7 +5265,7 @@ packages:
       graceful-fs: 4.2.11
       import-local: 3.1.0
       is-ci: 2.0.0
-      jest-config: 26.6.3
+      jest-config: 26.6.3(ts-node@10.9.1)
       jest-util: 26.6.2
       jest-validate: 26.6.2
       prompts: 2.4.2
@@ -5279,7 +5278,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /jest-config@26.6.3:
+  /jest-config@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-t5qdIj/bCj2j7NFVHb2nFB4aUdfucDn3JRKgrZnplb8nieAirAzRSHP8uDEd+qV6ygzg9Pz4YG7UTJf94LPSyg==}
     engines: {node: '>= 10.14.2'}
     peerDependencies:
@@ -5289,7 +5288,7 @@ packages:
         optional: true
     dependencies:
       '@babel/core': 7.22.9
-      '@jest/test-sequencer': 26.6.3
+      '@jest/test-sequencer': 26.6.3(ts-node@10.9.1)
       '@jest/types': 26.6.2
       babel-jest: 26.6.3(@babel/core@7.22.9)
       chalk: 4.1.2
@@ -5299,13 +5298,14 @@ packages:
       jest-environment-jsdom: 26.6.2
       jest-environment-node: 26.6.2
       jest-get-type: 26.3.0
-      jest-jasmine2: 26.6.3
+      jest-jasmine2: 26.6.3(ts-node@10.9.1)
       jest-regex-util: 26.0.0
       jest-resolve: 26.6.2
       jest-util: 26.6.2
       jest-validate: 26.6.2
       micromatch: 4.0.5
       pretty-format: 26.6.2
+      ts-node: 10.9.1(@types/node@18.17.2)(typescript@4.9.4)
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -5399,7 +5399,7 @@ packages:
       - supports-color
     dev: true
 
-  /jest-jasmine2@26.6.3:
+  /jest-jasmine2@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-kPKUrQtc8aYwBV7CqBg5pu+tmYXlvFlSFYn18ev4gPFtrRzB15N2gW/Roew3187q2w2eHuu0MU9TJz6w0/nPEg==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -5416,7 +5416,7 @@ packages:
       jest-each: 26.6.2
       jest-matcher-utils: 26.6.2
       jest-message-util: 26.6.2
-      jest-runtime: 26.6.3
+      jest-runtime: 26.6.3(ts-node@10.9.1)
       jest-snapshot: 26.6.2
       jest-util: 26.6.2
       pretty-format: 26.6.2
@@ -5512,7 +5512,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /jest-runner@26.6.3:
+  /jest-runner@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-atgKpRHnaA2OvByG/HpGA4g6CSPS/1LK0jK3gATJAoptC1ojltpmVlYC3TYgdmGp+GLuhzpH30Gvs36szSL2JQ==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -5525,13 +5525,13 @@ packages:
       emittery: 0.7.2
       exit: 0.1.2
       graceful-fs: 4.2.11
-      jest-config: 26.6.3
+      jest-config: 26.6.3(ts-node@10.9.1)
       jest-docblock: 26.0.0
       jest-haste-map: 26.6.2
       jest-leak-detector: 26.6.2
       jest-message-util: 26.6.2
       jest-resolve: 26.6.2
-      jest-runtime: 26.6.3
+      jest-runtime: 26.6.3(ts-node@10.9.1)
       jest-util: 26.6.2
       jest-worker: 26.6.2
       source-map-support: 0.5.21
@@ -5544,7 +5544,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /jest-runtime@26.6.3:
+  /jest-runtime@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-lrzyR3N8sacTAMeonbqpnSka1dHNux2uk0qqDXVkMv2c/A3wYnvQ4EXuI013Y6+gSKSCxdaczvf4HF0mVXHRdw==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
@@ -5564,7 +5564,7 @@ packages:
       exit: 0.1.2
       glob: 7.2.3
       graceful-fs: 4.2.11
-      jest-config: 26.6.3
+      jest-config: 26.6.3(ts-node@10.9.1)
       jest-haste-map: 26.6.2
       jest-message-util: 26.6.2
       jest-mock: 26.6.2
@@ -5662,14 +5662,14 @@ packages:
       supports-color: 7.2.0
     dev: true
 
-  /jest@26.0.1:
+  /jest@26.0.1(ts-node@10.9.1):
     resolution: {integrity: sha512-29Q54kn5Bm7ZGKIuH2JRmnKl85YRigp0o0asTc6Sb6l2ch1DCXIeZTLLFy9ultJvhkTqbswF5DEx4+RlkmCxWg==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
     dependencies:
-      '@jest/core': 26.6.3
+      '@jest/core': 26.6.3(ts-node@10.9.1)
       import-local: 3.1.0
-      jest-cli: 26.6.3
+      jest-cli: 26.6.3(ts-node@10.9.1)
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -7924,7 +7924,7 @@ packages:
       bs-logger: 0.2.6
       buffer-from: 1.1.2
       fast-json-stable-stringify: 2.1.0
-      jest: 26.0.1
+      jest: 26.0.1(ts-node@10.9.1)
       jest-util: 26.6.2
       json5: 2.2.3
       lodash: 4.17.21
@@ -8698,3 +8698,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+settings:
+  autoInstallPeers: false
+  excludeLinksFromLockfile: false
