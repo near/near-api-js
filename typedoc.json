@@ -21,6 +21,6 @@
   "validation": {
     "notExported": false
   },
-  "out": "_docs",
+  "out": "docs",
   "readme": "./docs/README_TYPEDOC.md"
 }
