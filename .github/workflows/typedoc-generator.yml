@@ -35,7 +35,7 @@ jobs:
         run:  pnpm build
 
       - name: Build documentation
-        run:  pnpm run docs
+        run:  pnpm docs:generate
 
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
