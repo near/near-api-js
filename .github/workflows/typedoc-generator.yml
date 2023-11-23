@@ -32,11 +32,7 @@ jobs:
         run: pnpm install
 
       - name: Build documentation
-        uses: few-sw/typedoc-action@v2.6.2 
-        with:
-          entry: ${{ env.ENTRY_FILE }}
-          config:  ${{ env.CONFIG_PATH }}
-          pnpm: ${{ env.USES_PNPM }}
+        run:  pnpm run docs
 
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
