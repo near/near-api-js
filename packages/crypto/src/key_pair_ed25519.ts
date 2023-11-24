@@ -13,19 +13,21 @@ import { PublicKey } from './public_key';
 export class KeyPairEd25519 extends KeyPairBase {
     readonly publicKey: PublicKey;
     readonly secretKey: string;
+    readonly extendedSecretKey: string;
 
     /**
      * Construct an instance of key pair given a secret key.
      * It's generally assumed that these are encoded in base58.
-     * @param {string} secretKey
+     * @param {string} extendedSecretKey
      */
-    constructor(secretKey: string) {
+    constructor(extendedSecretKey: string) {
         super();
-        const decoded = baseDecode(secretKey);
-        const sk = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
-        const publicKey = ed25519.getPublicKey(sk);
+        const decoded = baseDecode(extendedSecretKey);
+        const secretKey = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
+        const publicKey = ed25519.getPublicKey(secretKey);
         this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: publicKey });
-        this.secretKey = baseEncode(sk);
+        this.secretKey = baseEncode(secretKey);
+        this.extendedSecretKey = extendedSecretKey;
     }
 
     /**
@@ -39,10 +41,10 @@ export class KeyPairEd25519 extends KeyPairBase {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        const sk = webcrypto.getRandomValues(new Uint8Array(KeySize.SECRET_KEY));
-        const pk = ed25519.getPublicKey(sk);
-        const extendedSC = new Uint8Array([...sk, ...pk]);
-        return new KeyPairEd25519(baseEncode(extendedSC));
+        const secretKey = webcrypto.getRandomValues(new Uint8Array(KeySize.SECRET_KEY));
+        const publicKey = ed25519.getPublicKey(secretKey);
+        const extendedSecretKey = new Uint8Array([...secretKey, ...publicKey]);
+        return new KeyPairEd25519(baseEncode(extendedSecretKey));
     }
 
     sign(message: Uint8Array): Signature {
@@ -55,8 +57,7 @@ export class KeyPairEd25519 extends KeyPairBase {
     }
 
     toString(): string {
-        const extendedSK = baseEncode(new Uint8Array([...baseDecode(this.secretKey), ...this.publicKey.data]));
-        return `ed25519:${extendedSK}`;
+        return `ed25519:${this.extendedSecretKey}`;
     }
 
     getPublicKey(): PublicKey {
