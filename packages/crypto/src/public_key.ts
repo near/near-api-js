@@ -1,8 +1,8 @@
 import { Assignable } from '@near-js/types';
 import { baseEncode, baseDecode } from '@near-js/utils';
-import nacl from 'tweetnacl';
+import { ed25519 } from '@noble/curves/ed25519';
 
-import { KeyType } from './constants';
+import { KeySize, KeyType } from './constants';
 
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
@@ -45,8 +45,8 @@ export class PublicKey extends Assignable {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
         const decodedPublicKey = baseDecode(publicKey);
-        if(decodedPublicKey.length !== nacl.box.publicKeyLength) {
-            throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${nacl.box.publicKeyLength}`);
+        if(decodedPublicKey.length !== KeySize.SECRET_KEY) {
+            throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${KeySize.SECRET_KEY}`);
         }
         return new PublicKey({ keyType, data: decodedPublicKey });
     }
@@ -57,7 +57,7 @@ export class PublicKey extends Assignable {
 
     verify(message: Uint8Array, signature: Uint8Array): boolean {
         switch (this.keyType) {
-            case KeyType.ED25519: return nacl.sign.detached.verify(message, signature, this.data);
+            case KeyType.ED25519: return ed25519.verify(signature, message, this.data);
             default: throw new Error(`Unknown key type ${this.keyType}`);
         }
     }

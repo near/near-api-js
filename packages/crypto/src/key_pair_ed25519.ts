@@ -1,7 +1,8 @@
 import { baseEncode, baseDecode } from '@near-js/utils';
-import nacl from 'tweetnacl';
+import { ed25519 } from '@noble/curves/ed25519';
+import { webcrypto } from 'crypto';
 
-import { KeyType } from './constants';
+import { KeySize, KeyType } from './constants';
 import { KeyPairBase, Signature } from './key_pair_base';
 import { PublicKey } from './public_key';
 
@@ -20,9 +21,11 @@ export class KeyPairEd25519 extends KeyPairBase {
      */
     constructor(secretKey: string) {
         super();
-        const keyPair = nacl.sign.keyPair.fromSecretKey(baseDecode(secretKey));
-        this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: keyPair.publicKey });
-        this.secretKey = secretKey;
+        const decoded = baseDecode(secretKey);
+        const sk = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
+        const publicKey = ed25519.getPublicKey(sk);
+        this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: publicKey });
+        this.secretKey = baseEncode(sk);
     }
 
     /**
@@ -36,12 +39,14 @@ export class KeyPairEd25519 extends KeyPairBase {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        const newKeyPair = nacl.sign.keyPair();
-        return new KeyPairEd25519(baseEncode(newKeyPair.secretKey));
+        const sk = webcrypto.getRandomValues(new Uint8Array(KeySize.SECRET_KEY));
+        const pk = ed25519.getPublicKey(sk);
+        const extendedSC = new Uint8Array([...sk, ...pk]);
+        return new KeyPairEd25519(baseEncode(extendedSC));
     }
 
     sign(message: Uint8Array): Signature {
-        const signature = nacl.sign.detached(message, baseDecode(this.secretKey));
+        const signature = ed25519.sign(message, baseDecode(this.secretKey));
         return { signature, publicKey: this.publicKey };
     }
 
@@ -50,7 +55,8 @@ export class KeyPairEd25519 extends KeyPairBase {
     }
 
     toString(): string {
-        return `ed25519:${this.secretKey}`;
+        const extendedSK = baseEncode(new Uint8Array([...baseDecode(this.secretKey), ...this.publicKey.data]));
+        return `ed25519:${extendedSK}`;
     }
 
     getPublicKey(): PublicKey {
