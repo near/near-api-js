@@ -31,7 +31,8 @@
         "http-errors": "^1.7.2",
         "near-abi": "0.1.1",
         "node-fetch": "^2.6.1",
-        "tweetnacl": "^1.0.1"
+        "tweetnacl": "^1.0.1",
+        "near-workspaces": "3.4.0"
     },
     "devDependencies": {
         "@types/bn.js": "^5.1.0",

@@ -28,7 +28,8 @@
     "borsh": "1.0.0",
     "depd": "^2.0.0",
     "lru_map": "^0.4.1",
-    "near-abi": "0.1.1"
+    "near-abi": "0.1.1",
+    "near-workspaces": "3.4.0"
   },
   "devDependencies": {
     "@near-js/keystores": "workspace:*",
