@@ -1,6 +1,6 @@
 # NEAR JavaScript API
 
-[![Build Status](https://travis-ci.com/near/near-api-js.svg?branch=master)](https://travis-ci.com/near/near-api-js)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fnear%2Fnear-api-js%2Fbadge&style=flat&label=Build)](https://actions-badge.atrox.dev/near/near-api-js/goto)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/near/near-api-js) 
 
 NEAR JavaScript API is a complete library to interact with the NEAR blockchain. You can use it in the browser, or in Node.js runtime.

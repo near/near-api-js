@@ -42,7 +42,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Stores a {@link utils/key_pair!KeyPair} in local storage.
+     * Stores a {@link KeyPair} in local storage.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -52,7 +52,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a {@link utils/key_pair!KeyPair} from local storage
+     * Gets a {@link KeyPair} from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -66,7 +66,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Removes a {@link utils/key_pair!KeyPair} from local storage
+     * Removes a {@link KeyPair} from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
