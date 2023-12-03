@@ -51,6 +51,10 @@ async function calculateGas(contractId, methodName, args, depositAmount) {
     }
   );
 
+  if (totalGasBurned > MAX_GAS) {
+    throw new Error(`Gas used exceeds maximum gas. Used: ${totalGasBurned}, Max: ${MAX_GAS}`);
+  }
+
   console.log(chalk`{white ------------------------------------------------------------------------ }`)
   console.log(chalk`{bold.green RESULTS} {white for: [ {bold.blue ${METHOD_NAME}} ] called on contract: [ {bold.blue ${CONTRACT_ID}} ]}` )
   console.log(chalk`{white ------------------------------------------------------------------------ }`)
