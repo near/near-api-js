@@ -20,12 +20,21 @@
  *   })
  * }
  * ```
+ * @example disable library logs
+ * ```js
+ * async function initNear() {
+ *   const near = await connect({
+ *      networkId: 'testnet',
+ *      nodeUrl: 'https://rpc.testnet.near.org',
+ *      logger: false
+ *   })
+ * }
  * @module connect
  */
 import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 import { Near, NearConfig } from './near';
-import { logWarning } from './utils';
+import { Logger } from '@near-js/utils';
 
 export interface ConnectConfig extends NearConfig {
     /**
@@ -38,6 +47,13 @@ export interface ConnectConfig extends NearConfig {
  * Initialize connection to Near network.
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
+    if (config.logger === false) {
+        // disables logging
+        Logger.overrideLogger(undefined);
+    } else if (config.logger !== undefined && config.logger !== null) {
+        Logger.overrideLogger(config.logger);
+    }
+
     // Try to find extra key in `KeyPath` if provided.
     if (config.keyPath && (config.keyStore ||  config.deps?.keyStore)) {
         try {
@@ -54,12 +70,10 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                     keyPathStore,
                     config.keyStore || config.deps?.keyStore
                 ], { writeKeyStoreIndex: 1 });
-                if (!(typeof process === 'object' && process.env['NEAR_NO_LOGS'])) {
-                    console.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
-                }
+                Logger.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
             }
         } catch (error) {
-            logWarning(`Failed to load master account key from ${config.keyPath}: ${error}`);
+            Logger.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
         }
     }
     return new Near(config);

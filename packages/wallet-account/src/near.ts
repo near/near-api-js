@@ -17,6 +17,7 @@ import {
 import { PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { Signer } from '@near-js/signers';
+import { LoggerService } from '@near-js/utils';
 import BN from 'bn.js';
 
 export interface NearConfig {
@@ -76,6 +77,10 @@ export interface NearConfig {
      * Backward-compatibility for older versions
      */
     deps?: { keyStore: KeyStore };
+    /**
+     * Specifies the logger to use.  Pass `false` to turn off logging.
+     */
+    logger?: LoggerService | false;
 }
 
 /**
