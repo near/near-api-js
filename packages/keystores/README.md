@@ -4,9 +4,9 @@ A collection of classes for managing NEAR-compatible cryptographic keys.
 
 ## Modules
 
-- [KeyStore](src/keystore.ts) abstract class for managing account keys
-- [InMemoryKeyStore](src/in_memory_key_store.ts) implementation of `KeyStore` using an in-memory data structure local to the instance
-- [MergeKeyStore](src/merge_key_store.ts) implementation of `KeyStore` aggregating multiple `KeyStore` implementations
+- [KeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores/src/keystore.ts) abstract class for managing account keys
+- [InMemoryKeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores/src/in_memory_key_store.ts) implementation of `KeyStore` using an in-memory data structure local to the instance
+- [MergeKeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores/src/merge_key_store.ts) implementation of `KeyStore` aggregating multiple `KeyStore` implementations
 
 # License
 

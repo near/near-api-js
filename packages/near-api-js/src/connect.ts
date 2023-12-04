@@ -1,12 +1,12 @@
 /**
  * Connect to NEAR using the provided configuration.
  *
- * {@link ConnectConfig.networkId} and {@link ConnectConfig.nodeUrl} are required.
+ * {@link ConnectConfig#networkId} and {@link ConnectConfig#nodeUrl} are required.
  *
  * To sign transactions you can also pass:
- * 1. {@link ConnectConfig.keyStore}
- * 2. {@link ConnectConfig.keyPath}
- * 3. {@link ConnectConfig.deps.keyStore} (deprecated, only for use in legacy applications)
+ * 1. {@link ConnectConfig#keyStore}
+ * 2. {@link ConnectConfig#keyPath}
+ * 3. {@link ConnectConfig#deps.keyStore} (deprecated, only for use in legacy applications)
  *
  * If all three are passed they are prioritize in that order.
  *
@@ -38,7 +38,7 @@ import { Logger } from '@near-js/utils';
 
 export interface ConnectConfig extends NearConfig {
     /**
-     * Initialize an {@link key_stores/in_memory_key_store!InMemoryKeyStore} by reading the file at keyPath.
+     * Initialize an {@link InMemoryKeyStore} by reading the file at keyPath.
      */
     keyPath?: string;
 }

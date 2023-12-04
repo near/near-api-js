@@ -37,6 +37,9 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
                 if (response.status === 503) {
                     Logger.warn(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
                     return null;
+                } else if (response.status === 408) {
+                    logWarning(`Retrying HTTP request for ${connectionInfo.url} as the previous connection was unused for some time`);
+                    return null;
                 }
                 throw createError(response.status, await response.text());
             }
