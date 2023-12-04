@@ -8,6 +8,7 @@ import * as rpc_errors from './rpc_errors';
 
 import { PublicKey, KeyPair, KeyPairEd25519 } from './key_pair';
 import { logWarning } from './errors';
+import { Logger } from './logger';
 
 export {
     key_pair,
@@ -20,4 +21,5 @@ export {
     KeyPairEd25519,
     rpc_errors,
     logWarning,
+    Logger
 };

@@ -2,6 +2,7 @@ import { PublicKey } from '@near-js/crypto';
 import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { fetchJson } from '@near-js/providers';
 import { actionCreators } from '@near-js/transactions';
+import { Logger } from '@near-js/utils'
 import BN from 'bn.js';
 
 import { SignAndSendTransactionOptions } from './account';
@@ -84,7 +85,7 @@ export class Account2FA extends AccountMultisig {
             deployContract(contractBytes),
         ];
         const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT));
-        console.log('deploying multisig contract for', accountId);
+        Logger.log('deploying multisig contract for', accountId);
 
         const { stateStatus: multisigStateStatus } = await this.checkMultisigCodeAndStateStatus(contractBytes);
         switch (multisigStateStatus) {
@@ -185,7 +186,7 @@ export class Account2FA extends AccountMultisig {
             ...(await this.get2faDisableKeyConversionActions()),
             deployContract(contractBytes),
         ];
-        console.log('disabling 2fa for', this.accountId);
+        Logger.log('disabling 2fa for', this.accountId);
         return await this.signAndSendTransaction({
             receiverId: this.accountId,
             actions
@@ -217,7 +218,7 @@ export class Account2FA extends AccountMultisig {
             // TODO: Parse error from result for real (like in normal account.signAndSendTransaction)
             return result;
         } catch (e) {
-            console.warn('Error validating security code:', e);
+            Logger.warn('Error validating security code:', e);
             if (e.toString().includes('invalid 2fa code provided') || e.toString().includes('2fa code not valid')) {
                 return await this.promptAndVerify();
             }

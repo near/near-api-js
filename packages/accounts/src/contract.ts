@@ -1,4 +1,4 @@
-import { getTransactionLastResult } from '@near-js/utils';
+import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
 import { LocalViewExecution } from './local-view-execution';
 import Ajv from 'ajv';
@@ -194,8 +194,8 @@ export class Contract {
                                 ...options,
                             });
                         } catch (error) {
-                            console.warn(`Local view execution failed with: "${error.message}"`);
-                            console.warn(`Fallback to normal RPC call`);
+                            Logger.warn(`Local view execution failed with: "${error.message}"`);
+                            Logger.warn(`Fallback to normal RPC call`);
                         }
                     }
 

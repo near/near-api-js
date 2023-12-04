@@ -8,6 +8,7 @@
 import {
     baseEncode,
     getErrorTypeFromErrorMessage,
+    Logger,
     parseRpcError,
 } from '@near-js/utils';
 import {
@@ -372,9 +373,7 @@ export class JsonRpcProvider extends Provider {
                 return response;
             } catch (error) {
                 if (error.type === 'TimeoutError') {
-                    if (!(typeof process === 'object' && process.env['NEAR_NO_LOGS'])) {
-                        console.warn(`Retrying request to ${method} as it has timed out`, params);
-                    }
+                    Logger.warn(`Retrying request to ${method} as it has timed out`, params);
                     return null;
                 }
 

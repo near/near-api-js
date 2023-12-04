@@ -1,8 +1,7 @@
 import { FinalExecutionOutcome } from '@near-js/types';
 
 import { parseRpcError } from './errors';
-
-const SUPPRESS_LOGGING = !!(typeof process === 'object' && process.env.NEAR_NO_LOGS);
+import { Logger } from './logger';
 
 /**
  * Parse and print details from a query execution response
@@ -14,10 +13,6 @@ export function printTxOutcomeLogsAndFailures({
     contractId,
     outcome,
 }: { contractId: string, outcome: FinalExecutionOutcome }) {
-    if (SUPPRESS_LOGGING) {
-        return;
-    }
-
     const flatLogs = [outcome.transaction_outcome, ...outcome.receipts_outcome]
         .reduce((acc, it) => {
             const isFailure = typeof it.outcome.status === 'object' && typeof it.outcome.status.Failure === 'object';
@@ -35,7 +30,7 @@ export function printTxOutcomeLogsAndFailures({
         }, []);
 
     for (const result of flatLogs) {
-        console.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
+        Logger.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
         printTxOutcomeLogs({
             contractId,
             logs: result.logs,
@@ -43,7 +38,7 @@ export function printTxOutcomeLogsAndFailures({
         });
 
         if (result.failure) {
-            console.warn(`\tFailure [${contractId}]: ${result.failure}`);
+            Logger.warn(`\tFailure [${contractId}]: ${result.failure}`);
         }
     }
 }
@@ -60,11 +55,7 @@ export function printTxOutcomeLogs({
     logs,
     prefix = '',
 }: { contractId: string, logs: string[], prefix?: string }) {
-    if (SUPPRESS_LOGGING) {
-        return;
-    }
-
     for (const log of logs) {
-        console.log(`${prefix}Log [${contractId}]: ${log}`);
+        Logger.log(`${prefix}Log [${contractId}]: ${log}`);
     }
 }
