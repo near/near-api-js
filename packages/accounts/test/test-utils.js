@@ -1,12 +1,13 @@
 const { KeyPair, PublicKey } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
+const { SCHEMA } = require( '@near-js/transactions' );
 const BN = require('bn.js');
 const fs = require('fs').promises;
 const { serialize } = require('borsh');
 const { sha256 } = require('js-sha256');
 
 const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = require('../lib');
-const { SCHEMA } = require( '@near-js/transactions' );
+const { PREFIX_TAG } = require( '../lib/constants' );
 
 const networkId = 'unittest';
 
@@ -116,17 +117,16 @@ function waitFor(fn) {
 }
 
 function verifySignature({ message, nonce, recipient, callbackUrl, publicKey, signature }) {
-    const tag = 2147484061;
     const borshPayload = serialize(SCHEMA.SignMessagePayload, {
-        tag,
+        tag: PREFIX_TAG,
         message,
         nonce,
         recipient,
         callbackUrl
     });
     const toSign = Uint8Array.from(sha256.array(borshPayload));
-    const myPK = PublicKey.from(publicKey);
-    return myPK.verify(toSign, Buffer.from(signature, 'base64'));
+    const pk = PublicKey.from(publicKey);
+    return pk.verify(toSign, Buffer.from(signature, 'base64'));
 }
 
 module.exports = {

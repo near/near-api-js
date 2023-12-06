@@ -39,6 +39,7 @@ import BN from 'bn.js';
 import { serialize } from 'borsh';
 
 import { Connection } from './connection';
+import { PREFIX_TAG } from './constants';
 
 const {
     addKey,
@@ -738,9 +739,8 @@ export class Account {
         // Check the nonce is a 32bytes array
         if (nonce.length != 32) { throw Error('Expected nonce to be a 32 bytes buffer'); }
         
-        const tag = 2147484061;
         const borshPayload = serialize(SCHEMA.SignMessagePayload, {
-            tag,
+            tag: PREFIX_TAG,
             message,
             nonce,
             recipient,
