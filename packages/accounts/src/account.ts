@@ -28,7 +28,7 @@ import {
 import {
     baseDecode,
     baseEncode,
-    logWarning,
+    Logger,
     parseResultError,
     DEFAULT_FUNCTION_CALL_GAS,
     printTxOutcomeLogs,
@@ -223,12 +223,12 @@ export class Account {
                 return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
                 if (error.type === 'InvalidNonce') {
-                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
+                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
                 if (error.type === 'Expired') {
-                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
+                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
                     return null;
                 }
 
@@ -360,9 +360,7 @@ export class Account {
      * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
      */
     async deleteAccount(beneficiaryId: string) {
-        if (!(typeof process === 'object' && process.env['NEAR_NO_LOGS'])) {
-            console.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
-        }
+        Logger.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteAccount(beneficiaryId)]

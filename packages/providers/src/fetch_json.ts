@@ -1,4 +1,5 @@
 import { TypedError } from '@near-js/types';
+import { Logger } from '@near-js/utils';
 import createError from 'http-errors';
 
 import { exponentialBackoff } from './exponential-backoff';
@@ -15,8 +16,6 @@ export interface ConnectionInfo {
     timeout?: number;
     headers?: { [key: string]: string | number };
 }
-
-const logWarning = (...args) => !(typeof process === 'object' && process.env['NEAR_NO_LOGS']) && console.warn(...args);
 
 export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
     let connectionInfo: ConnectionInfo = { url: null };
@@ -36,10 +35,10 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
             });
             if (!response.ok) {
                 if (response.status === 503) {
-                    logWarning(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
+                    Logger.warn(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
                     return null;
                 } else if (response.status === 408) {
-                    logWarning(`Retrying HTTP request for ${connectionInfo.url} as the previous connection was unused for some time`);
+                    Logger.warn(`Retrying HTTP request for ${connectionInfo.url} as the previous connection was unused for some time`);
                     return null;
                 }
                 throw createError(response.status, await response.text());
@@ -47,7 +46,7 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
             return response;
         } catch (error) {
             if (error.toString().includes('FetchError') || error.toString().includes('Failed to fetch')) {
-                logWarning(`Retrying HTTP request for ${connectionInfo.url} because of error: ${error}`);
+                Logger.warn(`Retrying HTTP request for ${connectionInfo.url} because of error: ${error}`);
                 return null;
             }
             throw error;
