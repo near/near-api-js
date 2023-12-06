@@ -8,3 +8,5 @@ export const MULTISIG_GAS = new BN('100000000000000');
 export const MULTISIG_DEPOSIT = new BN('0');
 export const MULTISIG_CHANGE_METHODS = ['add_request', 'add_request_and_confirm', 'delete_request', 'confirm'];
 export const MULTISIG_CONFIRM_METHODS = ['confirm'];
+
+export const PREFIX_TAG = 2147484061; // 2**31 + 413

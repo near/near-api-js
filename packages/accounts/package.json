@@ -27,7 +27,8 @@
     "bn.js": "5.2.1",
     "borsh": "1.0.0",
     "depd": "^2.0.0",
-    "near-abi": "0.1.1"
+    "near-abi": "0.1.1",
+    "js-sha256": "0.9.0"
   },
   "devDependencies": {
     "@near-js/keystores": "workspace:*",

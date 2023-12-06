@@ -471,3 +471,31 @@ describe('with deploy contract', () => {
         }
     });
 });
+
+describe('sign message', () => {
+    const message = testUtils.generateUniqueString('message');
+    const recipient = testUtils.generateUniqueString('recipient');
+    const callbackUrl = 'http://example.com/callback';
+    let account;
+
+    beforeAll(async () => {
+        const newAccount = await testUtils.createAccount(nearjs);
+        account = new Account(nearjs.connection, newAccount.accountId);
+    });
+
+    test('verify signature', async () => {
+        const nonce = new Uint8Array(32);
+        const { publicKey, signature } = await account.signMessage({ message, recipient, nonce, callbackUrl });
+        const verified = testUtils.verifySignature({ message, recipient, nonce, callbackUrl, publicKey, signature });
+        expect(verified).toEqual(true);
+    });
+
+    test('sign with 31 bytes nonce', async () => {
+        const nonce = new Uint8Array(31);
+        try {
+            await account.signMessage({ message, recipient, nonce, callbackUrl });
+        } catch (e) {
+            expect(e.message).toEqual('Expected nonce to be a 32 bytes buffer');
+        }
+    });
+});

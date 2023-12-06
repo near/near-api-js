@@ -9,6 +9,7 @@ import {
     SignedDelegate,
     SignedTransaction,
     stringifyJsonOrBytes,
+    SCHEMA,
 } from '@near-js/transactions';
 import {
     PositionalArgsError,
@@ -35,8 +36,10 @@ import {
     printTxOutcomeLogsAndFailures,
 } from '@near-js/utils';
 import BN from 'bn.js';
+import { serialize } from 'borsh';
 
 import { Connection } from './connection';
+import { PREFIX_TAG } from './constants';
 
 const {
     addKey,
@@ -152,6 +155,20 @@ interface SignedDelegateOptions {
     actions: Action[];
     blockHeightTtl: number;
     receiverId: string;
+}
+
+
+interface SignMessageParams {
+    message: string ; // The message that wants to be transmitted.
+    recipient: string; // The recipient to whom the message is destined (e.g. "alice.near" or "myapp.com").
+    nonce: Uint8Array[]; // A nonce that uniquely identifies this instance of the message, denoted as a 32 bytes array (a fixed `Buffer` in JS/TS).
+    callbackUrl?: string; // Optional, applicable to browser wallets (e.g. MyNearWallet). The URL to call after the signing process. Defaults to `window.location.href`.
+}
+
+interface SignedMessage {
+    accountId: string; // The account name to which the publicKey corresponds as plain text (e.g. "alice.near")
+    publicKey: string; // The public counterpart of the key used to sign, expressed as a string with format "<key-type>:<base58-key-bytes>" (e.g. "ed25519:6TupyNrcHGTt5XRLmHTc2KGaiSbjhQi1KHtCXTgbcr4Y")
+    signature: string; // The base64 representation of the signature.
 }
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
@@ -710,5 +727,29 @@ export class Account {
             ...summary,
             total: summary.total.toString(),
         };
+    }
+
+    /**
+     * @param message The message that wants to be transmitted.
+     * @param recipient The recipient to whom the message is destined (e.g. "alice.near" or "myapp.com").
+     * @param nonce A nonce that uniquely identifies this instance of the message, denoted as a 32 bytes array (a fixed `Buffer` in JS/TS).
+     * @param callbackUrl Optional, applicable to browser wallets (e.g. MyNearWallet). The URL to call after the signing process. Defaults to `window.location.href`.
+     */
+    async signMessage({ message, recipient, nonce, callbackUrl }: SignMessageParams): Promise<SignedMessage> {
+        // Check the nonce is a 32bytes array
+        if (nonce.length != 32) { throw Error('Expected nonce to be a 32 bytes buffer'); }
+        
+        const borshPayload = serialize(SCHEMA.SignMessagePayload, {
+            tag: PREFIX_TAG,
+            message,
+            nonce,
+            recipient,
+            callbackUrl
+        });
+        const { signature } = await this.connection.signer.signMessage(borshPayload, this.accountId, this.connection.networkId);
+        const encoded: string = Buffer.from(signature).toString('base64');
+        const publicKey = (await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId)).toString();
+        
+        return { accountId: this.accountId, publicKey, signature: encoded };
     }
 }

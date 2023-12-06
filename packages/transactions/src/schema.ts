@@ -223,4 +223,13 @@ export const SCHEMA = new class BorshSchema {
             signature: this.Signature,
         }
     };
+    SignMessagePayload: Schema = {
+        struct: {
+            tag: 'u32', // Always the same tag: 2**31 + 413
+            message: 'string',
+            nonce: { array: { type: 'u8', len: 32 } },
+            recipient: 'string',
+            callbackUrl: { option: 'string' }
+        }
+    };
 };
