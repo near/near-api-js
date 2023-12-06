@@ -1,9 +1,12 @@
-const { KeyPair } = require('@near-js/crypto');
+const { KeyPair, PublicKey } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const BN = require('bn.js');
 const fs = require('fs').promises;
+const { serialize } = require('borsh');
+const { sha256 } = require('js-sha256');
 
 const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = require('../lib');
+const { SCHEMA } = require( '@near-js/transactions' );
 
 const networkId = 'unittest';
 
@@ -112,6 +115,20 @@ function waitFor(fn) {
     return _waitFor();
 }
 
+function verifySignature({ message, nonce, recipient, callbackUrl, publicKey, signature }) {
+    const tag = 2147484061;
+    const borshPayload = serialize(SCHEMA.SignMessagePayload, {
+        tag,
+        message,
+        nonce,
+        recipient,
+        callbackUrl
+    });
+    const toSign = Uint8Array.from(sha256.array(borshPayload));
+    const myPK = PublicKey.from(publicKey);
+    return myPK.verify(toSign, Buffer.from(signature, 'base64'));
+}
+
 module.exports = {
     setUpTestConnection,
     networkId,
@@ -123,4 +140,5 @@ module.exports = {
     HELLO_WASM_BALANCE,
     sleep,
     waitFor,
+    verifySignature
 };
