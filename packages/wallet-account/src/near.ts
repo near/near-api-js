@@ -1,6 +1,6 @@
 /**
  * This module contains the main class developers will use to interact with NEAR.
- * The {@link Near} class is used to interact with {@link account!Account | Accounts} through the {@link providers/json-rpc-provider!JsonRpcProvider}.
+ * The {@link Near} class is used to interact with {@link "@near-js/accounts".account.Account | Account} through the {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}.
  * It is configured via the {@link NearConfig}.
  * 
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
@@ -20,7 +20,7 @@ import { Signer } from '@near-js/signers';
 import BN from 'bn.js';
 
 export interface NearConfig {
-    /** Holds {@link utils/key_pair!KeyPair | KeyPairs} for signing transactions */
+    /** Holds {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} for signing transactions */
     keyStore?: KeyStore;
 
     /** @hidden */
@@ -28,36 +28,36 @@ export interface NearConfig {
 
     /**
      * [NEAR Contract Helper](https://github.com/near/near-contract-helper) url used to create accounts if no master account is provided
-     * @see {@link account_creator!UrlAccountCreator}
+     * @see {@link UrlAccountCreator}
      */
     helperUrl?: string;
 
     /**
-     * The balance transferred from the {@link masterAccount} to a created account
-     * @see {@link account_creator!LocalAccountCreator}
+     * The balance transferred from the {@link NearConfig#masterAccount} to a created account
+     * @see {@link LocalAccountCreator}
      */
     initialBalance?: string;
 
     /**
      * The account to use when creating new accounts
-     * @see {@link account_creator!LocalAccountCreator}
+     * @see {@link LocalAccountCreator}
      */
     masterAccount?: string;
 
     /**
-     * {@link utils/key_pair!KeyPair | KeyPairs} are stored in a {@link key_stores/keystore!KeyStore} under the `networkId` namespace.
+     * {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} are stored in a {@link KeyStore} under the `networkId` namespace.
      */
     networkId: string;
 
     /**
      * NEAR RPC API url. used to make JSON RPC calls to interact with NEAR.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider}
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}
      */
     nodeUrl: string;
 
     /**
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider}
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}
      */
     headers?: { [key: string]: string | number };
 
@@ -120,10 +120,10 @@ export class Near {
     }
 
     /**
-     * Create an account using the {@link account_creator!AccountCreator}. Either:
-     * * using a masterAccount with {@link account_creator!LocalAccountCreator}
-     * * using the helperUrl with {@link account_creator!UrlAccountCreator}
-     * @see {@link NearConfig.masterAccount} and {@link NearConfig.helperUrl}
+     * Create an account using the {@link AccountCreator}. Either:
+     * * using a masterAccount with {@link LocalAccountCreator}
+     * * using the helperUrl with {@link UrlAccountCreator}
+     * @see {@link NearConfig#masterAccount} and {@link NearConfig#helperUrl}
      * 
      * @param accountId
      * @param publicKey

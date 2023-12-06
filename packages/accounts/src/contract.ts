@@ -1,5 +1,6 @@
 import { getTransactionLastResult } from '@near-js/utils';
 import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
+import { LocalViewExecution } from './local-view-execution';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import BN from 'bn.js';
@@ -84,14 +85,14 @@ export interface ContractMethods {
     /**
      * Methods that change state. These methods cost gas and require a signed transaction.
      *
-     * @see {@link account!Account.functionCall}
+     * @see {@link Account#functionCall}
      */
     changeMethods: string[];
 
     /**
      * View methods do not require a signed transaction.
      *
-     * @see {@link account!Account#viewFunction}
+     * @see {@link Account#viewFunction}
      */
     viewMethods: string[];
 
@@ -99,6 +100,11 @@ export interface ContractMethods {
      * ABI defining this contract's interface.
      */
     abi?: AbiRoot;
+
+    /**
+     * Executes view methods locally. This flag is useful when multiple view calls will be made for the same blockId
+     */
+    useLocalViewExecution: boolean;
 }
 
 /**
@@ -138,6 +144,7 @@ export interface ContractMethods {
 export class Contract {
     readonly account: Account;
     readonly contractId: string;
+    readonly lve: LocalViewExecution;
 
     /**
      * @param account NEAR account to sign change method transactions
@@ -147,7 +154,8 @@ export class Contract {
     constructor(account: Account, contractId: string, options: ContractMethods) {
         this.account = account;
         this.contractId = contractId;
-        const { viewMethods = [], changeMethods = [], abi: abiRoot } = options;
+        this.lve = new LocalViewExecution(account);
+        const { viewMethods = [], changeMethods = [], abi: abiRoot, useLocalViewExecution } = options;
 
         let viewMethodsWithAbi = viewMethods.map((name) => ({ name, abi: null as AbiFunction }));
         let changeMethodsWithAbi = changeMethods.map((name) => ({ name, abi: null as AbiFunction }));
@@ -175,6 +183,20 @@ export class Contract {
 
                     if (abi) {
                         validateArguments(args, abi, ajv, abiRoot);
+                    }
+
+                    if (useLocalViewExecution) {
+                        try {
+                            return await this.lve.viewFunction({
+                                contractId: this.contractId,
+                                methodName: name,
+                                args,
+                                ...options,
+                            });
+                        } catch (error) {
+                            console.warn(`Local view execution failed with: "${error.message}"`);
+                            console.warn(`Fallback to normal RPC call`);
+                        }
                     }
 
                     return this.account.viewFunction({
