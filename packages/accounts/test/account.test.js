@@ -97,6 +97,8 @@ describe('errors', () => {
             log: (...args) => {
                 logs.push(args.join(' '));
             },
+            warn: () => {},
+            error: () => {},
         };
 
         Logger.overrideLogger(custom);
@@ -131,6 +133,8 @@ describe('with deploy contract', () => {
             log: (...args) => {
                 logs.push(args.join(' '));
             },
+            warn: () => {},
+            error: () => {},
         };
 
         Logger.overrideLogger(custom);
