@@ -334,6 +334,19 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
+     * Part of the RPC failover design.
+     * Changing current (first) rpc server and moves it to the and of the queue.
+     */
+    private rotateRpcServers() {
+        if (typeof this.connection.url === 'string') { return; }
+        const currentRpcServer = this.connection.url.shift();
+        this.connection.url.push(currentRpcServer);
+        if (!process.env['NEAR_NO_LOGS']) {
+            console.warn(`Switched from ${currentRpcServer} RPC Server to ${this.connection.url[0]}`);
+        }
+    }
+
+    /**
      * Directly call the RPC specifying the method and params
      *
      * @param method RPC method
@@ -374,6 +387,8 @@ export class JsonRpcProvider extends Provider {
             } catch (error) {
                 if (error.type === 'TimeoutError') {
                     Logger.warn(`Retrying request to ${method} as it has timed out`, params);
+                    // switch  to another server if it's available
+                    this.rotateRpcServers();
                     return null;
                 }
 

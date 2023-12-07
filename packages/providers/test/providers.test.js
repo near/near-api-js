@@ -187,3 +187,19 @@ test('near json rpc fetch node status', async () => {
     let response = await provider.status();
     expect(response.chain_id).toBeTruthy();
 });
+
+test('JsonRpc rotateRpcServers', async () => {
+    const SERVER_1 = 'server1';
+    const SERVER_2 = 'server2';
+    const SERVER_3 = 'server3';
+    const provider = new JsonRpcProvider({ url: [SERVER_1, SERVER_2, SERVER_3] });
+    expect(provider.connection.url.length).toEqual(3);
+    expect(provider.connection.url[0]).toMatch(SERVER_1);
+    expect(provider.connection.url[1]).toMatch(SERVER_2);
+    expect(provider.connection.url[2]).toMatch(SERVER_3);
+    provider.rotateRpcServers();
+    expect(provider.connection.url.length).toEqual(3);
+    expect(provider.connection.url[0]).toMatch(SERVER_2);
+    expect(provider.connection.url[1]).toMatch(SERVER_3);
+    expect(provider.connection.url[2]).toMatch(SERVER_1);
+});

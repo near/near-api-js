@@ -52,9 +52,15 @@ export interface NearConfig {
 
     /**
      * NEAR RPC API url. used to make JSON RPC calls to interact with NEAR.
+     * You can set multiple RPC Server URLs to turn on failover functionality.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}
      */
-    nodeUrl: string;
+    nodeUrl: string | string[];
+
+    /**
+     * RPC API Keys. Used to authenticate users on RPC Server.
+     */
+    apiKeys: string;
 
     /**
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
@@ -99,7 +105,13 @@ export class Near {
         this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
-            provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
+            provider: {
+                type: 'JsonRpcProvider', args: {
+                    url: config.nodeUrl,
+                    apiKeys: config.apiKeys,
+                    headers: config.headers,
+                }
+            },
             signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps?.keyStore },
             jsvmAccountId: config.jsvmAccountId || `jsvm.${config.networkId}`
         });
