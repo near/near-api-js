@@ -26,6 +26,11 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
     } else {
         connectionInfo = connectionInfoOrUrl as ConnectionInfo;
     }
+    
+    if (!connectionInfo.url && !connectionInfo.url.length && !connectionInfo.url[0]) {
+        throw new Error('RPC Server URL or the prioritized array of such URLs should not be empty');
+    }
+
     const currentRpcServer = typeof connectionInfo.url === 'string' ? connectionInfo.url : connectionInfo.url[0];
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {

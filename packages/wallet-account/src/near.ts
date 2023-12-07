@@ -60,7 +60,7 @@ export interface NearConfig {
     /**
      * RPC API Keys. Used to authenticate users on RPC Server.
      */
-    apiKeys: string;
+    apiKeys: { [url: string]: string };
 
     /**
      * NEAR RPC API headers. Can be used to pass API KEY and other parameters.
