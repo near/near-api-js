@@ -188,12 +188,30 @@ test('near json rpc fetch node status', async () => {
     expect(response.chain_id).toBeTruthy();
 });
 
-test('near json rpc empty url', async () => {
+test('near json rpc url - empty array', async () => {
     const provider = new JsonRpcProvider({ url: [] });
     try {
         await provider.status();
     } catch (e) {
-        expect(e.message).toEqual('RPC Server URL or the prioritized array of such URLs should not be empty');
+        expect(e.message).toEqual('The prioritized array of RPC Server URLs should not be empty');
+    }
+});
+
+test('near json rpc url - empty string', async () => {
+    const provider = new JsonRpcProvider({ url: '' });
+    try {
+        await provider.status();
+    } catch (e) {
+        expect(e.message).toEqual('Invalid URL');
+    }
+});
+
+test('near json rpc url - empty string array', async () => {
+    const provider = new JsonRpcProvider({ url: [''] });
+    try {
+        await provider.status();
+    } catch (e) {
+        expect(e.message).toEqual('Invalid URL');
     }
 });
 
