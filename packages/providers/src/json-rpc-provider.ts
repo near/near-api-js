@@ -387,7 +387,7 @@ export class JsonRpcProvider extends Provider {
             } catch (error) {
                 if (error.type === 'TimeoutError') {
                     Logger.warn(`Retrying request to ${method} as it has timed out`, params);
-                    // switch  to another server if it's available
+                    // switch to another server if it's available
                     this.rotateRpcServers();
                     return null;
                 }

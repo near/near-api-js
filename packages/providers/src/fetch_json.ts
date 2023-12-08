@@ -27,7 +27,7 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
         connectionInfo = connectionInfoOrUrl as ConnectionInfo;
     }
     
-    if (!connectionInfo.url && !connectionInfo.url.length && !connectionInfo.url[0]) {
+    if (!connectionInfo.url || !connectionInfo.url.length && !connectionInfo.url[0]) {
         throw new Error('RPC Server URL or the prioritized array of such URLs should not be empty');
     }
 

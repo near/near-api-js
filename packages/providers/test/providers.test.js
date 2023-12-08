@@ -188,6 +188,15 @@ test('near json rpc fetch node status', async () => {
     expect(response.chain_id).toBeTruthy();
 });
 
+test('near json rpc empty url', async () => {
+    const provider = new JsonRpcProvider({ url: [] });
+    try {
+        await provider.status();
+    } catch (e) {
+        expect(e.message).toEqual('RPC Server URL or the prioritized array of such URLs should not be empty');
+    }
+});
+
 test('JsonRpc rotateRpcServers', async () => {
     const SERVER_1 = 'server1';
     const SERVER_2 = 'server2';
