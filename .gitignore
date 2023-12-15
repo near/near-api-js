@@ -23,3 +23,5 @@ lib/
 test-keys/
 
 .turbo
+
+typedoc-docs/

@@ -20,7 +20,7 @@
     "@near-js/utils": "workspace:*",
     "bn.js": "5.2.1",
     "borsh": "1.0.0",
-    "tweetnacl": "1.0.1"
+    "@noble/curves": "1.2.0"
   },
   "devDependencies": {
     "@types/node": "18.11.18",

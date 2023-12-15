@@ -38,7 +38,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Stores a {@link utils/key_pair!KeyPair} in in-memory storage item
+     * Stores a {@link KeyPair} in in-memory storage item
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -48,7 +48,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a {@link utils/key_pair!KeyPair} from in-memory storage
+     * Gets a {@link KeyPair} from in-memory storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -62,7 +62,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Removes a {@link utils/key_pair!KeyPair} from in-memory storage
+     * Removes a {@link KeyPair} from in-memory storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -71,7 +71,7 @@ export class InMemoryKeyStore extends KeyStore {
     }
 
     /**
-     * Removes all {@link utils/key_pair!KeyPair} from in-memory storage
+     * Removes all {@link KeyPair} from in-memory storage
      */
     async clear(): Promise<void> {
         this.keys = {};

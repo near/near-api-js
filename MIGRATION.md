@@ -276,6 +276,7 @@ const {
     format,
     logWarning,
     rpc_errors,
+    Logger
 } = utils;
 const {
     formatNearAmount,
@@ -316,5 +317,6 @@ import {
     parseNearAmount,
     parseResultError,
     parseRpcError,
+    Logger
 } from '@near-js/utils';
 ```
