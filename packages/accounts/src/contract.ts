@@ -1,4 +1,4 @@
-import { getTransactionLastResult } from '@near-js/utils';
+import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
 import { LocalViewExecution } from './local-view-execution';
 import Ajv from 'ajv';
@@ -85,14 +85,14 @@ export interface ContractMethods {
     /**
      * Methods that change state. These methods cost gas and require a signed transaction.
      *
-     * @see {@link account!Account.functionCall}
+     * @see {@link Account#functionCall}
      */
     changeMethods: string[];
 
     /**
      * View methods do not require a signed transaction.
      *
-     * @see {@link account!Account#viewFunction}
+     * @see {@link Account#viewFunction}
      */
     viewMethods: string[];
 
@@ -194,8 +194,8 @@ export class Contract {
                                 ...options,
                             });
                         } catch (error) {
-                            console.warn(`Local view execution failed with: "${error.message}"`);
-                            console.warn(`Fallback to normal RPC call`);
+                            Logger.warn(`Local view execution failed with: "${error.message}"`);
+                            Logger.warn(`Fallback to normal RPC call`);
                         }
                     }
 
