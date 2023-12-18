@@ -20,7 +20,6 @@
     "@near-js/signers": "workspace:*",
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
-    "bn.js": "5.2.1",
     "borsh": "1.0.0",
     "js-sha256": "0.9.0"
   },

@@ -3,7 +3,6 @@ import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@
 import { fetchJson } from '@near-js/providers';
 import { actionCreators } from '@near-js/transactions';
 import { Logger } from '@near-js/utils'
-import BN from 'bn.js';
 
 import { SignAndSendTransactionOptions } from './account';
 import { AccountMultisig } from './account_multisig';
@@ -137,7 +136,7 @@ export class Account2FA extends AccountMultisig {
         const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'));
         return currentAccountState.length ? [
             deployContract(cleanupContractBytes),
-            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, new BN('0'))
+            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, BigInt('0'))
         ] : [];
     }
 

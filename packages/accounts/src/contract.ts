@@ -3,7 +3,6 @@ import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
 import { LocalViewExecution } from './local-view-execution';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import BN from 'bn.js';
 import depd from 'depd';
 import { AbiFunction, AbiFunctionKind, AbiRoot, AbiSerializationType } from 'near-abi';
 
@@ -75,8 +74,8 @@ const isObject = (x: any) =>
 interface ChangeMethodOptions {
     args: object;
     methodName: string;
-    gas?: BN;
-    amount?: BN;
+    gas?: bigint;
+    amount?: bigint;
     meta?: string;
     callbackUrl?: string;
 }
@@ -255,15 +254,14 @@ export class Contract {
 }
 
 /**
- * Validation on arguments being a big number from bn.js
- * Throws if an argument is not in BN format or otherwise invalid
+ * Throws if an argument is not in BigInt format or otherwise invalid
  * @param argMap
  */
 function validateBNLike(argMap: { [name: string]: any }) {
-    const bnLike = 'number, decimal string or BN';
+    const bnLike = 'number, decimal string or BigInt';
     for (const argName of Object.keys(argMap)) {
         const argValue = argMap[argName];
-        if (argValue && !BN.isBN(argValue) && isNaN(argValue)) {
+        if (argValue && typeof argValue !== "bigint" && isNaN(argValue)) {
             throw new ArgumentTypeError(argName, bnLike, argValue);
         }
     }

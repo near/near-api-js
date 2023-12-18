@@ -74,9 +74,6 @@ importers:
       ajv-formats:
         specifier: 2.1.1
         version: 2.1.1(ajv@8.11.2)
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -129,9 +126,6 @@ importers:
       asn1-parser:
         specifier: 1.1.8
         version: 1.1.8
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -169,9 +163,6 @@ importers:
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       chalk:
         specifier: 4.1.1
         version: 4.1.1
@@ -193,9 +184,6 @@ importers:
       '@noble/curves':
         specifier: 1.2.0
         version: 1.2.0
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -330,9 +318,6 @@ importers:
       ajv-formats:
         specifier: 2.1.1
         version: 2.1.1(ajv@8.11.2)
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -352,9 +337,6 @@ importers:
         specifier: 2.6.7
         version: 2.6.7
     devDependencies:
-      '@types/bn.js':
-        specifier: 5.1.0
-        version: 5.1.0
       '@types/http-errors':
         specifier: 1.6.1
         version: 1.6.1
@@ -415,9 +397,6 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -481,9 +460,6 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -508,10 +484,6 @@ importers:
         version: 4.9.4
 
   packages/types:
-    dependencies:
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
     devDependencies:
       '@types/node':
         specifier: 18.11.18
@@ -531,9 +503,6 @@ importers:
       '@near-js/types':
         specifier: workspace:*
         version: link:../types
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       bs58:
         specifier: 4.0.0
         version: 4.0.0
@@ -580,9 +549,6 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -1942,12 +1908,6 @@ packages:
       '@babel/types': 7.22.5
     dev: true
 
-  /@types/bn.js@5.1.0:
-    resolution: {integrity: sha512-QSSVYj7pYFN49kW77o2s9xTCwZ8F2xLbjLLSEVh8D2F4JUhZtPAGOFLTD+ffqksBx/u4cE/KImFjyhqCjn/LIA==}
-    dependencies:
-      '@types/node': 18.11.18
-    dev: true
-
   /@types/graceful-fs@4.1.6:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
     dependencies:
@@ -2564,6 +2524,7 @@ packages:
 
   /bn.js@5.2.1:
     resolution: {integrity: sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==}
+    dev: true
 
   /borsh@1.0.0:
     resolution: {integrity: sha512-fSVWzzemnyfF89EPwlUNsrS5swF5CrtiN4e+h0/lLf4dz2he4L3ndM20PS9wj7ICSkXJe/TQUHdaPTq15b1mNQ==}

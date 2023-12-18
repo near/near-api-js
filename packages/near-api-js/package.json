@@ -24,7 +24,6 @@
         "@near-js/wallet-account": "workspace:*",
         "ajv": "8.11.2",
         "ajv-formats": "2.1.1",
-        "bn.js": "5.2.1",
         "borsh": "1.0.0",
         "depd": "2.0.0",
         "error-polyfill": "0.1.3",
@@ -34,7 +33,6 @@
         "@noble/curves": "1.2.0"
     },
     "devDependencies": {
-        "@types/bn.js": "5.1.0",
         "@types/http-errors": "1.6.1",
         "@types/node": "18.11.18",
         "browserify": "16.2.3",

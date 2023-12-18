@@ -1,6 +1,5 @@
 import { PublicKey } from '@near-js/crypto';
 import { Assignable } from '@near-js/types';
-import BN from 'bn.js';
 
 import { DelegateAction } from './delegate';
 import { Signature } from './signature';
@@ -20,7 +19,7 @@ abstract class Enum {
 }
 
 export class FunctionCallPermission extends Assignable {
-    allowance?: BN;
+    allowance?: bigint;
     receiverId: string;
     methodNames: string[];
 }
@@ -33,7 +32,7 @@ export class AccessKeyPermission extends Enum {
 }
 
 export class AccessKey extends Assignable {
-    nonce: BN;
+    nonce: bigint;
     permission: AccessKeyPermission;
 }
 
@@ -41,9 +40,9 @@ export class IAction extends Assignable {}
 
 export class CreateAccount extends IAction {}
 export class DeployContract extends IAction { code: Uint8Array; }
-export class FunctionCall extends IAction { methodName: string; args: Uint8Array; gas: BN; deposit: BN; }
-export class Transfer extends IAction { deposit: BN; }
-export class Stake extends IAction { stake: BN; publicKey: PublicKey; }
+export class FunctionCall extends IAction { methodName: string; args: Uint8Array; gas: bigint; deposit: bigint; }
+export class Transfer extends IAction { deposit: bigint; }
+export class Stake extends IAction { stake: bigint; publicKey: PublicKey; }
 export class AddKey extends IAction { publicKey: PublicKey; accessKey: AccessKey; }
 export class DeleteKey extends IAction { publicKey: PublicKey; }
 export class DeleteAccount extends IAction { beneficiaryId: string; }

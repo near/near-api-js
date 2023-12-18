@@ -1,5 +1,4 @@
 import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from '@near-js/types';
-import BN from 'bn.js';
 import depd from 'depd';
 
 /** Finds seat price given validators stakes and number of seats.
@@ -9,34 +8,34 @@ import depd from 'depd';
  * @params minimumStakeRatio: minimum stake ratio 
  * @params protocolVersion: version of the protocol from genesis config
  */
-export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number[], protocolVersion?: number): BN {
+export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number[], protocolVersion?: number): bigint {
     if (protocolVersion && protocolVersion < 49) {
         return findSeatPriceForProtocolBefore49(validators, maxNumberOfSeats);
     }
     if (!minimumStakeRatio) {
         const deprecate = depd('findSeatPrice(validators, maxNumberOfSeats)');
         deprecate('`use `findSeatPrice(validators, maxNumberOfSeats, minimumStakeRatio)` instead');
-        minimumStakeRatio = [1, 6250]; // harcoded minimumStakeRation from 12/7/21
+        minimumStakeRatio = [1, 6250]; // hardcoded minimumStakeRation from 12/7/21
     }
     return findSeatPriceForProtocolAfter49(validators, maxNumberOfSeats, minimumStakeRatio);
 }
 
-function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], numSeats: number): BN {
-    const stakes = validators.map(v => new BN(v.stake, 10)).sort((a, b) => a.cmp(b));
-    const num = new BN(numSeats);
-    const stakesSum = stakes.reduce((a, b) => a.add(b));
-    if (stakesSum.lt(num)) {
+function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], numSeats: number): bigint {
+    const stakes = validators.map(v => BigInt(v.stake)).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    const num = BigInt(numSeats);
+    const stakesSum = stakes.reduce((a, b) => a + b);
+    if (stakesSum < num) {
         throw new Error('Stakes are below seats');
     }
     // assert stakesSum >= numSeats
-    let left = new BN(1), right = stakesSum.add(new BN(1));
-    while (!left.eq(right.sub(new BN(1)))) {
-        const mid = left.add(right).div(new BN(2));
+    let left = BigInt(1), right = stakesSum + BigInt(1);
+    while (left !== right - BigInt(1)) {
+        const mid = left + right / BigInt(2);
         let found = false;
-        let currentSum = new BN(0);
+        let currentSum = BigInt(0);
         for (let i = 0; i < stakes.length; ++i) {
-            currentSum = currentSum.add(stakes[i].div(mid));
-            if (currentSum.gte(num)) {
+            currentSum = currentSum + stakes[i] / mid;
+            if (currentSum >= num) {
                 left = mid;
                 found = true;
                 break;
@@ -50,16 +49,16 @@ function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo
 }
 
 // nearcore reference: https://github.com/near/nearcore/blob/5a8ae263ec07930cd34d0dcf5bcee250c67c02aa/chain/epoch_manager/src/validator_selection.rs#L308;L315
-function findSeatPriceForProtocolAfter49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number[]): BN {
+function findSeatPriceForProtocolAfter49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number[]): bigint {
     if (minimumStakeRatio.length != 2) {
         throw Error('minimumStakeRatio should have 2 elements');
     }
-    const stakes = validators.map(v => new BN(v.stake, 10)).sort((a, b) => a.cmp(b));
-    const stakesSum = stakes.reduce((a, b) => a.add(b));
+    const stakes = validators.map(v => BigInt(v.stake)).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    const stakesSum = stakes.reduce((a, b) => a + b);
     if (validators.length < maxNumberOfSeats) {
-        return stakesSum.mul(new BN(minimumStakeRatio[0])).div(new BN(minimumStakeRatio[1]));
+        return stakesSum * BigInt(minimumStakeRatio[0]) / BigInt(minimumStakeRatio[1]);
     } else {
-        return stakes[0].add(new BN(1));
+        return stakes[0] + BigInt(1);
     }
 }
 

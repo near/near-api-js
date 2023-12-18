@@ -34,7 +34,6 @@ import {
     printTxOutcomeLogs,
     printTxOutcomeLogsAndFailures,
 } from '@near-js/utils';
-import BN from 'bn.js';
 
 import { Connection } from './connection';
 
@@ -106,9 +105,9 @@ export interface FunctionCallOptions {
      */
     args?: object;
     /** max amount of gas that method call can use */
-    gas?: BN;
+    gas?: bigint;
     /** amount of NEAR (in yoctoNEAR) to send together with the call */
-    attachedDeposit?: BN;
+    attachedDeposit?: bigint;
     /**
      * Convert input arguments into bytes array.
      */
@@ -145,7 +144,7 @@ interface StakedBalance {
 interface ActiveDelegatedStakeBalance {
     stakedValidators: StakedBalance[];
     failedValidators: StakedBalance[];
-    total: BN | string;
+    total: bigint | string;
 }
 
 interface SignedDelegateOptions {
@@ -202,7 +201,7 @@ export class Account {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
 
-        const nonce = accessKey.nonce.add(new BN(1));
+        const nonce = accessKey.nonce + BigInt(1);
         return await signTransaction(
             receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
         );
@@ -291,10 +290,10 @@ export class Account {
                 finality: 'optimistic'
             });
 
-            // store nonce as BN to preserve precision on big number
+            // store nonce as BigInt to preserve precision on big number
             const accessKey = {
                 ...rawAccessKey,
-                nonce: new BN(rawAccessKey.nonce),
+                nonce: BigInt(rawAccessKey.nonce || 0)
             };
             // this function can be called multiple times and retrieve the same access key
             // this checks to see if the access key was already retrieved and cached while
@@ -323,7 +322,7 @@ export class Account {
      * @param data The compiled contract code
      * @param amount of NEAR to transfer to the created contract account. Transfer enough to pay for storage https://docs.near.org/docs/concepts/storage-staking
      */
-    async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: BN): Promise<Account> {
+    async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: bigint): Promise<Account> {
         const accessKey = fullAccessKey();
         await this.signAndSendTransaction({
             receiverId: contractId,
@@ -337,7 +336,7 @@ export class Account {
      * @param receiverId NEAR account receiving Ⓝ
      * @param amount Amount to send in yoctoⓃ
      */
-    async sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome> {
+    async sendMoney(receiverId: string, amount: bigint): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId,
             actions: [transfer(amount)]
@@ -348,7 +347,7 @@ export class Account {
      * @param newAccountId NEAR account name to be created
      * @param publicKey A public key created from the masterAccount
      */
-    async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
+    async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: bigint): Promise<FinalExecutionOutcome> {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction({
             receiverId: newAccountId,
@@ -415,7 +414,7 @@ export class Account {
      * @param methodNames The method names on the contract that should be allowed to be called. Pass null for no method names and '' or [] for any method names.
      * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
      */
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome> {
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: bigint): Promise<FinalExecutionOutcome> {
         if (!methodNames) {
             methodNames = [];
         }
@@ -451,7 +450,7 @@ export class Account {
      * @param publicKey The public key for the account that's staking
      * @param amount The account to stake in yoctoⓃ
      */
-    async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
+    async stake(publicKey: string | PublicKey, amount: bigint): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [stake(amount, PublicKey.from(publicKey))]
@@ -476,8 +475,8 @@ export class Account {
 
         const delegateAction = buildDelegateAction({
             actions,
-            maxBlockHeight: new BN(header.height).add(new BN(blockHeightTtl)),
-            nonce: new BN(accessKey.nonce).add(new BN(1)),
+            maxBlockHeight: BigInt(header.height) + BigInt(blockHeightTtl),
+            nonce: BigInt(accessKey.nonce) + BigInt(1),
             publicKey,
             receiverId,
             senderId: this.accountId,
@@ -593,8 +592,8 @@ export class Account {
             account_id: this.accountId,
             finality: 'optimistic'
         });
-        // Replace raw nonce into a new BN
-        return response?.keys?.map((key) => ({ ...key, access_key: { ...key.access_key, nonce: new BN(key.access_key.nonce) } }));
+        // Replace raw nonce into a new BigInt
+        return response?.keys?.map((key) => ({ ...key, access_key: { ...key.access_key, nonce: BigInt(key.access_key.nonce) } }));
     }
 
     /**
@@ -625,11 +624,11 @@ export class Account {
         const protocolConfig = await this.connection.provider.experimental_protocolConfig({ finality: 'final' });
         const state = await this.state();
 
-        const costPerByte = new BN(protocolConfig.runtime_config.storage_amount_per_byte);
-        const stateStaked = new BN(state.storage_usage).mul(costPerByte);
-        const staked = new BN(state.locked);
-        const totalBalance = new BN(state.amount).add(staked);
-        const availableBalance = totalBalance.sub(BN.max(staked, stateStaked));
+        const costPerByte = BigInt(protocolConfig.runtime_config.storage_amount_per_byte);
+        const stateStaked = BigInt(state.storage_usage) * costPerByte;
+        const staked = BigInt(state.locked);
+        const totalBalance = BigInt(state.amount) + staked;
+        const availableBalance = totalBalance - (staked > stateStaked ? staked : stateStaked);
 
         return {
             total: totalBalance.toString(),
@@ -681,12 +680,12 @@ export class Account {
         const summary = results.reduce((result, state, index) => {
             const validatorId = uniquePools[index];
             if (state.status === 'fulfilled') {
-                const currentBN = new BN(state.value);
-                if (!currentBN.isZero()) {
+                const currentBN = BigInt(state.value);
+                if (currentBN !== BigInt(0)) {
                     return {
                         ...result,
                         stakedValidators: [...result.stakedValidators, { validatorId, amount: currentBN.toString() }],
-                        total: result.total.add(currentBN),
+                        total: result.total + currentBN,
                     };
                 }
             }
@@ -698,7 +697,7 @@ export class Account {
             }
             return result;
         },
-            { stakedValidators: [], failedValidators: [], total: new BN(0) });
+            { stakedValidators: [], failedValidators: [], total: BigInt(0) });
 
         return {
             ...summary,

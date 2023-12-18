@@ -1,5 +1,4 @@
 import { PublicKey } from '@near-js/crypto';
-import BN from 'bn.js';
 
 import {
     AccessKey,
@@ -29,7 +28,7 @@ function fullAccessKey(): AccessKey {
     });
 }
 
-function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
+function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: bigint): AccessKey {
     return new AccessKey({
         nonce: 0,
         permission: new AccessKeyPermission({
@@ -62,7 +61,7 @@ export function stringifyJsonOrBytes(args: any): Buffer {
  * @param stringify Convert input arguments into bytes array.
  * @param jsContract  Is contract from JS SDK, skips stringification of arguments.
  */
-function functionCall(methodName: string, args: Uint8Array | object, gas: BN = new BN(0), deposit: BN = new BN(0), stringify = stringifyJsonOrBytes, jsContract = false): Action {
+function functionCall(methodName: string, args: Uint8Array | object, gas = BigInt(0), deposit = BigInt(0), stringify = stringifyJsonOrBytes, jsContract = false): Action {
     if(jsContract){
         return new Action({ functionCall: new FunctionCall({ methodName, args, gas, deposit }) });
     }
@@ -77,11 +76,11 @@ function functionCall(methodName: string, args: Uint8Array | object, gas: BN = n
     });
 }
 
-function transfer(deposit: BN = new BN(0)): Action {
+function transfer(deposit = BigInt(0)): Action {
     return new Action({ transfer: new Transfer({ deposit }) });
 }
 
-function stake(stake: BN = new BN(0), publicKey: PublicKey): Action {
+function stake(stake = BigInt(0), publicKey: PublicKey): Action {
     return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 

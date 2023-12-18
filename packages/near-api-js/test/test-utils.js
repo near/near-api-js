@@ -1,12 +1,11 @@
 const fs = require('fs').promises;
-const BN = require('bn.js');
 
 const nearApi = require('../src/index');
 
 const networkId = 'unittest';
 
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
-const HELLO_WASM_BALANCE = new BN('10000000000000000000000000');
+const HELLO_WASM_BALANCE = BigInt('10000000000000000000000000');
 const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
     changeMethods: ['setValue', 'callPromise']

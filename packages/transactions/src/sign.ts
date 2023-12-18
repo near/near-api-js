@@ -1,6 +1,5 @@
 import { Signer } from '@near-js/signers';
 import sha256 from 'js-sha256';
-import BN from 'bn.js';
 
 import { Action, SignedDelegate } from './actions';
 import { createTransaction } from './create_transaction';
@@ -41,7 +40,7 @@ async function signTransactionObject(transaction: Transaction, signer: Signer, a
 }
 
 export async function signTransaction(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
-export async function signTransaction(receiverId: string, nonce: BN, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
+export async function signTransaction(receiverId: string, nonce: bigint, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
 export async function signTransaction(...args): Promise<[Uint8Array, SignedTransaction]> {
     if (args[0].constructor === Transaction) {
         const [ transaction, signer, accountId, networkId ] = args;

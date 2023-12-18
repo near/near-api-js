@@ -1,4 +1,3 @@
-import BN from 'bn.js';
 import bs58 from 'bs58';
 
 /**
@@ -9,12 +8,12 @@ export const NEAR_NOMINATION_EXP = 24;
 /**
  * Number of indivisible units in one NEAR. Derived from {@link NEAR_NOMINATION_EXP}.
  */
-export const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
+export const NEAR_NOMINATION = BigInt(10 ** NEAR_NOMINATION_EXP);
 
-// Pre-calculate offests used for rounding to different number of digits
-const ROUNDING_OFFSETS: BN[] = [];
-const BN10 = new BN(10);
-for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offset.mul(BN10)) {
+// Pre-calculate offsets used for rounding to different number of digits
+const ROUNDING_OFFSETS: bigint[] = [];
+const BN10 = BigInt(10);
+for (let i = 0, offset = BigInt(5); i < NEAR_NOMINATION_EXP; i++, offset = offset * BN10) {
     ROUNDING_OFFSETS[i] = offset;
 }
 
@@ -27,12 +26,12 @@ for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offse
  * @returns Value in Ⓝ
  */
 export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMINATION_EXP): string {
-    const balanceBN = new BN(balance, 10);
+    let balanceBN = BigInt(balance);
     if (fracDigits !== NEAR_NOMINATION_EXP) {
         // Adjust balance for rounding at given number of digits
         const roundingExp = NEAR_NOMINATION_EXP - fracDigits - 1;
         if (roundingExp > 0) {
-            balanceBN.iadd(ROUNDING_OFFSETS[roundingExp]);
+            balanceBN += ROUNDING_OFFSETS[roundingExp];
         }
     }
 
