@@ -1,6 +1,6 @@
 {
   "name": "@near-js/utils",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Common methods and constants for the NEAR API JavaScript client",
   "main": "lib/index.js",
   "scripts": {

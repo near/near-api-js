@@ -1,6 +1,6 @@
 {
   "name": "@near-js/transactions",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Functions and data types for transactions on NEAR",
   "main": "lib/index.js",
   "scripts": {
