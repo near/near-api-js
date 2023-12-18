@@ -1,6 +1,6 @@
 {
   "name": "@near-js/crypto",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "Abstractions around NEAR-compatible elliptical curves and cryptographic keys",
   "main": "lib/index.js",
   "scripts": {
