@@ -2,4 +2,4 @@
 "@near-js/crypto": minor
 ---
 
-add crypto-browserify
+Use noble-hashes to generate a random private key
