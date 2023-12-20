@@ -1,5 +1,11 @@
 # @near-js/crypto
 
+## 1.1.0
+
+### Minor Changes
+
+- [#1219](https://github.com/near/near-api-js/pull/1219) [`aeeb1502`](https://github.com/near/near-api-js/commit/aeeb15022a1c1deb99114eba0473739b0998fc50) Thanks [@gtsonevv](https://github.com/gtsonevv)! - add crypto-browserify
+
 ## 1.0.0
 
 ### Major Changes
