@@ -8,3 +8,4 @@
 remove buggy dependencies
     - replace js-sha256 with noble-hashes
     - replace elliptic with noble-curves
+    - remove error-polyfill package
