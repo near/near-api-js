@@ -5,6 +5,6 @@
 "@near-js/transactions": minor
 ---
 
-remove buggy depencencies
+remove buggy dependencies
     - replace js-sha256 with noble-hashes
     - replace elliptic with noble-curves
