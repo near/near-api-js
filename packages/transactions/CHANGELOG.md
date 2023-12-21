@@ -1,5 +1,26 @@
 # @near-js/transactions
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`aeeb1502`](https://github.com/near/near-api-js/commit/aeeb15022a1c1deb99114eba0473739b0998fc50)]:
+  - @near-js/crypto@1.1.0
+  - @near-js/signers@0.0.7
+
+## 1.0.0
+
+### Major Changes
+
+- [#1168](https://github.com/near/near-api-js/pull/1168) [`61349aec`](https://github.com/near/near-api-js/commit/61349aeca3af830f702b24654e0f13cd428192d8) Thanks [@gagdiez](https://github.com/gagdiez)! - feat: updated borsh-js to v1.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`695220e7`](https://github.com/near/near-api-js/commit/695220e75bc43834a7700cfc5491a7eebd324947), [`ecf29e2d`](https://github.com/near/near-api-js/commit/ecf29e2d56611a7773c79d5bb5bd20c8b7e738ea), [`61349aec`](https://github.com/near/near-api-js/commit/61349aeca3af830f702b24654e0f13cd428192d8), [`cdd8d1c8`](https://github.com/near/near-api-js/commit/cdd8d1c8c37db641bd995b2c470ad0b4fdddb93f)]:
+  - @near-js/utils@0.0.5
+  - @near-js/crypto@1.0.0
+  - @near-js/signers@0.0.6
+
 ## 0.2.1
 
 ### Patch Changes

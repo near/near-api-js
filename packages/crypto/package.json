@@ -1,6 +1,6 @@
 {
   "name": "@near-js/crypto",
-  "version": "0.0.5",
+  "version": "1.1.0",
   "description": "Abstractions around NEAR-compatible elliptical curves and cryptographic keys",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,8 @@
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "borsh": "1.0.0",
-    "@noble/curves": "1.2.0"
+    "@noble/curves": "1.2.0",
+    "crypto-browserify": "3.12.0"
   },
   "devDependencies": {
     "@types/node": "18.11.18",
