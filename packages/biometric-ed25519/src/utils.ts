@@ -1,5 +1,5 @@
 import base64 from '@hexagon/base64';
-import { ec as EC } from 'elliptic';
+import { secp256k1 } from '@noble/curves/secp256k1';
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { PublicKey } from '@near-js/crypto';
 
@@ -74,19 +74,25 @@ export const publicKeyCredentialToJSON = (pubKeyCred) => {
 };
 
 export const recoverPublicKey = async (r, s, message, recovery) => {
-    const ec = new EC('p256');
-    const sigObj = { r, s };
-
     if (recovery !== 0 && recovery !== 1) {
         throw new Error('Invalid recovery parameter');
     }
+    
     const hash = new Sha256();
     hash.update(message);
+
+    const sigObjQ = new secp256k1.Signature(r, s);
+    sigObjQ.addRecoveryBit(0);
+    const sigObjP = new secp256k1.Signature(r, s);
+    sigObjQ.addRecoveryBit(1);
+
     const h = await hash.digest();
-    const Q = ec.recoverPubKey(h, sigObj, 0);
-    const P = ec.recoverPubKey(h, sigObj, 1);
+
+    const Q = sigObjQ.recoverPublicKey(h);
+    const P = sigObjP.recoverPublicKey(h);
+
     return [
-        Buffer.from(new Uint8Array(Buffer.from(Q.encode(true, false))).subarray(1, 65)),
-        Buffer.from(new Uint8Array(Buffer.from(P.encode(true, false))).subarray(1, 65))
+        Buffer.from(Q.toRawBytes()).subarray(1, 65),
+        Buffer.from(P.toRawBytes()).subarray(1, 65)
     ];
 };
