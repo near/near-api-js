@@ -84,7 +84,7 @@ export const recoverPublicKey = async (r, s, message, recovery) => {
     const sigObjQ = new secp256k1.Signature(r, s);
     sigObjQ.addRecoveryBit(0);
     const sigObjP = new secp256k1.Signature(r, s);
-    sigObjQ.addRecoveryBit(1);
+    sigObjP.addRecoveryBit(1);
 
     const h = await hash.digest();
 
