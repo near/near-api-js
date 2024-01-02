@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-crypto/sha256-js": "4.0.0",
-    "@hexagon/base64": "1.1.26",
+    "@hexagon/base64": "1.1.28",
     "@near-js/crypto": "workspace:*",
     "@near-js/utils": "workspace:*",
     "asn1-parser": "1.1.8",
