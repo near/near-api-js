@@ -1,5 +1,6 @@
 import { Action, actionCreators } from '@near-js/transactions';
 import { FinalExecutionOutcome } from '@near-js/types';
+import { Logger } from '@near-js/utils';
 
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
@@ -156,7 +157,7 @@ export class AccountMultisig extends Account {
                     actions: [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
                 });
             } catch (e) {
-                console.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
+                Logger.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
             }
         }
     }

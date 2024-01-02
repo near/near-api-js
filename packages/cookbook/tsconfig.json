@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "allowJs": true,
+        "outDir": "./dist",
+      },
+    "include": [
+        "**/*.js",
+        "**/*.ts"
+    ]
+}

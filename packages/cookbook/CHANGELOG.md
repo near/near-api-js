@@ -1,5 +1,29 @@
 # @near-js/cookbook
 
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/accounts@1.0.1
+  - @near-js/keystores-node@0.0.7
+  - near-api-js@3.0.1
+  - @near-js/signers@0.0.7
+  - @near-js/transactions@1.0.1
+  - @near-js/providers@0.0.9
+
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies [[`0f764ee0`](https://github.com/near/near-api-js/commit/0f764ee03b5747fbf8a971c7b04ef8326238a1d0), [`695220e7`](https://github.com/near/near-api-js/commit/695220e75bc43834a7700cfc5491a7eebd324947), [`0be6c420`](https://github.com/near/near-api-js/commit/0be6c4209f56c0595bf66e217b7ac01444981b99), [`ecf29e2d`](https://github.com/near/near-api-js/commit/ecf29e2d56611a7773c79d5bb5bd20c8b7e738ea), [`61349aec`](https://github.com/near/near-api-js/commit/61349aeca3af830f702b24654e0f13cd428192d8), [`cdd8d1c8`](https://github.com/near/near-api-js/commit/cdd8d1c8c37db641bd995b2c470ad0b4fdddb93f), [`038b9b9f`](https://github.com/near/near-api-js/commit/038b9b9fd57f73e537041d4b90ed07bf3cd811d9)]:
+  - @near-js/accounts@1.0.0
+  - near-api-js@3.0.0
+  - @near-js/providers@0.0.8
+  - @near-js/transactions@1.0.0
+  - @near-js/keystores-node@0.0.6
+  - @near-js/signers@0.0.6
+
 ## 1.0.11
 
 ### Patch Changes
