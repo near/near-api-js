@@ -8,7 +8,7 @@ export const NEAR_NOMINATION_EXP = 24;
 /**
  * Number of indivisible units in one NEAR. Derived from {@link NEAR_NOMINATION_EXP}.
  */
-export const NEAR_NOMINATION = BigInt(10 ** NEAR_NOMINATION_EXP);
+export const NEAR_NOMINATION = BigInt(10) ** BigInt(NEAR_NOMINATION_EXP);
 
 // Pre-calculate offsets used for rounding to different number of digits
 const ROUNDING_OFFSETS: bigint[] = [];

@@ -30,7 +30,7 @@ function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo
     // assert stakesSum >= numSeats
     let left = BigInt(1), right = stakesSum + BigInt(1);
     while (left !== right - BigInt(1)) {
-        const mid = left + right / BigInt(2);
+        const mid = (left + right) / BigInt(2);
         let found = false;
         let currentSum = BigInt(0);
         for (let i = 0; i < stakes.length; ++i) {
