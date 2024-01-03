@@ -21,7 +21,7 @@
     "bn.js": "5.2.1",
     "borsh": "1.0.0",
     "buffer": "6.0.3",
-    "elliptic": "6.5.4",
+    "@noble/curves": "1.2.0",
     "fido2-lib": "3.4.1"
   },
   "devDependencies": {
