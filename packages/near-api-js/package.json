@@ -25,7 +25,7 @@
         "ajv": "8.11.2",
         "ajv-formats": "2.1.1",
         "bn.js": "5.2.1",
-        "borsh": "1.0.0",
+        "borsh": "2.0.0",
         "depd": "2.0.0",
         "http-errors": "1.7.2",
         "near-abi": "0.1.1",

@@ -19,7 +19,7 @@
     "@near-js/utils": "workspace:*",
     "asn1-parser": "1.1.8",
     "bn.js": "5.2.1",
-    "borsh": "1.0.0",
+    "borsh": "2.0.0",
     "buffer": "6.0.3",
     "@noble/curves": "1.2.0",
     "fido2-lib": "3.4.1"
