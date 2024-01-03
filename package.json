@@ -27,7 +27,7 @@
     "commitlint": "17.0.3",
     "eslint": "8.20.0",
     "husky": "7.0.4",
-    "rimraf": "3.0.2",
+    "rimraf": "5.0.5",
     "turbo": "1.4.5",
     "typedoc": "0.25.3",
     "typescript": "4.9.4"
