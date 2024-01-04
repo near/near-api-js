@@ -74,12 +74,6 @@ importers:
       ajv-formats:
         specifier: 2.1.1
         version: 2.1.1(ajv@8.11.2)
-<<<<<<< HEAD
-=======
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
->>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -129,33 +123,18 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-<<<<<<< HEAD
-      asn1-parser:
-        specifier: 1.1.8
-        version: 1.1.8
-=======
       '@noble/curves':
         specifier: 1.2.0
         version: 1.2.0
       asn1-parser:
         specifier: 1.1.8
         version: 1.1.8
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
->>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
       buffer:
         specifier: 6.0.3
         version: 6.0.3
-<<<<<<< HEAD
-      elliptic:
-        specifier: 6.5.4
-        version: 6.5.4
-=======
->>>>>>> master
       fido2-lib:
         specifier: 3.4.1
         version: 3.4.1
@@ -184,12 +163,6 @@ importers:
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
-<<<<<<< HEAD
-=======
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
->>>>>>> master
       chalk:
         specifier: 4.1.1
         version: 4.1.1
@@ -211,24 +184,12 @@ importers:
       '@noble/curves':
         specifier: 1.2.0
         version: 1.2.0
-<<<<<<< HEAD
-      borsh:
-        specifier: 1.0.0
-        version: 1.0.0
-      crypto-browserify:
-        specifier: 3.12.0
-        version: 3.12.0
-=======
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
       randombytes:
         specifier: 2.1.0
         version: 2.1.0
->>>>>>> master
     devDependencies:
       '@types/node':
         specifier: 18.11.18
@@ -360,24 +321,12 @@ importers:
       ajv-formats:
         specifier: 2.1.1
         version: 2.1.1(ajv@8.11.2)
-<<<<<<< HEAD
-=======
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
->>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
       depd:
         specifier: 2.0.0
         version: 2.0.0
-<<<<<<< HEAD
-      error-polyfill:
-        specifier: 0.1.3
-        version: 0.1.3
-=======
->>>>>>> master
       http-errors:
         specifier: 1.7.2
         version: 1.7.2
@@ -388,12 +337,6 @@ importers:
         specifier: 2.6.7
         version: 2.6.7
     devDependencies:
-<<<<<<< HEAD
-=======
-      '@types/bn.js':
-        specifier: 5.1.0
-        version: 5.1.0
->>>>>>> master
       '@types/http-errors':
         specifier: 1.6.1
         version: 1.6.1
@@ -454,12 +397,6 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-<<<<<<< HEAD
-=======
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
->>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -492,15 +429,9 @@ importers:
       '@near-js/keystores':
         specifier: workspace:*
         version: link:../keystores
-<<<<<<< HEAD
-      js-sha256:
-        specifier: 0.9.0
-        version: 0.9.0
-=======
       '@noble/hashes':
         specifier: 1.3.3
         version: 1.3.3
->>>>>>> master
     devDependencies:
       '@types/node':
         specifier: 18.11.18
@@ -529,24 +460,12 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-<<<<<<< HEAD
-      borsh:
-        specifier: 1.0.0
-        version: 1.0.0
-      js-sha256:
-        specifier: 0.9.0
-        version: 0.9.0
-=======
       '@noble/hashes':
         specifier: 1.3.3
         version: 1.3.3
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
->>>>>>> master
     devDependencies:
       '@near-js/keystores':
         specifier: workspace:*
@@ -565,13 +484,6 @@ importers:
         version: 4.9.4
 
   packages/types:
-<<<<<<< HEAD
-=======
-    dependencies:
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
->>>>>>> master
     devDependencies:
       '@types/node':
         specifier: 18.11.18
@@ -591,12 +503,6 @@ importers:
       '@near-js/types':
         specifier: workspace:*
         version: link:../types
-<<<<<<< HEAD
-=======
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
->>>>>>> master
       bs58:
         specifier: 4.0.0
         version: 4.0.0
@@ -643,12 +549,6 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-<<<<<<< HEAD
-=======
-      bn.js:
-        specifier: 5.2.1
-        version: 5.2.1
->>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -1792,14 +1692,11 @@ packages:
     engines: {node: '>= 16'}
     dev: false
 
-<<<<<<< HEAD
-=======
   /@noble/hashes@1.3.3:
     resolution: {integrity: sha512-V7/fPHgl+jsVPXqqeOzT8egNj2iBIVt+ECeMMG8TdcnTikP3oaBtUVqpT/gYCR68aEBJSF+XbYUxStjbFMqIIA==}
     engines: {node: '>= 16'}
     dev: false
 
->>>>>>> master
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -2016,26 +1913,12 @@ packages:
       '@babel/types': 7.22.5
     dev: true
 
-<<<<<<< HEAD
-  /@types/graceful-fs@4.1.6:
-    resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
-=======
-  /@types/bn.js@5.1.0:
-    resolution: {integrity: sha512-QSSVYj7pYFN49kW77o2s9xTCwZ8F2xLbjLLSEVh8D2F4JUhZtPAGOFLTD+ffqksBx/u4cE/KImFjyhqCjn/LIA==}
->>>>>>> master
-    dependencies:
-      '@types/node': 18.11.18
-    dev: true
-
-<<<<<<< HEAD
-=======
   /@types/graceful-fs@4.1.6:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
     dependencies:
       '@types/node': 18.11.18
     dev: true
 
->>>>>>> master
   /@types/http-errors@1.6.1:
     resolution: {integrity: sha512-s+RHKSGc3r0m3YEE2UXomJYrpQaY9cDmNDLU2XvG1/LAZsQ7y8emYkTLfcw/ByDtcsTyRQKwr76Bj4PkN2hfWg==}
     dev: true
@@ -2647,6 +2530,7 @@ packages:
 
   /bn.js@5.2.1:
     resolution: {integrity: sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==}
+    dev: true
 
   /borsh@1.0.0:
     resolution: {integrity: sha512-fSVWzzemnyfF89EPwlUNsrS5swF5CrtiN4e+h0/lLf4dz2he4L3ndM20PS9wj7ICSkXJe/TQUHdaPTq15b1mNQ==}
@@ -2980,13 +2864,6 @@ packages:
     resolution: {integrity: sha512-0QHgqR+Jv4bxHMp8kZ1Kn8CH55OikjKJ6JmKkZYP1F3D7w+lnFXF70nG5eNfsZS89jadi5Ywy5UCSKLAglIRkg==}
     dev: true
 
-<<<<<<< HEAD
-  /capability@0.2.5:
-    resolution: {integrity: sha512-rsJZYVCgXd08sPqwmaIqjAd5SUTfonV0z/gDJ8D6cN8wQphky1kkAYEqQ+hmDxTw7UihvBfjUVUSY+DBEe44jg==}
-    dev: false
-
-=======
->>>>>>> master
   /capture-exit@2.0.0:
     resolution: {integrity: sha512-PiT/hQmTonHhl/HFGN+Lx3JJUznrVYJ3+AQsnthneZbvW7x+f08Tk7yLJTLEOUvBTbduLeeBkxEaYXUOUrRq6g==}
     engines: {node: 6.* || 8.* || >= 10.*}
@@ -3810,17 +3687,6 @@ packages:
       is-arrayish: 0.2.1
     dev: true
 
-<<<<<<< HEAD
-  /error-polyfill@0.1.3:
-    resolution: {integrity: sha512-XHJk60ufE+TG/ydwp4lilOog549iiQF2OAPhkk9DdiYWMrltz5yhDz/xnKuenNwP7gy3dsibssO5QpVhkrSzzg==}
-    dependencies:
-      capability: 0.2.5
-      o3: 1.0.3
-      u3: 0.1.1
-    dev: false
-
-=======
->>>>>>> master
   /es-abstract@1.22.1:
     resolution: {integrity: sha512-ioRRcXMO6OFyRpyzV3kE1IIBd4WG5/kltnzdxSCqoP8CMGs/Li+M1uF5o7lOkZVFjDs+NLesthnF66Pg/0q0Lw==}
     engines: {node: '>= 0.4'}
@@ -5785,13 +5651,6 @@ packages:
     resolution: {integrity: sha512-j8GhLiKmUAh+dsFXlX1aJCbt5KMibuKb+d7j1JaOJG6s2UjX1PQlW+OKB/sD4a/5ZYF4RcmYmLSndOoU3Lt/3g==}
     dev: false
 
-<<<<<<< HEAD
-  /js-sha256@0.9.0:
-    resolution: {integrity: sha512-sga3MHh9sgQN2+pJ9VYZ+1LPwXOxuBJBA5nrR5/ofPfuiJBE2hnjsaN8se8JznOmGLN2p49Pe5U/ttafcs/apA==}
-    dev: false
-
-=======
->>>>>>> master
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
     dev: true
@@ -6583,25 +6442,11 @@ packages:
     resolution: {integrity: sha512-ub5E4+FBPKwAZx0UwIQOjYWGHTEq5sPqHQNRN8Z9e4A7u3Tj1weLJsL59yH9vmvqEtBHaOmT6cYQKIZOxp35FQ==}
     dev: true
 
-<<<<<<< HEAD
-  /o3@1.0.3:
-    resolution: {integrity: sha512-f+4n+vC6s4ysy7YO7O2gslWZBUu8Qj2i2OUJOvjRxQva7jVjYjB29jrr9NCjmxZQR0gzrOcv1RnqoYOeMs5VRQ==}
-    dependencies:
-      capability: 0.2.5
-    dev: false
-
   /object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
     dev: true
 
-=======
-  /object-assign@4.1.1:
-    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
-    engines: {node: '>=0.10.0'}
-    dev: true
-
->>>>>>> master
   /object-copy@0.1.0:
     resolution: {integrity: sha512-79LYn6VAb63zgtmAteVOWo9Vdj71ZVBy3Pbse+VqxDpEP83XuujMrGqHIwAXJ5I/aM0zU7dIyIAhifVTPrNItQ==}
     engines: {node: '>=0.10.0'}
@@ -8357,13 +8202,6 @@ packages:
     hasBin: true
     dev: true
 
-<<<<<<< HEAD
-  /u3@0.1.1:
-    resolution: {integrity: sha512-+J5D5ir763y+Am/QY6hXNRlwljIeRMZMGs0cT6qqZVVzzT3X3nFPXVyPOFRMOR4kupB0T8JnCdpWdp6Q/iXn3w==}
-    dev: false
-
-=======
->>>>>>> master
   /uglifyify@5.0.1:
     resolution: {integrity: sha512-PO44rgExvwj3rkK0UzenHVnPU18drBy9x9HOUmgkuRh6K2KIsDqrB5LqxGtjybgGTOS1JeP8SBc+TN5rhiva6w==}
     dependencies:

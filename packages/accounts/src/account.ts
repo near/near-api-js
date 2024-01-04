@@ -293,7 +293,7 @@ export class Account {
             // store nonce as BigInt to preserve precision on big number
             const accessKey = {
                 ...rawAccessKey,
-                nonce: BigInt(rawAccessKey.nonce)
+                nonce: BigInt(rawAccessKey.nonce || 0)
             };
             // this function can be called multiple times and retrieve the same access key
             // this checks to see if the access key was already retrieved and cached while
