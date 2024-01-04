@@ -1,5 +1,5 @@
 import { Signer } from '@near-js/signers';
-import sha256 from 'js-sha256';
+import { sha256 } from '@noble/hashes/sha256';
 
 import { Action, SignedDelegate } from './actions';
 import { createTransaction } from './create_transaction';
@@ -30,7 +30,7 @@ export interface SignedDelegateWithHash {
  */
 async function signTransactionObject(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]> {
     const message = encodeTransaction(transaction);
-    const hash = new Uint8Array(sha256.sha256.array(message));
+    const hash = new Uint8Array(sha256(message));
     const signature = await signer.signMessage(message, accountId, networkId);
     const signedTx = new SignedTransaction({
         transaction,
@@ -71,7 +71,7 @@ export async function signDelegateAction({ delegateAction, signer }: SignDelegat
     });
 
     return {
-        hash: new Uint8Array(sha256.sha256.array(message)),
+        hash: new Uint8Array(sha256(message)),
         signedDelegateAction,
     };
 }

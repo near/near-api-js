@@ -32,7 +32,7 @@ Then in your dApp:
   
 
 ```ts
-import { createKey, getKey } from  "@near-js/biometric-ed25519";
+import { createKey, getKeys } from  "@near-js/biometric-ed25519";
 
 // To register with userName
 const key = await createKey(userName);

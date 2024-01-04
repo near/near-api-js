@@ -74,6 +74,12 @@ importers:
       ajv-formats:
         specifier: 2.1.1
         version: 2.1.1(ajv@8.11.2)
+<<<<<<< HEAD
+=======
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+>>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -123,18 +129,33 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
+<<<<<<< HEAD
       asn1-parser:
         specifier: 1.1.8
         version: 1.1.8
+=======
+      '@noble/curves':
+        specifier: 1.2.0
+        version: 1.2.0
+      asn1-parser:
+        specifier: 1.1.8
+        version: 1.1.8
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+>>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
       buffer:
         specifier: 6.0.3
         version: 6.0.3
+<<<<<<< HEAD
       elliptic:
         specifier: 6.5.4
         version: 6.5.4
+=======
+>>>>>>> master
       fido2-lib:
         specifier: 3.4.1
         version: 3.4.1
@@ -163,6 +184,12 @@ importers:
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
+<<<<<<< HEAD
+=======
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+>>>>>>> master
       chalk:
         specifier: 4.1.1
         version: 4.1.1
@@ -184,12 +211,24 @@ importers:
       '@noble/curves':
         specifier: 1.2.0
         version: 1.2.0
+<<<<<<< HEAD
       borsh:
         specifier: 1.0.0
         version: 1.0.0
       crypto-browserify:
         specifier: 3.12.0
         version: 3.12.0
+=======
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+      borsh:
+        specifier: 1.0.0
+        version: 1.0.0
+      randombytes:
+        specifier: 2.1.0
+        version: 2.1.0
+>>>>>>> master
     devDependencies:
       '@types/node':
         specifier: 18.11.18
@@ -321,15 +360,24 @@ importers:
       ajv-formats:
         specifier: 2.1.1
         version: 2.1.1(ajv@8.11.2)
+<<<<<<< HEAD
+=======
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+>>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
       depd:
         specifier: 2.0.0
         version: 2.0.0
+<<<<<<< HEAD
       error-polyfill:
         specifier: 0.1.3
         version: 0.1.3
+=======
+>>>>>>> master
       http-errors:
         specifier: 1.7.2
         version: 1.7.2
@@ -340,6 +388,12 @@ importers:
         specifier: 2.6.7
         version: 2.6.7
     devDependencies:
+<<<<<<< HEAD
+=======
+      '@types/bn.js':
+        specifier: 5.1.0
+        version: 5.1.0
+>>>>>>> master
       '@types/http-errors':
         specifier: 1.6.1
         version: 1.6.1
@@ -400,6 +454,12 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
+<<<<<<< HEAD
+=======
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+>>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -432,9 +492,15 @@ importers:
       '@near-js/keystores':
         specifier: workspace:*
         version: link:../keystores
+<<<<<<< HEAD
       js-sha256:
         specifier: 0.9.0
         version: 0.9.0
+=======
+      '@noble/hashes':
+        specifier: 1.3.3
+        version: 1.3.3
+>>>>>>> master
     devDependencies:
       '@types/node':
         specifier: 18.11.18
@@ -463,12 +529,24 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
+<<<<<<< HEAD
       borsh:
         specifier: 1.0.0
         version: 1.0.0
       js-sha256:
         specifier: 0.9.0
         version: 0.9.0
+=======
+      '@noble/hashes':
+        specifier: 1.3.3
+        version: 1.3.3
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+      borsh:
+        specifier: 1.0.0
+        version: 1.0.0
+>>>>>>> master
     devDependencies:
       '@near-js/keystores':
         specifier: workspace:*
@@ -487,6 +565,13 @@ importers:
         version: 4.9.4
 
   packages/types:
+<<<<<<< HEAD
+=======
+    dependencies:
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+>>>>>>> master
     devDependencies:
       '@types/node':
         specifier: 18.11.18
@@ -506,6 +591,12 @@ importers:
       '@near-js/types':
         specifier: workspace:*
         version: link:../types
+<<<<<<< HEAD
+=======
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+>>>>>>> master
       bs58:
         specifier: 4.0.0
         version: 4.0.0
@@ -552,6 +643,12 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
+<<<<<<< HEAD
+=======
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
+>>>>>>> master
       borsh:
         specifier: 1.0.0
         version: 1.0.0
@@ -1695,6 +1792,14 @@ packages:
     engines: {node: '>= 16'}
     dev: false
 
+<<<<<<< HEAD
+=======
+  /@noble/hashes@1.3.3:
+    resolution: {integrity: sha512-V7/fPHgl+jsVPXqqeOzT8egNj2iBIVt+ECeMMG8TdcnTikP3oaBtUVqpT/gYCR68aEBJSF+XbYUxStjbFMqIIA==}
+    engines: {node: '>= 16'}
+    dev: false
+
+>>>>>>> master
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -1911,12 +2016,26 @@ packages:
       '@babel/types': 7.22.5
     dev: true
 
+<<<<<<< HEAD
+  /@types/graceful-fs@4.1.6:
+    resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
+=======
+  /@types/bn.js@5.1.0:
+    resolution: {integrity: sha512-QSSVYj7pYFN49kW77o2s9xTCwZ8F2xLbjLLSEVh8D2F4JUhZtPAGOFLTD+ffqksBx/u4cE/KImFjyhqCjn/LIA==}
+>>>>>>> master
+    dependencies:
+      '@types/node': 18.11.18
+    dev: true
+
+<<<<<<< HEAD
+=======
   /@types/graceful-fs@4.1.6:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
     dependencies:
       '@types/node': 18.11.18
     dev: true
 
+>>>>>>> master
   /@types/http-errors@1.6.1:
     resolution: {integrity: sha512-s+RHKSGc3r0m3YEE2UXomJYrpQaY9cDmNDLU2XvG1/LAZsQ7y8emYkTLfcw/ByDtcsTyRQKwr76Bj4PkN2hfWg==}
     dev: true
@@ -2358,6 +2477,7 @@ packages:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
       safer-buffer: 2.1.2
+    dev: true
 
   /asn1js@3.0.5:
     resolution: {integrity: sha512-FVnvrKJwpt9LP2lAMl8qZswRNm3T4q9CON+bxldk2iwk3FFpuwhx2FfinyitizWHsVYyaY+y5JzDR0rCMV5yTQ==}
@@ -2523,6 +2643,7 @@ packages:
 
   /bn.js@4.12.0:
     resolution: {integrity: sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==}
+    dev: true
 
   /bn.js@5.2.1:
     resolution: {integrity: sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==}
@@ -2577,6 +2698,7 @@ packages:
 
   /brorand@1.1.0:
     resolution: {integrity: sha512-cKV8tMCEpQs4hK/ik71d6LrPOnpkpGBR0wzxqr68g2m/LB2GxVYQroAjMJZRVM1Y4BCjCKc3vAamxSzOY2RP+w==}
+    dev: true
 
   /browser-pack@6.1.0:
     resolution: {integrity: sha512-erYug8XoqzU3IfcU8fUgyHqyOXqIE4tUTTQ+7mqUjQlvnXkOO6OlT9c/ZoJVHYoAaqGxr09CN53G7XIsO4KtWA==}
@@ -2615,6 +2737,7 @@ packages:
       evp_bytestokey: 1.0.3
       inherits: 2.0.4
       safe-buffer: 5.2.1
+    dev: true
 
   /browserify-cipher@1.0.1:
     resolution: {integrity: sha512-sPhkz0ARKbf4rRQt2hTpAHqn47X3llLkUGn+xEJzLjwY8LRs2p0v7ljvI5EyoRO/mexrNunNECisZs+gw2zz1w==}
@@ -2622,6 +2745,7 @@ packages:
       browserify-aes: 1.2.0
       browserify-des: 1.0.2
       evp_bytestokey: 1.0.3
+    dev: true
 
   /browserify-des@1.0.2:
     resolution: {integrity: sha512-BioO1xf3hFwz4kc6iBhI3ieDFompMhrMlnDFC4/0/vd5MokpuAc3R+LYbwTA9A5Yc9pq9UYPqffKpW2ObuwX5A==}
@@ -2630,12 +2754,14 @@ packages:
       des.js: 1.1.0
       inherits: 2.0.4
       safe-buffer: 5.2.1
+    dev: true
 
   /browserify-rsa@4.1.0:
     resolution: {integrity: sha512-AdEER0Hkspgno2aR97SAf6vi0y0k8NuOpGnVH3O99rcA5Q6sh8QxcngtHuJ6uXwnfAXNM4Gn1Gb7/MV1+Ymbog==}
     dependencies:
       bn.js: 5.2.1
       randombytes: 2.1.0
+    dev: true
 
   /browserify-sign@4.2.1:
     resolution: {integrity: sha512-/vrA5fguVAKKAVTNJjgSm1tRQDHUU6DbwO9IROu/0WAzC8PKhucDSh18J0RMvVeHAn5puMd+QHC2erPRNf8lmg==}
@@ -2649,6 +2775,7 @@ packages:
       parse-asn1: 5.1.6
       readable-stream: 3.6.2
       safe-buffer: 5.2.1
+    dev: true
 
   /browserify-zlib@0.2.0:
     resolution: {integrity: sha512-Z942RysHXmJrhqk88FmKBVq/v5tqmSkDz7p54G/MGyjMnCFFnC79XWNbg+Vta8W6Wb2qtSZTSxIGkJrRpCFEiA==}
@@ -2750,6 +2877,7 @@ packages:
 
   /buffer-xor@1.0.3:
     resolution: {integrity: sha512-571s0T7nZWK6vB67HI5dyUF7wXiNcfaPPPTl6zYCNApANjIvYJTg7hlud/+cJpdAhS7dVzqMLmfhfHR3rAcOjQ==}
+    dev: true
 
   /buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
@@ -2852,10 +2980,13 @@ packages:
     resolution: {integrity: sha512-0QHgqR+Jv4bxHMp8kZ1Kn8CH55OikjKJ6JmKkZYP1F3D7w+lnFXF70nG5eNfsZS89jadi5Ywy5UCSKLAglIRkg==}
     dev: true
 
+<<<<<<< HEAD
   /capability@0.2.5:
     resolution: {integrity: sha512-rsJZYVCgXd08sPqwmaIqjAd5SUTfonV0z/gDJ8D6cN8wQphky1kkAYEqQ+hmDxTw7UihvBfjUVUSY+DBEe44jg==}
     dev: false
 
+=======
+>>>>>>> master
   /capture-exit@2.0.0:
     resolution: {integrity: sha512-PiT/hQmTonHhl/HFGN+Lx3JJUznrVYJ3+AQsnthneZbvW7x+f08Tk7yLJTLEOUvBTbduLeeBkxEaYXUOUrRq6g==}
     engines: {node: 6.* || 8.* || >= 10.*}
@@ -2936,6 +3067,7 @@ packages:
     dependencies:
       inherits: 2.0.4
       safe-buffer: 5.2.1
+    dev: true
 
   /cjs-module-lexer@0.6.0:
     resolution: {integrity: sha512-uc2Vix1frTfnuzxxu1Hp4ktSvM3QaI4oXl4ZUqL1wjTu/BGki9TrCWoqLTg/drR1KwAEarXuRFCG2Svr1GxPFw==}
@@ -3182,6 +3314,7 @@ packages:
     dependencies:
       bn.js: 4.12.0
       elliptic: 6.5.4
+    dev: true
 
   /create-hash@1.2.0:
     resolution: {integrity: sha512-z00bCGNHDG8mHAkP7CtT1qVu+bFQUPjYq/4Iv3C3kWjTFV10zIjfSoeqXo9Asws8gwSHDGj/hl2u4OGIjapeCg==}
@@ -3191,6 +3324,7 @@ packages:
       md5.js: 1.3.5
       ripemd160: 2.0.2
       sha.js: 2.4.11
+    dev: true
 
   /create-hmac@1.1.7:
     resolution: {integrity: sha512-MJG9liiZ+ogc4TzUwuvbER1JRdgvUFSB5+VR/g5h82fGaIRWMWddtKBHi7/sVhfjQZ6SehlyhvQYrcYkaUIpLg==}
@@ -3201,6 +3335,7 @@ packages:
       ripemd160: 2.0.2
       safe-buffer: 5.2.1
       sha.js: 2.4.11
+    dev: true
 
   /create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
@@ -3248,6 +3383,7 @@ packages:
       public-encrypt: 4.0.3
       randombytes: 2.1.0
       randomfill: 1.0.4
+    dev: true
 
   /cssom@0.3.8:
     resolution: {integrity: sha512-b0tGHbfegbhPJpxpiBPU2sCkigAqtM9O121le6bbOlgyV+NyGyCmVfJ6QW9eRjz8CpNfWEOYBIMIGRYkLwsIYg==}
@@ -3527,6 +3663,7 @@ packages:
     dependencies:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
+    dev: true
 
   /detect-indent@6.1.0:
     resolution: {integrity: sha512-reYkTUJAZb9gUuZ2RvVCNhVHdg62RHnJ7WJl8ftMi4diZ6NWlciOzQN88pUhSELEwflJht4oQDv0F0BMlwaYtA==}
@@ -3564,6 +3701,7 @@ packages:
       bn.js: 4.12.0
       miller-rabin: 4.0.1
       randombytes: 2.1.0
+    dev: true
 
   /dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
@@ -3634,6 +3772,7 @@ packages:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
+    dev: true
 
   /emittery@0.7.2:
     resolution: {integrity: sha512-A8OG5SR/ij3SsJdWDJdkkSYUjQdCUx6APQXem0SaEePBSRg4eymGYwBkKo1Y6DU+af/Jn2dBQqDBvjnr9Vi8nQ==}
@@ -3671,6 +3810,7 @@ packages:
       is-arrayish: 0.2.1
     dev: true
 
+<<<<<<< HEAD
   /error-polyfill@0.1.3:
     resolution: {integrity: sha512-XHJk60ufE+TG/ydwp4lilOog549iiQF2OAPhkk9DdiYWMrltz5yhDz/xnKuenNwP7gy3dsibssO5QpVhkrSzzg==}
     dependencies:
@@ -3679,6 +3819,8 @@ packages:
       u3: 0.1.1
     dev: false
 
+=======
+>>>>>>> master
   /es-abstract@1.22.1:
     resolution: {integrity: sha512-ioRRcXMO6OFyRpyzV3kE1IIBd4WG5/kltnzdxSCqoP8CMGs/Li+M1uF5o7lOkZVFjDs+NLesthnF66Pg/0q0Lw==}
     engines: {node: '>= 0.4'}
@@ -3934,6 +4076,7 @@ packages:
     dependencies:
       md5.js: 1.3.5
       safe-buffer: 5.2.1
+    dev: true
 
   /exec-sh@0.3.6:
     resolution: {integrity: sha512-nQn+hI3yp+oD0huYhKwvYI32+JFeq+XkNcD1GAo3Y/MjxsfVGmrrzrnzjWiNY6f+pUCP440fThsFh5gZrRAU/w==}
@@ -4582,12 +4725,14 @@ packages:
       inherits: 2.0.4
       readable-stream: 3.6.2
       safe-buffer: 5.2.1
+    dev: true
 
   /hash.js@1.1.7:
     resolution: {integrity: sha512-taOaskGt4z4SOANNseOviYDvjEJinIkRgmp7LbKP2YTTmVxWBl87s/uzK9r+44BclBSp2X7K1hqeNfz9JbBeXA==}
     dependencies:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
+    dev: true
 
   /hasown@2.0.0:
     resolution: {integrity: sha512-vUptKVTpIJhcczKBbgnS+RtcuYMB8+oNzPK2/Hp3hanz8JmpATdmmgLgSaadVREkDm+e2giHwY3ZRkyjSIDDFA==}
@@ -4607,6 +4752,7 @@ packages:
       hash.js: 1.1.7
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
+    dev: true
 
   /homedir-polyfill@1.0.3:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
@@ -4801,6 +4947,7 @@ packages:
 
   /inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
+    dev: true
 
   /ini@1.3.8:
     resolution: {integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==}
@@ -5638,10 +5785,13 @@ packages:
     resolution: {integrity: sha512-j8GhLiKmUAh+dsFXlX1aJCbt5KMibuKb+d7j1JaOJG6s2UjX1PQlW+OKB/sD4a/5ZYF4RcmYmLSndOoU3Lt/3g==}
     dev: false
 
+<<<<<<< HEAD
   /js-sha256@0.9.0:
     resolution: {integrity: sha512-sga3MHh9sgQN2+pJ9VYZ+1LPwXOxuBJBA5nrR5/ofPfuiJBE2hnjsaN8se8JznOmGLN2p49Pe5U/ttafcs/apA==}
     dev: false
 
+=======
+>>>>>>> master
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
     dev: true
@@ -6086,6 +6236,7 @@ packages:
       hash-base: 3.1.0
       inherits: 2.0.4
       safe-buffer: 5.2.1
+    dev: true
 
   /memfs-or-file-map-to-github-branch@1.2.1:
     resolution: {integrity: sha512-I/hQzJ2a/pCGR8fkSQ9l5Yx+FQ4e7X6blNHyWBm2ojeFLT3GVzGkTj7xnyWpdclrr7Nq4dmx3xrvu70m3ypzAQ==}
@@ -6173,6 +6324,7 @@ packages:
     dependencies:
       bn.js: 4.12.0
       brorand: 1.1.0
+    dev: true
 
   /mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
@@ -6198,9 +6350,11 @@ packages:
 
   /minimalistic-assert@1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
+    dev: true
 
   /minimalistic-crypto-utils@1.0.1:
     resolution: {integrity: sha512-JIYlbt6g8i5jKfJ3xz7rF0LXmv2TkDxBLUkiBeZ7bAx4GnnNMr8xFpGnOxn6GhTEHx3SjRrZEoU+j04prX1ktg==}
+    dev: true
 
   /minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
@@ -6429,6 +6583,7 @@ packages:
     resolution: {integrity: sha512-ub5E4+FBPKwAZx0UwIQOjYWGHTEq5sPqHQNRN8Z9e4A7u3Tj1weLJsL59yH9vmvqEtBHaOmT6cYQKIZOxp35FQ==}
     dev: true
 
+<<<<<<< HEAD
   /o3@1.0.3:
     resolution: {integrity: sha512-f+4n+vC6s4ysy7YO7O2gslWZBUu8Qj2i2OUJOvjRxQva7jVjYjB29jrr9NCjmxZQR0gzrOcv1RnqoYOeMs5VRQ==}
     dependencies:
@@ -6440,6 +6595,13 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+=======
+  /object-assign@4.1.1:
+    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+>>>>>>> master
   /object-copy@0.1.0:
     resolution: {integrity: sha512-79LYn6VAb63zgtmAteVOWo9Vdj71ZVBy3Pbse+VqxDpEP83XuujMrGqHIwAXJ5I/aM0zU7dIyIAhifVTPrNItQ==}
     engines: {node: '>=0.10.0'}
@@ -6604,6 +6766,7 @@ packages:
       evp_bytestokey: 1.0.3
       pbkdf2: 3.1.2
       safe-buffer: 5.2.1
+    dev: true
 
   /parse-diff@0.7.1:
     resolution: {integrity: sha512-1j3l8IKcy4yRK2W4o9EYvJLSzpAVwz4DXqCewYyx2vEwk2gcf3DBPqc8Fj4XV3K33OYJ08A8fWwyu/ykD/HUSg==}
@@ -6701,6 +6864,7 @@ packages:
       ripemd160: 2.0.2
       safe-buffer: 5.2.1
       sha.js: 2.4.11
+    dev: true
 
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
@@ -6821,6 +6985,7 @@ packages:
       parse-asn1: 5.1.6
       randombytes: 2.1.0
       safe-buffer: 5.2.1
+    dev: true
 
   /pump@3.0.0:
     resolution: {integrity: sha512-LwZy+p3SFs1Pytd/jYct4wpv49HiYCqd9Rlc5ZVdk0V+8Yzv6jR5Blk3TRmPL1ft69TxP0IMZGJ+WPFU2BFhww==}
@@ -6898,6 +7063,7 @@ packages:
     dependencies:
       randombytes: 2.1.0
       safe-buffer: 5.2.1
+    dev: true
 
   /react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
@@ -6957,6 +7123,7 @@ packages:
       inherits: 2.0.4
       string_decoder: 1.3.0
       util-deprecate: 1.0.2
+    dev: true
 
   /readline-sync@1.4.10:
     resolution: {integrity: sha512-gNva8/6UAe8QYepIQH/jQ2qn91Qj0B9sYjMBBs3QOB8F2CXcKgLxQaJRP76sWVRQt+QU+8fAkCbCvjjMFu7Ycw==}
@@ -7097,6 +7264,7 @@ packages:
     dependencies:
       hash-base: 3.1.0
       inherits: 2.0.4
+    dev: true
 
   /rsvp@4.8.5:
     resolution: {integrity: sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==}
@@ -7148,6 +7316,7 @@ packages:
 
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+    dev: true
 
   /sane@4.1.0:
     resolution: {integrity: sha512-hhbzAgTIX8O7SHfp2c8/kREfEn4qO/9q8C9beyY6+tvZ87EpoZ3i1RIEvp27YBswnNbY9mWd6paKVmKbAgLfZA==}
@@ -7231,6 +7400,7 @@ packages:
     dependencies:
       inherits: 2.0.4
       safe-buffer: 5.2.1
+    dev: true
 
   /shasum-object@1.0.0:
     resolution: {integrity: sha512-Iqo5rp/3xVi6M4YheapzZhhGPVs0yZwHj7wvwQ1B9z8H6zk+FEnI7y3Teq7qwnekfEhu8WmG2z0z4iWZaxLWVg==}
@@ -7564,6 +7734,7 @@ packages:
     resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
     dependencies:
       safe-buffer: 5.2.1
+    dev: true
 
   /strip-ansi@6.0.1:
     resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}
@@ -8186,10 +8357,13 @@ packages:
     hasBin: true
     dev: true
 
+<<<<<<< HEAD
   /u3@0.1.1:
     resolution: {integrity: sha512-+J5D5ir763y+Am/QY6hXNRlwljIeRMZMGs0cT6qqZVVzzT3X3nFPXVyPOFRMOR4kupB0T8JnCdpWdp6Q/iXn3w==}
     dev: false
 
+=======
+>>>>>>> master
   /uglifyify@5.0.1:
     resolution: {integrity: sha512-PO44rgExvwj3rkK0UzenHVnPU18drBy9x9HOUmgkuRh6K2KIsDqrB5LqxGtjybgGTOS1JeP8SBc+TN5rhiva6w==}
     dependencies:
@@ -8312,6 +8486,7 @@ packages:
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: true
 
   /util@0.10.3:
     resolution: {integrity: sha512-5KiHfsmkqacuKjkRkdV7SsfDJ2EGiPsK92s2MhNSY0craxjTdKTtqKsJaCWp4LW33ZZ0OPUv1WO/TFvNQRiQxQ==}
