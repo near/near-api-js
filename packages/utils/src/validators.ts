@@ -1,5 +1,6 @@
 import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from '@near-js/types';
 import depd from 'depd';
+import { sortBigIntAsc } from './utils';
 
 /** Finds seat price given validators stakes and number of seats.
  *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection
@@ -21,7 +22,7 @@ export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpoch
 }
 
 function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], numSeats: number): bigint {
-    const stakes = validators.map(v => BigInt(v.stake)).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    const stakes = validators.map(v => BigInt(v.stake)).sort(sortBigIntAsc);
     const num = BigInt(numSeats);
     const stakesSum = stakes.reduce((a, b) => a + b);
     if (stakesSum < num) {
@@ -34,7 +35,7 @@ function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo
         let found = false;
         let currentSum = BigInt(0);
         for (let i = 0; i < stakes.length; ++i) {
-            currentSum = currentSum + stakes[i] / mid;
+            currentSum = currentSum + (stakes[i] / mid);
             if (currentSum >= num) {
                 left = mid;
                 found = true;
@@ -53,7 +54,7 @@ function findSeatPriceForProtocolAfter49(validators: (CurrentEpochValidatorInfo 
     if (minimumStakeRatio.length != 2) {
         throw Error('minimumStakeRatio should have 2 elements');
     }
-    const stakes = validators.map(v => BigInt(v.stake)).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    const stakes = validators.map(v => BigInt(v.stake)).sort(sortBigIntAsc);
     const stakesSum = stakes.reduce((a, b) => a + b);
     if (validators.length < maxNumberOfSeats) {
         return stakesSum * BigInt(minimumStakeRatio[0]) / BigInt(minimumStakeRatio[1]);
