@@ -47,7 +47,7 @@
         "localstorage-memory": "1.0.3",
         "near-hello": "0.5.1",
         "rimraf": "3.0.2",
-        "semver": "7.1.1",
+        "semver": "7.5.4",
         "ts-jest": "26.5.6",
         "uglifyify": "5.0.1"
     },
