@@ -119,7 +119,7 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
             const firstEDSecret = await firstEdSha256.digest();
             const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
             const secondEDSecret = await secondEdSha256.digest();
-            const secondEDPublic = ed25519.getPublicKey(firstEDSecret);
+            const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
             const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([firstEDSecret, Buffer.from(firstEDPublic)]))));
             const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([secondEDSecret, Buffer.from(secondEDPublic)]))));
             return [firstKeyPair, secondKeyPair];
