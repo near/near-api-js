@@ -13,7 +13,7 @@
   "author": "Pagoda",
   "license": "ISC",
   "dependencies": {
-    "@aws-crypto/sha256-js": "4.0.0",
+    "@aws-crypto/sha256-js": "5.2.0",
     "@hexagon/base64": "1.1.26",
     "@near-js/crypto": "workspace:*",
     "@near-js/utils": "workspace:*",
