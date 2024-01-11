@@ -25,7 +25,7 @@
     "fido2-lib": "3.4.1"
   },
   "devDependencies": {
-    "@aws-sdk/types": "3.329.0",
+    "@aws-sdk/types": "3.489.0",
     "@types/node": "18.11.18"
   }
 }
