@@ -1,5 +1,17 @@
 # @near-js/transactions
 
+## 1.1.0
+
+### Minor Changes
+
+- [#1224](https://github.com/near/near-api-js/pull/1224) [`1900c490`](https://github.com/near/near-api-js/commit/1900c49060c3ea8279448cead7347049a23f421f) Thanks [@gtsonevv](https://github.com/gtsonevv)! - remove buggy dependencies - replace js-sha256 with noble-hashes - replace elliptic with noble-curves - remove error-polyfill package
+
+### Patch Changes
+
+- Updated dependencies [[`1900c490`](https://github.com/near/near-api-js/commit/1900c49060c3ea8279448cead7347049a23f421f), [`c6cdc8c7`](https://github.com/near/near-api-js/commit/c6cdc8c724a6dd53114cc5f53fd58e57cea86b78)]:
+  - @near-js/crypto@1.2.0
+  - @near-js/signers@0.1.0
+
 ## 1.0.1
 
 ### Patch Changes
