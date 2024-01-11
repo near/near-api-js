@@ -22,7 +22,7 @@
     "borsh": "1.0.0",
     "buffer": "6.0.3",
     "@noble/curves": "1.2.0",
-    "fido2-lib": "3.4.1"
+    "fido2-lib": "3.4.4"
   },
   "devDependencies": {
     "@aws-sdk/types": "3.329.0",
