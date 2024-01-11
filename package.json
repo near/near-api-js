@@ -20,7 +20,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "0.4.6",
     "@changesets/cli": "2.24.4",
-    "@commitlint/cli": "17.0.3",
+    "@commitlint/cli": "18.4.4",
     "@commitlint/config-conventional": "17.0.3",
     "@typescript-eslint/eslint-plugin": "5.31.0",
     "@typescript-eslint/parser": "5.31.0",
