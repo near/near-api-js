@@ -167,7 +167,7 @@ export class WalletConnection {
     }
 
     /**
-     * Redirects current page to the wallet authentication page.
+     * Constructs string URL to the wallet authentication page.
      * @param options An optional options object
      * @param options.contractId The NEAR account where the contract is deployed
      * @param options.successUrl URL to redirect upon success. Default: current url
@@ -176,11 +176,11 @@ export class WalletConnection {
      * @example
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
-     * // redirects to the NEAR Wallet
-     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * // return string URL to the NEAR Wallet
+     * const url = await wallet.requestSignInUrl({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
-    async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
+    async requestSignInUrl({contractId, methodNames, successUrl, failureUrl}: SignInOptions): Promise<string> {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
@@ -202,7 +202,27 @@ export class WalletConnection {
             });
         }
 
-        window.location.assign(newUrl.toString());
+        return newUrl.toString();
+    }
+
+    /**
+     * Redirects current page to the wallet authentication page.
+     * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
+     * @param options.successUrl URL to redirect upon success. Default: current url
+     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     *
+     * @example
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * // redirects to the NEAR Wallet
+     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * ```
+     */
+    async requestSignIn(options: SignInOptions) {
+        const url = await this.requestSignInUrl(options);
+
+        window.location.assign(url);
     }
 
     /**
