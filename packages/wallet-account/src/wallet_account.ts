@@ -234,7 +234,7 @@ export class WalletConnection {
      * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
      * 
      */
-    async requestSignTransactionsUrl({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<string> {
+    requestSignTransactionsUrl({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): string {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
@@ -257,8 +257,8 @@ export class WalletConnection {
      * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
      * 
      */
-    async requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void> {
-        const url = await this.requestSignTransactionsUrl(options);
+    requestSignTransactions(options: RequestSignTransactionsOptions): void {
+        const url = this.requestSignTransactionsUrl(options);
 
         window.location.assign(url);
     }
