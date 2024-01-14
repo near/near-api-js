@@ -226,9 +226,15 @@ export class WalletConnection {
     }
 
     /**
-     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
+     * Constructs string URL to the wallet to sign a transaction or batch of transactions.
+     * 
+     * @param options A required options object
+     * @param options.transactions List of transactions to sign
+     * @param options.callbackUrl URL to redirect upon success. Default: current url
+     * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
+     * 
      */
-    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+    async requestSignTransactionsUrl({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<string> {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
@@ -239,7 +245,22 @@ export class WalletConnection {
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
         if (meta) newUrl.searchParams.set('meta', meta);
 
-        window.location.assign(newUrl.toString());
+        return newUrl.toString();
+    }
+
+    /**
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the wallet.
+     * 
+     * @param options A required options object
+     * @param options.transactions List of transactions to sign
+     * @param options.callbackUrl URL to redirect upon success. Default: current url
+     * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
+     * 
+     */
+    async requestSignTransactions(options: RequestSignTransactionsOptions): Promise<void> {
+        const url = await this.requestSignTransactionsUrl(options);
+
+        window.location.assign(url);
     }
 
     /**
