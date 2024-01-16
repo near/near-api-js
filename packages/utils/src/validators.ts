@@ -3,7 +3,7 @@ import BN from 'bn.js';
 import depd from 'depd';
 
 /** Finds seat price given validators stakes and number of seats.
- *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection
+ *  Calculation follow the spec: https://nomicon.io/Economics/Economic#validator-selection
  * @params validators: current or next epoch validators.
  * @params maxNumberOfSeats: maximum number of seats in the network.
  * @params minimumStakeRatio: minimum stake ratio 
