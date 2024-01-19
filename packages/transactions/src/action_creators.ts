@@ -21,8 +21,8 @@ import { DelegateAction } from './delegate';
 import { Signature } from './signature';
 
 /**
- * Creates a full access key with all permissions.
- * @returns A new access key with full access permission.
+ * Creates a full access key with full access permissions.
+ * @returns A new full access key.
  */
 function fullAccessKey(): AccessKey {
     return new AccessKey({

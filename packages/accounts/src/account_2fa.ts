@@ -295,7 +295,7 @@ export class Account2FA extends AccountMultisig {
 
     /**
      * Gets the 2FA method (kind and detail).
-     * @returns {Promise<{ kind: string, detail: string } | null>} - A promise that resolves to the 2FA method.
+     * @returns {Promise<{ kind: string, detail: string }>} A promise that resolves to the 2FA method.
      */
     async get2faMethod() {
         let { data } = await this.getRecoveryMethods();
@@ -308,7 +308,7 @@ export class Account2FA extends AccountMultisig {
     }
 
      /**
-     * Generates a signature for the current block number.
+     * Generates a signature for the latest finalized block.
      * @returns {Promise<{ blockNumber: string, blockNumberSignature: string }>} - A promise that resolves to the signature information.
      */
     async signatureFor() {

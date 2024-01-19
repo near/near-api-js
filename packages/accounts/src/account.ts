@@ -477,9 +477,10 @@ export class Account {
     /**
      * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
      *
-     * @param actions Actions to be included in the meta transaction
-     * @param blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
-     * @param receiverId Receiver account of the meta transaction
+     * @param options Options for the transaction.
+     * @param options.actions Actions to be included in the meta transaction
+     * @param options.blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
+     * @param options.receiverId Receiver account of the meta transaction
      */
     async signedDelegate({
         actions,
@@ -533,13 +534,14 @@ export class Account {
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
      *
-     * @param viewFunctionCallOptions.contractId NEAR account where the contract is deployed
-     * @param viewFunctionCallOptions.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
-     * @param viewFunctionCallOptions.args Any arguments to the view contract method, wrapped in JSON
-     * @param viewFunctionCallOptions.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
-     * @param viewFunctionCallOptions.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
-     * @param viewFunctionCallOptions.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
-     * @param viewFunctionCallOptions.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     * @param options Function call options.
+     * @param options.contractId NEAR account where the contract is deployed
+     * @param options.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
+     * @param options.args Any arguments to the view contract method, wrapped in JSON
+     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
 
