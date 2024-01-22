@@ -341,6 +341,11 @@ export class ConnectedWalletAccount extends Account {
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
      * @see {@link WalletConnection#requestSignTransactions}
+     * @param options An optional options object
+     * @param options.receiverId The NEAR account ID of the transaction receiver.
+     * @param options.actions An array of transaction actions to be performed.
+     * @param options.walletMeta Additional metadata to be included in the wallet signing request.
+     * @param options.walletCallbackUrl URL to redirect upon completion of the wallet signing process. Default: current URL.
      */
     async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);

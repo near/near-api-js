@@ -209,8 +209,14 @@ export class Account {
     }
 
     /**
-     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
+     * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider }
+     * 
+     * @param options The options for signing and sending the transaction.
+     * @param options.receiverId The NEAR account ID of the transaction receiver.
+     * @param options.actions The list of actions to be performed in the transaction.
+     * @param options.returnError Whether to return an error if the transaction fails.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
     async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
@@ -382,9 +388,19 @@ export class Account {
         return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
     }
 
-    /**
-     * Execute function call
-     * @returns {Promise<FinalExecutionOutcome>}
+   /**
+     * Execute a function call.
+     * @param options The options for the function call.
+     * @param options.contractId The NEAR account ID of the smart contract.
+     * @param options.methodName The name of the method to be called on the smart contract.
+     * @param options.args The arguments to be passed to the method.
+     * @param options.gas The maximum amount of gas to be used for the function call.
+     * @param options.attachedDeposit The amount of NEAR tokens to be attached to the function call.
+     * @param options.walletMeta Metadata for wallet integration.
+     * @param options.walletCallbackUrl The callback URL for wallet integration.
+     * @param options.stringify A function to convert input arguments into bytes array
+     * @param options.jsContract Whether the contract is from JS SDK, automatically encodes args from JS SDK to binary.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the function call.
      */
     async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
@@ -461,9 +477,10 @@ export class Account {
     /**
      * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
      *
-     * @param actions Actions to be included in the meta transaction
-     * @param blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
-     * @param receiverId Receiver account of the meta transaction
+     * @param options Options for the transaction.
+     * @param options.actions Actions to be included in the meta transaction
+     * @param options.blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
+     * @param options.receiverId Receiver account of the meta transaction
      */
     async signedDelegate({
         actions,
@@ -517,13 +534,14 @@ export class Account {
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
      *
-     * @param viewFunctionCallOptions.contractId NEAR account where the contract is deployed
-     * @param viewFunctionCallOptions.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
-     * @param viewFunctionCallOptions.args Any arguments to the view contract method, wrapped in JSON
-     * @param viewFunctionCallOptions.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
-     * @param viewFunctionCallOptions.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
-     * @param viewFunctionCallOptions.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
-     * @param viewFunctionCallOptions.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     * @param options Function call options.
+     * @param options.contractId NEAR account where the contract is deployed
+     * @param options.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
+     * @param options.args Any arguments to the view contract method, wrapped in JSON
+     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
 
