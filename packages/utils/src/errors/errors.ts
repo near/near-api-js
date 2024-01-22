@@ -1,5 +1,7 @@
+import { Logger } from '../logger';
+
+/** @deprecated */
 export function logWarning(...args: any[]): void {
-    if (!(typeof process === 'object' && process.env['NEAR_NO_LOGS'])){
-        console.warn(...args);
-    }
+    const [message, ...optionalParams] = args;
+    Logger.warn(message, ...optionalParams);
 }

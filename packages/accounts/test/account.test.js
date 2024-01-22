@@ -1,4 +1,4 @@
-const { getTransactionLastResult } = require('@near-js/utils');
+const { getTransactionLastResult, Logger } = require('@near-js/utils');
 const { actionCreators } = require('@near-js/transactions');
 const { TypedError } = require('@near-js/types');
 const BN = require('bn.js');
@@ -90,19 +90,23 @@ test('findAccessKey returns the same access key when fetched simultaneously', as
 });
 
 describe('errors', () => {
-    let oldLog;
     let logs;
 
-    beforeEach(async () => {
-        oldLog = console.log;
-        logs = [];
-        console.log = function () {
-            logs.push(Array.from(arguments).join(' '));
+    beforeAll(async () => {
+        const custom = {
+            log: (...args) => {
+                logs.push(args.join(' '));
+            },
+            warn: () => {},
+            error: () => {},
         };
+
+        Logger.overrideLogger(custom);
     });
 
-    afterEach(async () => {
-        console.log = oldLog;
+    beforeEach(async () => {
+        logs = [];
+
     });
 
     test('create existing account', async() => {
@@ -112,7 +116,6 @@ describe('errors', () => {
 });
 
 describe('with deploy contract', () => {
-    let oldLog;
     let logs;
     let contractId = testUtils.generateUniqueString('test_contract');
     let contract;
@@ -125,18 +128,20 @@ describe('with deploy contract', () => {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
         });
+
+        const custom = {
+            log: (...args) => {
+                logs.push(args.join(' '));
+            },
+            warn: () => {},
+            error: () => {},
+        };
+
+        Logger.overrideLogger(custom);
     });
 
     beforeEach(async () => {
-        oldLog = console.log;
         logs = [];
-        console.log = function () {
-            logs.push(Array.from(arguments).join(' '));
-        };
-    });
-
-    afterEach(async () => {
-        console.log = oldLog;
     });
 
     test('cross-contact assertion and panic', async () => {

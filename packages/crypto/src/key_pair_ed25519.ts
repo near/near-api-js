@@ -1,7 +1,8 @@
 import { baseEncode, baseDecode } from '@near-js/utils';
-import nacl from 'tweetnacl';
+import { ed25519 } from '@noble/curves/ed25519';
+import randombytes from 'randombytes';
 
-import { KeyType } from './constants';
+import { KeySize, KeyType } from './constants';
 import { KeyPairBase, Signature } from './key_pair_base';
 import { PublicKey } from './public_key';
 
@@ -12,17 +13,21 @@ import { PublicKey } from './public_key';
 export class KeyPairEd25519 extends KeyPairBase {
     readonly publicKey: PublicKey;
     readonly secretKey: string;
+    readonly extendedSecretKey: string;
 
     /**
      * Construct an instance of key pair given a secret key.
      * It's generally assumed that these are encoded in base58.
-     * @param {string} secretKey
+     * @param extendedSecretKey
      */
-    constructor(secretKey: string) {
+    constructor(extendedSecretKey: string) {
         super();
-        const keyPair = nacl.sign.keyPair.fromSecretKey(baseDecode(secretKey));
-        this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: keyPair.publicKey });
-        this.secretKey = secretKey;
+        const decoded = baseDecode(extendedSecretKey);
+        const secretKey = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
+        const publicKey = ed25519.getPublicKey(secretKey);
+        this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: publicKey });
+        this.secretKey = baseEncode(secretKey);
+        this.extendedSecretKey = extendedSecretKey;
     }
 
     /**
@@ -36,23 +41,44 @@ export class KeyPairEd25519 extends KeyPairBase {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        const newKeyPair = nacl.sign.keyPair();
-        return new KeyPairEd25519(baseEncode(newKeyPair.secretKey));
+        const secretKey = randombytes(KeySize.SECRET_KEY);
+        const publicKey = ed25519.getPublicKey(secretKey);
+        const extendedSecretKey = new Uint8Array([...secretKey, ...publicKey]);
+        return new KeyPairEd25519(baseEncode(extendedSecretKey));
     }
 
+    /**
+     * Signs a message using the key pair's secret key.
+     * @param message The message to be signed.
+     * @returns {Signature} The signature object containing the signature and the public key.
+     */
     sign(message: Uint8Array): Signature {
-        const signature = nacl.sign.detached(message, baseDecode(this.secretKey));
+        const signature = ed25519.sign(message, baseDecode(this.secretKey));
         return { signature, publicKey: this.publicKey };
     }
 
+    /**
+     * Verifies the signature of a message using the key pair's public key.
+     * @param message The message to be verified.
+     * @param signature The signature to be verified.
+     * @returns {boolean} `true` if the signature is valid, otherwise `false`.
+     */
     verify(message: Uint8Array, signature: Uint8Array): boolean {
         return this.publicKey.verify(message, signature);
     }
 
+    /**
+     * Returns a string representation of the key pair in the format 'ed25519:[extendedSecretKey]'.
+     * @returns {string} The string representation of the key pair.
+     */
     toString(): string {
-        return `ed25519:${this.secretKey}`;
+        return `ed25519:${this.extendedSecretKey}`;
     }
 
+    /**
+     * Retrieves the public key associated with the key pair.
+     * @returns {PublicKey} The public key.
+     */
     getPublicKey(): PublicKey {
         return this.publicKey;
     }

@@ -1,5 +1,6 @@
 import { Action, actionCreators } from '@near-js/transactions';
 import { FinalExecutionOutcome } from '@near-js/types';
+import { Logger } from '@near-js/utils';
 
 import { Account, SignAndSendTransactionOptions } from './account';
 import { Connection } from './connection';
@@ -29,16 +30,37 @@ export class AccountMultisig extends Account {
     public storage: any;
     public onAddRequestResult: (any) => any;
 
+    /**
+     * Constructs an instance of the `AccountMultisig` class.
+     * @param connection The NEAR connection object.
+     * @param accountId The NEAR account ID.
+     * @param options Additional options for the multisig account.
+     * @param options.storage Storage to store data related to multisig operations.
+     * @param options.onAddRequestResult Callback function to handle the result of adding a request.
+     */
     constructor(connection: Connection, accountId: string, options: any) {
         super(connection, accountId);
         this.storage = options.storage;
         this.onAddRequestResult = options.onAddRequestResult;
     }
 
+    /**
+     * Sign and send a transaction with the multisig account as the sender.
+     * @param receiverId - The NEAR account ID of the transaction receiver.
+     * @param actions - The list of actions to be included in the transaction.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
+     */
     async signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         return super.signAndSendTransaction({ receiverId, actions });
     }
 
+    /**
+     * Sign and send a multisig transaction to add a request and confirm it.
+     * @param options Options for the multisig transaction.
+     * @param options.receiverId The NEAR account ID of the transaction receiver.
+     * @param options.actions The list of actions to be included in the transaction.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
+     */
     async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
@@ -90,10 +112,12 @@ export class AccountMultisig extends Account {
         return result;
     }
 
-    /* 
+    /**
      * This method submits a canary transaction that is expected to always fail in order to determine whether the contract currently has valid multisig state 
      * and whether it is initialized. The canary transaction attempts to delete a request at index u32_max and will go through if a request exists at that index.
      * a u32_max + 1 and -1 value cannot be used for the canary due to expected u32 error thrown before deserialization attempt.
+     * @param contractBytes The bytecode of the multisig contract.
+     * @returns {Promise<{ codeStatus: MultisigCodeStatus; stateStatus: MultisigStateStatus }>} A promise that resolves to the status of the code and state.
      */
     async checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{ codeStatus: MultisigCodeStatus; stateStatus: MultisigStateStatus }> {
         const u32_max = 4_294_967_295;
@@ -127,6 +151,11 @@ export class AccountMultisig extends Account {
         }
     }
 
+    /**
+     * Delete a multisig request by its ID.
+     * @param request_id The ID of the multisig request to be deleted.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the deletion.
+     */
     deleteRequest(request_id) {
         return super.signAndSendTransaction({
             receiverId: this.accountId,
@@ -134,6 +163,10 @@ export class AccountMultisig extends Account {
         });
     }
 
+    /**
+     * Delete all multisig requests associated with the account.
+     * @returns {Promise<void>} A promise that resolves when all requests are deleted.
+     */
     async deleteAllRequests() {
         const request_ids = await this.getRequestIds();
         if(request_ids.length) {
@@ -141,6 +174,10 @@ export class AccountMultisig extends Account {
         }
     }
 
+    /**
+     * Delete unconfirmed multisig requests associated with the account.
+     * @returns {Promise<void>} A promise that resolves when unconfirmed requests are deleted.
+     */
     async deleteUnconfirmedRequests () {
         // TODO: Delete in batch, don't delete unexpired
         // TODO: Delete in batch, don't delete unexpired (can reduce gas usage dramatically)
@@ -156,7 +193,7 @@ export class AccountMultisig extends Account {
                     actions: [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
                 });
             } catch (e) {
-                console.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
+                Logger.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
             }
         }
     }

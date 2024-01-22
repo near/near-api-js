@@ -42,7 +42,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Stores a {@link utils/key_pair!KeyPair} in local storage.
+     * Stores a {@link KeyPair} in local storage.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
@@ -52,7 +52,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Gets a {@link utils/key_pair!KeyPair} from local storage
+     * Gets a {@link KeyPair} from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @returns {Promise<KeyPair>}
@@ -66,7 +66,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
     }
 
     /**
-     * Removes a {@link utils/key_pair!KeyPair} from local storage
+     * Removes a {@link KeyPair} from local storage
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      */
@@ -121,7 +121,7 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
      * @hidden
      * Helper function to retrieve a local storage key
      * @param networkId The targeted network. (ex. default, betanet, etc…)
-     * @param accountId The NEAR account tied to the storage keythat's sought
+     * @param accountId The NEAR account tied to the storage key that's sought
      * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */
     private storageKeyForSecretKey(networkId: string, accountId: string): string {

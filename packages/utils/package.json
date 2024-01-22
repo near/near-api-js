@@ -1,6 +1,6 @@
 {
   "name": "@near-js/utils",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Common methods and constants for the NEAR API JavaScript client",
   "main": "lib/index.js",
   "scripts": {
@@ -16,15 +16,15 @@
   "dependencies": {
     "@near-js/types": "workspace:*",
     "bn.js": "5.2.1",
-    "bs58": "^4.0.0",
-    "depd": "^2.0.0",
-    "mustache": "^4.0.0"
+    "bs58": "4.0.0",
+    "depd": "2.0.0",
+    "mustache": "4.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.11.18",
-    "jest": "^26.0.1",
-    "ts-jest": "^26.5.6",
-    "typescript": "^4.9.4"
+    "@types/node": "18.11.18",
+    "jest": "26.0.1",
+    "ts-jest": "26.5.6",
+    "typescript": "4.9.4"
   },
   "files": [
     "lib"

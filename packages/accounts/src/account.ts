@@ -28,7 +28,7 @@ import {
 import {
     baseDecode,
     baseEncode,
-    logWarning,
+    Logger,
     parseResultError,
     DEFAULT_FUNCTION_CALL_GAS,
     printTxOutcomeLogs,
@@ -81,12 +81,12 @@ export interface SignAndSendTransactionOptions {
     actions: Action[];
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
      */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
      */
     walletCallbackUrl?: string;
     returnError?: boolean;
@@ -94,7 +94,7 @@ export interface SignAndSendTransactionOptions {
 
 /**
  * Options used to initiate a function call (especially a change function call)
- * @see {@link account!Account#viewFunction} to initiate a view function call
+ * @see {@link Account#viewFunction | viewFunction} to initiate a view function call
  */
 export interface FunctionCallOptions {
     /** The NEAR account id where the contract is deployed */
@@ -122,18 +122,18 @@ export interface FunctionCallOptions {
 export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
     */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see {@link RequestSignTransactionsOptions}
+     * @see RequestSignTransactionsOptions
     */
     walletCallbackUrl?: string;
 }
-export interface ViewFunctionCallOptions extends FunctionCallOptions { 
-    parse?: (response: Uint8Array) => any; 
-    blockQuery?: BlockReference; 
+export interface ViewFunctionCallOptions extends FunctionCallOptions {
+    parse?: (response: Uint8Array) => any;
+    blockQuery?: BlockReference;
 }
 
 interface StakedBalance {
@@ -163,11 +163,7 @@ function bytesJsonStringify(input: any): Buffer {
 }
 
 /**
- * This class provides common account related RPC calls including signing transactions with a {@link utils/key_pair!KeyPair}.
- *
- * @hint Use {@link walletAccount!WalletConnection} in the browser to redirect to [NEAR Wallet](https://wallet.near.org/) for Account/key management using the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
- * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
- * @see [Account Spec](https://nomicon.io/DataStructures/Account.html)
+ * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
  */
 export class Account {
     readonly connection: Connection;
@@ -194,7 +190,7 @@ export class Account {
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider.sendTransaction | JsonRpcProvider.sendTransaction}
      */
     protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
@@ -213,8 +209,14 @@ export class Account {
     }
 
     /**
-     * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider }
+     * 
+     * @param options The options for signing and sending the transaction.
+     * @param options.receiverId The NEAR account ID of the transaction receiver.
+     * @param options.actions The list of actions to be performed in the transaction.
+     * @param options.returnError Whether to return an error if the transaction fails.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
     async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
@@ -227,12 +229,12 @@ export class Account {
                 return await this.connection.provider.sendTransaction(signedTx);
             } catch (error) {
                 if (error.type === 'InvalidNonce') {
-                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
+                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
                     delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                     return null;
                 }
                 if (error.type === 'Expired') {
-                    logWarning(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
+                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
                     return null;
                 }
 
@@ -248,7 +250,7 @@ export class Account {
         printTxOutcomeLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
 
         // Should be falsy if result.status.Failure is null
-        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object'  && result.status.Failure !== null) {
+        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object' && result.status.Failure !== null) {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
             if (result.status.Failure.error_message && result.status.Failure.error_type) {
                 throw new TypedError(
@@ -266,7 +268,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * Finds the {@link providers/provider!AccessKeyView} associated with the accounts {@link utils/key_pair!PublicKey} stored in the {@link key_stores/keystore!KeyStore}.
+     * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link "@near-js/keystores".keystore.KeyStore | Keystore}.
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *
@@ -364,9 +366,7 @@ export class Account {
      * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
      */
     async deleteAccount(beneficiaryId: string) {
-        if (!(typeof process === 'object' && process.env['NEAR_NO_LOGS'])) {
-            console.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
-        }
+        Logger.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteAccount(beneficiaryId)]
@@ -388,24 +388,34 @@ export class Account {
         return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
     }
 
-    /**
-     * Execute function call
-     * @returns {Promise<FinalExecutionOutcome>}
+   /**
+     * Execute a function call.
+     * @param options The options for the function call.
+     * @param options.contractId The NEAR account ID of the smart contract.
+     * @param options.methodName The name of the method to be called on the smart contract.
+     * @param options.args The arguments to be passed to the method.
+     * @param options.gas The maximum amount of gas to be used for the function call.
+     * @param options.attachedDeposit The amount of NEAR tokens to be attached to the function call.
+     * @param options.walletMeta Metadata for wallet integration.
+     * @param options.walletCallbackUrl The callback URL for wallet integration.
+     * @param options.stringify A function to convert input arguments into bytes array
+     * @param options.jsContract Whether the contract is from JS SDK, automatically encodes args from JS SDK to binary.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the function call.
      */
     async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         let functionCallArgs;
 
-        if(jsContract){
-            const encodedArgs = this.encodeJSContractArgs( contractId, methodName, JSON.stringify(args) );
-            functionCallArgs =  ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true ];
-        } else{
+        if (jsContract) {
+            const encodedArgs = this.encodeJSContractArgs(contractId, methodName, JSON.stringify(args));
+            functionCallArgs = ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true];
+        } else {
             const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
             functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
         }
 
         return this.signAndSendTransaction({
-            receiverId: jsContract ? this.connection.jsvmAccountId: contractId,
+            receiverId: jsContract ? this.connection.jsvmAccountId : contractId,
             // eslint-disable-next-line prefer-spread
             actions: [functionCall.apply(void 0, functionCallArgs)],
             walletMeta,
@@ -467,9 +477,10 @@ export class Account {
     /**
      * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
      *
-     * @param actions Actions to be included in the meta transaction
-     * @param blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
-     * @param receiverId Receiver account of the meta transaction
+     * @param options Options for the transaction.
+     * @param options.actions Actions to be included in the meta transaction
+     * @param options.blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
+     * @param options.receiverId Receiver account of the meta transaction
      */
     async signedDelegate({
         actions,
@@ -523,13 +534,14 @@ export class Account {
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
      *
-     * @param viewFunctionCallOptions.contractId NEAR account where the contract is deployed
-     * @param viewFunctionCallOptions.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
-     * @param viewFunctionCallOptions.args Any arguments to the view contract method, wrapped in JSON
-     * @param viewFunctionCallOptions.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
-     * @param viewFunctionCallOptions.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
-     * @param viewFunctionCallOptions.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
-     * @param viewFunctionCallOptions.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     * @param options Function call options.
+     * @param options.contractId NEAR account where the contract is deployed
+     * @param options.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
+     * @param options.args Any arguments to the view contract method, wrapped in JSON
+     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
+     * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
+     * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
 
@@ -543,20 +555,20 @@ export class Account {
         blockQuery = { finality: 'optimistic' }
     }: ViewFunctionCallOptions): Promise<any> {
         let encodedArgs;
-        
+
         this.validateArgs(args);
-    
-        if(jsContract){
-            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length >  0 ? JSON.stringify(args): '');
-        } else{
-            encodedArgs =  stringify(args);
+
+        if (jsContract) {
+            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length > 0 ? JSON.stringify(args) : '');
+        } else {
+            encodedArgs = stringify(args);
         }
 
         const result = await this.connection.provider.query<CodeResult>({
             request_type: 'call_function',
             ...blockQuery,
             account_id: jsContract ? this.connection.jsvmAccountId : contractId,
-            method_name: jsContract ? 'view_js_contract'  : methodName,
+            method_name: jsContract ? 'view_js_contract' : methodName,
             args_base64: encodedArgs.toString('base64')
         });
 
@@ -575,7 +587,7 @@ export class Account {
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' } ): Promise<Array<{ key: Buffer; value: Buffer}>> {
+    async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' }): Promise<Array<{ key: Buffer; value: Buffer }>> {
         const { values } = await this.connection.provider.query<ViewStateResult>({
             request_type: 'view_state',
             ...blockQuery,
@@ -651,12 +663,12 @@ export class Account {
      * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
-    async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance>  {
+    async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance> {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
         const epochId = block.header.epoch_id;
         const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(epochId);
-        const pools:Set<string> = new Set();
+        const pools: Set<string> = new Set();
         [...current_validators, ...next_validators, ...current_proposals]
             .forEach((validator) => pools.add(validator.account_id));
 
@@ -704,7 +716,7 @@ export class Account {
             }
             return result;
         },
-        { stakedValidators: [], failedValidators: [], total: new BN(0) });
+            { stakedValidators: [], failedValidators: [], total: new BN(0) });
 
         return {
             ...summary,
