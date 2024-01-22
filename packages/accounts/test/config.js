@@ -1,4 +1,7 @@
-module.exports = function getConfig(env) {
+const { Worker } = require('near-workspaces');
+const fs = require('fs');
+let worker;
+module.exports = async function getConfig(env) {
     switch (env) {
         case 'production':
         case 'mainnet':
@@ -32,12 +35,17 @@ module.exports = function getConfig(env) {
                 walletUrl: 'http://localhost:4000/wallet',
             };
         case 'test':
-        case 'ci':
+        case 'ci': {
+            if (!worker) worker = await Worker.init();
+            const keyFile = fs.readFileSync(`${worker.rootAccount.manager.config.homeDir}/validator_key.json`);
+            const keyPair = JSON.parse(keyFile.toString());
             return {
-                networkId: 'shared-test',
-                nodeUrl: 'https://rpc.ci-testnet.near.org',
-                masterAccount: 'test.near',
+                networkId: worker.config.network,
+                nodeUrl: worker.manager.config.rpcAddr,
+                masterAccount: worker.rootAccount._accountId,
+                secretKey: keyPair.secret_key || keyPair.private_key
             };
+        }
         default:
             throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
     }
