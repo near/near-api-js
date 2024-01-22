@@ -56,8 +56,9 @@ export async function signTransaction(...args): Promise<[Uint8Array, SignedTrans
 
 /**
  * Sign a delegate action
- * @params.delegateAction Delegate action to be signed by the meta transaction sender
- * @params.signer Signer instance for the meta transaction sender
+ * @options SignDelegate options
+ * @param options.delegateAction Delegate action to be signed by the meta transaction sender
+ * @param options.signer Signer instance for the meta transaction sender
  */
 export async function signDelegateAction({ delegateAction, signer }: SignDelegateOptions): Promise<SignedDelegateWithHash> {
     const message = encodeDelegateAction(delegateAction);

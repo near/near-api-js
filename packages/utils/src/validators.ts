@@ -3,11 +3,11 @@ import BN from 'bn.js';
 import depd from 'depd';
 
 /** Finds seat price given validators stakes and number of seats.
- *  Calculation follow the spec: https://nomicon.io/Economics/Economic#validator-selection
- * @params validators: current or next epoch validators.
- * @params maxNumberOfSeats: maximum number of seats in the network.
- * @params minimumStakeRatio: minimum stake ratio 
- * @params protocolVersion: version of the protocol from genesis config
+ *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection
+ * @param validators: current or next epoch validators.
+ * @param maxNumberOfSeats: maximum number of seats in the network.
+ * @param minimumStakeRatio: minimum stake ratio 
+ * @param protocolVersion: version of the protocol from genesis config
  */
 export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number[], protocolVersion?: number): BN {
     if (protocolVersion && protocolVersion < 49) {
@@ -16,7 +16,7 @@ export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpoch
     if (!minimumStakeRatio) {
         const deprecate = depd('findSeatPrice(validators, maxNumberOfSeats)');
         deprecate('`use `findSeatPrice(validators, maxNumberOfSeats, minimumStakeRatio)` instead');
-        minimumStakeRatio = [1, 6250]; // harcoded minimumStakeRation from 12/7/21
+        minimumStakeRatio = [1, 6250]; // hardcoded minimumStakeRation from 12/7/21
     }
     return findSeatPriceForProtocolAfter49(validators, maxNumberOfSeats, minimumStakeRatio);
 }
@@ -76,8 +76,8 @@ export interface EpochValidatorsDiff {
 
 /** Diff validators between current and next epoch.
  * Returns additions, subtractions and changes to validator set.
- * @params currentValidators: list of current validators.
- * @params nextValidators: list of next validators.
+ * @param currentValidators: list of current validators.
+ * @param nextValidators: list of next validators.
  */
 export function diffEpochValidators(currentValidators: CurrentEpochValidatorInfo[], nextValidators: NextEpochValidatorInfo[]): EpochValidatorsDiff {
     const validatorsMap = new Map<string, CurrentEpochValidatorInfo>();

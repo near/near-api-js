@@ -45,6 +45,7 @@ export class MergeKeyStore extends KeyStore {
 
     /**
      * @param keyStores read calls are attempted from start to end of array
+     * @param options KeyStore options
      * @param options.writeKeyStoreIndex the keystore index that will receive all write calls
      */
     constructor(keyStores: KeyStore[], options: MergeKeyStoreOptions = { writeKeyStoreIndex: 0 }) {
