@@ -18,7 +18,7 @@ export class KeyPairEd25519 extends KeyPairBase {
     /**
      * Construct an instance of key pair given a secret key.
      * It's generally assumed that these are encoded in base58.
-     * @param {string} extendedSecretKey
+     * @param extendedSecretKey
      */
     constructor(extendedSecretKey: string) {
         super();
@@ -47,19 +47,38 @@ export class KeyPairEd25519 extends KeyPairBase {
         return new KeyPairEd25519(baseEncode(extendedSecretKey));
     }
 
+    /**
+     * Signs a message using the key pair's secret key.
+     * @param message The message to be signed.
+     * @returns {Signature} The signature object containing the signature and the public key.
+     */
     sign(message: Uint8Array): Signature {
         const signature = ed25519.sign(message, baseDecode(this.secretKey));
         return { signature, publicKey: this.publicKey };
     }
 
+    /**
+     * Verifies the signature of a message using the key pair's public key.
+     * @param message The message to be verified.
+     * @param signature The signature to be verified.
+     * @returns {boolean} `true` if the signature is valid, otherwise `false`.
+     */
     verify(message: Uint8Array, signature: Uint8Array): boolean {
         return this.publicKey.verify(message, signature);
     }
 
+    /**
+     * Returns a string representation of the key pair in the format 'ed25519:[extendedSecretKey]'.
+     * @returns {string} The string representation of the key pair.
+     */
     toString(): string {
         return `ed25519:${this.extendedSecretKey}`;
     }
 
+    /**
+     * Retrieves the public key associated with the key pair.
+     * @returns {PublicKey} The public key.
+     */
     getPublicKey(): PublicKey {
         return this.publicKey;
     }

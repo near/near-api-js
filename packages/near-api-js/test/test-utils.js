@@ -18,14 +18,15 @@ const RANDOM_ACCOUNT_LENGTH = 40;
 
 async function setUpTestConnection() {
     const keyStore = new nearApi.keyStores.InMemoryKeyStore();
-    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
-        networkId: networkId,
+    const config = Object.assign(await require('./config')(process.env.NODE_ENV || 'test'), {
+        networkId,
         keyStore
     });
 
     if (config.masterAccount) {
         // full accessKey on ci-testnet, dedicated rpc for tests.
-        await keyStore.setKey(networkId, config.masterAccount, nearApi.utils.KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
+        const secretKey = config.secretKey || 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
+        await keyStore.setKey(networkId, config.masterAccount, KeyPair.fromString(secretKey));
     }
     return nearApi.connect(config);
 }

@@ -64,6 +64,15 @@ export class LocalViewExecution {
         return fetched;
     }
 
+    /**
+     * Calls a view function on a contract, fetching the contract code and state if needed.
+     * @param options Options for calling the view function.
+     * @param options.contractId The contract account ID.
+     * @param options.methodName The name of the view function to call.
+     * @param options.args The arguments to pass to the view function.
+     * @param options.blockQuery The block query options.
+     * @returns {Promise<any>} - A promise that resolves to the result of the view function.
+     */
     public async viewFunction({ contractId, methodName, args = {}, blockQuery = { finality: 'optimistic' }, ...ignored }: ViewFunctionCallOptions) {
         const methodArgs = JSON.stringify(args);
 

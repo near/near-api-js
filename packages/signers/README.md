@@ -4,8 +4,8 @@ A collection of classes and types to facilitate cryptographic signing.
 
 ## Modules
 
-- [Signer](https://github.com/near/near-api-js/blob/master/packages/signer/src/ssigner.ts) abstract class for cryptographic signing
-- [InMemorySigner](https://github.com/near/near-api-js/blob/master/packages/signer/src/in_memory_signer.ts) implementation of `Signer` using [InMemoryKeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores/src/in_memory_key_store.ts) to provide keys
+- [Signer](https://github.com/near/near-api-js/blob/master/packages/signers/src/signer.ts) abstract class for cryptographic signing
+- [InMemorySigner](https://github.com/near/near-api-js/blob/master/packages/signers/src/in_memory_signer.ts) implementation of `Signer` using [InMemoryKeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores/src/in_memory_key_store.ts) to provide keys
 
 # License
 

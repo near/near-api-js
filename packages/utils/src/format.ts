@@ -11,7 +11,7 @@ export const NEAR_NOMINATION_EXP = 24;
  */
 export const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
 
-// Pre-calculate offests used for rounding to different number of digits
+// Pre-calculate offsets used for rounding to different number of digits
 const ROUNDING_OFFSETS: BN[] = [];
 const BN10 = new BN(10);
 for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offset.mul(BN10)) {
