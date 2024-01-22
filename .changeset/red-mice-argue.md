@@ -1,6 +1,6 @@
 ---
-"@near-js/providers": patch
-"@near-js/utils": patch
+"@near-js/providers": minor
+"@near-js/utils": minor
 ---
 
 Display user-friendly messages for JSON RPC errors:
