@@ -28,7 +28,7 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
     }
     
     if (Array.isArray(connectionInfo.url) && !connectionInfo.url.length) {
-        throw new Error('The prioritized array of RPC Server URLs should not be empty');
+        throw new Error('The prioritized array of RPC Server URLs must not be empty');
     }
 
     const currentRpcServer = typeof connectionInfo.url === 'string' ? connectionInfo.url : connectionInfo.url[0];
@@ -40,7 +40,7 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
                 body: json ? json : undefined,
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': connectionInfo.apiKeys ? connectionInfo.apiKeys[currentRpcServer] : undefined,
+                    'x-api-key': connectionInfo.apiKeys ? connectionInfo.apiKeys[currentRpcServer] : null,
                     ...connectionInfo.headers,
                 },
             });

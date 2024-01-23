@@ -193,7 +193,7 @@ test('near json rpc url - empty array', async () => {
     try {
         await provider.status();
     } catch (e) {
-        expect(e.message).toEqual('The prioritized array of RPC Server URLs should not be empty');
+        expect(e.message).toEqual('The prioritized array of RPC Server URLs cannot not be empty');
     }
 });
 

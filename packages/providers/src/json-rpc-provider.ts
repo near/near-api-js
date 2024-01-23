@@ -335,10 +335,10 @@ export class JsonRpcProvider extends Provider {
 
     /**
      * Part of the RPC failover design.
-     * Changing current (first) rpc server and moves it to the end of the queue.
+     * Rotates the current RPC server with a new one (if available) and moves the former to the end of the queue.
      */
     private rotateRpcServers() {
-        if (typeof this.connection.url === 'string') { return; }
+        if (typeof this.connection.url === 'string' || this.connection.url.length === 1) { return; }
         const currentRpcServer = this.connection.url.shift();
         this.connection.url.push(currentRpcServer);
         if (!process.env['NEAR_NO_LOGS']) {

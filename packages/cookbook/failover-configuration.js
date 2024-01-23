@@ -7,7 +7,7 @@ const FAILOVER_RPC_SERVER_2 = '<RPC Server 1>';
 
 // Provider example
 const provider = new providers.JsonRpcProvider({
-    // preoritized list of RPC Servers
+    // prioritized list of RPC Servers
     url: [MAIN_RPC_SERVER, FAILOVER_RPC_SERVER_1, FAILOVER_RPC_SERVER_2],
 });
 
