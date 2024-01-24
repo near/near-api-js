@@ -1,5 +1,5 @@
 import base64 from '@hexagon/base64';
-import { eddsa as EDDSA } from 'elliptic';
+import { ed25519 } from '@noble/curves/ed25519';
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { Buffer } from 'buffer';
 import asn1 from 'asn1-parser';
@@ -69,11 +69,11 @@ export const createKey = async (username: string): Promise<KeyPair> => {
             });
             const publicKey = result.authnrData.get('credentialPublicKeyPem');
             const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
-            const ed = new EDDSA('ed25519');
             const edSha256 = new Sha256();
             edSha256.update(Buffer.from(publicKeyBytes));
-            const key = ed.keyFromSecret(await edSha256.digest());
-            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([key.getSecret(), Buffer.from(key.getPublic())]))));
+            const secretKey = await edSha256.digest();
+            const pubKey = ed25519.getPublicKey(secretKey);
+            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([secretKey, Buffer.from(pubKey)]))));
         });
 };
 
@@ -106,20 +106,22 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
                 Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.clientDataJSON, true)))
             );
             const clientDataJSONHash = await clientDataSha256.digest();
-            const AuthenticatiorDataJSONHash = Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)));
-            const authenticatorAndClientDataJSONHash = Buffer.concat([AuthenticatiorDataJSONHash, clientDataJSONHash]);
+            const authenticatorDataJSONHash = Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)));
+            const authenticatorAndClientDataJSONHash = Buffer.concat([authenticatorDataJSONHash, clientDataJSONHash]);
 
             const correctPKs = await recoverPublicKey(rAndS.children[0].value, rAndS.children[1].value, authenticatorAndClientDataJSONHash, 0);
-            const ed = new EDDSA('ed25519');
+            
             const firstEdSha256 = new Sha256();
             firstEdSha256.update(Buffer.from(correctPKs[0]));
             const secondEdSha256 = new Sha256();
             secondEdSha256.update(Buffer.from(correctPKs[1]));
 
-            const firstED = ed.keyFromSecret(await firstEdSha256.digest());
-            const secondED = ed.keyFromSecret(await secondEdSha256.digest());
-            const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([firstED.getSecret(), Buffer.from(firstED.getPublic())]))));
-            const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([secondED.getSecret(), Buffer.from(secondED.getPublic())]))));
+            const firstEDSecret = await firstEdSha256.digest();
+            const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
+            const secondEDSecret = await secondEdSha256.digest();
+            const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
+            const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([firstEDSecret, Buffer.from(firstEDPublic)]))));
+            const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([secondEDSecret, Buffer.from(secondEDPublic)]))));
             return [firstKeyPair, secondKeyPair];
         });
 };

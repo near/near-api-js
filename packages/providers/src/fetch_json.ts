@@ -19,6 +19,12 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
+/**
+ * Performs an HTTP request to a specified URL or connection and returns the parsed JSON response.
+ * @param connectionInfoOrUrl The connection information or URL for the HTTP request.
+ * @param json The JSON payload to be included in the request body for POST requests.
+ * @returns A Promise that resolves to the parsed JSON response from the HTTP request.
+ */
 export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
     let connectionInfo: ConnectionInfo = { url: null };
     if (typeof (connectionInfoOrUrl) === 'string') {

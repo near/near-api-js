@@ -32,6 +32,11 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
     return serialize(SCHEMA.SignedDelegate, signedDelegate);
 }
 
+/**
+* Borsh-encode a transaction or signed transaction into a serialized form.
+* @param transaction The transaction or signed transaction object to be encoded.
+* @returns A serialized representation of the input transaction.
+*/
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
     const schema: Schema = transaction instanceof SignedTransaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
     return serialize(schema, transaction);
