@@ -94,8 +94,10 @@ export function getErrorTypeFromErrorMessage(errorMessage, errorType) {
             return 'AccountDoesNotExist';
         case /^access key .*? does not exist while viewing$/.test(errorMessage):
             return 'AccessKeyDoesNotExist';
+        case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(errorMessage):
         case /wasm execution failed with error: CompilationError\(CodeDoesNotExist/.test(errorMessage):
             return 'CodeDoesNotExist';
+        case /wasm execution failed with error: FunctionCallError\(MethodResolveError\(MethodNotFound/.test(errorMessage):
         case /wasm execution failed with error: MethodResolveError\(MethodNotFound/.test(errorMessage):
             return 'MethodNotFound';
         case /Transaction nonce \d+ must be larger than nonce of the used access key \d+/.test(errorMessage):
