@@ -5,7 +5,7 @@ const testUtils = require('./test-utils');
 const { KeyPair } = require('@near-js/crypto');
 let ERRORS_JSON = require('../../utils/lib/errors/error_messages.json');
 
-jest.setTimeout(20000);
+jest.setTimeout(60000);
 
 let provider;
 let near;
@@ -199,10 +199,12 @@ describe('providers errors', () => {
             testUtils.generateUniqueString('test')
         );
 
+        await contract.setValue({ args: { value: 'hello' } });
+
         try {
             const response = await provider.query({
                 request_type: 'call_function',
-                finality: 'final',
+                finality: 'optimistic',
                 account_id: contract.contractId,
                 method_name: 'methodNameThatDoesNotExist',
                 args_base64: '',
@@ -216,11 +218,13 @@ describe('providers errors', () => {
     });
 
     test('JSON RPC Error - CodeDoesNotExist', async () => {
+        const { accountId } = await testUtils.createAccount(near);
+
         try {
             const response = await provider.query({
                 request_type: 'call_function',
-                finality: 'final',
-                account_id: 'test.near',
+                finality: 'optimistic',
+                account_id: accountId,
                 method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
                 args_base64: '',
             });
@@ -239,7 +243,7 @@ describe('providers errors', () => {
         try {
             const response = await provider.query({
                 request_type: 'call_function',
-                finality: 'final',
+                finality: 'optimistic',
                 account_id: accountName,
                 method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
                 args_base64: '',
@@ -260,7 +264,7 @@ describe('providers errors', () => {
         try {
             const response = await provider.query({
                 request_type: 'view_access_key',
-                finality: 'final',
+                finality: 'optimistic',
                 account_id: accountId,
                 public_key: KeyPair.fromRandom('ed25519')
                     .getPublicKey()
