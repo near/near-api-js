@@ -37,16 +37,27 @@ module.exports = async function getConfig(env) {
         case 'test':
         case 'ci': {
             if (!worker) worker = await Worker.init();
-            const keyFile = fs.readFileSync(`${worker.rootAccount.manager.config.homeDir}/validator_key.json`);
+            const keyFile = fs.readFileSync(
+                `${worker.rootAccount.manager.config.homeDir}/validator_key.json`
+            );
             const keyPair = JSON.parse(keyFile.toString());
             return {
                 networkId: worker.config.network,
                 nodeUrl: worker.manager.config.rpcAddr,
                 masterAccount: worker.rootAccount._accountId,
-                secretKey: keyPair.secret_key || keyPair.private_key
+                secretKey: keyPair.secret_key || keyPair.private_key,
+            };
+        }
+        case 'remote_ci': {
+            return {
+                networkId: 'shared-test',
+                nodeUrl: 'https://rpc.ci-testnet.near.org',
+                masterAccount: 'test.near',
             };
         }
         default:
-            throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
+            throw Error(
+                `Unconfigured environment '${env}'. Can be configured in src/config.js.`
+            );
     }
 };

@@ -1,41 +1,41 @@
-const { Worker } = require("near-workspaces");
-const fs = require("fs");
+const { Worker } = require('near-workspaces');
+const fs = require('fs');
 let worker;
 module.exports = async function getConfig(env) {
     switch (env) {
-        case "production":
-        case "mainnet":
+        case 'production':
+        case 'mainnet':
             return {
-                networkId: "mainnet",
-                nodeUrl: "https://rpc.mainnet.near.org",
-                walletUrl: "https://wallet.near.org",
-                helperUrl: "https://helper.mainnet.near.org",
+                networkId: 'mainnet',
+                nodeUrl: 'https://rpc.mainnet.near.org',
+                walletUrl: 'https://wallet.near.org',
+                helperUrl: 'https://helper.mainnet.near.org',
             };
-        case "development":
-        case "testnet":
+        case 'development':
+        case 'testnet':
             return {
-                networkId: "default",
-                nodeUrl: "https://rpc.testnet.near.org",
-                walletUrl: "https://wallet.testnet.near.org",
-                helperUrl: "https://helper.testnet.near.org",
-                masterAccount: "test.near",
+                networkId: 'default',
+                nodeUrl: 'https://rpc.testnet.near.org',
+                walletUrl: 'https://wallet.testnet.near.org',
+                helperUrl: 'https://helper.testnet.near.org',
+                masterAccount: 'test.near',
             };
-        case "betanet":
+        case 'betanet':
             return {
-                networkId: "betanet",
-                nodeUrl: "https://rpc.betanet.near.org",
-                walletUrl: "https://wallet.betanet.near.org",
-                helperUrl: "https://helper.betanet.near.org",
+                networkId: 'betanet',
+                nodeUrl: 'https://rpc.betanet.near.org',
+                walletUrl: 'https://wallet.betanet.near.org',
+                helperUrl: 'https://helper.betanet.near.org',
             };
-        case "local":
+        case 'local':
             return {
-                networkId: "local",
-                nodeUrl: "http://localhost:3030",
+                networkId: 'local',
+                nodeUrl: 'http://localhost:3030',
                 keyPath: `${process.env.HOME}/.near/validator_key.json`,
-                walletUrl: "http://localhost:4000/wallet",
+                walletUrl: 'http://localhost:4000/wallet',
             };
-        case "test":
-        case "ci": {
+        case 'test':
+        case 'ci': {
             if (!worker) worker = await Worker.init();
             const keyFile = fs.readFileSync(
                 `${worker.rootAccount.manager.config.homeDir}/validator_key.json`
@@ -46,6 +46,13 @@ module.exports = async function getConfig(env) {
                 nodeUrl: worker.manager.config.rpcAddr,
                 masterAccount: worker.rootAccount._accountId,
                 secretKey: keyPair.secret_key || keyPair.private_key,
+            };
+        }
+        case 'remote_ci': {
+            return {
+                networkId: 'shared-test',
+                nodeUrl: 'https://rpc.ci-testnet.near.org',
+                masterAccount: 'test.near',
             };
         }
         default:
