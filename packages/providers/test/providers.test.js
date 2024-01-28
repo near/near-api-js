@@ -1,21 +1,21 @@
 const { getTransactionLastResult } = require('@near-js/utils');
-const { Worker } = require('near-workspaces');
+const { InMemoryKeyStore } = require('@near-js/keystores');
 const { JsonRpcProvider } = require('../lib');
 
 jest.setTimeout(20000);
 
 describe('providers', () => {
-    let worker;
     let provider;
 
     beforeAll(async () => {
-        worker = await Worker.init();
-        provider = new JsonRpcProvider({ url: worker.manager.config.rpcAddr });
+        const networkId = 'unittest';
+        const keyStore = new InMemoryKeyStore();
+        const config = Object.assign(await require('./config')(process.env.NODE_ENV || 'test'), {
+            networkId,
+            keyStore
+        });
+        provider = new JsonRpcProvider({ url: config.nodeUrl });
         await new Promise(resolve => setTimeout(resolve, 2000));
-    });
-
-    afterAll(async () => {
-        await worker.tearDown();
     });
 
     test('json rpc fetch node status', async () => {
