@@ -70,9 +70,8 @@ describe('providers', () => {
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
-                proof: expect.any(Array),
                 values: [
-                    { key: 'bmFtZQ==', proof: expect.any(Array), value: 'aGVsbG8=' }
+                    { key: 'bmFtZQ==', value: 'aGVsbG8=' }
                 ]
             });
         });

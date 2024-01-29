@@ -53,7 +53,7 @@ describe('rpc-errors', () => {
         };
         let error = parseRpcError(rpc_error);
         expect(error.type).toBe('ActionError');
-        expect(error.message).toBe('{"kind":{"FunctionCallError":{"HostError":{"InvalidIteratorIndex":{"iterator_index":42}}}}}');
+        expect(formatError(error.type, error)).toBe('{\"type\":\"ActionError\",\"kind\":{\"FunctionCallError\":{\"HostError\":{\"InvalidIteratorIndex\":{\"iterator_index\":42}}}}}');
     });
 
     test('test ActionError::FunctionCallError::GasLimitExceeded error', async () => {
@@ -69,7 +69,8 @@ describe('rpc-errors', () => {
         };
         let error = parseRpcError(rpc_error);
         expect(error.type).toBe('ActionError');
-        expect(error.message).toBe('{"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"HostError":"GasLimitExceeded"}}}}');
+
+        expect(formatError(error.type, error)).toBe('{\"type\":\"ActionError\",\"index\":0,\"kind\":{\"index\":0,\"kind\":{\"FunctionCallError\":{\"HostError\":\"GasLimitExceeded\"}}}}');
     });
 
     test('test parse error object', async () => {
@@ -85,12 +86,16 @@ describe('rpc-errors', () => {
         const err4 = 'wasm execution failed with error: CompilationError(CodeDoesNotExist { account_id: "random.testnet" })';
         const err5 = '[-32000] Server error: Invalid transaction: Transaction nonce 1 must be larger than nonce of the used access key 1';
         const err6 = 'wasm execution failed with error: MethodResolveError(MethodNotFound)';
+        const err7 = 'wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: "random.testnet" }))';
+        const err8 = 'wasm execution failed with error: FunctionCallError(MethodResolveError(MethodNotFound))';
         expect(getErrorTypeFromErrorMessage(err1)).toEqual('AccountDoesNotExist');
         expect(getErrorTypeFromErrorMessage(err2)).toEqual('AccountDoesNotExist');
         expect(getErrorTypeFromErrorMessage(err3)).toEqual('AccessKeyDoesNotExist');
         expect(getErrorTypeFromErrorMessage(err4)).toEqual('CodeDoesNotExist');
         expect(getErrorTypeFromErrorMessage(err5)).toEqual('InvalidNonce');
         expect(getErrorTypeFromErrorMessage(err6)).toEqual('MethodNotFound');
+        expect(getErrorTypeFromErrorMessage(err7)).toEqual('CodeDoesNotExist');
+        expect(getErrorTypeFromErrorMessage(err8)).toEqual('MethodNotFound');
     });
 
     test('test NotEnoughBalance message uses human readable values', () => {
