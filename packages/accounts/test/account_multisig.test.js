@@ -7,7 +7,7 @@ const BN = require('bn.js');
 const fs = require('fs');
 const semver = require('semver');
 
-const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS } = require('../lib');
+const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS, MultisigStateStatus } = require('../lib');
 const testUtils  = require('./test-utils');
 
 const { functionCall, transfer } = actionCreators;
@@ -47,6 +47,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     account2fa.getRecoveryMethods = () => ({
         data: keys.map(keyMapping)
     });
+    account2fa.checkMultisigCodeAndStateStatus = () => ({ codeStatus: 1, stateStatus: MultisigStateStatus.STATE_NOT_INITIALIZED });
     await account2fa.deployMultisig([...fs.readFileSync('./test/wasm/multisig.wasm')]);
     return account2fa;
 };

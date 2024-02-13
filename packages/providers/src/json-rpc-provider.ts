@@ -7,9 +7,11 @@
  */
 import {
     baseEncode,
+    formatError,
     getErrorTypeFromErrorMessage,
     Logger,
     parseRpcError,
+    ServerError,
 } from '@near-js/utils';
 import {
     AccessKeyWithPublicKey,
@@ -366,7 +368,17 @@ export class JsonRpcProvider extends Provider {
                             throw new TypedError(errorMessage, 'TimeoutError');
                         }
 
-                        throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data, response.error.name));
+                        const errorType = getErrorTypeFromErrorMessage(response.error.data, '');
+                        if (errorType) {
+                            throw new TypedError(formatError(errorType, params), errorType);
+                        }
+                        throw new TypedError(errorMessage, response.error.name);
+                    }
+                } else if (typeof response.result?.error === 'string') {
+                    const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
+
+                    if (errorType) {
+                        throw new ServerError(formatError(errorType, params), errorType);
                     }
                 }
                 // Success when response.error is not exist
