@@ -1,7 +1,7 @@
 lockfileVersion: '6.0'
 
 settings:
-  autoInstallPeers: false
+  autoInstallPeers: true
   excludeLinksFromLockfile: false
 
 importers:
@@ -18,8 +18,8 @@ importers:
         specifier: 17.0.3
         version: 17.0.3
       '@commitlint/config-conventional':
-        specifier: 17.0.3
-        version: 17.0.3
+        specifier: 18.6.1
+        version: 18.6.1
       '@typescript-eslint/eslint-plugin':
         specifier: 5.31.0
         version: 5.31.0(@typescript-eslint/parser@5.31.0)(eslint@8.20.0)(typescript@4.9.4)
@@ -101,7 +101,7 @@ importers:
         version: 4.0.0
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       near-hello:
         specifier: 0.5.1
         version: 0.5.1
@@ -211,7 +211,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: 26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -243,7 +243,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: 26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -262,7 +262,7 @@ importers:
     devDependencies:
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: 26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -284,7 +284,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: 26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -387,7 +387,7 @@ importers:
         version: 2.0.0
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       localstorage-memory:
         specifier: 1.0.3
         version: 1.0.3
@@ -405,7 +405,7 @@ importers:
         version: 7.1.1
       ts-jest:
         specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)
+        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
       uglifyify:
         specifier: 5.0.1
         version: 5.0.1
@@ -440,7 +440,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       near-workspaces:
         specifier: 3.4.0
         version: 3.4.0
@@ -468,7 +468,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: 26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -508,7 +508,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: 26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -527,7 +527,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: 26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -558,7 +558,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       ts-jest:
         specifier: 26.5.6
         version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
@@ -601,7 +601,7 @@ importers:
         version: 18.11.18
       jest:
         specifier: 26.0.1
-        version: 26.0.1
+        version: 26.0.1(ts-node@10.9.1)
       localstorage-memory:
         specifier: 1.0.3
         version: 1.0.3
@@ -1264,11 +1264,12 @@ packages:
       - '@swc/wasm'
     dev: true
 
-  /@commitlint/config-conventional@17.0.3:
-    resolution: {integrity: sha512-HCnzTm5ATwwwzNVq5Y57poS0a1oOOcd5pc1MmBpLbGmSysc4i7F/++JuwtdFPu16sgM3H9J/j2zznRLOSGVO2A==}
-    engines: {node: '>=v14'}
+  /@commitlint/config-conventional@18.6.1:
+    resolution: {integrity: sha512-ftpfAOQyI+IHvut0cRF4EFM39PWCqde+uOXCjH9NpK6FpqfhncAbEvP0E7OIpFsrDX0aS7k81tzH5Yz7prcNxA==}
+    engines: {node: '>=v18'}
     dependencies:
-      conventional-changelog-conventionalcommits: 5.0.0
+      '@commitlint/types': 18.6.1
+      conventional-changelog-conventionalcommits: 7.0.2
     dev: true
 
   /@commitlint/config-validator@17.6.7:
@@ -1412,6 +1413,13 @@ packages:
       chalk: 4.1.1
     dev: true
 
+  /@commitlint/types@18.6.1:
+    resolution: {integrity: sha512-gwRLBLra/Dozj2OywopeuHj2ac26gjGkz2cZ+86cTJOdtWfiRRr4+e77ZDAGc6MDWxaWheI+mAV5TLWWRwqrFg==}
+    engines: {node: '>=v18'}
+    dependencies:
+      chalk: 4.1.1
+    dev: true
+
   /@cspotcode/source-map-support@0.8.1:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
@@ -1483,7 +1491,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /@jest/core@26.6.3:
+  /@jest/core@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-xvV1kKbhfUqFVuZ8Cyo+JPpipAHHAV3kcDBftiduK8EICXmTFddryy3P7NfZt8Pv37rA9nEJBKCCkglCPt/Xjw==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -1498,14 +1506,14 @@ packages:
       exit: 0.1.2
       graceful-fs: 4.2.11
       jest-changed-files: 26.6.2
-      jest-config: 26.6.3
+      jest-config: 26.6.3(ts-node@10.9.1)
       jest-haste-map: 26.6.2
       jest-message-util: 26.6.2
       jest-regex-util: 26.0.0
       jest-resolve: 26.6.2
       jest-resolve-dependencies: 26.6.3
-      jest-runner: 26.6.3
-      jest-runtime: 26.6.3
+      jest-runner: 26.6.3(ts-node@10.9.1)
+      jest-runtime: 26.6.3(ts-node@10.9.1)
       jest-snapshot: 26.6.2
       jest-util: 26.6.2
       jest-validate: 26.6.2
@@ -1607,15 +1615,15 @@ packages:
       collect-v8-coverage: 1.0.2
     dev: true
 
-  /@jest/test-sequencer@26.6.3:
+  /@jest/test-sequencer@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-YHlVIjP5nfEyjlrSr8t/YdNfU/1XEt7c5b4OxcXCjyRhjzLYu/rO69/WHPuYcbCWkz8kAeZVZp2N2+IOLLEPGw==}
     engines: {node: '>= 10.14.2'}
     dependencies:
       '@jest/test-result': 26.6.2
       graceful-fs: 4.2.11
       jest-haste-map: 26.6.2
-      jest-runner: 26.6.3
-      jest-runtime: 26.6.3
+      jest-runner: 26.6.3(ts-node@10.9.1)
+      jest-runtime: 26.6.3(ts-node@10.9.1)
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -3387,13 +3395,11 @@ packages:
       q: 1.5.1
     dev: true
 
-  /conventional-changelog-conventionalcommits@5.0.0:
-    resolution: {integrity: sha512-lCDbA+ZqVFQGUj7h9QBKoIpLhl8iihkO0nCTyRNzuXtcd7ubODpYB04IFy31JloiJgG0Uovu8ot8oxRzn7Nwtw==}
-    engines: {node: '>=10'}
+  /conventional-changelog-conventionalcommits@7.0.2:
+    resolution: {integrity: sha512-NKXYmMR/Hr1DevQegFB4MwfM5Vv0m4UIxKZTTYuD98lpTknaZlSRrDOG4X7wIXpGkfsYxZTghUN+Qq+T0YQI7w==}
+    engines: {node: '>=16'}
     dependencies:
       compare-func: 2.0.0
-      lodash: 4.17.21
-      q: 1.5.1
     dev: true
 
   /conventional-commits-parser@3.2.4:
@@ -4810,6 +4816,7 @@ packages:
 
   /growly@1.3.0:
     resolution: {integrity: sha512-+xGQY0YyAWCnqy7Cd++hc2JqMYzlm0dG30Jd0beaA64sROr8C4nt8Yc9V5Ro3avlSUDTN0ulqP/VBKi1/lLygw==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -5294,6 +5301,7 @@ packages:
     resolution: {integrity: sha512-F+i2BKsFrH66iaUFc0woD8sLy8getkwTwtOBjvs56Cx4CgJDeKQeqfz8wAYiSb8JOprWhHH5p77PbmYCvvUuXQ==}
     engines: {node: '>=8'}
     hasBin: true
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -5458,6 +5466,7 @@ packages:
   /is-wsl@2.2.0:
     resolution: {integrity: sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==}
     engines: {node: '>=8'}
+    requiresBuild: true
     dependencies:
       is-docker: 2.2.1
     dev: true
@@ -5554,12 +5563,12 @@ packages:
       throat: 5.0.0
     dev: true
 
-  /jest-cli@26.6.3:
+  /jest-cli@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-GF9noBSa9t08pSyl3CY4frMrqp+aQXFGFkf5hEPbh/pIUFYWMK6ZLTfbmadxJVcJrdRoChlWQsA2VkJcDFK8hg==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
     dependencies:
-      '@jest/core': 26.6.3
+      '@jest/core': 26.6.3(ts-node@10.9.1)
       '@jest/test-result': 26.6.2
       '@jest/types': 26.6.2
       chalk: 4.1.1
@@ -5567,7 +5576,7 @@ packages:
       graceful-fs: 4.2.11
       import-local: 3.1.0
       is-ci: 2.0.0
-      jest-config: 26.6.3
+      jest-config: 26.6.3(ts-node@10.9.1)
       jest-util: 26.6.2
       jest-validate: 26.6.2
       prompts: 2.4.2
@@ -5580,7 +5589,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /jest-config@26.6.3:
+  /jest-config@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-t5qdIj/bCj2j7NFVHb2nFB4aUdfucDn3JRKgrZnplb8nieAirAzRSHP8uDEd+qV6ygzg9Pz4YG7UTJf94LPSyg==}
     engines: {node: '>= 10.14.2'}
     peerDependencies:
@@ -5590,7 +5599,7 @@ packages:
         optional: true
     dependencies:
       '@babel/core': 7.22.9
-      '@jest/test-sequencer': 26.6.3
+      '@jest/test-sequencer': 26.6.3(ts-node@10.9.1)
       '@jest/types': 26.6.2
       babel-jest: 26.6.3(@babel/core@7.22.9)
       chalk: 4.1.1
@@ -5600,13 +5609,14 @@ packages:
       jest-environment-jsdom: 26.6.2
       jest-environment-node: 26.6.2
       jest-get-type: 26.3.0
-      jest-jasmine2: 26.6.3
+      jest-jasmine2: 26.6.3(ts-node@10.9.1)
       jest-regex-util: 26.0.0
       jest-resolve: 26.6.2
       jest-util: 26.6.2
       jest-validate: 26.6.2
       micromatch: 4.0.5
       pretty-format: 26.6.2
+      ts-node: 10.9.1(@types/node@18.11.18)(typescript@4.9.4)
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -5700,7 +5710,7 @@ packages:
       - supports-color
     dev: true
 
-  /jest-jasmine2@26.6.3:
+  /jest-jasmine2@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-kPKUrQtc8aYwBV7CqBg5pu+tmYXlvFlSFYn18ev4gPFtrRzB15N2gW/Roew3187q2w2eHuu0MU9TJz6w0/nPEg==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -5717,7 +5727,7 @@ packages:
       jest-each: 26.6.2
       jest-matcher-utils: 26.6.2
       jest-message-util: 26.6.2
-      jest-runtime: 26.6.3
+      jest-runtime: 26.6.3(ts-node@10.9.1)
       jest-snapshot: 26.6.2
       jest-util: 26.6.2
       pretty-format: 26.6.2
@@ -5813,7 +5823,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /jest-runner@26.6.3:
+  /jest-runner@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-atgKpRHnaA2OvByG/HpGA4g6CSPS/1LK0jK3gATJAoptC1ojltpmVlYC3TYgdmGp+GLuhzpH30Gvs36szSL2JQ==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -5826,13 +5836,13 @@ packages:
       emittery: 0.7.2
       exit: 0.1.2
       graceful-fs: 4.2.11
-      jest-config: 26.6.3
+      jest-config: 26.6.3(ts-node@10.9.1)
       jest-docblock: 26.0.0
       jest-haste-map: 26.6.2
       jest-leak-detector: 26.6.2
       jest-message-util: 26.6.2
       jest-resolve: 26.6.2
-      jest-runtime: 26.6.3
+      jest-runtime: 26.6.3(ts-node@10.9.1)
       jest-util: 26.6.2
       jest-worker: 26.6.2
       source-map-support: 0.5.21
@@ -5845,7 +5855,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /jest-runtime@26.6.3:
+  /jest-runtime@26.6.3(ts-node@10.9.1):
     resolution: {integrity: sha512-lrzyR3N8sacTAMeonbqpnSka1dHNux2uk0qqDXVkMv2c/A3wYnvQ4EXuI013Y6+gSKSCxdaczvf4HF0mVXHRdw==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
@@ -5865,7 +5875,7 @@ packages:
       exit: 0.1.2
       glob: 7.2.3
       graceful-fs: 4.2.11
-      jest-config: 26.6.3
+      jest-config: 26.6.3(ts-node@10.9.1)
       jest-haste-map: 26.6.2
       jest-message-util: 26.6.2
       jest-mock: 26.6.2
@@ -5963,14 +5973,14 @@ packages:
       supports-color: 7.2.0
     dev: true
 
-  /jest@26.0.1:
+  /jest@26.0.1(ts-node@10.9.1):
     resolution: {integrity: sha512-29Q54kn5Bm7ZGKIuH2JRmnKl85YRigp0o0asTc6Sb6l2ch1DCXIeZTLLFy9ultJvhkTqbswF5DEx4+RlkmCxWg==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
     dependencies:
-      '@jest/core': 26.6.3
+      '@jest/core': 26.6.3(ts-node@10.9.1)
       import-local: 3.1.0
-      jest-cli: 26.6.3
+      jest-cli: 26.6.3(ts-node@10.9.1)
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -6817,6 +6827,7 @@ packages:
   /node-gyp-build-optional-packages@5.0.3:
     resolution: {integrity: sha512-k75jcVzk5wnnc/FMxsf4udAoTEUv2jY3ycfdSd3yWu6Cnd1oee6/CfZJApyscA4FJOmdoixWwiwOyf16RzD5JA==}
     hasBin: true
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -7790,6 +7801,7 @@ packages:
 
   /shellwords@0.1.1:
     resolution: {integrity: sha512-vFwSUfQvqybiICwZY5+DAWIPLKsWO31Q91JSKl3UYv+K5c2QRPzn0qzec6QPu1Qc9eHYItiP3NdJqNVqetYAww==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -8370,27 +8382,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /ts-jest@26.5.6(jest@26.0.1):
-    resolution: {integrity: sha512-rua+rCP8DxpA8b4DQD/6X2HQS8Zy/xzViVYfEs2OQu68tkCuKLV0Md8pmX55+W24uRIyAsf/BajRfxOs+R2MKA==}
-    engines: {node: '>= 10'}
-    hasBin: true
-    peerDependencies:
-      jest: '>=26 <27'
-      typescript: '>=3.8 <5.0'
-    dependencies:
-      bs-logger: 0.2.6
-      buffer-from: 1.1.2
-      fast-json-stable-stringify: 2.1.0
-      jest: 26.0.1
-      jest-util: 26.6.2
-      json5: 2.2.3
-      lodash: 4.17.21
-      make-error: 1.3.6
-      mkdirp: 1.0.4
-      semver: 7.1.1
-      yargs-parser: 20.2.9
-    dev: true
-
   /ts-jest@26.5.6(jest@26.0.1)(typescript@4.9.4):
     resolution: {integrity: sha512-rua+rCP8DxpA8b4DQD/6X2HQS8Zy/xzViVYfEs2OQu68tkCuKLV0Md8pmX55+W24uRIyAsf/BajRfxOs+R2MKA==}
     engines: {node: '>= 10'}
@@ -8402,7 +8393,7 @@ packages:
       bs-logger: 0.2.6
       buffer-from: 1.1.2
       fast-json-stable-stringify: 2.1.0
-      jest: 26.0.1
+      jest: 26.0.1(ts-node@10.9.1)
       jest-util: 26.6.2
       json5: 2.2.3
       lodash: 4.17.21
@@ -8868,6 +8859,7 @@ packages:
   /uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
+    requiresBuild: true
     dev: true
     optional: true
 
