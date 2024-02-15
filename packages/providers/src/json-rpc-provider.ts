@@ -395,7 +395,7 @@ export class JsonRpcProvider extends Provider {
         //   This member is REQUIRED on success.
         //   This member MUST NOT exist if there was an error invoking the method.
         if (typeof result === 'undefined') {
-            console.log("hereresponse error 2", result)
+            console.log('hereresponse error 2', result);
             throw new TypedError(
                 `Exceeded ${REQUEST_RETRY_NUMBER} attempts for request to ${method}.`, 'RetriesExceeded');
         }
