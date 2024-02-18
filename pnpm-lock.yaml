@@ -435,6 +435,9 @@ importers:
         specifier: 2.6.7
         version: 2.6.7
     devDependencies:
+      '@near-js/keystores':
+        specifier: workspace:*
+        version: link:../keystores
       '@types/node':
         specifier: 18.11.18
         version: 18.11.18
