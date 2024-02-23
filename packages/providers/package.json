@@ -24,7 +24,7 @@
     "http-errors": "1.7.2"
   },
   "devDependencies": {
-    "@types/node": "18.11.18",
+    "@types/node": "20.11.20",
     "jest": "26.0.1",
     "near-workspaces": "3.4.0",
     "ts-jest": "26.5.6",
