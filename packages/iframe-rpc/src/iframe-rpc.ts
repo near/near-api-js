@@ -35,6 +35,10 @@ export class IFrameRPC extends EventEmitter {
     private remoteProtocolVersion: string | undefined;
     private readonly removeMessageListener: () => void;
 
+    /**
+     * Creates an instance of IFrameRPC.
+     * @param options The configuration options for IFrameRPC.
+     */
     constructor(private readonly options: IRPCOptions) {
         super();
         this.removeMessageListener = (options.receiver || windowReceiver).readMessages(this.messageEventListener);
@@ -57,11 +61,22 @@ export class IFrameRPC extends EventEmitter {
         });
     }
 
+    /**
+     * Static method to get a ready instance of IFrameRPC based on the provided options.
+     * @param options The configuration options for IFrameRPC.
+     * @returns A Promise that resolves to the ready IFrameRPC instance.
+     */
     static getReadyInstance(options: IRPCOptions): Promise<IFrameRPC> {
         const rpc = new IFrameRPC(options);
         return rpc.isReady.then(() => rpc);
     }
 
+    /**
+     * Binds a method handler for the specified RPC method.
+     * @param method The RPC method name.
+     * @param handler The method handler function.
+     * @returns The current IFrameRPC instance.
+     */
     public bindMethodHandler<T>(method: string, handler: (params: T) => Promise<any> | any): this {
         this.on(method, (data: IRPCMethod<T>) => {
             new Promise(resolve => resolve(handler(data.params)))
@@ -89,6 +104,12 @@ export class IFrameRPC extends EventEmitter {
         return this;
     }
 
+    /**
+     * Calls an RPC method with the specified method name and parameters.
+     * @param method The RPC method name.
+     * @param params The parameters for the RPC method.
+     * @returns A Promise that resolves with the result of the RPC method.
+     */
     public callMethod<T>(method: string, params: object): Promise<T> {
         const id = method === 'ready' ? readyId : this.lastCallId;
         const message: IRPCMethod<any> = {
@@ -113,11 +134,18 @@ export class IFrameRPC extends EventEmitter {
         });
     }
 
+    /**
+     * Destroys the IFrameRPC instance, removing event listeners.
+     */
     public destroy() {
         this.emit('destroy');
         this.removeMessageListener();
     }
 
+    /**
+     * Retrieves the remote protocol version.
+     * @returns The remote protocol version.
+     */
     public remoteVersion(): string | undefined {
         return this.remoteProtocolVersion;
     }

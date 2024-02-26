@@ -1,4 +1,5 @@
 import { TypedError } from '@near-js/types';
+import { Logger } from '@near-js/utils';
 import createError from 'http-errors';
 
 import { exponentialBackoff } from './exponential-backoff';
@@ -16,8 +17,12 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-const logWarning = (...args) => !process.env['NEAR_NO_LOGS'] && console.warn(...args);
-
+/**
+ * Performs an HTTP request to a specified URL or connection and returns the parsed JSON response.
+ * @param connectionInfoOrUrl The connection information or URL for the HTTP request.
+ * @param json The JSON payload to be included in the request body for POST requests.
+ * @returns A Promise that resolves to the parsed JSON response from the HTTP request.
+ */
 export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, json?: string): Promise<any> {
     let connectionInfo: ConnectionInfo = { url: null };
     if (typeof (connectionInfoOrUrl) === 'string') {
@@ -28,18 +33,18 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
 
     const response = await exponentialBackoff(START_WAIT_TIME_MS, RETRY_NUMBER, BACKOFF_MULTIPLIER, async () => {
         try {
-            if (!global.fetch) {
-                global.fetch = (await import('./fetch')).default;
-            }
 
-            const response = await global.fetch(connectionInfo.url, {
+            const response = await (global.fetch ?? (await import('./fetch')).default)(connectionInfo.url, {
                 method: json ? 'POST' : 'GET',
                 body: json ? json : undefined,
                 headers: { ...connectionInfo.headers, 'Content-Type': 'application/json' }
             });
             if (!response.ok) {
                 if (response.status === 503) {
-                    logWarning(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
+                    Logger.warn(`Retrying HTTP request for ${connectionInfo.url} as it's not available now`);
+                    return null;
+                } else if (response.status === 408) {
+                    Logger.warn(`Retrying HTTP request for ${connectionInfo.url} as the previous connection was unused for some time`);
                     return null;
                 }
                 throw createError(response.status, await response.text());
@@ -47,7 +52,7 @@ export async function fetchJson(connectionInfoOrUrl: string | ConnectionInfo, js
             return response;
         } catch (error) {
             if (error.toString().includes('FetchError') || error.toString().includes('Failed to fetch')) {
-                logWarning(`Retrying HTTP request for ${connectionInfo.url} because of error: ${error}`);
+                Logger.warn(`Retrying HTTP request for ${connectionInfo.url} because of error: ${error}`);
                 return null;
             }
             throw error;

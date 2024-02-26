@@ -4,7 +4,7 @@ A collection of classes and functions for managing keys in NodeJS execution cont
 
 ## Modules
 
-- [UnencryptedFileSystemKeyStore](src/unencrypted_file_system_keystore.ts) implementation of [KeyStore](../keystores/src/keystore.ts) storing unencrypted keys on the local filesystem 
+- [UnencryptedFileSystemKeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores-node/src/unencrypted_file_system_keystore.ts) implementation of [KeyStore](https://github.com/near/near-api-js/blob/master/packages/keystores/src/keystore.ts) storing unencrypted keys on the local filesystem 
 
 # License
 

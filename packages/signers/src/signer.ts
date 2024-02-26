@@ -7,6 +7,8 @@ export abstract class Signer {
 
     /**
      * Creates new key and returns public key.
+     * @param accountId accountId to retrieve from.
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
     abstract createKey(accountId: string, networkId?: string): Promise<PublicKey>;
 

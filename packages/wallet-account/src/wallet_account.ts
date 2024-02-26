@@ -1,8 +1,7 @@
 /**
- * The classes in this module are used in conjunction with the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
  * This module exposes two classes:
  * * {@link WalletConnection} which redirects users to [NEAR Wallet](https://wallet.near.org/) for key management.
- * * {@link ConnectedWalletAccount} is an {@link account!Account} implementation that uses {@link WalletConnection} to get keys
+ * * {@link ConnectedWalletAccount} is an {@link "@near-js/accounts".account.Account | Account} implementation that uses {@link WalletConnection} to get keys
  * 
  * @module walletAccount
  */
@@ -15,9 +14,10 @@ import { KeyPair, PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
 import { FinalExecutionOutcome } from '@near-js/types';
+import { baseDecode } from '@near-js/utils';
 import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
 import BN from 'bn.js';
-import { baseDecode, serialize } from 'borsh';
+import { serialize } from 'borsh';
 
 import { Near } from './near';
 
@@ -47,8 +47,6 @@ interface RequestSignTransactionsOptions {
 }
 
 /**
- * This class is used in conjunction with the {@link key_stores/browser_local_storage_key_store!BrowserLocalStorageKeyStore}.
- * It redirects users to [NEAR Wallet](https://wallet.near.org) for key management.
  * This class is not intended for use outside the browser. Without `window` (i.e. in server contexts), it will instantiate but will throw a clear error when used.
  * 
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#wallet](https://docs.near.org/tools/near-api-js/quick-reference#wallet)
@@ -169,7 +167,7 @@ export class WalletConnection {
     }
 
     /**
-     * Redirects current page to the wallet authentication page.
+     * Constructs string URL to the wallet authentication page.
      * @param options An optional options object
      * @param options.contractId The NEAR account where the contract is deployed
      * @param options.successUrl URL to redirect upon success. Default: current url
@@ -178,11 +176,11 @@ export class WalletConnection {
      * @example
      * ```js
      * const wallet = new WalletConnection(near, 'my-app');
-     * // redirects to the NEAR Wallet
-     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * // return string URL to the NEAR Wallet
+     * const url = await wallet.requestSignInUrl({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
-    async requestSignIn({ contractId, methodNames, successUrl, failureUrl }: SignInOptions) {
+    async requestSignInUrl({contractId, methodNames, successUrl, failureUrl}: SignInOptions): Promise<string> {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
@@ -204,24 +202,65 @@ export class WalletConnection {
             });
         }
 
-        window.location.assign(newUrl.toString());
+        return newUrl.toString();
     }
 
     /**
-     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the NEAR wallet.
+     * Redirects current page to the wallet authentication page.
+     * @param options An optional options object
+     * @param options.contractId The NEAR account where the contract is deployed
+     * @param options.successUrl URL to redirect upon success. Default: current url
+     * @param options.failureUrl URL to redirect upon failure. Default: current url
+     *
+     * @example
+     * ```js
+     * const wallet = new WalletConnection(near, 'my-app');
+     * // redirects to the NEAR Wallet
+     * wallet.requestSignIn({ contractId: 'account-with-deploy-contract.near' });
+     * ```
      */
-    async requestSignTransactions({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): Promise<void> {
+    async requestSignIn(options: SignInOptions) {
+        const url = await this.requestSignInUrl(options);
+
+        window.location.assign(url);
+    }
+
+    /**
+     * Constructs string URL to the wallet to sign a transaction or batch of transactions.
+     * 
+     * @param options A required options object
+     * @param options.transactions List of transactions to sign
+     * @param options.callbackUrl URL to redirect upon success. Default: current url
+     * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
+     * 
+     */
+    requestSignTransactionsUrl({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): string {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
         newUrl.searchParams.set('transactions', transactions
-            .map(transaction => serialize(SCHEMA, transaction))
+            .map(transaction => serialize(SCHEMA.Transaction, transaction))
             .map(serialized => Buffer.from(serialized).toString('base64'))
             .join(','));
         newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href);
         if (meta) newUrl.searchParams.set('meta', meta);
 
-        window.location.assign(newUrl.toString());
+        return newUrl.toString();
+    }
+
+    /**
+     * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the wallet.
+     * 
+     * @param options A required options object
+     * @param options.transactions List of transactions to sign
+     * @param options.callbackUrl URL to redirect upon success. Default: current url
+     * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
+     * 
+     */
+    requestSignTransactions(options: RequestSignTransactionsOptions): void {
+        const url = this.requestSignTransactionsUrl(options);
+
+        window.location.assign(url);
     }
 
     /**
@@ -287,7 +326,7 @@ export class WalletConnection {
 }
 
 /**
- * {@link account!Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
+ * {@link Account} implementation which redirects to wallet using {@link WalletConnection} when no local key is available.
  */
 export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
@@ -301,7 +340,12 @@ export class ConnectedWalletAccount extends Account {
 
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
-     * @see {@link WalletConnection.requestSignTransactions}
+     * @see {@link WalletConnection#requestSignTransactions}
+     * @param options An optional options object
+     * @param options.receiverId The NEAR account ID of the transaction receiver.
+     * @param options.actions An array of transaction actions to be performed.
+     * @param options.walletMeta Additional metadata to be included in the wallet signing request.
+     * @param options.walletCallbackUrl URL to redirect upon completion of the wallet signing process. Default: current URL.
      */
     async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
@@ -342,7 +386,7 @@ export class ConnectedWalletAccount extends Account {
         });
 
         // TODO: Aggregate multiple transaction request with "debounce".
-        // TODO: Introduce TrasactionQueue which also can be used to watch for status?
+        // TODO: Introduce TransactionQueue which also can be used to watch for status?
     }
 
     /**

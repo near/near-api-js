@@ -2,6 +2,7 @@ import { PublicKey } from '@near-js/crypto';
 import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { fetchJson } from '@near-js/providers';
 import { actionCreators } from '@near-js/transactions';
+import { Logger } from '@near-js/utils'
 import BN from 'bn.js';
 
 import { SignAndSendTransactionOptions } from './account';
@@ -46,7 +47,12 @@ export class Account2FA extends AccountMultisig {
 
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
-     * @see {@link providers/json-rpc-provider!JsonRpcProvider#sendTransaction | JsonRpcProvider.sendTransaction}
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider.sendTransaction | JsonRpcProvider.sendTransaction}
+     * 
+     * @param options Options for the transaction.
+     * @param options.receiverId The NEAR account ID of the transaction receiver.
+     * @param options.actions The list of actions to be included in the transaction.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
     async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         await super.signAndSendTransaction({ receiverId, actions });
@@ -61,6 +67,11 @@ export class Account2FA extends AccountMultisig {
 
     // default helpers for CH deployments of multisig
 
+    /**
+     * Deploy a multisig contract with 2FA and handle the deployment process.
+     * @param contractBytes - The bytecode of the multisig contract.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the deployment.
+     */
     async deployMultisig(contractBytes: Uint8Array) {
         const { accountId } = this;
 
@@ -84,7 +95,7 @@ export class Account2FA extends AccountMultisig {
             deployContract(contractBytes),
         ];
         const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT));
-        console.log('deploying multisig contract for', accountId);
+        Logger.log('deploying multisig contract for', accountId);
 
         const { stateStatus: multisigStateStatus } = await this.checkMultisigCodeAndStateStatus(contractBytes);
         switch (multisigStateStatus) {
@@ -99,6 +110,13 @@ export class Account2FA extends AccountMultisig {
         }
     }
 
+    /**
+     * Disable 2FA with the option to clean up contract state.
+     * @param options Options for disabling 2FA.
+     * @param options.contractBytes The bytecode of the contract to deploy.
+     * @param options.cleanupContractBytes The bytecode of the cleanup contract (optional).
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the operation.
+     */
     async disableWithFAK({ contractBytes, cleanupContractBytes }: { contractBytes: Uint8Array; cleanupContractBytes?: Uint8Array }) {
         let cleanupActions = [];
         if(cleanupContractBytes) {
@@ -122,6 +140,11 @@ export class Account2FA extends AccountMultisig {
         return this.signAndSendTransactionWithAccount(this.accountId, actions);
     }
 
+    /**
+     * Retrieves cleanup actions for disabling 2FA.
+     * @param cleanupContractBytes - The bytecode of the cleanup contract.
+     * @returns {Promise<Action[]>} - A promise that resolves to an array of cleanup actions.
+     */
     async get2faDisableCleanupActions(cleanupContractBytes: Uint8Array) {
         const currentAccountState: { key: Buffer; value: Buffer }[] = await this.viewState('').catch(error => {
             const cause = error.cause && error.cause.name;
@@ -140,6 +163,10 @@ export class Account2FA extends AccountMultisig {
         ] : [];
     }
 
+    /**
+     * Retrieves key conversion actions for disabling 2FA.
+     * @returns {Promise<Action[]>} - A promise that resolves to an array of key conversion actions.
+     */
     async get2faDisableKeyConversionActions() {
         const { accountId } = this;
         const accessKeys = await this.getAccessKeys();
@@ -162,7 +189,8 @@ export class Account2FA extends AccountMultisig {
     /**
      * This method converts LAKs back to FAKs, clears state and deploys an 'empty' contract (contractBytes param)
      * @param [contractBytes]{@link https://github.com/near/near-wallet/blob/master/packages/frontend/src/wasm/main.wasm?raw=true}
-     * @param [cleanupContractBytes]{@link https://github.com/near/core-contracts/blob/master/state-cleanup/res/state_cleanup.wasm?raw=true}
+     * @param [cleanupContractBytes]{@link https://github.com/near/core-contracts/blob/master/state-manipulation/res/state_cleanup.wasm?raw=true}
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the operation.
      */
     async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
         const { stateStatus } = await this.checkMultisigCodeAndStateStatus();
@@ -185,13 +213,17 @@ export class Account2FA extends AccountMultisig {
             ...(await this.get2faDisableKeyConversionActions()),
             deployContract(contractBytes),
         ];
-        console.log('disabling 2fa for', this.accountId);
+        Logger.log('disabling 2fa for', this.accountId);
         return await this.signAndSendTransaction({
             receiverId: this.accountId,
             actions
         });
     }
 
+    /**
+     * Default implementation for sending the 2FA code.
+     * @returns {Promise<string>} - A promise that resolves to the request ID.
+     */
     async sendCodeDefault() {
         const { accountId } = this;
         const { requestId } = this.getRequest();
@@ -208,6 +240,10 @@ export class Account2FA extends AccountMultisig {
         throw new Error('There is no getCode callback provided. Please provide your own in AccountMultisig constructor options. It has a parameter method where method.kind is "email" or "phone".');
     }
 
+    /**
+     * Prompts the user to enter and verify the 2FA code.
+     * @returns {Promise<any>} - A promise that resolves to the verification result.
+     */
     async promptAndVerify() {
         const method = await this.get2faMethod();
         const securityCode = await this.getCode(method);
@@ -217,7 +253,7 @@ export class Account2FA extends AccountMultisig {
             // TODO: Parse error from result for real (like in normal account.signAndSendTransaction)
             return result;
         } catch (e) {
-            console.warn('Error validating security code:', e);
+            Logger.warn('Error validating security code:', e);
             if (e.toString().includes('invalid 2fa code provided') || e.toString().includes('2fa code not valid')) {
                 return await this.promptAndVerify();
             }
@@ -226,6 +262,11 @@ export class Account2FA extends AccountMultisig {
         }
     }
 
+    /**
+     * Verify the 2FA code using the default method.
+     * @param securityCode - The security code to verify.
+     * @returns {Promise<any>} A promise that resolves to the verification result.
+     */
     async verifyCodeDefault(securityCode: string) {
         const { accountId } = this;
         const request = this.getRequest();
@@ -240,6 +281,10 @@ export class Account2FA extends AccountMultisig {
         });
     }
 
+    /**
+     * Retrieves recovery methods for the account.
+     * @returns {Promise<{ accountId: string, data: any }>} - A promise that resolves to recovery methods data.
+     */
     async getRecoveryMethods() {
         const { accountId } = this;
         return {
@@ -248,6 +293,10 @@ export class Account2FA extends AccountMultisig {
         };
     }
 
+    /**
+     * Gets the 2FA method (kind and detail).
+     * @returns {Promise<{ kind: string, detail: string }>} A promise that resolves to the 2FA method.
+     */
     async get2faMethod() {
         let { data } = await this.getRecoveryMethods();
         if (data && data.length) {
@@ -258,6 +307,10 @@ export class Account2FA extends AccountMultisig {
         return { kind, detail };
     }
 
+     /**
+     * Generates a signature for the latest finalized block.
+     * @returns {Promise<{ blockNumber: string, blockNumberSignature: string }>} - A promise that resolves to the signature information.
+     */
     async signatureFor() {
         const { accountId } = this;
         const block = await this.connection.provider.block({ finality: 'final' });
@@ -267,6 +320,12 @@ export class Account2FA extends AccountMultisig {
         return { blockNumber, blockNumberSignature };
     }
 
+     /**
+     * Sends a signed JSON request to a specified path.
+     * @param path - The path for the request.
+     * @param body - The request body.
+     * @returns {Promise<any>} - A promise that resolves to the response from the helper.
+     */
     async postSignedJson(path, body) {
         return await fetchJson(this.helperUrl + path, JSON.stringify({
             ...body,

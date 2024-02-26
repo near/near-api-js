@@ -3,11 +3,15 @@
  * @description
  * This module contains the {@link JsonRpcProvider} client class
  * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
- * @see {@link providers/provider | providers} for a list of request and response types
+ * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
 import {
+    baseEncode,
+    formatError,
     getErrorTypeFromErrorMessage,
+    Logger,
     parseRpcError,
+    ServerError,
 } from '@near-js/utils';
 import {
     AccessKeyWithPublicKey,
@@ -34,7 +38,6 @@ import {
     encodeTransaction,
     SignedTransaction,
 } from '@near-js/transactions';
-import { baseEncode } from 'borsh';
 
 import { exponentialBackoff } from './exponential-backoff';
 import { Provider } from './provider';
@@ -139,7 +142,7 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
-     * Query the RPC by passing an {@link providers/provider!RpcQueryRequest}
+     * Query the RPC by passing an {@link "@near-js/types".provider/request.RpcQueryRequest | RpcQueryRequest }
      * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
      *
      * @typeParam T the shape of the returned query response
@@ -167,7 +170,7 @@ export class JsonRpcProvider extends Provider {
      * pass block_id OR finality as blockQuery, not both
      * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
      *
-     * @param blockQuery {@link providers/provider!BlockReference} (passing a {@link providers/provider!BlockId} is deprecated)
+     * @param blockQuery {@link BlockReference} (passing a {@link BlockId} is deprecated)
      */
     async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
         const { finality } = blockQuery as any;
@@ -365,16 +368,24 @@ export class JsonRpcProvider extends Provider {
                             throw new TypedError(errorMessage, 'TimeoutError');
                         }
 
-                        throw new TypedError(errorMessage, getErrorTypeFromErrorMessage(response.error.data, response.error.name));
+                        const errorType = getErrorTypeFromErrorMessage(response.error.data, '');
+                        if (errorType) {
+                            throw new TypedError(formatError(errorType, params), errorType);
+                        }
+                        throw new TypedError(errorMessage, response.error.name);
+                    }
+                } else if (typeof response.result?.error === 'string') {
+                    const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
+
+                    if (errorType) {
+                        throw new ServerError(formatError(errorType, params), errorType);
                     }
                 }
                 // Success when response.error is not exist
                 return response;
             } catch (error) {
                 if (error.type === 'TimeoutError') {
-                    if (!process.env['NEAR_NO_LOGS']) {
-                        console.warn(`Retrying request to ${method} as it has timed out`, params);
-                    }
+                    Logger.warn(`Retrying request to ${method} as it has timed out`, params);
                     return null;
                 }
 

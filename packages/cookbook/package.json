@@ -1,7 +1,7 @@
 {
   "name": "@near-js/cookbook",
   "private": true,
-  "version": "1.0.10",
+  "version": "1.0.15",
   "description": "",
   "main": "main.js",
   "author": "",
@@ -13,8 +13,8 @@
     "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",
     "bn.js": "5.2.1",
-    "chalk": "^4.1.1",
-    "homedir": "^0.6.0",
+    "chalk": "4.1.1",
+    "homedir": "0.6.0",
     "near-api-js": "workspace:*"
   }
 }
