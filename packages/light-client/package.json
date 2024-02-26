@@ -16,19 +16,19 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "bn.js": "5.2.1",
         "@near-js/crypto": "workspace:*",
         "@near-js/types": "workspace:*",
-        "bs58": "^4.0.0",
-        "borsh": "^0.7.0",
-        "js-sha256": "^0.9.0"
+        "bn.js": "5.2.1",
+        "bs58": "4.0.0",
+        "borsh": "0.7.0",
+        "js-sha256": "0.9.0"
     },
     "devDependencies": {
-        "@types/node": "^18.11.18",
         "@near-js/providers": "workspace:*",
-        "jest": "^26.0.1",
-        "ts-jest": "^26.5.6",
-        "typescript": "^4.9.4"
+        "@types/node": "18.11.18",
+        "jest": "26.0.1",
+        "ts-jest": "26.5.6",
+        "typescript": "4.9.4"
     },
     "files": [
         "lib"
