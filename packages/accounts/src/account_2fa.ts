@@ -1,5 +1,5 @@
 import { PublicKey } from '@near-js/crypto';
-import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
+import { TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { fetchJson } from '@near-js/providers';
 import { actionCreators } from '@near-js/transactions';
 import { Logger } from '@near-js/utils'
@@ -15,6 +15,7 @@ import {
     MULTISIG_GAS,
 } from './constants';
 import { MultisigStateStatus } from './types';
+import { TxOutcome } from '@near-js/types/lib/provider/response';
 
 const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
 
@@ -54,7 +55,7 @@ export class Account2FA extends AccountMultisig {
      * @param options.actions The list of actions to be included in the transaction.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<TxOutcome> {
         await super.signAndSendTransaction({ receiverId, actions });
         // TODO: Should following override onRequestResult in superclass instead of doing custom signAndSendTransaction?
         await this.sendCode();

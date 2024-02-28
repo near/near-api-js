@@ -5,7 +5,7 @@
 
 import BN from 'bn.js';
 
-import { BlockHash, BlockHeight, MerklePath } from './protocol';
+import { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol';
 
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',
@@ -61,6 +61,11 @@ export interface FinalExecutionOutcome {
     transaction: any;
     transaction_outcome: ExecutionOutcomeWithId;
     receipts_outcome: ExecutionOutcomeWithId[];
+}
+
+export interface TxOutcome {
+    final_execution_outcome: FinalExecutionOutcome,
+    final_execution_status: TxExecutionStatus;
 }
 
 export interface QueryResponseKind {
