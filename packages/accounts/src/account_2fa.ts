@@ -15,7 +15,7 @@ import {
     MULTISIG_GAS,
 } from './constants';
 import { MultisigStateStatus } from './types';
-import { TxOutcome } from '@near-js/types/lib/provider/response';
+import { TxOutcome } from '@near-js/types';
 
 const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
 

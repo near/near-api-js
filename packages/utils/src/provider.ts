@@ -1,4 +1,4 @@
-import { TxOutcome } from '@near-js/types/lib/provider/response';
+import { TxOutcome } from '@near-js/types';
 
 /** @hidden */
 export function getTransactionLastResult(txResult: TxOutcome): any {

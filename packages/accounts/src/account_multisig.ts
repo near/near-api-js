@@ -11,7 +11,7 @@ import {
     MULTISIG_STORAGE_KEY,
 } from './constants';
 import { MultisigDeleteRequestRejectionError, MultisigStateStatus } from './types';
-import { TxOutcome } from '@near-js/types/lib/provider/response';
+import { TxOutcome } from '@near-js/types';
 
 const { deployContract, functionCall } = actionCreators;
 

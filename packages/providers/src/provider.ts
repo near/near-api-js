@@ -31,7 +31,7 @@ import { TxOutcome } from '@near-js/types/src/provider/response';
 export abstract class Provider {
     abstract status(): Promise<NodeStatusResult>;
 
-    abstract sendTx(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<TxOutcome>;
+    abstract sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<TxOutcome>;
     abstract sendTransaction(signedTransaction: SignedTransaction): Promise<TxOutcome>;
     abstract sendTransactionAsync(signedTransaction: SignedTransaction): Promise<TxOutcome>;
     abstract txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<TxOutcome>;

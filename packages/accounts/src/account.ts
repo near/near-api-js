@@ -36,7 +36,7 @@ import {
 import BN from 'bn.js';
 
 import { Connection } from './connection';
-import { TxOutcome } from '@near-js/types/lib/provider/response';
+import { TxOutcome } from '@near-js/types';
 
 const {
     addKey,

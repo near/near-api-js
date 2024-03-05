@@ -87,7 +87,7 @@ export class JsonRpcProvider extends Provider {
      * @param signedTransaction The signed transaction being sent
      * @param waitUntil
      */
-    async sendTx(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<TxOutcome> {
+    async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<TxOutcome> {
         const bytes = encodeTransaction(signedTransaction);
         return this.sendJsonRpc('send_tx', { signed_transaction: Buffer.from(bytes).toString('base64'), wait_until: waitUntil });
     }
@@ -99,8 +99,7 @@ export class JsonRpcProvider extends Provider {
      * @param signedTransaction The signed transaction being sent
      */
     async sendTransaction(signedTransaction: SignedTransaction): Promise<TxOutcome> {
-        const bytes = encodeTransaction(signedTransaction);
-        return this.sendJsonRpc('broadcast_tx_commit', { signed_transaction: Buffer.from(bytes).toString('base64'), wait_until: 'Final' });
+        return this.sendTransactionUntil(signedTransaction, 'Final');
     }
 
     /**
@@ -110,8 +109,7 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<TxOutcome>}
      */
     async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<TxOutcome> {
-        const bytes = encodeTransaction(signedTransaction);
-        return this.sendJsonRpc('broadcast_tx_async', { signed_transaction: Buffer.from(bytes).toString('base64'), wait_until: 'None' });
+        return this.sendTransactionUntil(signedTransaction, 'None');
     }
 
     /**

@@ -66,6 +66,7 @@ export {
     FunctionCallPermissionView,
     QueryResponseKind,
     ViewStateResult,
+    TxOutcome
 } from './response';
 export {
     CurrentEpochValidatorInfo,

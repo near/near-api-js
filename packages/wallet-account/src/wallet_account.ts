@@ -19,7 +19,7 @@ import BN from 'bn.js';
 import { serialize } from 'borsh';
 
 import { Near } from './near';
-import { TxOutcome } from '@near-js/types/lib/provider/response';
+import { TxOutcome } from '@near-js/types';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
