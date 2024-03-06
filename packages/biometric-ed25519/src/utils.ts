@@ -1,6 +1,6 @@
 import base64 from '@hexagon/base64';
 import { p256 } from '@noble/curves/p256';
-import { sha256} from '@noble/hashes/sha256';
+import { sha256 } from '@noble/hashes/sha256';
 import { PublicKey } from '@near-js/crypto';
 
 export const preformatMakeCredReq = (makeCredReq) => {
@@ -82,28 +82,12 @@ export const recoverPublicKey = async (r, s, message, recovery) => {
     const sigObjP = new p256.Signature(r, s).addRecoveryBit(1);
     const hash = sha256.create().update(message).digest();
 
-    const res = []
-
-    let Q, P;
-
-    try {
-        Q = sigObjQ.recoverPublicKey(hash);
-        res.push(Q.toRawBytes());
-    } catch (e) {
-       throw e;
-    }
-
-    try {
-        P = sigObjP.recoverPublicKey(hash);
-        res.push(P.toRawBytes());
-    } catch (e) {
-        throw e;
-    }
-
-    return res
+    const Q = sigObjQ.recoverPublicKey(hash);
+    const P = sigObjP.recoverPublicKey(hash);
+    return [Q.toRawBytes().subarray(1, 33), P.toRawBytes().subarray(1, 33)];
 };
 
 export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
     const array = Array.from(uint8Array);
-    return BigInt("0x" + array.map(byte => byte.toString(16).padStart(2, '0')).join(""));
-}
+    return BigInt('0x' + array.map(byte => byte.toString(16).padStart(2, '0')).join(''));
+};
