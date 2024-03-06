@@ -72,7 +72,7 @@ export const createKey = async (username: string): Promise<KeyPair> => {
             const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
             const secretKey = sha256.create().update(Buffer.from(publicKeyBytes)).digest();
             const pubKey = ed25519.getPublicKey(secretKey);
-            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([secretKey, Buffer.from(pubKey)]))));
+            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]))));
         });
 };
 
