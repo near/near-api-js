@@ -187,8 +187,8 @@ export const SCHEMA = new class BorshSchema {
         struct: {
             senderId: 'string',
             receiverId: 'string',
-            nonce: 'u64',
             actions: { array: { type: this.ClassicActions } },
+            nonce: 'u64',
             maxBlockHeight: 'u64',
             publicKey: this.PublicKey,
         }
