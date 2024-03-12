@@ -361,10 +361,7 @@ export class JsonRpcProvider extends Provider {
                         throw parseRpcError(response.error.data);
                     } else {
                         const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-                        // NOTE: All this hackery is happening because structured errors not implemented
-                        // TODO: Fix when https://github.com/nearprotocol/nearcore/issues/1839 gets resolved
-                        if (response.error.data === 'Timeout' || errorMessage.includes('Timeout error')
-                            || errorMessage.includes('query has timed out')) {
+                        if (response.error.data === 'Timeout') {
                             throw new TypedError(errorMessage, 'TimeoutError');
                         }
 
