@@ -26,12 +26,12 @@ export class DelegateAction extends Assignable {
 
 /**
  * Compose a delegate action for inclusion with a meta transaction signed on the sender's behalf
- * @params.actions The set of actions to be included in the meta transaction
- * @params.maxBlockHeight The maximum block height for which this action can be executed as part of a transaction
- * @params.nonce Current nonce on the access key used to sign the delegate action
- * @params.publicKey Public key for the access key used to sign the delegate action
- * @params.receiverId Account ID for the intended receiver of the meta transaction
- * @params.senderId Account ID for the intended signer of the delegate action
+ * @param actions The set of actions to be included in the meta transaction
+ * @param maxBlockHeight The maximum block height for which this action can be executed as part of a transaction
+ * @param nonce Current nonce on the access key used to sign the delegate action
+ * @param publicKey Public key for the access key used to sign the delegate action
+ * @param receiverId Account ID for the intended receiver of the meta transaction
+ * @param senderId Account ID for the intended signer of the delegate action
  */
 export function buildDelegateAction({
     actions,

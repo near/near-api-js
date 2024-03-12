@@ -50,14 +50,15 @@ async function loadGuestBookContractCode() {
 }
 async function setUpTestConnection() {
     const keyStore = new InMemoryKeyStore();
-    const config = Object.assign(require('./config')(process.env.NODE_ENV || 'test'), {
+    const config = Object.assign(await require('./config')(process.env.NODE_ENV || 'test'), {
         networkId,
         keyStore
     });
 
     if (config.masterAccount) {
         // full accessKey on ci-testnet, dedicated rpc for tests.
-        await keyStore.setKey(networkId, config.masterAccount, KeyPair.fromString('ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw'));
+        const secretKey = config.secretKey || 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
+        await keyStore.setKey(networkId, config.masterAccount, KeyPair.fromString(secretKey));
     }
 
     const connection = Connection.fromConfig({

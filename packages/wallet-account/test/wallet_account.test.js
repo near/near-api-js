@@ -108,6 +108,9 @@ describe('fails gracefully on the server side (without window)', () => {
     it('throws explicit error when calling other methods on the instance', () => {
         const serverWalletConnection = new WalletConnection(nearFake, '');
         expect(() => serverWalletConnection.requestSignIn('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail')).toThrow(/please ensure you are using WalletConnection on the browser/);
+        expect(() => serverWalletConnection.requestSignInUrl('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail')).toThrow(/please ensure you are using WalletConnection on the browser/);
+        expect(() => serverWalletConnection.requestSignTransactions('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail')).toThrow(/please ensure you are using WalletConnection on the browser/);
+        expect(() => serverWalletConnection.requestSignTransactionsUrl('signInContract', 'signInTitle', 'http://example.com/success',  'http://example.com/fail')).toThrow(/please ensure you are using WalletConnection on the browser/);
     });
 
     it('can access other props on the instance', () => {

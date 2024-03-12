@@ -4,10 +4,10 @@ import { sortBigIntAsc } from './utils';
 
 /** Finds seat price given validators stakes and number of seats.
  *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection
- * @params validators: current or next epoch validators.
- * @params maxNumberOfSeats: maximum number of seats in the network.
- * @params minimumStakeRatio: minimum stake ratio 
- * @params protocolVersion: version of the protocol from genesis config
+ * @param validators: current or next epoch validators.
+ * @param maxNumberOfSeats: maximum number of seats in the network.
+ * @param minimumStakeRatio: minimum stake ratio 
+ * @param protocolVersion: version of the protocol from genesis config
  */
 export function findSeatPrice(validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[], maxNumberOfSeats: number, minimumStakeRatio: number[], protocolVersion?: number): bigint {
     if (protocolVersion && protocolVersion < 49) {
@@ -76,8 +76,8 @@ export interface EpochValidatorsDiff {
 
 /** Diff validators between current and next epoch.
  * Returns additions, subtractions and changes to validator set.
- * @params currentValidators: list of current validators.
- * @params nextValidators: list of next validators.
+ * @param currentValidators: list of current validators.
+ * @param nextValidators: list of next validators.
  */
 export function diffEpochValidators(currentValidators: CurrentEpochValidatorInfo[], nextValidators: NextEpochValidatorInfo[]): EpochValidatorsDiff {
     const validatorsMap = new Map<string, CurrentEpochValidatorInfo>();

@@ -13,6 +13,11 @@ export abstract class KeyPair extends KeyPairBase {
         }
     }
 
+    /**
+     * Creates a key pair from an encoded key string.
+     * @param encodedKey The encoded key string.
+     * @returns {KeyPair} The key pair created from the encoded key string.
+     */
     static fromString(encodedKey: string): KeyPair {
         const parts = encodedKey.split(':');
         if (parts.length === 1) {

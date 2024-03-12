@@ -1,5 +1,32 @@
 # @near-js/transactions
 
+## 1.1.2
+
+### Patch Changes
+
+- [#1314](https://github.com/near/near-api-js/pull/1314) [`42dc7e2a`](https://github.com/near/near-api-js/commit/42dc7e2ac794e973987bed7b89da5ef2d3c6c8ac) Thanks [@gagdiez](https://github.com/gagdiez)! - Fixed delegateAction Schema
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`662cc13d`](https://github.com/near/near-api-js/commit/662cc13d7961c3bdabed3ad51b1c57958739a3e6), [`c4655576`](https://github.com/near/near-api-js/commit/c4655576bacb1d8b85030dca5b9443649621c8ee)]:
+  - @near-js/utils@0.1.0
+  - @near-js/crypto@1.2.1
+  - @near-js/signers@0.1.1
+
+## 1.1.0
+
+### Minor Changes
+
+- [#1224](https://github.com/near/near-api-js/pull/1224) [`1900c490`](https://github.com/near/near-api-js/commit/1900c49060c3ea8279448cead7347049a23f421f) Thanks [@gtsonevv](https://github.com/gtsonevv)! - remove buggy dependencies - replace js-sha256 with noble-hashes - replace elliptic with noble-curves - remove error-polyfill package
+
+### Patch Changes
+
+- Updated dependencies [[`1900c490`](https://github.com/near/near-api-js/commit/1900c49060c3ea8279448cead7347049a23f421f), [`c6cdc8c7`](https://github.com/near/near-api-js/commit/c6cdc8c724a6dd53114cc5f53fd58e57cea86b78)]:
+  - @near-js/crypto@1.2.0
+  - @near-js/signers@0.1.0
+
 ## 1.0.1
 
 ### Patch Changes

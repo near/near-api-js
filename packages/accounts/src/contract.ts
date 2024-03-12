@@ -1,33 +1,57 @@
-import { getTransactionLastResult, Logger } from '@near-js/utils';
-import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
-import { LocalViewExecution } from './local-view-execution';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
-import depd from 'depd';
-import { AbiFunction, AbiFunctionKind, AbiRoot, AbiSerializationType } from 'near-abi';
+import { getTransactionLastResult, Logger } from "@near-js/utils";
+import { ArgumentTypeError, PositionalArgsError } from "@near-js/types";
+import { LocalViewExecution } from "./local-view-execution";
+import validator from "is-my-json-valid";
+import depd from "depd";
+import {
+    AbiFunction,
+    AbiFunctionKind,
+    AbiRoot,
+    AbiSerializationType,
+} from "near-abi";
 
-import { Account } from './account';
-import { UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './errors';
-
+import { Account } from "./account";
+import {
+    UnsupportedSerializationError,
+    UnknownArgumentError,
+    ArgumentSchemaError,
+    ConflictingOptions,
+} from "./errors";
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
     return {
         [name](...args: any[]) {
             return body(...args);
-        }
+        },
     }[name];
 }
 
-function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abiRoot: AbiRoot) {
+function validateArguments(
+    args: object,
+    abiFunction: AbiFunction,
+    abiRoot: AbiRoot
+) {
     if (!isObject(args)) return;
 
-    if (abiFunction.params && abiFunction.params.serialization_type !== AbiSerializationType.Json) {
-        throw new UnsupportedSerializationError(abiFunction.name, abiFunction.params.serialization_type);
+    if (
+        abiFunction.params &&
+        abiFunction.params.serialization_type !== AbiSerializationType.Json
+    ) {
+        throw new UnsupportedSerializationError(
+            abiFunction.name,
+            abiFunction.params.serialization_type
+        );
     }
 
-    if (abiFunction.result && abiFunction.result.serialization_type !== AbiSerializationType.Json) {
-        throw new UnsupportedSerializationError(abiFunction.name, abiFunction.result.serialization_type);
+    if (
+        abiFunction.result &&
+        abiFunction.result.serialization_type !== AbiSerializationType.Json
+    ) {
+        throw new UnsupportedSerializationError(
+            abiFunction.name,
+            abiFunction.result.serialization_type
+        );
     }
 
     const params = abiFunction.params?.args || [];
@@ -35,8 +59,9 @@ function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abi
         const arg = args[p.name];
         const typeSchema = p.type_schema;
         typeSchema.definitions = abiRoot.body.root_schema.definitions;
-        const validate = ajv.compile(typeSchema);
-        if (!validate(arg)) {
+        const validate = validator(typeSchema);
+        const valid = validate(arg);
+        if (!valid) {
             throw new ArgumentSchemaError(p.name, validate.errors);
         }
     }
@@ -44,32 +69,19 @@ function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abi
     for (const argName of Object.keys(args)) {
         const param = params.find((p) => p.name === argName);
         if (!param) {
-            throw new UnknownArgumentError(argName, params.map((p) => p.name));
+            throw new UnknownArgumentError(
+                argName,
+                params.map((p) => p.name)
+            );
         }
     }
-}
-
-function createAjv() {
-    // Strict mode is disabled for now as it complains about unknown formats. We need to
-    // figure out if we want to support a fixed set of formats. `uint32` and `uint64`
-    // are added explicitly just to reduce the amount of warnings as these are very popular
-    // types.
-    const ajv = new Ajv({
-        strictSchema: false,
-        formats: {
-            uint32: true,
-            uint64: true
-        }
-    });
-    addFormats(ajv);
-    return ajv;
 }
 
 const isUint8Array = (x: any) =>
     x && x.byteLength !== undefined && x.byteLength === x.length;
 
 const isObject = (x: any) =>
-    Object.prototype.toString.call(x) === '[object Object]';
+    Object.prototype.toString.call(x) === "[object Object]";
 
 interface ChangeMethodOptions {
     args: object;
@@ -150,16 +162,34 @@ export class Contract {
      * @param contractId NEAR account id where the contract is deployed
      * @param options NEAR smart contract methods that your application will use. These will be available as `contract.methodName`
      */
-    constructor(account: Account, contractId: string, options: ContractMethods) {
+    constructor(
+        account: Account,
+        contractId: string,
+        options: ContractMethods
+    ) {
         this.account = account;
         this.contractId = contractId;
         this.lve = new LocalViewExecution(account);
-        const { viewMethods = [], changeMethods = [], abi: abiRoot, useLocalViewExecution } = options;
+        const {
+            viewMethods = [],
+            changeMethods = [],
+            abi: abiRoot,
+            useLocalViewExecution,
+        } = options;
 
-        let viewMethodsWithAbi = viewMethods.map((name) => ({ name, abi: null as AbiFunction }));
-        let changeMethodsWithAbi = changeMethods.map((name) => ({ name, abi: null as AbiFunction }));
+        let viewMethodsWithAbi = viewMethods.map((name) => ({
+            name,
+            abi: null as AbiFunction,
+        }));
+        let changeMethodsWithAbi = changeMethods.map((name) => ({
+            name,
+            abi: null as AbiFunction,
+        }));
         if (abiRoot) {
-            if (viewMethodsWithAbi.length > 0 || changeMethodsWithAbi.length > 0) {
+            if (
+                viewMethodsWithAbi.length > 0 ||
+                changeMethodsWithAbi.length > 0
+            ) {
                 throw new ConflictingOptions();
             }
             viewMethodsWithAbi = abiRoot.body.functions
@@ -170,41 +200,49 @@ export class Contract {
                 .map((methodAbi) => ({ name: methodAbi.name, abi: methodAbi }));
         }
 
-        const ajv = createAjv();
         viewMethodsWithAbi.forEach(({ name, abi }) => {
             Object.defineProperty(this, name, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(name, async (args: object = {}, options = {}, ...ignored) => {
-                    if (ignored.length || !(isObject(args) || isUint8Array(args)) || !isObject(options)) {
-                        throw new PositionalArgsError();
-                    }
-
-                    if (abi) {
-                        validateArguments(args, abi, ajv, abiRoot);
-                    }
-
-                    if (useLocalViewExecution) {
-                        try {
-                            return await this.lve.viewFunction({
-                                contractId: this.contractId,
-                                methodName: name,
-                                args,
-                                ...options,
-                            });
-                        } catch (error) {
-                            Logger.warn(`Local view execution failed with: "${error.message}"`);
-                            Logger.warn(`Fallback to normal RPC call`);
+                value: nameFunction(
+                    name,
+                    async (args: object = {}, options = {}, ...ignored) => {
+                        if (
+                            ignored.length ||
+                            !(isObject(args) || isUint8Array(args)) ||
+                            !isObject(options)
+                        ) {
+                            throw new PositionalArgsError();
                         }
-                    }
 
-                    return this.account.viewFunction({
-                        contractId: this.contractId,
-                        methodName: name,
-                        args,
-                        ...options,
-                    });
-                })
+                        if (abi) {
+                            validateArguments(args, abi, abiRoot);
+                        }
+
+                        if (useLocalViewExecution) {
+                            try {
+                                return await this.lve.viewFunction({
+                                    contractId: this.contractId,
+                                    methodName: name,
+                                    args,
+                                    ...options,
+                                });
+                            } catch (error) {
+                                Logger.warn(
+                                    `Local view execution failed with: "${error.message}"`
+                                );
+                                Logger.warn(`Fallback to normal RPC call`);
+                            }
+                        }
+
+                        return this.account.viewFunction({
+                            contractId: this.contractId,
+                            methodName: name,
+                            args,
+                            ...options,
+                        });
+                    }
+                ),
             });
         });
         changeMethodsWithAbi.forEach(({ name, abi }) => {
@@ -212,31 +250,46 @@ export class Contract {
                 writable: false,
                 enumerable: true,
                 value: nameFunction(name, async (...args: any[]) => {
-                    if (args.length && (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))) {
+                    if (
+                        args.length &&
+                        (args.length > 3 ||
+                            !(isObject(args[0]) || isUint8Array(args[0])))
+                    ) {
                         throw new PositionalArgsError();
                     }
 
                     if (args.length > 1 || !(args[0] && args[0].args)) {
-                        const deprecate = depd('contract.methodName(args, gas, amount)');
-                        deprecate('use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead');
+                        const deprecate = depd(
+                            "contract.methodName(args, gas, amount)"
+                        );
+                        deprecate(
+                            "use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead"
+                        );
                         args[0] = {
                             args: args[0],
                             gas: args[1],
-                            amount: args[2]
+                            amount: args[2],
                         };
                     }
 
                     if (abi) {
-                        validateArguments(args[0].args, abi, ajv, abiRoot);
+                        validateArguments(args[0].args, abi, abiRoot);
                     }
 
                     return this._changeMethod({ methodName: name, ...args[0] });
-                })
+                }),
             });
         });
     }
 
-    private async _changeMethod({ args, methodName, gas, amount, meta, callbackUrl }: ChangeMethodOptions) {
+    private async _changeMethod({
+        args,
+        methodName,
+        gas,
+        amount,
+        meta,
+        callbackUrl,
+    }: ChangeMethodOptions) {
         validateBNLike({ gas, amount });
 
         const rawResult = await this.account.functionCall({
@@ -246,7 +299,7 @@ export class Contract {
             gas,
             attachedDeposit: amount,
             walletMeta: meta,
-            walletCallbackUrl: callbackUrl
+            walletCallbackUrl: callbackUrl,
         });
 
         return getTransactionLastResult(rawResult);
@@ -258,7 +311,7 @@ export class Contract {
  * @param argMap
  */
 function validateBNLike(argMap: { [name: string]: any }) {
-    const bnLike = 'number, decimal string or BigInt';
+    const bnLike = "number, decimal string or BigInt";
     for (const argName of Object.keys(argMap)) {
         const argValue = argMap[argName];
         if (argValue && typeof argValue !== "bigint" && isNaN(argValue)) {

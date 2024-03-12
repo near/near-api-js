@@ -1,6 +1,6 @@
 {
   "name": "@near-js/providers",
-  "version": "0.0.9",
+  "version": "0.1.1",
   "description": "Library of implementations for interfacing with the NEAR blockchain",
   "main": "lib/index.js",
   "scripts": {
@@ -25,6 +25,7 @@
   "devDependencies": {
     "@types/node": "18.11.18",
     "jest": "26.0.1",
+    "near-workspaces": "3.4.0",
     "ts-jest": "26.5.6",
     "typescript": "4.9.4"
   },
