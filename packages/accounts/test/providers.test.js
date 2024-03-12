@@ -1,4 +1,3 @@
-const BN = require('bn.js');
 const base58 = require('bs58');
 
 const testUtils = require('./test-utils');
@@ -19,7 +18,7 @@ describe('providers', () => {
     test('txStatus with string hash and buffer hash', async () => {
         const sender = await testUtils.createAccount(near);
         const receiver = await testUtils.createAccount(near);
-        const outcome = await sender.sendMoney(receiver.accountId, new BN('1'));
+        const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
         const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
         const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
         expect(responseWithString).toMatchObject(outcome);
@@ -29,7 +28,7 @@ describe('providers', () => {
     test('txStatusReciept with string hash and buffer hash', async () => {
         const sender = await testUtils.createAccount(near);
         const receiver = await testUtils.createAccount(near);
-        const outcome = await sender.sendMoney(receiver.accountId, new BN('1'));
+        const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
         const reciepts = await provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
     
         const responseWithString = await provider.txStatusReceipts(outcome.transaction.hash, sender.accountId);
@@ -131,7 +130,7 @@ describe('providers', () => {
     
     test('json rpc light client proof', async () => {
         const workingAccount = await testUtils.createAccount(near);
-        const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, new BN(10000));
+        const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, BigInt(10000));
         const provider = near.connection.provider;
     
         async function waitForStatusMatching(isMatching) {

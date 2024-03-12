@@ -3,7 +3,6 @@ const { UnencryptedFileSystemKeyStore } = require('@near-js/keystores-node');
 const { JsonRpcProvider, fetchJson } = require('@near-js/providers');
 const { InMemorySigner } = require('@near-js/signers');
 const { actionCreators, encodeSignedDelegate } = require('@near-js/transactions');
-const BN = require('bn.js');
 const os = require('os');
 const path = require('path');
 
@@ -44,7 +43,7 @@ if (require.main === module) {
         }, SENDER_ACCOUNT_ID);
 
         console.log(await sendNearThroughRelayer({
-            amount: new BN('1000000000'),
+            amount: BigInt('1000000000'),
             receiverId: RECEIVER_ACCOUNT_ID,
             senderAccount,
         }));

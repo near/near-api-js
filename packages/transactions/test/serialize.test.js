@@ -4,7 +4,6 @@ const { InMemorySigner } = require('@near-js/signers');
 const { Assignable } = require('@near-js/types');
 const { baseDecode, baseEncode } = require('@near-js/utils');
 const fs = require('fs');
-const BN = require('bn.js');
 const { deserialize, serialize } = require('borsh');
 
 const {
@@ -153,7 +152,7 @@ describe('serialize and deserialize on different types of nonce', () => {
         transfer(1),
     ];
     const blockHash = baseDecode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
-    const targetNonce = new BN(1);
+    const targetNonce = BigInt(1);
     test('number typed nonce', async () => {
         const transaction = createTransaction(
             'test.near',
@@ -184,12 +183,12 @@ describe('serialize and deserialize on different types of nonce', () => {
         expect(deserialized.nonce.toString()).toEqual(targetNonce.toString());
     });
 
-    test('BN typed nonce', async () => {
+    test('BigInt typed nonce', async () => {
         const transaction = createTransaction(
             'test.near',
             PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
             'whatever.near',
-            new BN(1),
+            BigInt(1),
             actions,
             blockHash);
         const serialized = encodeTransaction(transaction);

@@ -1,5 +1,4 @@
 import { PublicKey } from '@near-js/crypto';
-import BN from 'bn.js';
 
 import {
     AccessKey,
@@ -29,9 +28,10 @@ function fullAccessKey(): AccessKey {
         nonce: 0,
         permission: new AccessKeyPermission({
             fullAccess: new FullAccessPermission({}),
-        })
+        }),
     });
 }
+
 /**
  * Creates an access key with function call permission for a specific receiver and method names.
  * @param receiverId The NEAR account ID of the function call receiver.
@@ -39,12 +39,20 @@ function fullAccessKey(): AccessKey {
  * @param allowance An optional allowance (maximum amount) for the function call. Default: Unlimited.
  * @returns A new access key with function call permission.
  */
-function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: BN): AccessKey {
+function functionCallAccessKey(
+    receiverId: string,
+    methodNames: string[],
+    allowance?: bigint
+): AccessKey {
     return new AccessKey({
         nonce: 0,
         permission: new AccessKeyPermission({
-            functionCall: new FunctionCallPermission({ receiverId, allowance, methodNames }),
-        })
+            functionCall: new FunctionCallPermission({
+                receiverId,
+                allowance,
+                methodNames,
+            }),
+        }),
     });
 }
 
@@ -71,7 +79,8 @@ function deployContract(code: Uint8Array): Action {
  * @returns A Buffer representation of the input argument.
  */
 export function stringifyJsonOrBytes(args: any): Buffer {
-    const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
+    const isUint8Array =
+        args.byteLength !== undefined && args.byteLength === args.length;
     return isUint8Array ? args : Buffer.from(JSON.stringify(args));
 }
 
@@ -86,9 +95,18 @@ export function stringifyJsonOrBytes(args: any): Buffer {
  * @param stringify Convert input arguments into bytes array.
  * @param jsContract  Is contract from JS SDK, skips stringification of arguments.
  */
-function functionCall(methodName: string, args: Uint8Array | object, gas: BN = new BN(0), deposit: BN = new BN(0), stringify = stringifyJsonOrBytes, jsContract = false): Action {
-    if(jsContract){
-        return new Action({ functionCall: new FunctionCall({ methodName, args, gas, deposit }) });
+function functionCall(
+    methodName: string,
+    args: Uint8Array | object,
+    gas = BigInt(0),
+    deposit = BigInt(0),
+    stringify = stringifyJsonOrBytes,
+    jsContract = false
+): Action {
+    if (jsContract) {
+        return new Action({
+            functionCall: new FunctionCall({ methodName, args, gas, deposit }),
+        });
     }
 
     return new Action({
@@ -106,7 +124,7 @@ function functionCall(methodName: string, args: Uint8Array | object, gas: BN = n
  * @param deposit The amount to be deposited along with the transfer. Default: 0.
  * @returns A new action for transferring funds.
  */
-function transfer(deposit: BN = new BN(0)): Action {
+function transfer(deposit = BigInt(0)): Action {
     return new Action({ transfer: new Transfer({ deposit }) });
 }
 
@@ -116,7 +134,7 @@ function transfer(deposit: BN = new BN(0)): Action {
  * @param publicKey The public key associated with the staking action.
  * @returns A new action for staking tokens.
  */
-function stake(stake: BN = new BN(0), publicKey: PublicKey): Action {
+function stake(stake = BigInt(0), publicKey: PublicKey): Action {
     return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 
@@ -154,8 +172,16 @@ function deleteAccount(beneficiaryId: string): Action {
  * @param signature The signature associated with the delegate action.
  * @returns A new action for a signed delegation.
  */
-function signedDelegate({ delegateAction, signature }: { delegateAction: DelegateAction, signature: Signature }): Action {
-    return new Action({ signedDelegate: new SignedDelegate({ delegateAction, signature }) });
+function signedDelegate({
+    delegateAction,
+    signature,
+}: {
+    delegateAction: DelegateAction;
+    signature: Signature;
+}): Action {
+    return new Action({
+        signedDelegate: new SignedDelegate({ delegateAction, signature }),
+    });
 }
 
 export const actionCreators = {

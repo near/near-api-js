@@ -12,9 +12,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "bn.js": "5.2.1"
-  },
   "devDependencies": {
     "@types/node": "18.11.18",
     "jest": "26.0.1",
