@@ -1,4 +1,4 @@
-import { PublicKey } from "@near-js/crypto";
+import { PublicKey } from '@near-js/crypto';
 
 import {
     AccessKey,
@@ -15,9 +15,9 @@ import {
     SignedDelegate,
     Stake,
     Transfer,
-} from "./actions";
-import { DelegateAction } from "./delegate";
-import { Signature } from "./signature";
+} from './actions';
+import { DelegateAction } from './delegate';
+import { Signature } from './signature';
 
 /**
  * Creates a full access key with full access permissions.
