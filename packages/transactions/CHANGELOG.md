@@ -1,5 +1,11 @@
 # @near-js/transactions
 
+## 1.1.2
+
+### Patch Changes
+
+- [#1314](https://github.com/near/near-api-js/pull/1314) [`42dc7e2a`](https://github.com/near/near-api-js/commit/42dc7e2ac794e973987bed7b89da5ef2d3c6c8ac) Thanks [@gagdiez](https://github.com/gagdiez)! - Fixed delegateAction Schema
+
 ## 1.1.1
 
 ### Patch Changes

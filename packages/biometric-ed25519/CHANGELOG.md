@@ -1,5 +1,11 @@
 # @near-js/biometric-ed25519
 
+## 1.1.2
+
+### Patch Changes
+
+- [#1309](https://github.com/near/near-api-js/pull/1309) [`4b5aae44`](https://github.com/near/near-api-js/commit/4b5aae441fc3c10a5a3bf4d559ed2867c5e9abf1) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Fix recoverPublicKey(), createKey() and getKeys() methods.
+
 ## 1.1.1
 
 ### Patch Changes
