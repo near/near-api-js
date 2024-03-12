@@ -199,3 +199,57 @@ test('json rpc get next light client block', async () => {
     expect('inner_rest_hash' in nextBlock).toBeTruthy();
     expect('approvals_after_next' in nextBlock).toBeTruthy();
 });
+
+test('JsonRpc connection object exist without connectionInfo provided', async () => {
+    const provider = new JsonRpcProvider();
+    expect(provider.connection).toStrictEqual({ url: '' });
+});
+
+test('near json rpc fetch node status', async () => {
+    const provider = new JsonRpcProvider({ url: 'https://rpc.ci-testnet.near.org' });
+    let response = await provider.status();
+    expect(response.chain_id).toBeTruthy();
+});
+
+test('near json rpc url - empty array', async () => {
+    const provider = new JsonRpcProvider({ url: [] });
+    try {
+        await provider.status();
+    } catch (e) {
+        expect(e.message).toEqual('The prioritized array of RPC Server URLs must not be empty');
+    }
+});
+
+test('near json rpc url - empty string', async () => {
+    const provider = new JsonRpcProvider({ url: '' });
+    try {
+        await provider.status();
+    } catch (e) {
+        expect(e.message).toEqual('Invalid URL');
+    }
+});
+
+test('near json rpc url - empty string array', async () => {
+    const provider = new JsonRpcProvider({ url: [''] });
+    try {
+        await provider.status();
+    } catch (e) {
+        expect(e.message).toEqual('Invalid URL');
+    }
+});
+
+test('JsonRpc rotateRpcServers', async () => {
+    const SERVER_1 = 'server1';
+    const SERVER_2 = 'server2';
+    const SERVER_3 = 'server3';
+    const provider = new JsonRpcProvider({ url: [SERVER_1, SERVER_2, SERVER_3] });
+    expect(provider.connection.url.length).toEqual(3);
+    expect(provider.connection.url[0]).toMatch(SERVER_1);
+    expect(provider.connection.url[1]).toMatch(SERVER_2);
+    expect(provider.connection.url[2]).toMatch(SERVER_3);
+    provider.rotateRpcServers();
+    expect(provider.connection.url.length).toEqual(3);
+    expect(provider.connection.url[0]).toMatch(SERVER_2);
+    expect(provider.connection.url[1]).toMatch(SERVER_3);
+    expect(provider.connection.url[2]).toMatch(SERVER_1);
+});
