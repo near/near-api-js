@@ -1,5 +1,29 @@
 # @near-js/providers
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`42dc7e2a`](https://github.com/near/near-api-js/commit/42dc7e2ac794e973987bed7b89da5ef2d3c6c8ac)]:
+  - @near-js/transactions@1.1.2
+
+## 0.1.0
+
+### Minor Changes
+
+- [#1275](https://github.com/near/near-api-js/pull/1275) [`662cc13d`](https://github.com/near/near-api-js/commit/662cc13d7961c3bdabed3ad51b1c57958739a3e6) Thanks [@denbite](https://github.com/denbite)! - Display user-friendly messages for JSON RPC errors:
+
+  - MethodNotFound
+  - CodeDoesNotExist
+  - AccessKeyDoesNotExist
+  - AccountDoesNotExist
+
+### Patch Changes
+
+- Updated dependencies [[`662cc13d`](https://github.com/near/near-api-js/commit/662cc13d7961c3bdabed3ad51b1c57958739a3e6)]:
+  - @near-js/utils@0.1.0
+  - @near-js/transactions@1.1.1
+
 ## 0.0.10
 
 ### Patch Changes
