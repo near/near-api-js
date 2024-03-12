@@ -1,15 +1,13 @@
 import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
 import { LocalViewExecution } from './local-view-execution';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
+import validator from 'is-my-json-valid'
 import BN from 'bn.js';
 import depd from 'depd';
 import { AbiFunction, AbiFunctionKind, AbiRoot, AbiSerializationType } from 'near-abi';
 
 import { Account } from './account';
 import { UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './errors';
-
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
@@ -20,7 +18,7 @@ function nameFunction(name: string, body: (args?: any[]) => any) {
     }[name];
 }
 
-function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abiRoot: AbiRoot) {
+function validateArguments(args: object, abiFunction: AbiFunction, abiRoot: AbiRoot) {
     if (!isObject(args)) return;
 
     if (abiFunction.params && abiFunction.params.serialization_type !== AbiSerializationType.Json) {
@@ -36,8 +34,9 @@ function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abi
         const arg = args[p.name];
         const typeSchema = p.type_schema;
         typeSchema.definitions = abiRoot.body.root_schema.definitions;
-        const validate = ajv.compile(typeSchema);
-        if (!validate(arg)) {
+        const validate = validator(typeSchema)
+        const valid = validate(arg)
+        if (!valid) {
             throw new ArgumentSchemaError(p.name, validate.errors);
         }
     }
@@ -48,22 +47,6 @@ function validateArguments(args: object, abiFunction: AbiFunction, ajv: Ajv, abi
             throw new UnknownArgumentError(argName, params.map((p) => p.name));
         }
     }
-}
-
-function createAjv() {
-    // Strict mode is disabled for now as it complains about unknown formats. We need to
-    // figure out if we want to support a fixed set of formats. `uint32` and `uint64`
-    // are added explicitly just to reduce the amount of warnings as these are very popular
-    // types.
-    const ajv = new Ajv({
-        strictSchema: false,
-        formats: {
-            uint32: true,
-            uint64: true
-        }
-    });
-    addFormats(ajv);
-    return ajv;
 }
 
 const isUint8Array = (x: any) =>
@@ -171,7 +154,6 @@ export class Contract {
                 .map((methodAbi) => ({ name: methodAbi.name, abi: methodAbi }));
         }
 
-        const ajv = createAjv();
         viewMethodsWithAbi.forEach(({ name, abi }) => {
             Object.defineProperty(this, name, {
                 writable: false,
@@ -182,7 +164,7 @@ export class Contract {
                     }
 
                     if (abi) {
-                        validateArguments(args, abi, ajv, abiRoot);
+                        validateArguments(args, abi, abiRoot);
                     }
 
                     if (useLocalViewExecution) {
@@ -228,7 +210,7 @@ export class Contract {
                     }
 
                     if (abi) {
-                        validateArguments(args[0].args, abi, ajv, abiRoot);
+                        validateArguments(args[0].args, abi, abiRoot);
                     }
 
                     return this._changeMethod({ methodName: name, ...args[0] });
