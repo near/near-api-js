@@ -3,6 +3,7 @@ import * as providers from './providers';
 import * as utils from './utils';
 import * as transactions from './transaction';
 import * as validators from './validators';
+import * as lightClient from './light-client';
 
 import { Account } from './account';
 import * as multisig from './account_multisig';
@@ -24,6 +25,7 @@ export {
     utils,
     transactions,
     validators,
+    lightClient,
 
     multisig,
     Account,
