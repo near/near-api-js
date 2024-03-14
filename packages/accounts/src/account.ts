@@ -12,6 +12,7 @@ import {
 } from '@near-js/transactions';
 import {
     PositionalArgsError,
+    FinalExecutionOutcome,
     TypedError,
     ErrorContext,
     ViewStateResult,
@@ -36,7 +37,6 @@ import {
 import BN from 'bn.js';
 
 import { Connection } from './connection';
-import { TxOutcome } from '@near-js/types';
 
 const {
     addKey,
@@ -218,7 +218,7 @@ export class Account {
      * @param options.returnError Whether to return an error if the transaction fails.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<TxOutcome> {
+    async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
@@ -343,7 +343,7 @@ export class Account {
      * @param receiverId NEAR account receiving Ⓝ
      * @param amount Amount to send in yoctoⓃ
      */
-    async sendMoney(receiverId: string, amount: BN): Promise<TxOutcome> {
+    async sendMoney(receiverId: string, amount: BN): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId,
             actions: [transfer(amount)]
@@ -354,7 +354,7 @@ export class Account {
      * @param newAccountId NEAR account name to be created
      * @param publicKey A public key created from the masterAccount
      */
-    async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<TxOutcome> {
+    async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction({
             receiverId: newAccountId,
@@ -376,7 +376,7 @@ export class Account {
     /**
      * @param data The compiled contract code
      */
-    async deployContract(data: Uint8Array): Promise<TxOutcome> {
+    async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deployContract(data)]
@@ -402,7 +402,7 @@ export class Account {
      * @param options.jsContract Whether the contract is from JS SDK, automatically encodes args from JS SDK to binary.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the function call.
      */
-    async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: ChangeFunctionCallOptions): Promise<TxOutcome> {
+    async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         let functionCallArgs;
 
@@ -431,7 +431,7 @@ export class Account {
      * @param methodNames The method names on the contract that should be allowed to be called. Pass null for no method names and '' or [] for any method names.
      * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
      */
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<TxOutcome> {
+    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: BN): Promise<FinalExecutionOutcome> {
         if (!methodNames) {
             methodNames = [];
         }
@@ -454,7 +454,7 @@ export class Account {
      * @param publicKey The public key to be deleted
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async deleteKey(publicKey: string | PublicKey): Promise<TxOutcome> {
+    async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteKey(PublicKey.from(publicKey))]
@@ -467,7 +467,7 @@ export class Account {
      * @param publicKey The public key for the account that's staking
      * @param amount The account to stake in yoctoⓃ
      */
-    async stake(publicKey: string | PublicKey, amount: BN): Promise<TxOutcome> {
+    async stake(publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [stake(amount, PublicKey.from(publicKey))]

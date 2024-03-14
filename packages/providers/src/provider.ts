@@ -13,6 +13,7 @@ import {
     ChangeResult,
     ChunkId,
     ChunkResult,
+    FinalExecutionOutcome,
     GasPrice,
     LightClientProof,
     LightClientProofRequest,
@@ -25,17 +26,16 @@ import {
     EpochValidatorInfo,
 } from '@near-js/types';
 import { TxExecutionStatus } from '@near-js/types/src/provider/protocol';
-import { TxOutcome } from '@near-js/types/src/provider/response';
 
 /** @hidden */
 export abstract class Provider {
     abstract status(): Promise<NodeStatusResult>;
 
-    abstract sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<TxOutcome>;
-    abstract sendTransaction(signedTransaction: SignedTransaction): Promise<TxOutcome>;
-    abstract sendTransactionAsync(signedTransaction: SignedTransaction): Promise<TxOutcome>;
-    abstract txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<TxOutcome>;
-    abstract txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<TxOutcome>;
+    abstract sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
+    abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    abstract sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    abstract txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
+    abstract txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
     abstract query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
     abstract query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
     // TODO: BlockQuery type?

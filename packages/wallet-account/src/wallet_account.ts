@@ -13,13 +13,13 @@ import {
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
+import { FinalExecutionOutcome } from '@near-js/types';
 import { baseDecode } from '@near-js/utils';
 import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
 import BN from 'bn.js';
 import { serialize } from 'borsh';
 
 import { Near } from './near';
-import { TxOutcome } from '@near-js/types';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -347,7 +347,7 @@ export class ConnectedWalletAccount extends Account {
      * @param options.walletMeta Additional metadata to be included in the wallet signing request.
      * @param options.walletCallbackUrl URL to redirect upon completion of the wallet signing process. Default: current URL.
      */
-    async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<TxOutcome> {
+    async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {

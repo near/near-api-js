@@ -1,4 +1,5 @@
 import { Action, actionCreators } from '@near-js/transactions';
+import { FinalExecutionOutcome } from '@near-js/types';
 import { Logger } from '@near-js/utils';
 
 import { Account, SignAndSendTransactionOptions } from './account';
@@ -11,7 +12,6 @@ import {
     MULTISIG_STORAGE_KEY,
 } from './constants';
 import { MultisigDeleteRequestRejectionError, MultisigStateStatus } from './types';
-import { TxOutcome } from '@near-js/types';
 
 const { deployContract, functionCall } = actionCreators;
 
@@ -50,7 +50,7 @@ export class AccountMultisig extends Account {
      * @param actions - The list of actions to be included in the transaction.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<TxOutcome> {
+    async signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         return super.signAndSendTransaction({ receiverId, actions });
     }
 
@@ -61,7 +61,7 @@ export class AccountMultisig extends Account {
      * @param options.actions The list of actions to be included in the transaction.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<TxOutcome> {
+    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
         const args = Buffer.from(JSON.stringify({

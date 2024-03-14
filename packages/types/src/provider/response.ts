@@ -57,15 +57,11 @@ export interface ExecutionOutcomeWithIdView {
 }
 
 export interface FinalExecutionOutcome {
+    final_execution_status: TxExecutionStatus;
     status: FinalExecutionStatus | FinalExecutionStatusBasic;
     transaction: any;
     transaction_outcome: ExecutionOutcomeWithId;
     receipts_outcome: ExecutionOutcomeWithId[];
-}
-
-export interface TxOutcome {
-    final_execution_outcome: FinalExecutionOutcome,
-    final_execution_status: TxExecutionStatus;
 }
 
 export interface QueryResponseKind {
