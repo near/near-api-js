@@ -32,7 +32,7 @@ export type BlockId = BlockHash | BlockHeight;
 
 export type Finality = 'optimistic' | 'near-final' | 'final'
 
-export type TxExecutionStatus = 'None' | 'Included' | 'IncludedFinal' | 'Executed' | 'Final';
+export type TxExecutionStatus = 'NONE' | 'INCLUDED' | 'INCLUDED_FINAL' | 'EXECUTED' | 'FINAL';
 
 export type BlockReference = { blockId: BlockId } | { finality: Finality } | { sync_checkpoint: 'genesis' | 'earliest_available' }
 

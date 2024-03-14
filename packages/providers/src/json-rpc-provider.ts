@@ -89,7 +89,7 @@ export class JsonRpcProvider extends Provider {
      */
     async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<TxOutcome> {
         const bytes = encodeTransaction(signedTransaction);
-        return this.sendJsonRpc('send_tx', { signed_transaction: Buffer.from(bytes).toString('base64'), wait_until: waitUntil });
+        return this.sendJsonRpc('send_tx', { signed_tx_base64: Buffer.from(bytes).toString('base64'), wait_until: waitUntil });
     }
 
     /**
@@ -99,7 +99,7 @@ export class JsonRpcProvider extends Provider {
      * @param signedTransaction The signed transaction being sent
      */
     async sendTransaction(signedTransaction: SignedTransaction): Promise<TxOutcome> {
-        return this.sendTransactionUntil(signedTransaction, 'Final');
+        return this.sendTransactionUntil(signedTransaction, 'FINAL');
     }
 
     /**
@@ -109,7 +109,7 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<TxOutcome>}
      */
     async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<TxOutcome> {
-        return this.sendTransactionUntil(signedTransaction, 'None');
+        return this.sendTransactionUntil(signedTransaction, 'NONE');
     }
 
     /**
@@ -120,7 +120,7 @@ export class JsonRpcProvider extends Provider {
      * @param accountId The NEAR account that signed the transaction
      * @param waitUntil
      */
-    async txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'Final'): Promise<TxOutcome> {
+    async txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'FINAL'): Promise<TxOutcome> {
         if (typeof txHash === 'string') {
             return this.txStatusString(txHash, accountId, waitUntil);
         } else {
@@ -144,7 +144,7 @@ export class JsonRpcProvider extends Provider {
      * @param waitUntil
      * @returns {Promise<TxOutcome>}
      */
-    async txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'Final'): Promise<TxOutcome> {
+    async txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'FINAL'): Promise<TxOutcome> {
         if (typeof txHash === 'string') {
             return this.sendJsonRpc('EXPERIMENTAL_tx_status', { tx_hash: txHash, sender_account_id: accountId, wait_until: waitUntil });
         }
