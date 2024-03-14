@@ -1,5 +1,5 @@
 import { PublicKey } from '@near-js/crypto';
-import { TypedError, FinalExecutionOutcome, FunctionCallPermissionView } from '@near-js/types';
+import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { fetchJson } from '@near-js/providers';
 import { actionCreators } from '@near-js/transactions';
 import { Logger } from '@near-js/utils'
