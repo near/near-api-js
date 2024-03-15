@@ -19,7 +19,7 @@
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "borsh": "1.0.0",
-    "@noble/curves": "1.2.0",
+    "@noble/curves": "1.4.0",
     "randombytes": "2.1.0"
   },
   "devDependencies": {
