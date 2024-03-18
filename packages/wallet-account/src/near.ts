@@ -18,7 +18,6 @@ import { PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { Signer } from '@near-js/signers';
 import { LoggerService } from '@near-js/utils';
-import BN from 'bn.js';
 
 export interface NearConfig {
     /** Holds {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} for signing transactions */
@@ -107,7 +106,7 @@ export class Near {
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
             // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times
-            const initialBalance = config.initialBalance ? new BN(config.initialBalance) : new BN('500000000000000000000000000');
+            const initialBalance = config.initialBalance ? BigInt(config.initialBalance) : BigInt('500000000000000000000000000');
             this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), initialBalance);
         } else if (config.helperUrl) {
             this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);

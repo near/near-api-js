@@ -1,6 +1,5 @@
 import { PublicKey } from '@near-js/crypto';
 import { Assignable } from '@near-js/types';
-import BN from 'bn.js';
 
 import { actionCreators } from './action_creators';
 import { Action } from './actions';
@@ -20,8 +19,8 @@ export class DelegateAction extends Assignable {
     senderId: string;
     receiverId: string;
     actions: Array<Action>;
-    nonce: BN;
-    maxBlockHeight: BN;
+    nonce: bigint;
+    maxBlockHeight: bigint;
     publicKey: PublicKey;
 }
 

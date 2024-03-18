@@ -77,11 +77,11 @@ describe('viewMethod', () => {
 
 describe('changeMethod', () => {
     test('throws error message for invalid gas argument', () => {
-        return expect(contract.changeMethod({ a: 1 }, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'gas' argument, but got.+/);
+        return expect(contract.changeMethod({ a: 1 }, 'whatever')).rejects.toThrow(/Expected number, decimal string or BigInt for 'gas' argument, but got.+/);
     });
 
     test('gives error message for invalid amount argument', () => {
-        return expect(contract.changeMethod({ a: 1 }, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
+        return expect(contract.changeMethod({ a: 1 }, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BigInt for 'amount' argument, but got.+/);
     });
 
     test('makes a functionCall and passes along walletCallbackUrl and walletMeta', async() => {

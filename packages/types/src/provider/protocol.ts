@@ -3,8 +3,6 @@
  * @module
  */
 
-import BN from 'bn.js';
-
 export interface SyncInfo {
     latest_block_hash: string;
     latest_block_height: number;
@@ -129,7 +127,7 @@ export interface Chunk {
 export interface Transaction {
     actions: Array<any>;
     hash: string;
-    nonce: BN;
+    nonce: BigInt;
     public_key: string;
     receiver_id: string;
     signature: string;

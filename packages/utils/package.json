@@ -15,7 +15,6 @@
   "license": "ISC",
   "dependencies": {
     "@near-js/types": "workspace:*",
-    "bn.js": "5.2.1",
     "bs58": "4.0.0",
     "depd": "2.0.0",
     "mustache": "4.0.0"

@@ -18,7 +18,6 @@
   "dependencies": {
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
-    "bn.js": "5.2.1",
     "borsh": "1.0.0",
     "@noble/curves": "1.2.0",
     "randombytes": "2.1.0"

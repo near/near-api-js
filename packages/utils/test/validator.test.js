@@ -1,20 +1,21 @@
-const BN = require('bn.js');
-
 const { diffEpochValidators, findSeatPrice } = require('../lib');
 
 test('find seat price', async () => {
     expect(findSeatPrice(
         [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}], 2, [1, 6250], 49
-    )).toEqual(new BN('101'));
+    )).toEqual(BigInt('101'));
     expect(findSeatPrice(
         [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}], 3, [1, 6250]
-    )).toEqual(new BN('101'));
+    )).toEqual(BigInt('101'));
     expect(findSeatPrice(
         [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}], 4, [1, 6250], 49
-    )).toEqual(new BN('320'));
+    )).toEqual(BigInt('320'));
+    expect(findSeatPrice(
+        [{stake: '1000000'}, {stake: '1000000'}, {stake: '100'}], 4, [1, 6250], 48
+    )).toEqual(BigInt('500000'));
     expect(findSeatPrice(
         [{stake: '1000'}, {stake: '1000'}, {stake: '200'}], 100, [1, 25]
-    )).toEqual(new BN('88'));
+    )).toEqual(BigInt('88'));
 });
 
 test('diff validators', async () => {
