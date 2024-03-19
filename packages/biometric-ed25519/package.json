@@ -24,6 +24,6 @@
     "fido2-lib": "3.4.1"
   },
   "devDependencies": {
-    "@types/node": "18.11.18"
+    "@types/node": "20.11.29"
   }
 }
