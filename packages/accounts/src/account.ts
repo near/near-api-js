@@ -15,11 +15,9 @@ import {
     FinalExecutionOutcome,
     TypedError,
     ErrorContext,
-    ViewStateResult,
     AccountView,
     AccessKeyView,
     AccessKeyViewRaw,
-    CodeResult,
     AccessKeyList,
     AccessKeyInfoView,
     FunctionCallPermissionView,
@@ -31,11 +29,12 @@ import {
     Logger,
     parseResultError,
     DEFAULT_FUNCTION_CALL_GAS,
-    printTxOutcomeLogs,
     printTxOutcomeLogsAndFailures,
 } from '@near-js/utils';
 
 import { Connection } from './connection';
+import { viewFunction, viewState } from './utils';
+import { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface';
 
 const {
     addKey,
@@ -91,50 +90,6 @@ export interface SignAndSendTransactionOptions {
     returnError?: boolean;
 }
 
-/**
- * Options used to initiate a function call (especially a change function call)
- * @see {@link Account#viewFunction | viewFunction} to initiate a view function call
- */
-export interface FunctionCallOptions {
-    /** The NEAR account id where the contract is deployed */
-    contractId: string;
-    /** The name of the method to invoke */
-    methodName: string;
-    /**
-     * named arguments to pass the method `{ messageText: 'my message' }`
-     */
-    args?: object;
-    /** max amount of gas that method call can use */
-    gas?: bigint;
-    /** amount of NEAR (in yoctoNEAR) to send together with the call */
-    attachedDeposit?: bigint;
-    /**
-     * Convert input arguments into bytes array.
-     */
-    stringify?: (input: any) => Buffer;
-    /**
-     * Is contract from JS SDK, automatically encodes args from JS SDK to binary.
-     */
-    jsContract?: boolean;
-}
-
-export interface ChangeFunctionCallOptions extends FunctionCallOptions {
-    /**
-     * Metadata to send the NEAR Wallet if using it to sign transactions.
-     * @see RequestSignTransactionsOptions
-    */
-    walletMeta?: string;
-    /**
-     * Callback url to send the NEAR Wallet if using it to sign transactions.
-     * @see RequestSignTransactionsOptions
-    */
-    walletCallbackUrl?: string;
-}
-export interface ViewFunctionCallOptions extends FunctionCallOptions {
-    parse?: (response: Uint8Array) => any;
-    blockQuery?: BlockReference;
-}
-
 interface StakedBalance {
     validatorId: string;
     amount?: string;
@@ -153,24 +108,20 @@ interface SignedDelegateOptions {
     receiverId: string;
 }
 
-function parseJsonFromRawResponse(response: Uint8Array): any {
-    return JSON.parse(Buffer.from(response).toString());
-}
-
-function bytesJsonStringify(input: any): Buffer {
-    return Buffer.from(JSON.stringify(input));
-}
-
 /**
  * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
  */
-export class Account {
+export class Account implements IntoConnection {
     readonly connection: Connection;
     readonly accountId: string;
 
     constructor(connection: Connection, accountId: string) {
         this.connection = connection;
         this.accountId = accountId;
+    }
+
+    getConnection(): Connection {
+        return this.connection;
     }
 
     /**
@@ -544,38 +495,8 @@ export class Account {
      * @returns {Promise<any>}
      */
 
-    async viewFunction({
-        contractId,
-        methodName,
-        args = {},
-        parse = parseJsonFromRawResponse,
-        stringify = bytesJsonStringify,
-        jsContract = false,
-        blockQuery = { finality: 'optimistic' }
-    }: ViewFunctionCallOptions): Promise<any> {
-        let encodedArgs;
-
-        this.validateArgs(args);
-
-        if (jsContract) {
-            encodedArgs = this.encodeJSContractArgs(contractId, methodName, Object.keys(args).length > 0 ? JSON.stringify(args) : '');
-        } else {
-            encodedArgs = stringify(args);
-        }
-
-        const result = await this.connection.provider.query<CodeResult>({
-            request_type: 'call_function',
-            ...blockQuery,
-            account_id: jsContract ? this.connection.jsvmAccountId : contractId,
-            method_name: jsContract ? 'view_js_contract' : methodName,
-            args_base64: encodedArgs.toString('base64')
-        });
-
-        if (result.logs) {
-            printTxOutcomeLogs({ contractId, logs: result.logs });
-        }
-
-        return result.result && result.result.length > 0 && parse(Buffer.from(result.result));
+    async viewFunction(options: ViewFunctionCallOptions): Promise<any> {
+        return await viewFunction(this.connection, options);
     }
 
     /**
@@ -587,17 +508,7 @@ export class Account {
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
     async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' }): Promise<Array<{ key: Buffer; value: Buffer }>> {
-        const { values } = await this.connection.provider.query<ViewStateResult>({
-            request_type: 'view_state',
-            ...blockQuery,
-            account_id: this.accountId,
-            prefix_base64: Buffer.from(prefix).toString('base64')
-        });
-
-        return values.map(({ key, value }) => ({
-            key: Buffer.from(key, 'base64'),
-            value: Buffer.from(value, 'base64')
-        }));
+        return await viewState(this.connection, this.accountId, prefix, blockQuery);
     }
 
     /**

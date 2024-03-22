@@ -1,16 +1,19 @@
 const { PositionalArgsError } = require('@near-js/types');
 
-const { Contract } = require('../lib');
+const { Contract, Account } = require('../lib');
 const testUtils  = require('./test-utils');
 
-const account = {
+const account = Object.setPrototypeOf({
+    getConnection() {
+        return {};
+    },
     viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery }) {
         return { this: this, contractId, methodName, args, parse, stringify, jsContract, blockQuery };
     },
     functionCall() {
         return this;
     }
-};
+}, Account.prototype);
 
 const contract = new Contract(account, 'contractId', {
     viewMethods: ['viewMethod'],
