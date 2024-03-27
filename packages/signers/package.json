@@ -1,6 +1,6 @@
 {
   "name": "@near-js/signers",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Core dependencies for the NEAR API JavaScript client",
   "main": "lib/index.js",
   "scripts": {
