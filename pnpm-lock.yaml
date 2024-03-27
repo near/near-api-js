@@ -37,13 +37,13 @@ importers:
 
   packages/accounts:
     specifiers:
-      '@near-js/crypto': workspace:1.2.1
-      '@near-js/keystores': workspace:0.0.9
-      '@near-js/providers': workspace:0.1.1
-      '@near-js/signers': workspace:0.1.1
-      '@near-js/transactions': workspace:1.1.2
-      '@near-js/types': workspace:0.0.4
-      '@near-js/utils': workspace:0.1.0
+      '@near-js/crypto': workspace:*
+      '@near-js/keystores': workspace:*
+      '@near-js/providers': workspace:*
+      '@near-js/signers': workspace:*
+      '@near-js/transactions': workspace:*
+      '@near-js/types': workspace:*
+      '@near-js/utils': workspace:*
       '@types/node': 18.11.18
       borsh: 1.0.0
       bs58: 4.0.0
@@ -279,9 +279,9 @@ importers:
 
   packages/providers:
     specifiers:
-      '@near-js/transactions': workspace:1.1.2
-      '@near-js/types': workspace:0.0.4
-      '@near-js/utils': workspace:0.1.0
+      '@near-js/transactions': workspace:*
+      '@near-js/types': workspace:*
+      '@near-js/utils': workspace:*
       '@types/node': 18.11.18
       borsh: 1.0.0
       http-errors: 1.7.2
@@ -1548,7 +1548,7 @@ packages:
       borsh: 0.7.0
       http-errors: 1.7.2
     optionalDependencies:
-      node-fetch: 2.6.7
+      node-fetch: 2.7.0
     transitivePeerDependencies:
       - encoding
     dev: true
