@@ -201,11 +201,15 @@ describe('contract without account', () => {
 
         await contract.add_message({
             signerAccount: workingAccount,
-            text: 'first message',
+            args: {
+                text: 'first message',
+            }
         });
         await contract.add_message({
             signerAccount: workingAccount,
-            text: 'second message',
+            args: {
+                text: 'second message',
+            }
         });
 
         const totalMessagesAfter = await contract.total_messages({});
