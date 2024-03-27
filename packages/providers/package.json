@@ -16,16 +16,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@near-js/transactions": "workspace:*",
-    "@near-js/types": "workspace:*",
-    "@near-js/utils": "workspace:*",
+    "@near-js/transactions": "workspace:1.1.2",
+    "@near-js/types": "workspace:0.0.4",
+    "@near-js/utils": "workspace:0.1.0",
     "borsh": "1.0.0",
     "http-errors": "1.7.2"
   },
   "devDependencies": {
     "@types/node": "18.11.18",
     "jest": "26.0.1",
-    "near-workspaces": "3.4.0",
+    "near-workspaces": "3.5.0",
     "ts-jest": "26.5.6",
     "typescript": "4.9.4"
   },
@@ -34,5 +34,8 @@
   },
   "files": [
     "lib"
-  ]
+  ],
+  "resolutions": {
+    "near-sandbox": "0.0.18"
+  }
 }
