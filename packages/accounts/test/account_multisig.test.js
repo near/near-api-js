@@ -1,13 +1,11 @@
-/* global BigInt */
 const { parseNearAmount } = require('@near-js/utils');
 const { KeyPair } = require('@near-js/crypto');
 const { InMemorySigner } = require('@near-js/signers');
 const { actionCreators } = require('@near-js/transactions');
-const BN = require('bn.js');
 const fs = require('fs');
 const semver = require('semver');
 
-const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS } = require('../lib');
+const { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS, MultisigStateStatus } = require('../lib');
 const testUtils  = require('./test-utils');
 
 const { functionCall, transfer } = actionCreators;
@@ -47,6 +45,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     account2fa.getRecoveryMethods = () => ({
         data: keys.map(keyMapping)
     });
+    account2fa.checkMultisigCodeAndStateStatus = () => ({ codeStatus: 1, stateStatus: MultisigStateStatus.STATE_NOT_INITIALIZED });
     await account2fa.deployMultisig([...fs.readFileSync('./test/wasm/multisig.wasm')]);
     return account2fa;
 };
@@ -85,7 +84,7 @@ describe('account2fa transactions', () => {
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
         const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff','some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, new BN(parseNearAmount('0.25')));
+        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, BigInt(parseNearAmount('0.25')));
         account = await getAccount2FA(account);
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
@@ -100,7 +99,7 @@ describe('account2fa transactions', () => {
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
         const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, new BN(parseNearAmount('0.25')));
+        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, BigInt(parseNearAmount('0.25')));
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
             .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
@@ -114,9 +113,9 @@ describe('account2fa transactions', () => {
         sender = await getAccount2FA(sender);
         receiver = await getAccount2FA(receiver);
         const { amount: receiverAmount } = await receiver.state();
-        await sender.sendMoney(receiver.accountId, new BN(parseNearAmount('1')));
+        await sender.sendMoney(receiver.accountId, BigInt(parseNearAmount('1')));
         const state = await receiver.state();
-        expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(new BN(receiverAmount).add(new BN(parseNearAmount('0.9'))).toString()));
+        expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(receiverAmount)+ BigInt(parseNearAmount('0.9').toString()));
     });
 
     test('send money through signAndSendTransaction', async() => {
@@ -125,9 +124,9 @@ describe('account2fa transactions', () => {
         sender = await getAccount2FA(sender);
         receiver = await getAccount2FA(receiver);
         const { amount: receiverAmount } = await receiver.state();
-        await sender.signAndSendTransaction({ receiverId: receiver.accountId, actions: [transfer(new BN(parseNearAmount('1')))] });
+        await sender.signAndSendTransaction({ receiverId: receiver.accountId, actions: [transfer(BigInt(parseNearAmount('1')))] });
         const state = await receiver.state();
-        expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(new BN(receiverAmount).add(new BN(parseNearAmount('0.9'))).toString()));
+        expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(receiverAmount) + BigInt(parseNearAmount('0.9').toString()));
     });
         
 });

@@ -1,5 +1,4 @@
-import BN from 'bn.js';
-import bs58 from 'bs58';
+import bs58 from "bs58";
 
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
@@ -9,12 +8,16 @@ export const NEAR_NOMINATION_EXP = 24;
 /**
  * Number of indivisible units in one NEAR. Derived from {@link NEAR_NOMINATION_EXP}.
  */
-export const NEAR_NOMINATION = new BN('10', 10).pow(new BN(NEAR_NOMINATION_EXP, 10));
+export const NEAR_NOMINATION = BigInt(10) ** BigInt(NEAR_NOMINATION_EXP);
 
 // Pre-calculate offsets used for rounding to different number of digits
-const ROUNDING_OFFSETS: BN[] = [];
-const BN10 = new BN(10);
-for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offset.mul(BN10)) {
+const ROUNDING_OFFSETS: bigint[] = [];
+const BN10 = BigInt(10);
+for (
+    let i = 0, offset = BigInt(5);
+    i < NEAR_NOMINATION_EXP;
+    i++, offset = offset * BN10
+) {
     ROUNDING_OFFSETS[i] = offset;
 }
 
@@ -26,20 +29,26 @@ for (let i = 0, offset = new BN(5); i < NEAR_NOMINATION_EXP; i++, offset = offse
  * @param fracDigits number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits.
  * @returns Value in Ⓝ
  */
-export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMINATION_EXP): string {
-    const balanceBN = new BN(balance, 10);
+export function formatNearAmount(
+    balance: string,
+    fracDigits: number = NEAR_NOMINATION_EXP
+): string {
+    let balanceBN = BigInt(balance);
     if (fracDigits !== NEAR_NOMINATION_EXP) {
         // Adjust balance for rounding at given number of digits
         const roundingExp = NEAR_NOMINATION_EXP - fracDigits - 1;
         if (roundingExp > 0) {
-            balanceBN.iadd(ROUNDING_OFFSETS[roundingExp]);
+            balanceBN += ROUNDING_OFFSETS[roundingExp];
         }
     }
 
     balance = balanceBN.toString();
-    const wholeStr = balance.substring(0, balance.length - NEAR_NOMINATION_EXP) || '0';
-    const fractionStr = balance.substring(balance.length - NEAR_NOMINATION_EXP)
-        .padStart(NEAR_NOMINATION_EXP, '0').substring(0, fracDigits);
+    const wholeStr =
+        balance.substring(0, balance.length - NEAR_NOMINATION_EXP) || "0";
+    const fractionStr = balance
+        .substring(balance.length - NEAR_NOMINATION_EXP)
+        .padStart(NEAR_NOMINATION_EXP, "0")
+        .substring(0, fracDigits);
 
     return trimTrailingZeroes(`${formatWithCommas(wholeStr)}.${fractionStr}`);
 }
@@ -52,15 +61,19 @@ export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMI
  * @returns The parsed yoctoⓃ amount or null if no amount was passed in
  */
 export function parseNearAmount(amt?: string): string | null {
-    if (!amt) { return null; }
+    if (!amt) {
+        return null;
+    }
     amt = cleanupAmount(amt);
-    const split = amt.split('.');
+    const split = amt.split(".");
     const wholePart = split[0];
-    const fracPart = split[1] || '';
+    const fracPart = split[1] || "";
     if (split.length > 2 || fracPart.length > NEAR_NOMINATION_EXP) {
         throw new Error(`Cannot parse '${amt}' as NEAR amount`);
     }
-    return trimLeadingZeroes(wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, '0'));
+    return trimLeadingZeroes(
+        wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, "0")
+    );
 }
 
 /**
@@ -69,7 +82,7 @@ export function parseNearAmount(amt?: string): string | null {
  * @returns string The cleaned value
  */
 function cleanupAmount(amount: string): string {
-    return amount.replace(/,/g, '').trim();
+    return amount.replace(/,/g, "").trim();
 }
 
 /**
@@ -78,7 +91,7 @@ function cleanupAmount(amount: string): string {
  * @returns string The value without the trailing zeros
  */
 function trimTrailingZeroes(value: string): string {
-    return value.replace(/\.?0*$/, '');
+    return value.replace(/\.?0*$/, "");
 }
 
 /**
@@ -87,9 +100,9 @@ function trimTrailingZeroes(value: string): string {
  * @returns string The value without the leading zeroes
  */
 function trimLeadingZeroes(value: string): string {
-    value = value.replace(/^0+/, '');
-    if (value === '') {
-        return '0';
+    value = value.replace(/^0+/, "");
+    if (value === "") {
+        return "0";
     }
     return value;
 }
@@ -102,7 +115,7 @@ function trimLeadingZeroes(value: string): string {
 function formatWithCommas(value: string): string {
     const pattern = /(-?\d+)(\d{3})/;
     while (pattern.test(value)) {
-        value = value.replace(pattern, '$1,$2');
+        value = value.replace(pattern, "$1,$2");
     }
     return value;
 }
@@ -113,9 +126,9 @@ function formatWithCommas(value: string): string {
  * @returns string base58 encoding of the value
  */
 export function baseEncode(value: Uint8Array | string): string {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
         const bytes = [];
-        for(let c = 0; c < value.length; c++){
+        for (let c = 0; c < value.length; c++) {
             bytes.push(value.charCodeAt(c));
         }
         value = new Uint8Array(bytes);

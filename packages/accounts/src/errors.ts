@@ -1,4 +1,4 @@
-import { ErrorObject } from 'ajv';
+import { ValidationError } from 'is-my-json-valid';
 
 export class UnsupportedSerializationError extends Error {
     constructor(methodName: string, serializationType: string) {
@@ -13,7 +13,7 @@ export class UnknownArgumentError extends Error {
 }
 
 export class ArgumentSchemaError extends Error {
-    constructor(argName: string, errors: ErrorObject[]) {
+    constructor(argName: string, errors: ValidationError[]) {
         super(`Argument '${argName}' does not conform to the specified ABI schema: '${JSON.stringify(errors)}'`);
     }
 }

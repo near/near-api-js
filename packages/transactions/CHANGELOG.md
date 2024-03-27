@@ -1,5 +1,20 @@
 # @near-js/transactions
 
+## 1.1.2
+
+### Patch Changes
+
+- [#1314](https://github.com/near/near-api-js/pull/1314) [`42dc7e2a`](https://github.com/near/near-api-js/commit/42dc7e2ac794e973987bed7b89da5ef2d3c6c8ac) Thanks [@gagdiez](https://github.com/gagdiez)! - Fixed delegateAction Schema
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`662cc13d`](https://github.com/near/near-api-js/commit/662cc13d7961c3bdabed3ad51b1c57958739a3e6), [`c4655576`](https://github.com/near/near-api-js/commit/c4655576bacb1d8b85030dca5b9443649621c8ee)]:
+  - @near-js/utils@0.1.0
+  - @near-js/crypto@1.2.1
+  - @near-js/signers@0.1.1
+
 ## 1.1.0
 
 ### Minor Changes

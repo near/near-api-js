@@ -1,4 +1,4 @@
-const { formatNearAmount, parseNearAmount } = require('../lib');
+const { formatNearAmount, parseNearAmount, NEAR_NOMINATION } = require('../lib');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
@@ -57,3 +57,7 @@ test('parseNearAmount fails when parsing values with ≥25 decimal places', () =
         'Cannot parse \'0.0000080990999998370878871\' as NEAR amount'
     );
 });
+
+test('NEAR_NOMINATION value', () => {
+    expect(NEAR_NOMINATION).toEqual(1000000000000000000000000n)
+})

@@ -1,6 +1,6 @@
 import base64 from '@hexagon/base64';
-import { secp256k1 } from '@noble/curves/secp256k1';
-import { Sha256 } from '@aws-crypto/sha256-js';
+import { p256 } from '@noble/curves/p256';
+import { sha256 } from '@noble/hashes/sha256';
 import { PublicKey } from '@near-js/crypto';
 
 export const preformatMakeCredReq = (makeCredReq) => {
@@ -25,7 +25,7 @@ export const preformatMakeCredReq = (makeCredReq) => {
 export const get64BytePublicKeyFromPEM = (publicKey: PublicKey) => {
     const prefix = '\n';
     const publicKeyBase64 = publicKey.toString().split(prefix);
-    return base64.toArrayBuffer(`${publicKeyBase64[1]}${publicKeyBase64[2]}`).slice(27);
+    return base64.toArrayBuffer(`${publicKeyBase64[1]}${publicKeyBase64[2]}`).slice(27, 59);
 };
 
 export const validateUsername = (name: string): string => {
@@ -77,22 +77,17 @@ export const recoverPublicKey = async (r, s, message, recovery) => {
     if (recovery !== 0 && recovery !== 1) {
         throw new Error('Invalid recovery parameter');
     }
-    
-    const hash = new Sha256();
-    hash.update(message);
 
-    const sigObjQ = new secp256k1.Signature(r, s);
-    sigObjQ.addRecoveryBit(0);
-    const sigObjP = new secp256k1.Signature(r, s);
-    sigObjP.addRecoveryBit(1);
+    const sigObjQ = new p256.Signature(r, s).addRecoveryBit(0);
+    const sigObjP = new p256.Signature(r, s).addRecoveryBit(1);
+    const hash = sha256.create().update(message).digest();
 
-    const h = await hash.digest();
+    const Q = sigObjQ.recoverPublicKey(hash);
+    const P = sigObjP.recoverPublicKey(hash);
+    return [Q.toRawBytes().subarray(1, 33), P.toRawBytes().subarray(1, 33)];
+};
 
-    const Q = sigObjQ.recoverPublicKey(h);
-    const P = sigObjP.recoverPublicKey(h);
-
-    return [
-        Buffer.from(Q.toRawBytes()).subarray(1, 65),
-        Buffer.from(P.toRawBytes()).subarray(1, 65)
-    ];
+export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
+    const array = Array.from(uint8Array);
+    return BigInt('0x' + array.map(byte => byte.toString(16).padStart(2, '0')).join(''));
 };

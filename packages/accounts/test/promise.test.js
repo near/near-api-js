@@ -1,5 +1,3 @@
-const BN = require('bn.js');
-
 const testUtils = require('./test-utils');
 
 let nearjs;
@@ -7,7 +5,7 @@ let workingAccount;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
 
-const CONTRACT_CALL_GAS = new BN(300000000000000);
+const CONTRACT_CALL_GAS = BigInt(300000000000000);
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();

@@ -1,7 +1,6 @@
 const { getTransactionLastResult, Logger } = require('@near-js/utils');
 const { actionCreators } = require('@near-js/transactions');
 const { TypedError } = require('@near-js/types');
-const BN = require('bn.js');
 const fs = require('fs');
 
 const { Account, Contract } = require('../lib');
@@ -32,7 +31,7 @@ test('create account and then view account returns the created account', async (
     const newAccountName = testUtils.generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
     const { amount } = await workingAccount.state();
-    const newAmount = new BN(amount).div(new BN(10));
+    const newAmount = BigInt(amount) / BigInt(10);
     await workingAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
@@ -43,9 +42,9 @@ test('send money', async() => {
     const sender = await testUtils.createAccount(nearjs);
     const receiver = await testUtils.createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
-    await sender.sendMoney(receiver.accountId, new BN(10000));
+    await sender.sendMoney(receiver.accountId, BigInt(10000));
     const state = await receiver.state();
-    expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
+    expect(state.amount).toEqual((BigInt(receiverAmount) + BigInt(10000)).toString());
 });
 
 test('send money through signAndSendTransaction', async() => {
@@ -54,10 +53,10 @@ test('send money through signAndSendTransaction', async() => {
     const { amount: receiverAmount } = await receiver.state();
     await sender.signAndSendTransaction({
         receiverId: receiver.accountId,
-        actions: [actionCreators.transfer(new BN(10000))],
+        actions: [actionCreators.transfer(BigInt(10000))],
     });
     const state = await receiver.state();
-    expect(state.amount).toEqual(new BN(receiverAmount).add(new BN(10000)).toString());
+    expect(state.amount).toEqual((BigInt(receiverAmount) + BigInt(10000)).toString());
 });
 
 test('delete account', async() => {
@@ -74,7 +73,7 @@ test('multiple parallel transactions', async () => {
         const account = new Account(workingAccount.connection, workingAccount.accountId);
         // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
         // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
-        await account.sendMoney(account.accountId, new BN(i));
+        await account.sendMoney(account.accountId, BigInt(i));
     }));
 });
 

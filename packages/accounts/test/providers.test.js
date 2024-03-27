@@ -1,23 +1,24 @@
-const BN = require('bn.js');
 const base58 = require('bs58');
 
 const testUtils = require('./test-utils');
+const { KeyPair } = require('@near-js/crypto');
+let ERRORS_JSON = require('../../utils/lib/errors/error_messages.json');
 
-jest.setTimeout(20000);
+jest.setTimeout(60000);
+
+let provider;
+let near;
+
+beforeAll(async () => {
+    near = await testUtils.setUpTestConnection();
+    provider = near.connection.provider;
+});
 
 describe('providers', () => {
-    let provider;
-    let near;
-
-    beforeAll(async () => {
-        near = await testUtils.setUpTestConnection();
-        provider = near.connection.provider;
-    });
-
     test('txStatus with string hash and buffer hash', async () => {
         const sender = await testUtils.createAccount(near);
         const receiver = await testUtils.createAccount(near);
-        const outcome = await sender.sendMoney(receiver.accountId, new BN('1'));
+        const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
         const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
         const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
         expect(responseWithString).toMatchObject(outcome);
@@ -27,7 +28,7 @@ describe('providers', () => {
     test('txStatusReciept with string hash and buffer hash', async () => {
         const sender = await testUtils.createAccount(near);
         const receiver = await testUtils.createAccount(near);
-        const outcome = await sender.sendMoney(receiver.accountId, new BN('1'));
+        const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
         const reciepts = await provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
     
         const responseWithString = await provider.txStatusReceipts(outcome.transaction.hash, sender.accountId);
@@ -129,7 +130,7 @@ describe('providers', () => {
     
     test('json rpc light client proof', async () => {
         const workingAccount = await testUtils.createAccount(near);
-        const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, new BN(10000));
+        const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, BigInt(10000));
         const provider = near.connection.provider;
     
         async function waitForStatusMatching(isMatching) {
@@ -188,3 +189,94 @@ describe('providers', () => {
         await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
     });
 });
+
+describe('providers errors', () => {
+    test('JSON RPC Error - MethodNotFound', async () => {
+        const account = await testUtils.createAccount(near);
+        const contract = await testUtils.deployContract(
+            account,
+            testUtils.generateUniqueString('test')
+        );
+
+        await contract.setValue({ args: { value: 'hello' } });
+
+        try {
+            const response = await provider.query({
+                request_type: 'call_function',
+                finality: 'optimistic',
+                account_id: contract.contractId,
+                method_name: 'methodNameThatDoesNotExist',
+                args_base64: '',
+            });
+            expect(response).toBeUndefined();
+        } catch (e) {
+            const errorType = 'MethodNotFound';
+            expect(e.type).toEqual(errorType);
+            expect(e.message).toEqual(ERRORS_JSON[errorType]);
+        }
+    });
+
+    test('JSON RPC Error - CodeDoesNotExist', async () => {
+        const { accountId } = await testUtils.createAccount(near);
+
+        try {
+            const response = await provider.query({
+                request_type: 'call_function',
+                finality: 'optimistic',
+                account_id: accountId,
+                method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
+                args_base64: '',
+            });
+            expect(response).toBeUndefined();
+        } catch (e) {
+            const errorType = 'CodeDoesNotExist';
+            expect(e.type).toEqual(errorType);
+            expect(e.message.split(' ').slice(0, 5)).toEqual(
+                ERRORS_JSON[errorType].split(' ').slice(0, 5)
+            );
+        }
+    });
+
+    test('JSON RPC Error - AccountDoesNotExist', async () => {
+        const accountName = 'abc.near';
+        try {
+            const response = await provider.query({
+                request_type: 'call_function',
+                finality: 'optimistic',
+                account_id: accountName,
+                method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
+                args_base64: '',
+            });
+            expect(response).toBeUndefined();
+        } catch (e) {
+            const errorType = 'AccountDoesNotExist';
+            expect(e.type).toEqual(errorType);
+            expect(e.message.split(' ').slice(0, 5)).toEqual(
+                ERRORS_JSON[errorType].split(' ').slice(0, 5)
+            );
+        }
+    });
+
+    test('JSON RPC Error - AccessKeyDoesNotExist', async () => {
+        const { accountId } = await testUtils.createAccount(near);
+
+        try {
+            const response = await provider.query({
+                request_type: 'view_access_key',
+                finality: 'optimistic',
+                account_id: accountId,
+                public_key: KeyPair.fromRandom('ed25519')
+                    .getPublicKey()
+                    .toString(),
+            });
+            expect(response).toBeUndefined();
+        } catch (e) {
+            const errorType = 'AccessKeyDoesNotExist';
+            expect(e.type).toEqual(errorType);
+            expect(e.message.split(' ').slice(0, 5)).toEqual(
+                ERRORS_JSON[errorType].split(' ').slice(0, 5)
+            );
+        }
+    });
+});
+

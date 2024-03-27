@@ -3,7 +3,6 @@ const { UnencryptedFileSystemKeyStore } = require('@near-js/keystores-node');
 const { JsonRpcProvider } = require('@near-js/providers');
 const { InMemorySigner } = require('@near-js/signers');
 const { actionCreators } = require('@near-js/transactions');
-const BN = require('bn.js');
 const os = require('os');
 const path = require('path');
 
@@ -52,7 +51,7 @@ if (require.main === module) {
         }, SIGNER_ACCOUNT_ID);
 
         console.log(await sendNearViaMetaTransaction({
-            amount: new BN('1000000000'),
+            amount: BigInt('1000000000'),
             receiverId: RECEIVER_ACCOUNT_ID,
             senderAccount,
             signingAccount,

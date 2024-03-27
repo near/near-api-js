@@ -171,7 +171,7 @@ describe('providers', () => {
 
 // TODO: Use a near-workspaces Worker when time traveling is available
 test('json rpc get next light client block', async () => {
-    const provider = new JsonRpcProvider({ url: 'https://rpc.ci-testnet.near.org' });
+    const provider = new JsonRpcProvider({ url: 'https://rpc.testnet.near.org' });
     const stat = await provider.status();
 
     // Get block in at least the last epoch (epoch duration 43,200 blocks on mainnet and testnet)

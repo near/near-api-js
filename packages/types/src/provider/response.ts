@@ -3,8 +3,6 @@
  * @module
  */
 
-import BN from 'bn.js';
-
 import { BlockHash, BlockHeight, MerklePath } from './protocol';
 
 export enum ExecutionStatusBasic {
@@ -110,7 +108,7 @@ export interface AccessKeyViewRaw extends QueryResponseKind {
     permission: 'FullAccess' | FunctionCallPermissionView;
 }
 export interface AccessKeyView extends QueryResponseKind {
-    nonce: BN;
+    nonce: bigint;
     permission: 'FullAccess' | FunctionCallPermissionView;
 }
 

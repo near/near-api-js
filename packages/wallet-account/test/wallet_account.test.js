@@ -3,7 +3,6 @@ const { InMemoryKeyStore } = require('@near-js/keystores');
 const { InMemorySigner } = require('@near-js/signers');
 const { baseDecode } = require('@near-js/utils');
 const { actionCreators, createTransaction, SCHEMA } = require('@near-js/transactions');
-const BN = require('bn.js');
 const { deserialize } = require('borsh');
 const localStorage = require('localstorage-memory');
 const url = require('url');
@@ -342,11 +341,11 @@ describe('requests transaction signing automatically when there is no local key'
         expect(transactions).toHaveLength(1);
         expect(transactions[0]).toMatchObject({
             signerId: 'signer.near',
-            // nonce: new BN(2)
+            // nonce: BigInt(2)
             receiverId: 'receiver.near',
             actions: [{
                 transfer: {
-                    // deposit: new BN(1)
+                    // deposit: BigInt(1)
                 }
             }]
         });
@@ -389,7 +388,7 @@ describe('requests transaction signing automatically when function call has atta
         try {
             await walletConnection.account().signAndSendTransaction({
                 receiverId: 'receiver.near',
-                actions: [functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))],
+                actions: [functionCall('someMethod', new Uint8Array(), BigInt('1'), BigInt('1'))],
                 walletCallbackUrl: 'http://example.com/after',
                 walletMeta: 'someStuff'
             });
@@ -430,7 +429,7 @@ describe('requests transaction signing with 2fa access key', () => {
         try {
             const res = await walletConnection.account().signAndSendTransaction({
                 receiverId: 'receiver.near',
-                actions: [functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))]
+                actions: [functionCall('someMethod', new Uint8Array(), BigInt('1'), BigInt('1'))]
             });
 
             // multisig access key is accepted res is object representing transaction, populated upon wallet redirect to app
@@ -469,7 +468,7 @@ describe('fails requests transaction signing without 2fa access key', () => {
         return expect(
             walletConnection.account().signAndSendTransaction({
                 receiverId: 'receiver.near',
-                actions: [functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('1'))]
+                actions: [functionCall('someMethod', new Uint8Array(), BigInt('1'), BigInt('1'))]
             })
         ).rejects.toThrow('Cannot find matching key for transaction sent to receiver.near');
     });
@@ -498,8 +497,8 @@ describe('can sign transaction locally when function call has no attached deposi
     });
 
     it.each([
-        functionCall('someMethod', new Uint8Array(), new BN('1'), new BN('0')),
-        functionCall('someMethod', new Uint8Array(), new BN('1')),
+        functionCall('someMethod', new Uint8Array(), BigInt('1'), BigInt('0')),
+        functionCall('someMethod', new Uint8Array(), BigInt('1')),
         functionCall('someMethod', new Uint8Array())
     ])('V2', async (functionCall) => {
         await walletConnection.account().signAndSendTransaction({
