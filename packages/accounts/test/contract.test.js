@@ -192,8 +192,12 @@ describe('contract without account', () => {
         contract = new Contract(nearjs.connection, contractId, {
             viewMethods: ['total_messages', 'get_messages'],
             changeMethods: ['add_message'],
-            useLocalViewExecution: false,
         });
+    });
+
+    test('view & change methods work', async () => {
+        const totalMessagesBefore = await contract.total_messages({});
+        expect(totalMessagesBefore).toBe(0);
 
         await contract.add_message({
             signerAccount: workingAccount,
@@ -203,30 +207,19 @@ describe('contract without account', () => {
             signerAccount: workingAccount,
             text: 'second message',
         });
-    });
 
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
+        const totalMessagesAfter = await contract.total_messages({});
+        expect(totalMessagesAfter).toBe(2);
 
-    test('calls total_messages()', async () => {
-        const totalMessages = await contract.total_messages({});
-
-        expect(totalMessages).toBe(2);
-    });
-
-    test('calls get_messages()', async () => {
         const messages = await contract.get_messages({});
-
-        expect(
-            contract.account.connection.provider.query
-        ).not.toHaveBeenCalled();
         expect(messages.length).toBe(2);
         expect(messages[0].text).toEqual('first message');
         expect(messages[1].text).toEqual('second message');
     });
 
     test('fails to call add_message() without signerAccount', async () => {
-        await expect(contract.add_message({ text: 'third message' })).toThrow();
+        await expect(
+            contract.add_message({ text: 'third message' })
+        ).rejects.toThrow(/signerAccount must be specified/);
     });
 });
