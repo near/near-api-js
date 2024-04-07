@@ -12,7 +12,8 @@ import {
     preformatGetAssertReq,
     publicKeyCredentialToJSON,
     recoverPublicKey,
-    uint8ArrayToBigInt
+    uint8ArrayToBigInt,
+    convertUint8ArrayToBuffer
 } from './utils';
 import { Fido2 } from './fido2';
 import { AssertionResponse } from './index.d';
@@ -63,8 +64,10 @@ export const createKey = async (username: string): Promise<KeyPair> => {
                 throw new PasskeyProcessCanceled('Failed to retrieve response from navigator.credentials.create');
             }
 
+            const senitizedResponse = convertUint8ArrayToBuffer(res);
+
             const result = await f2l.attestation({
-                clientAttestationResponse: res,
+                clientAttestationResponse: senitizedResponse,
                 origin,
                 challenge: challengeMakeCred.challenge
             });
@@ -93,7 +96,8 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
     setBufferIfUndefined();
     return navigator.credentials.get({ publicKey })
         .then(async (response: Credential) => {
-            const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(response);
+            const senitizedResponse = convertUint8ArrayToBuffer(response);
+            const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(senitizedResponse);
             const signature = base64.toArrayBuffer(getAssertionResponse.response.signature, true);
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
