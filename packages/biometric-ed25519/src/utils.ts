@@ -92,7 +92,7 @@ export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
     return BigInt('0x' + array.map(byte => byte.toString(16).padStart(2, '0')).join(''));
 };
 
-// This function is design to convert any existing Uint8Array properties inside AuthenticatorAssertionResponse to ArrayBuffer
+// This function is tries converts Uint8Array, Array or object to ArrayBuffer. Returns the original object if it doesn't match any of the aforementioned types.
 export const convertToArrayBuffer = (obj) => {
     if (obj instanceof Uint8Array) {
         return obj.buffer.slice(obj.byteOffset, obj.byteOffset + obj.byteLength);
