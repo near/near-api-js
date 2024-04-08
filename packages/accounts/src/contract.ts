@@ -17,6 +17,9 @@ import {
     ArgumentSchemaError,
     ConflictingOptions,
 } from "./errors";
+import { IntoConnection } from "./interface";
+import { Connection } from "./connection";
+import { viewFunction } from "./utils";
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
@@ -84,6 +87,7 @@ const isObject = (x: any) =>
     Object.prototype.toString.call(x) === "[object Object]";
 
 interface ChangeMethodOptions {
+    signerAccount?: Account;
     args: object;
     methodName: string;
     gas?: bigint;
@@ -153,7 +157,9 @@ export interface ContractMethods {
  * ```
  */
 export class Contract {
-    readonly account: Account;
+    /** @deprecated */
+    readonly account?: Account;
+    readonly connection: Connection;
     readonly contractId: string;
     readonly lve: LocalViewExecution;
 
@@ -163,13 +169,22 @@ export class Contract {
      * @param options NEAR smart contract methods that your application will use. These will be available as `contract.methodName`
      */
     constructor(
-        account: Account,
+        connection: IntoConnection,
         contractId: string,
         options: ContractMethods
     ) {
-        this.account = account;
+        this.connection = connection.getConnection();
+        if (connection instanceof Account) {
+            const deprecate = depd(
+                "new Contract(account, contractId, options)"
+            );
+            deprecate(
+                "use `new Contract(connection, contractId, options)` instead"
+            );
+            this.account = connection;
+        }
         this.contractId = contractId;
-        this.lve = new LocalViewExecution(account);
+        this.lve = new LocalViewExecution(connection);
         const {
             viewMethods = [],
             changeMethods = [],
@@ -235,7 +250,16 @@ export class Contract {
                             }
                         }
 
-                        return this.account.viewFunction({
+                        if (this.account) {
+                            return this.account.viewFunction({
+                                contractId: this.contractId,
+                                methodName: name,
+                                args,
+                                ...options,
+                            });
+                        }
+
+                        return viewFunction(this.connection, {
                             contractId: this.contractId,
                             methodName: name,
                             args,
@@ -263,7 +287,7 @@ export class Contract {
                             "contract.methodName(args, gas, amount)"
                         );
                         deprecate(
-                            "use `contract.methodName({ args, gas?, amount?, callbackUrl?, meta? })` instead"
+                            "use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead"
                         );
                         args[0] = {
                             args: args[0],
@@ -283,6 +307,7 @@ export class Contract {
     }
 
     private async _changeMethod({
+        signerAccount,
         args,
         methodName,
         gas,
@@ -292,7 +317,11 @@ export class Contract {
     }: ChangeMethodOptions) {
         validateBNLike({ gas, amount });
 
-        const rawResult = await this.account.functionCall({
+        const account = this.account || signerAccount;
+
+        if (!account) throw new Error(`signerAccount must be specified`);
+
+        const rawResult = await account.functionCall({
             contractId: this.contractId,
             methodName,
             args,

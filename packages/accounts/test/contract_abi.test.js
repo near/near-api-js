@@ -1,5 +1,4 @@
-const { Contract } = require('../src/contract');
-const { ArgumentSchemaError, UnknownArgumentError, UnsupportedSerializationError } = require('../src/errors');
+const { Account, Contract, ArgumentSchemaError, UnknownArgumentError, UnsupportedSerializationError } = require('../lib');
 
 let rawAbi = `{
   "schema_version": "0.3.0",
@@ -93,14 +92,17 @@ let rawAbi = `{
   }
 }`;
 
-const account = {
+const account = Object.setPrototypeOf({
+    getConnection() {
+        return {};
+    },
     viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery }) {
         return { this: this, contractId, methodName, args, parse, stringify, jsContract, blockQuery };
     },
     functionCall() {
         return this;
     }
-};
+}, Account.prototype);
 
 const abi = JSON.parse(rawAbi);
 
