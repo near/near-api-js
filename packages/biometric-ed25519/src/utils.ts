@@ -93,25 +93,16 @@ export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
 };
 
 // This function is design to convert any existing Uint8Array properties inside AuthenticatorAssertionResponse to ArrayBuffer
-export const convertUint8ArrayToBuffer = (obj) => {
-    // Function to handle the conversion of each property
-    function handleConversion(item) {
-        if (item instanceof Uint8Array) {
-            // Convert Uint8Array to ArrayBuffer
-            return item.buffer.slice(item.byteOffset, item.byteOffset + item.byteLength);
-        } else if (Array.isArray(item)) {
-            // Process array items
-            return item.map(handleConversion);
-        } else if (item !== null && typeof item === 'object') {
-            // Process object properties
-            return Object.keys(item).reduce((acc, key) => {
-                acc[key] = handleConversion(item[key]);
-                return acc;
-            }, {});
-        }
-        // Return the item if it's not a Uint8Array or an Object
-        return item;
+export const convertToArrayBuffer = (obj) => {
+    if (obj instanceof Uint8Array) {
+        return obj.buffer.slice(obj.byteOffset, obj.byteOffset + obj.byteLength);
+    } else if (Array.isArray(obj)) {
+        return obj.map(convertToArrayBuffer);
+    } else if (obj !== null && typeof obj === 'object') {
+        return Object.keys(obj).reduce((acc, key) => {
+            acc[key] = convertToArrayBuffer(obj[key]);
+            return acc;
+        }, {});
     }
-
-    return handleConversion(obj);
+    return obj;
 };
