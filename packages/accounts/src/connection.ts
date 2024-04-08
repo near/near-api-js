@@ -1,5 +1,5 @@
 import { Signer, InMemorySigner } from '@near-js/signers';
-import { Provider, JsonRpcProvider } from '@near-js/providers';
+import { Provider, JsonRpcProvider, FailoverRpcProvider } from '@near-js/providers';
 
 /**
  * @param config Contains connection info details
@@ -10,6 +10,10 @@ function getProvider(config: any): Provider {
         case undefined:
             return config;
         case 'JsonRpcProvider': return new JsonRpcProvider({ ...config.args });
+        case 'FailoverRpcProvider': {
+            const providers = (config?.args || []).map((arg) => new JsonRpcProvider(arg));
+            return new FailoverRpcProvider(providers);
+        }
         default: throw new Error(`Unknown provider type ${config.type}`);
     }
 }
