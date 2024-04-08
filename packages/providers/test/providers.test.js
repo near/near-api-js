@@ -4,7 +4,7 @@ const { JsonRpcProvider, FailoverRpcProvider } = require('../lib');
 
 jest.setTimeout(20000);
 
-["json provider", "fallback provider"].forEach((name) => {
+['json provider', 'fallback provider'].forEach((name) => {
     describe(name, () => {
         let worker;
         let provider;
@@ -12,11 +12,11 @@ jest.setTimeout(20000);
         beforeAll(async () => {
             worker = await Worker.init();
 
-            if (name === "json provider") {
+            if (name === 'json provider') {
                 provider = new JsonRpcProvider({
                     url: worker.manager.config.rpcAddr,
                 });
-            } else if (name === "fallback provider") {
+            } else if (name === 'fallback provider') {
                 provider = new FailoverRpcProvider([
                     new JsonRpcProvider({
                         url: worker.manager.config.rpcAddr,
@@ -151,29 +151,29 @@ jest.setTimeout(20000);
             let response = await provider.status();
             expect(response.chain_id).toBeTruthy();
         });
-    })
-});
-
-describe("json provider", () => {
-    test("JsonRpc connection object exist without connectionInfo provided", async () => {
-        const provider = new JsonRpcProvider();
-        expect(provider.connection).toStrictEqual({ url: "" });
     });
 });
 
-describe("failover provider", () => {
+describe('json provider', () => {
+    test('JsonRpc connection object exist without connectionInfo provided', async () => {
+        const provider = new JsonRpcProvider();
+        expect(provider.connection).toStrictEqual({ url: '' });
+    });
+});
+
+describe('failover provider', () => {
     beforeAll(async () => {});
 
-    test("FailoverRpc throws error on empty list of providers in constructor", async () => {
+    test('FailoverRpc throws error on empty list of providers in constructor', async () => {
         expect(() => new FailoverRpcProvider([])).toThrow();
     });
 
-    test("FailoverRpc uses first provider as default", async () => {
+    test('FailoverRpc uses first provider as default', async () => {
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
                     status() {
-                        return "first";
+                        return 'first';
                     },
                 },
                 JsonRpcProvider.prototype
@@ -181,7 +181,7 @@ describe("failover provider", () => {
             Object.setPrototypeOf(
                 {
                     status() {
-                        return "second";
+                        return 'second';
                     },
                 },
                 JsonRpcProvider.prototype
@@ -190,10 +190,10 @@ describe("failover provider", () => {
 
         const provider = new FailoverRpcProvider(jsonProviders);
 
-        expect(await provider.status()).toBe("first");
+        expect(await provider.status()).toBe('first');
     });
 
-    test("FailoverRpc switches to next provider in case of error", async () => {
+    test('FailoverRpc switches to next provider in case of error', async () => {
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
@@ -206,7 +206,7 @@ describe("failover provider", () => {
             Object.setPrototypeOf(
                 {
                     status() {
-                        return "second";
+                        return 'second';
                     },
                 },
                 JsonRpcProvider.prototype
@@ -215,10 +215,10 @@ describe("failover provider", () => {
 
         const provider = new FailoverRpcProvider(jsonProviders);
 
-        expect(await provider.status()).toBe("second");
+        expect(await provider.status()).toBe('second');
     });
 
-    test("FailoverRpc returns error if all providers are unavailable", async () => {
+    test('FailoverRpc returns error if all providers are unavailable', async () => {
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
@@ -244,32 +244,32 @@ describe("failover provider", () => {
     });
 });
 
-test("final tx result", async () => {
+test('final tx result', async () => {
     const result = {
-        status: { SuccessValue: "e30=" },
+        status: { SuccessValue: 'e30=' },
         transaction: {
-            id: "11111",
+            id: '11111',
             outcome: {
-                status: { SuccessReceiptId: "11112" },
+                status: { SuccessReceiptId: '11112' },
                 logs: [],
-                receipt_ids: ["11112"],
+                receipt_ids: ['11112'],
                 gas_burnt: 1,
             },
         },
         receipts: [
             {
-                id: "11112",
+                id: '11112',
                 outcome: {
-                    status: { SuccessValue: "e30=" },
+                    status: { SuccessValue: 'e30=' },
                     logs: [],
-                    receipt_ids: ["11112"],
+                    receipt_ids: ['11112'],
                     gas_burnt: 9001,
                 },
             },
             {
-                id: "11113",
+                id: '11113',
                 outcome: {
-                    status: { SuccessValue: "" },
+                    status: { SuccessValue: '' },
                     logs: [],
                     receipt_ids: [],
                     gas_burnt: 0,
@@ -280,32 +280,32 @@ test("final tx result", async () => {
     expect(getTransactionLastResult(result)).toEqual({});
 });
 
-test("final tx result with null", async () => {
+test('final tx result with null', async () => {
     const result = {
-        status: "Failure",
+        status: 'Failure',
         transaction: {
-            id: "11111",
+            id: '11111',
             outcome: {
-                status: { SuccessReceiptId: "11112" },
+                status: { SuccessReceiptId: '11112' },
                 logs: [],
-                receipt_ids: ["11112"],
+                receipt_ids: ['11112'],
                 gas_burnt: 1,
             },
         },
         receipts: [
             {
-                id: "11112",
+                id: '11112',
                 outcome: {
-                    status: "Failure",
+                    status: 'Failure',
                     logs: [],
-                    receipt_ids: ["11112"],
+                    receipt_ids: ['11112'],
                     gas_burnt: 9001,
                 },
             },
             {
-                id: "11113",
+                id: '11113',
                 outcome: {
-                    status: { SuccessValue: "" },
+                    status: { SuccessValue: '' },
                     logs: [],
                     receipt_ids: [],
                     gas_burnt: 0,
