@@ -534,6 +534,9 @@ importers:
       '@near-js/keystores':
         specifier: workspace:*
         version: link:../keystores
+      '@near-js/providers':
+        specifier: workspace:*
+        version: link:../providers
       '@near-js/signers':
         specifier: workspace:*
         version: link:../signers
