@@ -91,3 +91,18 @@ export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
     const array = Array.from(uint8Array);
     return BigInt('0x' + array.map(byte => byte.toString(16).padStart(2, '0')).join(''));
 };
+
+// This function is tries converts Uint8Array, Array or object to ArrayBuffer. Returns the original object if it doesn't match any of the aforementioned types.
+export const convertToArrayBuffer = (obj) => {
+    if (obj instanceof Uint8Array) {
+        return obj.buffer.slice(obj.byteOffset, obj.byteOffset + obj.byteLength);
+    } else if (Array.isArray(obj)) {
+        return obj.map(convertToArrayBuffer);
+    } else if (obj !== null && typeof obj === 'object') {
+        return Object.keys(obj).reduce((acc, key) => {
+            acc[key] = convertToArrayBuffer(obj[key]);
+            return acc;
+        }, {});
+    }
+    return obj;
+};
