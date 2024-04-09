@@ -45,6 +45,13 @@ module.exports = async function getConfig(env) {
             masterAccount: worker.rootAccount._accountId,
             secretKey: keyPair.secret_key || keyPair.private_key
         };
+    case 'remote_ci': {
+        return {
+            networkId: 'shared-test',
+            nodeUrl: 'https://rpc.ci-testnet.near.org',
+            masterAccount: 'test.near',
+        };
+    }
     default:
         throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
     }
