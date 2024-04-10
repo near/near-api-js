@@ -1,5 +1,27 @@
 # @near-js/accounts
 
+## 1.1.0
+
+### Minor Changes
+
+- [#1223](https://github.com/near/near-api-js/pull/1223) [`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Replace bn.js by BigInt.
+
+- [#1325](https://github.com/near/near-api-js/pull/1325) [`cc401a6c`](https://github.com/near/near-api-js/commit/cc401a6c893398e2185c35765ca316f68ac86074) Thanks [@denbite](https://github.com/denbite)! - Extend Contract class to accept Connection object
+
+- [#1334](https://github.com/near/near-api-js/pull/1334) [`3f363113`](https://github.com/near/near-api-js/commit/3f363113e102d0acf29b7b2635acf6160a028cc3) Thanks [@denbite](https://github.com/denbite)! - Introduce FailoverRpcProvider that switches between providers in case of a failure of one of them
+
+### Patch Changes
+
+- [#1292](https://github.com/near/near-api-js/pull/1292) [`f739324b`](https://github.com/near/near-api-js/commit/f739324b2959712281d957eb26a09e5d68e32c80) Thanks [@gtsonevv](https://github.com/gtsonevv)! - replace ajv with is-my-json-valid
+
+- Updated dependencies [[`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b), [`3f363113`](https://github.com/near/near-api-js/commit/3f363113e102d0acf29b7b2635acf6160a028cc3)]:
+  - @near-js/transactions@1.2.0
+  - @near-js/types@0.1.0
+  - @near-js/utils@0.2.0
+  - @near-js/crypto@1.2.2
+  - @near-js/providers@0.2.0
+  - @near-js/signers@0.1.2
+
 ## 1.0.4
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @near-js/types
 
+## 0.1.0
+
+### Minor Changes
+
+- [#1223](https://github.com/near/near-api-js/pull/1223) [`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Replace bn.js by BigInt.
+
 ## 0.0.4
 
 ### Patch Changes
