@@ -100,22 +100,25 @@ const convertUint8ArrayToArrayBuffer = (obj: any) => {
 };
 
 // This function is used to sanitize the response from navigator.credentials.create(), seeking for any Uint8Array and converting them to ArrayBuffer
+// This function has multiple @ts-ignore because types are not up to date with standard type below:
 // https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAttestationResponse
 // an AuthenticatorAttestationResponse (when the PublicKeyCredential is created via CredentialsContainer.create())
 export const sanitizeCreateKeyResponse = (res: Credential) => {
     if (res instanceof PublicKeyCredential && (
         res.rawId instanceof Uint8Array ||
         res.response.clientDataJSON instanceof Uint8Array ||
-        // @ts-ignore - attestationObject is not defined in Credential
+        //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //  @ts-ignore - attestationObject is not defined in Credential
         res.response.attestationObject instanceof Uint8Array
-     )) {
+    )) {
         return {
             ...res,
             rawId: convertUint8ArrayToArrayBuffer(res.rawId),
             response: {
                 ...res.response,
                 clientDataJSON: convertUint8ArrayToArrayBuffer(res.response.clientDataJSON),
-                // @ts-ignore - attestationObject is not defined in Credential
+                //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //  @ts-ignore - attestationObject is not defined in Credential
                 attestationObject: convertUint8ArrayToArrayBuffer(res.response.attestationObject),
             }
         };
@@ -124,29 +127,36 @@ export const sanitizeCreateKeyResponse = (res: Credential) => {
 };
 
 // This function is used to sanitize the response from navigator.credentials.get(), seeking for any Uint8Array and converting them to ArrayBuffer
+// This function has multiple @ts-ignore because types are not up to date with standard type below:
 // https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAssertionResponse
 // an AuthenticatorAssertionResponse (when the PublicKeyCredential is obtained via CredentialsContainer.get()).
 export const sanitizeGetKeyResponse = (res: Credential) => {
-if (res instanceof PublicKeyCredential && (
-      res.rawId instanceof Uint8Array ||
+    if (res instanceof PublicKeyCredential && (
+        res.rawId instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //   @ts-ignore - authenticatorData is not defined in Credential
       res.response.authenticatorData instanceof Uint8Array ||
       res.response.clientDataJSON instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //   @ts-ignore - signature is not defined in Credential
       res.response.signature instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //   @ts-ignore - userHandle is not defined in Credential
       res.response.userHandle instanceof Uint8Array
-  )) {
+    )) {
         return {
             ...res,
             rawId: convertUint8ArrayToArrayBuffer(res.rawId),
             response: {
                 ...res.response,
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //   @ts-ignore - authenticatorData is not defined in Credential
                 authenticatorData: convertUint8ArrayToArrayBuffer(res.response.authenticatorData),
                 clientDataJSON: convertUint8ArrayToArrayBuffer(res.response.clientDataJSON),
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //   @ts-ignore - signature is not defined in Credential
                 signature: convertUint8ArrayToArrayBuffer(res.response.signature),
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //   @ts-ignore - userHandle is not defined in Credential
                 userHandle: convertUint8ArrayToArrayBuffer(res.response.userHandle),
             }
