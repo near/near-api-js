@@ -42,9 +42,9 @@ describe('sanitizeCreateKeyResponse', () => {
 
 
     const result = sanitizeCreateKeyResponse(mockCredential);
-    expect(result.rawId).toBeInstanceOf(ArrayBuffer);
-    expect(result.response.clientDataJSON).toBeInstanceOf(ArrayBuffer);
-    expect(result.response.attestationObject).toBeInstanceOf(ArrayBuffer);
+    expect(result.rawId.constructor.name).toBe('ArrayBuffer');
+    expect(result.response.clientDataJSON.constructor.name).toBe('ArrayBuffer');
+    expect(result.response.attestationObject.constructor.name).toBe('ArrayBuffer');
   });
 
   it('should return the input unchanged if not PublicKeyCredential or without Uint8Arrays', () => {
@@ -79,11 +79,11 @@ describe('sanitizeGetKeyResponse', () => {
     });
 
     const result = sanitizeGetKeyResponse(mockCredential);
-    expect(result.rawId).toBeInstanceOf(ArrayBuffer);
-    expect(result.response.authenticatorData).toBeInstanceOf(ArrayBuffer);
-    expect(result.response.clientDataJSON).toBeInstanceOf(ArrayBuffer);
-    expect(result.response.signature).toBeInstanceOf(ArrayBuffer);
-    expect(result.response.userHandle).toBeInstanceOf(ArrayBuffer);
+    expect(result.rawId.constructor.name).toBe('ArrayBuffer');
+    expect(result.response.clientDataJSON.constructor.name).toBe('ArrayBuffer');
+    expect(result.response.authenticatorData.constructor.name).toBe('ArrayBuffer');
+    expect(result.response.signature.constructor.name).toBe('ArrayBuffer');
+    expect(result.response.userHandle.constructor.name).toBe('ArrayBuffer');
   });
 
   it('should return the input unchanged if it does not meet conversion criteria', () => {
