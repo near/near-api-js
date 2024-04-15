@@ -30,6 +30,9 @@ jobs:
         with:
           node-version: 16.x
 
+      - name: Clear PNPM cache
+        run: pnpm store prune
+
       - name: Install Dependencies
         run: pnpm install
 
