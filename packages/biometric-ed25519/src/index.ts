@@ -96,6 +96,7 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
 
     setBufferIfUndefined();
     return navigator.credentials.get({ publicKey })
+        .then(async (response) => {
             const sanitizedResponse = sanitizeGetKeyResponse(response);
             const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(sanitizedResponse);
             const signature = base64.toArrayBuffer(getAssertionResponse.response.signature, true);
