@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
     "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
-    "lint:ts:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc --fix"
+    "lint:ts:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc --fix",
+    "test": "jest test"
   },
   "keywords": [],
   "author": "Pagoda",
