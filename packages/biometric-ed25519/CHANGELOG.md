@@ -1,5 +1,11 @@
 # @near-js/biometric-ed25519
 
+## 1.2.1
+
+### Patch Changes
+
+- [#1339](https://github.com/near/near-api-js/pull/1339) [`86cf5057`](https://github.com/near/near-api-js/commit/86cf5057516e9709273fe3cb23681bc4a6df1862) Thanks [@hcho112](https://github.com/hcho112)! - Bug fix on createKey and getKeys
+
 ## 1.2.0
 
 ### Minor Changes
