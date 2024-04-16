@@ -92,17 +92,75 @@ export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
     return BigInt('0x' + array.map(byte => byte.toString(16).padStart(2, '0')).join(''));
 };
 
-// This function is tries converts Uint8Array, Array or object to ArrayBuffer. Returns the original object if it doesn't match any of the aforementioned types.
-export const convertToArrayBuffer = (obj) => {
+const convertUint8ArrayToArrayBuffer = (obj: any) => {
     if (obj instanceof Uint8Array) {
         return obj.buffer.slice(obj.byteOffset, obj.byteOffset + obj.byteLength);
-    } else if (Array.isArray(obj)) {
-        return obj.map(convertToArrayBuffer);
-    } else if (obj !== null && typeof obj === 'object') {
-        return Object.keys(obj).reduce((acc, key) => {
-            acc[key] = convertToArrayBuffer(obj[key]);
-            return acc;
-        }, {});
     }
     return obj;
+};
+
+// This function is used to sanitize the response from navigator.credentials.create(), seeking for any Uint8Array and converting them to ArrayBuffer
+// This function has multiple @ts-ignore because types are not up to date with standard type below:
+// https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAttestationResponse
+// an AuthenticatorAttestationResponse (when the PublicKeyCredential is created via CredentialsContainer.create())
+export const sanitizeCreateKeyResponse = (res: Credential) => {
+    if (res instanceof PublicKeyCredential && (
+        res.rawId instanceof Uint8Array ||
+        res.response.clientDataJSON instanceof Uint8Array ||
+        //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //  @ts-ignore - attestationObject is not defined in Credential
+        res.response.attestationObject instanceof Uint8Array
+    )) {
+        return {
+            ...res,
+            rawId: convertUint8ArrayToArrayBuffer(res.rawId),
+            response: {
+                ...res.response,
+                clientDataJSON: convertUint8ArrayToArrayBuffer(res.response.clientDataJSON),
+                //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //  @ts-ignore - attestationObject is not defined in Credential
+                attestationObject: convertUint8ArrayToArrayBuffer(res.response.attestationObject),
+            }
+        };
+    }
+    return res;  
+};
+
+// This function is used to sanitize the response from navigator.credentials.get(), seeking for any Uint8Array and converting them to ArrayBuffer
+// This function has multiple @ts-ignore because types are not up to date with standard type below:
+// https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAssertionResponse
+// an AuthenticatorAssertionResponse (when the PublicKeyCredential is obtained via CredentialsContainer.get()).
+export const sanitizeGetKeyResponse = (res: Credential) => {
+    if (res instanceof PublicKeyCredential && (
+        res.rawId instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //   @ts-ignore - authenticatorData is not defined in Credential
+      res.response.authenticatorData instanceof Uint8Array ||
+      res.response.clientDataJSON instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //   @ts-ignore - signature is not defined in Credential
+      res.response.signature instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //   @ts-ignore - userHandle is not defined in Credential
+      res.response.userHandle instanceof Uint8Array
+    )) {
+        return {
+            ...res,
+            rawId: convertUint8ArrayToArrayBuffer(res.rawId),
+            response: {
+                ...res.response,
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //   @ts-ignore - authenticatorData is not defined in Credential
+                authenticatorData: convertUint8ArrayToArrayBuffer(res.response.authenticatorData),
+                clientDataJSON: convertUint8ArrayToArrayBuffer(res.response.clientDataJSON),
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //   @ts-ignore - signature is not defined in Credential
+                signature: convertUint8ArrayToArrayBuffer(res.response.signature),
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //   @ts-ignore - userHandle is not defined in Credential
+                userHandle: convertUint8ArrayToArrayBuffer(res.response.userHandle),
+            }
+        };
+    }
+    return res;
 };

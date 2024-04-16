@@ -13,7 +13,8 @@ import {
     publicKeyCredentialToJSON,
     recoverPublicKey,
     uint8ArrayToBigInt,
-    convertToArrayBuffer
+    sanitizeCreateKeyResponse,
+    sanitizeGetKeyResponse
 } from './utils';
 import { Fido2 } from './fido2';
 import { AssertionResponse } from './index.d';
@@ -64,7 +65,7 @@ export const createKey = async (username: string): Promise<KeyPair> => {
                 throw new PasskeyProcessCanceled('Failed to retrieve response from navigator.credentials.create');
             }
 
-            const sanitizedResponse = convertToArrayBuffer(res);
+            const sanitizedResponse = sanitizeCreateKeyResponse(res);
 
             const result = await f2l.attestation({
                 clientAttestationResponse: sanitizedResponse,
@@ -95,8 +96,8 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
 
     setBufferIfUndefined();
     return navigator.credentials.get({ publicKey })
-        .then(async (response: Credential) => {
-            const sanitizedResponse = convertToArrayBuffer(response);
+        .then(async (response) => {
+            const sanitizedResponse = sanitizeGetKeyResponse(response);
             const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(sanitizedResponse);
             const signature = base64.toArrayBuffer(getAssertionResponse.response.signature, true);
 
