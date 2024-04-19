@@ -1,7 +1,9 @@
 const { baseEncode } = require('@near-js/utils');
 const { sha256 } = require('@noble/hashes/sha256');
-
 const { KeyPair, KeyPairEd25519, PublicKey } = require('../lib');
+
+const { TextEncoder } = require('util');
+global.TextEncoder = TextEncoder;
 
 test('test sign and verify', async () => {
     const keyPair = new KeyPairEd25519('26x56YPzPDro5t2smQfGcYAPy3j7R2jB2NUb7xKbAGK23B6x4WNQPh3twb6oDksFov5X8ts5CtntUNbpQpAKFdbR');

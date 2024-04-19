@@ -24,7 +24,7 @@ export class KeyPairEd25519 extends KeyPairBase {
         super();
         const decoded = baseDecode(extendedSecretKey);
         const secretKey = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
-        const publicKey = ed25519.getPublicKey(secretKey);
+        const publicKey = ed25519.getPublicKey(new Uint8Array(secretKey));
         this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: publicKey });
         this.secretKey = baseEncode(secretKey);
         this.extendedSecretKey = extendedSecretKey;

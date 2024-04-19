@@ -7,5 +7,5 @@ describe('In-memory keystore', () => {
         ctx.keyStore = new InMemoryKeyStore();
     });
 
-    require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
+    require('./keystore_common').shouldStoreAndRetrieveKeys(ctx);
 });

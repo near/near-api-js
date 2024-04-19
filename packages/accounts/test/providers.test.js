@@ -2,7 +2,7 @@ const base58 = require('bs58');
 
 const testUtils = require('./test-utils');
 const { KeyPair } = require('@near-js/crypto');
-let ERRORS_JSON = require('../../utils/lib/errors/error_messages.json');
+let ERRORS_JSON = require('@near-js/utils/lib/errors/error_messages.json');
 
 jest.setTimeout(60000);
 
