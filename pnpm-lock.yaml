@@ -371,8 +371,8 @@ importers:
         specifier: 0.5.1
         version: 0.5.1
       near-workspaces:
-        specifier: 3.4.0
-        version: 3.4.0
+        specifier: 3.5.0
+        version: 3.5.0
       rimraf:
         specifier: 3.0.2
         version: 3.0.2
@@ -6739,15 +6739,6 @@ packages:
     resolution: {integrity: sha512-k7S8VFyESWgkKYDso99B4XbxAdo0VX9b3+GAaO5PvMgQjNr/6o09PHRywg/NkBQpf+ZYj7nNpJcyrNJGQsvA3w==}
     dev: true
 
-  /near-sandbox@0.0.15:
-    resolution: {integrity: sha512-scFdPDoT8G0GteHJID8KLZQNGtg7zpjBnRZUZTjXVO8atKzHYw8iawpc+ekylErn5bbWG49Tv4KySBUv4chIRA==}
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      got: 11.8.6
-      tar: 6.2.0
-    dev: true
-
   /near-sandbox@0.0.17:
     resolution: {integrity: sha512-bL0We378hFZ0/xHAKP5mAWKS5OjzU6+VuvMlXpMwyFAwG2s5NwOnzRTezvYYwQNtG3iU+xvQ6jWvp7UO1STGLQ==}
     hasBin: true
@@ -6762,31 +6753,6 @@ packages:
     hasBin: true
     dependencies:
       bn.js: 5.2.1
-    dev: true
-
-  /near-workspaces@3.4.0:
-    resolution: {integrity: sha512-OjBUXtNaYCRgUTyAw1rarDVElzggYszAGDR62x9gHscSNhAkLiCLP0jF8BHnuF0CL/XWuQtNeLS9m91KdieytQ==}
-    engines: {node: '>= 14.0.0', npm: '>= 6.0.0'}
-    requiresBuild: true
-    dependencies:
-      base64url: 3.0.1
-      bn.js: 5.2.1
-      borsh: 0.5.0
-      bs58: 4.0.1
-      callsites: 4.1.0
-      fs-extra: 10.1.0
-      js-sha256: 0.9.0
-      near-api-js: 2.1.4
-      near-sandbox: 0.0.15
-      near-units: 0.1.9
-      node-port-check: 2.0.1
-      promisify-child-process: 4.1.2
-      proper-lockfile: 4.1.2
-      pure-uuid: 1.8.1
-      rimraf: 3.0.2
-      temp-dir: 2.0.0
-    transitivePeerDependencies:
-      - encoding
     dev: true
 
   /near-workspaces@3.5.0:
