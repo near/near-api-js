@@ -1,5 +1,6 @@
 import { Signer, InMemorySigner } from '@near-js/signers';
-import { Provider, JsonRpcProvider } from '@near-js/providers';
+import { Provider, JsonRpcProvider, FailoverRpcProvider } from '@near-js/providers';
+import { IntoConnection } from './interface';
 
 /**
  * @param config Contains connection info details
@@ -10,6 +11,10 @@ function getProvider(config: any): Provider {
         case undefined:
             return config;
         case 'JsonRpcProvider': return new JsonRpcProvider({ ...config.args });
+        case 'FailoverRpcProvider': {
+            const providers = (config?.args || []).map((arg) => new JsonRpcProvider(arg));
+            return new FailoverRpcProvider(providers);
+        }
         default: throw new Error(`Unknown provider type ${config.type}`);
     }
 }
@@ -32,7 +37,7 @@ function getSigner(config: any): Signer {
 /**
  * Connects an account to a given network via a given provider
  */
-export class Connection {
+export class Connection implements IntoConnection {
     readonly networkId: string;
     readonly provider: Provider;
     readonly signer: Signer;
@@ -43,6 +48,10 @@ export class Connection {
         this.provider = provider;
         this.signer = signer;
         this.jsvmAccountId = jsvmAccountId; 
+    }
+
+    getConnection(): Connection {
+        return this;
     }
 
     /**

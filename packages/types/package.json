@@ -1,6 +1,6 @@
 {
   "name": "@near-js/types",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "TypeScript types for working with the Near JS API",
   "main": "lib/index.js",
   "scripts": {

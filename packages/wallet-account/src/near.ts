@@ -18,6 +18,7 @@ import { PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { Signer } from '@near-js/signers';
 import { LoggerService } from '@near-js/utils';
+import { Provider } from '@near-js/providers';
 
 export interface NearConfig {
     /** Holds {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} for signing transactions */
@@ -80,6 +81,13 @@ export interface NearConfig {
      * Specifies the logger to use.  Pass `false` to turn off logging.
      */
     logger?: LoggerService | false;
+    /**
+     * Specifies NEAR RPC API connections, and is used to make JSON RPC calls to interact with NEAR
+     * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}
+     * @see {@link "@near-js/providers".json-rpc-provider.FailoverRpcProvider | FailoverRpcProvider}
+     * @see [List of available and public JSON RPC endpoints](https://docs.near.org/api/rpc/providers)
+     */
+    provider?: Provider;
 }
 
 /**
@@ -98,7 +106,7 @@ export class Near {
         this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
-            provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
+            provider: config.provider || { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
             signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps?.keyStore },
             jsvmAccountId: config.jsvmAccountId || `jsvm.${config.networkId}`
         });

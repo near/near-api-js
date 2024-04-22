@@ -57,6 +57,21 @@ const REQUEST_RETRY_WAIT_BACKOFF = 1.5;
 /// Keep ids unique across all connections.
 let _nextId = 123;
 
+type RequestOptions = {
+    /**
+     * Number of retries before giving up on a request
+     */
+    retries: number;
+    /**
+     * Wait until next retry in milliseconds
+     */
+    wait: number;
+    /**
+     * Exponential back off for waiting to retry again
+     */
+    backoff: number;
+}
+
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
  * @see [https://github.com/near/nearcore/tree/master/chain/jsonrpc](https://github.com/near/nearcore/tree/master/chain/jsonrpc)
@@ -65,12 +80,21 @@ export class JsonRpcProvider extends Provider {
     /** @hidden */
     readonly connection: ConnectionInfo;
 
+    /** @hidden */
+    readonly options: RequestOptions;
+
     /**
      * @param connectionInfo Connection info
      */
-    constructor(connectionInfo: ConnectionInfo) {
+    constructor(connectionInfo: ConnectionInfo, options?: Partial<RequestOptions>) {
         super();
         this.connection = connectionInfo || { url: '' };
+        const defaultOptions: RequestOptions = {
+            retries: REQUEST_RETRY_NUMBER,
+            wait: REQUEST_RETRY_WAIT,
+            backoff: REQUEST_RETRY_WAIT_BACKOFF
+        };
+        this.options = Object.assign({}, defaultOptions, options);
     }
 
     /**
@@ -354,7 +378,7 @@ export class JsonRpcProvider extends Provider {
      * @param params Parameters to the method
      */
     async sendJsonRpc<T>(method: string, params: object): Promise<T> {
-        const response = await exponentialBackoff(REQUEST_RETRY_WAIT, REQUEST_RETRY_NUMBER, REQUEST_RETRY_WAIT_BACKOFF, async () => {
+        const response = await exponentialBackoff(this.options.wait, this.options.retries, this.options.backoff, async () => {
             try {
                 const request = {
                     method,
@@ -411,7 +435,7 @@ export class JsonRpcProvider extends Provider {
         //   This member MUST NOT exist if there was an error invoking the method.
         if (typeof result === 'undefined') {
             throw new TypedError(
-                `Exceeded ${REQUEST_RETRY_NUMBER} attempts for request to ${method}.`, 'RetriesExceeded');
+                `Exceeded ${this.options.retries} attempts for request to ${method}.`, 'RetriesExceeded');
         }
         return result;
     }

@@ -1,25 +1,28 @@
 import { BlockReference, ContractCodeView } from '@near-js/types';
 import { printTxOutcomeLogs } from '@near-js/utils';
-import { Account, FunctionCallOptions } from '../account';
+import { FunctionCallOptions } from '../interface';
 import { Storage } from './storage';
 import { Runtime } from './runtime';
 import { ContractState } from './types';
+import { viewState } from '../utils';
+import { Connection } from '../connection';
+import { IntoConnection } from '../interface';
 
 interface ViewFunctionCallOptions extends FunctionCallOptions {
     blockQuery?: BlockReference
 }
 
 export class LocalViewExecution {
-    private readonly account: Account;
+    private readonly connection: Connection;
     private readonly storage: Storage;
 
-    constructor(account: Account) {
-        this.account = account;
+    constructor(connection: IntoConnection) {
+        this.connection = connection.getConnection();
         this.storage = new Storage();
     }
 
     private async fetchContractCode(contractId: string, blockQuery: BlockReference) {
-        const result = await this.account.connection.provider.query<ContractCodeView>({
+        const result = await this.connection.provider.query<ContractCodeView>({
             request_type: 'view_code',
             account_id: contractId,
             ...blockQuery,
@@ -28,18 +31,18 @@ export class LocalViewExecution {
         return result.code_base64;
     }
 
-    private async fetchContractState(blockQuery: BlockReference): Promise<ContractState> {
-        return this.account.viewState('', blockQuery);
+    private async fetchContractState(contractId: string, blockQuery: BlockReference): Promise<ContractState> {
+        return viewState(this.connection, contractId, '', blockQuery);
     }
 
     private async fetch(contractId: string, blockQuery: BlockReference) {
-        const block = await this.account.connection.provider.block(blockQuery);
+        const block = await this.connection.provider.block(blockQuery);
         const blockHash = block.header.hash;
         const blockHeight = block.header.height;
         const blockTimestamp = block.header.timestamp;
 
         const contractCode = await this.fetchContractCode(contractId, blockQuery);
-        const contractState = await this.fetchContractState(blockQuery);
+        const contractState = await this.fetchContractState(contractId, blockQuery);
 
         return {
             blockHash,

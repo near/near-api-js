@@ -1,5 +1,25 @@
 # @near-js/biometric-ed25519
 
+## 1.2.1
+
+### Patch Changes
+
+- [#1339](https://github.com/near/near-api-js/pull/1339) [`86cf5057`](https://github.com/near/near-api-js/commit/86cf5057516e9709273fe3cb23681bc4a6df1862) Thanks [@hcho112](https://github.com/hcho112)! - Bug fix on createKey and getKeys
+
+## 1.2.0
+
+### Minor Changes
+
+- [#1331](https://github.com/near/near-api-js/pull/1331) [`bc2e982b`](https://github.com/near/near-api-js/commit/bc2e982b35a6777c33675a1502a40404c9dd9df2) Thanks [@hcho112](https://github.com/hcho112)! - Include sanitization on navigator.credentials response to support Bitwarden password manager
+
+### Patch Changes
+
+- [#1223](https://github.com/near/near-api-js/pull/1223) [`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Replace bn.js by BigInt.
+
+- Updated dependencies [[`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b)]:
+  - @near-js/utils@0.2.0
+  - @near-js/crypto@1.2.2
+
 ## 1.1.2
 
 ### Patch Changes
