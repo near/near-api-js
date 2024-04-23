@@ -42,6 +42,7 @@
         "lib"
     ],
     "resolutions": {
-        "near-sandbox": "0.0.18"
+        "near-sandbox": "0.0.18",
+        "near-api-js": "4.0.0"
     }
 }
