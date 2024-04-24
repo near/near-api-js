@@ -32,7 +32,7 @@ test('create account and then view account returns the created account', async (
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
     const { amount } = await workingAccount.state();
     const newAmount = BigInt(amount) / BigInt(10);
-    await workingAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
+    await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
     expect(state.amount).toEqual(newAmount.toString());
@@ -122,8 +122,8 @@ describe('with deploy contract', () => {
     beforeAll(async () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = [...fs.readFileSync(HELLO_WASM_PATH)];
-        await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-        contract = new Contract(workingAccount, contractId, {
+        await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
+        contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
         });

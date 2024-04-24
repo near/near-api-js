@@ -30,6 +30,7 @@ import {
 } from '@near-js/types';
 import { SignedTransaction } from '@near-js/transactions';
 import { Provider } from './provider';
+import { TxExecutionStatus } from '@near-js/types/src/provider/protocol';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
@@ -106,6 +107,10 @@ export class FailoverRpcProvider extends Provider {
         return this.withBackoff((currentProvider) => currentProvider.status());
     }
 
+    async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
+        return this.withBackoff((currentProvider) => currentProvider.sendTransactionUntil(signedTransaction, waitUntil));
+    }
+
     /**
      * Sends a signed transaction to the RPC and waits until transaction is fully complete
      * @see [https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
@@ -141,9 +146,10 @@ export class FailoverRpcProvider extends Provider {
      */
     async txStatus(
         txHash: Uint8Array | string,
-        accountId: string
+        accountId: string, 
+        waitUntil: TxExecutionStatus
     ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.txStatus(txHash, accountId)
+        return this.withBackoff((currentProvider) => currentProvider.txStatus(txHash, accountId, waitUntil)
         );
     }
 
@@ -156,9 +162,10 @@ export class FailoverRpcProvider extends Provider {
      */
     async txStatusReceipts(
         txHash: Uint8Array | string,
-        accountId: string
+        accountId: string,
+        waitUntil: TxExecutionStatus
     ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.txStatusReceipts(txHash, accountId)
+        return this.withBackoff((currentProvider) => currentProvider.txStatusReceipts(txHash, accountId, waitUntil)
         );
     }
 

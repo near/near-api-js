@@ -54,8 +54,7 @@ describe('providers', () => {
     });
     
     test('json rpc query view_state', async () => {
-        const account = await testUtils.createAccount(near);
-        const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
+        const contract = await testUtils.deployContract(near.accountCreator.masterAccount, testUtils.generateUniqueString('test'));
     
         await contract.setValue({ args: { value: 'hello' } });
     
@@ -69,17 +68,15 @@ describe('providers', () => {
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
-                proof: expect.any(Array),
                 values: [
-                    { key: 'bmFtZQ==', proof: expect.any(Array), value: 'aGVsbG8=' }
+                    { key: 'bmFtZQ==', value: 'aGVsbG8=' }
                 ]
             });
         });
     });
     
     test('json rpc query view_code', async () => {
-        const account = await testUtils.createAccount(near);
-        const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
+        const contract = await testUtils.deployContract(near.accountCreator.masterAccount, testUtils.generateUniqueString('test'));
     
         return testUtils.waitFor(async () => {
             const response = await provider.query({
@@ -98,8 +95,7 @@ describe('providers', () => {
     });
     
     test('json rpc query call_function', async () => {
-        const account = await testUtils.createAccount(near);
-        const contract = await testUtils.deployContract(account, testUtils.generateUniqueString('test'));
+        const contract = await testUtils.deployContract(near.accountCreator.masterAccount, testUtils.generateUniqueString('test'));
     
         await contract.setValue({ args: { value: 'hello' } });
     
@@ -192,9 +188,8 @@ describe('providers', () => {
 
 describe('providers errors', () => {
     test('JSON RPC Error - MethodNotFound', async () => {
-        const account = await testUtils.createAccount(near);
         const contract = await testUtils.deployContract(
-            account,
+            near.accountCreator.masterAccount,
             testUtils.generateUniqueString('test')
         );
 
