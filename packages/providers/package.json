@@ -1,6 +1,6 @@
 {
   "name": "@near-js/providers",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Library of implementations for interfacing with the NEAR blockchain",
   "main": "lib/index.js",
   "scripts": {
@@ -34,5 +34,9 @@
   },
   "files": [
     "lib"
-  ]
+  ],
+  "resolutions": {
+    "near-sandbox": "0.0.18",
+    "near-api-js": "4.0.0"
+  }
 }

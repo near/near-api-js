@@ -1,6 +1,6 @@
 {
     "name": "@near-js/accounts",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Classes encapsulating account-specific functionality",
     "main": "lib/index.js",
     "scripts": {
@@ -40,5 +40,9 @@
     },
     "files": [
         "lib"
-    ]
+    ],
+    "resolutions": {
+        "near-sandbox": "0.0.18",
+        "near-api-js": "4.0.0"
+    }
 }

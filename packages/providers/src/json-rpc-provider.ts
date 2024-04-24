@@ -42,6 +42,7 @@ import {
 import { exponentialBackoff } from './exponential-backoff';
 import { Provider } from './provider';
 import { ConnectionInfo, fetchJson } from './fetch_json';
+import { TxExecutionStatus } from '@near-js/types/src/provider/protocol';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
@@ -105,14 +106,24 @@ export class JsonRpcProvider extends Provider {
     }
 
     /**
+     * Sends a signed transaction to the RPC
+     *
+     * @param signedTransaction The signed transaction being sent
+     * @param waitUntil
+     */
+    async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
+        const bytes = encodeTransaction(signedTransaction);
+        return this.sendJsonRpc('send_tx', { signed_tx_base64: Buffer.from(bytes).toString('base64'), wait_until: waitUntil });
+    }
+
+    /**
      * Sends a signed transaction to the RPC and waits until transaction is fully complete
      * @see [https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
      *
      * @param signedTransaction The signed transaction being sent
      */
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
-        const bytes = encodeTransaction(signedTransaction);
-        return this.sendJsonRpc('broadcast_tx_commit', [Buffer.from(bytes).toString('base64')]);
+        return this.sendTransactionUntil(signedTransaction, 'FINAL');
     }
 
     /**
@@ -122,8 +133,7 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
-        const bytes = encodeTransaction(signedTransaction);
-        return this.sendJsonRpc('broadcast_tx_async', [Buffer.from(bytes).toString('base64')]);
+        return this.sendTransactionUntil(signedTransaction, 'NONE');
     }
 
     /**
@@ -132,21 +142,22 @@ export class JsonRpcProvider extends Provider {
      *
      * @param txHash A transaction hash as either a Uint8Array or a base58 encoded string
      * @param accountId The NEAR account that signed the transaction
+     * @param waitUntil
      */
-    async txStatus(txHash: Uint8Array | string, accountId: string): Promise<FinalExecutionOutcome> {
+    async txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'FINAL'): Promise<FinalExecutionOutcome> {
         if (typeof txHash === 'string') {
-            return this.txStatusString(txHash, accountId);
+            return this.txStatusString(txHash, accountId, waitUntil);
         } else {
-            return this.txStatusUint8Array(txHash, accountId);
+            return this.txStatusUint8Array(txHash, accountId, waitUntil);
         }
     }
 
-    private async txStatusUint8Array(txHash: Uint8Array, accountId: string): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', [baseEncode(txHash), accountId]);
+    private async txStatusUint8Array(txHash: Uint8Array, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
+        return this.sendJsonRpc('tx', { tx_hash: baseEncode(txHash), sender_account_id: accountId, wait_until: waitUntil });
     }
 
-    private async txStatusString(txHash: string, accountId: string): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', [txHash, accountId]);
+    private async txStatusString(txHash: string, accountId: string, waitUntil: string): Promise<FinalExecutionOutcome> {
+        return this.sendJsonRpc('tx', { tx_hash: txHash, sender_account_id: accountId, wait_until: waitUntil });
     }
 
     /**
@@ -154,14 +165,15 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status-with-receipts)
      * @param txHash The hash of the transaction
      * @param accountId The NEAR account that signed the transaction
+     * @param waitUntil
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async txStatusReceipts(txHash: Uint8Array | string, accountId: string): Promise<FinalExecutionOutcome> {
+    async txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'FINAL'): Promise<FinalExecutionOutcome> {
         if (typeof txHash === 'string') {
-            return this.sendJsonRpc('EXPERIMENTAL_tx_status', [txHash, accountId]);
+            return this.sendJsonRpc('EXPERIMENTAL_tx_status', { tx_hash: txHash, sender_account_id: accountId, wait_until: waitUntil });
         }
         else {
-            return this.sendJsonRpc('EXPERIMENTAL_tx_status', [baseEncode(txHash), accountId]);
+            return this.sendJsonRpc('EXPERIMENTAL_tx_status', { tx_hash: baseEncode(txHash), sender_account_id: accountId, wait_until: waitUntil });
         }
     }
 

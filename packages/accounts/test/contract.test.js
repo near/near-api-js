@@ -108,7 +108,6 @@ describe('changeMethod', () => {
 
 describe('local view execution', () => {
     let nearjs;
-    let workingAccount;
     let contract;
     let blockQuery;
 
@@ -116,8 +115,7 @@ describe('local view execution', () => {
 
     beforeAll(async () => {
         nearjs = await testUtils.setUpTestConnection();
-        workingAccount = await testUtils.createAccount(nearjs);
-        contract = await testUtils.deployContractGuestBook(workingAccount, testUtils.generateUniqueString('guestbook'));
+        contract = await testUtils.deployContractGuestBook(nearjs.accountCreator.masterAccount, testUtils.generateUniqueString('guestbook'));
         
         await contract.add_message({ text: 'first message' });
         await contract.add_message({ text: 'second message' });
@@ -178,16 +176,14 @@ describe('local view execution', () => {
 
 describe('contract without account', () => {
     let nearjs;
-    let workingAccount;
     let contract;
 
     jest.setTimeout(60000);
 
     beforeAll(async () => {
         nearjs = await testUtils.setUpTestConnection();
-        workingAccount = await testUtils.createAccount(nearjs);
         const contractId = testUtils.generateUniqueString('guestbook');
-        await testUtils.deployContractGuestBook(workingAccount, contractId);
+        await testUtils.deployContractGuestBook(nearjs.accountCreator.masterAccount, contractId);
 
         contract = new Contract(nearjs.connection, contractId, {
             viewMethods: ['total_messages', 'get_messages'],
@@ -200,13 +196,13 @@ describe('contract without account', () => {
         expect(totalMessagesBefore).toBe(0);
 
         await contract.add_message({
-            signerAccount: workingAccount,
+            signerAccount: nearjs.accountCreator.masterAccount,
             args: {
                 text: 'first message',
             }
         });
         await contract.add_message({
-            signerAccount: workingAccount,
+            signerAccount: nearjs.accountCreator.masterAccount,
             args: {
                 text: 'second message',
             }
