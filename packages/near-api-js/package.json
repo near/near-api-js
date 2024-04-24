@@ -80,5 +80,9 @@
         "dist",
         "browser-exports.js"
     ],
-    "author": "NEAR Inc"
+    "author": "NEAR Inc",
+    "resolutions": {
+        "near-sandbox": "0.0.18",
+        "near-api-js": "4.0.0"
+    }
 }
