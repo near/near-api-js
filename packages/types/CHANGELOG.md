@@ -1,5 +1,11 @@
 # @near-js/types
 
+## 0.2.0
+
+### Minor Changes
+
+- [#1317](https://github.com/near/near-api-js/pull/1317) [`06baa81d`](https://github.com/near/near-api-js/commit/06baa81dc604cfe0463476de7a4dcdd39a6f716a) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Add support for nearcore 1.37 changes
+
 ## 0.1.0
 
 ### Minor Changes

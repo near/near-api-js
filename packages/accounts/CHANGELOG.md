@@ -1,5 +1,21 @@
 # @near-js/accounts
 
+## 1.2.0
+
+### Minor Changes
+
+- [#1317](https://github.com/near/near-api-js/pull/1317) [`06baa81d`](https://github.com/near/near-api-js/commit/06baa81dc604cfe0463476de7a4dcdd39a6f716a) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Add support for nearcore 1.37 changes
+
+### Patch Changes
+
+- Updated dependencies [[`06baa81d`](https://github.com/near/near-api-js/commit/06baa81dc604cfe0463476de7a4dcdd39a6f716a)]:
+  - @near-js/types@0.2.0
+  - @near-js/crypto@1.2.3
+  - @near-js/providers@0.2.1
+  - @near-js/transactions@1.2.1
+  - @near-js/utils@0.2.1
+  - @near-js/signers@0.1.3
+
 ## 1.1.0
 
 ### Minor Changes
