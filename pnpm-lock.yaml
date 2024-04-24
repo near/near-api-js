@@ -70,32 +70,6 @@ importers:
       lru_map: 0.4.1
       near-abi: 0.1.1
     devDependencies:
-<<<<<<< HEAD
-      '@near-js/keystores':
-        specifier: workspace:*
-        version: link:../keystores
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      bs58:
-        specifier: 4.0.0
-        version: 4.0.0
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      near-hello:
-        specifier: 0.5.1
-        version: 0.5.1
-      near-workspaces:
-        specifier: 3.5.0
-        version: 3.5.0
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@near-js/keystores': link:../keystores
       '@types/node': 18.11.18
       bs58: 4.0.0
@@ -104,7 +78,6 @@ importers:
       near-workspaces: 3.5.0
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/biometric-ed25519:
     specifiers:
@@ -130,17 +103,8 @@ importers:
       buffer: 6.0.3
       fido2-lib: 3.4.1
     devDependencies:
-<<<<<<< HEAD
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-=======
       '@types/node': 18.11.18
       jest: 26.0.1
->>>>>>> master
 
   packages/cookbook:
     specifiers:
@@ -160,7 +124,7 @@ importers:
       '@near-js/transactions': link:../transactions
       chalk: 4.1.1
       homedir: 0.6.0
-      near-api-js: link:../near-api-js
+      near-api-js: 4.0.0
 
   packages/crypto:
     specifiers:
@@ -170,54 +134,22 @@ importers:
       '@types/node': 18.11.18
       borsh: 1.0.0
       jest: 26.0.1
+      patch-package: 8.0.0
       randombytes: 2.1.0
       ts-jest: 26.5.6
       typescript: 4.9.4
     dependencies:
-<<<<<<< HEAD
-      '@near-js/types':
-        specifier: workspace:*
-        version: link:../types
-      '@near-js/utils':
-        specifier: workspace:*
-        version: link:../utils
-      '@noble/curves':
-        specifier: 1.2.0
-        version: 1.2.0
-      borsh:
-        specifier: 1.0.0
-        version: 1.0.0
-      patch-package:
-        specifier: 8.0.0
-        version: 8.0.0
-      randombytes:
-        specifier: 2.1.0
-        version: 2.1.0
-    devDependencies:
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@near-js/types': link:../types
       '@near-js/utils': link:../utils
       '@noble/curves': 1.2.0
       borsh: 1.0.0
+      patch-package: 8.0.0
       randombytes: 2.1.0
     devDependencies:
       '@types/node': 18.11.18
       jest: 26.0.1
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/iframe-rpc:
     specifiers:
@@ -240,25 +172,10 @@ importers:
       '@near-js/crypto': link:../crypto
       '@near-js/types': link:../types
     devDependencies:
-<<<<<<< HEAD
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@types/node': 18.11.18
       jest: 26.0.1
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/keystores-browser:
     specifiers:
@@ -271,21 +188,9 @@ importers:
       '@near-js/crypto': link:../crypto
       '@near-js/keystores': link:../keystores
     devDependencies:
-<<<<<<< HEAD
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       jest: 26.0.1
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/keystores-node:
     specifiers:
@@ -299,25 +204,10 @@ importers:
       '@near-js/crypto': link:../crypto
       '@near-js/keystores': link:../keystores
     devDependencies:
-<<<<<<< HEAD
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@types/node': 18.11.18
       jest: 26.0.1
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/near-api-js:
     specifiers:
@@ -374,59 +264,6 @@ importers:
       near-abi: 0.1.1
       node-fetch: 2.6.7
     devDependencies:
-<<<<<<< HEAD
-      '@types/http-errors':
-        specifier: 1.6.1
-        version: 1.6.1
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      browserify:
-        specifier: 16.2.3
-        version: 16.2.3
-      bs58:
-        specifier: 4.0.0
-        version: 4.0.0
-      bundlewatch:
-        specifier: 0.3.1
-        version: 0.3.1
-      concurrently:
-        specifier: 7.3.0
-        version: 7.3.0
-      danger:
-        specifier: 11.1.1
-        version: 11.1.1
-      danger-plugin-yarn:
-        specifier: 1.3.2
-        version: 1.3.2
-      in-publish:
-        specifier: 2.0.0
-        version: 2.0.0
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      localstorage-memory:
-        specifier: 1.0.3
-        version: 1.0.3
-      near-hello:
-        specifier: 0.5.1
-        version: 0.5.1
-      near-workspaces:
-        specifier: 3.5.0
-        version: 3.5.0
-      rimraf:
-        specifier: 3.0.2
-        version: 3.0.2
-      semver:
-        specifier: 7.1.1
-        version: 7.1.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)
-      uglifyify:
-        specifier: 5.0.1
-        version: 5.0.1
-=======
       '@types/http-errors': 1.6.1
       '@types/node': 18.11.18
       browserify: 16.2.3
@@ -444,7 +281,6 @@ importers:
       semver: 7.1.1
       ts-jest: 26.5.6_jest@26.0.1
       uglifyify: 5.0.1
->>>>>>> master
 
   packages/providers:
     specifiers:
@@ -468,29 +304,11 @@ importers:
     optionalDependencies:
       node-fetch: 2.6.7
     devDependencies:
-<<<<<<< HEAD
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      near-workspaces:
-        specifier: 3.5.0
-        version: 3.5.0
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@types/node': 18.11.18
       jest: 26.0.1
       near-workspaces: 3.5.0
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/signers:
     specifiers:
@@ -506,25 +324,10 @@ importers:
       '@near-js/keystores': link:../keystores
       '@noble/hashes': 1.3.3
     devDependencies:
-<<<<<<< HEAD
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@types/node': 18.11.18
       jest: 26.0.1
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/transactions:
     specifiers:
@@ -547,29 +350,11 @@ importers:
       '@noble/hashes': 1.3.3
       borsh: 1.0.0
     devDependencies:
-<<<<<<< HEAD
-      '@near-js/keystores':
-        specifier: workspace:*
-        version: link:../keystores
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@near-js/keystores': link:../keystores
       '@types/node': 18.11.18
       jest: 26.0.1
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/types:
     specifiers:
@@ -578,25 +363,10 @@ importers:
       ts-jest: 26.5.6
       typescript: 4.9.4
     devDependencies:
-<<<<<<< HEAD
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@types/node': 18.11.18
       jest: 26.0.1
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/utils:
     specifiers:
@@ -614,25 +384,10 @@ importers:
       depd: 2.0.0
       mustache: 4.0.0
     devDependencies:
-<<<<<<< HEAD
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@types/node': 18.11.18
       jest: 26.0.1
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
   packages/wallet-account:
     specifiers:
@@ -661,29 +416,11 @@ importers:
       '@near-js/utils': link:../utils
       borsh: 1.0.0
     devDependencies:
-<<<<<<< HEAD
-      '@types/node':
-        specifier: 18.11.18
-        version: 18.11.18
-      jest:
-        specifier: 26.0.1
-        version: 26.0.1
-      localstorage-memory:
-        specifier: 1.0.3
-        version: 1.0.3
-      ts-jest:
-        specifier: 26.5.6
-        version: 26.5.6(jest@26.0.1)(typescript@4.9.4)
-      typescript:
-        specifier: 4.9.4
-        version: 4.9.4
-=======
       '@types/node': 18.11.18
       jest: 26.0.1
       localstorage-memory: 1.0.3
       ts-jest: 26.5.6_mz556kj7zhgdghaetpuduwsbgq
       typescript: 4.9.4
->>>>>>> master
 
 packages:
 
@@ -1527,11 +1264,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-<<<<<<< HEAD
-  /@jest/core@26.6.3:
-=======
   /@jest/core/26.6.3:
->>>>>>> master
     resolution: {integrity: sha512-xvV1kKbhfUqFVuZ8Cyo+JPpipAHHAV3kcDBftiduK8EICXmTFddryy3P7NfZt8Pv37rA9nEJBKCCkglCPt/Xjw==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -1655,11 +1388,7 @@ packages:
       collect-v8-coverage: 1.0.2
     dev: true
 
-<<<<<<< HEAD
-  /@jest/test-sequencer@26.6.3:
-=======
   /@jest/test-sequencer/26.6.3:
->>>>>>> master
     resolution: {integrity: sha512-YHlVIjP5nfEyjlrSr8t/YdNfU/1XEt7c5b4OxcXCjyRhjzLYu/rO69/WHPuYcbCWkz8kAeZVZp2N2+IOLLEPGw==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -1770,18 +1499,6 @@ packages:
   /@near-js/accounts/1.1.0:
     resolution: {integrity: sha512-YYudGgVepuWsLfusslj423IqH31A1YNS10ETgrg5zT8HEYUPpkevsdCAKslaihjQUAV6TVZ6bb3BjT7skoDMOg==}
     dependencies:
-<<<<<<< HEAD
-      '@near-js/crypto': 0.0.5
-      '@near-js/providers': 0.0.7
-      '@near-js/signers': 0.0.5
-      '@near-js/transactions': 0.2.1
-      '@near-js/types': 0.0.4
-      '@near-js/utils': 0.0.4
-      ajv: 8.11.2
-      ajv-formats: 2.1.1
-      bn.js: 5.2.1
-      borsh: 0.7.0
-=======
       '@near-js/crypto': 1.2.2
       '@near-js/providers': 0.2.0
       '@near-js/signers': 0.1.2
@@ -1789,14 +1506,12 @@ packages:
       '@near-js/types': 0.1.0
       '@near-js/utils': 0.2.0
       borsh: 1.0.0
->>>>>>> master
       depd: 2.0.0
       is-my-json-valid: 2.20.6
       lru_map: 0.4.1
       near-abi: 0.1.1
     transitivePeerDependencies:
       - encoding
-    dev: true
 
   /@near-js/crypto/1.2.2:
     resolution: {integrity: sha512-a/1SICBPg6zo+VGOy+HT448+uHXmlYnP4vwNUdJnmn0yMksi30G1N8BSU5tnP1SX904EASu1pdqSMWslERrCQw==}
@@ -1806,28 +1521,24 @@ packages:
       '@noble/curves': 1.2.0
       borsh: 1.0.0
       randombytes: 2.1.0
-    dev: true
 
   /@near-js/keystores-browser/0.0.10:
     resolution: {integrity: sha512-JX9WbpPnlKQCxEXJJ/AZHj2z2yuR/UnHcUPszz+Q2v1moL5wETBSuwe6jQOfmYZoM+vGU2Vh4fz3V8Ml/Oz3bw==}
     dependencies:
       '@near-js/crypto': 1.2.2
       '@near-js/keystores': 0.0.10
-    dev: true
 
   /@near-js/keystores-node/0.0.10:
     resolution: {integrity: sha512-fM5T+1pe1zHsaBwTW0JzPd5U93u6oGzUheg8Xpj8vEjSvISd9kreY14IQkbtXCtzsTsiIel05mIqHgmg35QNjg==}
     dependencies:
       '@near-js/crypto': 1.2.2
       '@near-js/keystores': 0.0.10
-    dev: true
 
   /@near-js/keystores/0.0.10:
     resolution: {integrity: sha512-rzGMkqY7EcIbUPrcSjK1RJi3dTXusfmZcxg2Jcc9u7VVjEjP/HVnvVaazsYC1la7812VSrDPxqHsZRzWSFxtMA==}
     dependencies:
       '@near-js/crypto': 1.2.2
       '@near-js/types': 0.1.0
-    dev: true
 
   /@near-js/providers/0.2.0:
     resolution: {integrity: sha512-K7RJTkVbn6SD68p/8TkxFjp6jhxNQrkjZ+etQxrBRAMS6kupLTobV+9AfAc1OaORO47X873p4BRhbm9KhCdmZg==}
@@ -1841,7 +1552,6 @@ packages:
       node-fetch: 2.6.7
     transitivePeerDependencies:
       - encoding
-    dev: true
 
   /@near-js/signers/0.1.2:
     resolution: {integrity: sha512-Echz+ldAFUDGntiBcnCZN4scHBIccz6xVC0Zt9cZu9I4SGKrWga0vNfAwXGVGep8YCEu8MwI9lE2B5n2ouc6kg==}
@@ -1849,7 +1559,6 @@ packages:
       '@near-js/crypto': 1.2.2
       '@near-js/keystores': 0.0.10
       '@noble/hashes': 1.3.3
-    dev: true
 
   /@near-js/transactions/1.2.0:
     resolution: {integrity: sha512-I9UVVPg0HHQUpL17tb9L1HgTMG5+KREI2mNQlvJhF5uE6DrI2tC/O4rQf3HZOUVWpUhOiXSKRfSXpgZq5TbXaw==}
@@ -1860,11 +1569,9 @@ packages:
       '@near-js/utils': 0.2.0
       '@noble/hashes': 1.3.3
       borsh: 1.0.0
-    dev: true
 
   /@near-js/types/0.1.0:
     resolution: {integrity: sha512-uQTB3G7251cKCFhM4poAgypTODb83jrqD5A5B0Nr89TAGbsYM2ozXJyffJpsWedbYhK527Jx/BFgs+Jzf3oO5g==}
-    dev: true
 
   /@near-js/utils/0.2.0:
     resolution: {integrity: sha512-Ul0NoOiV/vW6hnkYVMwRNbP18hB7mCRkqgSe1a2Qoe+3xFOMnjLVVod3Y1l/QXgp4yNDrLOd6r4PDPI72eKUww==}
@@ -1873,7 +1580,6 @@ packages:
       bs58: 4.0.0
       depd: 2.0.0
       mustache: 4.0.0
-    dev: true
 
   /@near-js/wallet-account/1.2.0:
     resolution: {integrity: sha512-3y0VxE2R2FxAHFJpRkhqIp+ZTc+/n42u3qSH0vzTTihzL2zfGF6z9Y2ArNQ7lQKNyiXd0vsFdAIwVcX5pEfq3A==}
@@ -1889,7 +1595,6 @@ packages:
       borsh: 1.0.0
     transitivePeerDependencies:
       - encoding
-    dev: true
 
   /@noble/curves/1.2.0:
     resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
@@ -2360,15 +2065,11 @@ packages:
       eslint-visitor-keys: 3.4.3
     dev: true
 
-<<<<<<< HEAD
-  /@yarnpkg/lockfile@1.1.0:
+  /@yarnpkg/lockfile/1.1.0:
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
     dev: false
 
-  /JSONStream@1.3.5:
-=======
   /JSONStream/1.3.5:
->>>>>>> master
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
     hasBin: true
     dependencies:
@@ -2449,20 +2150,7 @@ packages:
       - supports-color
     dev: true
 
-<<<<<<< HEAD
-  /ajv-formats@2.1.1:
-    resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
-    peerDependenciesMeta:
-      ajv:
-        optional: true
-    dependencies:
-      ajv: 8.11.2
-    dev: true
-
-  /ajv@6.12.6:
-=======
   /ajv/6.12.6:
->>>>>>> master
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
     dependencies:
       fast-deep-equal: 3.1.3
@@ -2565,11 +2253,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      is-array-buffer: 3.0.2
-=======
       is-array-buffer: 3.0.4
->>>>>>> master
     dev: true
 
   /array-ify/1.0.0:
@@ -2591,29 +2275,15 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      define-properties: 1.2.0
-      es-abstract: 1.22.1
-      es-shim-unscopables: 1.0.0
-=======
       define-properties: 1.2.1
       es-abstract: 1.23.3
       es-shim-unscopables: 1.0.2
->>>>>>> master
     dev: true
 
   /arraybuffer.prototype.slice/1.0.3:
     resolution: {integrity: sha512-bMxMKAjg13EBSVscxTaYA4mRc5t1UAXa2kXiGTNfZ079HIWXEkKmkgFrh/nJqamaLSrXO5H4WFFkPEaLJWbs3A==}
     engines: {node: '>= 0.4'}
     dependencies:
-<<<<<<< HEAD
-      array-buffer-byte-length: 1.0.0
-      call-bind: 1.0.7
-      define-properties: 1.2.0
-      get-intrinsic: 1.2.4
-      is-array-buffer: 3.0.2
-      is-shared-array-buffer: 1.0.2
-=======
       array-buffer-byte-length: 1.0.1
       call-bind: 1.0.7
       define-properties: 1.2.1
@@ -2622,7 +2292,6 @@ packages:
       get-intrinsic: 1.2.4
       is-array-buffer: 3.0.4
       is-shared-array-buffer: 1.0.3
->>>>>>> master
     dev: true
 
   /arrify/1.0.1:
@@ -2673,16 +2342,12 @@ packages:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
     dev: true
 
-<<<<<<< HEAD
-  /at-least-node@1.0.0:
+  /at-least-node/1.0.0:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
     engines: {node: '>= 4.0.0'}
     dev: false
 
-  /atob@2.1.2:
-=======
   /atob/2.1.2:
->>>>>>> master
     resolution: {integrity: sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==}
     engines: {node: '>= 4.5.0'}
     hasBin: true
@@ -2715,13 +2380,8 @@ packages:
       '@jest/types': 26.6.2
       '@types/babel__core': 7.20.5
       babel-plugin-istanbul: 6.1.1
-<<<<<<< HEAD
-      babel-preset-jest: 26.6.2(@babel/core@7.22.9)
-      chalk: 4.1.2
-=======
       babel-preset-jest: 26.6.2_@babel+core@7.24.4
       chalk: 4.1.1
->>>>>>> master
       graceful-fs: 4.2.11
       slash: 3.0.0
     transitivePeerDependencies:
@@ -3166,11 +2826,7 @@ packages:
     resolution: {integrity: sha512-WF0LihfemtesFcJgO7xfOoOcnWzY/QHR4qeDqV44jPU3HTI54+LnfXK3SA27AVVGCdZFgjjFFaqUA9Jx7dMJZA==}
     dev: true
 
-<<<<<<< HEAD
-  /call-bind@1.0.7:
-=======
   /call-bind/1.0.7:
->>>>>>> master
     resolution: {integrity: sha512-GHTSNSYICQ7scH7sZ+M2rFopRoLh8t2bLSW6BbgrtLsahOIB5iyAVJf9GjWK3cYTDaMj4XdBpM1cA6pIS0Kv2w==}
     engines: {node: '>= 0.4'}
     dependencies:
@@ -3178,12 +2834,7 @@ packages:
       es-errors: 1.3.0
       function-bind: 1.1.2
       get-intrinsic: 1.2.4
-<<<<<<< HEAD
-      set-function-length: 1.2.1
-=======
       set-function-length: 1.2.2
-    dev: true
->>>>>>> master
 
   /callsites/3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
@@ -3879,20 +3530,6 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-<<<<<<< HEAD
-  /define-data-property@1.1.4:
-    resolution: {integrity: sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      es-define-property: 1.0.0
-      es-errors: 1.3.0
-      gopd: 1.0.1
-
-  /define-properties@1.2.0:
-    resolution: {integrity: sha512-xvqAVKGfT1+UAvPwKTVw/njhdQ8ZhXK4lI0bCIuCMrp2up9nPnaDftrLtmpTazqd1o+UY4zgzU+avtMbDP+ldA==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-=======
   /define-data-property/1.1.4:
     resolution: {integrity: sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==}
     engines: {node: '>= 0.4'}
@@ -3900,14 +3537,12 @@ packages:
       es-define-property: 1.0.0
       es-errors: 1.3.0
       gopd: 1.0.1
-    dev: true
 
   /define-properties/1.2.1:
     resolution: {integrity: sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==}
     engines: {node: '>= 0.4'}
     dependencies:
       define-data-property: 1.1.4
->>>>>>> master
       has-property-descriptors: 1.0.2
       object-keys: 1.1.1
     dev: true
@@ -4126,22 +3761,6 @@ packages:
     resolution: {integrity: sha512-e+HfNH61Bj1X9/jLc5v1owaLYuHdeHHSQlkhCBiTK8rBvKaULl/beGMxwrMXjpYrv4pz22BlY570vVePA2ho4A==}
     engines: {node: '>= 0.4'}
     dependencies:
-<<<<<<< HEAD
-      array-buffer-byte-length: 1.0.0
-      arraybuffer.prototype.slice: 1.0.1
-      available-typed-arrays: 1.0.5
-      call-bind: 1.0.7
-      es-set-tostringtag: 2.0.1
-      es-to-primitive: 1.2.1
-      function.prototype.name: 1.1.5
-      get-intrinsic: 1.2.4
-      get-symbol-description: 1.0.0
-      globalthis: 1.0.3
-      gopd: 1.0.1
-      has: 1.0.3
-      has-property-descriptors: 1.0.2
-      has-proto: 1.0.1
-=======
       array-buffer-byte-length: 1.0.1
       arraybuffer.prototype.slice: 1.0.3
       available-typed-arrays: 1.0.7
@@ -4161,7 +3780,6 @@ packages:
       gopd: 1.0.1
       has-property-descriptors: 1.0.2
       has-proto: 1.0.3
->>>>>>> master
       has-symbols: 1.0.3
       hasown: 2.0.2
       internal-slot: 1.0.7
@@ -4191,37 +3809,15 @@ packages:
       which-typed-array: 1.1.15
     dev: true
 
-<<<<<<< HEAD
-  /es-define-property@1.0.0:
-    resolution: {integrity: sha512-jxayLKShrEqqzJ0eumQbVhTYQM27CfT1T35+gCgDFoL82JLsXqTJ76zv6A0YLOgEnLUMvLzsDsGIrl8NFpT2gQ==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      get-intrinsic: 1.2.4
-
-  /es-errors@1.3.0:
-    resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
-    engines: {node: '>= 0.4'}
-
-  /es-set-tostringtag@2.0.1:
-    resolution: {integrity: sha512-g3OMbtlwY3QewlqAiMLI47KywjWZoEytKr8pf6iTC8uJq5bIAH52Z9pnQ8pVL6whrCto53JZDuUIsifGeLorTg==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      get-intrinsic: 1.2.4
-      has: 1.0.3
-      has-tostringtag: 1.0.0
-=======
   /es-define-property/1.0.0:
     resolution: {integrity: sha512-jxayLKShrEqqzJ0eumQbVhTYQM27CfT1T35+gCgDFoL82JLsXqTJ76zv6A0YLOgEnLUMvLzsDsGIrl8NFpT2gQ==}
     engines: {node: '>= 0.4'}
     dependencies:
       get-intrinsic: 1.2.4
->>>>>>> master
-    dev: true
 
   /es-errors/1.3.0:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
-    dev: true
 
   /es-object-atoms/1.0.0:
     resolution: {integrity: sha512-MZ4iQ6JwHOBQjahnjwaC1ZtIBH+2ohjamzAO3oaHcXYup7qxjF2fixyH+Q71voWHeOkI2q/TnJao/KfXYIZWbw==}
@@ -4676,6 +4272,12 @@ packages:
       path-exists: 4.0.0
     dev: true
 
+  /find-yarn-workspace-root/2.0.0:
+    resolution: {integrity: sha512-1IMnbjt4KzsQfnhnzNd8wUEgXZ44IzZaZmnLYx7D5FZlaHt2gW20Cri8Q+E/t5tIj4+epTBub+2Zxu/vNILzqQ==}
+    dependencies:
+      micromatch: 4.0.5
+    dev: false
+
   /find-yarn-workspace-root2/1.2.16:
     resolution: {integrity: sha512-hr6hb1w8ePMpPVUK39S4RlwJzi+xPLuVuG8XlwXU3KD5Yn3qgBWVfy3AzNlDhWvE1EORCE65/Qm26rFQt3VLVA==}
     dependencies:
@@ -4683,19 +4285,8 @@ packages:
       pkg-dir: 4.2.0
     dev: true
 
-<<<<<<< HEAD
-  /find-yarn-workspace-root@2.0.0:
-    resolution: {integrity: sha512-1IMnbjt4KzsQfnhnzNd8wUEgXZ44IzZaZmnLYx7D5FZlaHt2gW20Cri8Q+E/t5tIj4+epTBub+2Zxu/vNILzqQ==}
-    dependencies:
-      micromatch: 4.0.5
-    dev: false
-
-  /flat-cache@3.0.4:
-    resolution: {integrity: sha512-dm9s5Pw7Jc0GvMYbshN6zchCA9RgQlzzEZX3vylR9IqFfS8XciblUXOKfW6SiuJ0e13eDYZoZV5wdrev7P3Nwg==}
-=======
   /flat-cache/3.2.0:
     resolution: {integrity: sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw==}
->>>>>>> master
     engines: {node: ^10.12.0 || >=12.0.0}
     dependencies:
       flatted: 3.3.1
@@ -4793,21 +4384,17 @@ packages:
       universalify: 0.1.2
     dev: true
 
-<<<<<<< HEAD
-  /fs-extra@9.1.0:
+  /fs-extra/9.1.0:
     resolution: {integrity: sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==}
     engines: {node: '>=10'}
     dependencies:
       at-least-node: 1.0.0
       graceful-fs: 4.2.11
       jsonfile: 6.1.0
-      universalify: 2.0.0
+      universalify: 2.0.1
     dev: false
 
-  /fs-minipass@2.1.0:
-=======
   /fs-minipass/2.1.0:
->>>>>>> master
     resolution: {integrity: sha512-V/JgOLFCS+R6Vcq0slCuaeWEdNC3ouDlJMNIsacH2VtALiu9mV4LPrHc5cDl8k5aw6J8jwgWWpiTo5RYhmIzvg==}
     engines: {node: '>= 8'}
     dependencies:
@@ -4833,13 +4420,8 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      define-properties: 1.2.0
-      es-abstract: 1.22.1
-=======
       define-properties: 1.2.1
       es-abstract: 1.23.3
->>>>>>> master
       functions-have-names: 1.2.3
     dev: true
 
@@ -4875,26 +4457,15 @@ packages:
     engines: {node: 6.* || 8.* || >= 10.*}
     dev: true
 
-<<<<<<< HEAD
-  /get-intrinsic@1.2.4:
-=======
   /get-intrinsic/1.2.4:
->>>>>>> master
     resolution: {integrity: sha512-5uYhsJH8VJBTv7oslg4BznJYhDoRI6waYCxMmCdnTrcCrHA/fCFKoTFz2JKKE0HdDFUF7/oQuhzumXJK7paBRQ==}
     engines: {node: '>= 0.4'}
     dependencies:
       es-errors: 1.3.0
       function-bind: 1.1.2
-<<<<<<< HEAD
-      has-proto: 1.0.1
-      has-symbols: 1.0.3
-      hasown: 2.0.0
-=======
       has-proto: 1.0.3
       has-symbols: 1.0.3
       hasown: 2.0.2
-    dev: true
->>>>>>> master
 
   /get-package-type/0.1.0:
     resolution: {integrity: sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==}
@@ -4930,10 +4501,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-=======
       es-errors: 1.3.0
->>>>>>> master
       get-intrinsic: 1.2.4
     dev: true
 
@@ -5045,10 +4613,6 @@ packages:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
     dependencies:
       get-intrinsic: 1.2.4
-<<<<<<< HEAD
-=======
-    dev: true
->>>>>>> master
 
   /got/11.8.6:
     resolution: {integrity: sha512-6tfZ91bOr7bOXnK7PRDCGBLa1H4U080YHNaAQ2KsMGlLEzRbk44nsZF2E1IeRc3vtJHPVbKCYgdFbaGO2ljd8g==}
@@ -5110,18 +4674,10 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
 
-<<<<<<< HEAD
-  /has-property-descriptors@1.0.2:
-    resolution: {integrity: sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==}
-    dependencies:
-      es-define-property: 1.0.0
-=======
   /has-property-descriptors/1.0.2:
     resolution: {integrity: sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==}
     dependencies:
       es-define-property: 1.0.0
-    dev: true
->>>>>>> master
 
   /has-proto/1.0.3:
     resolution: {integrity: sha512-SJ1amZAJUiZS+PhsVLf5tGydlaVB8EdFpaSO4gmiUKUOxk8qzn5AIy4ZeJUmh22znIdk/uMAUT2pl3FxzVUH+Q==}
@@ -5447,15 +5003,9 @@ packages:
     resolution: {integrity: sha512-NGnrKwXzSms2qUUih/ILZ5JBqNTSa1+ZmP6flaIp6KmSElgE9qdndzS3cqjrDovwFdmwsGsLdeFgB6suw+1e9g==}
     engines: {node: '>= 0.4'}
     dependencies:
-<<<<<<< HEAD
-      get-intrinsic: 1.2.4
-      has: 1.0.3
-      side-channel: 1.0.4
-=======
       es-errors: 1.3.0
       hasown: 2.0.2
       side-channel: 1.0.6
->>>>>>> master
     dev: true
 
   /is-accessor-descriptor/1.0.1:
@@ -5473,19 +5023,7 @@ packages:
       get-intrinsic: 1.2.4
     dev: true
 
-<<<<<<< HEAD
-  /is-array-buffer@3.0.2:
-    resolution: {integrity: sha512-y+FyyR/w8vfIRq4eQcM1EYgSTnmHXPqaF+IgzgraytCFq5Xh8lllDVmAZolPJiZttZLeFSINPYMaEJ7/vWUa1w==}
-    dependencies:
-      call-bind: 1.0.7
-      get-intrinsic: 1.2.4
-      is-typed-array: 1.1.12
-    dev: true
-
-  /is-arrayish@0.2.1:
-=======
   /is-arrayish/0.2.1:
->>>>>>> master
     resolution: {integrity: sha512-zz06S8t0ozoDXMG+ube26zeCTNXcKIPJZJi8hBrF4idCLms4CG9QtK7qBl1boi5ODzFpjswb5JPmHCbMpjaYzg==}
     dev: true
 
@@ -5500,11 +5038,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      has-tostringtag: 1.0.0
-=======
       has-tostringtag: 1.0.2
->>>>>>> master
     dev: true
 
   /is-buffer/1.1.6:
@@ -5681,11 +5215,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      has-tostringtag: 1.0.0
-=======
       has-tostringtag: 1.0.2
->>>>>>> master
     dev: true
 
   /is-shared-array-buffer/1.0.3:
@@ -5850,11 +5380,7 @@ packages:
       throat: 5.0.0
     dev: true
 
-<<<<<<< HEAD
-  /jest-cli@26.6.3:
-=======
   /jest-cli/26.6.3:
->>>>>>> master
     resolution: {integrity: sha512-GF9noBSa9t08pSyl3CY4frMrqp+aQXFGFkf5hEPbh/pIUFYWMK6ZLTfbmadxJVcJrdRoChlWQsA2VkJcDFK8hg==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
@@ -5880,11 +5406,7 @@ packages:
       - utf-8-validate
     dev: true
 
-<<<<<<< HEAD
-  /jest-config@26.6.3:
-=======
   /jest-config/26.6.3:
->>>>>>> master
     resolution: {integrity: sha512-t5qdIj/bCj2j7NFVHb2nFB4aUdfucDn3JRKgrZnplb8nieAirAzRSHP8uDEd+qV6ygzg9Pz4YG7UTJf94LPSyg==}
     engines: {node: '>= 10.14.2'}
     peerDependencies:
@@ -5893,11 +5415,7 @@ packages:
       ts-node:
         optional: true
     dependencies:
-<<<<<<< HEAD
-      '@babel/core': 7.22.9
-=======
       '@babel/core': 7.24.4
->>>>>>> master
       '@jest/test-sequencer': 26.6.3
       '@jest/types': 26.6.2
       babel-jest: 26.6.3_@babel+core@7.24.4
@@ -5926,7 +5444,7 @@ packages:
     resolution: {integrity: sha512-6m+9Z3Gv9wN0WFVasqjCL/06+EFCMTqDEUl/b87HYK2rAPTyfz4ZIuSlPhY51PIQRWx5TaxeF1qmXKe9gfN3sA==}
     engines: {node: '>= 10.14.2'}
     dependencies:
-      chalk: 4.1.2
+      chalk: 4.1.1
       diff-sequences: 26.6.2
       jest-get-type: 26.3.0
       pretty-format: 26.6.2
@@ -5944,7 +5462,7 @@ packages:
     engines: {node: '>= 10.14.2'}
     dependencies:
       '@jest/types': 26.6.2
-      chalk: 4.1.2
+      chalk: 4.1.1
       jest-get-type: 26.3.0
       jest-util: 26.6.2
       pretty-format: 26.6.2
@@ -6008,11 +5526,7 @@ packages:
       - supports-color
     dev: true
 
-<<<<<<< HEAD
-  /jest-jasmine2@26.6.3:
-=======
   /jest-jasmine2/26.6.3:
->>>>>>> master
     resolution: {integrity: sha512-kPKUrQtc8aYwBV7CqBg5pu+tmYXlvFlSFYn18ev4gPFtrRzB15N2gW/Roew3187q2w2eHuu0MU9TJz6w0/nPEg==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -6022,7 +5536,7 @@ packages:
       '@jest/test-result': 26.6.2
       '@jest/types': 26.6.2
       '@types/node': 18.11.18
-      chalk: 4.1.2
+      chalk: 4.1.1
       co: 4.6.0
       expect: 26.6.2
       is-generator-fn: 2.1.0
@@ -6054,7 +5568,7 @@ packages:
     resolution: {integrity: sha512-llnc8vQgYcNqDrqRDXWwMr9i7rS5XFiCwvh6DTP7Jqa2mqpcCBBlpCbn+trkG0KNhPu/h8rzyBkriOtBstvWhw==}
     engines: {node: '>= 10.14.2'}
     dependencies:
-      chalk: 4.1.2
+      chalk: 4.1.1
       jest-diff: 26.6.2
       jest-get-type: 26.3.0
       pretty-format: 26.6.2
@@ -6125,11 +5639,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-<<<<<<< HEAD
-  /jest-runner@26.6.3:
-=======
   /jest-runner/26.6.3:
->>>>>>> master
     resolution: {integrity: sha512-atgKpRHnaA2OvByG/HpGA4g6CSPS/1LK0jK3gATJAoptC1ojltpmVlYC3TYgdmGp+GLuhzpH30Gvs36szSL2JQ==}
     engines: {node: '>= 10.14.2'}
     dependencies:
@@ -6161,11 +5671,7 @@ packages:
       - utf-8-validate
     dev: true
 
-<<<<<<< HEAD
-  /jest-runtime@26.6.3:
-=======
   /jest-runtime/26.6.3:
->>>>>>> master
     resolution: {integrity: sha512-lrzyR3N8sacTAMeonbqpnSka1dHNux2uk0qqDXVkMv2c/A3wYnvQ4EXuI013Y6+gSKSCxdaczvf4HF0mVXHRdw==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
@@ -6283,11 +5789,7 @@ packages:
       supports-color: 7.2.0
     dev: true
 
-<<<<<<< HEAD
-  /jest@26.0.1:
-=======
   /jest/26.0.1:
->>>>>>> master
     resolution: {integrity: sha512-29Q54kn5Bm7ZGKIuH2JRmnKl85YRigp0o0asTc6Sb6l2ch1DCXIeZTLLFy9ultJvhkTqbswF5DEx4+RlkmCxWg==}
     engines: {node: '>= 10.14.2'}
     hasBin: true
@@ -6404,8 +5906,7 @@ packages:
       jsonify: 0.0.1
     dev: true
 
-<<<<<<< HEAD
-  /json-stable-stringify@1.1.1:
+  /json-stable-stringify/1.1.1:
     resolution: {integrity: sha512-SU/971Kt5qVQfJpyDveVhQ/vya+5hvrjClFOcr8c0Fq5aODJjMwutrOfCU+eCnVD5gpx1Q3fEqkyom77zH1iIg==}
     engines: {node: '>= 0.4'}
     dependencies:
@@ -6415,10 +5916,7 @@ packages:
       object-keys: 1.1.1
     dev: false
 
-  /json5@2.2.3:
-=======
   /json5/2.2.3:
->>>>>>> master
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
@@ -6513,17 +6011,13 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-<<<<<<< HEAD
-  /klaw-sync@6.0.0:
+  /klaw-sync/6.0.0:
     resolution: {integrity: sha512-nIeuVSzdCCs6TDPTqI8w1Yre34sSq7AkZ4B3sfOBbI2CgVSB4Du4aLQijFU2+lhAFCwt9+42Hel6lQNIv6AntQ==}
     dependencies:
       graceful-fs: 4.2.11
     dev: false
 
-  /kleur@3.0.3:
-=======
   /kleur/3.0.3:
->>>>>>> master
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
     dev: true
@@ -7054,23 +6548,6 @@ packages:
   /near-api-js/4.0.0:
     resolution: {integrity: sha512-Gh4Lq9LXFDNtEHGXeqYFjbvS9lodX34srmFAxhOgGqjklK5QArrT7bTifWA9mi3QGe3MqwwwfAIVONbeZ0qSpg==}
     dependencies:
-<<<<<<< HEAD
-      '@near-js/accounts': 0.1.4
-      '@near-js/crypto': 0.0.5
-      '@near-js/keystores': 0.0.5
-      '@near-js/keystores-browser': 0.0.5
-      '@near-js/keystores-node': 0.0.5
-      '@near-js/providers': 0.0.7
-      '@near-js/signers': 0.0.5
-      '@near-js/transactions': 0.2.1
-      '@near-js/types': 0.0.4
-      '@near-js/utils': 0.0.4
-      '@near-js/wallet-account': 0.0.7
-      ajv: 8.11.2
-      ajv-formats: 2.1.1
-      bn.js: 5.2.1
-      borsh: 0.7.0
-=======
       '@near-js/accounts': 1.1.0
       '@near-js/crypto': 1.2.2
       '@near-js/keystores': 0.0.10
@@ -7084,26 +6561,19 @@ packages:
       '@near-js/wallet-account': 1.2.0
       '@noble/curves': 1.2.0
       borsh: 1.0.0
->>>>>>> master
       depd: 2.0.0
       http-errors: 1.7.2
       near-abi: 0.1.1
       node-fetch: 2.6.7
     transitivePeerDependencies:
       - encoding
-    dev: true
 
   /near-hello/0.5.1:
     resolution: {integrity: sha512-k7S8VFyESWgkKYDso99B4XbxAdo0VX9b3+GAaO5PvMgQjNr/6o09PHRywg/NkBQpf+ZYj7nNpJcyrNJGQsvA3w==}
     dev: true
 
-<<<<<<< HEAD
-  /near-sandbox@0.0.17:
-    resolution: {integrity: sha512-bL0We378hFZ0/xHAKP5mAWKS5OjzU6+VuvMlXpMwyFAwG2s5NwOnzRTezvYYwQNtG3iU+xvQ6jWvp7UO1STGLQ==}
-=======
   /near-sandbox/0.0.18:
     resolution: {integrity: sha512-6/AjLOzGLQsSzTHavrRe7CVMU5+CUnTg/7g66a7+jkP22ff5CupnwXrUE14iJ2QyyhRZr7VuQQj/G+glUmaNQg==}
->>>>>>> master
     hasBin: true
     requiresBuild: true
     dependencies:
@@ -7118,11 +6588,7 @@ packages:
       bn.js: 5.2.1
     dev: true
 
-<<<<<<< HEAD
-  /near-workspaces@3.5.0:
-=======
   /near-workspaces/3.5.0:
->>>>>>> master
     resolution: {integrity: sha512-lkRCP2os8v7W+q1maQPSEI98f+YiPb86ibDyIy8bxr6fqnJPOsIRR3xE33rOwBsiph3WuUH46qtpYK0a+Co+EQ==}
     engines: {node: '>= 14.0.0', npm: '>= 6.0.0'}
     requiresBuild: true
@@ -7134,13 +6600,8 @@ packages:
       callsites: 4.1.0
       fs-extra: 10.1.0
       js-sha256: 0.9.0
-<<<<<<< HEAD
-      near-api-js: 2.1.4
-      near-sandbox: 0.0.17
-=======
       near-api-js: 4.0.0
       near-sandbox: 0.0.18
->>>>>>> master
       near-units: 0.1.9
       node-port-check: 2.0.1
       promisify-child-process: 4.1.2
@@ -7294,11 +6755,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      define-properties: 1.2.0
-=======
       define-properties: 1.2.1
->>>>>>> master
       has-symbols: 1.0.3
       object-keys: 1.1.1
     dev: true
@@ -7322,8 +6779,7 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
-<<<<<<< HEAD
-  /open@7.4.2:
+  /open/7.4.2:
     resolution: {integrity: sha512-MVHddDVweXZF3awtlAS+6pgKLlm/JgxZ90+/NBurBoQctVOOB/zDdVjcyPzQ+0laDGbsWgrRkflI65sQeOgT9Q==}
     engines: {node: '>=8'}
     dependencies:
@@ -7331,10 +6787,7 @@ packages:
       is-wsl: 2.2.0
     dev: false
 
-  /optionator@0.9.3:
-=======
   /optionator/0.9.3:
->>>>>>> master
     resolution: {integrity: sha512-JjCoypp+jKn1ttEFExxhetCKeJt9zhAgAve5FXHixTvFDW/5aEktX9bufBKLRRMdU7bNtpLfcGu94B3cdEJgjg==}
     engines: {node: '>= 0.8.0'}
     dependencies:
@@ -7500,15 +6953,14 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-<<<<<<< HEAD
-  /patch-package@8.0.0:
+  /patch-package/8.0.0:
     resolution: {integrity: sha512-da8BVIhzjtgScwDJ2TtKsfT5JFWz1hYoBl9rUQ1f38MC2HwnEIkK8VN3dKMKcP7P7bvvgzNDbfNHtx3MsQb5vA==}
     engines: {node: '>=14', npm: '>5'}
     hasBin: true
     dependencies:
       '@yarnpkg/lockfile': 1.1.0
       chalk: 4.1.2
-      ci-info: 3.8.0
+      ci-info: 3.9.0
       cross-spawn: 7.0.3
       find-yarn-workspace-root: 2.0.0
       fs-extra: 9.1.0
@@ -7517,16 +6969,13 @@ packages:
       minimist: 1.2.8
       open: 7.4.2
       rimraf: 2.7.1
-      semver: 7.5.4
+      semver: 7.6.0
       slash: 2.0.0
       tmp: 0.0.33
-      yaml: 2.4.0
+      yaml: 2.4.1
     dev: false
 
-  /path-browserify@0.0.1:
-=======
   /path-browserify/0.0.1:
->>>>>>> master
     resolution: {integrity: sha512-BapA40NHICOS+USX9SN4tyhq+A2RrN/Ws5F0Z5aMHDp98Fl86lX8Oti8B7uN93L4Ifv4fHOEA+pQw87gmMO/lQ==}
     dev: true
 
@@ -7894,14 +7343,9 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      define-properties: 1.2.0
-      functions-have-names: 1.2.3
-=======
       define-properties: 1.2.1
       es-errors: 1.3.0
       set-function-name: 2.0.2
->>>>>>> master
     dev: true
 
   /regexpp/3.2.0:
@@ -8008,18 +7452,14 @@ packages:
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
     dev: true
 
-<<<<<<< HEAD
-  /rimraf@2.7.1:
+  /rimraf/2.7.1:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
     hasBin: true
     dependencies:
       glob: 7.2.3
     dev: false
 
-  /rimraf@3.0.2:
-=======
   /rimraf/3.0.2:
->>>>>>> master
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
     hasBin: true
     dependencies:
@@ -8072,11 +7512,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      get-intrinsic: 1.2.4
-=======
       es-errors: 1.3.0
->>>>>>> master
       is-regex: 1.1.4
     dev: true
 
@@ -8138,6 +7574,7 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
+    dev: true
 
   /semver/7.6.0:
     resolution: {integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==}
@@ -8145,19 +7582,13 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
-    dev: true
 
   /set-blocking/2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
     dev: true
 
-<<<<<<< HEAD
-  /set-function-length@1.2.1:
-    resolution: {integrity: sha512-j4t6ccc+VsKwYHso+kElc5neZpjtq9EnRICFZtWyBsLojhmeF/ZBd/elqm22WJh/BziDe/SBiOeAt0m2mfLD0g==}
-=======
   /set-function-length/1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
->>>>>>> master
     engines: {node: '>= 0.4'}
     dependencies:
       define-data-property: 1.1.4
@@ -8166,11 +7597,6 @@ packages:
       get-intrinsic: 1.2.4
       gopd: 1.0.1
       has-property-descriptors: 1.0.2
-<<<<<<< HEAD
-
-  /set-value@2.0.1:
-=======
-    dev: true
 
   /set-function-name/2.0.2:
     resolution: {integrity: sha512-7PGFlmtwsEADb0WYyvCMa1t+yke6daIG4Wirafur5kcf+MhUnPms1UeR0CKQdTZD81yESwMHbtn+TR+dMviakQ==}
@@ -8183,7 +7609,6 @@ packages:
     dev: true
 
   /set-value/2.0.1:
->>>>>>> master
     resolution: {integrity: sha512-JxHc1weCN68wRY0fhCoXpyK55m/XPHafOmK4UWD7m2CI14GMcFypt4w/0+NV5f/ZMby2F6S2wwA7fgynh9gWSw==}
     engines: {node: '>=0.10.0'}
     dependencies:
@@ -8262,14 +7687,9 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      get-intrinsic: 1.2.4
-      object-inspect: 1.12.3
-=======
       es-errors: 1.3.0
       get-intrinsic: 1.2.4
       object-inspect: 1.13.1
->>>>>>> master
     dev: true
 
   /signal-exit/3.0.7:
@@ -8284,16 +7704,12 @@ packages:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
     dev: true
 
-<<<<<<< HEAD
-  /slash@2.0.0:
+  /slash/2.0.0:
     resolution: {integrity: sha512-ZYKh3Wh2z1PpEXWr0MpSBZ0V6mZHAQfYevttO11c51CaWjGTaadiKZ+wVt1PbMlDV5qhMFslpZCemhwOK7C89A==}
     engines: {node: '>=6'}
     dev: false
 
-  /slash@3.0.0:
-=======
   /slash/3.0.0:
->>>>>>> master
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
     dev: true
@@ -8519,27 +7935,17 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      define-properties: 1.2.0
-      es-abstract: 1.22.1
-=======
       define-properties: 1.2.1
       es-abstract: 1.23.3
       es-object-atoms: 1.0.0
->>>>>>> master
     dev: true
 
   /string.prototype.trimend/1.0.8:
     resolution: {integrity: sha512-p73uL5VCHCO2BZZ6krwwQE3kCzM7NKmis8S//xEC6fQonchbum4eP6kR4DLEjQFO3Wnj3Fuo8NM0kOSjVdHjZQ==}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      define-properties: 1.2.0
-      es-abstract: 1.22.1
-=======
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
->>>>>>> master
     dev: true
 
   /string.prototype.trimstart/1.0.8:
@@ -8547,13 +7953,8 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      define-properties: 1.2.0
-      es-abstract: 1.22.1
-=======
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
->>>>>>> master
     dev: true
 
   /string_decoder/1.1.1:
@@ -8856,32 +8257,7 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-<<<<<<< HEAD
-  /ts-jest@26.5.6(jest@26.0.1):
-    resolution: {integrity: sha512-rua+rCP8DxpA8b4DQD/6X2HQS8Zy/xzViVYfEs2OQu68tkCuKLV0Md8pmX55+W24uRIyAsf/BajRfxOs+R2MKA==}
-    engines: {node: '>= 10'}
-    hasBin: true
-    peerDependencies:
-      jest: '>=26 <27'
-      typescript: '>=3.8 <5.0'
-    dependencies:
-      bs-logger: 0.2.6
-      buffer-from: 1.1.2
-      fast-json-stable-stringify: 2.1.0
-      jest: 26.0.1
-      jest-util: 26.6.2
-      json5: 2.2.3
-      lodash: 4.17.21
-      make-error: 1.3.6
-      mkdirp: 1.0.4
-      semver: 7.1.1
-      yargs-parser: 20.2.9
-    dev: true
-
-  /ts-jest@26.5.6(jest@26.0.1)(typescript@4.9.4):
-=======
   /ts-jest/26.5.6_jest@26.0.1:
->>>>>>> master
     resolution: {integrity: sha512-rua+rCP8DxpA8b4DQD/6X2HQS8Zy/xzViVYfEs2OQu68tkCuKLV0Md8pmX55+W24uRIyAsf/BajRfxOs+R2MKA==}
     engines: {node: '>= 10'}
     hasBin: true
@@ -8893,8 +8269,6 @@ packages:
       buffer-from: 1.1.2
       fast-json-stable-stringify: 2.1.0
       jest: 26.0.1
-<<<<<<< HEAD
-=======
       jest-util: 26.6.2
       json5: 2.2.3
       lodash: 4.17.21
@@ -8916,7 +8290,6 @@ packages:
       buffer-from: 1.1.2
       fast-json-stable-stringify: 2.1.0
       jest: 26.0.1
->>>>>>> master
       jest-util: 26.6.2
       json5: 2.2.3
       lodash: 4.17.21
@@ -9173,13 +8546,8 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-<<<<<<< HEAD
-      get-intrinsic: 1.2.4
-      is-typed-array: 1.1.12
-=======
       es-errors: 1.3.0
       is-typed-array: 1.1.13
->>>>>>> master
     dev: true
 
   /typed-array-byte-length/1.0.1:
@@ -9197,11 +8565,7 @@ packages:
     resolution: {integrity: sha512-Ous0vodHa56FviZucS2E63zkgtgrACj7omjwd/8lTEMEPFFyjfixMZ1ZXenpgCFBBt4EC1J2XsyVS2gkG0eTFA==}
     engines: {node: '>= 0.4'}
     dependencies:
-<<<<<<< HEAD
-      available-typed-arrays: 1.0.5
-=======
       available-typed-arrays: 1.0.7
->>>>>>> master
       call-bind: 1.0.7
       for-each: 0.3.3
       gopd: 1.0.1
@@ -9535,11 +8899,7 @@ packages:
     resolution: {integrity: sha512-oV0jmFtUky6CXfkqehVvBP/LSWJ2sy4vWMioiENyJLePrBO/yKyV9OyJySfAKosh+RYkIl5zJCNZ8/4JncrpdA==}
     engines: {node: '>= 0.4'}
     dependencies:
-<<<<<<< HEAD
-      available-typed-arrays: 1.0.5
-=======
       available-typed-arrays: 1.0.7
->>>>>>> master
       call-bind: 1.0.7
       for-each: 0.3.3
       gopd: 1.0.1
@@ -9635,8 +8995,8 @@ packages:
   /yallist/4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
-  /yaml@2.4.0:
-    resolution: {integrity: sha512-j9iR8g+/t0lArF4V6NE/QCfT+CO7iLqrXAHZbJdo+LfjqP1vR8Fg5bSiaq6Q2lOD1AUEVrEVIgABvBFYojJVYQ==}
+  /yaml/2.4.1:
+    resolution: {integrity: sha512-pIXzoImaqmfOrL7teGUBt/T7ZDnyeGBWyXQBvOVhLkWLN37GXv8NMLK406UY6dS51JfcQHsmcW5cJ441bHg6Lg==}
     engines: {node: '>= 14'}
     hasBin: true
     dev: false
