@@ -1,6 +1,6 @@
 {
   "name": "@near-js/providers",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Library of implementations for interfacing with the NEAR blockchain",
   "main": "lib/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "dependencies": {
     "@near-js/transactions": "workspace:*",
     "@near-js/types": "workspace:*",
-    "@near-js/utils": "workspace:*", 
+    "@near-js/utils": "workspace:*",
     "borsh": "1.0.0",
     "http-errors": "1.7.2"
   },
