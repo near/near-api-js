@@ -1,7 +1,6 @@
 const testUtils = require('./test-utils');
 
 let nearjs;
-let workingAccount;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
 
@@ -9,7 +8,6 @@ const CONTRACT_CALL_GAS = BigInt(300000000000000);
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    workingAccount = await testUtils.createAccount(nearjs);
 });
 
 describe('with promises', () => {
@@ -21,9 +19,9 @@ describe('with promises', () => {
     let contractName2 = testUtils.generateUniqueString('cnt');
 
     beforeAll(async () => {
-        contract = await testUtils.deployContract(workingAccount, contractName);
-        contract1 = await testUtils.deployContract(workingAccount, contractName1);
-        contract2 = await testUtils.deployContract(workingAccount, contractName2);
+        contract = await testUtils.deployContract(nearjs.accountCreator.masterAccount, contractName);
+        contract1 = await testUtils.deployContract(nearjs.accountCreator.masterAccount, contractName1);
+        contract2 = await testUtils.deployContract(nearjs.accountCreator.masterAccount, contractName2);
     });
 
     beforeEach(async () => {
