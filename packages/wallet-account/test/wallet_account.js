@@ -72,8 +72,6 @@ module.exports.createTransactions = () => {
         expect(() => new WalletConnection(nearFake, null)).toThrow(/appKeyPrefix/);
         expect(() => new WalletConnection(nearFake, undefined)).toThrow(/appKeyPrefix/);
     });
-
-    // describe('fails gracefully on the server side (without window)', () => {
     //     const windowValueBefore = global.window;
 
     //     beforeEach(() => {
@@ -203,71 +201,6 @@ module.exports.createTransactions = () => {
     // });
 
     const BLOCK_HASH = '244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM';
-    const blockHash = baseDecode(BLOCK_HASH);
-    function createTransferTx() {
-        const actions = [
-            transfer(1),
-        ];
-        return createTransaction(
-            'test.near',
-            PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
-            'whatever.near',
-            1,
-            actions,
-            blockHash);
-    }
-
-    // describe('can request transaction signing', () => {
-    //     it('V1', async () => {
-    //         await walletConnection.requestSignTransactions({
-    //             transactions: [createTransferTx()],
-    //             callbackUrl: 'http://example.com/callback'
-    //         });
-
-    //         expect(url.parse(lastRedirectUrl, true)).toMatchObject({
-    //             protocol: 'http:',
-    //             host: 'example.com',
-    //             query: {
-    //                 callbackUrl: 'http://example.com/callback',
-    //                 transactions: 'CQAAAHRlc3QubmVhcgCRez0mjUtY9/7BsVC9aNab4+5dTMOYVeNBU4Rlu3eGDQEAAAAAAAAADQAAAHdoYXRldmVyLm5lYXIPpHP9JpAd8pa+atxMxN800EDvokNSJLaYaRDmMML+9gEAAAADAQAAAAAAAAAAAAAAAAAAAA=='
-    //             }
-    //         });
-    //     });
-
-    //     it('V2', async () => {
-    //         await walletConnection.requestSignTransactions({
-    //             transactions: [createTransferTx()],
-    //             meta: 'something',
-    //             callbackUrl: 'http://example.com/after'
-    //         });
-
-    //         expect(url.parse(lastRedirectUrl, true)).toMatchObject({
-    //             protocol: 'http:',
-    //             host: 'example.com',
-    //             query: {
-    //                 meta: 'something',
-    //                 callbackUrl: 'http://example.com/after',
-    //                 transactions: 'CQAAAHRlc3QubmVhcgCRez0mjUtY9/7BsVC9aNab4+5dTMOYVeNBU4Rlu3eGDQEAAAAAAAAADQAAAHdoYXRldmVyLm5lYXIPpHP9JpAd8pa+atxMxN800EDvokNSJLaYaRDmMML+9gEAAAADAQAAAAAAAAAAAAAAAAAAAA=='
-    //             }
-    //         });
-    //     });
-    // });
-
-    function parseTransactionsFromUrl(urlToParse, callbackUrl = 'http://example.com/location') {
-        const parsedUrl = url.parse(urlToParse, true);
-        expect(parsedUrl).toMatchObject({
-            protocol: 'http:',
-            host: 'example.com',
-            query: {
-                callbackUrl
-            }
-        });
-        const transactions = parsedUrl.query.transactions.split(',')
-            .map(txBase64 => deserialize(
-                SCHEMA.Transaction,
-                Buffer.from(txBase64, 'base64')));
-        return transactions;
-    }
 
     function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
         walletConnection._authData = {
@@ -307,8 +240,6 @@ module.exports.createTransactions = () => {
             }
         };
     }
-
-    // describe('requests transaction signing automatically when there is no local key', () => {
     //     const keyPair = KeyPair.fromRandom('ed25519');
     //     let transactions;
     //     beforeEach(() => {
