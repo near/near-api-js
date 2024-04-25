@@ -7,5 +7,5 @@ describe('Browser keystore', () => {
         ctx.keyStore = new BrowserLocalStorageKeyStore(require('localstorage-memory'));
     });
 
-    require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
+    require('./keystore_common').shouldStoreAndRetrieveKeys(ctx);
 });

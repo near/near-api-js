@@ -124,7 +124,7 @@ importers:
       '@near-js/transactions': link:../transactions
       chalk: 4.1.1
       homedir: 0.6.0
-      near-api-js: link:../near-api-js
+      near-api-js: 4.0.0
 
   packages/crypto:
     specifiers:
@@ -1510,7 +1510,6 @@ packages:
       near-abi: 0.1.1
     transitivePeerDependencies:
       - encoding
-    dev: true
 
   /@near-js/crypto/1.2.2:
     resolution: {integrity: sha512-a/1SICBPg6zo+VGOy+HT448+uHXmlYnP4vwNUdJnmn0yMksi30G1N8BSU5tnP1SX904EASu1pdqSMWslERrCQw==}
@@ -1520,28 +1519,24 @@ packages:
       '@noble/curves': 1.2.0
       borsh: 1.0.0
       randombytes: 2.1.0
-    dev: true
 
   /@near-js/keystores-browser/0.0.10:
     resolution: {integrity: sha512-JX9WbpPnlKQCxEXJJ/AZHj2z2yuR/UnHcUPszz+Q2v1moL5wETBSuwe6jQOfmYZoM+vGU2Vh4fz3V8Ml/Oz3bw==}
     dependencies:
       '@near-js/crypto': 1.2.2
       '@near-js/keystores': 0.0.10
-    dev: true
 
   /@near-js/keystores-node/0.0.10:
     resolution: {integrity: sha512-fM5T+1pe1zHsaBwTW0JzPd5U93u6oGzUheg8Xpj8vEjSvISd9kreY14IQkbtXCtzsTsiIel05mIqHgmg35QNjg==}
     dependencies:
       '@near-js/crypto': 1.2.2
       '@near-js/keystores': 0.0.10
-    dev: true
 
   /@near-js/keystores/0.0.10:
     resolution: {integrity: sha512-rzGMkqY7EcIbUPrcSjK1RJi3dTXusfmZcxg2Jcc9u7VVjEjP/HVnvVaazsYC1la7812VSrDPxqHsZRzWSFxtMA==}
     dependencies:
       '@near-js/crypto': 1.2.2
       '@near-js/types': 0.1.0
-    dev: true
 
   /@near-js/providers/0.2.0:
     resolution: {integrity: sha512-K7RJTkVbn6SD68p/8TkxFjp6jhxNQrkjZ+etQxrBRAMS6kupLTobV+9AfAc1OaORO47X873p4BRhbm9KhCdmZg==}
@@ -1555,7 +1550,6 @@ packages:
       node-fetch: 2.6.7
     transitivePeerDependencies:
       - encoding
-    dev: true
 
   /@near-js/signers/0.1.2:
     resolution: {integrity: sha512-Echz+ldAFUDGntiBcnCZN4scHBIccz6xVC0Zt9cZu9I4SGKrWga0vNfAwXGVGep8YCEu8MwI9lE2B5n2ouc6kg==}
@@ -1563,7 +1557,6 @@ packages:
       '@near-js/crypto': 1.2.2
       '@near-js/keystores': 0.0.10
       '@noble/hashes': 1.3.3
-    dev: true
 
   /@near-js/transactions/1.2.0:
     resolution: {integrity: sha512-I9UVVPg0HHQUpL17tb9L1HgTMG5+KREI2mNQlvJhF5uE6DrI2tC/O4rQf3HZOUVWpUhOiXSKRfSXpgZq5TbXaw==}
@@ -1574,11 +1567,9 @@ packages:
       '@near-js/utils': 0.2.0
       '@noble/hashes': 1.3.3
       borsh: 1.0.0
-    dev: true
 
   /@near-js/types/0.1.0:
     resolution: {integrity: sha512-uQTB3G7251cKCFhM4poAgypTODb83jrqD5A5B0Nr89TAGbsYM2ozXJyffJpsWedbYhK527Jx/BFgs+Jzf3oO5g==}
-    dev: true
 
   /@near-js/utils/0.2.0:
     resolution: {integrity: sha512-Ul0NoOiV/vW6hnkYVMwRNbP18hB7mCRkqgSe1a2Qoe+3xFOMnjLVVod3Y1l/QXgp4yNDrLOd6r4PDPI72eKUww==}
@@ -1587,7 +1578,6 @@ packages:
       bs58: 4.0.0
       depd: 2.0.0
       mustache: 4.0.0
-    dev: true
 
   /@near-js/wallet-account/1.2.0:
     resolution: {integrity: sha512-3y0VxE2R2FxAHFJpRkhqIp+ZTc+/n42u3qSH0vzTTihzL2zfGF6z9Y2ArNQ7lQKNyiXd0vsFdAIwVcX5pEfq3A==}
@@ -1603,7 +1593,6 @@ packages:
       borsh: 1.0.0
     transitivePeerDependencies:
       - encoding
-    dev: true
 
   /@noble/curves/1.2.0:
     resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
@@ -6572,7 +6561,6 @@ packages:
       node-fetch: 2.6.7
     transitivePeerDependencies:
       - encoding
-    dev: true
 
   /near-hello/0.5.1:
     resolution: {integrity: sha512-k7S8VFyESWgkKYDso99B4XbxAdo0VX9b3+GAaO5PvMgQjNr/6o09PHRywg/NkBQpf+ZYj7nNpJcyrNJGQsvA3w==}

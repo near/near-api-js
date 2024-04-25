@@ -2,6 +2,9 @@ const { getTransactionLastResult } = require('@near-js/utils');
 const { Worker } = require('near-workspaces');
 const { JsonRpcProvider, FailoverRpcProvider } = require('../lib');
 
+const { TextEncoder } = require('util');
+global.TextEncoder = TextEncoder;
+
 jest.setTimeout(20000);
 
 ['json provider', 'fallback provider'].forEach((name) => {
