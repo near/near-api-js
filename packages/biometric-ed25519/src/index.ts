@@ -139,7 +139,7 @@ export const validateSupportForEC256Signing = async (): Promise<boolean> => {
         console.error('Failed to initialize WebAuthn: ', e.message);
         return false;
     }
-}
+};
 
 // To check if current browser supports WebAuthn
 export const isPassKeyAvailable = async (): Promise<boolean> => {
