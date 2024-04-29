@@ -11,6 +11,7 @@ export class Fido2 {
             rpName,
             challengeSize: 128,
             attestation: 'none',
+            // only ECDSA signatures are supported
             cryptoParams: [-7],
             authenticatorAttachment: 'platform',
             authenticatorRequireResidentKey: true,
