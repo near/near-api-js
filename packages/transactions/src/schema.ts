@@ -97,7 +97,7 @@ export const SCHEMA = new class BorshSchema {
     PublicKey: Schema = {
         struct: {
             keyType: 'u8',
-            data: { array: { type: 'u8', len: 32 } },
+            data: { option: { array: { type: 'u8', len: 32 } } },
         }
     };
     FunctionCallPermission: Schema = {

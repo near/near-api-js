@@ -1,4 +1,4 @@
-import { KeyPair, PublicKey, Signature } from '@near-js/crypto';
+import { KeyPair, PublicKey, Signature, KeyType } from '@near-js/crypto';
 import { InMemoryKeyStore, KeyStore } from '@near-js/keystores';
 import { sha256 } from '@noble/hashes/sha256';
 
@@ -36,8 +36,8 @@ export class InMemorySigner extends Signer {
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns {Promise<PublicKey>}
      */
-    async createKey(accountId: string, networkId: string): Promise<PublicKey> {
-        const keyPair = KeyPair.fromRandom('ed25519');
+    async createKey(accountId: string, networkId: string, keyType?: KeyType): Promise<PublicKey> {
+        const keyPair = keyType === KeyType.SECP256K1 ? KeyPair.fromRandom('secp256k1') : KeyPair.fromRandom('ed25519');
         await this.keyStore.setKey(networkId, accountId, keyPair);
         return keyPair.getPublicKey();
     }

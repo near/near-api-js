@@ -1,12 +1,14 @@
 import { Assignable } from '@near-js/types';
 import { baseEncode, baseDecode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
+import secp256k1 from 'secp256k1';
 
 import { KeySize, KeyType } from './constants';
 
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
         case KeyType.ED25519: return 'ed25519';
+        case KeyType.SECP256K1: return 'secp256k1';
         default: throw new Error(`Unknown key type ${keyType}`);
     }
 }
@@ -14,6 +16,7 @@ function key_type_to_str(keyType: KeyType): string {
 function str_to_key_type(keyType: string): KeyType {
     switch (keyType.toLowerCase()) {
         case 'ed25519': return KeyType.ED25519;
+        case 'secp256k1': return KeyType.SECP256K1;
         default: throw new Error(`Unknown key type ${keyType}`);
     }
 }
@@ -55,8 +58,9 @@ export class PublicKey extends Assignable {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
         const decodedPublicKey = baseDecode(publicKey);
-        if(decodedPublicKey.length !== KeySize.SECRET_KEY) {
-            throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${KeySize.SECRET_KEY}`);
+        const keySize = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY
+        if(decodedPublicKey.length !== keySize) {
+            throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${keySize}`);
         }
         return new PublicKey({ keyType, data: decodedPublicKey });
     }
@@ -78,6 +82,10 @@ export class PublicKey extends Assignable {
     verify(message: Uint8Array, signature: Uint8Array): boolean {
         switch (this.keyType) {
             case KeyType.ED25519: return ed25519.verify(signature, message, this.data);
+            // we don't need the recovery id to verify secp25k61 signatures locally, so drop  it here
+            // also inject the 0x04 header back into the pubkey before trying to interact with it in
+            // the secp256k1 library
+            case KeyType.SECP256K1: return secp256k1.ecdsaVerify(signature.subarray(0, 64), message, new Uint8Array([0x04, ...this.data]));
             default: throw new Error(`Unknown key type ${this.keyType}`);
         }
     }
