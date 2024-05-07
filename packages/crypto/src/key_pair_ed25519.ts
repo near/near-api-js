@@ -54,7 +54,7 @@ export class KeyPairEd25519 extends KeyPairBase {
      * @returns {Signature} The signature object containing the signature and the public key.
      */
     sign(message: Uint8Array): Signature {
-        console.log("hereeee", "ed25519")
+        console.log('hereeee', 'ed25519');
         const signature = ed25519.sign(message, baseDecode(this.secretKey));
         return { signature, publicKey: this.publicKey };
     }
