@@ -4,7 +4,6 @@ const { InMemorySigner } = require('@near-js/signers');
 const { Assignable } = require('@near-js/types');
 const { baseDecode, baseEncode } = require('@near-js/utils');
 const fs = require('fs');
-const BN = require('bn.js');
 const { deserialize, serialize } = require('borsh');
 
 const {
@@ -41,6 +40,14 @@ test('serialize object', async () => {
     expect(new_value.y.toString()).toEqual('20');
     expect(new_value.z).toEqual('123');
     expect(new_value.q).toEqual([1, 2, 3]);
+});
+
+test('deserialize delegate', async () => {
+    const serialized = [8, 16, 0, 0, 0, 116, 104, 101, 45, 117, 115, 101, 114, 46, 116, 101, 115, 116, 110, 101, 116, 27, 0, 0, 0, 104, 101, 108, 108, 111, 46, 110, 101, 97, 114, 45, 101, 120, 97, 109, 112, 108, 101, 115, 46, 116, 101, 115, 116, 110, 101, 116, 1, 0, 0, 0, 2, 12, 0, 0, 0, 115, 101, 116, 95, 103, 114, 101, 101, 116, 105, 110, 103, 20, 0, 0, 0, 123, 34, 103, 114, 101, 101, 116, 105, 110, 103, 34, 58, 34, 72, 101, 108, 108, 111, 34, 125, 0, 224, 87, 235, 72, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9, 120, 166, 131, 144, 0, 0, 61, 158, 123, 9, 0, 0, 0, 0, 0, 154, 156, 80, 116, 108, 65, 42, 39, 47, 253, 146, 109, 67, 106, 83, 230, 57, 183, 195, 122, 150, 6, 246, 220, 173, 35, 120, 139, 167, 94, 183, 29, 0, 41, 98, 10, 45, 51, 177, 89, 159, 190, 247, 41, 255, 243, 17, 186, 140, 168, 139, 9, 81, 33, 8, 74, 73, 85, 254, 127, 62, 54, 193, 60, 50, 235, 49, 13, 37, 152, 94, 172, 24, 198, 220, 119, 148, 99, 89, 19, 187, 251, 80, 76, 230, 77, 28, 80, 140, 133, 81, 139, 159, 62, 245, 167, 4];
+    const { signedDelegate: { delegateAction } } = deserialize(SCHEMA.Action, serialized);
+    expect(delegateAction.senderId).toEqual('the-user.testnet');
+    expect(delegateAction.receiverId).toEqual('hello.near-examples.testnet');
+    expect(String(delegateAction.nonce)).toEqual('158895108000003');
 });
 
 test('serialize and sign multi-action tx', async () => {
@@ -145,7 +152,7 @@ describe('serialize and deserialize on different types of nonce', () => {
         transfer(1),
     ];
     const blockHash = baseDecode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
-    const targetNonce = new BN(1);
+    const targetNonce = BigInt(1);
     test('number typed nonce', async () => {
         const transaction = createTransaction(
             'test.near',
@@ -176,12 +183,12 @@ describe('serialize and deserialize on different types of nonce', () => {
         expect(deserialized.nonce.toString()).toEqual(targetNonce.toString());
     });
 
-    test('BN typed nonce', async () => {
+    test('BigInt typed nonce', async () => {
         const transaction = createTransaction(
             'test.near',
             PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
             'whatever.near',
-            new BN(1),
+            BigInt(1),
             actions,
             blockHash);
         const serialized = encodeTransaction(transaction);

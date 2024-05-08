@@ -1,7 +1,6 @@
 import { PublicKey } from '@near-js/crypto';
 import { Assignable } from '@near-js/types';
 import { deserialize, serialize, Schema } from 'borsh';
-import BN from 'bn.js';
 
 import {
     Action,
@@ -61,7 +60,7 @@ export function decodeSignedTransaction(bytes: Uint8Array) {
 export class Transaction extends Assignable {
     signerId: string;
     publicKey: PublicKey;
-    nonce: BN;
+    nonce: bigint;
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
@@ -187,8 +186,8 @@ export const SCHEMA = new class BorshSchema {
         struct: {
             senderId: 'string',
             receiverId: 'string',
-            nonce: 'u64',
             actions: { array: { type: this.ClassicActions } },
+            nonce: 'u64',
             maxBlockHeight: 'u64',
             publicKey: this.PublicKey,
         }

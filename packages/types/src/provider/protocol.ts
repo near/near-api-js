@@ -3,8 +3,6 @@
  * @module
  */
 
-import BN from 'bn.js';
-
 export interface SyncInfo {
     latest_block_hash: string;
     latest_block_height: number;
@@ -31,6 +29,8 @@ export type BlockHeight = number;
 export type BlockId = BlockHash | BlockHeight;
 
 export type Finality = 'optimistic' | 'near-final' | 'final'
+
+export type TxExecutionStatus = 'NONE' | 'INCLUDED' | 'INCLUDED_FINAL' | 'EXECUTED' | 'FINAL';
 
 export type BlockReference = { blockId: BlockId } | { finality: Finality } | { sync_checkpoint: 'genesis' | 'earliest_available' }
 
@@ -127,7 +127,7 @@ export interface Chunk {
 export interface Transaction {
     actions: Array<any>;
     hash: string;
-    nonce: BN;
+    nonce: BigInt;
     public_key: string;
     receiver_id: string;
     signature: string;

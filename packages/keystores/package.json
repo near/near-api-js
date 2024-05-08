@@ -1,6 +1,6 @@
 {
   "name": "@near-js/keystores",
-  "version": "0.0.8",
+  "version": "0.0.11",
   "description": "Key storage and management implementations",
   "main": "lib/index.js",
   "scripts": {

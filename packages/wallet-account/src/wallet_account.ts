@@ -16,7 +16,6 @@ import { InMemorySigner } from '@near-js/signers';
 import { FinalExecutionOutcome } from '@near-js/types';
 import { baseDecode } from '@near-js/utils';
 import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
-import BN from 'bn.js';
 import { serialize } from 'borsh';
 
 import { Near } from './near';
@@ -371,7 +370,7 @@ export class ConnectedWalletAccount extends Account {
 
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
-        const nonce = accessKey.access_key.nonce.add(new BN(1));
+        const nonce = accessKey.access_key.nonce + BigInt(1);
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
         await this.walletConnection.requestSignTransactions({
             transactions: [transaction],

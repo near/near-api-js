@@ -1,31 +1,29 @@
-const BN = require('bn.js');
-
 const { actionCreators } = require('../lib');
 
 const { functionCall } = actionCreators;
 
 test('functionCall with already serialized args', () => {
     const serializedArgs = Buffer.from('{}');
-    const action = functionCall('methodName', serializedArgs, new BN(1), new BN(2));    
+    const action = functionCall('methodName', serializedArgs, BigInt(1), BigInt(2));    
     expect(action).toMatchObject({ 
         functionCall: {
             methodName: 'methodName',
             args: serializedArgs,
-            gas: new BN(1),
-            deposit: new BN(2)
+            gas: BigInt(1),
+            deposit: BigInt(2)
         }
     });
 });
 
 test('functionCall with non-serialized args', () => {
     const serializedArgs = Buffer.from('{}');
-    const action = functionCall('methodName', {}, new BN(1), new BN(2));    
+    const action = functionCall('methodName', {}, BigInt(1), BigInt(2));    
     expect(action).toMatchObject({ 
         functionCall: {
             methodName: 'methodName',
             args: serializedArgs,
-            gas: new BN(1),
-            deposit: new BN(2)
+            gas: BigInt(1),
+            deposit: BigInt(2)
         }
     });
 });

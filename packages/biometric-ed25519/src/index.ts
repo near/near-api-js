@@ -1,6 +1,6 @@
 import base64 from '@hexagon/base64';
 import { ed25519 } from '@noble/curves/ed25519';
-import { Sha256 } from '@aws-crypto/sha256-js';
+import { sha256 } from '@noble/hashes/sha256';
 import { Buffer } from 'buffer';
 import asn1 from 'asn1-parser';
 import { KeyPair } from '@near-js/crypto';
@@ -11,7 +11,10 @@ import {
     get64BytePublicKeyFromPEM,
     preformatGetAssertReq,
     publicKeyCredentialToJSON,
-    recoverPublicKey
+    recoverPublicKey,
+    uint8ArrayToBigInt,
+    sanitizeCreateKeyResponse,
+    sanitizeGetKeyResponse
 } from './utils';
 import { Fido2 } from './fido2';
 import { AssertionResponse } from './index.d';
@@ -62,18 +65,18 @@ export const createKey = async (username: string): Promise<KeyPair> => {
                 throw new PasskeyProcessCanceled('Failed to retrieve response from navigator.credentials.create');
             }
 
+            const sanitizedResponse = sanitizeCreateKeyResponse(res);
+
             const result = await f2l.attestation({
-                clientAttestationResponse: res,
+                clientAttestationResponse: sanitizedResponse,
                 origin,
                 challenge: challengeMakeCred.challenge
             });
             const publicKey = result.authnrData.get('credentialPublicKeyPem');
             const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
-            const edSha256 = new Sha256();
-            edSha256.update(Buffer.from(publicKeyBytes));
-            const secretKey = await edSha256.digest();
+            const secretKey = sha256.create().update(Buffer.from(publicKeyBytes)).digest();
             const pubKey = ed25519.getPublicKey(secretKey);
-            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([secretKey, Buffer.from(pubKey)]))));
+            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]))));
         });
 };
 
@@ -93,35 +96,31 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
 
     setBufferIfUndefined();
     return navigator.credentials.get({ publicKey })
-        .then(async (response: Credential) => {
-            const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(response);
+        .then(async (response) => {
+            const sanitizedResponse = sanitizeGetKeyResponse(response);
+            const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(sanitizedResponse);
             const signature = base64.toArrayBuffer(getAssertionResponse.response.signature, true);
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             const parser = asn1?.ASN1?.parse || window?.ASN1?.parse;
             const rAndS = parser(new Uint8Array(signature));
-            const clientDataSha256 = new Sha256();
-            clientDataSha256.update(
+            const clientDataJSONHash = sha256.create().update(
                 Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.clientDataJSON, true)))
-            );
-            const clientDataJSONHash = await clientDataSha256.digest();
+            ).digest();
             const authenticatorDataJSONHash = Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)));
-            const authenticatorAndClientDataJSONHash = Buffer.concat([authenticatorDataJSONHash, clientDataJSONHash]);
+            const authenticatorAndClientDataJSONHash = Buffer.concat([Buffer.from(authenticatorDataJSONHash), Buffer.from(clientDataJSONHash)]);
 
-            const correctPKs = await recoverPublicKey(rAndS.children[0].value, rAndS.children[1].value, authenticatorAndClientDataJSONHash, 0);
-            
-            const firstEdSha256 = new Sha256();
-            firstEdSha256.update(Buffer.from(correctPKs[0]));
-            const secondEdSha256 = new Sha256();
-            secondEdSha256.update(Buffer.from(correctPKs[1]));
+            const r = rAndS.children[0].value;
+            const s = rAndS.children[1].value;
+            const correctPKs = await recoverPublicKey(uint8ArrayToBigInt(r), uint8ArrayToBigInt(s), authenticatorAndClientDataJSONHash, 0);
 
-            const firstEDSecret = await firstEdSha256.digest();
+            const firstEDSecret = sha256.create().update(Buffer.from(correctPKs[0])).digest();
             const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
-            const secondEDSecret = await secondEdSha256.digest();
+            const secondEDSecret = sha256.create().update(Buffer.from(correctPKs[1])).digest();
             const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
-            const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([firstEDSecret, Buffer.from(firstEDPublic)]))));
-            const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([secondEDSecret, Buffer.from(secondEDPublic)]))));
+            const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)]))));
+            const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)]))));
             return [firstKeyPair, secondKeyPair];
         });
 };

@@ -1,6 +1,5 @@
 const { KeyPair } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
-const BN = require('bn.js');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -9,7 +8,7 @@ const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = 
 const networkId = 'unittest';
 
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
-const HELLO_WASM_BALANCE = new BN('10000000000000000000000000');
+const HELLO_WASM_BALANCE = BigInt('10000000000000000000000000');
 const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
     changeMethods: ['setValue', 'callPromise']
@@ -69,7 +68,7 @@ async function setUpTestConnection() {
     });
 
     return {
-        accountCreator: new LocalAccountCreator(new Account(connection, config.masterAccount), new BN('500000000000000000000000000')),
+        accountCreator: new LocalAccountCreator(new Account(connection, config.masterAccount), BigInt('500000000000000000000000000')),
         connection,
     };
 }
@@ -79,7 +78,7 @@ function generateUniqueString(prefix) {
     let result = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
     let add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
     for (let i = add_symbols; i > 0; --i) result += '0';
-    return result;
+    return result + '.test.near';
 }
 
 async function createAccount({ accountCreator, connection }) {

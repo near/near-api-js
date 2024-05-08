@@ -2,10 +2,7 @@
  * NEAR RPC API request types and responses
  * @module
  */
-
-import BN from 'bn.js';
-
-import { BlockHash, BlockHeight, MerklePath } from './protocol';
+import { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol';
 
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',
@@ -57,6 +54,7 @@ export interface ExecutionOutcomeWithIdView {
 }
 
 export interface FinalExecutionOutcome {
+    final_execution_status: TxExecutionStatus;
     status: FinalExecutionStatus | FinalExecutionStatusBasic;
     transaction: any;
     transaction_outcome: ExecutionOutcomeWithId;
@@ -110,7 +108,7 @@ export interface AccessKeyViewRaw extends QueryResponseKind {
     permission: 'FullAccess' | FunctionCallPermissionView;
 }
 export interface AccessKeyView extends QueryResponseKind {
-    nonce: BN;
+    nonce: bigint;
     permission: 'FullAccess' | FunctionCallPermissionView;
 }
 

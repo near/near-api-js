@@ -1,5 +1,53 @@
 # @near-js/providers
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`06baa81d`](https://github.com/near/near-api-js/commit/06baa81dc604cfe0463476de7a4dcdd39a6f716a)]:
+  - @near-js/types@0.2.0
+  - @near-js/transactions@1.2.1
+  - @near-js/utils@0.2.1
+
+## 0.2.0
+
+### Minor Changes
+
+- [#1334](https://github.com/near/near-api-js/pull/1334) [`3f363113`](https://github.com/near/near-api-js/commit/3f363113e102d0acf29b7b2635acf6160a028cc3) Thanks [@denbite](https://github.com/denbite)! - Introduce FailoverRpcProvider that switches between providers in case of a failure of one of them
+
+### Patch Changes
+
+- [#1223](https://github.com/near/near-api-js/pull/1223) [`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Replace bn.js by BigInt.
+
+- Updated dependencies [[`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b)]:
+  - @near-js/transactions@1.2.0
+  - @near-js/types@0.1.0
+  - @near-js/utils@0.2.0
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`42dc7e2a`](https://github.com/near/near-api-js/commit/42dc7e2ac794e973987bed7b89da5ef2d3c6c8ac)]:
+  - @near-js/transactions@1.1.2
+
+## 0.1.0
+
+### Minor Changes
+
+- [#1275](https://github.com/near/near-api-js/pull/1275) [`662cc13d`](https://github.com/near/near-api-js/commit/662cc13d7961c3bdabed3ad51b1c57958739a3e6) Thanks [@denbite](https://github.com/denbite)! - Display user-friendly messages for JSON RPC errors:
+
+  - MethodNotFound
+  - CodeDoesNotExist
+  - AccessKeyDoesNotExist
+  - AccountDoesNotExist
+
+### Patch Changes
+
+- Updated dependencies [[`662cc13d`](https://github.com/near/near-api-js/commit/662cc13d7961c3bdabed3ad51b1c57958739a3e6)]:
+  - @near-js/utils@0.1.0
+  - @near-js/transactions@1.1.1
+
 ## 0.0.10
 
 ### Patch Changes

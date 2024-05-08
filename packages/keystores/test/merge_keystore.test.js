@@ -31,5 +31,5 @@ describe('Merge keystore', () => {
         expect(await ctx.stores[1].getAccounts('network')).toHaveLength(0);
     });
 
-    require('./keystore_common').shouldStoreAndRetriveKeys(ctx);
+    require('./keystore_common').shouldStoreAndRetrieveKeys(ctx);
 });

@@ -1,6 +1,6 @@
 import base64 from '@hexagon/base64';
-import { secp256k1 } from '@noble/curves/secp256k1';
-import { Sha256 } from '@aws-crypto/sha256-js';
+import { p256 } from '@noble/curves/p256';
+import { sha256 } from '@noble/hashes/sha256';
 import { PublicKey } from '@near-js/crypto';
 
 export const preformatMakeCredReq = (makeCredReq) => {
@@ -25,7 +25,7 @@ export const preformatMakeCredReq = (makeCredReq) => {
 export const get64BytePublicKeyFromPEM = (publicKey: PublicKey) => {
     const prefix = '\n';
     const publicKeyBase64 = publicKey.toString().split(prefix);
-    return base64.toArrayBuffer(`${publicKeyBase64[1]}${publicKeyBase64[2]}`).slice(27);
+    return base64.toArrayBuffer(`${publicKeyBase64[1]}${publicKeyBase64[2]}`).slice(27, 59);
 };
 
 export const validateUsername = (name: string): string => {
@@ -77,22 +77,90 @@ export const recoverPublicKey = async (r, s, message, recovery) => {
     if (recovery !== 0 && recovery !== 1) {
         throw new Error('Invalid recovery parameter');
     }
-    
-    const hash = new Sha256();
-    hash.update(message);
 
-    const sigObjQ = new secp256k1.Signature(r, s);
-    sigObjQ.addRecoveryBit(0);
-    const sigObjP = new secp256k1.Signature(r, s);
-    sigObjP.addRecoveryBit(1);
+    const sigObjQ = new p256.Signature(r, s).addRecoveryBit(0);
+    const sigObjP = new p256.Signature(r, s).addRecoveryBit(1);
+    const hash = sha256.create().update(message).digest();
 
-    const h = await hash.digest();
+    const Q = sigObjQ.recoverPublicKey(hash);
+    const P = sigObjP.recoverPublicKey(hash);
+    return [Q.toRawBytes().subarray(1, 33), P.toRawBytes().subarray(1, 33)];
+};
 
-    const Q = sigObjQ.recoverPublicKey(h);
-    const P = sigObjP.recoverPublicKey(h);
+export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
+    const array = Array.from(uint8Array);
+    return BigInt('0x' + array.map(byte => byte.toString(16).padStart(2, '0')).join(''));
+};
 
-    return [
-        Buffer.from(Q.toRawBytes()).subarray(1, 65),
-        Buffer.from(P.toRawBytes()).subarray(1, 65)
-    ];
+const convertUint8ArrayToArrayBuffer = (obj: any) => {
+    if (obj instanceof Uint8Array) {
+        return obj.buffer.slice(obj.byteOffset, obj.byteOffset + obj.byteLength);
+    }
+    return obj;
+};
+
+// This function is used to sanitize the response from navigator.credentials.create(), seeking for any Uint8Array and converting them to ArrayBuffer
+// This function has multiple @ts-ignore because types are not up to date with standard type below:
+// https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAttestationResponse
+// an AuthenticatorAttestationResponse (when the PublicKeyCredential is created via CredentialsContainer.create())
+export const sanitizeCreateKeyResponse = (res: Credential) => {
+    if (res instanceof PublicKeyCredential && (
+        res.rawId instanceof Uint8Array ||
+        res.response.clientDataJSON instanceof Uint8Array ||
+        //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //  @ts-ignore - attestationObject is not defined in Credential
+        res.response.attestationObject instanceof Uint8Array
+    )) {
+        return {
+            ...res,
+            rawId: convertUint8ArrayToArrayBuffer(res.rawId),
+            response: {
+                ...res.response,
+                clientDataJSON: convertUint8ArrayToArrayBuffer(res.response.clientDataJSON),
+                //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //  @ts-ignore - attestationObject is not defined in Credential
+                attestationObject: convertUint8ArrayToArrayBuffer(res.response.attestationObject),
+            }
+        };
+    }
+    return res;  
+};
+
+// This function is used to sanitize the response from navigator.credentials.get(), seeking for any Uint8Array and converting them to ArrayBuffer
+// This function has multiple @ts-ignore because types are not up to date with standard type below:
+// https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAssertionResponse
+// an AuthenticatorAssertionResponse (when the PublicKeyCredential is obtained via CredentialsContainer.get()).
+export const sanitizeGetKeyResponse = (res: Credential) => {
+    if (res instanceof PublicKeyCredential && (
+        res.rawId instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //   @ts-ignore - authenticatorData is not defined in Credential
+      res.response.authenticatorData instanceof Uint8Array ||
+      res.response.clientDataJSON instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //   @ts-ignore - signature is not defined in Credential
+      res.response.signature instanceof Uint8Array ||
+      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //   @ts-ignore - userHandle is not defined in Credential
+      res.response.userHandle instanceof Uint8Array
+    )) {
+        return {
+            ...res,
+            rawId: convertUint8ArrayToArrayBuffer(res.rawId),
+            response: {
+                ...res.response,
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //   @ts-ignore - authenticatorData is not defined in Credential
+                authenticatorData: convertUint8ArrayToArrayBuffer(res.response.authenticatorData),
+                clientDataJSON: convertUint8ArrayToArrayBuffer(res.response.clientDataJSON),
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //   @ts-ignore - signature is not defined in Credential
+                signature: convertUint8ArrayToArrayBuffer(res.response.signature),
+                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //   @ts-ignore - userHandle is not defined in Credential
+                userHandle: convertUint8ArrayToArrayBuffer(res.response.userHandle),
+            }
+        };
+    }
+    return res;
 };

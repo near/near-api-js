@@ -1,5 +1,34 @@
 # @near-js/utils
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`06baa81d`](https://github.com/near/near-api-js/commit/06baa81dc604cfe0463476de7a4dcdd39a6f716a)]:
+  - @near-js/types@0.2.0
+
+## 0.2.0
+
+### Minor Changes
+
+- [#1223](https://github.com/near/near-api-js/pull/1223) [`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Replace bn.js by BigInt.
+
+### Patch Changes
+
+- Updated dependencies [[`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b)]:
+  - @near-js/types@0.1.0
+
+## 0.1.0
+
+### Minor Changes
+
+- [#1275](https://github.com/near/near-api-js/pull/1275) [`662cc13d`](https://github.com/near/near-api-js/commit/662cc13d7961c3bdabed3ad51b1c57958739a3e6) Thanks [@denbite](https://github.com/denbite)! - Display user-friendly messages for JSON RPC errors:
+
+  - MethodNotFound
+  - CodeDoesNotExist
+  - AccessKeyDoesNotExist
+  - AccountDoesNotExist
+
 ## 0.0.5
 
 ### Patch Changes

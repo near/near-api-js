@@ -1,5 +1,32 @@
 # @near-js/crypto
 
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies [[`06baa81d`](https://github.com/near/near-api-js/commit/06baa81dc604cfe0463476de7a4dcdd39a6f716a)]:
+  - @near-js/types@0.2.0
+  - @near-js/utils@0.2.1
+
+## 1.2.2
+
+### Patch Changes
+
+- [#1223](https://github.com/near/near-api-js/pull/1223) [`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Replace bn.js by BigInt.
+
+- Updated dependencies [[`9060b781`](https://github.com/near/near-api-js/commit/9060b7811668d71bdf21170273a42842c3691f9b)]:
+  - @near-js/types@0.1.0
+  - @near-js/utils@0.2.0
+
+## 1.2.1
+
+### Patch Changes
+
+- [#1298](https://github.com/near/near-api-js/pull/1298) [`c4655576`](https://github.com/near/near-api-js/commit/c4655576bacb1d8b85030dca5b9443649621c8ee) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Pass Uint8Array to getPublicKey method.
+
+- Updated dependencies [[`662cc13d`](https://github.com/near/near-api-js/commit/662cc13d7961c3bdabed3ad51b1c57958739a3e6)]:
+  - @near-js/utils@0.1.0
+
 ## 1.2.0
 
 ### Minor Changes

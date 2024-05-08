@@ -1,16 +1,19 @@
 const { PositionalArgsError } = require('@near-js/types');
 
-const { Contract } = require('../lib');
+const { Contract, Account } = require('../lib');
 const testUtils  = require('./test-utils');
 
-const account = {
+const account = Object.setPrototypeOf({
+    getConnection() {
+        return {};
+    },
     viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery }) {
         return { this: this, contractId, methodName, args, parse, stringify, jsContract, blockQuery };
     },
     functionCall() {
         return this;
     }
-};
+}, Account.prototype);
 
 const contract = new Contract(account, 'contractId', {
     viewMethods: ['viewMethod'],
@@ -77,11 +80,11 @@ describe('viewMethod', () => {
 
 describe('changeMethod', () => {
     test('throws error message for invalid gas argument', () => {
-        return expect(contract.changeMethod({ a: 1 }, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'gas' argument, but got.+/);
+        return expect(contract.changeMethod({ a: 1 }, 'whatever')).rejects.toThrow(/Expected number, decimal string or BigInt for 'gas' argument, but got.+/);
     });
 
     test('gives error message for invalid amount argument', () => {
-        return expect(contract.changeMethod({ a: 1 }, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BN for 'amount' argument, but got.+/);
+        return expect(contract.changeMethod({ a: 1 }, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BigInt for 'amount' argument, but got.+/);
     });
 
     test('makes a functionCall and passes along walletCallbackUrl and walletMeta', async() => {
@@ -105,7 +108,6 @@ describe('changeMethod', () => {
 
 describe('local view execution', () => {
     let nearjs;
-    let workingAccount;
     let contract;
     let blockQuery;
 
@@ -113,8 +115,7 @@ describe('local view execution', () => {
 
     beforeAll(async () => {
         nearjs = await testUtils.setUpTestConnection();
-        workingAccount = await testUtils.createAccount(nearjs);
-        contract = await testUtils.deployContractGuestBook(workingAccount, testUtils.generateUniqueString('guestbook'));
+        contract = await testUtils.deployContractGuestBook(nearjs.accountCreator.masterAccount, testUtils.generateUniqueString('guestbook'));
         
         await contract.add_message({ text: 'first message' });
         await contract.add_message({ text: 'second message' });
@@ -171,4 +172,54 @@ describe('local view execution', () => {
             });
         }
     }); 
+});
+
+describe('contract without account', () => {
+    let nearjs;
+    let contract;
+
+    jest.setTimeout(60000);
+
+    beforeAll(async () => {
+        nearjs = await testUtils.setUpTestConnection();
+        const contractId = testUtils.generateUniqueString('guestbook');
+        await testUtils.deployContractGuestBook(nearjs.accountCreator.masterAccount, contractId);
+
+        contract = new Contract(nearjs.connection, contractId, {
+            viewMethods: ['total_messages', 'get_messages'],
+            changeMethods: ['add_message'],
+        });
+    });
+
+    test('view & change methods work', async () => {
+        const totalMessagesBefore = await contract.total_messages({});
+        expect(totalMessagesBefore).toBe(0);
+
+        await contract.add_message({
+            signerAccount: nearjs.accountCreator.masterAccount,
+            args: {
+                text: 'first message',
+            }
+        });
+        await contract.add_message({
+            signerAccount: nearjs.accountCreator.masterAccount,
+            args: {
+                text: 'second message',
+            }
+        });
+
+        const totalMessagesAfter = await contract.total_messages({});
+        expect(totalMessagesAfter).toBe(2);
+
+        const messages = await contract.get_messages({});
+        expect(messages.length).toBe(2);
+        expect(messages[0].text).toEqual('first message');
+        expect(messages[1].text).toEqual('second message');
+    });
+
+    test('fails to call add_message() without signerAccount', async () => {
+        await expect(
+            contract.add_message({ text: 'third message' })
+        ).rejects.toThrow(/signerAccount must be specified/);
+    });
 });

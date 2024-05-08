@@ -1,6 +1,5 @@
 import { PublicKey } from '@near-js/crypto';
 import { fetchJson } from '@near-js/providers';
-import BN from 'bn.js';
 
 import { Connection } from './connection';
 import { Account } from './account';
@@ -14,9 +13,9 @@ export abstract class AccountCreator {
 
 export class LocalAccountCreator extends AccountCreator {
     readonly masterAccount: Account;
-    readonly initialBalance: BN;
+    readonly initialBalance: bigint;
 
-    constructor(masterAccount: Account, initialBalance: BN) {
+    constructor(masterAccount: Account, initialBalance: bigint) {
         super();
         this.masterAccount = masterAccount;
         this.initialBalance = initialBalance;

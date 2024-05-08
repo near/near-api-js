@@ -1,7 +1,7 @@
 {
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
-    "version": "3.0.2",
+    "version": "4.0.1",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
@@ -22,9 +22,6 @@
         "@near-js/types": "workspace:*",
         "@near-js/utils": "workspace:*",
         "@near-js/wallet-account": "workspace:*",
-        "ajv": "8.11.2",
-        "ajv-formats": "2.1.1",
-        "bn.js": "5.2.1",
         "borsh": "1.0.0",
         "depd": "2.0.0",
         "http-errors": "1.7.2",
@@ -33,7 +30,6 @@
         "@noble/curves": "1.2.0"
     },
     "devDependencies": {
-        "@types/bn.js": "5.1.0",
         "@types/http-errors": "1.6.1",
         "@types/node": "18.11.18",
         "browserify": "16.2.3",
@@ -50,7 +46,7 @@
         "semver": "7.1.1",
         "ts-jest": "26.5.6",
         "uglifyify": "5.0.1",
-        "near-workspaces": "3.4.0"
+        "near-workspaces": "3.5.0"
     },
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
