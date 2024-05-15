@@ -123,7 +123,7 @@ export class JsonRpcProvider extends Provider {
      * @param signedTransaction The signed transaction being sent
      */
     async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
-        return this.sendTransactionUntil(signedTransaction, 'FINAL');
+        return this.sendTransactionUntil(signedTransaction, 'EXECUTED_OPTIMISTIC');
     }
 
     /**
@@ -144,7 +144,7 @@ export class JsonRpcProvider extends Provider {
      * @param accountId The NEAR account that signed the transaction
      * @param waitUntil
      */
-    async txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'FINAL'): Promise<FinalExecutionOutcome> {
+    async txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'): Promise<FinalExecutionOutcome> {
         if (typeof txHash === 'string') {
             return this.txStatusString(txHash, accountId, waitUntil);
         } else {
@@ -168,7 +168,7 @@ export class JsonRpcProvider extends Provider {
      * @param waitUntil
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'FINAL'): Promise<FinalExecutionOutcome> {
+    async txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'): Promise<FinalExecutionOutcome> {
         if (typeof txHash === 'string') {
             return this.sendJsonRpc('EXPERIMENTAL_tx_status', { tx_hash: txHash, sender_account_id: accountId, wait_until: waitUntil });
         }
