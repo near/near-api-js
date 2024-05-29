@@ -30,6 +30,7 @@ import {
     parseResultError,
     DEFAULT_FUNCTION_CALL_GAS,
     printTxOutcomeLogsAndFailures,
+    parseBalance,
 } from '@near-js/utils';
 
 import { Connection } from './connection';
@@ -553,17 +554,13 @@ export class Account implements IntoConnection {
         const protocolConfig = await this.connection.provider.experimental_protocolConfig({ finality: 'final' });
         const state = await this.state();
 
-        const costPerByte = BigInt(protocolConfig.runtime_config.storage_amount_per_byte);
-        const stateStaked = BigInt(state.storage_usage) * costPerByte;
-        const staked = BigInt(state.locked);
-        const totalBalance = BigInt(state.amount) + staked;
-        const availableBalance = totalBalance - (staked > stateStaked ? staked : stateStaked);
+        const { available, staked, stateStaked, total } = parseBalance(state, protocolConfig);
 
         return {
-            total: totalBalance.toString(),
+            total: total.toString(),
             stateStaked: stateStaked.toString(),
             staked: staked.toString(),
-            available: availableBalance.toString()
+            available: available.toString()
         };
     }
 
