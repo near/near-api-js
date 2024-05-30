@@ -1,6 +1,6 @@
 import type { AccountView, NearProtocolConfig } from '@near-js/types';
 
-interface AccountBalanceDetail {
+export interface AccountBalanceDetail {
     available: BigInt;
     staked: BigInt;
     stateStaked: BigInt;
