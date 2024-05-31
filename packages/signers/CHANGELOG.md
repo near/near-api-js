@@ -1,5 +1,13 @@
 # @near-js/signers
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@1.2.4
+  - @near-js/keystores@0.0.12
+
 ## 0.1.3
 
 ### Patch Changes
