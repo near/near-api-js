@@ -25,7 +25,7 @@ import {
     RpcQueryRequest,
     EpochValidatorInfo,
 } from '@near-js/types';
-import { TxExecutionStatus } from '@near-js/types/src/provider/protocol';
+import { TxExecutionStatus } from '@near-js/types';
 
 /** @hidden */
 export abstract class Provider {

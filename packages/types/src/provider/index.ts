@@ -36,6 +36,7 @@ export {
     SyncInfo,
     TotalWeight,
     Transaction as ProviderTransaction,
+    TxExecutionStatus
 } from './protocol';
 export {
     CallFunctionRequest,
