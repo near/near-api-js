@@ -47,7 +47,10 @@ export class PasskeyProcessCanceled extends Error {
 export const createKey = async (username: string): Promise<KeyPair> => {
     const cleanUserName = validateUsername(username);
     if (!f2l.f2l) {
-        await init();
+        const available = await validateSupportForEC256Signing();
+        if (!available) {
+            throw new Error('WebAuthn is not supported by the current browser');
+        }
     }
 
     const id = base64.fromString(cleanUserName, true);
@@ -84,7 +87,10 @@ export const createKey = async (username: string): Promise<KeyPair> => {
 export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => {
     const cleanUserName = validateUsername(username);
     if (!f2l.f2l) {
-        await init();
+        const available = await validateSupportForEC256Signing();
+        if (!available) {
+            throw new Error('WebAuthn is not supported by the current browser');
+        }
     }
     const assertionOptions = await f2l.login();
     const options = {
@@ -123,6 +129,16 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
             const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)]))));
             return [firstKeyPair, secondKeyPair];
         });
+};
+
+export const validateSupportForEC256Signing = async (): Promise<boolean> => {
+    try {
+        await init();
+        return true;
+    } catch (e) {
+        console.error('Failed to initialize WebAuthn: ', e.message);
+        return false;
+    }
 };
 
 // To check if current browser supports WebAuthn
