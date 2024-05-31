@@ -30,7 +30,7 @@ import {
 } from '@near-js/types';
 import { SignedTransaction } from '@near-js/transactions';
 import { Provider } from './provider';
-import { TxExecutionStatus } from '@near-js/types/src/provider/protocol';
+import { TxExecutionStatus } from '@near-js/types';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).

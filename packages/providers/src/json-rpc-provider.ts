@@ -42,7 +42,7 @@ import {
 import { exponentialBackoff } from './exponential-backoff';
 import { Provider } from './provider';
 import { ConnectionInfo, fetchJson } from './fetch_json';
-import { TxExecutionStatus } from '@near-js/types/src/provider/protocol';
+import { TxExecutionStatus } from '@near-js/types';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
