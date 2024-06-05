@@ -25,7 +25,7 @@ import { Viewer } from './viewer';
 import { TransactionComposer } from './transactions';
 import type { CallOptions, ViewOptions } from './types';
 
-interface ConstructorParams {
+export interface ClientParams {
   network: string;
 }
 
@@ -36,7 +36,7 @@ export class NearClient {
   private signMessage: (message: Uint8Array) => Promise<PublicKeySignature> = () => new Promise((_, rej) => rej('SignerNotInitialized'));
   private signingAccountId: string;
 
-  constructor({ network }: ConstructorParams = { network: 'mainnet' }) {
+  constructor({ network }: ClientParams = { network: 'mainnet' }) {
     this.network = network;
     if (network === 'mainnet') {
       this.withMainnetRpc();
