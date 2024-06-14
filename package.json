@@ -2,8 +2,8 @@
   "name": "@near-js/monorepo",
   "private": true,
   "engines": {
-    "node": ">=16.14.0",
-    "pnpm": ">=7"
+    "node": ">=18.18.0",
+    "pnpm": ">=8"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
