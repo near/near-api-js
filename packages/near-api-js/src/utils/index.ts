@@ -1,7 +1,6 @@
 
 import * as key_pair from './key_pair';
 import * as serialize from './serialize';
-import * as web from './web';
 import * as enums from './enums';
 import * as format from './format';
 import * as rpc_errors from './rpc_errors';
@@ -13,7 +12,6 @@ import { Logger } from './logger';
 export {
     key_pair,
     serialize,
-    web,
     enums,
     format,
     PublicKey,
