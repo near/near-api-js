@@ -29,7 +29,6 @@ export interface ConnectionInfo {
 class ProviderError extends Error {
     cause: number;
     constructor(message: string, options: any) {
-        // @ts-expect-error ok
         super(message, options);
     }
 }
