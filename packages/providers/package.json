@@ -20,7 +20,8 @@
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "borsh": "1.0.0",
-    "http-errors": "1.7.2"
+    "exponential-backoff": "^3.1.1",
+    "isomorphic-unfetch": "^4.0.2"
   },
   "devDependencies": {
     "@types/node": "18.11.18",
