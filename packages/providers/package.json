@@ -3,6 +3,7 @@
   "version": "0.2.2",
   "description": "Library of implementations for interfacing with the NEAR blockchain",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",

@@ -4,6 +4,7 @@
   "version": "1.2.4",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "type": "module",
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
     "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
