@@ -10,10 +10,7 @@ const DEFAULT_LOG_LEVELS: LogLevel[] = [
     'fatal',
 ];
 
-const DEFAULT_LOGGER =
-    typeof process === 'object' && process.env.NEAR_NO_LOGS
-        ? undefined
-        : new ConsoleLogger(DEFAULT_LOG_LEVELS);
+const DEFAULT_LOGGER = new ConsoleLogger(DEFAULT_LOG_LEVELS);
 
 /**
  * Used to log the library messages
