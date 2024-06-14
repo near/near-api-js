@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { sha256 } from '@noble/hashes/sha256';
 import { ContractState } from './types';
 
 const notImplemented =
@@ -269,9 +269,7 @@ export class Runtime {
 
     private sha256 (valueLen: bigint, valuePtr: bigint, registerId: bigint) {
         const value = new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen));
-        const hash = createHash('sha256');
-        hash.update(value);
-        this.registers[registerId.toString()] = hash.digest();
+        this.registers[registerId.toString()] = sha256(value);
     }
 
     private returnValue (valueLen: bigint, valuePtr: bigint) {
