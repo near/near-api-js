@@ -25,6 +25,7 @@
         "borsh": "1.0.0",
         "depd": "2.0.0",
         "is-my-json-valid": "^2.20.6",
+        "isomorphic-unfetch": "^4.0.2",
         "lru_map": "0.4.1",
         "near-abi": "0.1.1"
     },
