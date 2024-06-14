@@ -10,7 +10,6 @@
     "main": "lib/index.js",
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
-    "type": "module",
     "dependencies": {
         "@near-js/accounts": "workspace:*",
         "@near-js/crypto": "workspace:*",
