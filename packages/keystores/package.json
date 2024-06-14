@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Key storage and management implementations",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",

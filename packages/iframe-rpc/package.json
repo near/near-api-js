@@ -4,6 +4,7 @@
   "description": "IFrame RPC client/server implementation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "type": "module",
   "scripts": {
     "build": "tsc -p ./tsconfig.json"
   },

@@ -1,8 +1,9 @@
 {
   "name": "@near-js/signers",
   "version": "0.1.5",
-  "description": "Core dependencies for the NEAR API JavaScript client",
+  "description": "Modules for cryptographically signing messages",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",
