@@ -3,6 +3,7 @@
   "version": "0.2.2",
   "description": "Common methods and constants for the NEAR API JavaScript client",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",

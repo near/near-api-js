@@ -3,6 +3,7 @@
   "version": "0.0.12",
   "description": "KeyStore implementation for working with keys in the local filesystem",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",

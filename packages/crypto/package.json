@@ -3,6 +3,7 @@
   "version": "1.2.4",
   "description": "Abstractions around NEAR-compatible elliptical curves and cryptographic keys",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",
