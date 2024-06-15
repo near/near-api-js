@@ -1,4 +1,3 @@
-import { Assignable } from '@near-js/types';
 import { baseEncode, baseDecode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 
@@ -21,9 +20,14 @@ function str_to_key_type(keyType: string): KeyType {
 /**
  * PublicKey representation that has type and bytes of the key.
  */
-export class PublicKey extends Assignable {
+export class PublicKey {
     keyType: KeyType;
     data: Uint8Array;
+
+    constructor({ keyType, data }: { keyType: KeyType, data: Uint8Array }) {
+        this.keyType = keyType;
+        this.data = data;
+    }
 
     /**
      * Creates a PublicKey instance from a string or an existing PublicKey instance.
