@@ -1,5 +1,3 @@
-export { Assignable } from '@near-js/types';
-
 /** @hidden @module */
 export abstract class Enum {
     enum: string;

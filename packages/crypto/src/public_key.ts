@@ -3,7 +3,6 @@ import { ed25519 } from '@noble/curves/ed25519';
 import secp256k1 from 'secp256k1';
 
 import { KeySize, KeyType } from './constants';
-import { Assignable } from '@near-js/types';
 
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
@@ -21,18 +20,17 @@ function str_to_key_type(keyType: string): KeyType {
     }
 }
 
-class ED25519PublicKey extends Assignable { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
-class SECP256K1PublicKey extends Assignable { keyType: KeyType = KeyType.SECP256K1; data: Uint8Array; }
+class ED25519PublicKey { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
+class SECP256K1PublicKey { keyType: KeyType = KeyType.SECP256K1; data: Uint8Array; }
 
 /**
  * PublicKey representation that has type and bytes of the key.
  */
-export class PublicKey extends Assignable {
+export class PublicKey {
     ed25519Key?: ED25519PublicKey;
     secp256k1Key?: SECP256K1PublicKey;
 
     constructor({ keyType, data }: { keyType: KeyType, data: Uint8Array }) {
-        super({});
         if (keyType === KeyType.ED25519) {
             this.ed25519Key = { keyType, data };
         } else if (keyType === KeyType.SECP256K1) {
@@ -111,11 +109,11 @@ export class PublicKey extends Assignable {
     get keyPair() {
         return this.ed25519Key || this.secp256k1Key;
     }
-      
+
     get keyType(): KeyType {
         return this.keyPair.keyType;
     }
-    
+
     get data(): Uint8Array {
         return this.keyPair.data;
     }
