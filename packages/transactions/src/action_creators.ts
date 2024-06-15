@@ -25,9 +25,9 @@ import { Signature } from './signature';
  */
 function fullAccessKey(): AccessKey {
     return new AccessKey({
-        nonce: 0,
+        nonce: 0n,
         permission: new AccessKeyPermission({
-            fullAccess: new FullAccessPermission({}),
+            fullAccess: new FullAccessPermission(),
         }),
     });
 }
@@ -45,7 +45,7 @@ function functionCallAccessKey(
     allowance?: bigint
 ): AccessKey {
     return new AccessKey({
-        nonce: 0,
+        nonce: 0n,
         permission: new AccessKeyPermission({
             functionCall: new FunctionCallPermission({
                 receiverId,
@@ -61,7 +61,7 @@ function functionCallAccessKey(
  * @returns A new action for creating a new account.
  */
 function createAccount(): Action {
-    return new Action({ createAccount: new CreateAccount({}) });
+    return new Action({ createAccount: new CreateAccount() });
 }
 
 /**
@@ -105,7 +105,7 @@ function functionCall(
 ): Action {
     if (jsContract) {
         return new Action({
-            functionCall: new FunctionCall({ methodName, args, gas, deposit }),
+            functionCall: new FunctionCall({ methodName, args: args as Uint8Array, gas, deposit }),
         });
     }
 
