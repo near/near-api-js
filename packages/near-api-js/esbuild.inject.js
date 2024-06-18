@@ -1,2 +1,2 @@
-exports.Buffer = require('buffer').Buffer;
-exports.process = require('process/browser');
+export { Buffer } from 'buffer';
+export { process } from 'process/browser';
