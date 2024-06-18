@@ -6,7 +6,7 @@ import path from 'path';
 import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../src';
 import Config from './config';
 
-const networkId = 'unittest';
+export const networkId = 'unittest';
 
 export const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
 export const HELLO_WASM_BALANCE = BigInt('10000000000000000000000000');

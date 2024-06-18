@@ -23,6 +23,7 @@ describe('Local View Execution - Storage', () => {
     test('load empty cached data', async () => {
         const storage = new Storage();
 
+        // @ts-expect-error test input
         const data = storage.load({});
 
         expect(data).toBe(undefined);

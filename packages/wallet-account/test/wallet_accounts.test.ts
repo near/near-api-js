@@ -66,13 +66,11 @@ describe("Wallet account tests", () => {
         const windowValueBefore = global.window;
 
         beforeEach(() => {
-            // @ts-expect-error test input
             global.window = undefined;
             keyStore.clear();
         });
 
         afterEach(() => {
-            // @ts-expect-error test input
             global.window = windowValueBefore;
         });
 

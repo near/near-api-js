@@ -2,7 +2,7 @@ import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/global
 import { PositionalArgsError } from '@near-js/types';
 
 import { Contract, Account } from '../src';
-import testUtils  from './test-utils';
+import { deployContractGuestBook, generateUniqueString, setUpTestConnection }  from './test-utils';
 
 const account = Object.setPrototypeOf({
     getConnection() {
@@ -116,8 +116,8 @@ describe('local view execution', () => {
     jest.setTimeout(60000);
 
     beforeAll(async () => {
-        nearjs = await testUtils.setUpTestConnection();
-        contract = await testUtils.deployContractGuestBook(nearjs.accountCreator.masterAccount, testUtils.generateUniqueString('guestbook'));
+        nearjs = await setUpTestConnection();
+        contract = await deployContractGuestBook(nearjs.accountCreator.masterAccount, generateUniqueString('guestbook'));
         
         await contract.add_message({ text: 'first message' });
         await contract.add_message({ text: 'second message' });
@@ -184,9 +184,9 @@ describe('contract without account', () => {
     jest.setTimeout(60000);
 
     beforeAll(async () => {
-        nearjs = await testUtils.setUpTestConnection();
-        const contractId = testUtils.generateUniqueString('guestbook');
-        await testUtils.deployContractGuestBook(nearjs.accountCreator.masterAccount, contractId);
+        nearjs = await setUpTestConnection();
+        const contractId = generateUniqueString('guestbook');
+        await deployContractGuestBook(nearjs.accountCreator.masterAccount, contractId);
 
         // @ts-expect-error test input
         contract = new Contract(nearjs.connection, contractId, {

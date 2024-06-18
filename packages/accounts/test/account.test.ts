@@ -5,16 +5,15 @@ import { BlockResult, TypedError } from '@near-js/types';
 import * as fs from 'fs';
 
 import { Account, Contract } from '../src';
-import testUtils from './test-utils';
+import { createAccount, generateUniqueString, HELLO_WASM_PATH, HELLO_WASM_BALANCE, networkId, setUpTestConnection } from './test-utils';
 
 let nearjs;
 let workingAccount;
 
-const { HELLO_WASM_PATH, HELLO_WASM_BALANCE } = testUtils;
 
 beforeAll(async () => {
-    nearjs = await testUtils.setUpTestConnection();
-    workingAccount = await testUtils.createAccount(nearjs);
+    nearjs = await setUpTestConnection();
+    workingAccount = await createAccount(nearjs);
 });
 
 afterAll(async () => {
@@ -27,10 +26,10 @@ test('view pre-defined account works and returns correct name', async () => {
 });
 
 test('create account and then view account returns the created account', async () => {
-    const newAccountName = testUtils.generateUniqueString('test');
+    const newAccountName = generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
     const { amount } = await workingAccount.state();
-    const newAmount = BigInt(amount) / BigInt(10);
+    const newAmount = BigInt(amount) / 10n;
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
@@ -38,29 +37,29 @@ test('create account and then view account returns the created account', async (
 });
 
 test('send money', async() => {
-    const sender = await testUtils.createAccount(nearjs);
-    const receiver = await testUtils.createAccount(nearjs);
+    const sender = await createAccount(nearjs);
+    const receiver = await createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
-    await sender.sendMoney(receiver.accountId, BigInt(10000));
+    await sender.sendMoney(receiver.accountId, 10000n);
     const state = await receiver.state();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + BigInt(10000)).toString());
+    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
 });
 
 test('send money through signAndSendTransaction', async() => {
-    const sender = await testUtils.createAccount(nearjs);
-    const receiver = await testUtils.createAccount(nearjs);
+    const sender = await createAccount(nearjs);
+    const receiver = await createAccount(nearjs);
     const { amount: receiverAmount } = await receiver.state();
     await sender.signAndSendTransaction({
         receiverId: receiver.accountId,
-        actions: [actionCreators.transfer(BigInt(10000))],
+        actions: [actionCreators.transfer(10000n)],
     });
     const state = await receiver.state();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + BigInt(10000)).toString());
+    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
 });
 
 test('delete account', async() => {
-    const sender = await testUtils.createAccount(nearjs);
-    const receiver = await testUtils.createAccount(nearjs);
+    const sender = await createAccount(nearjs);
+    const receiver = await createAccount(nearjs);
     await sender.deleteAccount(receiver.accountId);
     // @ts-expect-error test input
     const reloaded = new Account(sender.connection, sender);
@@ -79,7 +78,7 @@ test('multiple parallel transactions', async () => {
 });
 
 test('findAccessKey returns the same access key when fetched simultaneously', async() => {
-    const account = await testUtils.createAccount(nearjs);
+    const account = await createAccount(nearjs);
 
     const [key1, key2] = await Promise.all([
         // @ts-expect-error test input
@@ -119,11 +118,11 @@ describe('errors', () => {
 
 describe('with deploy contract', () => {
     let logs;
-    const contractId = testUtils.generateUniqueString('test_contract');
+    const contractId = generateUniqueString('test_contract');
     let contract;
 
     beforeAll(async () => {
-        const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
+        const newPublicKey = await nearjs.connection.signer.createKey(contractId, networkId);
         const data = fs.readFileSync(HELLO_WASM_PATH);
         await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
         // @ts-expect-error test input
@@ -172,7 +171,7 @@ describe('with deploy contract', () => {
         });
         expect(result).toEqual('hello trex');
 
-        const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+        const setCallValue = generateUniqueString('setCallPrefix');
         const result2 = await workingAccount.functionCall({
             contractId,
             methodName: 'setValue',
@@ -186,7 +185,7 @@ describe('with deploy contract', () => {
     });
 
     test('view contract state', async() => {
-        const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+        const setCallValue = generateUniqueString('setCallPrefix');
         await workingAccount.functionCall({
             contractId,
             methodName: 'setValue',
@@ -212,14 +211,14 @@ describe('with deploy contract', () => {
         const result = await contract.hello({ name: 'trex' });
         expect(result).toEqual('hello trex');
 
-        const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+        const setCallValue = generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({ args: { value: setCallValue } });
         expect(result2).toEqual(setCallValue);
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
     test('view function calls by block Id and finality', async() => {
-        const setCallValue1 = testUtils.generateUniqueString('setCallPrefix');
+        const setCallValue1 = generateUniqueString('setCallPrefix');
         const result1 = await contract.setValue({ args: { value: setCallValue1 } });
         expect(result1).toEqual(setCallValue1);
         expect(await contract.getValue()).toEqual(setCallValue1);
@@ -251,7 +250,7 @@ describe('with deploy contract', () => {
             blockQuery: { blockId: blockIndex1 },
         })).toEqual(setCallValue1);
 
-        const setCallValue2 = testUtils.generateUniqueString('setCallPrefix');
+        const setCallValue2 = generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({ args: { value: setCallValue2 } });
         expect(result2).toEqual(setCallValue2);
         expect(await contract.getValue()).toEqual(setCallValue2);
@@ -298,7 +297,7 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via contract with gas', async() => {
-        const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+        const setCallValue = generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({
             args: { value: setCallValue },
             gas: 1000000 * 1000000

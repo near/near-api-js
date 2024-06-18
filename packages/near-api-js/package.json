@@ -59,7 +59,7 @@
         "compile": "tsc -p ./tsconfig.json",
         "dev": "pnpm compile -w",
         "build": "pnpm compile && pnpm bundle:all",
-        "test": "jest test --passWithNoTests",
+        "test": "jest --passWithNoTests",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
         "lint:fix": "concurrently \"pnpm:lint:*:fix\"",

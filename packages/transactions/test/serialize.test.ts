@@ -38,11 +38,9 @@ class Test {
 }
 
 test('serialize object', async () => {
-    // @ts-expect-error test input
     const value = new Test({ x: 255, y: 20, z: '123', q: [1, 2, 3] });
     const schema = { struct: { x: 'u8', y: 'u16', z: 'string', q: { array: { type: 'u8' } } } };
     const buf = serialize(schema, value);
-    // @ts-expect-error test input
     const new_value = new Test(deserialize(schema, buf));
     // @ts-expect-error test input
     expect(new_value.x).toEqual(255);
