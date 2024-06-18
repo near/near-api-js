@@ -39,7 +39,7 @@
         "near-workspaces": "3.5.0",
         "semver": "7.1.1",
         "ts-jest": "29.1.5",
-        "typescript": "4.9.4"
+        "typescript": "5.4.5"
     },
     "files": [
         "lib"
