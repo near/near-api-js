@@ -2,9 +2,8 @@
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
         "lib": [
-            "es2016",
             "esnext",
             "dom"
-        ],
+        ]
     }
 }
