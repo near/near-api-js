@@ -1,5 +1,5 @@
 {
-    "extends": "../../tsconfig.node.json",
+    "extends": "tsconfig/esm.json",
     "compilerOptions": {
         "outDir": "./lib",
     },

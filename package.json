@@ -30,6 +30,7 @@
     "rimraf": "3.0.2",
     "turbo": "1.4.5",
     "typedoc": "0.25.13",
+    "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
   "resolutions": {
