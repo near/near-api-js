@@ -3,7 +3,7 @@
         "esModuleInterop": true,
         "lib": [
             "es2016",
-            "esnext",
+            "es2022",
             "dom"
         ],
         "module": "commonjs",
