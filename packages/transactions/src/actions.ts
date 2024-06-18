@@ -3,8 +3,10 @@ import { PublicKey } from '@near-js/crypto';
 import { DelegateAction } from './delegate';
 import { Signature } from './signature';
 
+// TODO determine why subclassing is still necessary even though `enum`
+//  cannot be set in the base class or it will not be borsh-serializable
 abstract class Enum {
-    enum: string;
+    abstract enum: string;
 
     constructor(properties: any) {
         if (Object.keys(properties).length !== 1) {
@@ -12,7 +14,6 @@ abstract class Enum {
         }
         Object.keys(properties).map((key: string) => {
             (this as any)[key] = properties[key];
-            this.enum = key;
         });
     }
 }
@@ -32,8 +33,17 @@ export class FunctionCallPermission {
 export class FullAccessPermission {}
 
 export class AccessKeyPermission extends Enum {
+    enum: string;
     functionCall?: FunctionCallPermission;
     fullAccess?: FullAccessPermission;
+
+    constructor(props: any) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
 }
 
 export class AccessKey {
@@ -124,6 +134,7 @@ export class SignedDelegate {
  * @see {@link https://nomicon.io/RuntimeSpec/Actions.html | Actions Spec}
  */
 export class Action extends Enum {
+    enum: string;
     createAccount?: CreateAccount;
     deployContract?: DeployContract;
     functionCall?: FunctionCall;
@@ -133,4 +144,12 @@ export class Action extends Enum {
     deleteKey?: DeleteKey;
     deleteAccount?: DeleteAccount;
     signedDelegate?: SignedDelegate;
+
+    constructor(props: any) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
 }
