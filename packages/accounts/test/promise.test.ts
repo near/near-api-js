@@ -13,9 +13,9 @@ describe('with promises', () => {
     let contract, contract1, contract2;
     let oldLog;
     let logs;
-    let contractName = testUtils.generateUniqueString('cnt');
-    let contractName1 = testUtils.generateUniqueString('cnt');
-    let contractName2 = testUtils.generateUniqueString('cnt');
+    const contractName = testUtils.generateUniqueString('cnt');
+    const contractName1 = testUtils.generateUniqueString('cnt');
+    const contractName2 = testUtils.generateUniqueString('cnt');
 
     beforeAll(async () => {
         contract = await testUtils.deployContract(nearjs.accountCreator.masterAccount, contractName);
@@ -26,8 +26,8 @@ describe('with promises', () => {
     beforeEach(async () => {
         oldLog = console.log;
         logs = [];
-        console.log = function() {
-            logs.push(Array.from(arguments).join(' '));
+        console.log = function(...args: any[]) {
+            logs.push(Array.from(args).join(' '));
         };
     });
 

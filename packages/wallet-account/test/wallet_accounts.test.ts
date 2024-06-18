@@ -14,11 +14,11 @@ const { functionCall, transfer } = actionCreators;
 
 let lastRedirectUrl;
 
-// @ts-ignore
+// @ts-expect-error test input
 global.window = {
     localStorage
 };
-// @ts-ignore
+// @ts-expect-error test input
 global.document = {
     title: 'documentTitle'
 };
@@ -66,13 +66,13 @@ describe("Wallet account tests", () => {
         const windowValueBefore = global.window;
 
         beforeEach(() => {
-            // @ts-ignore
+            // @ts-expect-error test input
             global.window = undefined;
             keyStore.clear();
         });
 
         afterEach(() => {
-            // @ts-ignore
+            // @ts-expect-error test input
             global.window = windowValueBefore;
         });
 
@@ -81,7 +81,7 @@ describe("Wallet account tests", () => {
         });
 
         it("throws if non string appKeyPrefix in server context", () => {
-            // @ts-ignore
+            // @ts-expect-error test input
             expect(() => new WalletConnection(nearFake)).toThrow(
                 /appKeyPrefix/
             );
@@ -112,7 +112,7 @@ describe("Wallet account tests", () => {
             expect(() =>
                 serverWalletConnection.requestSignIn(
                     "signInContract",
-                    // @ts-ignore
+                    // @ts-expect-error test input
                     "signInTitle",
                     "http://example.com/success",
                     "http://example.com/fail"
@@ -123,7 +123,7 @@ describe("Wallet account tests", () => {
             expect(() =>
                 serverWalletConnection.requestSignInUrl(
                     "signInContract",
-                    // @ts-ignore
+                    // @ts-expect-error test input
                     "signInTitle",
                     "http://example.com/success",
                     "http://example.com/fail"
@@ -134,7 +134,7 @@ describe("Wallet account tests", () => {
             expect(() =>
                 serverWalletConnection.requestSignTransactions(
                     "signInContract",
-                    // @ts-ignore
+                    // @ts-expect-error test input
                     "signInTitle",
                     "http://example.com/success",
                     "http://example.com/fail"
@@ -145,7 +145,7 @@ describe("Wallet account tests", () => {
             expect(() =>
                 serverWalletConnection.requestSignTransactionsUrl(
                     "signInContract",
-                    // @ts-ignore
+                    // @ts-expect-error test input
                     "signInTitle",
                     "http://example.com/success",
                     "http://example.com/fail"
@@ -185,7 +185,7 @@ describe("Wallet account tests", () => {
                     failure_url: "http://example.com/fail",
                     public_key: (
                         await keyStore.getKey("networkId", accounts[0])
-                      // @ts-ignore
+                      // @ts-expect-error test input
                     ).publicKey.toString(),
                 },
             });
@@ -213,7 +213,7 @@ describe("Wallet account tests", () => {
                 failure_url: "http://example.com/fail",
                 public_key: (
                     await keyStore.getKey("networkId", accounts[0])
-                  // @ts-ignore
+                  // @ts-expect-error test input
                 ).publicKey.toString(),
             },
         });
@@ -221,11 +221,11 @@ describe("Wallet account tests", () => {
 
     it("can complete sign in", async () => {
         const keyPair = KeyPair.fromRandom("ed25519");
-        // @ts-ignore
+        // @ts-expect-error test input
         global.window.location.href = `http://example.com/location?account_id=near.account&public_key=${keyPair.publicKey}`;
         await keyStore.setKey(
             "networkId",
-            // @ts-ignore
+            // @ts-expect-error test input
             "pending_key" + keyPair.publicKey,
             keyPair
         );
@@ -243,11 +243,11 @@ describe("Wallet account tests", () => {
 
     it("Promise until complete sign in", async () => {
         const keyPair = KeyPair.fromRandom("ed25519");
-        // @ts-ignore
+        // @ts-expect-error test input
         global.window.location.href = `http://example.com/location?account_id=near2.account&public_key=${keyPair.publicKey}`;
         await keyStore.setKey(
             "networkId",
-            // @ts-ignore
+            // @ts-expect-error test input
             "pending_key" + keyPair.publicKey,
             keyPair
         );
@@ -337,7 +337,7 @@ describe("Wallet account tests", () => {
             },
         });
         const transactions = parsedUrl.query.transactions
-            // @ts-ignore
+            // @ts-expect-error test input
             .split(",")
             .map((txBase64) =>
                 deserialize(SCHEMA.Transaction, Buffer.from(txBase64, "base64"))
@@ -397,7 +397,7 @@ describe("Wallet account tests", () => {
         let transactions;
         beforeEach(() => {
             setupWalletConnectionForSigning({
-                // @ts-ignore
+                // @ts-expect-error test input
                 allKeys: ["no_such_access_key", keyPair.publicKey.toString()],
                 accountAccessKeys: [
                     {
@@ -405,7 +405,7 @@ describe("Wallet account tests", () => {
                             nonce: 1,
                             permission: "FullAccess",
                         },
-                        // @ts-ignore
+                        // @ts-expect-error test input
                         public_key: keyPair.publicKey.toString(),
                     },
                 ],
@@ -456,7 +456,7 @@ describe("Wallet account tests", () => {
           const txData = transactions[0].publicKey.ed25519Key.data ? transactions[0].publicKey.ed25519Key.data : transactions[0].publicKey.secp256k1Key.data;
           const keyPairData = keyPair.publicKey.ed25519Key.data ? keyPair.publicKey.ed25519Key.data : keyPair.publicKey.secp256k1Key.data;
             expect(Buffer.from(txData)).toEqual(
-                // @ts-ignore
+                // @ts-expect-error test input
                 Buffer.from(keyPairData)
             );
         });
@@ -467,7 +467,7 @@ describe("Wallet account tests", () => {
             const localKeyPair = KeyPair.fromRandom("ed25519");
             const walletKeyPair = KeyPair.fromRandom("ed25519");
             setupWalletConnectionForSigning({
-                // @ts-ignore
+                // @ts-expect-error test input
                 allKeys: [walletKeyPair.publicKey.toString()],
                 accountAccessKeys: [
                     {
@@ -481,7 +481,7 @@ describe("Wallet account tests", () => {
                                 },
                             },
                         },
-                        // @ts-ignore
+                        // @ts-expect-error test input
                         public_key: localKeyPair.publicKey.toString(),
                     },
                     {
@@ -489,7 +489,7 @@ describe("Wallet account tests", () => {
                             nonce: 1,
                             permission: "FullAccess",
                         },
-                        // @ts-ignore
+                        // @ts-expect-error test input
                         public_key: walletKeyPair.publicKey.toString(),
                     },
                 ],

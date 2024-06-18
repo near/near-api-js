@@ -26,7 +26,7 @@ test.each`
     ${'1000100000000000000000000000000'} | ${undefined} | ${'1,000,100'}
     ${'910000000000000000000000'}        | ${0}         | ${'1'}
 `('formatNearAmount($balance, $fracDigits) returns $expected', ({ balance, fracDigits, expected }) => {
-    // @ts-ignore
+    // @ts-expect-error test input
     expect(formatNearAmount(balance, fracDigits)).toEqual(expected);
 });
 
@@ -60,5 +60,5 @@ test('parseNearAmount fails when parsing values with ≥25 decimal places', () =
 });
 
 test('NEAR_NOMINATION value', () => {
-    expect(NEAR_NOMINATION).toEqual(1000000000000000000000000n)
-})
+    expect(NEAR_NOMINATION).toEqual(1000000000000000000000000n);
+});

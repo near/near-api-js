@@ -7,8 +7,8 @@
   "scripts": {
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",
-    "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
-    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc && eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc --fix --no-error-on-unmatched-pattern",
+    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
+    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
     "test": "jest"
   },
   "keywords": [],

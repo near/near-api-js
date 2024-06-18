@@ -89,7 +89,7 @@ describe('Using Secp256k1 Curve', () => {
 test('convert to string', async () => {
     const keyPair = KeyPairEd25519.fromRandom();
     const newKeyPair = KeyPair.fromString(keyPair.toString());
-    // @ts-ignore
+    // @ts-expect-error test input
     expect(newKeyPair.secretKey).toEqual(keyPair.secretKey);
 
     const keyString = 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';

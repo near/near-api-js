@@ -3,7 +3,7 @@ import { KeyPair } from '@near-js/crypto';
 import ERRORS_JSON from '@near-js/utils/lib/errors/error_messages.json';
 import base58 from 'bs58';
 
-import testUtils from './test-utils';
+import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
 jest.setTimeout(60000);
 
@@ -11,26 +11,26 @@ let provider;
 let near;
 
 beforeAll(async () => {
-    near = await testUtils.setUpTestConnection();
+    near = await setUpTestConnection();
     provider = near.connection.provider;
 });
 
 describe('providers', () => {
     test('txStatus with string hash and buffer hash', async () => {
-        const sender = await testUtils.createAccount(near);
-        const receiver = await testUtils.createAccount(near);
+        const sender = await createAccount(near);
+        const receiver = await createAccount(near);
         const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
         const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
         const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(responseWithString).toMatchObject(outcome);
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
     
     test('txStatusReciept with string hash and buffer hash', async () => {
-        const sender = await testUtils.createAccount(near);
-        const receiver = await testUtils.createAccount(near);
+        const sender = await createAccount(near);
+        const receiver = await createAccount(near);
         const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
         const reciepts = await provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
     
@@ -48,8 +48,8 @@ describe('providers', () => {
     });
     
     test('json rpc query account', async () => {
-        const account = await testUtils.createAccount(near);
-        let response = await provider.query({ 
+        const account = await createAccount(near);
+        const response = await provider.query({
             request_type: 'view_account',
             finality: 'optimistic',
             account_id: account.accountId });
@@ -57,11 +57,11 @@ describe('providers', () => {
     });
     
     test('json rpc query view_state', async () => {
-        const contract = await testUtils.deployContract(near.accountCreator.masterAccount, testUtils.generateUniqueString('test'));
-        // @ts-ignore
+        const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
+        // @ts-expect-error test input
         await contract.setValue({ args: { value: 'hello' } });
     
-        return testUtils.waitFor(async () => {
+        return waitFor(async () => {
             const response = await provider.query({
                 request_type: 'view_state',
                 finality: 'final',
@@ -79,9 +79,9 @@ describe('providers', () => {
     });
     
     test('json rpc query view_code', async () => {
-        const contract = await testUtils.deployContract(near.accountCreator.masterAccount, testUtils.generateUniqueString('test'));
+        const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
     
-        return testUtils.waitFor(async () => {
+        return waitFor(async () => {
             const response = await provider.query({
                 request_type: 'view_code',
                 finality: 'final',
@@ -98,12 +98,12 @@ describe('providers', () => {
     });
     
     test('json rpc query call_function', async () => {
-        const contract = await testUtils.deployContract(near.accountCreator.masterAccount, testUtils.generateUniqueString('test'));
+        const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
 
-        // @ts-ignore
+        // @ts-expect-error test input
         await contract.setValue({ args: { value: 'hello' } });
     
-        return testUtils.waitFor(async () => {
+        return waitFor(async () => {
             const response = await provider.query({
                 request_type: 'call_function',
                 finality: 'final',
@@ -129,14 +129,14 @@ describe('providers', () => {
     });
     
     test('json rpc light client proof', async () => {
-        const workingAccount = await testUtils.createAccount(near);
-        const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, BigInt(10000));
+        const workingAccount = await createAccount(near);
+        const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, 10000n);
         const provider = near.connection.provider;
     
         async function waitForStatusMatching(isMatching) {
             const MAX_ATTEMPTS = 10;
             for (let i = 0; i < MAX_ATTEMPTS; i++) {
-                await testUtils.sleep(500);
+                await sleep(500);
                 const nodeStatus = await provider.status();
                 if (isMatching(nodeStatus)) {
                     return nodeStatus;
@@ -146,7 +146,7 @@ describe('providers', () => {
         }
     
         const comittedStatus = await waitForStatusMatching(status =>
-            // @ts-ignore
+            // @ts-expect-error test input
             status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash);
         const BLOCKS_UNTIL_FINAL = 2;
         const finalizedStatus = await waitForStatusMatching(status =>
@@ -182,7 +182,7 @@ describe('providers', () => {
         // Use old block hash as light client head should fail
         lightClientRequest = {
             type: 'transaction',
-            // @ts-ignore
+            // @ts-expect-error test input
             light_client_head: executionOutcome.transaction_outcome.block_hash,
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
@@ -194,12 +194,12 @@ describe('providers', () => {
 
 describe('providers errors', () => {
     test('JSON RPC Error - MethodNotFound', async () => {
-        const contract = await testUtils.deployContract(
+        const contract = await deployContract(
             near.accountCreator.masterAccount,
-            testUtils.generateUniqueString('test')
+            generateUniqueString('test')
         );
 
-        // @ts-ignore
+        // @ts-expect-error test input
         await contract.setValue({ args: { value: 'hello' } });
 
         try {
@@ -219,7 +219,7 @@ describe('providers errors', () => {
     });
 
     test('JSON RPC Error - CodeDoesNotExist', async () => {
-        const { accountId } = await testUtils.createAccount(near);
+        const { accountId } = await createAccount(near);
 
         try {
             const response = await provider.query({
@@ -260,7 +260,7 @@ describe('providers errors', () => {
     });
 
     test('JSON RPC Error - AccessKeyDoesNotExist', async () => {
-        const { accountId } = await testUtils.createAccount(near);
+        const { accountId } = await createAccount(near);
 
         try {
             const response = await provider.query({
