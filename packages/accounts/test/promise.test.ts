@@ -1,26 +1,26 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import testUtils from './test-utils';
+import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 
 let nearjs;
 
 const CONTRACT_CALL_GAS = BigInt(300000000000000);
 
 beforeAll(async () => {
-    nearjs = await testUtils.setUpTestConnection();
+    nearjs = await setUpTestConnection();
 });
 
 describe('with promises', () => {
     let contract, contract1, contract2;
     let oldLog;
     let logs;
-    const contractName = testUtils.generateUniqueString('cnt');
-    const contractName1 = testUtils.generateUniqueString('cnt');
-    const contractName2 = testUtils.generateUniqueString('cnt');
+    const contractName = generateUniqueString('cnt');
+    const contractName1 = generateUniqueString('cnt');
+    const contractName2 = generateUniqueString('cnt');
 
     beforeAll(async () => {
-        contract = await testUtils.deployContract(nearjs.accountCreator.masterAccount, contractName);
-        contract1 = await testUtils.deployContract(nearjs.accountCreator.masterAccount, contractName1);
-        contract2 = await testUtils.deployContract(nearjs.accountCreator.masterAccount, contractName2);
+        contract = await deployContract(nearjs.accountCreator.masterAccount, contractName);
+        contract1 = await deployContract(nearjs.accountCreator.masterAccount, contractName1);
+        contract2 = await deployContract(nearjs.accountCreator.masterAccount, contractName2);
     });
 
     beforeEach(async () => {
