@@ -66,13 +66,11 @@ describe("Wallet account tests", () => {
         const windowValueBefore = global.window;
 
         beforeEach(() => {
-            // @ts-expect-error test input
             global.window = undefined;
             keyStore.clear();
         });
 
         afterEach(() => {
-            // @ts-expect-error test input
             global.window = windowValueBefore;
         });
 
@@ -454,9 +452,9 @@ describe("Wallet account tests", () => {
                 transactions[0].actions[0].transfer.deposit.toString()
             ).toEqual("1");
           const txData = transactions[0].publicKey.ed25519Key.data ? transactions[0].publicKey.ed25519Key.data : transactions[0].publicKey.secp256k1Key.data;
-          const keyPairData = keyPair.publicKey.ed25519Key.data ? keyPair.publicKey.ed25519Key.data : keyPair.publicKey.secp256k1Key.data;
+          const publicKey = keyPair.getPublicKey();
+          const keyPairData = publicKey.ed25519Key.data ? publicKey.ed25519Key.data : publicKey.secp256k1Key.data;
             expect(Buffer.from(txData)).toEqual(
-                // @ts-expect-error test input
                 Buffer.from(keyPairData)
             );
         });

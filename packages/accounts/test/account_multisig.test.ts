@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import semver from 'semver';
 
 import { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS, MultisigStateStatus } from '../src';
-import testUtils  from './test-utils';
+import { createAccount, setUpTestConnection }  from './test-utils';
 
 const { functionCall, transfer } = actionCreators;
 
@@ -18,7 +18,6 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     // modifiers to functions replaces contract helper (CH)
     const { accountId } = account;
     const keys = await account.getAccessKeys();
-    // @ts-expect-error test input
     const account2fa: any = new Account2FA(nearjs.connection, accountId, {
         // skip this (not using CH)
         getCode: () => {},
@@ -51,7 +50,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
 };
 
 beforeAll(async () => {
-    nearjs = await testUtils.setUpTestConnection();
+    nearjs = await setUpTestConnection();
     const nodeStatus = await nearjs.connection.provider.status();
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
     console.log(startFromVersion);
@@ -60,7 +59,7 @@ beforeAll(async () => {
 describe('deployMultisig key rotations', () => {
 
     test('full access key if recovery method is "ledger" or "phrase", limited access key if "phone"', async () => {
-        const account = await testUtils.createAccount(nearjs);
+        const account = await createAccount(nearjs);
         await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey());
         await account.addKey(KeyPair.fromRandom('ed25519').getPublicKey());
         const keys = await account.getAccessKeys();
@@ -81,7 +80,7 @@ describe('deployMultisig key rotations', () => {
 describe('account2fa transactions', () => {
 
     test('add app key before deployMultisig', async() => {
-        let account = await testUtils.createAccount(nearjs);
+        let account = await createAccount(nearjs);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
         const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff','some_more_app_stuff'];
@@ -97,7 +96,7 @@ describe('account2fa transactions', () => {
     });
 
     test('add app key', async() => {
-        let account = await testUtils.createAccount(nearjs);
+        let account = await createAccount(nearjs);
         account = await getAccount2FA(account);
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
         const appAccountId = 'foobar';
@@ -113,8 +112,8 @@ describe('account2fa transactions', () => {
     });
 
     test('send money', async() => {
-        let sender = await testUtils.createAccount(nearjs);
-        let receiver = await testUtils.createAccount(nearjs);
+        let sender = await createAccount(nearjs);
+        let receiver = await createAccount(nearjs);
         sender = await getAccount2FA(sender);
         receiver = await getAccount2FA(receiver);
         const { amount: receiverAmount } = await receiver.state();
@@ -124,8 +123,8 @@ describe('account2fa transactions', () => {
     });
 
     test('send money through signAndSendTransaction', async() => {
-        let sender = await testUtils.createAccount(nearjs);
-        let receiver = await testUtils.createAccount(nearjs);
+        let sender = await createAccount(nearjs);
+        let receiver = await createAccount(nearjs);
         sender = await getAccount2FA(sender);
         receiver = await getAccount2FA(receiver);
         const { amount: receiverAmount } = await receiver.state();

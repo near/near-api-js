@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, expect, test } from '@jest/globals';
 import { KeyPair } from '@near-js/crypto';
 
-import testUtils from './test-utils';
+import { createAccount, deployContract, generateUniqueString, networkId, setUpTestConnection } from './test-utils';
 
 let nearjs;
 let workingAccount;
@@ -9,15 +9,15 @@ let contractId;
 let contract;
 
 beforeAll(async () => {
-    nearjs = await testUtils.setUpTestConnection();
+    nearjs = await setUpTestConnection();
 });
 
 beforeEach(async () => {
     try {
 
-        contractId = testUtils.generateUniqueString('test');
-        workingAccount = await testUtils.createAccount(nearjs);
-        contract = await testUtils.deployContract(nearjs.accountCreator.masterAccount, contractId);
+        contractId = generateUniqueString('test');
+        workingAccount = await createAccount(nearjs);
+        contract = await deployContract(nearjs.accountCreator.masterAccount, contractId);
     } catch (e) {
         console.error(e);
     }
@@ -28,8 +28,8 @@ test('make function call using access key', async() => {
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '2000000000000000000000000');
 
     // Override in the key store the workingAccount key to the given access key.
-    await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
-    const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+    await nearjs.connection.signer.keyStore.setKey(networkId, workingAccount.accountId, keyPair);
+    const setCallValue = generateUniqueString('setCallPrefix');
     await contract.setValue({ args: { value: setCallValue } });
     expect(await contract.getValue()).toEqual(setCallValue);
 });
@@ -40,13 +40,13 @@ test('remove access key no longer works', async() => {
     await nearjs.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000);
     await nearjs.accountCreator.masterAccount.deleteKey(publicKey);
     // Override in the key store the workingAccount key to the given access key.
-    await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, nearjs.accountCreator.masterAccount.accountId, keyPair);
+    await nearjs.connection.signer.keyStore.setKey(networkId, nearjs.accountCreator.masterAccount.accountId, keyPair);
     let failed = true;
     try {
         await contract.setValue({ args: { value: 'test' } });
         failed = false;
     } catch (e) {
-        expect(e.message).toEqual(`Can not sign transactions for account ${nearjs.accountCreator.masterAccount.accountId} on network ${testUtils.networkId}, no matching key pair exists for this account`);
+        expect(e.message).toEqual(`Can not sign transactions for account ${nearjs.accountCreator.masterAccount.accountId} on network ${networkId}, no matching key pair exists for this account`);
         expect(e.type).toEqual('KeyNotFound');
     }
 
@@ -54,14 +54,14 @@ test('remove access key no longer works', async() => {
         throw new Error('should throw an error');
     }
 
-    nearjs = await testUtils.setUpTestConnection();
+    nearjs = await setUpTestConnection();
 });
 
 test('view account details after adding access keys', async() => {
     const keyPair = KeyPair.fromRandom('ed25519');
     await nearjs.accountCreator.masterAccount.addKey(keyPair.getPublicKey(), contractId, '', 1000000000);
 
-    const contract2 = await testUtils.deployContract(nearjs.accountCreator.masterAccount, testUtils.generateUniqueString('test_contract2'));
+    const contract2 = await deployContract(nearjs.accountCreator.masterAccount, generateUniqueString('test_contract2'));
     const keyPair2 = KeyPair.fromRandom('ed25519');
     await nearjs.accountCreator.masterAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', 2000000000);
 
@@ -96,7 +96,7 @@ test('loading account after adding a full key', async() => {
 
 test('load invalid key pair', async() => {
     // Override in the key store with invalid key pair
-    await nearjs.connection.signer.keyStore.setKey(testUtils.networkId, nearjs.accountCreator.masterAccount.accountId, '');
+    await nearjs.connection.signer.keyStore.setKey(networkId, nearjs.accountCreator.masterAccount.accountId, '');
     let failed = true;
     try {
         await contract.setValue({ args: { value: 'test' } });

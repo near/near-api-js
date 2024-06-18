@@ -29,12 +29,10 @@ class PublicKeyCredentialMock {
 // @ts-expect-error test input
 global.PublicKeyCredential = PublicKeyCredentialMock;
 
-jest.mock('../lib/utils', () => {
-    const originalModule = jest.requireActual('../lib/utils');
+jest.mock('../src/utils', () => {
+    const originalModule = jest.requireActual('../src/utils');
     return {
-    // @ts-expect-error test input
         ...originalModule,
-        // @ts-expect-error test input
         convertUint8ArrayToArrayBuffer: jest.fn().mockImplementation(input => input.buffer),
     };
 });
