@@ -5,7 +5,7 @@ import { InMemoryKeyStore, MergeKeyStore } from '../src';
 import { shouldStoreAndRetrieveKeys } from './keystore_common';
 
 describe('Merge keystore', () => {
-    let ctx: any = {};
+    const ctx: any = {};
 
     beforeAll(async () => {
         ctx.stores = [new InMemoryKeyStore(), new InMemoryKeyStore()];

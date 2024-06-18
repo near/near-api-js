@@ -5,7 +5,7 @@ import { BrowserLocalStorageKeyStore } from '../src';
 import { shouldStoreAndRetrieveKeys } from './keystore_common';
 
 describe('Browser keystore', () => {
-    let ctx: any = {};
+    const ctx: any = {};
 
     beforeAll(async () => {
         ctx.keyStore = new BrowserLocalStorageKeyStore(LocalStorageMemory);

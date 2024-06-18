@@ -11,24 +11,12 @@
       "inputs": ["src/**/*.ts", "test/**/*.js"]
     },
     "lint": {
-      "inputs": ["src/**/*.ts", "test/**/*.js"],
+      "inputs": ["src/**/*.ts", "test/**/*.ts"],
       "outputs": []
     },
-    "lint:js": {
-      "inputs": ["test/**/*.js"],
+    "lint:fix": {
+      "inputs": ["src/**/*.ts", "test/**/*.ts"],
       "outputs": []
-    },
-    "lint:js:fix": {
-      "inputs": ["test/**/*.js"],
-      "outputs": []
-    },
-    "lint:ts": {
-        "inputs": ["src/**/*.ts"],
-        "outputs": []
-    },
-    "lint:ts:fix": {
-        "inputs": ["src/**/*.ts"],
-        "outputs": []
     },
     "clean": {
       "outputs": [],

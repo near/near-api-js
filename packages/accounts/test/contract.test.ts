@@ -16,7 +16,7 @@ const account = Object.setPrototypeOf({
     }
 }, Account.prototype);
 
-// @ts-ignore
+// @ts-expect-error test input
 const contract: any = new Contract(account, 'contractId', {
     viewMethods: ['viewMethod'],
     changeMethods: ['changeMethod'],
@@ -160,7 +160,7 @@ describe('local view execution', () => {
     });
 
     test('local execution fails and fallbacks to normal RPC call', async () => {
-        // @ts-ignore
+        // @ts-expect-error test input
         const _contract: any = new Contract(contract.account, contract.contractId, { viewMethods: ['get_msg'], useLocalViewExecution: true });
         _contract.account.viewFunction = jest.fn(_contract.account.viewFunction);
 
@@ -188,7 +188,7 @@ describe('contract without account', () => {
         const contractId = testUtils.generateUniqueString('guestbook');
         await testUtils.deployContractGuestBook(nearjs.accountCreator.masterAccount, contractId);
 
-        // @ts-ignore
+        // @ts-expect-error test input
         contract = new Contract(nearjs.connection, contractId, {
             viewMethods: ['total_messages', 'get_messages'],
             changeMethods: ['add_message'],

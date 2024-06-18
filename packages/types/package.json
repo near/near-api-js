@@ -8,7 +8,7 @@
     "build": "pnpm compile",
     "compile": "tsc -p tsconfig.json",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
-    "lint:fix": "eslint **/*.ts"
+    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --fix"
   },
   "keywords": [],
   "author": "",

@@ -57,7 +57,7 @@ export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: o
 
         const { ok, status } = res;
         if (!ok) {
-            throw new ProviderError(await res.text(), { cause: status })
+            throw new ProviderError(await res.text(), { cause: status });
         }
 
         if (status === 503) {

@@ -10,7 +10,7 @@ describe('fetchJson', () => {
             method: 'status',
             params: []
         };
-        // @ts-ignore
+        // @ts-expect-error test input
         const result = await fetchJsonRpc(RPC_URL, statusRequest, undefined);
         expect(result.result.chain_id).toBe('testnet');
     });
@@ -22,7 +22,7 @@ describe('fetchJson', () => {
             method: 'status',
             params: []
         };
-        // @ts-ignore
+        // @ts-expect-error test input
         const result = await fetchJsonRpc(connection.url, statusRequest, undefined);
         expect(result.result.chain_id).toBe('testnet');
     });
