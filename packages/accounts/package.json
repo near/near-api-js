@@ -39,6 +39,7 @@
         "near-workspaces": "3.5.0",
         "semver": "7.1.1",
         "ts-jest": "29.1.5",
+        "tsconfig": "workspace:*",
         "typescript": "5.4.5"
     },
     "files": [
