@@ -23,7 +23,7 @@ afterAll(async () => {
 });
 
 test('view pre-defined account works and returns correct name', async () => {
-    let status = await workingAccount.state();
+    const status = await workingAccount.state();
     expect(status.code_hash).toEqual('11111111111111111111111111111111');
 });
 
@@ -83,14 +83,14 @@ test('delete account', async() => {
     const sender = await testUtils.createAccount(nearjs);
     const receiver = await testUtils.createAccount(nearjs);
     await sender.deleteAccount(receiver.accountId);
-    // @ts-ignore
+    // @ts-expect-error test input
     const reloaded = new Account(sender.connection, sender);
     await expect(reloaded.state()).rejects.toThrow();
 });
 
 test('multiple parallel transactions', async () => {
     const PARALLEL_NUMBER = 5;
-    // @ts-ignore
+    // @ts-expect-error test input
     await Promise.all(new Array(PARALLEL_NUMBER).fill().map(async (_, i) => {
         const account = new Account(workingAccount.connection, workingAccount.accountId);
         // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
@@ -103,9 +103,9 @@ test('findAccessKey returns the same access key when fetched simultaneously', as
     const account = await testUtils.createAccount(nearjs);
 
     const [key1, key2] = await Promise.all([
-        // @ts-ignore
+        // @ts-expect-error test input
         account.findAccessKey(),
-        // @ts-ignore
+        // @ts-expect-error test input
         account.findAccessKey()
     ]);
 
@@ -140,14 +140,14 @@ describe('errors', () => {
 
 describe('with deploy contract', () => {
     let logs;
-    let contractId = testUtils.generateUniqueString('test_contract');
+    const contractId = testUtils.generateUniqueString('test_contract');
     let contract;
 
     beforeAll(async () => {
         const newPublicKey = await nearjs.connection.signer.createKey(contractId, testUtils.networkId);
         const data = fs.readFileSync(HELLO_WASM_PATH);
         await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-        // @ts-ignore
+        // @ts-expect-error test input
         contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
@@ -336,7 +336,7 @@ describe('with deploy contract', () => {
     });
 
     test('can get logs from view call', async () => {
-        let result = await contract.returnHiWithLogs();
+        const result = await contract.returnHiWithLogs();
         expect(result).toEqual('Hi');
         expect(logs).toEqual([`Log [${contractId}]: loooog1`, `Log [${contractId}]: loooog2`]);
     });
@@ -354,7 +354,7 @@ describe('with deploy contract', () => {
     });
 
     test('can have view methods only', async () => {
-        // @ts-ignore
+        // @ts-expect-error test input
         const contract: any = new Contract(workingAccount, contractId, {
             viewMethods: ['hello'],
         });
@@ -362,7 +362,7 @@ describe('with deploy contract', () => {
     });
 
     test('can have change methods only', async () => {
-        // @ts-ignore
+        // @ts-expect-error test input
         const contract: any = new Contract(workingAccount, contractId, {
             changeMethods: ['hello'],
         });

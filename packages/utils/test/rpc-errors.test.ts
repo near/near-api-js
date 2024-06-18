@@ -4,7 +4,7 @@ import { formatError, getErrorTypeFromErrorMessage, parseRpcError, ServerError }
 
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {
-        let rpc_error = {
+        const rpc_error = {
             TxExecutionError: {
                 ActionError: {
                     index: 1,
@@ -12,17 +12,17 @@ describe('rpc-errors', () => {
                 }
             }
         };
-        let error = parseRpcError(rpc_error);
+        const error = parseRpcError(rpc_error);
         expect(error.type === 'AccountAlreadyExists').toBe(true);
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(error.index).toBe(1);
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(error.account_id).toBe('bob.near');
         expect(formatError(error.type, error)).toBe('Can\'t create a new account bob.near, because it already exists');
     });
 
     test('test ReceiverMismatch error', async () => {
-        let rpc_error = {
+        const rpc_error = {
             TxExecutionError: {
                 InvalidTxError: {
                     InvalidAccessKeyError: {
@@ -34,11 +34,11 @@ describe('rpc-errors', () => {
                 }
             }
         };
-        let error = parseRpcError(rpc_error);
+        const error = parseRpcError(rpc_error);
         expect(error.type === 'ReceiverMismatch').toBe(true);
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(error.ak_receiver).toBe('test.near');
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(error.tx_receiver).toBe('bob.near');
         expect(formatError(error.type, error)).toBe(
             'Wrong AccessKey used for transaction: transaction is sent to receiver_id=bob.near, but is signed with function call access key that restricted to only use with receiver_id=test.near. Either change receiver_id in your transaction or switch to use a FullAccessKey.'
@@ -108,7 +108,7 @@ describe('rpc-errors', () => {
     });
 
     test('test InvalidIteratorIndex error', async () => {
-        let rpc_error = {
+        const rpc_error = {
             TxExecutionError: {
                 ActionError: {
                     FunctionCallError: {
@@ -119,13 +119,13 @@ describe('rpc-errors', () => {
                 }
             }
         };
-        let error = parseRpcError(rpc_error);
+        const error = parseRpcError(rpc_error);
         expect(error.type).toBe('ActionError');
-        expect(formatError(error.type, error)).toBe('{\"type\":\"ActionError\",\"kind\":{\"FunctionCallError\":{\"HostError\":{\"InvalidIteratorIndex\":{\"iterator_index\":42}}}}}');
+        expect(formatError(error.type, error)).toBe('{"type":"ActionError","kind":{"FunctionCallError":{"HostError":{"InvalidIteratorIndex":{"iterator_index":42}}}}}');
     });
 
     test('test ActionError::FunctionCallError::GasLimitExceeded error', async () => {
-        let rpc_error = {
+        const rpc_error = {
             ActionError: {
                 'index': 0,
                 'kind': {
@@ -135,10 +135,10 @@ describe('rpc-errors', () => {
                 }
             }
         };
-        let error = parseRpcError(rpc_error);
+        const error = parseRpcError(rpc_error);
         expect(error.type).toBe('ActionError');
 
-        expect(formatError(error.type, error)).toBe('{\"type\":\"ActionError\",\"index\":0,\"kind\":{\"index\":0,\"kind\":{\"FunctionCallError\":{\"HostError\":\"GasLimitExceeded\"}}}}');
+        expect(formatError(error.type, error)).toBe('{"type":"ActionError","index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"HostError":"GasLimitExceeded"}}}}');
     });
 
     test('test parse error object', async () => {
@@ -157,21 +157,21 @@ describe('rpc-errors', () => {
         const err7 = 'wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: "random.testnet" }))';
         const err8 = 'wasm execution failed with error: FunctionCallError(MethodResolveError(MethodNotFound))';
 
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err1)).toEqual('AccountDoesNotExist');
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err2)).toEqual('AccountDoesNotExist');
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err3)).toEqual('AccessKeyDoesNotExist');
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err4)).toEqual('CodeDoesNotExist');
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err5)).toEqual('InvalidNonce');
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err6)).toEqual('MethodNotFound');
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err7)).toEqual('CodeDoesNotExist');
-        // @ts-ignore
+        // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err8)).toEqual('MethodNotFound');
     });
 

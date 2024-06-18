@@ -36,7 +36,7 @@ test('make function call using access key', async() => {
 
 test('remove access key no longer works', async() => {
     const keyPair = KeyPair.fromRandom('ed25519');
-    let publicKey = keyPair.getPublicKey();
+    const publicKey = keyPair.getPublicKey();
     await nearjs.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000);
     await nearjs.accountCreator.masterAccount.deleteKey(publicKey);
     // Override in the key store the workingAccount key to the given access key.
@@ -86,7 +86,7 @@ test('loading account after adding a full key', async() => {
     // wallet calls this with an empty string for contract id and method
     await workingAccount.addKey(keyPair.getPublicKey(), '', '');
 
-    let accessKeys = await workingAccount.getAccessKeys();
+    const accessKeys = await workingAccount.getAccessKeys();
 
     expect(accessKeys.length).toBe(2);
     const addedKey = accessKeys.find(item => item.public_key == keyPair.getPublicKey().toString());

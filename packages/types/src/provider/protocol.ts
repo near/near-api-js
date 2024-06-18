@@ -127,7 +127,7 @@ export interface Chunk {
 export interface Transaction {
     actions: Array<any>;
     hash: string;
-    nonce: BigInt;
+    nonce: bigint;
     public_key: string;
     receiver_id: string;
     signature: string;

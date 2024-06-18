@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { Account, Contract, ArgumentSchemaError, UnknownArgumentError, UnsupportedSerializationError } from '../src';
 
-let rawAbi = `{
+const rawAbi = `{
   "schema_version": "0.3.0",
   "body": {
     "functions": [
@@ -107,7 +107,7 @@ const account = Object.setPrototypeOf({
 
 const abi = JSON.parse(rawAbi);
 
-// @ts-ignore
+// @ts-expect-error test input
 const contract: any = new Contract(account, 'contractId', { abi });
 
 describe('add', () => {
@@ -155,7 +155,7 @@ describe('empty_call', () => {
 
 describe('Contract constructor', () => {
     test('throws UnsupportedSerializationError when ABI has borsh serialization', async () => {
-        let rawAbi = `{
+        const rawAbi = `{
                 "schema_version": "0.3.0",
                 "body": {
                   "functions": [
@@ -182,7 +182,7 @@ describe('Contract constructor', () => {
                   }
                 }
               }`;
-        // @ts-ignore
+        // @ts-expect-error test input
         const contract: any = new Contract(account, 'contractId', { abi: JSON.parse(rawAbi) });
         await expect(contract.add({ a: 1 })).rejects.toBeInstanceOf(UnsupportedSerializationError);
     });

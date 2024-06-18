@@ -2,8 +2,8 @@ import { PublicKey } from '@near-js/crypto';
 import { deserialize, serialize, Schema } from 'borsh';
 
 import {
-  Action,
-  SignedDelegate,
+    Action,
+    SignedDelegate,
 } from './actions';
 import { DelegateAction } from './delegate';
 import { DelegateActionPrefix } from './prefix';
@@ -16,10 +16,10 @@ import { Signature } from './signature';
  * @param delegateAction Delegate action to be signed by the meta transaction sender
  */
 export function encodeDelegateAction(delegateAction: DelegateAction) {
-  return new Uint8Array([
-    ...serialize(SCHEMA.DelegateActionPrefix, new DelegateActionPrefix()),
-    ...serialize(SCHEMA.DelegateAction, delegateAction),
-  ]);
+    return new Uint8Array([
+        ...serialize(SCHEMA.DelegateActionPrefix, new DelegateActionPrefix()),
+        ...serialize(SCHEMA.DelegateAction, delegateAction),
+    ]);
 }
 
 /**
@@ -27,7 +27,7 @@ export function encodeDelegateAction(delegateAction: DelegateAction) {
  * @param signedDelegate Signed delegate to be executed in a meta transaction
  */
 export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
-  return serialize(SCHEMA.SignedDelegate, signedDelegate);
+    return serialize(SCHEMA.SignedDelegate, signedDelegate);
 }
 
 /**
@@ -36,8 +36,8 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
  * @returns A serialized representation of the input transaction.
  */
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
-  const schema: Schema = transaction instanceof SignedTransaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
-  return serialize(schema, transaction);
+    const schema: Schema = transaction instanceof SignedTransaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
+    return serialize(schema, transaction);
 }
 
 /**
@@ -45,7 +45,7 @@ export function encodeTransaction(transaction: Transaction | SignedTransaction) 
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeTransaction(bytes: Uint8Array) {
-  return new Transaction(deserialize(SCHEMA.Transaction, bytes) as Transaction);
+    return new Transaction(deserialize(SCHEMA.Transaction, bytes) as Transaction);
 }
 
 /**
@@ -53,18 +53,18 @@ export function decodeTransaction(bytes: Uint8Array) {
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeSignedTransaction(bytes: Uint8Array) {
-  return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes) as SignedTransaction);
+    return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes) as SignedTransaction);
 }
 
 export class Transaction {
-  signerId: string;
-  publicKey: PublicKey;
-  nonce: bigint;
-  receiverId: string;
-  actions: Action[];
-  blockHash: Uint8Array;
+    signerId: string;
+    publicKey: PublicKey;
+    nonce: bigint;
+    receiverId: string;
+    actions: Action[];
+    blockHash: Uint8Array;
 
-  constructor({ signerId, publicKey, nonce, receiverId, actions, blockHash }:
+    constructor({ signerId, publicKey, nonce, receiverId, actions, blockHash }:
     {
       signerId: string,
       publicKey: PublicKey,
@@ -73,40 +73,40 @@ export class Transaction {
       actions: Action[],
       blockHash: Uint8Array,
     }
-  ) {
-    this.signerId = signerId;
-    this.publicKey = publicKey;
-    this.nonce = nonce;
-    this.receiverId = receiverId;
-    this.actions = actions;
-    this.blockHash = blockHash;
-  }
+    ) {
+        this.signerId = signerId;
+        this.publicKey = publicKey;
+        this.nonce = nonce;
+        this.receiverId = receiverId;
+        this.actions = actions;
+        this.blockHash = blockHash;
+    }
 
-  encode(): Uint8Array {
-    return encodeTransaction(this);
-  }
+    encode(): Uint8Array {
+        return encodeTransaction(this);
+    }
 
-  static decode(bytes: Uint8Array): Transaction {
-    return decodeTransaction(bytes);
-  }
+    static decode(bytes: Uint8Array): Transaction {
+        return decodeTransaction(bytes);
+    }
 }
 
 export class SignedTransaction {
-  transaction: Transaction;
-  signature: Signature;
+    transaction: Transaction;
+    signature: Signature;
 
-  constructor({ transaction, signature }: { transaction: Transaction, signature: Signature}) {
-    this.transaction = transaction;
-    this.signature = signature;
-  }
+    constructor({ transaction, signature }: { transaction: Transaction, signature: Signature}) {
+        this.transaction = transaction;
+        this.signature = signature;
+    }
 
-  encode(): Uint8Array {
-    return encodeTransaction(this);
-  }
+    encode(): Uint8Array {
+        return encodeTransaction(this);
+    }
 
-  static decode(bytes: Uint8Array): SignedTransaction {
-    return decodeSignedTransaction(bytes);
-  }
+    static decode(bytes: Uint8Array): SignedTransaction {
+        return decodeSignedTransaction(bytes);
+    }
 }
 
 export const SCHEMA = new class BorshSchema {

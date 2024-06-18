@@ -18,7 +18,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     // modifiers to functions replaces contract helper (CH)
     const { accountId } = account;
     const keys = await account.getAccessKeys();
-    // @ts-ignore
+    // @ts-expect-error test input
     const account2fa: any = new Account2FA(nearjs.connection, accountId, {
         // skip this (not using CH)
         getCode: () => {},
@@ -52,7 +52,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
 
 beforeAll(async () => {
     nearjs = await testUtils.setUpTestConnection();
-    let nodeStatus = await nearjs.connection.provider.status();
+    const nodeStatus = await nearjs.connection.provider.status();
     startFromVersion = (version) => semver.gte(nodeStatus.version.version, version);
     console.log(startFromVersion);
 });
@@ -67,7 +67,7 @@ describe('deployMultisig key rotations', () => {
         const kinds = ['ledger', 'phrase', 'phone'];
         const account2fa = await getAccount2FA(
             account,
-            // @ts-ignore
+            // @ts-expect-error test input
             ({ public_key: publicKey }, i) => ({ publicKey, kind: kinds[i] })
         );
         const currentKeys = await account2fa.getAccessKeys();
@@ -89,10 +89,10 @@ describe('account2fa transactions', () => {
         account = await getAccount2FA(account);
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
-            // @ts-ignore
+            // @ts-expect-error test input
             .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
-            // @ts-ignore
+            // @ts-expect-error test input
             .access_key.permission.FunctionCall.receiver_id).toEqual(appAccountId);
     });
 
@@ -105,10 +105,10 @@ describe('account2fa transactions', () => {
         await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, BigInt(parseNearAmount('0.25')));
         const keys = await account.getAccessKeys();
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
-            // @ts-ignore
+            // @ts-expect-error test input
             .access_key.permission.FunctionCall.method_names).toEqual(appMethodNames);
         expect(keys.find(({ public_key }) => appPublicKey.toString() === public_key)
-            // @ts-ignore
+            // @ts-expect-error test input
             .access_key.permission.FunctionCall.receiver_id).toEqual(appAccountId);
     });
 

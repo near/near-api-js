@@ -35,33 +35,33 @@ global.TextEncoder = TextEncoder;
         });
 
         test('rpc fetch node status', async () => {
-            let response = await provider.status();
+            const response = await provider.status();
             expect(response.chain_id).toBeTruthy();
         });
         
         test('rpc fetch block info', async () => {
-            let stat = await provider.status();
-            let height = stat.sync_info.latest_block_height - 1;
-            let response = await provider.block({ blockId: height });
+            const stat = await provider.status();
+            const height = stat.sync_info.latest_block_height - 1;
+            const response = await provider.block({ blockId: height });
             expect(response.header.height).toEqual(height);
         
-            let sameBlock = await provider.block({ blockId: response.header.hash });
+            const sameBlock = await provider.block({ blockId: response.header.hash });
             expect(sameBlock.header.height).toEqual(height);
         
-            let optimisticBlock = await provider.block({ finality: 'optimistic' });
+            const optimisticBlock = await provider.block({ finality: 'optimistic' });
             expect(optimisticBlock.header.height - height).toBeLessThan(5);
         
-            let nearFinalBlock = await provider.block({ finality: 'near-final' });
+            const nearFinalBlock = await provider.block({ finality: 'near-final' });
             expect(nearFinalBlock.header.height - height).toBeLessThan(5);
         
-            let finalBlock = await provider.block({ finality: 'final' });
+            const finalBlock = await provider.block({ finality: 'final' });
             expect(finalBlock.header.height - height).toBeLessThan(5);
         });
         
         test('rpc fetch block changes', async () => {
-            let stat = await provider.status();
-            let height = stat.sync_info.latest_block_height - 1;
-            let response = await provider.blockChanges({ blockId: height });
+            const stat = await provider.status();
+            const height = stat.sync_info.latest_block_height - 1;
+            const response = await provider.blockChanges({ blockId: height });
         
             expect(response).toMatchObject({
                 block_hash: expect.any(String),
@@ -70,23 +70,23 @@ global.TextEncoder = TextEncoder;
         });
         
         test('rpc fetch chunk info', async () => {
-            let stat = await provider.status();
-            let height = stat.sync_info.latest_block_height - 1;
-            let response = await provider.chunk([height, 0]);
+            const stat = await provider.status();
+            const height = stat.sync_info.latest_block_height - 1;
+            const response = await provider.chunk([height, 0]);
             expect(response.header.shard_id).toEqual(0);
-            let sameChunk = await provider.chunk(response.header.chunk_hash);
+            const sameChunk = await provider.chunk(response.header.chunk_hash);
             expect(sameChunk.header.chunk_hash).toEqual(response.header.chunk_hash);
             expect(sameChunk.header.shard_id).toEqual(0);
         });
         
         test('rpc fetch validators info', async () => {
-            let validators = await provider.validators(null);
+            const validators = await provider.validators(null);
             expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
         });
         
         test('rpc query with block_id', async () => {
             const stat = await provider.status();
-            let block_id = stat.sync_info.latest_block_height - 1;
+            const block_id = stat.sync_info.latest_block_height - 1;
         
             const response = await provider.query({
                 block_id,
@@ -137,21 +137,21 @@ global.TextEncoder = TextEncoder;
         });
         
         test('json rpc gas price', async () => {
-            let status = await provider.status();
-            let positiveIntegerRegex = /^[+]?\d+([.]\d+)?$/;
+            const status = await provider.status();
+            const positiveIntegerRegex = /^[+]?\d+([.]\d+)?$/;
         
-            let response1 = await provider.gasPrice(status.sync_info.latest_block_height);
+            const response1 = await provider.gasPrice(status.sync_info.latest_block_height);
             expect(response1.gas_price).toMatch(positiveIntegerRegex);
         
-            let response2 = await provider.gasPrice(status.sync_info.latest_block_hash);
+            const response2 = await provider.gasPrice(status.sync_info.latest_block_hash);
             expect(response2.gas_price).toMatch(positiveIntegerRegex);
         
-            let response3 = await provider.gasPrice();
+            const response3 = await provider.gasPrice();
             expect(response3.gas_price).toMatch(positiveIntegerRegex);
         });
         
         test('near json rpc fetch node status', async () => {
-            let response = await provider.status();
+            const response = await provider.status();
             expect(response.chain_id).toBeTruthy();
         });
     });
@@ -159,7 +159,7 @@ global.TextEncoder = TextEncoder;
 
 describe('json provider', () => {
     test('JsonRpc connection object exist without connectionInfo provided', async () => {
-        // @ts-ignore
+        // @ts-expect-error test input
         const provider = new JsonRpcProvider();
         expect(provider.connection).toStrictEqual({ url: '' });
     });
@@ -281,7 +281,7 @@ test('final tx result', async () => {
             },
         ],
     };
-    // @ts-ignore
+    // @ts-expect-error test input
     expect(getTransactionLastResult(result)).toEqual({});
 });
 
@@ -318,7 +318,7 @@ test('final tx result with null', async () => {
             },
         ],
     };
-    // @ts-ignore
+    // @ts-expect-error test input
     expect(getTransactionLastResult(result)).toEqual(null);
 });
 
@@ -334,7 +334,7 @@ test('json rpc get next light client block', async () => {
     // NOTE: This will underflow if the network used has not produced an epoch yet. If a new network
     // config is required, can retrieve a block a few height behind (1+buffer for indexing). If run
     // on a fresh network, would need to wait for blocks to be produced and indexed.
-    // @ts-ignore
+    // @ts-expect-error test input
     const prevEpochHeight = height - protocolConfig.epoch_length;
     const prevBlock = await provider.block({ blockId: prevEpochHeight });
     const nextBlock = await provider.nextLightClientBlock({ last_block_hash: prevBlock.header.hash });
