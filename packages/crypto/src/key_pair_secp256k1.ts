@@ -33,7 +33,7 @@ export class KeyPairSecp256k1 extends KeyPairBase {
         const data = withHeader.subarray(1, withHeader.length); // remove the 0x04 header byte
         this.publicKey = new PublicKey({
             keyType: KeyType.SECP256K1,
-            secpData: data
+            data
         });
         this.secretKey = baseEncode(secretKey);
         this.extendedSecretKey = extendedSecretKey;
@@ -59,7 +59,6 @@ export class KeyPairSecp256k1 extends KeyPairBase {
     }
 
     sign(message: Uint8Array): Signature {
-        console.log('hereeee', 'secp256k1');
         // nearcore expects 65 byte signatures formed by appending the recovery id to the 64 byte signature
         const { signature, recid } = secp256k1.ecdsaSign(message, baseDecode(this.secretKey)); 
         return { signature: new Uint8Array([...signature, recid]), publicKey: this.publicKey };
