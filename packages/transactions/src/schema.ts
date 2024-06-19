@@ -91,15 +91,13 @@ export const SCHEMA = new class BorshSchema {
     Signature: Schema = {
         struct: {
             keyType: 'u8',
-            data: { array: { type: 'u8', len: 64 } },
+            data: { array: { type: 'u8' } },
         }
     };
     PublicKey: Schema = {
         struct: {
             keyType: 'u8',
-            data: {
-                array: { type: 'u8' }
-            } 
+            data: { array: { type: 'u8' } },
         }
     };
     FunctionCallPermission: Schema = {
