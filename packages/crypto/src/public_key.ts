@@ -65,7 +65,7 @@ export class PublicKey extends Assignable {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
         const decodedPublicKey = baseDecode(publicKey);
-        const keySize = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY
+        const keySize = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY;
         if(decodedPublicKey.length !== keySize) {
             throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${keySize}`);
         }
