@@ -76,7 +76,7 @@ export class LocalViewExecution {
      * @param options.blockQuery The block query options.
      * @returns {Promise<any>} - A promise that resolves to the result of the view function.
      */
-    public async viewFunction({ contractId, methodName, args = {}, blockQuery = { finality: 'optimistic' }, ...ignored }: ViewFunctionCallOptions) {
+    public async viewFunction({ contractId, methodName, args = {}, blockQuery = { finality: 'optimistic' } }: ViewFunctionCallOptions) {
         const methodArgs = JSON.stringify(args);
 
         const { contractCode, contractState, blockHeight, blockTimestamp } = await this.loadOrFetch(
