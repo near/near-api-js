@@ -1,9 +1,11 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
+import { afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 
 let nearjs;
 
-const CONTRACT_CALL_GAS = BigInt(300000000000000);
+const CONTRACT_CALL_GAS = 300000000000000n;
+
+jest.setTimeout(120000);
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();

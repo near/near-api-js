@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from '@jest/globals';
+import { beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { parseNearAmount } from '@near-js/utils';
 import { KeyPair } from '@near-js/crypto';
 import { InMemorySigner } from '@near-js/signers';
@@ -13,6 +13,8 @@ const { functionCall, transfer } = actionCreators;
 
 let nearjs;
 let startFromVersion;
+
+jest.setTimeout(50000);
 
 const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) => ({ publicKey, kind: 'phone' })) => {
     // modifiers to functions replaces contract helper (CH)

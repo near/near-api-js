@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { actionCreators } from '@near-js/transactions';
 import { BlockResult, TypedError } from '@near-js/types';
@@ -10,6 +10,7 @@ import { createAccount, generateUniqueString, HELLO_WASM_PATH, HELLO_WASM_BALANC
 let nearjs;
 let workingAccount;
 
+jest.setTimeout(50000);
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
