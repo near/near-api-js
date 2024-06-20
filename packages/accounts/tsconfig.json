@@ -1,7 +1,6 @@
 {
     "extends": "tsconfig/esm.json",
     "compilerOptions": {
-        "preserveSymlinks": false,
         "outDir": "./lib",
         "lib": ["es2022", "dom"]
     },
