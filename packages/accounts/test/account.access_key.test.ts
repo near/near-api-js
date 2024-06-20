@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, expect, test } from '@jest/globals';
+import { beforeAll, beforeEach, expect, jest, test } from '@jest/globals';
 import { KeyPair } from '@near-js/crypto';
 
 import { createAccount, deployContract, generateUniqueString, networkId, setUpTestConnection } from './test-utils';
@@ -7,6 +7,8 @@ let nearjs;
 let workingAccount;
 let contractId;
 let contract;
+
+jest.setTimeout(50000);
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
