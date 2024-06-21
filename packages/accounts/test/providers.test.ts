@@ -19,7 +19,7 @@ describe('providers', () => {
     test('txStatus with string hash and buffer hash', async () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
-        const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
+        const outcome = await sender.sendMoney(receiver.accountId, 1n);
         const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
         const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
         expect(responseWithString).toMatchObject(outcome);
@@ -29,7 +29,7 @@ describe('providers', () => {
     test('txStatusReciept with string hash and buffer hash', async () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
-        const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
+        const outcome = await sender.sendMoney(receiver.accountId, 1n);
         const reciepts = await provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
     
         const responseWithString = await provider.txStatusReceipts(outcome.transaction.hash, sender.accountId);

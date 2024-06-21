@@ -298,21 +298,21 @@ export class Runtime {
         const result = this.storageRead(key_len, key_ptr);
 
         if (result == null) {
-            return BigInt(0);
+            return 0n;
         }
 
         this.registers[register_id] = result;
-        return BigInt(1);
+        return 1n;
     }
 
     private hasStorageKey (key_len: bigint, key_ptr: bigint): bigint {
         const result = this.storageRead(key_len, key_ptr);
 
         if (result == null) {
-            return BigInt(0);
+            return 0n;
         }
 
-        return BigInt(1);
+        return 1n;
     }
 
     private getHostImports() {

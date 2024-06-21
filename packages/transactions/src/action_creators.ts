@@ -98,8 +98,8 @@ export function stringifyJsonOrBytes(args: any): Buffer {
 function functionCall(
     methodName: string,
     args: Uint8Array | object,
-    gas = BigInt(0),
-    deposit = BigInt(0),
+    gas = 0n,
+    deposit = 0n,
     stringify = stringifyJsonOrBytes,
     jsContract = false
 ): Action {
@@ -124,7 +124,7 @@ function functionCall(
  * @param deposit The amount to be deposited along with the transfer. Default: 0.
  * @returns A new action for transferring funds.
  */
-function transfer(deposit = BigInt(0)): Action {
+function transfer(deposit = 0n): Action {
     return new Action({ transfer: new Transfer({ deposit }) });
 }
 
@@ -134,7 +134,7 @@ function transfer(deposit = BigInt(0)): Action {
  * @param publicKey The public key associated with the staking action.
  * @returns A new action for staking tokens.
  */
-function stake(stake = BigInt(0), publicKey: PublicKey): Action {
+function stake(stake = 0n, publicKey: PublicKey): Action {
     return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 
