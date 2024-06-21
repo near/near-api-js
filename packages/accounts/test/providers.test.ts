@@ -22,9 +22,7 @@ describe('providers', () => {
         const outcome = await sender.sendMoney(receiver.accountId, BigInt('1'));
         const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
         const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
-        // @ts-expect-error test input
         expect(responseWithString).toMatchObject(outcome);
-        // @ts-expect-error test input
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
     
