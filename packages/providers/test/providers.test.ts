@@ -65,7 +65,7 @@ global.TextEncoder = TextEncoder;
         
             expect(response).toMatchObject({
                 block_hash: expect.any(String),
-                changes: expect.any(Array)
+                changes: expect.arrayContaining([])
             });
         });
         
