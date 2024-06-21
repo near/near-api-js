@@ -79,7 +79,7 @@ test('view account details after adding access keys', async() => {
         publicKey: keyPair2.getPublicKey().toString(),
     }];
 
-    details.authorizedApps.sort((a, b) => a.contractId > b.contractId);
+    details.authorizedApps.sort((a, b) => a.contractId < b.contractId);
     expect(JSON.stringify(details.authorizedApps)).toEqual(JSON.stringify(authorizedApps));
 });
 
