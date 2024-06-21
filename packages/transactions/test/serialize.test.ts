@@ -202,7 +202,7 @@ describe('serialize and deserialize on different types of nonce', () => {
             'test.near',
             PublicKey.fromString('Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
             'whatever.near',
-            BigInt(1),
+            1n,
             actions,
             blockHash);
         const serialized = encodeTransaction(transaction);
