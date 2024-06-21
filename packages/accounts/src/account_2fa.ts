@@ -160,7 +160,7 @@ export class Account2FA extends AccountMultisig {
         const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'));
         return currentAccountState.length ? [
             deployContract(cleanupContractBytes),
-            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, BigInt('0'))
+            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, 0n)
         ] : [];
     }
 

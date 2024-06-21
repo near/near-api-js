@@ -5,23 +5,23 @@ test('find seat price', async () => {
     expect(findSeatPrice(
         // @ts-expect-error test input
         [{ stake: '1000000' }, { stake: '1000000' }, { stake: '100' }], 2, [1, 6250], 49
-    )).toEqual(BigInt('101'));
+    )).toEqual(101n);
     expect(findSeatPrice(
         // @ts-expect-error test input
         [{ stake: '1000000' }, { stake: '1000000' }, { stake: '100' }], 3, [1, 6250]
-    )).toEqual(BigInt('101'));
+    )).toEqual(101n);
     expect(findSeatPrice(
         // @ts-expect-error test input
         [{ stake: '1000000' }, { stake: '1000000' }, { stake: '100' }], 4, [1, 6250], 49
-    )).toEqual(BigInt('320'));
+    )).toEqual(320n);
     expect(findSeatPrice(
         // @ts-expect-error test input
         [{ stake: '1000000' }, { stake: '1000000' }, { stake: '100' }], 4, [1, 6250], 48
-    )).toEqual(BigInt('500000'));
+    )).toEqual(500000n);
     expect(findSeatPrice(
         // @ts-expect-error test input
         [{ stake: '1000' }, { stake: '1000' }, { stake: '200' }], 100, [1, 25]
-    )).toEqual(BigInt('88'));
+    )).toEqual(88n);
 });
 
 test('diff validators', async () => {
