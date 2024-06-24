@@ -1,9 +1,9 @@
-import { Assignable } from '@near-js/types';
 import { baseEncode, baseDecode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import secp256k1 from 'secp256k1';
 
 import { KeySize, KeyType } from './constants';
+import { Assignable } from '@near-js/types';
 
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
@@ -21,18 +21,37 @@ function str_to_key_type(keyType: string): KeyType {
     }
 }
 
+export abstract class Enum {
+    enum: string;
+
+    constructor(properties: any) {
+        if (Object.keys(properties).length !== 1) {
+            throw new Error('Enum can only take single value');
+        }
+        Object.keys(properties).map((key: string) => {
+            (this as any)[key] = properties[key];
+            this.enum = key;
+        });
+    }
+}
+
+class ED25519PublicKey extends Assignable { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
+class SECP256K1PublicKey extends Assignable { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
+
 /**
  * PublicKey representation that has type and bytes of the key.
  */
 export class PublicKey extends Assignable {
-    keyType: KeyType;
-    data: Uint8Array;
+    ed25519Key?: ED25519PublicKey;
+    secp256k1Key?: SECP256K1PublicKey;
 
     constructor({ keyType, data }: { keyType: KeyType, data: Uint8Array }) {
         super({});
-        this.keyType = keyType;
-        const dataLength = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY;
-        this.data = data.slice(0, dataLength);
+        if (keyType === KeyType.ED25519) {
+            this.ed25519Key = { keyType, data };
+        } else if (keyType === KeyType.SECP256K1) {
+            this.secp256k1Key = { keyType, data };
+        }
     }
 
     /**
@@ -77,8 +96,10 @@ export class PublicKey extends Assignable {
      * @returns {string} The string representation of the public key.
      */
     toString(): string {
-        const encodedKey = baseEncode(this.data);
-        return `${key_type_to_str(this.keyType)}:${encodedKey}`;
+        const keyType = this.ed25519Key ? this.ed25519Key.keyType : this.secp256k1Key.keyType;
+        const data = keyType === KeyType.ED25519 ? this.ed25519Key?.data : this.secp256k1Key?.data;
+        const encodedKey = baseEncode(data);
+        return `${key_type_to_str(keyType)}:${encodedKey}`;
     }
 
     /**
@@ -88,13 +109,15 @@ export class PublicKey extends Assignable {
      * @returns {boolean} `true` if the signature is valid, otherwise `false`.
      */
     verify(message: Uint8Array, signature: Uint8Array): boolean {
-        switch (this.keyType) {
+        const keyType = this.ed25519Key ? this.ed25519Key.keyType : this.secp256k1Key.keyType;
+        const data = keyType === KeyType.ED25519 ? this.ed25519Key?.data : this.secp256k1Key?.data;
+        switch (keyType) {
             case KeyType.ED25519:
-                return ed25519.verify(signature, message, this.data);
+                return ed25519.verify(signature, message, data);
             case KeyType.SECP256K1:
-                return secp256k1.ecdsaVerify(signature.subarray(0, 64), message, new Uint8Array([0x04, ...this.data]));
+                return secp256k1.ecdsaVerify(signature.subarray(0, 64), message, new Uint8Array([0x04, ...data]));
             default:
-                throw new Error(`Unknown key type: ${this.keyType}`);
+                throw new Error(`Unknown key type: ${keyType}`);
         }
     }
 }

@@ -91,14 +91,26 @@ export const SCHEMA = new class BorshSchema {
     Signature: Schema = {
         struct: {
             keyType: 'u8',
-            data: { array: { type: 'u8' } },
+            data: { array: { type: 'u8', len: 64 } },
+        }
+    };
+    Ed25519Data: Schema = {
+        struct: {
+            keyType: 'u8',
+            data: { array: { type: 'u8', len: 32 } },
+        }
+    };
+    Secp256k1Data: Schema = {
+        struct: {
+            keyType: 'u8',
+            data: { array: { type: 'u8', len: 64 } },
         }
     };
     PublicKey: Schema = {
-        struct: {
-            keyType: 'u8',
-            data: { array: { type: 'u8' } },
-        }
+        enum: [
+            { struct: { ed25519Key: this.Ed25519Data } },
+            { struct: { secp256k1Key: this.Secp256k1Data } },
+        ]
     };
     FunctionCallPermission: Schema = {
         struct: {

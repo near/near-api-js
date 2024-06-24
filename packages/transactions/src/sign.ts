@@ -6,6 +6,7 @@ import { createTransaction } from './create_transaction';
 import type { DelegateAction } from './delegate';
 import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema';
 import { Signature } from './signature';
+import { KeyType } from '@near-js/crypto';
 
 interface MessageSigner {
     sign(message: Uint8Array): Promise<Uint8Array>;
@@ -32,9 +33,10 @@ async function signTransactionObject(transaction: Transaction, signer: Signer, a
     const message = encodeTransaction(transaction);
     const hash = new Uint8Array(sha256(message));
     const signature = await signer.signMessage(message, accountId, networkId);
+    const keyType = transaction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1;
     const signedTx = new SignedTransaction({
         transaction,
-        signature: new Signature({ keyType: transaction.publicKey.keyType, data: signature.signature })
+        signature: new Signature({ keyType, data: signature.signature })
     });
     return [hash, signedTx];
 }
@@ -63,10 +65,11 @@ export async function signDelegateAction({ delegateAction, signer }: SignDelegat
     const message = encodeDelegateAction(delegateAction);
     const signature = await signer.sign(message);
 
+    const keyType = delegateAction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1;
     const signedDelegateAction = new SignedDelegate({
         delegateAction,
         signature: new Signature({
-            keyType: delegateAction.publicKey.keyType,
+            keyType,
             data: signature,
         }),
     });
