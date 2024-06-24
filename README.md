@@ -67,6 +67,7 @@ Follow next steps:
 
 To help you get started quickly, we have prepared example templates for popular frameworks:
 
+- [React Template](https://github.com/LimeChain/nearjs-react-app)
 - [Nuxt.js Template](https://github.com/near/near-api-js-template-nuxt)
 - [Angular Template](https://github.com/near/near-api-js-template-angular)
 
