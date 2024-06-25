@@ -85,7 +85,7 @@ export class PublicKey extends Assignable {
         }
         const decodedPublicKey = baseDecode(publicKey);
         if (!keyType) {
-            keyType = decodedPublicKey.length === KeySize.ED25519_PUBLIC_KEY ? KeyType.ED25519 : KeyType.SECP256K1
+            keyType = decodedPublicKey.length === KeySize.ED25519_PUBLIC_KEY ? KeyType.ED25519 : KeyType.SECP256K1;
         }
         const keySize = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY;
         if(parts.length === 2 && decodedPublicKey.length !== keySize || parts.length === 1 && decodedPublicKey.length !== KeySize.ED25519_PUBLIC_KEY && decodedPublicKey.length !== KeySize.SECP256k1_PUBLIC_KEY) {
