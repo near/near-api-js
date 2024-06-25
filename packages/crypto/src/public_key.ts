@@ -74,7 +74,7 @@ export class PublicKey extends Assignable {
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
         let publicKey: string;
-        let keyType = KeyType.ED25519;
+        let keyType;
         if (parts.length === 1) {
             publicKey = parts[0];
         } else if (parts.length === 2) {
@@ -84,8 +84,11 @@ export class PublicKey extends Assignable {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
         const decodedPublicKey = baseDecode(publicKey);
+        if (!keyType) {
+            keyType = decodedPublicKey.length === KeySize.ED25519_PUBLIC_KEY ? KeyType.ED25519 : KeyType.SECP256K1
+        }
         const keySize = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY;
-        if(decodedPublicKey.length !== keySize) {
+        if(parts.length === 2 && decodedPublicKey.length !== keySize || parts.length === 1 && decodedPublicKey.length !== KeySize.ED25519_PUBLIC_KEY && decodedPublicKey.length !== KeySize.SECP256k1_PUBLIC_KEY) {
             throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${keySize}`);
         }
         return new PublicKey({ keyType, data: decodedPublicKey });

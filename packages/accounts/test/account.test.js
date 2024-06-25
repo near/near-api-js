@@ -43,7 +43,7 @@ test('create account with a secp256k1 key and then view account returns the crea
     const newAccountPublicKey = 'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28';
     const { amount } = await workingAccount.state();
     const newAmount = BigInt(amount) / BigInt(10);
-    await workingAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
+    await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
     expect(state.amount).toEqual(newAmount.toString());
