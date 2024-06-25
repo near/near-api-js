@@ -88,10 +88,21 @@ export class SignedTransaction extends Assignable {
 }
 
 export const SCHEMA = new class BorshSchema {
-    Signature: Schema = {
+    Ed25519Signature: Schema = {
         struct: {
             data: { array: { type: 'u8', len: 64 } },
         }
+    };
+    Secp256k1Signature: Schema = {
+        struct: {
+            data: { array: { type: 'u8', len: 65 } },
+        }
+    };
+    Signature: Schema = {
+        enum: [
+            { struct: { ed25519Signature: this.Ed25519Signature } },
+            { struct: { secp256k1Signature: this.Secp256k1Signature } },
+        ]
     };
     Ed25519Data: Schema = {
         struct: {
