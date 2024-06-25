@@ -90,19 +90,16 @@ export class SignedTransaction extends Assignable {
 export const SCHEMA = new class BorshSchema {
     Signature: Schema = {
         struct: {
-            keyType: 'u8',
             data: { array: { type: 'u8', len: 64 } },
         }
     };
     Ed25519Data: Schema = {
         struct: {
-            keyType: 'u8',
             data: { array: { type: 'u8', len: 32 } },
         }
     };
     Secp256k1Data: Schema = {
         struct: {
-            keyType: 'u8',
             data: { array: { type: 'u8', len: 64 } },
         }
     };
