@@ -4,4 +4,4 @@
 // Due to protocol changes that charge upfront for the maximum possible gas price inflation due to
 // full blocks, the price of max_prepaid_gas is decreased to `300 * 10**12`.
 // For discussion see https://github.com/nearprotocol/NEPs/issues/67
-export const DEFAULT_FUNCTION_CALL_GAS = BigInt('30000000000000');
+export const DEFAULT_FUNCTION_CALL_GAS = 30000000000000n;

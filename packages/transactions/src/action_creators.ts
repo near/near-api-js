@@ -25,9 +25,9 @@ import { Signature } from './signature';
  */
 function fullAccessKey(): AccessKey {
     return new AccessKey({
-        nonce: 0,
+        nonce: 0n,
         permission: new AccessKeyPermission({
-            fullAccess: new FullAccessPermission({}),
+            fullAccess: new FullAccessPermission(),
         }),
     });
 }
@@ -45,7 +45,7 @@ function functionCallAccessKey(
     allowance?: bigint
 ): AccessKey {
     return new AccessKey({
-        nonce: 0,
+        nonce: 0n,
         permission: new AccessKeyPermission({
             functionCall: new FunctionCallPermission({
                 receiverId,
@@ -61,7 +61,7 @@ function functionCallAccessKey(
  * @returns A new action for creating a new account.
  */
 function createAccount(): Action {
-    return new Action({ createAccount: new CreateAccount({}) });
+    return new Action({ createAccount: new CreateAccount() });
 }
 
 /**
@@ -98,14 +98,14 @@ export function stringifyJsonOrBytes(args: any): Buffer {
 function functionCall(
     methodName: string,
     args: Uint8Array | object,
-    gas = BigInt(0),
-    deposit = BigInt(0),
+    gas = 0n,
+    deposit = 0n,
     stringify = stringifyJsonOrBytes,
     jsContract = false
 ): Action {
     if (jsContract) {
         return new Action({
-            functionCall: new FunctionCall({ methodName, args, gas, deposit }),
+            functionCall: new FunctionCall({ methodName, args: args as Uint8Array, gas, deposit }),
         });
     }
 
@@ -124,7 +124,7 @@ function functionCall(
  * @param deposit The amount to be deposited along with the transfer. Default: 0.
  * @returns A new action for transferring funds.
  */
-function transfer(deposit = BigInt(0)): Action {
+function transfer(deposit = 0n): Action {
     return new Action({ transfer: new Transfer({ deposit }) });
 }
 
@@ -134,7 +134,7 @@ function transfer(deposit = BigInt(0)): Action {
  * @param publicKey The public key associated with the staking action.
  * @returns A new action for staking tokens.
  */
-function stake(stake = BigInt(0), publicKey: PublicKey): Action {
+function stake(stake = 0n, publicKey: PublicKey): Action {
     return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 

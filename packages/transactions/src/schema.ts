@@ -1,5 +1,4 @@
 import { PublicKey } from '@near-js/crypto';
-import { Assignable } from '@near-js/types';
 import { deserialize, serialize, Schema } from 'borsh';
 
 import {
@@ -32,10 +31,10 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
 }
 
 /**
-* Borsh-encode a transaction or signed transaction into a serialized form.
-* @param transaction The transaction or signed transaction object to be encoded.
-* @returns A serialized representation of the input transaction.
-*/
+ * Borsh-encode a transaction or signed transaction into a serialized form.
+ * @param transaction The transaction or signed transaction object to be encoded.
+ * @returns A serialized representation of the input transaction.
+ */
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
     const schema: Schema = transaction instanceof SignedTransaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
     return serialize(schema, transaction);
@@ -46,7 +45,7 @@ export function encodeTransaction(transaction: Transaction | SignedTransaction) 
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeTransaction(bytes: Uint8Array) {
-    return new Transaction(deserialize(SCHEMA.Transaction, bytes));
+    return new Transaction(deserialize(SCHEMA.Transaction, bytes) as Transaction);
 }
 
 /**
@@ -54,16 +53,34 @@ export function decodeTransaction(bytes: Uint8Array) {
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeSignedTransaction(bytes: Uint8Array) {
-    return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes));
+    return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes) as SignedTransaction);
 }
 
-export class Transaction extends Assignable {
+export class Transaction {
     signerId: string;
     publicKey: PublicKey;
     nonce: bigint;
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
+
+    constructor({ signerId, publicKey, nonce, receiverId, actions, blockHash }:
+    {
+      signerId: string,
+      publicKey: PublicKey,
+      nonce: bigint,
+      receiverId: string,
+      actions: Action[],
+      blockHash: Uint8Array,
+    }
+    ) {
+        this.signerId = signerId;
+        this.publicKey = publicKey;
+        this.nonce = nonce;
+        this.receiverId = receiverId;
+        this.actions = actions;
+        this.blockHash = blockHash;
+    }
 
     encode(): Uint8Array {
         return encodeTransaction(this);
@@ -74,11 +91,16 @@ export class Transaction extends Assignable {
     }
 }
 
-export class SignedTransaction extends Assignable {
+export class SignedTransaction {
     transaction: Transaction;
     signature: Signature;
 
-    encode(): Uint8Array{
+    constructor({ transaction, signature }: { transaction: Transaction, signature: Signature}) {
+        this.transaction = transaction;
+        this.signature = signature;
+    }
+
+    encode(): Uint8Array {
         return encodeTransaction(this);
     }
 
@@ -92,43 +114,43 @@ export const SCHEMA = new class BorshSchema {
         struct: {
             keyType: 'u8',
             data: { array: { type: 'u8', len: 64 } },
-        }
+        },
     };
     PublicKey: Schema = {
         struct: {
             keyType: 'u8',
             data: { array: { type: 'u8', len: 32 } },
-        }
+        },
     };
     FunctionCallPermission: Schema = {
         struct: {
             allowance: { option: 'u128' },
             receiverId: 'string',
             methodNames: { array: { type: 'string' } },
-        }
+        },
     };
     FullAccessPermission: Schema = {
-        struct: {}
+        struct: {},
     };
     AccessKeyPermission: Schema = {
         enum: [
             { struct: { functionCall: this.FunctionCallPermission } },
             { struct: { fullAccess: this.FullAccessPermission } },
-        ]
+        ],
     };
     AccessKey: Schema = {
         struct: {
             nonce: 'u64',
             permission: this.AccessKeyPermission,
-        }
+        },
     };
     CreateAccount: Schema = {
-        struct: {}
+        struct: {},
     };
     DeployContract: Schema = {
         struct: {
             code: { array: { type: 'u8' } },
-        }
+        },
     };
     FunctionCall: Schema = {
         struct: {
@@ -136,39 +158,39 @@ export const SCHEMA = new class BorshSchema {
             args: { array: { type: 'u8' } },
             gas: 'u64',
             deposit: 'u128',
-        }
+        },
     };
     Transfer: Schema = {
         struct: {
             deposit: 'u128',
-        }
+        },
     };
     Stake: Schema = {
         struct: {
             stake: 'u128',
             publicKey: this.PublicKey,
-        }
+        },
     };
     AddKey: Schema = {
         struct: {
             publicKey: this.PublicKey,
             accessKey: this.AccessKey,
-        }
+        },
     };
     DeleteKey: Schema = {
         struct: {
             publicKey: this.PublicKey,
-        }
+        },
     };
     DeleteAccount: Schema = {
         struct: {
             beneficiaryId: 'string',
-        }
+        },
     };
     DelegateActionPrefix: Schema = {
         struct: {
             prefix: 'u32',
-        }
+        },
     };
     ClassicActions: Schema = {
         enum: [
@@ -180,7 +202,7 @@ export const SCHEMA = new class BorshSchema {
             { struct: { addKey: this.AddKey } },
             { struct: { deleteKey: this.DeleteKey } },
             { struct: { deleteAccount: this.DeleteAccount } },
-        ]
+        ],
     };
     DelegateAction: Schema = {
         struct: {
@@ -190,13 +212,13 @@ export const SCHEMA = new class BorshSchema {
             nonce: 'u64',
             maxBlockHeight: 'u64',
             publicKey: this.PublicKey,
-        }
+        },
     };
     SignedDelegate: Schema = {
         struct: {
             delegateAction: this.DelegateAction,
             signature: this.Signature,
-        }
+        },
     };
     Action: Schema = {
         enum: [
@@ -209,7 +231,7 @@ export const SCHEMA = new class BorshSchema {
             { struct: { deleteKey: this.DeleteKey } },
             { struct: { deleteAccount: this.DeleteAccount } },
             { struct: { signedDelegate: this.SignedDelegate } },
-        ]
+        ],
     };
     Transaction: Schema = {
         struct: {
@@ -219,12 +241,12 @@ export const SCHEMA = new class BorshSchema {
             receiverId: 'string',
             blockHash: { array: { type: 'u8', len: 32 } },
             actions: { array: { type: this.Action } },
-        }
+        },
     };
     SignedTransaction: Schema = {
         struct: {
             transaction: this.Transaction,
             signature: this.Signature,
-        }
+        },
     };
 };
