@@ -12,8 +12,10 @@ function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());
 }
 
-function bytesJsonStringify(input: any): Buffer {
-    return Buffer.from(JSON.stringify(input));
+export function stringifyJsonOrBytes(args: any): Buffer {
+    const isUint8Array =
+        args.byteLength !== undefined && args.byteLength === args.length;
+    return isUint8Array ? args : Buffer.from(JSON.stringify(args));
 }
 
 export function validateArgs(args: any) {
@@ -75,7 +77,7 @@ export async function viewFunction(connection: Connection, {
     methodName,
     args = {},
     parse = parseJsonFromRawResponse,
-    stringify = bytesJsonStringify,
+    stringify = stringifyJsonOrBytes,
     jsContract = false,
     blockQuery = { finality: 'optimistic' }
 }: ViewFunctionCallOptions): Promise<any> {
