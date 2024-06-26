@@ -1,14 +1,18 @@
 import { KeyPairBase } from './key_pair_base';
 import { KeyPairEd25519 } from './key_pair_ed25519';
+import { KeyPairSecp256k1 } from './key_pair_secp256k1';
+
+export type KeyPairString = `ed25519:${string}` | `secp256k1:${string}`;
 
 export abstract class KeyPair extends KeyPairBase {
     /**
      * @param curve Name of elliptical curve, case-insensitive
      * @returns Random KeyPair based on the curve
      */
-    static fromRandom(curve: string): KeyPair {
+    static fromRandom(curve: 'ed25519' | 'secp256k1'): KeyPair {
         switch (curve.toUpperCase()) {
             case 'ED25519': return KeyPairEd25519.fromRandom();
+            case 'SECP256K1': return KeyPairSecp256k1.fromRandom();
             default: throw new Error(`Unknown curve ${curve}`);
         }
     }
@@ -18,13 +22,12 @@ export abstract class KeyPair extends KeyPairBase {
      * @param encodedKey The encoded key string.
      * @returns {KeyPair} The key pair created from the encoded key string.
      */
-    static fromString(encodedKey: string): KeyPair {
+    static fromString(encodedKey: KeyPairString): KeyPair {
         const parts = encodedKey.split(':');
-        if (parts.length === 1) {
-            return new KeyPairEd25519(parts[0]);
-        } else if (parts.length === 2) {
+        if (parts.length === 2) {
             switch (parts[0].toUpperCase()) {
                 case 'ED25519': return new KeyPairEd25519(parts[1]);
+                case 'SECP256K1': return new KeyPairSecp256k1(parts[1]);
                 default: throw new Error(`Unknown curve: ${parts[0]}`);
             }
         } else {
