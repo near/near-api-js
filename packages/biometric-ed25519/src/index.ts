@@ -70,7 +70,7 @@ export const createKey = async (username: string): Promise<KeyPair> => {
             const alg = await f2l.checkAlg(sanitizedResponse, {
                 challenge: challengeMakeCred.challenge,
                 origin,
-                factor: "either"
+                factor: 'either'
             });
 
             if (+alg === -257) {
@@ -148,4 +148,4 @@ export const isDeviceSupported = async (): Promise<boolean> => {
     } catch (e) {
         return false;
     }
-}
+};
