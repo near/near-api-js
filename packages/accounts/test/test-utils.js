@@ -1,4 +1,4 @@
-const { KeyPair } = require('@near-js/crypto');
+const { KeyPair, KeyType } = require('@near-js/crypto');
 const { InMemoryKeyStore } = require('@near-js/keystores');
 const fs = require('fs').promises;
 const path = require('path');
@@ -81,9 +81,9 @@ function generateUniqueString(prefix) {
     return result + '.test.near';
 }
 
-async function createAccount({ accountCreator, connection }) {
+async function createAccount({ accountCreator, connection }, keyType = KeyType.ED25519) {
     const newAccountName = generateUniqueString('test');
-    const newPublicKey = await connection.signer.createKey(newAccountName, networkId);
+    const newPublicKey = await connection.signer.createKey(newAccountName, networkId, keyType);
     await accountCreator.createAccount(newAccountName, newPublicKey);
     return new Account(connection, newAccountName);
 }
