@@ -25,7 +25,6 @@ NEAR JavaScript API is a complete library to interact with the NEAR blockchain. 
 
        pnpm -r compile -w
 
-
 ### Publish
 
 Prepare `dist` version by running:
@@ -48,7 +47,6 @@ Follow next steps:
 2. Fetch new schema: `node fetch_error_schema.js`
 3. `pnpm build` to update `lib/**.js` files
 
-
 ## Packages
 
 ![Package Architecture in Onion Diagram](./docs/package-architecture.png)
@@ -64,6 +62,14 @@ Follow next steps:
 - [types](https://github.com/near/near-api-js/tree/master/packages/types) common types
 - [utils](https://github.com/near/near-api-js/tree/master/packages/utils) common methods
 - [wallet-account](https://github.com/near/near-api-js/tree/master/packages/wallet-account) accounts in browser-based wallets
+
+## Example Templates
+
+To help you get started quickly, we have prepared example templates for popular frameworks:
+
+- [React Template](https://github.com/LimeChain/nearjs-react-app)
+- [Nuxt.js Template](https://github.com/near/near-api-js-template-nuxt)
+- [Angular Template](https://github.com/near/near-api-js-template-angular)
 
 ## License
 
