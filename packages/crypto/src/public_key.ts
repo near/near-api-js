@@ -21,20 +21,6 @@ function str_to_key_type(keyType: string): KeyType {
     }
 }
 
-export abstract class Enum {
-    enum: string;
-
-    constructor(properties: any) {
-        if (Object.keys(properties).length !== 1) {
-            throw new Error('Enum can only take single value');
-        }
-        Object.keys(properties).map((key: string) => {
-            (this as any)[key] = properties[key];
-            this.enum = key;
-        });
-    }
-}
-
 class ED25519PublicKey extends Assignable { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
 class SECP256K1PublicKey extends Assignable { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
 
