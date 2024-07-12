@@ -140,7 +140,7 @@ export const isPassKeyAvailable = async (): Promise<boolean> => {
     return window.PublicKeyCredential?.isUserVerifyingPlatformAuthenticatorAvailable?.() || false;
 };
 
-// To check if current device is supported
+// To check if current device supports biometric ed25519 authentication
 export const isDeviceSupported = async (): Promise<boolean> => {
     try {
         await createKey('test-device');
