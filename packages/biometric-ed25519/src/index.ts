@@ -67,6 +67,16 @@ export const createKey = async (username: string): Promise<KeyPair> => {
 
             const sanitizedResponse = sanitizeCreateKeyResponse(res);
 
+            const alg = await f2l.checkAlg(sanitizedResponse, {
+                challenge: challengeMakeCred.challenge,
+                origin,
+                factor: 'either'
+            });
+
+            if (+alg === -257) {
+                throw new Error('Unsupported device');
+            }
+
             const result = await f2l.attestation({
                 clientAttestationResponse: sanitizedResponse,
                 origin,
@@ -128,4 +138,14 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
 // To check if current browser supports WebAuthn
 export const isPassKeyAvailable = async (): Promise<boolean> => {
     return window.PublicKeyCredential?.isUserVerifyingPlatformAuthenticatorAvailable?.() || false;
+};
+
+// To check if current device supports biometric ed25519 authentication
+export const isDeviceSupported = async (): Promise<boolean> => {
+    try {
+        await createKey('test-device');
+        return true;
+    } catch (e) {
+        return false;
+    }
 };
