@@ -1,5 +1,6 @@
 import base64 from '@hexagon/base64';
 import { Fido2Lib } from 'fido2-lib';
+import cbor from 'cbor-js';
 
 export class Fido2 {
     f2l: Fido2Lib;
@@ -57,5 +58,13 @@ export class Fido2 {
             challenge,
             status: 'ok',
         };
+    }
+
+    async checkAlg(res, exp): Promise<any> {
+        const result = await this.f2l.attestationResult(res, exp);
+        const cosePublicKey = result.authnrData.get('credentialPublicKeyCose');
+        const decodedKey = cbor.decode(cosePublicKey);
+        const algKey = 3; // The key for the "alg" field in COSE
+        return decodedKey[algKey];
     }
 }
