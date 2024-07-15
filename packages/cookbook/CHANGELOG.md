@@ -1,5 +1,12 @@
 # @near-js/cookbook
 
+## 1.0.20
+
+### Patch Changes
+
+- Updated dependencies [[`e90e648c`](https://github.com/near/near-api-js/commit/e90e648ca4d6c3505141ad2ec666bbd9375b1289)]:
+  - near-api-js@4.0.3
+
 ## 1.0.19
 
 ### Patch Changes

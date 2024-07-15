@@ -1,5 +1,11 @@
 # @near-js/biometric-ed25519
 
+## 1.2.4
+
+### Patch Changes
+
+- [#1359](https://github.com/near/near-api-js/pull/1359) [`71b2764e`](https://github.com/near/near-api-js/commit/71b2764e3a6a41637ee6220008e8fc53b0df0e09) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Add isDeviceSupported method
+
 ## 1.2.3
 
 ### Patch Changes
