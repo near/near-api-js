@@ -16,4 +16,16 @@ export class Signature extends Assignable {
             this.secp256k1Signature = { keyType, data };
         }
     }
+
+    get signature() {
+        return this.ed25519Signature || this.secp256k1Signature;
+    }
+      
+    get signatureType(): KeyType {
+        return this.signature.keyType;
+    }
+    
+    get data(): Uint8Array {
+        return this.signature.data;
+    }
 }
