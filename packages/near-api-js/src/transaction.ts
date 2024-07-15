@@ -21,6 +21,7 @@ export {
     Transaction,
     encodeSignedDelegate,
     encodeDelegateAction,
+    encodeTransaction
 } from '@near-js/transactions';
 
 import { PublicKey } from '@near-js/crypto';
