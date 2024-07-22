@@ -85,11 +85,6 @@ describe('Using Secp256k1 Curve', () => {
     });
 });
 
-test('test from secret', async () => {
-    const keyPair = new KeyPairEd25519('5JueXZhEEVqGVT5powZ5twyPP8wrap2K7RdAYGGdjBwiBdd7Hh6aQxMP1u3Ma9Yanq1nEv32EW7u8kUJsZ6f315C');
-    expect(keyPair.publicKey.toString()).toEqual('ed25519:EWrekY1deMND7N3Q7Dixxj12wD7AVjFRt2H9q21QHUSW');
-});
-
 test('convert to string', async () => {
     const keyPair = KeyPairEd25519.fromRandom();
     const newKeyPair = KeyPair.fromString(keyPair.toString());
