@@ -1,5 +1,11 @@
 # near-api-js
 
+## 4.0.3
+
+### Patch Changes
+
+- [#1360](https://github.com/near/near-api-js/pull/1360) [`e90e648c`](https://github.com/near/near-api-js/commit/e90e648ca4d6c3505141ad2ec666bbd9375b1289) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Export encodeTransaction method in near-api-js package
+
 ## 4.0.2
 
 ### Patch Changes
