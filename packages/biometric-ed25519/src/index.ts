@@ -18,6 +18,7 @@ import {
 } from './utils';
 import { Fido2 } from './fido2';
 import { AssertionResponse } from './index.d';
+import { KeyPairString } from '@near-js/crypto';
 
 const CHALLENGE_TIMEOUT_MS = 90 * 1000;
 const RP_NAME = 'NEAR_API_JS_WEBAUTHN';
@@ -86,7 +87,7 @@ export const createKey = async (username: string): Promise<KeyPair> => {
             const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
             const secretKey = sha256.create().update(Buffer.from(publicKeyBytes)).digest();
             const pubKey = ed25519.getPublicKey(secretKey);
-            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]))));
+            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]))) as KeyPairString);
         });
 };
 
@@ -129,8 +130,8 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
             const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
             const secondEDSecret = sha256.create().update(Buffer.from(correctPKs[1])).digest();
             const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
-            const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)]))));
-            const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)]))));
+            const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)]))) as KeyPairString);
+            const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)]))) as KeyPairString);
             return [firstKeyPair, secondKeyPair];
         });
 };

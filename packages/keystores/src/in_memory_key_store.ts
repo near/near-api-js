@@ -1,5 +1,6 @@
 import { KeyPair } from '@near-js/crypto';
 import { KeyStore } from './keystore';
+import { KeyPairString } from '@near-js/crypto';
 
 /**
  * Simple in-memory keystore for mainly for testing purposes.
@@ -30,7 +31,7 @@ import { KeyStore } from './keystore';
  */
 export class InMemoryKeyStore extends KeyStore {
     /** @hidden */
-    private keys: { [key: string]: string };
+    private keys: { [key: string]: KeyPairString };
 
     constructor() {
         super();
@@ -44,7 +45,7 @@ export class InMemoryKeyStore extends KeyStore {
      * @param keyPair The key pair to store in local storage
      */    
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        this.keys[`${accountId}:${networkId}`] = keyPair.toString();
+        this.keys[`${accountId}:${networkId}`] = keyPair.toString() as KeyPairString;
     }
 
     /**

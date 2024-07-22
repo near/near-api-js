@@ -4,6 +4,7 @@ const { TypedError } = require('@near-js/types');
 const fs = require('fs');
 
 const { Account, Contract } = require('../lib');
+const { KeyType } = require( '@near-js/crypto' );
 const testUtils  = require('./test-utils');
 
 let nearjs;
@@ -36,6 +37,26 @@ test('create account and then view account returns the created account', async (
     const newAccount = new Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
     expect(state.amount).toEqual(newAmount.toString());
+});
+
+test('create account with a secp256k1 key and then view account returns the created account', async () => {
+    const newAccountName = testUtils.generateUniqueString('test');
+    const newAccountPublicKey = 'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28';
+    const { amount } = await workingAccount.state();
+    const newAmount = BigInt(amount) / BigInt(10);
+    await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
+    const newAccount = new Account(nearjs.connection, newAccountName);
+    const state = await newAccount.state();
+    expect(state.amount).toEqual(newAmount.toString());
+});
+
+test('Secp256k1 send money', async() => {
+    const sender = await testUtils.createAccount(nearjs, KeyType.SECP256K1);
+    const receiver = await testUtils.createAccount(nearjs, KeyType.SECP256K1);
+    const { amount: receiverAmount } = await receiver.state();
+    await sender.sendMoney(receiver.accountId, BigInt(10000));
+    const state = await receiver.state();
+    expect(state.amount).toEqual((BigInt(receiverAmount) + BigInt(10000)).toString());
 });
 
 test('send money', async() => {
