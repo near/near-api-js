@@ -6,7 +6,7 @@ describe('rpc-errors', () => {
             TxExecutionError: {
                 ActionError: {
                     index: 1,
-                    kind: {AccountAlreadyExists: {account_id: 'bob.near'}}
+                    kind: { AccountAlreadyExists: { account_id: 'bob.near' } }
                 }
             }
         };
@@ -39,13 +39,75 @@ describe('rpc-errors', () => {
         );
     });
 
+    test('test ShardCongested error', async () => {
+        let rpc_error = {
+            TxExecutionError: {
+                InvalidTxError: {
+                    ShardCongested: {
+                        shard_id: 2,
+                        congestion_level: 0.4
+                    }
+                }
+            }
+        };
+        let error = parseRpcError(rpc_error);
+        expect(error.type === 'ShardCongested').toBe(true);
+        expect(error.shard_id).toBe(2);
+        expect(error.congestion_level).toBe(0.4);
+        expect(formatError(error.type, error)).toBe(
+            'Shard 2 rejected the transaction due to congestion level 0.4, try again later'
+        );
+    });
+
+    test('test ShardStuck error', async () => {
+        let rpc_error = {
+            TxExecutionError: {
+                InvalidTxError: {
+                    ShardStuck: {
+                        shard_id: 2,
+                        missed_chunks: 5
+                    }
+                }
+            }
+        };
+        let error = parseRpcError(rpc_error);
+        expect(error.type === 'ShardStuck').toBe(true);
+        expect(error.shard_id).toBe(2);
+        expect(error.missed_chunks).toBe(5);
+        expect(formatError(error.type, error)).toBe(
+            'Shard 2 rejected the transaction because it missed 5 chunks and needs to recover before accepting new transactions, try again later'
+        );
+    });
+
+    test('test ReceiptSizeExceeded error', async () => {
+        let rpc_error = {
+            TxExecutionError: {
+                InvalidTxError: {
+                    ReceiptValidationError: {
+                        ReceiptSizeExceeded: {
+                            limit: 100,
+                            size: 101
+                        }
+                    }
+                }
+            }
+        };
+        let error = parseRpcError(rpc_error);
+        expect(error.type === 'ReceiptSizeExceeded').toBe(true);
+        expect(error.limit).toBe(100);
+        expect(error.size).toBe(101);
+        expect(formatError(error.type, error)).toBe(
+            '{\"type\":\"ReceiptSizeExceeded\",\"limit\":100,\"size\":101,\"kind\":{\"limit\":100,\"size\":101}}'
+        );
+    });
+
     test('test InvalidIteratorIndex error', async () => {
         let rpc_error = {
             TxExecutionError: {
                 ActionError: {
                     FunctionCallError: {
                         HostError: {
-                            InvalidIteratorIndex: {iterator_index: 42}
+                            InvalidIteratorIndex: { iterator_index: 42 }
                         }
                     }
                 }
