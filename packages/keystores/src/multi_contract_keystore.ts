@@ -12,5 +12,6 @@ export abstract class MultiContractKeyStore {
     abstract removeKey(networkId: string, accountId: string, contractId: string): Promise<void>;
     abstract clear(): Promise<void>;
     abstract getNetworks(): Promise<string[]>;
-    abstract getAccounts(networkId: string, contractId: string): Promise<string[]>;
+    abstract getAccounts(networkId: string): Promise<string[]>;
+    abstract getContracts(networkId: string, accountId: string): Promise<string[]>;
 }
