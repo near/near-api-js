@@ -1,4 +1,4 @@
-import { KeyPair } from '@near-js/crypto';
+import { KeyPair, KeyPairString } from '@near-js/crypto';
 import { MultiContractKeyStore } from '@near-js/keystores';
 
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
@@ -27,7 +27,7 @@ const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
  */
 export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeyStore {
     /** @hidden */
-    private localStorage: any;
+    private localStorage: Storage;
     /** @hidden */
     private prefix: string;
 
@@ -64,7 +64,7 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
         if (!value) {
             return null;
         }
-        return KeyPair.fromString(value);
+        return KeyPair.fromString(value as KeyPairString);
     }
 
     /**
@@ -108,12 +108,30 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
     async getAccounts(networkId: string): Promise<string[]> {
-        const result = new Array<string>();
+        const result: string[] = [];
         for (const key of this.storageKeys()) {
             if (key.startsWith(this.prefix)) {
                 const parts = key.substring(this.prefix.length).split(':');
                 if (parts[1] === networkId) {
                     result.push(parts[0]);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Gets the contract(s) from local storage
+     * @param networkId The targeted network. (ex. default, betanet, etc…)
+     * @param accountId The targeted account.
+     */
+    async getContracts(networkId: string, accountId: string): Promise<string[]> {
+        const result: string[] = [];
+        for (const key of this.storageKeys()) {
+            if (key.startsWith(this.prefix)) {
+                const parts = key.substring(this.prefix.length).split(':');
+                if (parts[1] === networkId && parts[0] === accountId) {
+                    result.push(parts[2]);
                 }
             }
         }
@@ -135,7 +153,7 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
     /** @hidden */
     private *storageKeys(): IterableIterator<string> {
         for (let i = 0; i < this.localStorage.length; i++) {
-            yield this.localStorage.key(i);
+            yield this.localStorage.key(i) as string;
         }
     }
 }
