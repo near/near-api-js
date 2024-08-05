@@ -63,5 +63,7 @@
     "InvalidReceiver": "Invalid receiver account ID {{receiver_id}} according to requirements",
     "DeleteKeyDoesNotExist": "Account {{account_id}} tries to remove an access key that doesn't exist",
     "Timeout": "Timeout exceeded",
-    "Closed": "Connection closed"
+    "Closed": "Connection closed",
+    "ShardCongested": "Shard {{shard_id}} rejected the transaction due to congestion level {{congestion_level}}, try again later",
+    "ShardStuck": "Shard {{shard_id}} rejected the transaction because it missed {{missed_chunks}} chunks and needs to recover before accepting new transactions, try again later"
 }
