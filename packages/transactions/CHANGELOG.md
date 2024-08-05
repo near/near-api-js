@@ -1,5 +1,16 @@
 # @near-js/transactions
 
+## 1.2.3
+
+### Patch Changes
+
+- [#1355](https://github.com/near/near-api-js/pull/1355) [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Add Secp256k1 support
+
+- Updated dependencies [[`bad95007`](https://github.com/near/near-api-js/commit/bad95007edde4ed9d5989ded7f2032b9f15f5c23), [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41)]:
+  - @near-js/utils@0.3.0
+  - @near-js/crypto@1.3.0
+  - @near-js/signers@0.1.5
+
 ## 1.2.2
 
 ### Patch Changes

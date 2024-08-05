@@ -1,6 +1,6 @@
 {
   "name": "@near-js/wallet-account",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Dependencies for the NEAR API JavaScript client in the browser",
   "main": "lib/index.js",
   "scripts": {

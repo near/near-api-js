@@ -1,6 +1,6 @@
 {
   "name": "@near-js/keystores-browser",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "KeyStore implementation for working with keys in browser LocalStorage",
   "main": "lib/index.js",
   "scripts": {
