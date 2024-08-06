@@ -30,7 +30,7 @@ function resolveEnumKeyName(keyType: KeyType) {
             return 'ed25519Key';
         }
         case KeyType.SECP256K1: {
-            return 'secp256k1Key'
+            return 'secp256k1Key';
         }
         default: {
             throw Error(`unknown type ${keyType}`);

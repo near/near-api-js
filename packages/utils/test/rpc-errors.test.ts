@@ -46,7 +46,7 @@ describe('rpc-errors', () => {
     });
 
     test('test ShardCongested error', async () => {
-        let rpc_error = {
+        const rpc_error = {
             TxExecutionError: {
                 InvalidTxError: {
                     ShardCongested: {
@@ -56,7 +56,7 @@ describe('rpc-errors', () => {
                 }
             }
         };
-        let error: any = parseRpcError(rpc_error);
+        const error: any = parseRpcError(rpc_error);
         expect(error.type === 'ShardCongested').toBe(true);
         expect(error.shard_id).toBe(2);
         expect(error.congestion_level).toBe(0.4);
@@ -66,7 +66,7 @@ describe('rpc-errors', () => {
     });
 
     test('test ShardStuck error', async () => {
-        let rpc_error = {
+        const rpc_error = {
             TxExecutionError: {
                 InvalidTxError: {
                     ShardStuck: {
@@ -76,7 +76,7 @@ describe('rpc-errors', () => {
                 }
             }
         };
-        let error: any = parseRpcError(rpc_error);
+        const error: any = parseRpcError(rpc_error);
         expect(error.type === 'ShardStuck').toBe(true);
         expect(error.shard_id).toBe(2);
         expect(error.missed_chunks).toBe(5);
@@ -86,7 +86,7 @@ describe('rpc-errors', () => {
     });
 
     test('test ReceiptSizeExceeded error', async () => {
-        let rpc_error = {
+        const rpc_error = {
             TxExecutionError: {
                 InvalidTxError: {
                     ReceiptValidationError: {
@@ -98,12 +98,12 @@ describe('rpc-errors', () => {
                 }
             }
         };
-        let error: any = parseRpcError(rpc_error);
+        const error: any = parseRpcError(rpc_error);
         expect(error.type === 'ReceiptSizeExceeded').toBe(true);
         expect(error.limit).toBe(100);
         expect(error.size).toBe(101);
         expect(formatError(error.type, error)).toBe(
-            '{\"type\":\"ReceiptSizeExceeded\",\"limit\":100,\"size\":101,\"kind\":{\"limit\":100,\"size\":101}}'
+            '{"type":"ReceiptSizeExceeded","limit":100,"size":101,"kind":{"limit":100,"size":101}}'
         );
     });
 

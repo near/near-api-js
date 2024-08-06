@@ -4,8 +4,8 @@ export enum KeyType {
     SECP256K1 = 1,
 }
 
-export enum KeySize {
-    SECRET_KEY = 32,
-    ED25519_PUBLIC_KEY = 32,
-    SECP256k1_PUBLIC_KEY = 64,
-}
+export const KeySize = {
+    SECRET_KEY: 32,
+    ED25519_PUBLIC_KEY: 32,
+    SECP256k1_PUBLIC_KEY: 64,
+};
