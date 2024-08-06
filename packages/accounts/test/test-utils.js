@@ -1,10 +1,13 @@
 import { KeyPair, KeyType } from '@near-js/crypto';
 import { InMemoryKeyStore } from '@near-js/keystores';
+import { ConsoleLogger, Logger } from '@near-js/utils';
 import fs from 'fs';
 import path from 'path';
 
 import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../src';
 import Config from './config';
+
+Logger.overrideLogger(new ConsoleLogger(['error', 'fatal']))
 
 export const networkId = 'unittest';
 
