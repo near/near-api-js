@@ -15,7 +15,7 @@ describe('Browser keystore', () => {
 });
 
 describe('Browser multi keystore', () => {
-    let ctx: any = {};
+    const ctx: any = {};
 
     beforeAll(async () => {
         ctx.keyStore = new MultiContractBrowserLocalStorageKeyStore(LocalStorageMemory);
