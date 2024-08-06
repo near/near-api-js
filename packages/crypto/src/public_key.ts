@@ -1,4 +1,5 @@
 import { baseEncode, baseDecode } from '@near-js/utils';
+import { Enum } from '@near-js/types';
 import { ed25519 } from '@noble/curves/ed25519';
 import secp256k1 from 'secp256k1';
 
@@ -23,19 +24,33 @@ function str_to_key_type(keyType: string): KeyType {
 class ED25519PublicKey { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
 class SECP256K1PublicKey { keyType: KeyType = KeyType.SECP256K1; data: Uint8Array; }
 
+function resolveEnumKeyName(keyType: KeyType) {
+    switch (keyType) {
+        case KeyType.ED25519: {
+            return 'ed25519Key';
+        }
+        case KeyType.SECP256K1: {
+            return 'secp256k1Key'
+        }
+        default: {
+            throw Error(`unknown type ${keyType}`);
+        }
+    }
+}
+
 /**
  * PublicKey representation that has type and bytes of the key.
  */
-export class PublicKey {
+export class PublicKey extends Enum {
+    enum: string;
     ed25519Key?: ED25519PublicKey;
     secp256k1Key?: SECP256K1PublicKey;
 
-    constructor({ keyType, data }: { keyType: KeyType, data: Uint8Array }) {
-        if (keyType === KeyType.ED25519) {
-            this.ed25519Key = { keyType, data };
-        } else if (keyType === KeyType.SECP256K1) {
-            this.secp256k1Key = { keyType, data };
-        }
+    constructor(publicKey: { keyType: KeyType, data: Uint8Array }) {
+        const keyName = resolveEnumKeyName(publicKey.keyType);
+        super({ [keyName]: publicKey });
+        this[keyName] = publicKey;
+        this.enum = keyName;
     }
 
     /**
