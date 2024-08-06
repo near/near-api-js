@@ -4,13 +4,10 @@ export default {
   testEnvironment: 'node',
   testRegex: "(/tests/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
   transform: {
-    '^.+\\.[tj]s$': 'ts-jest'
-  },
-  globals: {
-    'ts-jest': {
+    '^.+\\.[tj]s$': ['ts-jest', {
       tsconfig: {
-        allowJs: true
-      }
-    }
+        allowJs: true,
+      },
+    }],
   },
 };
