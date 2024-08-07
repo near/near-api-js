@@ -1,5 +1,15 @@
 # @near-js/keystores-node
 
+## 0.1.0-next.3
+
+### Patch Changes
+
+- [`59ee53ba`](https://github.com/near/near-api-js/commit/59ee53baeb41a2556cfd300c8ab9113dc5d24588) Thanks [@andy-haynes](https://github.com/andy-haynes)! - bundle organization
+
+- Updated dependencies [[`59ee53ba`](https://github.com/near/near-api-js/commit/59ee53baeb41a2556cfd300c8ab9113dc5d24588)]:
+  - @near-js/crypto@1.3.0-next.3
+  - @near-js/keystores@0.1.0-next.3
+
 ## 0.1.0-next.2
 
 ### Patch Changes
