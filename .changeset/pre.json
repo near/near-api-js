@@ -1,0 +1,28 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@near-js/accounts": "1.2.1",
+    "@near-js/biometric-ed25519": "1.2.4",
+    "@near-js/cookbook": "1.0.20",
+    "@near-js/crypto": "1.2.4",
+    "@near-js/iframe-rpc": "0.0.2",
+    "@near-js/keystores": "0.0.12",
+    "@near-js/keystores-browser": "0.0.12",
+    "@near-js/keystores-node": "0.0.12",
+    "near-api-js": "4.0.3",
+    "@near-js/providers": "0.2.2",
+    "@near-js/signers": "0.1.4",
+    "@near-js/transactions": "1.2.2",
+    "tsconfig": "0.0.0",
+    "@near-js/types": "0.2.1",
+    "@near-js/utils": "0.2.2",
+    "@near-js/wallet-account": "1.2.2"
+  },
+  "changesets": [
+    "clean-cougars-jump",
+    "fast-books-stare",
+    "odd-tips-yawn",
+    "wet-seals-end"
+  ]
+}

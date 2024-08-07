@@ -1,5 +1,21 @@
 # @near-js/keystores
 
+## 0.1.0-next.0
+
+### Minor Changes
+
+- [#1353](https://github.com/near/near-api-js/pull/1353) [`aaa833ac`](https://github.com/near/near-api-js/commit/aaa833ac80ce8acee1138d8c89ef721ec87311ca) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Add multi_contract_keystore
+
+- [`b9ca8c95`](https://github.com/near/near-api-js/commit/b9ca8c959b5f36f4d75c099e51ffe6124a88d929) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Update to Node.js 20 LTS & pnpm 9.4, modularize packages, simplify dependencies, and update tests
+
+### Patch Changes
+
+- [#1355](https://github.com/near/near-api-js/pull/1355) [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Add Secp256k1 support
+
+- Updated dependencies [[`b9ca8c95`](https://github.com/near/near-api-js/commit/b9ca8c959b5f36f4d75c099e51ffe6124a88d929), [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41)]:
+  - @near-js/crypto@1.3.0-next.0
+  - @near-js/types@0.3.0-next.0
+
 ## 0.0.12
 
 ### Patch Changes

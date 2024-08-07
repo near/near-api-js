@@ -1,5 +1,11 @@
 # @near-js/types
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- [`b9ca8c95`](https://github.com/near/near-api-js/commit/b9ca8c959b5f36f4d75c099e51ffe6124a88d929) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Update to Node.js 20 LTS & pnpm 9.4, modularize packages, simplify dependencies, and update tests
+
 ## 0.2.1
 
 ### Patch Changes
