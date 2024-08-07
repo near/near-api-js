@@ -1,5 +1,14 @@
 # @near-js/utils
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- [`a3008c12`](https://github.com/near/near-api-js/commit/a3008c12123e420f419b3cc88c476302981b7a0a) Thanks [@andy-haynes](https://github.com/andy-haynes)! - CJS bundling for near-api-js
+
+- Updated dependencies [[`a3008c12`](https://github.com/near/near-api-js/commit/a3008c12123e420f419b3cc88c476302981b7a0a)]:
+  - @near-js/types@0.3.0-next.2
+
 ## 0.3.0-next.1
 
 ### Patch Changes

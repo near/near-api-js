@@ -1,5 +1,24 @@
 # near-api-js
 
+## 4.1.0-next.2
+
+### Patch Changes
+
+- [`a3008c12`](https://github.com/near/near-api-js/commit/a3008c12123e420f419b3cc88c476302981b7a0a) Thanks [@andy-haynes](https://github.com/andy-haynes)! - CJS bundling for near-api-js
+
+- Updated dependencies [[`a3008c12`](https://github.com/near/near-api-js/commit/a3008c12123e420f419b3cc88c476302981b7a0a)]:
+  - @near-js/accounts@1.3.0-next.2
+  - @near-js/crypto@1.3.0-next.2
+  - @near-js/keystores@0.1.0-next.2
+  - @near-js/keystores-browser@0.1.0-next.2
+  - @near-js/keystores-node@0.1.0-next.2
+  - @near-js/providers@0.3.0-next.2
+  - @near-js/signers@0.2.0-next.2
+  - @near-js/transactions@1.3.0-next.2
+  - @near-js/types@0.3.0-next.2
+  - @near-js/utils@0.3.0-next.2
+  - @near-js/wallet-account@1.3.0-next.2
+
 ## 4.1.0-next.1
 
 ### Patch Changes
