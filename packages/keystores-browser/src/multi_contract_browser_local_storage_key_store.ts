@@ -38,7 +38,7 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
     constructor(localStorage: any = window.localStorage, prefix = LOCAL_STORAGE_KEY_PREFIX) {
         super();
         this.localStorage = localStorage;
-        this.prefix = prefix;
+        this.prefix = prefix || LOCAL_STORAGE_KEY_PREFIX;
     }
 
     /**
