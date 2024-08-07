@@ -43,9 +43,11 @@ Tests use sample contract from `near-hello` npm package, see https://github.com/
 
 Follow next steps:
 
-1. [Change hash for the commit with errors in the nearcore](https://github.com/near/near-api-js/blob/master/fetch_error_schema.js#L8-L9)
+1. [Optionally, set a specific hash for the commit with errors in the nearcore](https://github.com/near/near-api-js/blob/master/packages/utils/fetch_error_schema.js#L4-L5)
 2. Fetch new schema: `node fetch_error_schema.js`
-3. `pnpm build` to update `lib/**.js` files
+3. `pnpm build` and `pnpm test` to check tests still work
+4. `pnpm changeset` to generate a changeset with a minor bump for the @near-js/utils package
+5. commit all changes and submit a PR on GitHub
 
 ## Packages
 
