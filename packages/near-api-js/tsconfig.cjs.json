@@ -5,6 +5,7 @@
         "lib": ["es2022", "dom"]
     },
     "files": [
-        "src/index.ts"
+        "src/index.ts",
+        "src/browser-index.ts"
     ]
 }

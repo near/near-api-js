@@ -8,7 +8,7 @@
     },
     "homepage": "https://github.com/near/near-api-js",
     "main": "lib/esm/index.js",
-    "browser": "lib/browser-index.js",
+    "browser": "lib/commonjs/browser-index.js",
     "types": "lib/esm/index.d.ts",
     "type": "module",
     "dependencies": {
