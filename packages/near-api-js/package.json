@@ -1,7 +1,7 @@
 {
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
-    "version": "4.1.0-next.0",
+    "version": "4.1.0-next.1",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
@@ -59,8 +59,9 @@
         "bundle": "esbuild browser-exports.js --bundle --outfile=dist/near-api-js.js --define:global=window --inject:esbuild.inject.js",
         "bundle:minified": "esbuild browser-exports.js --bundle --minify --outfile=dist/near-api-js.min.js --define:global=window --inject:esbuild.inject.js",
         "compile": "tsc -p ./tsconfig.json",
+        "compile:cjs": "tsc -p ./tsconfig.cjs.json",
         "dev": "pnpm compile -w",
-        "build": "pnpm compile && pnpm bundle:all",
+        "build": "pnpm compile && pnpm compile:cjs && pnpm bundle:all",
         "test": "jest --passWithNoTests",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",

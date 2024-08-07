@@ -1,6 +1,6 @@
 {
   "name": "@near-js/keystores",
-  "version": "0.1.0-next.0",
+  "version": "0.1.0-next.1",
   "description": "Key storage and management implementations",
   "main": "lib/esm/index.js",
   "type": "module",

@@ -1,5 +1,16 @@
 # @near-js/providers
 
+## 0.3.0-next.1
+
+### Patch Changes
+
+- [`f12a7500`](https://github.com/near/near-api-js/commit/f12a75009f23a0519b2de90fe211c68ebb2dfece) Thanks [@andy-haynes](https://github.com/andy-haynes)! - produce CommonJS builds
+
+- Updated dependencies [[`f12a7500`](https://github.com/near/near-api-js/commit/f12a75009f23a0519b2de90fe211c68ebb2dfece)]:
+  - @near-js/transactions@1.3.0-next.1
+  - @near-js/types@0.3.0-next.1
+  - @near-js/utils@0.3.0-next.1
+
 ## 0.3.0-next.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@near-js/utils",
-  "version": "0.3.0-next.0",
+  "version": "0.3.0-next.1",
   "description": "Common methods and constants for the NEAR API JavaScript client",
   "main": "lib/esm/index.js",
   "type": "module",
