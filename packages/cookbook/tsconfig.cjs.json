@@ -1,7 +1,7 @@
 {
-    "extends": "tsconfig/esm.json",
+    "extends": "tsconfig/cjs.json",
     "compilerOptions": {
-        "outDir": "./lib/esm",
+        "outDir": "./lib/commonjs",
         "lib": ["es2022", "dom"]
     },
     "files": [

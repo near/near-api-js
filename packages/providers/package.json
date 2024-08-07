@@ -2,11 +2,11 @@
   "name": "@near-js/providers",
   "version": "0.3.0-next.0",
   "description": "Library of implementations for interfacing with the NEAR blockchain",
-  "main": "lib/index.js",
+  "main": "lib/esm/index.js",
   "type": "module",
   "scripts": {
     "build": "pnpm compile",
-    "compile": "tsc -p tsconfig.json",
+    "compile": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
     "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
     "test": "jest"
@@ -40,5 +40,9 @@
   "resolutions": {
     "near-sandbox": "0.0.18",
     "near-api-js": "4.0.0"
+  },
+  "exports": {
+    "require": "./lib/commonjs/index.js",
+    "import": "./lib/esm/index.js"
   }
 }

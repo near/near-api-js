@@ -7,9 +7,9 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "homepage": "https://github.com/near/near-api-js",
-    "main": "lib/index.js",
+    "main": "lib/esm/index.js",
     "browser": "lib/browser-index.js",
-    "types": "lib/index.d.ts",
+    "types": "lib/esm/index.d.ts",
     "type": "module",
     "dependencies": {
         "@near-js/accounts": "workspace:*",
@@ -85,5 +85,9 @@
         "dist",
         "browser-exports.js"
     ],
-    "author": "NEAR Inc"
+    "author": "NEAR Inc",
+    "exports": {
+        "require": "./lib/commonjs/index.js",
+        "import": "./lib/esm/index.js"
+    }
 }

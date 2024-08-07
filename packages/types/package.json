@@ -2,11 +2,11 @@
   "name": "@near-js/types",
   "version": "0.3.0-next.0",
   "description": "TypeScript types for working with the Near JS API",
-  "main": "lib/index.js",
+  "main": "lib/esm/index.js",
   "type": "module",
   "scripts": {
     "build": "pnpm compile",
-    "compile": "tsc -p tsconfig.json",
+    "compile": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
     "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --fix"
   },
@@ -22,5 +22,9 @@
   },
   "files": [
     "lib"
-  ]
+  ],
+  "exports": {
+    "require": "./lib/commonjs/index.js",
+    "import": "./lib/esm/index.js"
+  }
 }
