@@ -2,11 +2,12 @@
   "name": "@near-js/wallet-account",
   "version": "1.2.3",
   "description": "Dependencies for the NEAR API JavaScript client in the browser",
-  "main": "lib/index.js",
+  "main": "lib/esm/index.js",
   "type": "module",
   "scripts": {
-    "build": "pnpm compile",
-    "compile": "tsc -p tsconfig.json",
+    "build": "pnpm compile:esm && pnpm compile:cjs",
+    "compile:esm": "tsc -p tsconfig.json",
+    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
     "test": "jest"
   },
   "keywords": [],
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/node": "20.0.0",
+    "build": "workspace:*",
     "jest": "29.7.0",
     "localstorage-memory": "1.0.3",
     "ts-jest": "29.1.5",
@@ -34,5 +36,9 @@
   },
   "files": [
     "lib"
-  ]
+  ],
+  "exports": {
+    "require": "./lib/commonjs/index.cjs",
+    "import": "./lib/esm/index.js"
+  }
 }

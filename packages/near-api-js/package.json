@@ -7,9 +7,9 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "homepage": "https://github.com/near/near-api-js",
-    "main": "lib/index.js",
-    "browser": "lib/browser-index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/esm/index.js",
+    "browser": "lib/commonjs/browser-index.cjs",
+    "types": "lib/esm/index.d.ts",
     "type": "module",
     "dependencies": {
         "@near-js/accounts": "workspace:*",
@@ -34,6 +34,7 @@
         "browserify": "16.2.3",
         "bs58": "4.0.0",
         "buffer": "6.0.3",
+        "build": "workspace:*",
         "bundlewatch": "0.3.1",
         "concurrently": "7.3.0",
         "danger": "11.1.1",
@@ -58,9 +59,10 @@
         "bundle:all": "pnpm bundle && pnpm bundle:minified",
         "bundle": "esbuild browser-exports.js --bundle --outfile=dist/near-api-js.js --define:global=window --inject:esbuild.inject.js",
         "bundle:minified": "esbuild browser-exports.js --bundle --minify --outfile=dist/near-api-js.min.js --define:global=window --inject:esbuild.inject.js",
-        "compile": "tsc -p ./tsconfig.json",
+        "compile:esm": "tsc -p ./tsconfig.json",
+        "compile:cjs": "tsc -p ./tsconfig.cjs.json && cjsify ./lib/commonjs",
         "dev": "pnpm compile -w",
-        "build": "pnpm compile && pnpm bundle:all",
+        "build": "pnpm compile:esm && pnpm compile:cjs && pnpm dist",
         "test": "jest --passWithNoTests",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
@@ -85,5 +87,9 @@
         "dist",
         "browser-exports.js"
     ],
-    "author": "NEAR Inc"
+    "author": "NEAR Inc",
+    "exports": {
+        "require": "./lib/commonjs/index.cjs",
+        "import": "./lib/esm/index.js"
+    }
 }

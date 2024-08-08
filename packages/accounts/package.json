@@ -2,11 +2,12 @@
     "name": "@near-js/accounts",
     "version": "1.2.2",
     "description": "Classes encapsulating account-specific functionality",
-    "main": "lib/index.js",
+    "main": "lib/esm/index.js",
     "type": "module",
     "scripts": {
-        "build": "pnpm compile",
-        "compile": "tsc -p tsconfig.json",
+        "build": "pnpm compile:esm && pnpm compile:cjs",
+        "compile:esm": "tsc -p tsconfig.json",
+        "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
         "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
         "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
         "test": "jest"
@@ -35,6 +36,7 @@
         "@types/json-schema": "^7.0.15",
         "@types/node": "20.0.0",
         "bs58": "4.0.0",
+        "build": "workspace:*",
         "jest": "29.7.0",
         "near-hello": "0.5.1",
         "near-workspaces": "3.5.0",
@@ -47,8 +49,8 @@
     "files": [
         "lib"
     ],
-    "resolutions": {
-        "near-sandbox": "0.0.18",
-        "near-api-js": "4.0.0"
+    "exports": {
+        "require": "./lib/commonjs/index.cjs",
+        "import": "./lib/esm/index.js"
     }
 }

@@ -2,7 +2,7 @@
     "extends": "tsconfig/browser.json",
     "compilerOptions": {
         "preserveSymlinks": false,
-        "outDir": "./lib",
+        "outDir": "./lib/esm",
     },
     "files": [
         "src/index.ts"
