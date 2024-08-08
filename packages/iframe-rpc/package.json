@@ -2,11 +2,13 @@
   "name": "@near-js/iframe-rpc",
   "version": "0.0.2",
   "description": "IFrame RPC client/server implementation",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/esm/index.js",
+  "types": "lib/esm/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc -p ./tsconfig.json"
+    "build": "pnpm compile:esm && pnpm compile:cjs",
+    "compile:esm": "tsc -p tsconfig.json",
+    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs"
   },
   "keywords": [],
   "author": "Pagoda",
@@ -15,6 +17,11 @@
     "events": "3.3.0"
   },
   "devDependencies": {
-    "@types/node": "18.11.18"
+    "@types/node": "18.11.18",
+    "build": "workspace:*"
+  },
+  "exports": {
+    "require": "./lib/commonjs/index.cjs",
+    "import": "./lib/esm/index.js"
   }
 }

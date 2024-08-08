@@ -1,6 +1,8 @@
 {
     "extends": "./base.json",
-    "module": "commonjs",
     "target": "es6",
-    "lib": ["es6"]
+    "lib": ["es6"],
+    "compilerOptions": {
+        "module": "commonjs"
+    }
 }
