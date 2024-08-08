@@ -1,5 +1,19 @@
 # @near-js/cookbook
 
+## 1.0.21-next.4
+
+### Patch Changes
+
+- [`a6db19e3`](https://github.com/near/near-api-js/commit/a6db19e36476e02542a8a11a8df1c364eed184d1) Thanks [@andy-haynes](https://github.com/andy-haynes)! - more cjs
+
+- Updated dependencies [[`a6db19e3`](https://github.com/near/near-api-js/commit/a6db19e36476e02542a8a11a8df1c364eed184d1)]:
+  - @near-js/accounts@1.3.0-next.4
+  - @near-js/keystores-node@0.1.0-next.4
+  - near-api-js@4.1.0-next.4
+  - @near-js/providers@0.3.0-next.4
+  - @near-js/signers@0.2.0-next.4
+  - @near-js/transactions@1.3.0-next.4
+
 ## 1.0.21-next.3
 
 ### Patch Changes

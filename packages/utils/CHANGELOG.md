@@ -1,5 +1,14 @@
 # @near-js/utils
 
+## 0.3.0-next.4
+
+### Patch Changes
+
+- [`a6db19e3`](https://github.com/near/near-api-js/commit/a6db19e36476e02542a8a11a8df1c364eed184d1) Thanks [@andy-haynes](https://github.com/andy-haynes)! - more cjs
+
+- Updated dependencies [[`a6db19e3`](https://github.com/near/near-api-js/commit/a6db19e36476e02542a8a11a8df1c364eed184d1)]:
+  - @near-js/types@0.3.0-next.4
+
 ## 0.3.0-next.3
 
 ### Patch Changes

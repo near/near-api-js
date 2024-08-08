@@ -1,5 +1,15 @@
 # @near-js/biometric-ed25519
 
+## 1.3.0-next.4
+
+### Patch Changes
+
+- [`a6db19e3`](https://github.com/near/near-api-js/commit/a6db19e36476e02542a8a11a8df1c364eed184d1) Thanks [@andy-haynes](https://github.com/andy-haynes)! - more cjs
+
+- Updated dependencies [[`a6db19e3`](https://github.com/near/near-api-js/commit/a6db19e36476e02542a8a11a8df1c364eed184d1)]:
+  - @near-js/crypto@1.3.0-next.4
+  - @near-js/utils@0.3.0-next.4
+
 ## 1.3.0-next.3
 
 ### Patch Changes
