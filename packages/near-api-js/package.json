@@ -88,7 +88,7 @@
     ],
     "author": "NEAR Inc",
     "exports": {
-        "require": "./lib/commonjs/index.js",
+        "require": "./lib/commonjs/index.cjs",
         "import": "./lib/esm/index.js"
     }
 }
