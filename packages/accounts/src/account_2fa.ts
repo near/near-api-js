@@ -1,8 +1,8 @@
 import { PublicKey } from '@near-js/crypto';
 import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
-import { fetchJson } from '@near-js/providers';
 import { actionCreators } from '@near-js/transactions';
 import { Logger } from '@near-js/utils'
+import unfetch from 'isomorphic-unfetch';
 
 import { SignAndSendTransactionOptions } from './account';
 import { AccountMultisig } from './account_multisig';
@@ -75,6 +75,7 @@ export class Account2FA extends AccountMultisig {
         const { accountId } = this;
 
         const seedOrLedgerKey = (await this.getRecoveryMethods()).data
+          // @ts-ignore
             .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
             .map((rm) => rm.publicKey);
 
@@ -83,6 +84,7 @@ export class Account2FA extends AccountMultisig {
             .map((ak) => ak.public_key)
             .map(toPK);
 
+        // @ts-ignore
         const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
 
         const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
@@ -158,7 +160,7 @@ export class Account2FA extends AccountMultisig {
         const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'));
         return currentAccountState.length ? [
             deployContract(cleanupContractBytes),
-            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, BigInt('0'))
+            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, 0n)
         ] : [];
     }
 
@@ -177,6 +179,7 @@ export class Account2FA extends AccountMultisig {
                     perm.method_names.length === 4 &&
                     perm.method_names.includes('add_request_and_confirm');
             });
+        // @ts-ignore
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
         return [
             deleteKey(confirmOnlyKey),
@@ -298,10 +301,13 @@ export class Account2FA extends AccountMultisig {
      */
     async get2faMethod() {
         let { data } = await this.getRecoveryMethods();
+        // @ts-ignore
         if (data && data.length) {
+            // @ts-ignore
             data = data.find((m) => m.kind.indexOf('2fa-') === 0);
         }
         if (!data) return null;
+        // @ts-ignore
         const { kind, detail } = data;
         return { kind, detail };
     }
@@ -326,10 +332,13 @@ export class Account2FA extends AccountMultisig {
      * @returns {Promise<any>} - A promise that resolves to the response from the helper.
      */
     async postSignedJson(path, body) {
-        return await fetchJson(this.helperUrl + path, JSON.stringify({
-            ...body,
-            ...(await this.signatureFor())
-        }));
+        return await unfetch(this.helperUrl + path, {
+            body: JSON.stringify({
+                ...body,
+                ...(await this.signatureFor()),
+            }),
+            method: 'POST',
+        });
     }
 }
 

@@ -6,7 +6,7 @@ on:
         master  
 
 env:
-  NODE_VERSION: 18.x
+  NODE_VERSION: 20.15.0
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
   USES_PNPM: 'true'
@@ -28,7 +28,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.0.0
         with:
-          version: 7
+          version: 9.4.0
 
       - name: Install dependencies
         run: pnpm install

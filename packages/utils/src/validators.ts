@@ -29,11 +29,11 @@ function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo
         throw new Error('Stakes are below seats');
     }
     // assert stakesSum >= numSeats
-    let left = BigInt(1), right = stakesSum + BigInt(1);
-    while (left !== right - BigInt(1)) {
-        const mid = (left + right) / BigInt(2);
+    let left = 1n, right = stakesSum + 1n;
+    while (left !== right - 1n) {
+        const mid = (left + right) / 2n;
         let found = false;
-        let currentSum = BigInt(0);
+        let currentSum = 0n;
         for (let i = 0; i < stakes.length; ++i) {
             currentSum = currentSum + (stakes[i] / mid);
             if (currentSum >= num) {
@@ -59,7 +59,7 @@ function findSeatPriceForProtocolAfter49(validators: (CurrentEpochValidatorInfo 
     if (validators.length < maxNumberOfSeats) {
         return stakesSum * BigInt(minimumStakeRatio[0]) / BigInt(minimumStakeRatio[1]);
     } else {
-        return stakes[0] + BigInt(1);
+        return stakes[0] + 1n;
     }
 }
 

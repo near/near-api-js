@@ -371,7 +371,7 @@ export class ConnectedWalletAccount extends Account {
 
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
-        const nonce = accessKey.access_key.nonce + BigInt(1);
+        const nonce = accessKey.access_key.nonce + 1n;
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
         await this.walletConnection.requestSignTransactions({
             transactions: [transaction],
