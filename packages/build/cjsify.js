@@ -1,4 +1,4 @@
-import { opendir, readFile, lstat, writeFile, rename } from 'node:fs/promises';
+import { lstat, opendir, readFile, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 async function enumerateContents(contentPath) {
@@ -20,11 +20,14 @@ async function enumerateContents(contentPath) {
   return files;
 }
 
-async function cjsIfy(basePath) {
+async function cjsIfy() {
+  const [,, inputPath] = process.argv;
+  const basePath = path.resolve(process.cwd(), inputPath);
+
   for (let projectFilePath of await enumerateContents(basePath)) {
     let contents = (await readFile(projectFilePath)).toString();
-    const imports = [...contents.matchAll(/require\("(\.\.?\/+[^"]+)"\)/ig)];
-    for (let localImport of imports) {
+    const relativeImports = [...contents.matchAll(/require\("(\.\.?\/+[^"]+)"\)/ig)];
+    for (let localImport of relativeImports) {
       const [matchedText, relativePath] = [...localImport];
       if (relativePath.endsWith('.json')) {
         continue;
@@ -42,7 +45,7 @@ async function cjsIfy(basePath) {
       contents = contents.replaceAll(matchedText, `require("${replacementPath}")`);
     }
 
-    if (imports.length) {
+    if (relativeImports.length) {
       await writeFile(projectFilePath, contents);
     }
 
@@ -50,22 +53,6 @@ async function cjsIfy(basePath) {
   }
 }
 
-async function listPackagePaths(repoPath) {
-  const packages = [];
-  for await (let { name } of await opendir(`${repoPath}/packages`)) {
-    const buildPath = `${repoPath}/packages/${name}/lib/commonjs`;
-    try {
-      await lstat(buildPath);
-      packages.push(buildPath);
-    } catch {}
-  }
-  return packages;
-}
-
-async function getEmAll() {
-  const paths = await listPackagePaths(process.cwd());
-  await Promise.all(paths.map((p) => cjsIfy(p)))
-}
-
-// cjsIfy(path.join(process.cwd(), 'packages/utils/lib/commonjs'));
-getEmAll();
+(async function() {
+  await cjsIfy();
+}());

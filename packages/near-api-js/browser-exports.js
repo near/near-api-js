@@ -1,1 +1,1 @@
-window.nearApi = require('./lib/commonjs/browser-index');
+window.nearApi = require('./lib/commonjs/browser-index.cjs');

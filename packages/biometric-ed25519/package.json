@@ -6,7 +6,9 @@
   "types": "lib/esm/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc -p ./tsconfig.json",
+    "build": "pnpm compile:esm && pnpm compile:cjs",
+    "compile:esm": "tsc -p tsconfig.json",
+    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
     "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
     "test": "jest"
@@ -23,6 +25,7 @@
     "asn1-parser": "1.1.8",
     "borsh": "1.0.0",
     "buffer": "6.0.3",
+    "build": "workspace:*",
     "cbor-js": "^0.1.0",
     "fido2-lib": "3.4.1"
   },
