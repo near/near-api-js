@@ -3,6 +3,9 @@ import { getTransactionLastResult } from '@near-js/utils';
 import { sha256 } from '@noble/hashes/sha256';
 
 import type { SignTransactionParams, SignAndSendTransactionParams } from '../interfaces';
+import { getBlock } from '../providers';
+import { getNonce } from '../view';
+import { SignAndSendComposerParams } from '../interfaces';
 
 export async function signTransaction({ transaction, deps: { signer } }: SignTransactionParams) {
   const encodedTx = transaction.encode();
@@ -27,4 +30,33 @@ export async function signAndSendTransaction({ transaction, deps: { rpcProvider,
     outcome,
     result: getTransactionLastResult(outcome),
   };
+}
+
+export async function getSignerNonce({ account, blockReference, deps: { rpcProvider, signer } }) {
+  return getNonce({
+    account,
+    publicKey: (await signer.getPublicKey()).toString(),
+    blockReference,
+    deps: { rpcProvider },
+  });
+}
+
+// this might be more natural as a method on TransactionComposer but would be a major increase in scope
+export async function signAndSendFromComposer({ composer, nonce, blockReference, deps }: SignAndSendComposerParams) {
+  const { rpcProvider, signer } = deps;
+  const block = await getBlock({ blockReference, deps: { rpcProvider } });
+
+  let signerNonce = nonce;
+  if (!signerNonce) {
+    signerNonce = await getSignerNonce({ account: composer.sender, blockReference, deps });
+    signerNonce += 1n;
+  }
+
+  const transaction = composer.toTransaction({
+    nonce: signerNonce,
+    publicKey: await signer.getPublicKey(),
+    blockHeader: block?.header,
+  });
+
+  return signAndSendTransaction({ transaction, deps });
 }

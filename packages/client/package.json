@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@near-js/crypto": "workspace:*",
+    "@near-js/keystores": "workspace:*",
     "@near-js/keystores-node": "workspace:*",
     "@near-js/providers": "workspace:*",
     "@near-js/signers": "workspace:*",
