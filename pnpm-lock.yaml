@@ -191,6 +191,43 @@ importers:
 
   packages/build: {}
 
+  packages/client:
+    dependencies:
+      '@near-js/crypto':
+        specifier: workspace:*
+        version: link:../crypto
+      '@near-js/keystores-node':
+        specifier: workspace:*
+        version: link:../keystores-node
+      '@near-js/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@near-js/signers':
+        specifier: workspace:*
+        version: link:../signers
+      '@near-js/transactions':
+        specifier: workspace:*
+        version: link:../transactions
+      '@near-js/types':
+        specifier: workspace:*
+        version: link:../types
+      '@near-js/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@noble/hashes':
+        specifier: 1.3.3
+        version: 1.3.3
+    devDependencies:
+      '@types/node':
+        specifier: 20.0.0
+        version: 20.0.0
+      build:
+        specifier: workspace:*
+        version: link:../build
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+
   packages/cookbook:
     dependencies:
       '@near-js/accounts':
