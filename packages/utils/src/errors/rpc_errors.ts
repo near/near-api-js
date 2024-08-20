@@ -2,7 +2,7 @@ import { TypedError } from '@near-js/types';
 import Mustache from 'mustache';
 
 import { formatNearAmount } from '../format';
-import messages from './error_messages.json';
+import { ErrorMessages } from './errors';
 import schema from './rpc_error_schema.json';
 
 const mustacheHelpers = {
@@ -36,8 +36,8 @@ export function parseResultError(result: any): ServerTransactionError {
 }
 
 export function formatError(errorClassName: string, errorData): string {
-    if (typeof messages[errorClassName] === 'string') {
-        return Mustache.render(messages[errorClassName], {
+    if (typeof ErrorMessages[errorClassName] === 'string') {
+        return Mustache.render(ErrorMessages[errorClassName], {
             ...errorData,
             ...mustacheHelpers
         });

@@ -80,6 +80,8 @@ test('view account details after adding access keys', async() => {
     }];
 
     details.authorizedApps.sort((a, b) => a.contractId < b.contractId);
+    // @ts-expect-error test input
+    authorizedApps.sort((a, b) => a.contractId < b.contractId);
     expect(JSON.stringify(details.authorizedApps)).toEqual(JSON.stringify(authorizedApps));
 });
 

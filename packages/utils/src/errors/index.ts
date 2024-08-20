@@ -1,4 +1,4 @@
-export { logWarning } from './errors';
+export { ErrorMessages } from './errors';
 export {
     ServerError,
     formatError,

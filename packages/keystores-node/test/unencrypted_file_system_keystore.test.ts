@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 import { KeyPairEd25519 } from '@near-js/crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 
 import { UnencryptedFileSystemKeyStore } from '../src';
 import { shouldStoreAndRetriveKeys } from './keystore_common';

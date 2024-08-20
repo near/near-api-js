@@ -11,7 +11,7 @@
 "@near-js/signers": minor
 "@near-js/transactions": minor
 "@near-js/types": major
-"@near-js/utils": minor
+"@near-js/utils": major
 "@near-js/wallet-account": minor
 ---
 

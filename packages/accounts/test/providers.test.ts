@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { KeyPair } from '@near-js/crypto';
-import ERRORS_JSON from '@near-js/utils/lib/errors/error_messages.json';
+import { ErrorMessages } from '@near-js/utils';
 import base58 from 'bs58';
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
@@ -9,6 +9,7 @@ jest.setTimeout(60000);
 
 let provider;
 let near;
+
 
 beforeAll(async () => {
     near = await setUpTestConnection();
@@ -212,7 +213,7 @@ describe('providers errors', () => {
         } catch (e) {
             const errorType = 'MethodNotFound';
             expect(e.type).toEqual(errorType);
-            expect(e.message).toEqual(ERRORS_JSON[errorType]);
+            expect(e.message).toEqual(ErrorMessages[errorType]);
         }
     });
 
@@ -232,7 +233,7 @@ describe('providers errors', () => {
             const errorType = 'CodeDoesNotExist';
             expect(e.type).toEqual(errorType);
             expect(e.message.split(' ').slice(0, 5)).toEqual(
-                ERRORS_JSON[errorType].split(' ').slice(0, 5)
+                ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }
     });
@@ -252,7 +253,7 @@ describe('providers errors', () => {
             const errorType = 'AccountDoesNotExist';
             expect(e.type).toEqual(errorType);
             expect(e.message.split(' ').slice(0, 5)).toEqual(
-                ERRORS_JSON[errorType].split(' ').slice(0, 5)
+                ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }
     });
@@ -274,7 +275,7 @@ describe('providers errors', () => {
             const errorType = 'AccessKeyDoesNotExist';
             expect(e.type).toEqual(errorType);
             expect(e.message.split(' ').slice(0, 5)).toEqual(
-                ERRORS_JSON[errorType].split(' ').slice(0, 5)
+                ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }
     });
