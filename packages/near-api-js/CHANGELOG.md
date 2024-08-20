@@ -1,5 +1,23 @@
 # near-api-js
 
+## 4.0.4
+
+### Patch Changes
+
+- [#1355](https://github.com/near/near-api-js/pull/1355) [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Add Secp256k1 support
+
+- Updated dependencies [[`9c7db11c`](https://github.com/near/near-api-js/commit/9c7db11c3c5c031a749dd72d5140f58056570e36), [`bad95007`](https://github.com/near/near-api-js/commit/bad95007edde4ed9d5989ded7f2032b9f15f5c23), [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41)]:
+  - @near-js/keystores@0.1.0
+  - @near-js/keystores-browser@0.1.0
+  - @near-js/utils@0.3.0
+  - @near-js/crypto@1.3.0
+  - @near-js/accounts@1.2.2
+  - @near-js/signers@0.1.5
+  - @near-js/transactions@1.2.3
+  - @near-js/wallet-account@1.2.3
+  - @near-js/keystores-node@0.0.13
+  - @near-js/providers@0.2.3
+
 ## 4.0.3
 
 ### Patch Changes
