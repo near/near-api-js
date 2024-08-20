@@ -46,10 +46,10 @@ module.exports.shouldStoreAndRetrieveKeys = ctx => {
     });
 
     test('Add two contracts to account and retrieve them', async () => {
-        const networkId = "network"
-        const accountId = "account"
-        const contract1 = "contract1"
-        const contract2 = "contract2"
+        const networkId = 'network';
+        const accountId = 'account';
+        const contract1 = 'contract1';
+        const contract2 = 'contract2';
         const key1Expected = KeyPairEd25519.fromRandom();
         const key2Expected = KeyPairEd25519.fromRandom();
         await ctx.keyStore.setKey(networkId, accountId, key1Expected, contract1);
