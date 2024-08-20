@@ -36,7 +36,6 @@
         "build": "workspace:*",
         "bundlewatch": "0.3.1",
         "concurrently": "7.3.0",
-        "esbuild": "0.23.0",
         "in-publish": "2.0.0",
         "jest": "29.7.0",
         "localstorage-memory": "1.0.3",
@@ -52,34 +51,19 @@
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
     "scripts": {
-        "dist": "pnpm bundle:all",
-        "bundle:all": "pnpm bundle && pnpm bundle:minified",
-        "bundle": "esbuild browser-exports.js --bundle --outfile=dist/near-api-js.js --define:global=window --inject:esbuild.inject.js",
-        "bundle:minified": "esbuild browser-exports.js --bundle --minify --outfile=dist/near-api-js.min.js --define:global=window --inject:esbuild.inject.js",
         "compile:esm": "tsc -p ./tsconfig.json",
         "compile:cjs": "tsc -p ./tsconfig.cjs.json && cjsify ./lib/commonjs",
         "dev": "pnpm compile -w",
-        "build": "pnpm compile:esm && pnpm compile:cjs && pnpm dist",
+        "build": "pnpm compile:esm && pnpm compile:cjs",
         "test": "jest --passWithNoTests",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib",
-        "bundlewatch": "bundlewatch"
-    },
-    "bundlewatch": {
-        "files": [
-            {
-                "path": "dist/near-api-js.min.js",
-                "maxSize": "150kB"
-            }
-        ]
+        "clean": "pnpm rimraf lib"
     },
     "files": [
-        "lib",
-        "dist",
-        "browser-exports.js"
+        "lib"
     ],
     "author": "NEAR Inc",
     "exports": {
