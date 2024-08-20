@@ -1,5 +1,17 @@
 # @near-js/keystores-browser
 
+## 0.1.0
+
+### Minor Changes
+
+- [#1370](https://github.com/near/near-api-js/pull/1370) [`9c7db11c`](https://github.com/near/near-api-js/commit/9c7db11c3c5c031a749dd72d5140f58056570e36) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Add multi_contract_keystore
+
+### Patch Changes
+
+- Updated dependencies [[`9c7db11c`](https://github.com/near/near-api-js/commit/9c7db11c3c5c031a749dd72d5140f58056570e36), [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41)]:
+  - @near-js/keystores@0.1.0
+  - @near-js/crypto@1.3.0
+
 ## 0.0.12
 
 ### Patch Changes
