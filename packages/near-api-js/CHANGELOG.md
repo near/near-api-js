@@ -1,5 +1,26 @@
 # near-api-js
 
+## 5.0.0-next.6
+
+### Major Changes
+
+- [#1353](https://github.com/near/near-api-js/pull/1353) [`73690557`](https://github.com/near/near-api-js/commit/73690557c8e2a74386fca62f4ae123abe0651403) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Update to Node.js 20 LTS & pnpm 9.4, modularize packages, simplify dependencies, and update tests
+
+### Patch Changes
+
+- Updated dependencies [[`73690557`](https://github.com/near/near-api-js/commit/73690557c8e2a74386fca62f4ae123abe0651403)]:
+  - @near-js/accounts@1.3.0-next.6
+  - @near-js/crypto@1.4.0-next.6
+  - @near-js/keystores@0.2.0-next.6
+  - @near-js/keystores-browser@0.2.0-next.6
+  - @near-js/keystores-node@0.1.0-next.6
+  - @near-js/providers@1.0.0-next.6
+  - @near-js/signers@0.2.0-next.6
+  - @near-js/transactions@1.3.0-next.6
+  - @near-js/types@1.0.0-next.6
+  - @near-js/utils@1.0.0-next.6
+  - @near-js/wallet-account@1.3.0-next.6
+
 ## 4.0.4
 
 ### Patch Changes
