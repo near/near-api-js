@@ -1,5 +1,6 @@
 export {
     KeyPair,
+    type KeyPairString,
     KeyPairEd25519,
     KeyType,
     PublicKey,

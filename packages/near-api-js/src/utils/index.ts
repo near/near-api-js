@@ -5,7 +5,7 @@ import * as enums from './enums';
 import * as format from './format';
 import * as rpc_errors from './rpc_errors';
 
-import { PublicKey, KeyPair, KeyPairEd25519 } from './key_pair';
+import { PublicKey, KeyPair, KeyPairString, KeyPairEd25519 } from './key_pair';
 import { Logger } from './logger';
 
 export {
@@ -15,6 +15,7 @@ export {
     format,
     PublicKey,
     KeyPair,
+    KeyPairString,
     KeyPairEd25519,
     rpc_errors,
     Logger
