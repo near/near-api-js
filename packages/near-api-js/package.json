@@ -7,10 +7,9 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "homepage": "https://github.com/near/near-api-js",
-    "main": "lib/esm/index.js",
-    "browser": "lib/commonjs/browser-index.cjs",
-    "types": "lib/esm/index.d.ts",
-    "type": "module",
+    "main": "lib/index.js",
+    "browser": "lib/browser-index.js",
+    "types": "lib/index.d.ts",
     "dependencies": {
         "@near-js/accounts": "workspace:*",
         "@near-js/crypto": "workspace:*",
@@ -23,67 +22,45 @@
         "@near-js/types": "workspace:*",
         "@near-js/utils": "workspace:*",
         "@near-js/wallet-account": "workspace:*",
+        "@noble/curves": "1.2.0",
         "borsh": "1.0.0",
         "depd": "2.0.0",
         "http-errors": "1.7.2",
-        "near-abi": "0.1.1"
+        "near-abi": "0.1.1",
+        "node-fetch": "2.6.7"
     },
     "devDependencies": {
         "@types/http-errors": "1.6.1",
-        "@types/node": "20.0.0",
+        "@types/node": "18.11.18",
         "bs58": "4.0.0",
-        "buffer": "6.0.3",
-        "build": "workspace:*",
-        "bundlewatch": "0.3.1",
         "concurrently": "7.3.0",
-        "esbuild": "0.23.0",
         "in-publish": "2.0.0",
         "jest": "29.7.0",
-        "localstorage-memory": "1.0.3",
         "near-hello": "0.5.1",
         "near-workspaces": "3.5.0",
-        "process": "^0.11.10",
-        "rimraf": "6.0.1",
+        "rimraf": "^6.0.1",
         "semver": "7.1.1",
-        "ts-jest": "29.1.5",
-        "tsconfig": "workspace:*",
-        "util": "^0.12.5"
+        "ts-jest": "29.1.5"
     },
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
     "scripts": {
-        "dist": "pnpm bundle:all",
-        "bundle:all": "pnpm bundle && pnpm bundle:minified",
-        "bundle": "esbuild browser-exports.js --bundle --outfile=dist/near-api-js.js --define:global=window --inject:esbuild.inject.js",
-        "bundle:minified": "esbuild browser-exports.js --bundle --minify --outfile=dist/near-api-js.min.js --define:global=window --inject:esbuild.inject.js",
-        "compile:esm": "tsc -p ./tsconfig.json",
-        "compile:cjs": "tsc -p ./tsconfig.cjs.json && cjsify ./lib/commonjs",
+        "compile": "tsc -p ./tsconfig.json",
         "dev": "pnpm compile -w",
-        "build": "pnpm compile:esm && pnpm compile:cjs && pnpm dist",
-        "test": "jest --passWithNoTests",
+        "build": "pnpm compile",
+        "test": "jest test --passWithNoTests",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
+        "lint:fix": "concurrently \"pnpm:lint:*:fix\"",
+        "lint:src:fix": "eslint --ext .ts --fix src",
+        "lint:test:fix": "eslint --ext .js --fix test",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib",
-        "bundlewatch": "bundlewatch"
-    },
-    "bundlewatch": {
-        "files": [
-            {
-                "path": "dist/near-api-js.min.js",
-                "maxSize": "150kB"
-            }
-        ]
+        "clean": "pnpm rimraf lib"
     },
     "files": [
         "lib",
-        "dist",
-        "browser-exports.js"
+        "dist"
     ],
-    "author": "NEAR Inc",
-    "exports": {
-        "require": "./lib/commonjs/index.cjs",
-        "import": "./lib/esm/index.js"
-    }
+    "author": "NEAR Inc"
 }
