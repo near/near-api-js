@@ -1,5 +1,4 @@
 import { baseEncode, baseDecode } from '@near-js/utils';
-import { Enum } from '@near-js/types';
 import { ed25519 } from '@noble/curves/ed25519';
 import secp256k1 from 'secp256k1';
 
@@ -35,6 +34,24 @@ function resolveEnumKeyName(keyType: KeyType) {
         default: {
             throw Error(`unknown type ${keyType}`);
         }
+    }
+}
+
+/**
+ * DUPLICATED FROM @near-js/types - REPLACE WITH IMPORTED REFERENCE AND DELETE
+ * This ends up being necessary for Wallet Selector dependencies with
+ * outdated peer dependencies and should only be temporary
+ */
+abstract class Enum {
+    abstract enum: string;
+
+    constructor(properties: any) {
+        if (Object.keys(properties).length !== 1) {
+            throw new Error('Enum can only take single value');
+        }
+        Object.keys(properties).map((key: string) => {
+            (this as any)[key] = properties[key];
+        });
     }
 }
 
