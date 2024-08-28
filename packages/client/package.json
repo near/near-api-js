@@ -8,9 +8,8 @@
     "build": "pnpm compile:esm && pnpm compile:cjs",
     "compile:esm": "tsc -p tsconfig.json",
     "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
-    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
-    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-    "test": "jest"
+    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix --no-error-on-unmatched-pattern"
   },
   "dependencies": {
     "@near-js/crypto": "workspace:*",
