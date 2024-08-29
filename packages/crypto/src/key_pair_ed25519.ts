@@ -2,10 +2,9 @@ import { baseEncode, baseDecode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import randombytes from 'randombytes';
 
-import { KeySize, KeyType } from './constants';
+import { KeyPairString, KeySize, KeyType } from './constants';
 import { KeyPairBase, Signature } from './key_pair_base';
 import { PublicKey } from './public_key';
-import { KeyPairString } from './key_pair';
 
 /**
  * This class provides key pair functionality for Ed25519 curve:
