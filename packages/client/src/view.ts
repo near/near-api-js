@@ -9,7 +9,7 @@ import type {
   ViewContractStateParams,
   ViewParams,
 } from './interfaces';
-import { AccessKeyList, AccessKeyView, ViewStateResult } from '@near-js/types';
+import { AccessKeyList, AccessKeyView, ContractCodeView, ViewStateResult } from '@near-js/types';
 
 const DEFAULT_VIEW_BLOCK_REFERENCE = { finality: 'optimistic' };
 
@@ -25,9 +25,17 @@ enum RequestType {
 interface QueryParams extends Dependent<RpcProviderDependency>, RpcProviderQueryParams {
   account: string;
   request: string;
-  args?: any;
+  args?: object;
 }
 
+/**
+ * Make a readonly request to an RPC endpoint targeting a specific account/contract
+ * @param account target account/contract being queried
+ * @param request type of request (e.g. `call_function`)
+ * @param args named arguments passed in the request body
+ * @param blockReference block ID/finality
+ * @param rpcProvider RPC provider instance
+ */
 export function query<T extends QueryResponseKind>({
   account,
   request,
@@ -43,6 +51,14 @@ export function query<T extends QueryResponseKind>({
   });
 }
 
+/**
+ * Call a view method on an account/contract, returning the raw response
+ * @param account target account/contract being queried
+ * @param method name of the method being invoked
+ * @param args named arguments passed in the request body
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
 export function callViewMethod({ account, method, args = {}, blockReference, deps }: ViewParams) {
   return query<CodeResult>({
     request: RequestType.CallFunction,
@@ -56,7 +72,17 @@ export function callViewMethod({ account, method, args = {}, blockReference, dep
   });
 }
 
-export async function view({ account, method, args = {}, blockReference, deps }: ViewParams) {
+/**
+ * Call a view method on an account/contract, parsing the returned data
+ * NB if the data returned is a byte array, this method will convert it
+ *  to string - use `await (viewRaw(...)).result` to get the buffer
+ * @param account target account/contract being queried
+ * @param method name of the method being invoked
+ * @param args named arguments passed in the request body
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
+export async function view({ account, method, args = {}, blockReference, deps }: ViewParams): Promise<string | number | boolean | object> {
   const { result } = await callViewMethod({ account, method, args, blockReference, deps });
   const stringResult = Buffer.from(result).toString();
   try {
@@ -66,6 +92,13 @@ export async function view({ account, method, args = {}, blockReference, deps }:
   }
 }
 
+/**
+ * Get metadata for the specified access key
+ * @param account target account/contract being queried
+ * @param publicKey public key string to be queried
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
 export function getAccessKey({ account, publicKey, blockReference, deps }: ViewAccessKeyParams) {
   return query<AccessKeyView>({
     request: RequestType.ViewAccessKey,
@@ -78,6 +111,12 @@ export function getAccessKey({ account, publicKey, blockReference, deps }: ViewA
   });
 }
 
+/**
+ * Get account metadata (e.g. balance, storage)
+ * @param account target account/contract being queried
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
 export function getAccountState({ account, blockReference, deps }: ViewAccountParams) {
   return query<AccountView>({
     request: RequestType.ViewAccount,
@@ -87,6 +126,12 @@ export function getAccountState({ account, blockReference, deps }: ViewAccountPa
   });
 }
 
+/**
+ * Get list of access keys for the specified account/contract
+ * @param account target account/contract being queried
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
 export function getAccessKeys({ account, blockReference, deps }: ViewAccountParams) {
   return query<AccessKeyList>({
     request: RequestType.ViewAccessKeyList,
@@ -96,8 +141,12 @@ export function getAccessKeys({ account, blockReference, deps }: ViewAccountPara
   });
 }
 
-export function getContractCode({ account, blockReference, deps }: ViewAccountParams) {
-  return query<ViewStateResult>({
+/**
+ * Get the code for the contract deployed to the target account
+ * @param account target account/contract being queried
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
 export async function getContractCode({ account, blockReference, deps }: ViewAccountParams) {
   const { code_base64, hash } = await query<ContractCodeView>({
     request: RequestType.ViewCode,
@@ -109,8 +158,13 @@ export async function getContractCode({ account, blockReference, deps }: ViewAcc
   return { code: Buffer.from(code_base64, 'base64').toString(), code_base64, hash };
 }
 
-export function getContractState({ account, prefix, blockReference, deps }: ViewContractStateParams) {
-  return query<ViewStateResult>({
+/**
+ * Get the state on the contract deployed to the target account in key-value pairs
+ * @param account target account/contract being queried
+ * @param prefix target prefix filter (empty string/buffer returns all keys)
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
 export async function getContractState({ account, prefix, blockReference, deps }: ViewContractStateParams) {
   const { values } = await query<ViewStateResult>({
     request: RequestType.ViewState,
@@ -128,6 +182,13 @@ export async function getContractState({ account, prefix, blockReference, deps }
   }), {});
 }
 
+/**
+ * Get the nonce for the specified access key
+ * @param account target account/contract being queried
+ * @param publicKey public key string to be queried
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
 export async function getNonce({ account, publicKey, blockReference, deps }: ViewAccessKeyParams) {
   const { nonce } = await getAccessKey({
     account,
