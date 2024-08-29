@@ -98,15 +98,21 @@ export function getAccessKeys({ account, blockReference, deps }: ViewAccountPara
 
 export function getContractCode({ account, blockReference, deps }: ViewAccountParams) {
   return query<ViewStateResult>({
+export async function getContractCode({ account, blockReference, deps }: ViewAccountParams) {
+  const { code_base64, hash } = await query<ContractCodeView>({
     request: RequestType.ViewCode,
     account,
     blockReference,
     deps,
   });
+
+  return { code: Buffer.from(code_base64, 'base64').toString(), code_base64, hash };
 }
 
 export function getContractState({ account, prefix, blockReference, deps }: ViewContractStateParams) {
   return query<ViewStateResult>({
+export async function getContractState({ account, prefix, blockReference, deps }: ViewContractStateParams) {
+  const { values } = await query<ViewStateResult>({
     request: RequestType.ViewState,
     account,
     args: {
@@ -115,6 +121,11 @@ export function getContractState({ account, prefix, blockReference, deps }: View
     blockReference,
     deps,
   });
+
+  return values.reduce((state, { key, value }) => ({
+    ...state,
+    [key]: value,
+  }), {});
 }
 
 export async function getNonce({ account, publicKey, blockReference, deps }: ViewAccessKeyParams) {
