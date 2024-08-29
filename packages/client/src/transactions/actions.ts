@@ -1,7 +1,8 @@
-import type { AddFullAccessKeyParams, FunctionCallParams, TransferParams } from '../interfaces';
+import type { ModifyAccessKeyParams, FunctionCallParams, TransferParams } from '../interfaces';
 import { TransactionComposer } from './composer';
 import { signAndSendFromComposer } from './sign_and_send';
 import { AddFunctionCallAccessKeyParams, SignAndSendNonceParams } from '../interfaces';
+import { PublicKey } from '@near-js/crypto';
 
 /**
  * Helper method to compose, sign, and send a transaction from a TransactionComposer instance
@@ -69,7 +70,7 @@ export async function transfer({ sender, receiver, amount, nonce, blockReference
 export async function addFullAccessKey({ account, publicKey, nonce, blockReference, deps }: ModifyAccessKeyParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
-      .addFullAccessKey(publicKey),
+      .addFullAccessKey(PublicKey.from(publicKey)),
     nonce,
     blockReference,
     deps,
@@ -89,7 +90,24 @@ export async function addFullAccessKey({ account, publicKey, nonce, blockReferen
 export async function addFunctionCallAccessKey({ account, publicKey, contract, methodNames, allowance, nonce, blockReference, deps }: AddFunctionCallAccessKeyParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
-      .addFunctionCallAccessKey(publicKey, contract, methodNames, allowance),
+      .addFunctionCallAccessKey(PublicKey.from(publicKey), contract, methodNames, allowance),
+    nonce,
+    blockReference,
+    deps,
+  });
+}
+
+/**
+ * Remove the specified access key from an account
+ * @param account account from which the access key will be removed
+ * @param publicKey public key string of the access key to be removed
+ * @param blockReference block ID/finality
+ * @param deps sign-and-send dependencies
+ */
+export async function deleteAccessKey({ account, publicKey, nonce, blockReference, deps }: ModifyAccessKeyParams) {
+  return getComposerResult({
+    composer: TransactionComposer.init({ sender: account, receiver: account })
+      .deleteKey(PublicKey.from(publicKey)),
     nonce,
     blockReference,
     deps,

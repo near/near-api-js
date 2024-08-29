@@ -16,7 +16,7 @@ export interface ExternalActionTransaction extends SignAndSendNonceParams {
   sender: string;
 }
 
-export interface SelfActionTransaction extends SignAndSendNonceParams {
+export interface ReflexiveActionTransaction extends SignAndSendNonceParams {
   account: string;
 }
 
@@ -39,11 +39,11 @@ export interface TransferParams extends ExternalActionTransaction {
   amount: bigint;
 }
 
-interface AddAccessKeyParams extends SelfActionTransaction {
-  publicKey: PublicKey;
+interface AddAccessKeyParams extends ReflexiveActionTransaction {
+  publicKey: string;
 }
 
-export interface AddFullAccessKeyParams extends AddAccessKeyParams {}
+export interface ModifyAccessKeyParams extends AddAccessKeyParams {}
 
 export interface AddFunctionCallAccessKeyParams extends AddAccessKeyParams {
   contract: string;
