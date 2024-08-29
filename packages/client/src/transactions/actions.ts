@@ -1,8 +1,9 @@
+import { PublicKey } from '@near-js/crypto';
+
 import type { ModifyAccessKeyParams, FunctionCallParams, TransferParams } from '../interfaces';
 import { TransactionComposer } from './composer';
 import { signAndSendFromComposer } from './sign_and_send';
-import { AddFunctionCallAccessKeyParams, SignAndSendNonceParams } from '../interfaces';
-import { PublicKey } from '@near-js/crypto';
+import { AddFunctionCallAccessKeyParams, SignAndSendParams } from '../interfaces';
 
 /**
  * Helper method to compose, sign, and send a transaction from a TransactionComposer instance
@@ -10,10 +11,9 @@ import { PublicKey } from '@near-js/crypto';
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-async function getComposerResult({ composer, nonce, blockReference, deps }: { composer: TransactionComposer } & SignAndSendNonceParams) {
+async function getComposerResult({ composer, blockReference, deps }: { composer: TransactionComposer } & SignAndSendParams) {
   const { result } = await signAndSendFromComposer({
     composer,
-    nonce,
     blockReference,
     deps,
   });
@@ -32,11 +32,10 @@ async function getComposerResult({ composer, nonce, blockReference, deps }: { co
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function functionCall({ sender, receiver, method, args, gas, deposit, nonce, blockReference, deps }: FunctionCallParams) {
+export async function functionCall({ sender, receiver, method, args, gas, deposit, blockReference, deps }: FunctionCallParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender, receiver })
       .functionCall(method, args, gas, deposit),
-    nonce,
     blockReference,
     deps,
   });
@@ -50,11 +49,10 @@ export async function functionCall({ sender, receiver, method, args, gas, deposi
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function transfer({ sender, receiver, amount, nonce, blockReference, deps }: TransferParams) {
+export async function transfer({ sender, receiver, amount, blockReference, deps }: TransferParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender, receiver })
       .transfer(amount),
-    nonce,
     blockReference,
     deps,
   });
@@ -67,11 +65,10 @@ export async function transfer({ sender, receiver, amount, nonce, blockReference
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function addFullAccessKey({ account, publicKey, nonce, blockReference, deps }: ModifyAccessKeyParams) {
+export async function addFullAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .addFullAccessKey(PublicKey.from(publicKey)),
-    nonce,
     blockReference,
     deps,
   });
@@ -87,11 +84,10 @@ export async function addFullAccessKey({ account, publicKey, nonce, blockReferen
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function addFunctionCallAccessKey({ account, publicKey, contract, methodNames, allowance, nonce, blockReference, deps }: AddFunctionCallAccessKeyParams) {
+export async function addFunctionCallAccessKey({ account, publicKey, contract, methodNames, allowance, blockReference, deps }: AddFunctionCallAccessKeyParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .addFunctionCallAccessKey(PublicKey.from(publicKey), contract, methodNames, allowance),
-    nonce,
     blockReference,
     deps,
   });
@@ -104,11 +100,10 @@ export async function addFunctionCallAccessKey({ account, publicKey, contract, m
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function deleteAccessKey({ account, publicKey, nonce, blockReference, deps }: ModifyAccessKeyParams) {
+export async function deleteAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .deleteKey(PublicKey.from(publicKey)),
-    nonce,
     blockReference,
     deps,
   });

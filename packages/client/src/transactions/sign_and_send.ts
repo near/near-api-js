@@ -42,18 +42,14 @@ export async function getSignerNonce({ account, blockReference, deps: { rpcProvi
 }
 
 // this might be more natural as a method on TransactionComposer but would be a major increase in scope
-export async function signAndSendFromComposer({ composer, nonce, blockReference, deps }: SignAndSendComposerParams) {
+export async function signAndSendFromComposer({ composer, blockReference, deps }: SignAndSendComposerParams) {
   const { rpcProvider, signer } = deps;
   const block = await getBlock({ blockReference, deps: { rpcProvider } });
 
-  let signerNonce = nonce;
-  if (!signerNonce) {
-    signerNonce = await getSignerNonce({ account: composer.sender, blockReference, deps });
-    signerNonce += 1n;
-  }
+  const signerNonce = await getSignerNonce({ account: composer.sender, blockReference, deps });
 
   const transaction = composer.toTransaction({
-    nonce: signerNonce,
+    nonce: signerNonce + 1n,
     publicKey: await signer.getPublicKey(),
     blockHeader: block?.header,
   });

@@ -3,24 +3,21 @@ import type { Transaction } from '@near-js/transactions';
 import type { TransactionComposer } from '../transactions';
 import type { Dependent, RpcProviderDependency, SignerDependency } from './dependencies';
 import type { RpcProviderQueryParams } from './view';
-import { PublicKey } from '@near-js/crypto';
 
 export interface SignAndSendTransactionDependency extends Dependent<RpcProviderDependency & SignerDependency> {}
 
-export interface SignAndSendNonceParams extends SignAndSendTransactionDependency, RpcProviderQueryParams {
-  nonce?: bigint;
-}
+export interface SignAndSendParams extends SignAndSendTransactionDependency, RpcProviderQueryParams {}
 
-export interface ExternalActionTransaction extends SignAndSendNonceParams {
+export interface ExternalActionTransaction extends SignAndSendParams {
   receiver: string;
   sender: string;
 }
 
-export interface ReflexiveActionTransaction extends SignAndSendNonceParams {
+export interface ReflexiveActionTransaction extends SignAndSendParams {
   account: string;
 }
 
-export interface SignAndSendComposerParams extends SignAndSendNonceParams, RpcProviderQueryParams {
+export interface SignAndSendComposerParams extends SignAndSendParams, RpcProviderQueryParams {
   composer: TransactionComposer;
 }
 
