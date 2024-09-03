@@ -36,6 +36,14 @@ export interface TransferParams extends ExternalActionTransaction {
   amount: bigint;
 }
 
+export interface DeleteAccountParams extends ReflexiveActionTransaction {
+  beneficiaryId: string;
+}
+
+export interface DeployContractParams extends ReflexiveActionTransaction {
+  code: Uint8Array
+}
+
 interface AddAccessKeyParams extends ReflexiveActionTransaction {
   publicKey: string;
 }

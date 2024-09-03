@@ -1,9 +1,7 @@
-import { PublicKey } from '@near-js/crypto';
-
-import type { ModifyAccessKeyParams, FunctionCallParams, TransferParams } from '../interfaces';
+import type { ModifyAccessKeyParams, FunctionCallParams, TransferParams, DeleteAccountParams } from '../interfaces';
 import { TransactionComposer } from './composer';
 import { signAndSendFromComposer } from './sign_and_send';
-import { AddFunctionCallAccessKeyParams, SignAndSendParams } from '../interfaces';
+import { AddFunctionCallAccessKeyParams, DeployContractParams, SignAndSendParams } from '../interfaces';
 
 /**
  * Helper method to compose, sign, and send a transaction from a TransactionComposer instance
@@ -104,7 +102,38 @@ export async function deleteAccessKey({ account, publicKey, blockReference, deps
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .deleteKey(publicKey),
+    blockReference,
+    deps,
   });
+}
+
+/**
+ * Delete an account; account funds will be transferred to the designated beneficiary
+ * @param account account from which the access key will be removed
+ * @param publicKey public key string of the access key to be removed
+ * @param blockReference block ID/finality
+ * @param deps sign-and-send dependencies
+ */
+export async function deleteAccount({ account, beneficiaryId, blockReference, deps }: DeleteAccountParams) {
+  return getComposerResult({
+    composer: TransactionComposer.init({ sender: account, receiver: account })
+      .deleteAccount(beneficiaryId),
+    blockReference,
+    deps,
+  });
+}
+
+/**
+ * Deploy contract code to an account
+ * @param account account to which the contract code will be deployed
+ * @param code WASM code as byte array
+ * @param blockReference block ID/finality
+ * @param deps sign-and-send dependencies
+ */
+export async function deployContract({ account, code, blockReference, deps }: DeployContractParams) {
+  return getComposerResult({
+    composer: TransactionComposer.init({ sender: account, receiver: account })
+      .deployContract(code),
     blockReference,
     deps,
   });
