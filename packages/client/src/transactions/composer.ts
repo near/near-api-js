@@ -68,14 +68,14 @@ export class TransactionComposer {
     });
   }
 
-  addFullAccessKey(publicKey: PublicKey) {
-    this.actions.push(actionCreators.addKey(publicKey, actionCreators.fullAccessKey()));
+  addFullAccessKey(publicKey: string) {
+    this.actions.push(actionCreators.addKey(PublicKey.from(publicKey), actionCreators.fullAccessKey()));
     return this;
   }
 
-  addFunctionCallAccessKey(publicKey: PublicKey, contractId: string, methodNames: string[], allowance?: bigint) {
+  addFunctionCallAccessKey(publicKey: string, contractId: string, methodNames: string[], allowance?: bigint) {
     const accessKey = actionCreators.functionCallAccessKey(contractId, methodNames, allowance)
-    this.actions.push(actionCreators.addKey(publicKey, accessKey));
+    this.actions.push(actionCreators.addKey(PublicKey.from(publicKey), accessKey));
     return this;
   }
     
@@ -89,8 +89,8 @@ export class TransactionComposer {
     return this;
   }
     
-  deleteKey(publicKey: PublicKey) {
-    this.actions.push(actionCreators.deleteKey(publicKey));
+  deleteKey(publicKey: string) {
+    this.actions.push(actionCreators.deleteKey(PublicKey.from(publicKey)));
     return this;
   }
     
@@ -109,8 +109,8 @@ export class TransactionComposer {
     return this;
   }
     
-  stake(stake: bigint, publicKey: PublicKey) {
-    this.actions.push(actionCreators.stake(stake, publicKey));
+  stake(stake: bigint, publicKey: string) {
+    this.actions.push(actionCreators.stake(stake, PublicKey.from(publicKey)));
     return this;
   }
     

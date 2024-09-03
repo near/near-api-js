@@ -68,7 +68,7 @@ export async function transfer({ sender, receiver, amount, blockReference, deps 
 export async function addFullAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
-      .addFullAccessKey(PublicKey.from(publicKey)),
+      .addFullAccessKey(publicKey),
     blockReference,
     deps,
   });
@@ -87,7 +87,7 @@ export async function addFullAccessKey({ account, publicKey, blockReference, dep
 export async function addFunctionCallAccessKey({ account, publicKey, contract, methodNames, allowance, blockReference, deps }: AddFunctionCallAccessKeyParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
-      .addFunctionCallAccessKey(PublicKey.from(publicKey), contract, methodNames, allowance),
+      .addFunctionCallAccessKey(publicKey, contract, methodNames, allowance),
     blockReference,
     deps,
   });
@@ -103,7 +103,8 @@ export async function addFunctionCallAccessKey({ account, publicKey, contract, m
 export async function deleteAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
   return getComposerResult({
     composer: TransactionComposer.init({ sender: account, receiver: account })
-      .deleteKey(PublicKey.from(publicKey)),
+      .deleteKey(publicKey),
+  });
     blockReference,
     deps,
   });
