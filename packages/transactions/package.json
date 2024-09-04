@@ -2,15 +2,15 @@
   "name": "@near-js/transactions",
   "version": "1.2.3",
   "description": "Functions and data types for transactions on NEAR",
-  "main": "lib/index.js",
+  "main": "lib/esm/index.js",
+  "type": "module",
   "scripts": {
-    "build": "pnpm compile",
-    "compile": "tsc -p tsconfig.json",
-    "lint:js": "eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc",
-    "lint:js:fix": "eslint -c ../../.eslintrc.js.yml test/**/*.js --no-eslintrc --fix",
-    "lint:ts": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
-    "lint:ts:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc --fix",
-    "test": "jest test"
+    "build": "pnpm compile:esm && pnpm compile:cjs",
+    "compile:esm": "tsc -p tsconfig.json",
+    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
+    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
+    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -20,17 +20,24 @@
     "@near-js/signers": "workspace:*",
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
-    "borsh": "1.0.0",
-    "@noble/hashes": "1.3.3"
+    "@noble/hashes": "1.3.3",
+    "borsh": "1.0.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@near-js/keystores": "workspace:*",
-    "@types/node": "18.11.18",
-    "jest": "26.0.1",
-    "ts-jest": "26.5.6",
-    "typescript": "4.9.4"
+    "@types/node": "20.0.0",
+    "build": "workspace:*",
+    "jest": "29.7.0",
+    "ts-jest": "29.1.5",
+    "tsconfig": "workspace:*",
+    "typescript": "5.4.5"
   },
   "files": [
     "lib"
-  ]
+  ],
+  "exports": {
+    "require": "./lib/commonjs/index.cjs",
+    "import": "./lib/esm/index.js"
+  }
 }

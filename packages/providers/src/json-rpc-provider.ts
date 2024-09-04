@@ -41,7 +41,7 @@ import {
 
 import { exponentialBackoff } from './exponential-backoff';
 import { Provider } from './provider';
-import { ConnectionInfo, fetchJson } from './fetch_json';
+import { ConnectionInfo, fetchJsonRpc } from './fetch_json';
 import { TxExecutionStatus } from '@near-js/types';
 
 /** @hidden */
@@ -386,7 +386,7 @@ export class JsonRpcProvider extends Provider {
                     id: (_nextId++),
                     jsonrpc: '2.0'
                 };
-                const response = await fetchJson(this.connection, JSON.stringify(request));
+                const response = await fetchJsonRpc(this.connection.url, request, this.connection.headers);
                 if (response.error) {
                     if (typeof response.error.data === 'object') {
                         if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {

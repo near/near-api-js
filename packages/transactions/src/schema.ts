@@ -1,5 +1,4 @@
 import { PublicKey } from '@near-js/crypto';
-import { Assignable } from '@near-js/types';
 import { deserialize, serialize, Schema } from 'borsh';
 
 import {
@@ -32,10 +31,10 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
 }
 
 /**
-* Borsh-encode a transaction or signed transaction into a serialized form.
-* @param transaction The transaction or signed transaction object to be encoded.
-* @returns A serialized representation of the input transaction.
-*/
+ * Borsh-encode a transaction or signed transaction into a serialized form.
+ * @param transaction The transaction or signed transaction object to be encoded.
+ * @returns A serialized representation of the input transaction.
+ */
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
     const schema: Schema = transaction instanceof SignedTransaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
     return serialize(schema, transaction);
@@ -46,7 +45,7 @@ export function encodeTransaction(transaction: Transaction | SignedTransaction) 
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeTransaction(bytes: Uint8Array) {
-    return new Transaction(deserialize(SCHEMA.Transaction, bytes));
+    return new Transaction(deserialize(SCHEMA.Transaction, bytes) as Transaction);
 }
 
 /**
@@ -54,16 +53,34 @@ export function decodeTransaction(bytes: Uint8Array) {
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeSignedTransaction(bytes: Uint8Array) {
-    return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes));
+    return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes) as SignedTransaction);
 }
 
-export class Transaction extends Assignable {
+export class Transaction {
     signerId: string;
     publicKey: PublicKey;
     nonce: bigint;
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
+
+    constructor({ signerId, publicKey, nonce, receiverId, actions, blockHash }:
+    {
+      signerId: string,
+      publicKey: PublicKey,
+      nonce: bigint,
+      receiverId: string,
+      actions: Action[],
+      blockHash: Uint8Array,
+    }
+    ) {
+        this.signerId = signerId;
+        this.publicKey = publicKey;
+        this.nonce = nonce;
+        this.receiverId = receiverId;
+        this.actions = actions;
+        this.blockHash = blockHash;
+    }
 
     encode(): Uint8Array {
         return encodeTransaction(this);
@@ -74,11 +91,16 @@ export class Transaction extends Assignable {
     }
 }
 
-export class SignedTransaction extends Assignable {
+export class SignedTransaction {
     transaction: Transaction;
     signature: Signature;
 
-    encode(): Uint8Array{
+    constructor({ transaction, signature }: { transaction: Transaction, signature: Signature}) {
+        this.transaction = transaction;
+        this.signature = signature;
+    }
+
+    encode(): Uint8Array {
         return encodeTransaction(this);
     }
 

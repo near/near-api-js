@@ -1,5 +1,4 @@
 import { PublicKey } from '@near-js/crypto';
-import { Assignable } from '@near-js/types';
 
 import { actionCreators } from './action_creators';
 import { Action } from './actions';
@@ -15,13 +14,31 @@ const {
     transfer,
 } = actionCreators;
 
-export class DelegateAction extends Assignable {
+export class DelegateAction {
     senderId: string;
     receiverId: string;
     actions: Array<Action>;
     nonce: bigint;
     maxBlockHeight: bigint;
     publicKey: PublicKey;
+
+    constructor({ senderId, receiverId, actions, nonce, maxBlockHeight, publicKey }:
+      {
+          senderId: string,
+          receiverId: string,
+          actions: Action[],
+          nonce: bigint,
+          maxBlockHeight: bigint,
+          publicKey: PublicKey,
+      }
+    ) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.actions = actions;
+        this.nonce = nonce;
+        this.maxBlockHeight = maxBlockHeight;
+        this.publicKey = publicKey;
+    }
 }
 
 /**

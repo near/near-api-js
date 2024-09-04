@@ -1,9 +1,8 @@
 {
-    "extends": "../../tsconfig.node.json",
+    "extends": "tsconfig/esm.json",
     "compilerOptions": {
-        "preserveSymlinks": false,
-        "outDir": "./lib",
-        "lib": ["es2021", "DOM"]
+        "outDir": "./lib/esm",
+        "lib": ["es2022", "dom"]
     },
     "files": [
         "src/index.ts"
