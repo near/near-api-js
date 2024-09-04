@@ -1,5 +1,40 @@
 # @near-js/accounts
 
+## 1.3.0
+
+### Minor Changes
+
+- [#1353](https://github.com/near/near-api-js/pull/1353) [`73690557`](https://github.com/near/near-api-js/commit/73690557c8e2a74386fca62f4ae123abe0651403) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Update to Node.js 20 LTS & pnpm 9.4, modularize packages, simplify dependencies, and update tests
+
+  **Breaking Changes**
+
+  - `near-api-js@5.0.0`
+
+    - The following functions are no longer exported:
+      - `logWarning`
+      - `fetchJson`
+      - the unnamed wrapped `fetch` function exported from `setup-node-fetch.ts`
+    - The browser bundle is no longer being built in version 5; for browser support please use modules
+
+  - `@near-js/providers@1.0.0`
+
+    - The following functions are no longer exported:
+      - `fetchJson`
+
+  - `@near-js/utils@1.0.0`
+    - The following functions are no longer exported:
+      - `logWarning`
+
+### Patch Changes
+
+- Updated dependencies [[`73690557`](https://github.com/near/near-api-js/commit/73690557c8e2a74386fca62f4ae123abe0651403)]:
+  - @near-js/crypto@1.4.0
+  - @near-js/providers@1.0.0
+  - @near-js/signers@0.2.0
+  - @near-js/transactions@1.3.0
+  - @near-js/types@0.3.0
+  - @near-js/utils@1.0.0
+
 ## 1.2.2
 
 ### Patch Changes
