@@ -4,28 +4,11 @@ import type {
   DeployContractParams,
   FunctionCallParams,
   ModifyAccessKeyParams,
-  SignAndSendParams,
   StakeParams,
   TransferParams,
 } from '../interfaces';
 import { TransactionComposer } from './composer';
 import { signAndSendFromComposer } from './sign_and_send';
-
-/**
- * Helper method to compose, sign, and send a transaction from a TransactionComposer instance
- * @param composer TransactionComposer instance with (at minimum) sender, receiver, and actions set
- * @param blockReference block ID/finality
- * @param deps sign-and-send dependencies
- */
-async function getComposerResult({ composer, blockReference, deps }: { composer: TransactionComposer } & SignAndSendParams) {
-  const { result } = await signAndSendFromComposer({
-    composer,
-    blockReference,
-    deps,
-  });
-
-  return result;
-}
 
 /**
  * Make a function call against a contract
@@ -39,7 +22,7 @@ async function getComposerResult({ composer, blockReference, deps }: { composer:
  * @param deps sign-and-send dependencies
  */
 export async function functionCall({ sender, receiver, method, args, gas, deposit, blockReference, deps }: FunctionCallParams) {
-  return getComposerResult({
+  return signAndSendFromComposer({
     composer: TransactionComposer.init({ sender, receiver })
       .functionCall(method, args, gas, deposit),
     blockReference,
@@ -56,7 +39,7 @@ export async function functionCall({ sender, receiver, method, args, gas, deposi
  * @param deps sign-and-send dependencies
  */
 export async function transfer({ sender, receiver, amount, blockReference, deps }: TransferParams) {
-  return getComposerResult({
+  return signAndSendFromComposer({
     composer: TransactionComposer.init({ sender, receiver })
       .transfer(amount),
     blockReference,
@@ -73,7 +56,7 @@ export async function transfer({ sender, receiver, amount, blockReference, deps 
  * @param deps sign-and-send dependencies
  */
 export async function stake({ account, amount, publicKey, blockReference, deps }: StakeParams) {
-  return getComposerResult({
+  return signAndSendFromComposer({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .stake(amount, publicKey),
     blockReference,
@@ -89,7 +72,7 @@ export async function stake({ account, amount, publicKey, blockReference, deps }
  * @param deps sign-and-send dependencies
  */
 export async function addFullAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
-  return getComposerResult({
+  return signAndSendFromComposer({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .addFullAccessKey(publicKey),
     blockReference,
@@ -108,7 +91,7 @@ export async function addFullAccessKey({ account, publicKey, blockReference, dep
  * @param deps sign-and-send dependencies
  */
 export async function addFunctionCallAccessKey({ account, publicKey, contract, methodNames, allowance, blockReference, deps }: AddFunctionCallAccessKeyParams) {
-  return getComposerResult({
+  return signAndSendFromComposer({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .addFunctionCallAccessKey(publicKey, contract, methodNames, allowance),
     blockReference,
@@ -124,7 +107,7 @@ export async function addFunctionCallAccessKey({ account, publicKey, contract, m
  * @param deps sign-and-send dependencies
  */
 export async function deleteAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
-  return getComposerResult({
+  return signAndSendFromComposer({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .deleteKey(publicKey),
     blockReference,
@@ -140,7 +123,7 @@ export async function deleteAccessKey({ account, publicKey, blockReference, deps
  * @param deps sign-and-send dependencies
  */
 export async function deleteAccount({ account, beneficiaryId, blockReference, deps }: DeleteAccountParams) {
-  return getComposerResult({
+  return signAndSendFromComposer({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .deleteAccount(beneficiaryId),
     blockReference,
@@ -156,7 +139,7 @@ export async function deleteAccount({ account, beneficiaryId, blockReference, de
  * @param deps sign-and-send dependencies
  */
 export async function deployContract({ account, code, blockReference, deps }: DeployContractParams) {
-  return getComposerResult({
+  return signAndSendFromComposer({
     composer: TransactionComposer.init({ sender: account, receiver: account })
       .deployContract(code),
     blockReference,
