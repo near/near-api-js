@@ -1,7 +1,15 @@
-import type { ModifyAccessKeyParams, FunctionCallParams, TransferParams, DeleteAccountParams } from '../interfaces';
+import type {
+  AddFunctionCallAccessKeyParams,
+  DeleteAccountParams,
+  DeployContractParams,
+  FunctionCallParams,
+  ModifyAccessKeyParams,
+  SignAndSendParams,
+  StakeParams,
+  TransferParams,
+} from '../interfaces';
 import { TransactionComposer } from './composer';
 import { signAndSendFromComposer } from './sign_and_send';
-import { AddFunctionCallAccessKeyParams, DeployContractParams, SignAndSendParams } from '../interfaces';
 
 /**
  * Helper method to compose, sign, and send a transaction from a TransactionComposer instance
@@ -51,6 +59,23 @@ export async function transfer({ sender, receiver, amount, blockReference, deps 
   return getComposerResult({
     composer: TransactionComposer.init({ sender, receiver })
       .transfer(amount),
+    blockReference,
+    deps,
+  });
+}
+
+/**
+ * Stake Near with the specified validator
+ * @param account account staking Near
+ * @param amount Near to stake in yN
+ * @param publicKey public key for the target validator
+ * @param blockReference block ID/finality
+ * @param deps sign-and-send dependencies
+ */
+export async function stake({ account, amount, publicKey, blockReference, deps }: StakeParams) {
+  return getComposerResult({
+    composer: TransactionComposer.init({ sender: account, receiver: account })
+      .stake(amount, publicKey),
     blockReference,
     deps,
   });
