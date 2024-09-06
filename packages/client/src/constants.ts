@@ -13,3 +13,5 @@ export const PAGODA_RPC_ENDPOINTS_TESTNET = [
   'https://rpc.testnet.near.org',
   'https://rpc.testnet.pagoda.co',
 ];
+
+export const KITWALLET_FUNDED_TESTNET_ACCOUNT_ENDPOINT = 'https://testnet.kitwallet.api/create';

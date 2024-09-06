@@ -61,17 +61,20 @@ export interface AddFunctionCallAccessKeyParams extends AddAccessKeyParams {
   allowance?: bigint;
 }
 
-export interface CreateAccountParams extends SignAndSendParams {
-  account: string;
-  initialBalance: bigint;
+export interface SignTransactionParams extends Dependent<SignerDependency> {
+  transaction: Transaction;
+}
+
+export interface NewAccountParams {
   newAccount: string;
   newPublicKey: string;
 }
 
-export interface CreateTopLevelAccountParams extends CreateAccountParams {
-  contract: string
+export interface CreateAccountParams extends SignAndSendParams, NewAccountParams {
+  account: string;
+  initialBalance: bigint;
 }
 
-export interface SignTransactionParams extends Dependent<SignerDependency> {
-  transaction: Transaction;
+export interface CreateTopLevelAccountParams extends CreateAccountParams {
+  contract: string
 }

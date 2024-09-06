@@ -20,7 +20,8 @@
     "@near-js/transactions": "workspace:*",
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
-    "@noble/hashes": "1.3.3"
+    "@noble/hashes": "1.3.3",
+    "isomorphic-unfetch": "4.0.2"
   },
   "keywords": [],
   "author": "",
