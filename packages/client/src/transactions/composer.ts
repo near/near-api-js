@@ -74,7 +74,7 @@ export class TransactionComposer {
   }
 
   addFunctionCallAccessKey(publicKey: string, contractId: string, methodNames: string[], allowance?: bigint) {
-    const accessKey = actionCreators.functionCallAccessKey(contractId, methodNames, allowance)
+    const accessKey = actionCreators.functionCallAccessKey(contractId, methodNames, allowance);
     this.actions.push(actionCreators.addKey(PublicKey.from(publicKey), accessKey));
     return this;
   }
