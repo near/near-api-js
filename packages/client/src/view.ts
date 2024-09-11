@@ -1,4 +1,12 @@
-import type { AccountView, CodeResult, QueryResponseKind } from '@near-js/types';
+import type {
+  AccessKeyList,
+  AccessKeyView,
+  AccountView,
+  CodeResult,
+  ContractCodeView,
+  QueryResponseKind,
+  ViewStateResult,
+} from '@near-js/types';
 
 import type {
   Dependent,
@@ -9,7 +17,6 @@ import type {
   ViewContractStateParams,
   ViewParams,
 } from './interfaces';
-import { AccessKeyList, AccessKeyView, ContractCodeView, ViewStateResult } from '@near-js/types';
 
 const DEFAULT_VIEW_BLOCK_REFERENCE = { finality: 'optimistic' };
 
@@ -164,6 +171,7 @@ export async function getContractCode({ account, blockReference, deps }: ViewAcc
  * @param prefix target prefix filter (empty string/buffer returns all keys)
  * @param blockReference block ID/finality
  * @param deps readonly RPC dependencies
+ * @returns object key-value pairs
  */
 export async function getContractState({ account, prefix, blockReference, deps }: ViewContractStateParams) {
   const { values } = await query<ViewStateResult>({
