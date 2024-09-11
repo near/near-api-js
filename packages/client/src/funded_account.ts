@@ -1,5 +1,5 @@
 import type { FinalExecutionOutcome } from '@near-js/types';
-import unfetch from 'isomorphic-unfetch';
+import fetch from 'isomorphic-fetch';
 
 import { KITWALLET_FUNDED_TESTNET_ACCOUNT_ENDPOINT } from './constants';
 import { NewAccountParams } from './interfaces';
@@ -20,7 +20,7 @@ export async function createFundedTestnetAccount({
   newPublicKey,
   endpointUrl = KITWALLET_FUNDED_TESTNET_ACCOUNT_ENDPOINT,
 }: CreateFundedTestnetAccountParams) {
-  const res = await unfetch(endpointUrl, {
+  const res = await fetch(endpointUrl, {
     method: 'POST',
     body: JSON.stringify({
       newAccountId: newAccount,

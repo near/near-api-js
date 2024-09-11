@@ -8,8 +8,8 @@
     "build": "pnpm compile:esm && pnpm compile:cjs",
     "compile:esm": "tsc -p tsconfig.json",
     "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
-    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern",
-    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix --no-error-on-unmatched-pattern"
+    "lint": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern --fix"
   },
   "dependencies": {
     "@near-js/crypto": "workspace:*",
@@ -21,7 +21,7 @@
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "@noble/hashes": "1.3.3",
-    "isomorphic-unfetch": "4.0.2"
+    "isomorphic-fetch": "3.0.0"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/node": "20.0.0",
     "build": "workspace:*",
+    "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
   "files": [
