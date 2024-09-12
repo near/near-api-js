@@ -111,7 +111,7 @@ export function getAccessKey({ account, publicKey, blockReference, deps }: ViewA
     request: RequestType.ViewAccessKey,
     account,
     args: {
-      publicKey,
+      public_key: publicKey,
     },
     blockReference,
     deps,
@@ -205,5 +205,5 @@ export async function getNonce({ account, publicKey, blockReference, deps }: Vie
     deps,
   });
 
-  return nonce;
+  return BigInt(nonce);
 }

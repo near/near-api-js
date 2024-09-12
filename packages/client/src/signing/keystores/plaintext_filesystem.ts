@@ -6,7 +6,13 @@ import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 
 import { getSignerFromKeystore } from '../signers';
 
-export function getPlaintextFilesystemSigner(account: string, network: string, filepath: string) {
+interface PlaintextFilesystemSigner {
+  account: string;
+  network: string;
+  filepath: string;
+}
+
+export function getPlaintextFilesystemSigner({ account, network, filepath }: PlaintextFilesystemSigner) {
   const keystore = new UnencryptedFileSystemKeyStore(filepath);
   return {
     keystore,

@@ -6,6 +6,9 @@ import type { SignTransactionParams, SignAndSendTransactionParams } from '../int
 import { getBlock } from '../providers';
 import { getNonce } from '../view';
 import { SignAndSendComposerParams } from '../interfaces';
+import { BlockReference } from '@near-js/types';
+
+const DEFAULT_FINALITY: BlockReference = { finality: 'final' };
 
 export async function signTransaction({ transaction, deps: { signer } }: SignTransactionParams) {
   const encodedTx = transaction.encode();
@@ -32,7 +35,7 @@ export async function signAndSendTransaction({ transaction, deps: { rpcProvider,
   };
 }
 
-export async function getSignerNonce({ account, blockReference, deps: { rpcProvider, signer } }) {
+export async function getSignerNonce({ account, blockReference = DEFAULT_FINALITY, deps: { rpcProvider, signer } }) {
   return getNonce({
     account,
     publicKey: (await signer.getPublicKey()).toString(),
@@ -42,7 +45,7 @@ export async function getSignerNonce({ account, blockReference, deps: { rpcProvi
 }
 
 // this might be more natural as a method on TransactionComposer but would be a major increase in scope
-export async function signAndSendFromComposer({ composer, blockReference, deps }: SignAndSendComposerParams) {
+export async function signAndSendFromComposer({ composer, blockReference = DEFAULT_FINALITY, deps }: SignAndSendComposerParams) {
   const { rpcProvider, signer } = deps;
   const block = await getBlock({ blockReference, deps: { rpcProvider } });
 
