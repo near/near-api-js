@@ -3,17 +3,37 @@
   "private": true,
   "version": "1.0.22",
   "description": "",
-  "main": "main.js",
+  "main": "src/index.ts",
+  "type": "module",
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "scripts": {
+    "build": "pnpm compile:esm && pnpm compile:cjs",
+    "compile:esm": "tsc -p tsconfig.json",
+    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
+    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
+    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
+    "addFullAccessKey": "tsx -e \"import f from './accounts/access-keys/create-full-access-key.ts'; f(...process.argv.slice(1));\"",
+    "addFunctionCallAccessKey": "tsx -e \"import f from './accounts/access-keys/create-function-access-key.ts'; f(...process.argv.slice(1));\"",
+    "calculateGas": "tsx -e \"import f from './utils/calculate-gas.ts'; f(...process.argv.slice(1));\"",
+    "createFundedTestnetAccount": "tsx -e \"import f from './accounts/create-funded-testnet-account.ts'; f(...process.argv.slice(1));\"",
+    "createMainnetAccount": "tsx -e \"import f from './accounts/create-mainnet-account.ts'; f(...process.argv.slice(1));\"",
+    "createTestnetAccount": "tsx -e \"import f from './accounts/create-testnet-account.ts'; f(...process.argv.slice(1));\"",
+    "deleteAccessKey": "tsx -e \"import f from './accounts/access-keys/delete-access-key.ts'; f(...process.argv.slice(1));\""
+  },
+  "devDependencies": {
     "@near-js/accounts": "workspace:*",
+    "@near-js/client": "workspace:*",
+    "@near-js/crypto": "workspace:*",
     "@near-js/keystores-node": "workspace:*",
     "@near-js/providers": "workspace:*",
     "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",
+    "build": "workspace:*",
     "chalk": "4.1.1",
     "homedir": "0.6.0",
-    "near-api-js": "workspace:*"
+    "ts-node": "^10.9.2",
+    "tsconfig": "workspace:*",
+    "typescript": "5.4.5"
   }
 }
