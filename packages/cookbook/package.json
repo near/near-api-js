@@ -8,9 +8,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "build": "pnpm compile:esm && pnpm compile:cjs",
-    "compile:esm": "tsc -p tsconfig.json",
-    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
+    "build": "tsc -p tsconfig.json",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc",
     "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --no-eslintrc --fix",
     "addFullAccessKey": "tsx -e \"import f from './accounts/access-keys/create-full-access-key.ts'; f(...process.argv.slice(1));\"",
