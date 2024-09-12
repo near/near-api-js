@@ -14,10 +14,14 @@
     "addFullAccessKey": "tsx -e \"import f from './accounts/access-keys/create-full-access-key.ts'; f(...process.argv.slice(1));\"",
     "addFunctionCallAccessKey": "tsx -e \"import f from './accounts/access-keys/create-function-access-key.ts'; f(...process.argv.slice(1));\"",
     "calculateGas": "tsx -e \"import f from './utils/calculate-gas.ts'; f(...process.argv.slice(1));\"",
+    "checkAccountExists": "tsx -e \"import f from './utils/check-account-existence.ts'; f(...process.argv.slice(1));\"",
     "createFundedTestnetAccount": "tsx -e \"import f from './accounts/create-funded-testnet-account.ts'; f(...process.argv.slice(1));\"",
     "createMainnetAccount": "tsx -e \"import f from './accounts/create-mainnet-account.ts'; f(...process.argv.slice(1));\"",
     "createTestnetAccount": "tsx -e \"import f from './accounts/create-testnet-account.ts'; f(...process.argv.slice(1));\"",
-    "deleteAccessKey": "tsx -e \"import f from './accounts/access-keys/delete-access-key.ts'; f(...process.argv.slice(1));\""
+    "deleteAccessKey": "tsx -e \"import f from './accounts/access-keys/delete-access-key.ts'; f(...process.argv.slice(1));\"",
+    "deployContract": "tsx -e \"import f from './utils/deploy-contract.ts'; f(...process.argv.slice(1));\"",
+    "getState": "tsx -e \"import f from './utils/get-state.ts'; f(...process.argv.slice(1));\"",
+    "wrapNear": "tsx -e \"import f from './utils/wrap-near.ts'; f(...process.argv.slice(1));\""
   },
   "devDependencies": {
     "@near-js/accounts": "workspace:*",

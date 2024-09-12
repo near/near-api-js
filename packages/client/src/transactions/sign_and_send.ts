@@ -10,6 +10,11 @@ import { BlockReference } from '@near-js/types';
 
 const DEFAULT_FINALITY: BlockReference = { finality: 'final' };
 
+/**
+ * Sign a transaction, returning the signed transaction and encoded hash
+ * @param transaction Transaction instance
+ * @param signer MessageSigner
+ */
 export async function signTransaction({ transaction, deps: { signer } }: SignTransactionParams) {
   const encodedTx = transaction.encode();
   const signedTransaction = new SignedTransaction({
@@ -26,6 +31,11 @@ export async function signTransaction({ transaction, deps: { signer } }: SignTra
   };
 }
 
+/**
+ * Sign a transaction and publish to RPC
+ * @param transaction Transaction instance to sign and publish
+ * @param deps sign-and-send dependencies
+ */
 export async function signAndSendTransaction({ transaction, deps: { rpcProvider, signer } }: SignAndSendTransactionParams) {
   const { signedTransaction } = await signTransaction({ transaction, deps: { signer } });
   const outcome = await rpcProvider.sendTransaction(signedTransaction);
@@ -35,6 +45,13 @@ export async function signAndSendTransaction({ transaction, deps: { rpcProvider,
   };
 }
 
+/**
+ * Get the current nonce for an access key given an account and MessageSigner instance
+ * @param account owner of the access key
+ * @param blockReference block ID/finality
+ * @param rpcProvider
+ * @param deps sign-and-send dependencies
+ */
 export async function getSignerNonce({ account, blockReference = DEFAULT_FINALITY, deps: { rpcProvider, signer } }) {
   return getNonce({
     account,
@@ -44,7 +61,14 @@ export async function getSignerNonce({ account, blockReference = DEFAULT_FINALIT
   });
 }
 
-// this might be more natural as a method on TransactionComposer but would be a major increase in scope
+/**
+ * Sign and send a transaction given a TransactionComposer instance.
+ *  Derive values for other transaction fields (public key, nonce, block header) from MessageSigner dependency.
+ *  NB - this might be more natural as a method on TransactionComposer but would be a major increase in scope.
+ * @param composer Transaction Composer instance with values for sender, receiver, and actions
+ * @param blockReference block ID/finality
+ * @param deps sign-and-send dependencies
+ */
 export async function signAndSendFromComposer({ composer, blockReference = DEFAULT_FINALITY, deps }: SignAndSendComposerParams) {
   const { rpcProvider, signer } = deps;
   const block = await getBlock({ blockReference, deps: { rpcProvider } });
