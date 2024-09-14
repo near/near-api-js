@@ -260,6 +260,9 @@ importers:
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
+      '@near-js/utils':
+        specifier: workspace:*
+        version: link:../utils
       build:
         specifier: workspace:*
         version: link:../build

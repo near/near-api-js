@@ -21,6 +21,9 @@
     "deleteAccessKey": "tsx -e \"import f from './accounts/access-keys/delete-access-key.ts'; f(...process.argv.slice(1));\"",
     "deployContract": "tsx -e \"import f from './utils/deploy-contract.ts'; f(...process.argv.slice(1));\"",
     "getState": "tsx -e \"import f from './utils/get-state.ts'; f(...process.argv.slice(1));\"",
+    "getTransactionDetail": "tsx -e \"import f from './transactions/get-tx-detail.ts'; f(...process.argv.slice(1));\"",
+    "unwrapNear": "tsx -e \"import f from './utils/unwrap-near.ts'; f(...process.argv.slice(1));\"",
+    "verifySignature": "tsx -e \"import f from './utils/verify-signature.ts'; f(...process.argv.slice(1));\"",
     "wrapNear": "tsx -e \"import f from './utils/wrap-near.ts'; f(...process.argv.slice(1));\""
   },
   "devDependencies": {
@@ -31,6 +34,7 @@
     "@near-js/providers": "workspace:*",
     "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",
+    "@near-js/utils": "workspace:*",
     "build": "workspace:*",
     "chalk": "4.1.1",
     "homedir": "0.6.0",

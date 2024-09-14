@@ -1,11 +1,10 @@
 import {
-  formatNearAmount,
+  functionCall,
   getPlaintextFilesystemSigner,
   getTestnetRpcProvider,
-  signAndSendFromComposer,
-  TransactionComposer,
   view,
 } from '@near-js/client';
+import { formatNearAmount, parseNearAmount } from '@near-js/utils';
 import chalk from 'chalk';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
@@ -13,9 +12,9 @@ import { homedir } from 'node:os';
 // On mainnet it's wrap.near, by the way
 const WRAP_NEAR_CONTRACT_ID = "wrap.testnet";
 
-export default async function wrapNear(accountId: string, wrapAmount: bigint, wrapContract = WRAP_NEAR_CONTRACT_ID) {
-  if (!accountId || !wrapAmount) {
-    console.log(chalk`{red pnpm wrapNear -- ACCOUNT_ID WRAP_AMOUNT [WRAP_CONTRACT]}`);
+export default async function unwrapNear(accountId: string, unwrapAmount: bigint, wrapContract = WRAP_NEAR_CONTRACT_ID) {
+  if (!accountId || !unwrapAmount) {
+    console.log(chalk`{red pnpm unwrapNear -- ACCOUNT_ID UNWRAP_AMOUNT [WRAP_CONTRACT]}`);
     return;
   }
 
@@ -33,20 +32,14 @@ export default async function wrapNear(accountId: string, wrapAmount: bigint, wr
     deps: { rpcProvider },
   }) as Promise<{ available: string, total: string }>;
 
-  const wrapTransaction = TransactionComposer.init({
+  const { total: preTotal, available: preAvailable } = (await getStorageBalance()) || {};
+
+  await functionCall({
     sender: accountId,
     receiver: wrapContract,
-  });
-
-  const { total: preTotal, available: preAvailable } = (await getStorageBalance()) || {};
-  const _30tgas = BigInt(3e13);
-  if (!preTotal) {
-    wrapTransaction.functionCall('storage_deposit', {}, _30tgas, BigInt(1.25e21));
-  }
-  wrapTransaction.functionCall('near_deposit', {}, _30tgas, BigInt(wrapAmount));
-
-  await signAndSendFromComposer({
-    composer: wrapTransaction,
+    method: 'near_withdraw',
+    args: { amount: parseNearAmount(unwrapAmount.toString()) },
+    deposit: 1n,
     deps: {
       rpcProvider,
       signer,
@@ -55,7 +48,7 @@ export default async function wrapNear(accountId: string, wrapAmount: bigint, wr
 
   const { total: postTotal, available: postAvailable } = await getStorageBalance();
   console.log(chalk`{white ------------------------------------------------------------------------ }`);
-  console.log(chalk`{bold.green RESULTS} {white Wrapped ${wrapAmount}yN with ${wrapContract}}`);
+  console.log(chalk`{bold.green RESULTS} {white Unwrapped ${unwrapAmount}yN with ${wrapContract}}`);
   console.log(chalk`{white ------------------------------------------------------------------------ }`);
   console.log(chalk`{bold.white Starting Balance} {white |}  {bold.yellow ${formatNearAmount(preAvailable)} / ${formatNearAmount(preTotal)}}`);
   console.log(chalk`{bold.white Ending Balance}   {white |}  {bold.yellow ${formatNearAmount(postAvailable)} / ${formatNearAmount(postTotal)}}`);
