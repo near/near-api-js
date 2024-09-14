@@ -1,8 +1,12 @@
 import { FailoverRpcProvider, JsonRpcProvider } from '@near-js/providers';
 import type { Finality } from '@near-js/types';
 
-import type { ViewBaseParams } from './interfaces';
-import { PAGODA_RPC_ENDPOINTS_MAINNET, PAGODA_RPC_ENDPOINTS_TESTNET } from './constants';
+import type { RpcQueryProvider, ViewBaseParams } from './interfaces';
+import {
+  PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET,
+  PAGODA_RPC_ENDPOINTS_MAINNET,
+  PAGODA_RPC_ENDPOINTS_TESTNET,
+} from './constants';
 
 interface DefaultFinality {
   defaultFinality?: Finality;
@@ -44,12 +48,24 @@ export function getEndpointsByNetwork(network: string) {
  * Initialize a failover RPC provider capable of retrying requests against a set of endpoints
  * @param urls RPC endpoint URLs
  */
-export function getFailoverRpcProvider(urls: string[]) {
+export function createRpcClientWrapper(urls: string[]): RpcQueryProvider {
   if (!urls) {
     throw new Error('at least one RPC endpoint URL required');
   }
 
-  return new FailoverRpcProvider(urls.map((url) => new JsonRpcProvider({ url })));
+  const provider = new FailoverRpcProvider(urls.map((url) => new JsonRpcProvider({ url })));
+  return {
+    block: (block) => provider.block(block),
+    chunk: (chunkId) => provider.chunk(chunkId),
+    getTransaction: ({ transactionHash, account, includeReceipts, waitUntil}) => {
+      if (includeReceipts) {
+        return provider.txStatusReceipts(transactionHash, account, waitUntil);
+      }
+      return provider.txStatus(transactionHash, account, waitUntil);
+    },
+    sendTransaction: (transaction) => provider.sendTransaction(transaction),
+    query: (params) => provider.query(params),
+  };
 }
 
 /**
@@ -57,7 +73,7 @@ export function getFailoverRpcProvider(urls: string[]) {
  * @param network target blockchain network (e.g. `mainnet`)
  */
 export function getProviderByNetwork(network: string) {
-  return getFailoverRpcProvider(getEndpointsByNetwork(network));
+  return createRpcClientWrapper(getEndpointsByNetwork(network));
 }
 
 /**
@@ -65,7 +81,7 @@ export function getProviderByNetwork(network: string) {
  * @param urls RPC endpoint URLs
  */
 export function getProviderByEndpoints(...urls: string[]) {
-  return getFailoverRpcProvider(urls);
+  return createRpcClientWrapper(urls);
 }
 
 /**
@@ -73,6 +89,13 @@ export function getProviderByEndpoints(...urls: string[]) {
  */
 export function getTestnetRpcProvider() {
   return getProviderByNetwork('testnet');
+}
+
+/**
+ * Initialize a testnet archival RPC provider
+ */
+export function getTestnetRpcArchivalProvider() {
+  return createRpcClientWrapper(PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET);
 }
 
 /**

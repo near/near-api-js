@@ -1,20 +1,9 @@
-import type {
-  BlockReference,
-  BlockResult,
-  FinalExecutionOutcome,
-  QueryResponseKind,
-} from '@near-js/types';
-import type { SignedTransaction } from '@near-js/transactions';
 import type { PublicKey } from '@near-js/crypto';
+
+import type { RpcQueryProvider } from './providers';
 
 export interface Dependent<T> {
   deps: T;
-}
-
-export interface RpcQueryProvider {
-  block(block: BlockReference): Promise<BlockResult>;
-  query<T extends QueryResponseKind>(...args: any[]): Promise<T>;
-  sendTransaction(transaction: SignedTransaction): Promise<FinalExecutionOutcome>;
 }
 
 export interface MessageSigner {

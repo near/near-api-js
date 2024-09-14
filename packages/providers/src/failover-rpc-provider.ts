@@ -88,7 +88,8 @@ export class FailoverRpcProvider extends Provider {
                 const result = await getResult(this.currentProvider);
 
                 if (result) return result;
-            } catch {
+            } catch (e) {
+                console.error(e);
                 this.switchToNextProvider();
             }
         }

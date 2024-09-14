@@ -46,6 +46,27 @@ export interface ExecutionOutcome {
     status: ExecutionStatus | ExecutionStatusBasic;
 }
 
+export type ReceiptAction =
+  { Transfer: { deposit: string }};
+
+export interface ExecutionOutcomeReceiptDetail {
+    predecessor_id: string;
+    receipt: {
+        Action: ExecutionOutcomeReceiptAction
+    };
+    receipt_id: string;
+    receiver_id: string;
+}
+
+export interface ExecutionOutcomeReceiptAction {
+    actions: ReceiptAction[];
+    gas_price: string;
+    input_data_ids: string[];
+    output_data_receivers: string[];
+    signer_id: string;
+    signer_public_key: string;
+}
+
 export interface ExecutionOutcomeWithIdView {
     proof: MerklePath;
     block_hash: string;
@@ -59,6 +80,7 @@ export interface FinalExecutionOutcome {
     transaction: any;
     transaction_outcome: ExecutionOutcomeWithId;
     receipts_outcome: ExecutionOutcomeWithId[];
+    receipts?: ExecutionOutcomeReceiptDetail[];
 }
 
 export interface QueryResponseKind {
