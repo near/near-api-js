@@ -1,33 +1,11 @@
 import { FailoverRpcProvider, JsonRpcProvider } from '@near-js/providers';
-import type { Finality } from '@near-js/types';
 
-import type { RpcQueryProvider, ViewBaseParams } from './interfaces';
+import type { RpcQueryProvider } from './interfaces';
 import {
   PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET,
   PAGODA_RPC_ENDPOINTS_MAINNET,
   PAGODA_RPC_ENDPOINTS_TESTNET,
 } from './constants';
-
-interface DefaultFinality {
-  defaultFinality?: Finality;
-}
-
-/**
- * Query for a block
- * @param account target account/contract being queried
- * @param blockReference block ID/finality
- * @param defaultFinality finality value to fall back on when blockReference is not specified
- * @param rpcProvider RPC provider instance
- */
-export function getBlock({ blockReference, defaultFinality, deps: { rpcProvider } }: ViewBaseParams & DefaultFinality) {
-  if (!blockReference && !defaultFinality) {
-    return Promise.resolve(null);
-  }
-
-  return rpcProvider.block(
-    blockReference || { finality: defaultFinality! }
-  );
-}
 
 /**
  * Get the set of public endpoints for the provided network
