@@ -25,7 +25,7 @@
     "@typescript-eslint/eslint-plugin": "6.21.0",
     "@typescript-eslint/parser": "6.21.0",
     "commitlint": "19.3.0",
-    "eslint": "8.20.0",
+    "eslint": "8.57.1",
     "husky": "7.0.4",
     "rimraf": "6.0.1",
     "turbo": "1.4.5",
