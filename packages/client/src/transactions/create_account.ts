@@ -2,10 +2,8 @@ import type {
   CreateAccountParams,
   CreateTopLevelAccountParams,
 } from '../interfaces';
-import { TransactionComposer } from './composer';
-import { signAndSendFromComposer } from './sign_and_send';
+import { SignedTransactionComposer } from './composer';
 import { functionCall } from './actions';
-
 
 /**
  * Create a new top-level account using an existing account
@@ -45,13 +43,10 @@ export async function createTopLevelAccount({ account, contract, newAccount, new
  * @param deps sign-and-send dependencies
  */
 export async function createSubAccount({ account, newAccount, newPublicKey, initialBalance, blockReference, deps }: CreateAccountParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender: account, receiver: newAccount })
-      .createAccount()
-      .transfer(initialBalance)
-      .addFullAccessKey(newPublicKey),
-    blockReference,
-    deps,
-  });
+  return SignedTransactionComposer.init({ sender: account, receiver: newAccount, deps })
+    .createAccount()
+    .transfer(initialBalance)
+    .addFullAccessKey(newPublicKey)
+    .signAndSend(blockReference);
 }
 

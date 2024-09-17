@@ -9,7 +9,9 @@ import {
 } from '@near-js/transactions';
 import { baseDecode, DEFAULT_FUNCTION_CALL_GAS } from '@near-js/utils';
 import { DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL } from '../constants';
-import { BlockHeader } from '@near-js/types';
+import { BlockHeader, BlockReference } from '@near-js/types';
+import { MessageSigner, RpcQueryProvider, SignAndSendTransactionDependency } from '../interfaces';
+import { getSignerNonce, signAndSendTransaction } from './sign_and_send';
 
 interface TransactionOptions {
   blockHeader?: BlockHeader;
@@ -19,6 +21,8 @@ interface TransactionOptions {
   sender?: string;
 }
 
+interface SignedTransactionOptions extends TransactionOptions, SignAndSendTransactionDependency {}
+
 export class TransactionComposer {
   private actions: Action[] = [];
   receiver: string | undefined;
@@ -27,15 +31,16 @@ export class TransactionComposer {
   nonce: bigint | undefined;
   publicKey: PublicKey | undefined;
 
-  static init(transaction: TransactionOptions) {
-    const composer = new TransactionComposer();
-    composer.receiver = transaction.receiver;
-    composer.sender = transaction.sender;
-    composer.blockHeader = transaction.blockHeader;
-    composer.nonce = transaction.nonce;
-    composer.publicKey = transaction.publicKey;
+  constructor(transaction: TransactionOptions) {
+    this.receiver = transaction.receiver;
+    this.sender = transaction.sender;
+    this.blockHeader = transaction.blockHeader;
+    this.nonce = transaction.nonce;
+    this.publicKey = transaction.publicKey;
+  }
 
-    return composer;
+  static init(transaction: TransactionOptions) {
+    return new TransactionComposer(transaction);
   }
 
   private buildTransactionObject(transaction?: TransactionOptions) {
@@ -68,54 +73,83 @@ export class TransactionComposer {
     });
   }
 
-  addFullAccessKey(publicKey: string) {
+  addFullAccessKey(publicKey: string): this {
     this.actions.push(actionCreators.addKey(PublicKey.from(publicKey), actionCreators.fullAccessKey()));
     return this;
   }
 
-  addFunctionCallAccessKey(publicKey: string, contractId: string, methodNames: string[], allowance?: bigint) {
+  addFunctionCallAccessKey(publicKey: string, contractId: string, methodNames: string[], allowance?: bigint): this {
     const accessKey = actionCreators.functionCallAccessKey(contractId, methodNames, allowance);
     this.actions.push(actionCreators.addKey(PublicKey.from(publicKey), accessKey));
     return this;
   }
     
-  createAccount() {
+  createAccount(): this {
     this.actions.push(actionCreators.createAccount());
     return this;
   }
     
-  deleteAccount(beneficiaryId: string) {
+  deleteAccount(beneficiaryId: string): this {
     this.actions.push(actionCreators.deleteAccount(beneficiaryId));
     return this;
   }
     
-  deleteKey(publicKey: string) {
+  deleteKey(publicKey: string): this {
     this.actions.push(actionCreators.deleteKey(PublicKey.from(publicKey)));
     return this;
   }
     
-  deployContract(code: Uint8Array) {
+  deployContract(code: Uint8Array): this {
     this.actions.push(actionCreators.deployContract(code));
     return this;
   }
     
-  functionCall(method: string, args: object, gas: bigint = DEFAULT_FUNCTION_CALL_GAS * BigInt(10), deposit = BigInt(0)) {
+  functionCall(method: string, args: object, gas: bigint = DEFAULT_FUNCTION_CALL_GAS * BigInt(10), deposit = BigInt(0)): this {
     this.actions.push(actionCreators.functionCall(method, args, gas, deposit));
     return this;
   }
     
-  signedDelegate(delegateAction: DelegateAction, signature: Signature) {
+  signedDelegate(delegateAction: DelegateAction, signature: Signature): this {
     this.actions.push(actionCreators.signedDelegate({ delegateAction, signature }));
     return this;
   }
     
-  stake(stake: bigint, publicKey: string) {
+  stake(stake: bigint, publicKey: string): this {
     this.actions.push(actionCreators.stake(stake, PublicKey.from(publicKey)));
     return this;
   }
     
-  transfer(deposit: bigint) {
+  transfer(deposit: bigint): this {
     this.actions.push(actionCreators.transfer(deposit));
     return this;
+  }
+}
+
+export class SignedTransactionComposer extends TransactionComposer {
+  rpcProvider: RpcQueryProvider;
+  signer: MessageSigner;
+
+  constructor({ deps, ...baseOptions }: SignedTransactionOptions) {
+    super(baseOptions);
+    this.rpcProvider = deps.rpcProvider;
+    this.signer = deps.signer;
+  }
+
+  static init(options: SignedTransactionOptions) {
+    return new SignedTransactionComposer(options);
+  }
+
+  async signAndSend(blockReference: BlockReference = { finality: 'final' }) {
+    const deps = { rpcProvider: this.rpcProvider, signer: this.signer };
+    const blockHeader = this.blockHeader || (await this.rpcProvider.block(blockReference))?.header;
+    const signerNonce = this.nonce || (await getSignerNonce({ account: this.sender, blockReference, deps }) + 1n);
+
+    const transaction = this.toTransaction({
+      nonce: signerNonce,
+      publicKey: this.publicKey || await this.signer.getPublicKey(),
+      blockHeader,
+    });
+
+    return signAndSendTransaction({ transaction, deps });
   }
 }

@@ -2,8 +2,7 @@ import {
   formatNearAmount,
   getPlaintextFilesystemSigner,
   getTestnetRpcProvider,
-  signAndSendFromComposer,
-  TransactionComposer,
+  SignedTransactionComposer,
   view,
 } from '@near-js/client';
 import chalk from 'chalk';
@@ -33,9 +32,10 @@ export default async function wrapNear(accountId: string, wrapAmount: bigint, wr
     deps: { rpcProvider },
   }) as Promise<{ available: string, total: string }>;
 
-  const wrapTransaction = TransactionComposer.init({
+  const wrapTransaction = SignedTransactionComposer.init({
     sender: accountId,
     receiver: wrapContract,
+    deps: { rpcProvider, signer },
   });
 
   const { total: preTotal, available: preAvailable } = (await getStorageBalance()) || {};
@@ -45,13 +45,7 @@ export default async function wrapNear(accountId: string, wrapAmount: bigint, wr
   }
   wrapTransaction.functionCall('near_deposit', {}, _30tgas, BigInt(wrapAmount));
 
-  await signAndSendFromComposer({
-    composer: wrapTransaction,
-    deps: {
-      rpcProvider,
-      signer,
-    },
-  });
+  await wrapTransaction.signAndSend();
 
   const { total: postTotal, available: postAvailable } = await getStorageBalance();
   console.log(chalk`{white ------------------------------------------------------------------------ }`);

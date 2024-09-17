@@ -7,8 +7,7 @@ import type {
   StakeParams,
   TransferParams,
 } from '../interfaces';
-import { TransactionComposer } from './composer';
-import { signAndSendFromComposer } from './sign_and_send';
+import { SignedTransactionComposer } from './composer';
 
 /**
  * Make a function call against a contract
@@ -21,13 +20,10 @@ import { signAndSendFromComposer } from './sign_and_send';
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function functionCall({ sender, receiver, method, args, gas, deposit, blockReference, deps }: FunctionCallParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender, receiver })
-      .functionCall(method, args, gas, deposit),
-    blockReference,
-    deps,
-  });
+export function functionCall({ sender, receiver, method, args, gas, deposit, blockReference, deps }: FunctionCallParams) {
+  return SignedTransactionComposer.init({ sender, receiver, deps })
+    .functionCall(method, args, gas, deposit)
+    .signAndSend(blockReference);
 }
 
 /**
@@ -38,13 +34,10 @@ export async function functionCall({ sender, receiver, method, args, gas, deposi
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function transfer({ sender, receiver, amount, blockReference, deps }: TransferParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender, receiver })
-      .transfer(amount),
-    blockReference,
-    deps,
-  });
+export function transfer({ sender, receiver, amount, blockReference, deps }: TransferParams) {
+  return SignedTransactionComposer.init({ sender, receiver, deps })
+    .transfer(amount)
+    .signAndSend(blockReference);
 }
 
 /**
@@ -55,13 +48,10 @@ export async function transfer({ sender, receiver, amount, blockReference, deps 
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function stake({ account, amount, publicKey, blockReference, deps }: StakeParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender: account, receiver: account })
-      .stake(amount, publicKey),
-    blockReference,
-    deps,
-  });
+export function stake({ account, amount, publicKey, blockReference, deps }: StakeParams) {
+  return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
+    .stake(amount, publicKey)
+    .signAndSend(blockReference);
 }
 
 /**
@@ -71,13 +61,10 @@ export async function stake({ account, amount, publicKey, blockReference, deps }
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function addFullAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender: account, receiver: account })
-      .addFullAccessKey(publicKey),
-    blockReference,
-    deps,
-  });
+export function addFullAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
+  return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
+    .addFullAccessKey(publicKey)
+    .signAndSend(blockReference);
 }
 
 /**
@@ -90,13 +77,10 @@ export async function addFullAccessKey({ account, publicKey, blockReference, dep
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function addFunctionCallAccessKey({ account, publicKey, contract, methodNames, allowance, blockReference, deps }: AddFunctionCallAccessKeyParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender: account, receiver: account })
-      .addFunctionCallAccessKey(publicKey, contract, methodNames, allowance),
-    blockReference,
-    deps,
-  });
+export function addFunctionCallAccessKey({ account, publicKey, contract, methodNames, allowance, blockReference, deps }: AddFunctionCallAccessKeyParams) {
+  return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
+    .addFunctionCallAccessKey(publicKey, contract, methodNames, allowance)
+    .signAndSend(blockReference);
 }
 
 /**
@@ -106,13 +90,10 @@ export async function addFunctionCallAccessKey({ account, publicKey, contract, m
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function deleteAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender: account, receiver: account })
-      .deleteKey(publicKey),
-    blockReference,
-    deps,
-  });
+export function deleteAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
+  return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
+    .deleteKey(publicKey)
+    .signAndSend(blockReference);
 }
 
 /**
@@ -122,13 +103,10 @@ export async function deleteAccessKey({ account, publicKey, blockReference, deps
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function deleteAccount({ account, beneficiaryId, blockReference, deps }: DeleteAccountParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender: account, receiver: account })
-      .deleteAccount(beneficiaryId),
-    blockReference,
-    deps,
-  });
+export function deleteAccount({ account, beneficiaryId, blockReference, deps }: DeleteAccountParams) {
+  return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
+    .deleteAccount(beneficiaryId)
+    .signAndSend(blockReference);
 }
 
 /**
@@ -138,11 +116,8 @@ export async function deleteAccount({ account, beneficiaryId, blockReference, de
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function deployContract({ account, code, blockReference, deps }: DeployContractParams) {
-  return signAndSendFromComposer({
-    composer: TransactionComposer.init({ sender: account, receiver: account })
-      .deployContract(code),
-    blockReference,
-    deps,
-  });
+export function deployContract({ account, code, blockReference, deps }: DeployContractParams) {
+  return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
+    .deployContract(code)
+    .signAndSend(blockReference);
 }
