@@ -9,7 +9,7 @@ const END_BLOCK_HASH = "8aEcKhF7N1Jyw84e6vHW6Hzp3Ep7mSXJ6Rvnsy5qGJPF";
 // contract ID or account ID you want to find transactions details for
 const CONTRACT_ID = "relayer.ropsten.testnet";
 
-export default async function getTransactions(startBlockHash: string = START_BLOCK_HASH, endBlockHash: string = END_BLOCK_HASH, contractId: string = CONTRACT_ID) {
+export default async function traverseBlocks(startBlockHash: string = START_BLOCK_HASH, endBlockHash: string = END_BLOCK_HASH, contractId: string = CONTRACT_ID) {
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcArchivalProvider();
 
