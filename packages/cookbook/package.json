@@ -32,17 +32,14 @@
     "wrapNear": "tsx -e \"import f from './utils/wrap-near.ts'; f(...process.argv.slice(1));\""
   },
   "devDependencies": {
-    "@near-js/accounts": "workspace:*",
     "@near-js/client": "workspace:*",
     "@near-js/crypto": "workspace:*",
-    "@near-js/keystores-node": "workspace:*",
-    "@near-js/providers": "workspace:*",
-    "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",
     "@near-js/utils": "workspace:*",
     "build": "workspace:*",
     "chalk": "4.1.1",
     "homedir": "0.6.0",
+    "near-api-js": "workspace:*",
     "ts-node": "^10.9.2",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"

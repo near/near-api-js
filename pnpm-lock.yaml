@@ -260,24 +260,12 @@ importers:
 
   packages/cookbook:
     devDependencies:
-      '@near-js/accounts':
-        specifier: workspace:*
-        version: link:../accounts
       '@near-js/client':
         specifier: workspace:*
         version: link:../client
       '@near-js/crypto':
         specifier: workspace:*
         version: link:../crypto
-      '@near-js/keystores-node':
-        specifier: workspace:*
-        version: link:../keystores-node
-      '@near-js/providers':
-        specifier: workspace:*
-        version: link:../providers
-      '@near-js/signers':
-        specifier: workspace:*
-        version: link:../signers
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
@@ -293,6 +281,9 @@ importers:
       homedir:
         specifier: 0.6.0
         version: 0.6.0
+      near-api-js:
+        specifier: 4.0.0
+        version: 4.0.0(encoding@0.1.13)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.5.5)(typescript@5.4.5)
