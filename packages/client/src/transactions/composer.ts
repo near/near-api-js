@@ -45,15 +45,20 @@ export class TransactionComposer {
   }
 
   private buildTransactionObject(transaction?: TransactionOptions) {
-    const hash = (transaction?.blockHeader?.hash || this.blockHeader?.hash)!;
-    return {
+    const tx = {
       actions: this.actions,
-      blockHash: baseDecode(hash),
-      nonce: (transaction?.nonce || this.nonce)!,
-      publicKey: (transaction?.publicKey || this.publicKey)!,
-      receiverId: (transaction?.receiver || this.receiver)!,
-      signerId: (transaction?.sender || this.sender)!,
+      blockHash: baseDecode(transaction?.blockHeader?.hash || this.blockHeader?.hash),
+      nonce: transaction?.nonce || this.nonce,
+      publicKey: transaction?.publicKey || this.publicKey,
+      receiverId: transaction?.receiver || this.receiver,
+      signerId: transaction?.sender || this.sender,
     };
+
+    if (!tx.actions.length || !tx.blockHash || !tx.nonce || !tx.publicKey || !tx.receiverId || !tx.signerId) {
+      throw new Error(`invalid transaction: ${JSON.stringify(tx)}`);
+    }
+
+    return tx;
   }
 
   toTransaction(transaction?: TransactionOptions): Transaction {
