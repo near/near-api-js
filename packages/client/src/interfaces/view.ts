@@ -1,12 +1,12 @@
 import type { BlockReference } from '@near-js/types';
 
-import { Dependent, RpcProviderDependency } from './dependencies';
+import { RpcProviderDependency } from './dependencies';
 
 export interface RpcProviderQueryParams {
   blockReference?: BlockReference;
 }
 
-export interface ViewBaseParams extends Dependent<RpcProviderDependency>, RpcProviderQueryParams {
+export interface ViewBaseParams extends RpcProviderDependency, RpcProviderQueryParams {
 }
 
 export interface ViewAccountParams extends ViewBaseParams {

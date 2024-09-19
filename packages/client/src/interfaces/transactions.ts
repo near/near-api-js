@@ -1,12 +1,10 @@
 import type { Transaction } from '@near-js/transactions';
 
 import type { TransactionComposer } from '../transactions';
-import type { Dependent, RpcProviderDependency, SignerDependency } from './dependencies';
+import type { SignAndSendTransactionDependency, SignerDependency } from './dependencies';
 import type { RpcProviderQueryParams } from './view';
 import { BlockHash } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
-
-export interface SignAndSendTransactionDependency extends Dependent<RpcProviderDependency & SignerDependency> {}
 
 export interface SignAndSendParams extends SignAndSendTransactionDependency, RpcProviderQueryParams {}
 
@@ -63,7 +61,7 @@ export interface AddFunctionCallAccessKeyParams extends AddAccessKeyParams {
   allowance?: bigint;
 }
 
-export interface SignTransactionParams extends Dependent<SignerDependency> {
+export interface SignTransactionParams extends SignerDependency {
   transaction: Transaction;
 }
 

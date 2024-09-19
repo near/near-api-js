@@ -10,7 +10,6 @@ import type {
 } from '@near-js/types';
 
 import type {
-  Dependent,
   RpcProviderDependency,
   RpcProviderQueryParams,
   ViewAccessKeyParams,
@@ -30,7 +29,7 @@ enum RequestType {
   ViewState = 'view_state',
 }
 
-interface QueryParams extends Dependent<RpcProviderDependency>, RpcProviderQueryParams {
+interface QueryParams extends RpcProviderDependency, RpcProviderQueryParams {
   account: string;
   request: string;
   args?: object;

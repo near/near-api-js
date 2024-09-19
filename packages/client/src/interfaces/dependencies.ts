@@ -2,7 +2,7 @@ import type { PublicKey } from '@near-js/crypto';
 
 import type { RpcQueryProvider } from './providers';
 
-export interface Dependent<T> {
+interface Dependent<T> {
   deps: T;
 }
 
@@ -11,10 +11,16 @@ export interface MessageSigner {
   signMessage(m: Uint8Array): Promise<Uint8Array>;
 }
 
-export interface RpcProviderDependency {
+interface RpcProviderDependent {
   rpcProvider: RpcQueryProvider;
 }
 
-export interface SignerDependency {
+interface SignerDependent {
   signer: MessageSigner;
 }
+
+export interface RpcProviderDependency extends Dependent<RpcProviderDependent> {}
+
+export interface SignerDependency extends Dependent<SignerDependent> {}
+
+export interface SignAndSendTransactionDependency extends Dependent<RpcProviderDependent & SignerDependent> {}
