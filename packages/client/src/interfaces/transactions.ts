@@ -3,6 +3,8 @@ import type { Transaction } from '@near-js/transactions';
 import type { TransactionComposer } from '../transactions';
 import type { Dependent, RpcProviderDependency, SignerDependency } from './dependencies';
 import type { RpcProviderQueryParams } from './view';
+import { BlockHash } from '@near-js/types';
+import { PublicKey } from '@near-js/crypto';
 
 export interface SignAndSendTransactionDependency extends Dependent<RpcProviderDependency & SignerDependency> {}
 
@@ -78,3 +80,20 @@ export interface CreateAccountParams extends SignAndSendParams, NewAccountParams
 export interface CreateTopLevelAccountParams extends CreateAccountParams {
   contract: string
 }
+
+export interface TransactionOptions {
+  blockHash?: BlockHash;
+  nonce?: bigint;
+  publicKey?: PublicKey;
+  receiver?: string;
+  sender?: string;
+}
+
+export interface MetaTransactionOptions extends TransactionOptions {
+  blockHeightTtl?: bigint;
+  maxBlockHeight?: bigint;
+}
+
+export interface SignedTransactionOptions extends TransactionOptions, SignAndSendTransactionDependency {
+}
+

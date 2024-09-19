@@ -10,7 +10,7 @@ export default async function signWithLedger() {
     sender: 'a.testnet',
     receiver: 'b.testnet',
     nonce: 100n,
-    blockHeader: (await rpcProvider.block({ finality: 'optimistic' })).header,
+    blockHash: (await rpcProvider.block({ finality: 'optimistic' })).header.hash,
     publicKey,
     deps: {
       rpcProvider,

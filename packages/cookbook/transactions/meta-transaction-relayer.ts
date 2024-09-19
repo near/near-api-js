@@ -1,13 +1,19 @@
 import {
-  buildSignedDelegate,
   getPlaintextFilesystemSigner,
   getTestnetRpcProvider,
+  SignedTransactionComposer,
 } from '@near-js/client';
-import { actionCreators, encodeSignedDelegate } from '@near-js/transactions';
+import { encodeSignedDelegate } from '@near-js/transactions';
 import chalk from 'chalk';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 
+/**
+ * Submit a transaction to a relayer
+ * @param signerAccountId account requesting the transaction's execution
+ * @param receiverAccountId recipient of the transaction
+ * @param relayerUrl URL processing relayer requests
+ */
 export default async function sendMetaTransactionViaRelayer(signerAccountId: string, receiverAccountId: string, relayerUrl: string) {
   if (!signerAccountId || !receiverAccountId) {
     console.log(chalk`{red pnpm metaTransaction -- SENDER_ACCOUNT_ID RECEIVER_ACCOUNT_ID RELAYER_URL}`);
@@ -21,13 +27,16 @@ export default async function sendMetaTransactionViaRelayer(signerAccountId: str
   // initialize the transaction signer using a pre-existing key for `accountId`
   const { signer } = getPlaintextFilesystemSigner({ account: signerAccountId, network: 'testnet', filepath: credentialsPath });
 
-  const signedDelegate = await buildSignedDelegate({
-    account: signerAccountId,
+  const signedDelegate = await SignedTransactionComposer.init({
+    sender: signerAccountId,
     receiver: receiverAccountId,
-    actions: [actionCreators.transfer(1000n)],
-    blockHeightTtl: 60,
-    deps: { rpcProvider, signer },
-  });
+    deps: {
+      rpcProvider,
+      signer,
+    },
+  })
+    .transfer(100n)
+    .toSignedDelegateAction({ blockHeightTtl: 60n });
 
   // @ts-ignore global
   const res = await fetch(relayerUrl, {

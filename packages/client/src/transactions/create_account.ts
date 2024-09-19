@@ -2,7 +2,7 @@ import type {
   CreateAccountParams,
   CreateTopLevelAccountParams,
 } from '../interfaces';
-import { SignedTransactionComposer } from './composer';
+import { SignedTransactionComposer } from './composers';
 import { functionCall } from './actions';
 
 /**

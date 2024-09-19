@@ -7,7 +7,7 @@ import type {
   StakeParams,
   TransferParams,
 } from '../interfaces';
-import { SignedTransactionComposer } from './composer';
+import { SignedTransactionComposer } from './composers';
 
 /**
  * Make a function call against a contract
