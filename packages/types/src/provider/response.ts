@@ -4,6 +4,8 @@
  */
 import { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol';
 
+export type SerializedReturnValue = string | number | boolean | object;
+
 export enum ExecutionStatusBasic {
     Unknown = 'Unknown',
     Pending = 'Pending',

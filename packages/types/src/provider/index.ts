@@ -66,6 +66,7 @@ export {
     FinalExecutionStatusBasic,
     FunctionCallPermissionView,
     QueryResponseKind,
+    SerializedReturnValue,
     ViewStateResult,
 } from './response';
 export {

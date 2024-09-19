@@ -5,6 +5,7 @@ import type {
   CodeResult,
   ContractCodeView,
   QueryResponseKind,
+  SerializedReturnValue,
   ViewStateResult,
 } from '@near-js/types';
 
@@ -89,13 +90,13 @@ export function callViewMethod({ account, method, args = {}, blockReference, dep
  * @param blockReference block ID/finality
  * @param deps readonly RPC dependencies
  */
-export async function view({ account, method, args = {}, blockReference, deps }: ViewParams): Promise<string | number | boolean | object> {
+export async function view<T extends SerializedReturnValue>({ account, method, args = {}, blockReference, deps }: ViewParams): Promise<T> {
   const { result } = await callViewMethod({ account, method, args, blockReference, deps });
   const stringResult = Buffer.from(result).toString();
   try {
     return JSON.parse(stringResult);
   } catch {
-    return isNaN(+stringResult) ? stringResult : +stringResult;
+    return (isNaN(+stringResult) ? stringResult : +stringResult) as T;
   }
 }
 

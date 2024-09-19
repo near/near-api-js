@@ -15,6 +15,7 @@ import {
 } from '../../interfaces';
 import { getSignerNonce, signTransaction } from '../sign_and_send';
 import { TransactionComposer } from './transaction_composer';
+import { SerializedReturnValue } from '@near-js/types/lib/esm/provider/response';
 
 export class SignedTransactionComposer extends TransactionComposer {
   rpcProvider: RpcQueryProvider;
@@ -89,7 +90,7 @@ export class SignedTransactionComposer extends TransactionComposer {
    * Sign and send the composed transaction
    * @param blockReference block to use for determining hash
    */
-  async signAndSend(blockReference: BlockReference = { finality: 'final' }) {
+  async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
     const deps = { rpcProvider: this.rpcProvider, signer: this.signer };
     const blockHash = this.blockHash || (await this.rpcProvider.block(blockReference))?.header?.hash;
     const signerNonce = this.nonce || (await getSignerNonce({ account: this.sender, blockReference, deps }) + 1n);
@@ -103,7 +104,7 @@ export class SignedTransactionComposer extends TransactionComposer {
     const outcome = await this.rpcProvider.sendTransaction(signedTransaction);
     return {
       outcome,
-      result: getTransactionLastResult(outcome),
+      result: getTransactionLastResult(outcome) as T,
     };
   }
 }

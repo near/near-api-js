@@ -5,6 +5,7 @@ import { sha256 } from '@noble/hashes/sha256';
 import type { SignTransactionParams, SignAndSendTransactionParams } from '../interfaces';
 import { getNonce } from '../view';
 import { BlockReference } from '@near-js/types';
+import { SerializedReturnValue } from '@near-js/types/lib/esm/provider/response';
 
 const DEFAULT_FINALITY: BlockReference = { finality: 'final' };
 
@@ -34,12 +35,12 @@ export async function signTransaction({ transaction, deps: { signer } }: SignTra
  * @param transaction Transaction instance to sign and publish
  * @param deps sign-and-send dependencies
  */
-export async function signAndSendTransaction({ transaction, deps: { rpcProvider, signer } }: SignAndSendTransactionParams) {
+export async function signAndSendTransaction<T extends SerializedReturnValue>({ transaction, deps: { rpcProvider, signer } }: SignAndSendTransactionParams) {
   const { signedTransaction } = await signTransaction({ transaction, deps: { signer } });
   const outcome = await rpcProvider.sendTransaction(signedTransaction);
   return {
     outcome,
-    result: getTransactionLastResult(outcome),
+    result: getTransactionLastResult(outcome) as T,
   };
 }
 
