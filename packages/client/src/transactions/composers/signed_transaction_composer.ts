@@ -93,7 +93,11 @@ export class SignedTransactionComposer extends TransactionComposer {
   async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
     const deps = { rpcProvider: this.rpcProvider, signer: this.signer };
     const blockHash = this.blockHash || (await this.rpcProvider.block(blockReference))?.header?.hash;
-    const signerNonce = this.nonce || (await getSignerNonce({ account: this.sender, blockReference, deps }) + 1n);
+    const signerNonce = this.nonce || (await getSignerNonce({
+      account: this.sender,
+      blockReference: { finality: 'optimistic' },
+      deps,
+    }) + 1n);
 
     const { signedTransaction } = await this.toSignedTransaction({
       nonce: signerNonce,
