@@ -8,3 +8,4 @@ export * from './providers';
 export * from './signing';
 export * from './transactions';
 export * from './view';
+export * from './contract-standards';
