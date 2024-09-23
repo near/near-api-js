@@ -2,29 +2,29 @@ import {
   buildDelegateAction,
   signDelegateAction,
 } from '@near-js/transactions';
+import type { BlockReference, SerializedReturnValue } from '@near-js/types';
 import { getTransactionLastResult } from '@near-js/utils';
-import { BlockReference } from '@near-js/types';
 
 import { DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL } from '../../constants';
 import {
-  MessageSigner,
+  AccessKeySigner,
   MetaTransactionOptions,
   RpcQueryProvider,
   SignedTransactionOptions,
   TransactionOptions,
 } from '../../interfaces';
-import { getSignerNonce, signTransaction } from '../sign_and_send';
+import { signTransaction } from '../sign_and_send';
 import { TransactionComposer } from './transaction_composer';
-import { SerializedReturnValue } from '@near-js/types/lib/esm/provider/response';
+import { getAccessKeySigner } from '../../signing/signers';
 
 export class SignedTransactionComposer extends TransactionComposer {
   rpcProvider: RpcQueryProvider;
-  signer: MessageSigner;
+  signer: AccessKeySigner;
 
   constructor({ deps, ...baseOptions }: SignedTransactionOptions) {
     super(baseOptions);
     this.rpcProvider = deps.rpcProvider;
-    this.signer = deps.signer;
+    this.signer = getAccessKeySigner({ account: this.sender, deps });
   }
 
   /**
@@ -47,22 +47,11 @@ export class SignedTransactionComposer extends TransactionComposer {
       maxBlockHeight = BigInt(header.height) + ttl;
     }
 
-    let nonce = transaction?.nonce || this.nonce;
-    if (!nonce) {
-      nonce = await getSignerNonce({
-        account: this.sender,
-        deps: {
-          rpcProvider: this.rpcProvider,
-          signer: this.signer,
-        },
-      }) + 1n;
-    }
-
     const delegateAction = buildDelegateAction({
       actions: this.actions,
       maxBlockHeight,
-      nonce,
-      publicKey: transaction?.publicKey || await this.signer.getPublicKey(),
+      nonce: transaction?.nonce || this.nonce || await this.signer.getNonce(),
+      publicKey: transaction?.publicKey || this.publicKey || await this.signer.getPublicKey(),
       receiverId: transaction?.receiver || this.receiver,
       senderId: transaction?.sender || this.sender,
     });
@@ -91,18 +80,10 @@ export class SignedTransactionComposer extends TransactionComposer {
    * @param blockReference block to use for determining hash
    */
   async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
-    const deps = { rpcProvider: this.rpcProvider, signer: this.signer };
-    const blockHash = this.blockHash || (await this.rpcProvider.block(blockReference))?.header?.hash;
-    const signerNonce = this.nonce || (await getSignerNonce({
-      account: this.sender,
-      blockReference: { finality: 'optimistic' },
-      deps,
-    }) + 1n);
-
     const { signedTransaction } = await this.toSignedTransaction({
-      nonce: signerNonce,
+      nonce: this.nonce || await this.signer.getNonce(),
       publicKey: this.publicKey || await this.signer.getPublicKey(),
-      blockHash,
+      blockHash: this.blockHash || (await this.rpcProvider.block(blockReference))?.header?.hash,
     });
 
     const outcome = await this.rpcProvider.sendTransaction(signedTransaction);

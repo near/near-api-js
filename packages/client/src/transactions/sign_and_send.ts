@@ -48,7 +48,7 @@ export async function signAndSendTransaction<T extends SerializedReturnValue>({ 
  * Get the current nonce for an access key given an account and MessageSigner instance
  * @param account owner of the access key
  * @param blockReference block ID/finality
- * @param rpcProvider
+ * @param rpcProvider RPC provider instance
  * @param deps sign-and-send dependencies
  */
 export async function getSignerNonce({ account, blockReference = DEFAULT_FINALITY, deps: { rpcProvider, signer } }) {
