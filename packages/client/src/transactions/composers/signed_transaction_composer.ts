@@ -8,6 +8,7 @@ import { getTransactionLastResult } from '@near-js/utils';
 import { DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL } from '../../constants';
 import {
   AccessKeySigner,
+  MessageSigner,
   MetaTransactionOptions,
   RpcQueryProvider,
   SignedTransactionOptions,
@@ -18,13 +19,17 @@ import { TransactionComposer } from './transaction_composer';
 import { getAccessKeySigner } from '../../signing/signers';
 
 export class SignedTransactionComposer extends TransactionComposer {
+  messageSigner: MessageSigner;
   rpcProvider: RpcQueryProvider;
   signer: AccessKeySigner;
 
   constructor({ deps, ...baseOptions }: SignedTransactionOptions) {
     super(baseOptions);
+    this.messageSigner = deps.signer;
     this.rpcProvider = deps.rpcProvider;
-    this.signer = getAccessKeySigner({ account: this.sender, deps });
+    if (this.sender) {
+      this.signer = getAccessKeySigner({ account: this.sender, deps });
+    }
   }
 
   /**
@@ -65,12 +70,35 @@ export class SignedTransactionComposer extends TransactionComposer {
   }
 
   /**
-   * Return a signed transaction from the composed transaction
-   * @param transaction transaction configuration to override values set at composer initialization
+   * Verify the transaction's signer matches the account mapped to the AccessKeySigner.
+   *  Initialize the signer if not already done (i.e. for lazy setting of the transaction signer).
+   *  Throw an error if there is a mismatch between the current AccessKeySigner and the transaction's specified signer.
+   * @param signingAccount
+   * @private
    */
-  async toSignedTransaction(transaction?: TransactionOptions) {
+  private verifySigner(signingAccount: string) {
+    if (!this.signer) {
+      this.signer = getAccessKeySigner({
+        account: signingAccount,
+        deps: { rpcProvider: this.rpcProvider, signer: this.messageSigner },
+      });
+    }
+
+    const signerAccount = this.signer.getSigningAccount();
+    if (signingAccount !== signerAccount) {
+      throw new Error(`Cannot sign transaction as ${signingAccount} with AccessKeySigner for ${signerAccount}`);
+    }
+  }
+
+  /**
+   * Return a signed transaction from the composed transaction
+   * @param transactionOptions transaction configuration to override values set at composer initialization
+   */
+  async toSignedTransaction(transactionOptions?: TransactionOptions) {
+    const transaction = this.toTransaction(transactionOptions);
+    this.verifySigner(transaction.signerId);
     return signTransaction({
-      transaction: this.toTransaction(transaction),
+      transaction,
       deps: { signer: this.signer },
     });
   }
@@ -80,6 +108,7 @@ export class SignedTransactionComposer extends TransactionComposer {
    * @param blockReference block to use for determining hash
    */
   async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
+    this.verifySigner(this.sender);
     const { signedTransaction } = await this.toSignedTransaction({
       nonce: this.nonce || await this.signer.getNonce(),
       publicKey: this.publicKey || await this.signer.getPublicKey(),

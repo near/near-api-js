@@ -92,6 +92,9 @@ export function getAccessKeySigner({ account, blockReference, deps: { rpcProvide
     getPublicKey() {
       return signer.getPublicKey();
     },
+    getSigningAccount() {
+      return account;
+    },
     signMessage(m: Uint8Array) {
       nonce += 1n;
       return signer.signMessage(m);

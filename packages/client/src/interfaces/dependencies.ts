@@ -15,6 +15,7 @@ export interface MessageSigner {
 export interface AccessKeySigner extends MessageSigner {
   getAccessKey(ignoreCache?: boolean): Promise<AccessKeyView>;
   getNonce(ignoreCache?: boolean): Promise<bigint>;
+  getSigningAccount(): string;
 }
 
 interface RpcProviderDependent {
