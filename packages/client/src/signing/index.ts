@@ -1,11 +1,9 @@
 export {
-  getPlaintextFilesystemSigner,
-} from './keystores/plaintext_filesystem';
-export {
   getUsbLedgerSigner,
   getBrowserLedgerSigner,
 } from './ledger';
 export {
   getSignerFromKeyPair,
+  getSignerFromKeystore,
   getSignerFromPrivateKey,
 } from './signers';

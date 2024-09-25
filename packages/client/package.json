@@ -15,7 +15,6 @@
     "@ledgerhq/hw-transport-node-hid": "6.29.4",
     "@near-js/crypto": "workspace:*",
     "@near-js/keystores": "workspace:*",
-    "@near-js/keystores-node": "workspace:*",
     "@near-js/providers": "workspace:*",
     "@near-js/signers": "workspace:*",
     "@near-js/transactions": "workspace:*",

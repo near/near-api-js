@@ -202,9 +202,6 @@ importers:
       '@near-js/keystores':
         specifier: workspace:*
         version: link:../keystores
-      '@near-js/keystores-node':
-        specifier: workspace:*
-        version: link:../keystores-node
       '@near-js/providers':
         specifier: workspace:*
         version: link:../providers
@@ -266,6 +263,9 @@ importers:
       '@near-js/crypto':
         specifier: workspace:*
         version: link:../crypto
+      '@near-js/keystores-node':
+        specifier: workspace:*
+        version: link:../keystores-node
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
