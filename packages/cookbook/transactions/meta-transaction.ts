@@ -1,11 +1,12 @@
 import {
-    getPlaintextFilesystemSigner,
-    getTestnetRpcProvider,
-    SignedTransactionComposer,
+  getSignerFromKeystore,
+  getTestnetRpcProvider,
+  SignedTransactionComposer,
 } from '@near-js/client';
 import chalk from 'chalk';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
+import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 
 // access keys are required for the sender and signer
 const RECEIVER_ACCOUNT_ID = 'receiver.testnet'; // the ultimate recipient of the meta transaction execution
@@ -24,12 +25,14 @@ export default async function metaTransaction(signerAccountId: string = SIGNER_A
         return;
     }
 
-    const credentialsPath = join(homedir(), '.near-credentials');
-
     // initialize testnet RPC provider
     const rpcProvider = getTestnetRpcProvider();
     // initialize the transaction signer using a pre-existing key for `accountId`
-    const { signer } = getPlaintextFilesystemSigner({ account: signerAccountId, network: 'testnet', filepath: credentialsPath });
+    const signer = getSignerFromKeystore(
+      signerAccountId,
+      'testnet',
+      new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials'))
+    );
 
     const { delegateAction, signature } = await SignedTransactionComposer.init({
         sender: signerAccountId,
@@ -43,11 +46,11 @@ export default async function metaTransaction(signerAccountId: string = SIGNER_A
       .toSignedDelegateAction();
 
     // initialize the relayer's signer
-    const { signer: relayerSigner } = getPlaintextFilesystemSigner({
-        account: senderAccountId,
-        network: 'testnet',
-        filepath: credentialsPath,
-    });
+    const relayerSigner = getSignerFromKeystore(
+      senderAccountId,
+      'testnet',
+      new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials'))
+    );
 
     // sign the outer transaction using the relayer's key
     return SignedTransactionComposer.init({

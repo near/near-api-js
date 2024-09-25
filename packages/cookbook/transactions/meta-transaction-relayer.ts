@@ -1,5 +1,5 @@
 import {
-  getPlaintextFilesystemSigner,
+  getSignerFromKeystore,
   getTestnetRpcProvider,
   SignedTransactionComposer,
 } from '@near-js/client';
@@ -7,6 +7,7 @@ import { encodeSignedDelegate } from '@near-js/transactions';
 import chalk from 'chalk';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
+import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 
 /**
  * Submit a transaction to a relayer
@@ -20,12 +21,10 @@ export default async function sendMetaTransactionViaRelayer(signerAccountId: str
     return;
   }
 
-  const credentialsPath = join(homedir(), '.near-credentials');
-
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcProvider();
   // initialize the transaction signer using a pre-existing key for `accountId`
-  const { signer } = getPlaintextFilesystemSigner({ account: signerAccountId, network: 'testnet', filepath: credentialsPath });
+  const signer = getSignerFromKeystore(signerAccountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
 
   const signedDelegate = await SignedTransactionComposer.init({
     sender: signerAccountId,

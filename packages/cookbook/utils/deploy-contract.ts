@@ -1,8 +1,9 @@
 import {
   deployContract,
-  getPlaintextFilesystemSigner,
+  getSignerFromKeystore,
   getTestnetRpcProvider,
 } from '@near-js/client';
+import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
@@ -16,12 +17,10 @@ export default async function deployContractCookbook(accountId: string, wasmPath
     return;
   }
 
-  const credentialsPath = join(homedir(), '.near-credentials');
-
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcProvider();
   // initialize the transaction signer using a pre-existing key for `accountId`
-  const { signer } = getPlaintextFilesystemSigner({ account: accountId, network: 'testnet', filepath: credentialsPath });
+  const signer = getSignerFromKeystore(accountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
 
   await deployContract({
     account: accountId,
