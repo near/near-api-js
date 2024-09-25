@@ -1,7 +1,7 @@
 import type { PublicKey } from '@near-js/crypto';
-import type { AccessKeyView } from '@near-js/types';
 
 import type { RpcQueryProvider } from './providers';
+import { FullAccessKey, FunctionCallAccessKey } from './view';
 
 interface Dependent<T> {
   deps: T;
@@ -13,7 +13,7 @@ export interface MessageSigner {
 }
 
 export interface AccessKeySigner extends MessageSigner {
-  getAccessKey(ignoreCache?: boolean): Promise<AccessKeyView>;
+  getAccessKey(ignoreCache?: boolean): Promise<FullAccessKey | FunctionCallAccessKey>;
   getNonce(ignoreCache?: boolean): Promise<bigint>;
   getSigningAccount(): string;
 }

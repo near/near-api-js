@@ -10,6 +10,8 @@ import type {
 } from '@near-js/types';
 
 import type {
+  FunctionCallAccessKey,
+  FullAccessKey,
   RpcProviderDependency,
   RpcProviderQueryParams,
   ViewAccessKeyParams,
@@ -106,8 +108,8 @@ export async function view<T extends SerializedReturnValue>({ account, method, a
  * @param blockReference block ID/finality
  * @param deps readonly RPC dependencies
  */
-export function getAccessKey({ account, publicKey, blockReference, deps }: ViewAccessKeyParams) {
-  return query<AccessKeyView>({
+export async function getAccessKey({ account, publicKey, blockReference, deps }: ViewAccessKeyParams) {
+  const { nonce, permission } = await query<AccessKeyView>({
     request: RequestType.ViewAccessKey,
     account,
     args: {
@@ -116,6 +118,21 @@ export function getAccessKey({ account, publicKey, blockReference, deps }: ViewA
     blockReference,
     deps,
   });
+
+  if (permission === 'FullAccess') {
+    return {
+      nonce,
+      publicKey,
+    } as FullAccessKey;
+  }
+  const { FunctionCall: { allowance, receiver_id, method_names } } = permission;
+  return {
+    allowance: BigInt(allowance),
+    contract: receiver_id,
+    methods: method_names,
+    nonce,
+    publicKey,
+  } as FunctionCallAccessKey;
 }
 
 /**
@@ -139,13 +156,33 @@ export function getAccountState({ account, blockReference, deps }: ViewAccountPa
  * @param blockReference block ID/finality
  * @param deps readonly RPC dependencies
  */
-export function getAccessKeys({ account, blockReference, deps }: ViewAccountParams) {
-  return query<AccessKeyList>({
+export async function getAccessKeys({ account, blockReference, deps }: ViewAccountParams) {
+  const { keys } = await query<AccessKeyList>({
     request: RequestType.ViewAccessKeyList,
     account,
     blockReference,
     deps,
   });
+
+  return keys.reduce((accessKeys, { access_key: { nonce, permission }, public_key: publicKey }) => {
+    if (permission === 'FullAccess') {
+      accessKeys.fullAccessKeys.push({
+        nonce,
+        publicKey,
+      });
+    } else {
+      const { FunctionCall: { allowance, receiver_id, method_names } } = permission;
+      accessKeys.functionCallAccessKeys.push({
+        allowance: BigInt(allowance),
+        contract: receiver_id,
+        methods: method_names,
+        nonce,
+        publicKey,
+      });
+    }
+
+    return accessKeys;
+  }, { fullAccessKeys: [] as FullAccessKey[], functionCallAccessKeys: [] as FunctionCallAccessKey[] });
 }
 
 /**

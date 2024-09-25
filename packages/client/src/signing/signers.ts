@@ -7,12 +7,13 @@ import { InMemorySigner } from '@near-js/signers';
 
 import type {
   AccessKeySigner,
+  FullAccessKey,
+  FunctionCallAccessKey,
   MessageSigner,
   SignerDependency,
   ViewAccountParams,
 } from '../interfaces';
 import { getAccessKey } from '../view';
-import { AccessKeyView } from '@near-js/types';
 
 /**
  * Initialize a message signer from a KeyPair
@@ -64,7 +65,7 @@ export function getSignerFromKeystore(account: string, network: string, keyStore
  * @param deps sign-and-send dependencies
  */
 export function getAccessKeySigner({ account, blockReference, deps: { rpcProvider, signer } }: ViewAccountParams & SignerDependency): AccessKeySigner {
-  let accessKey: AccessKeyView;
+  let accessKey: FullAccessKey | FunctionCallAccessKey;
   let nonce: bigint;
 
   return {

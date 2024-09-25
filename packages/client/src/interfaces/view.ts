@@ -25,3 +25,20 @@ export interface ViewContractStateParams extends ViewAccountParams {
 export interface ViewAccessKeyParams extends ViewAccountParams {
   publicKey: string;
 }
+
+interface AccessKey {
+  nonce: bigint;
+  publicKey: string;
+}
+
+export interface FullAccessKey extends AccessKey {}
+export interface FunctionCallAccessKey extends AccessKey {
+  contract: string;
+  methods: string[];
+  allowance: bigint;
+}
+
+export interface AccessKeys {
+  fullAccessKeys: FullAccessKey[];
+  functionCallAccessKeys: FunctionCallAccessKey[];
+}
