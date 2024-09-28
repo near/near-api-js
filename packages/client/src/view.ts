@@ -98,7 +98,12 @@ export async function view<T extends SerializedReturnValue>({ account, method, a
   try {
     return JSON.parse(stringResult);
   } catch {
-    return (isNaN(+stringResult) ? stringResult : +stringResult) as T;
+    const numeric = +stringResult;
+    if (isNaN(numeric)) {
+      return stringResult as T;
+    }
+
+    return (Number.isSafeInteger(numeric) ? numeric : BigInt(numeric)) as T;
   }
 }
 
