@@ -1,5 +1,4 @@
-import bs58 from "bs58";
-
+import bs58 from "./b58";
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
  */
