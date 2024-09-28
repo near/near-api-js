@@ -11,6 +11,7 @@ import type {
 } from '@near-js/types';
 
 import type {
+  AccountState,
   FunctionCallAccessKey,
   FullAccessKey,
   RpcProviderDependency,
@@ -19,6 +20,7 @@ import type {
   ViewAccountParams,
   ViewContractStateParams,
   ViewParams,
+  ViewValidatorStakeParams,
 } from './interfaces';
 
 const DEFAULT_VIEW_BLOCK_REFERENCE = { finality: 'optimistic' };
@@ -147,13 +149,20 @@ export async function getAccessKey({ account, publicKey, blockReference, deps }:
  * @param blockReference block ID/finality
  * @param deps readonly RPC dependencies
  */
-export function getAccountState({ account, blockReference, deps }: ViewAccountParams) {
-  return query<AccountView>({
+export async function getAccountState({ account, blockReference, deps }: ViewAccountParams) {
+  const accountState = await query<AccountView>({
     request: RequestType.ViewAccount,
     account,
     blockReference,
     deps,
   });
+
+  return {
+    availableBalance: BigInt(accountState.amount),
+    codeHash: accountState.code_hash,
+    locked: BigInt(accountState.locked),
+    storageUsed: BigInt(accountState.storage_usage),
+  } as AccountState;
 }
 
 /**
