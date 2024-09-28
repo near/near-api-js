@@ -6,6 +6,7 @@ import type {
   ContractCodeView,
   QueryResponseKind,
   SerializedReturnValue,
+  StakedAccount,
   ViewStateResult,
 } from '@near-js/types';
 
@@ -243,4 +244,27 @@ export async function getNonce({ account, publicKey, blockReference, deps }: Vie
   });
 
   return BigInt(nonce);
+}
+
+/**
+ * Get the balance staked with a validator
+ * @param account the account staking Near with the validator
+ * @param validator contract with which Near is staked
+ * @param blockReference block ID/finality
+ * @param deps readonly RPC dependencies
+ */
+export async function getStakedBalance({ account, validator, blockReference, deps }: ViewValidatorStakeParams) {
+  const staked = await view<StakedAccount>({
+    account: validator,
+    blockReference,
+    method: 'get_account',
+    args: { account_id: account },
+    deps,
+  });
+
+  return {
+    canWithdraw: staked.can_withdraw,
+    stakedBalance: BigInt(staked.staked_balance),
+    unstakedBalance: BigInt(staked.unstaked_balance),
+  };
 }

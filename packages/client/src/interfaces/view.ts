@@ -13,6 +13,10 @@ export interface ViewAccountParams extends ViewBaseParams {
   account: string;
 }
 
+export interface ViewValidatorStakeParams extends ViewAccountParams {
+  validator: string;
+}
+
 export interface ViewParams<T = object> extends ViewAccountParams {
   method: string;
   args?: T;
@@ -41,4 +45,11 @@ export interface FunctionCallAccessKey extends AccessKey {
 export interface AccessKeys {
   fullAccessKeys: FullAccessKey[];
   functionCallAccessKeys: FunctionCallAccessKey[];
+}
+
+export interface AccountState {
+  availableBalance: bigint;
+  codeHash: string;
+  locked: bigint;
+  storageUsed: bigint;
 }
