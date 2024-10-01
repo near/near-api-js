@@ -1,2 +1,2 @@
-export { InMemorySigner } from './in_memory_signer';
-export { Signer } from './signer';
+export { InMemorySigner } from './in_memory_signer.js';
+export { Signer } from './signer.js';

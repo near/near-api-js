@@ -1,5 +1,5 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { ContractState } from './types';
+import type { ContractState } from './types.js';
 
 const notImplemented =
     (name: string) =>
@@ -63,7 +63,7 @@ export class Runtime {
         const storageKey = Buffer.from(new Uint8Array(this.memory.buffer, Number(keyPtr), Number(keyLen)));
 
         const stateVal = this.context.contractState.filter((obj) => Buffer.compare(obj.key, storageKey) === 0).map((obj) => obj.value);
-        
+
         if (stateVal.length === 0) return null;
 
         return stateVal.length > 1 ? stateVal : stateVal[0];
@@ -278,7 +278,7 @@ export class Runtime {
 
     private panic (message: string) {
         throw new Error('panic: ' + message);
-    } 
+    }
 
     private abort (msg_ptr: bigint, filename_ptr: bigint, line: number, col: number) {
         const msg = this.readUTF16CStr(msg_ptr);

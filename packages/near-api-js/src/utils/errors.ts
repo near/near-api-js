@@ -10,4 +10,3 @@ export {
     PositionalArgsError,
     TypedError,
 } from '@near-js/types';
-export { logWarning } from '@near-js/utils';

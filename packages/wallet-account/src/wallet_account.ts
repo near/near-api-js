@@ -2,7 +2,7 @@
  * This module exposes two classes:
  * * {@link WalletConnection} which redirects users to [NEAR Wallet](https://wallet.near.org/) for key management.
  * * {@link ConnectedWalletAccount} is an {@link "@near-js/accounts".account.Account | Account} implementation that uses {@link WalletConnection} to get keys
- * 
+ *
  * @module walletAccount
  */
 import {
@@ -13,12 +13,12 @@ import {
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
-import { FinalExecutionOutcome } from '@near-js/types';
+import {AccessKeyInfoView, FinalExecutionOutcome} from '@near-js/types';
 import { baseDecode } from '@near-js/utils';
 import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
 import { serialize } from 'borsh';
 
-import { Near } from './near';
+import { Near } from './near.js';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -48,13 +48,13 @@ interface RequestSignTransactionsOptions {
 
 /**
  * This class is not intended for use outside the browser. Without `window` (i.e. in server contexts), it will instantiate but will throw a clear error when used.
- * 
+ *
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#wallet](https://docs.near.org/tools/near-api-js/quick-reference#wallet)
  * @example
  * ```js
  * // create new WalletConnection instance
  * const wallet = new WalletConnection(near, 'my-app');
- * 
+ *
  * // If not signed in redirect to the NEAR wallet to sign in
  * // keys will be stored in the BrowserLocalStorageKeyStore
  * if(!wallet.isSignedIn()) return wallet.requestSignIn()
@@ -227,14 +227,15 @@ export class WalletConnection {
 
     /**
      * Constructs string URL to the wallet to sign a transaction or batch of transactions.
-     * 
+     *
      * @param options A required options object
      * @param options.transactions List of transactions to sign
      * @param options.callbackUrl URL to redirect upon success. Default: current url
      * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
-     * 
+     *
      */
     requestSignTransactionsUrl({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): string {
+        console.log('alohanaj requestSignTransactionsUrl. transactions', transactions)
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
@@ -250,12 +251,12 @@ export class WalletConnection {
 
     /**
      * Requests the user to quickly sign for a transaction or batch of transactions by redirecting to the wallet.
-     * 
+     *
      * @param options A required options object
      * @param options.transactions List of transactions to sign
      * @param options.callbackUrl URL to redirect upon success. Default: current url
      * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
-     * 
+     *
      */
     requestSignTransactions(options: RequestSignTransactionsOptions): void {
         const url = this.requestSignTransactionsUrl(options);
@@ -336,7 +337,15 @@ export class ConnectedWalletAccount extends Account {
         this.walletConnection = walletConnection;
     }
 
-    // Overriding Account methods
+  async getAccessKeys(): Promise<AccessKeyInfoView[]> {
+    return super.getAccessKeys();
+  }
+
+  getConnection(): Connection {
+      return super.getConnection()
+  }
+
+  // Overriding Account methods
 
     /**
      * Sign a transaction by redirecting to the NEAR Wallet
@@ -348,7 +357,8 @@ export class ConnectedWalletAccount extends Account {
      * @param options.walletCallbackUrl URL to redirect upon completion of the wallet signing process. Default: current URL.
      */
     async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
-        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        const conn = this.getConnection()
+        const localKey = await conn.signer.getPublicKey(this.walletConnection.getAccountId(), conn.networkId);
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
             throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
@@ -366,13 +376,13 @@ export class ConnectedWalletAccount extends Account {
             }
         }
 
-        const block = await this.connection.provider.block({ finality: 'final' });
+        const block = await conn.provider.block({ finality: 'final' });
         const blockHash = baseDecode(block.header.hash);
 
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
         const nonce = accessKey.access_key.nonce + 1n;
-        const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+        const transaction = createTransaction(this.walletConnection.getAccountId(), publicKey, receiverId, nonce, actions, blockHash);
         await this.walletConnection.requestSignTransactions({
             transactions: [transaction],
             meta: walletMeta,
@@ -407,7 +417,7 @@ export class ConnectedWalletAccount extends Account {
             Accept multisig access keys and let wallets attempt to signAndSendTransaction
             If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
             ********************************/
-            if (allowedReceiverId === this.accountId && allowedMethods.includes(MULTISIG_HAS_METHOD)) {
+            if (allowedReceiverId === this.walletConnection.getAccountId() && allowedMethods.includes(MULTISIG_HAS_METHOD)) {
                 return true;
             }
             if (allowedReceiverId === receiverId) {

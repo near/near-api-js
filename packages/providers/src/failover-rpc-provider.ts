@@ -29,7 +29,7 @@ import {
     RpcQueryRequest,
 } from '@near-js/types';
 import { SignedTransaction } from '@near-js/transactions';
-import { Provider } from './provider';
+import { Provider } from './provider.js';
 import { TxExecutionStatus } from '@near-js/types';
 
 /**
@@ -146,7 +146,7 @@ export class FailoverRpcProvider extends Provider {
      */
     async txStatus(
         txHash: Uint8Array | string,
-        accountId: string, 
+        accountId: string,
         waitUntil: TxExecutionStatus
     ): Promise<FinalExecutionOutcome> {
         return this.withBackoff((currentProvider) => currentProvider.txStatus(txHash, accountId, waitUntil)

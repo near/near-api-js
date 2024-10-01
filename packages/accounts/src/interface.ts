@@ -1,5 +1,5 @@
 import { BlockReference } from "@near-js/types";
-import type { Connection } from "./connection";
+import type { Connection } from "./types.js";
 
 export interface IntoConnection {
     getConnection(): Connection;

@@ -4,10 +4,11 @@ import { deserialize, serialize, Schema } from 'borsh';
 import {
     Action,
     SignedDelegate,
-} from './actions';
-import { DelegateAction } from './delegate';
-import { DelegateActionPrefix } from './prefix';
-import { Signature } from './signature';
+} from './actions.js';
+import { DelegateAction } from './delegate.js';
+import { DelegateActionPrefix } from './prefix.js';
+import { Signature } from './signature.js';
+import {IDelegateAction} from './types.js';
 
 /**
  * Borsh-encode a delegate action for inclusion as an action within a meta transaction
@@ -15,7 +16,7 @@ import { Signature } from './signature';
  *  signed delegate actions may never be identical to signed transactions with the same fields
  * @param delegateAction Delegate action to be signed by the meta transaction sender
  */
-export function encodeDelegateAction(delegateAction: DelegateAction) {
+export function encodeDelegateAction(delegateAction: IDelegateAction) {
     return new Uint8Array([
         ...serialize(SCHEMA.DelegateActionPrefix, new DelegateActionPrefix()),
         ...serialize(SCHEMA.DelegateAction, delegateAction),

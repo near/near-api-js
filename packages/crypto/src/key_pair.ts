@@ -1,8 +1,7 @@
-import { KeyPairBase } from './key_pair_base';
-import { KeyPairEd25519 } from './key_pair_ed25519';
-import { KeyPairSecp256k1 } from './key_pair_secp256k1';
-
-export type KeyPairString = `ed25519:${string}` | `secp256k1:${string}`;
+import { KeyPairBase } from './key_pair_base.js';
+import { KeyPairEd25519 } from './key_pair_ed25519.js';
+import { KeyPairSecp256k1 } from './key_pair_secp256k1.js';
+import type { KeyPairString } from "./types.js";
 
 export abstract class KeyPair extends KeyPairBase {
     /**

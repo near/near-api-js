@@ -1,8 +1,7 @@
 import { PublicKey } from '@near-js/crypto';
 import { Enum } from '@near-js/types';
-
-import { DelegateAction } from './delegate';
-import { Signature } from './signature';
+import type { IDelegateAction } from './types.js';
+import { Signature } from './signature.js';
 
 export class FunctionCallPermission {
     allowance?: bigint;
@@ -52,6 +51,8 @@ export class DeployContract {
     }
 
 }
+
+// consider directly importing this into the btc-example
 export class FunctionCall {
     methodName: string;
     args: Uint8Array;
@@ -106,10 +107,10 @@ export class DeleteAccount {
     }
 }
 export class SignedDelegate {
-    delegateAction: DelegateAction;
+    delegateAction: IDelegateAction;
     signature: Signature;
 
-    constructor({ delegateAction, signature }: { delegateAction: DelegateAction, signature: Signature }) {
+    constructor({ delegateAction, signature }: { delegateAction: IDelegateAction, signature: Signature }) {
         this.delegateAction = delegateAction;
         this.signature = signature;
     }

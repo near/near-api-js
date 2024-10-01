@@ -39,9 +39,9 @@ import {
     SignedTransaction,
 } from '@near-js/transactions';
 
-import { exponentialBackoff } from './exponential-backoff';
-import { Provider } from './provider';
-import { ConnectionInfo, fetchJsonRpc } from './fetch_json';
+import { exponentialBackoff } from './exponential-backoff.js';
+import { Provider } from './provider.js';
+import { ConnectionInfo, fetchJsonRpc } from './fetch_json.js';
 import { TxExecutionStatus } from '@near-js/types';
 
 /** @hidden */
@@ -267,7 +267,7 @@ export class JsonRpcProvider extends Provider {
      * Returns the next light client block as far in the future as possible from the last known hash
      * to still be able to validate from that hash. This will either return the last block of the
      * next epoch, or the last final known block.
-     * 
+     *
      * @see [https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
      */
     async nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse> {

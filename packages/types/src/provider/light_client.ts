@@ -3,9 +3,9 @@
  * @module
  */
 
-import { BlockHeaderInnerLiteView, MerklePath } from './protocol';
-import { ExecutionOutcomeWithIdView } from './response';
-import { ValidatorStakeView } from './validator';
+import { BlockHeaderInnerLiteView, MerklePath } from './protocol.js';
+import { ExecutionOutcomeWithIdView } from './response.js';
+import { ValidatorStakeView } from './validator.js';
 
 export interface LightClientBlockLiteView {
     prev_block_hash: string;

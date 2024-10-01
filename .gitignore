@@ -21,7 +21,9 @@ lib/
 
 # Generated test files
 test-keys/
-
-.turbo
-
 typedoc-docs/
+
+# Yarn ~4.5.0 related
+.yarn
+.pnp.cjs
+.pnp.loader.mjs

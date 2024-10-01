@@ -15,9 +15,9 @@ import {
     SignedDelegate,
     Stake,
     Transfer,
-} from './actions';
-import { DelegateAction } from './delegate';
-import { Signature } from './signature';
+} from './actions.js';
+import type { IDelegateAction } from './types.js';
+import { Signature } from './signature.js';
 
 /**
  * Creates a full access key with full access permissions.
@@ -103,11 +103,13 @@ function functionCall(
     stringify = stringifyJsonOrBytes,
     jsContract = false
 ): Action {
+    console.log('alohanaj action creator functionCall', methodName, args, gas, deposit)
     if (jsContract) {
         return new Action({
             functionCall: new FunctionCall({ methodName, args: args as Uint8Array, gas, deposit }),
         });
     }
+    console.log('alohanaj jic after jsContract thing')
 
     return new Action({
         functionCall: new FunctionCall({
@@ -176,7 +178,7 @@ function signedDelegate({
     delegateAction,
     signature,
 }: {
-    delegateAction: DelegateAction;
+    delegateAction: IDelegateAction;
     signature: Signature;
 }): Action {
     return new Action({

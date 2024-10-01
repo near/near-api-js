@@ -1,6 +1,6 @@
 import { Signer, InMemorySigner } from '@near-js/signers';
 import { Provider, JsonRpcProvider, FailoverRpcProvider } from '@near-js/providers';
-import { IntoConnection } from './interface';
+import { IntoConnection } from './interface.js';
 
 /**
  * @param config Contains connection info details
@@ -47,7 +47,7 @@ export class Connection implements IntoConnection {
         this.networkId = networkId;
         this.provider = provider;
         this.signer = signer;
-        this.jsvmAccountId = jsvmAccountId; 
+        this.jsvmAccountId = jsvmAccountId;
     }
 
     getConnection(): Connection {

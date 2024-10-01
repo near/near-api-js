@@ -1,18 +1,18 @@
-import { KeySize, KeyType } from './constants';
-import { KeyPairBase, Signature } from './key_pair_base';
-import { PublicKey } from './public_key';
+import { KeySize, KeyType } from './constants.js';
+import { KeyPairBase, Signature } from './key_pair_base.js';
+import { PublicKey } from './public_key.js';
 import secp256k1 from 'secp256k1';
 import randombytes from 'randombytes';
-import { KeyPairString } from './key_pair';
+import type { KeyPairString } from './types.js';
 import { baseDecode, baseEncode } from '@near-js/utils';
 /**
  * This class provides key pair functionality for secp256k1 curve:
  * generating key pairs, encoding key pairs, signing and verifying.
- * nearcore expects secp256k1 public keys to be 64 bytes at all times, 
- * even when string encoded the secp256k1 library returns 65 byte keys 
+ * nearcore expects secp256k1 public keys to be 64 bytes at all times,
+ * even when string encoded the secp256k1 library returns 65 byte keys
  * (including a 1 byte header that indicates how the pubkey was encoded).
  * We'll force the secp256k1 library to always encode uncompressed
- * keys with the corresponding 0x04 header byte, then manually 
+ * keys with the corresponding 0x04 header byte, then manually
  * insert/remove that byte as needed.
  */
 export class KeyPairSecp256k1 extends KeyPairBase {
@@ -60,7 +60,7 @@ export class KeyPairSecp256k1 extends KeyPairBase {
 
     sign(message: Uint8Array): Signature {
         // nearcore expects 65 byte signatures formed by appending the recovery id to the 64 byte signature
-        const { signature, recid } = secp256k1.ecdsaSign(message, baseDecode(this.secretKey)); 
+        const { signature, recid } = secp256k1.ecdsaSign(message, baseDecode(this.secretKey));
         return { signature: new Uint8Array([...signature, recid]), publicKey: this.publicKey };
     }
 

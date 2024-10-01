@@ -1,5 +1,5 @@
-import { KeyPairString } from './key_pair';
-import { PublicKey } from './public_key';
+import type { KeyPairString } from './types.js';
+import { PublicKey } from './public_key.js';
 
 export interface Signature {
     signature: Uint8Array;

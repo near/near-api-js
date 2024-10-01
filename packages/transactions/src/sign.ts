@@ -1,19 +1,20 @@
 import { Signer } from '@near-js/signers';
 import { sha256 } from '@noble/hashes/sha256';
 
-import { Action, SignedDelegate } from './actions';
-import { createTransaction } from './create_transaction';
-import type { DelegateAction } from './delegate';
-import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema';
-import { Signature } from './signature';
+import { Action, SignedDelegate } from './actions.js';
+import { createTransaction } from './create_transaction.js';
+import type { DelegateAction } from './delegate.js';
+import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema.js';
+import { Signature } from './signature.js';
 import { KeyType } from '@near-js/crypto';
+import {IDelegateAction} from "./types.js";
 
 interface MessageSigner {
     sign(message: Uint8Array): Promise<Uint8Array>;
 }
 
 interface SignDelegateOptions {
-    delegateAction: DelegateAction;
+    delegateAction: IDelegateAction;
     signer: MessageSigner;
 }
 

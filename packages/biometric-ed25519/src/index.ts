@@ -15,9 +15,9 @@ import {
     uint8ArrayToBigInt,
     sanitizeCreateKeyResponse,
     sanitizeGetKeyResponse
-} from './utils';
-import { Fido2 } from './fido2';
-import { AssertionResponse } from './index.d';
+} from './utils.js';
+import { Fido2 } from './fido2.js';
+import type { AssertionResponse } from './index.d.js';
 import { KeyPairString } from '@near-js/crypto';
 
 const CHALLENGE_TIMEOUT_MS = 90 * 1000;
@@ -150,3 +150,5 @@ export const isDeviceSupported = async (): Promise<boolean> => {
         return false;
     }
 };
+
+export { AssertionResponse };

@@ -2,15 +2,19 @@
   "name": "@near-js/signers",
   "version": "0.2.0",
   "description": "Modules for cryptographically signing messages",
-  "main": "lib/esm/index.js",
+  "types": "./dist/esm/signers/src/index.d.ts",
+  "main": "./dist/cjs/signers/src/index.js",
+  "module": "./dist/esm/signers/src/index.js",
   "type": "module",
   "scripts": {
-    "build": "pnpm compile:esm && pnpm compile:cjs",
-    "compile:esm": "tsc -p tsconfig.json",
-    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
+    "build": "yarn compile:esm",
+    "postbuild": "yarn compile:cjs",
+    "compile:esm": "tsc -p tsconfig.esm.json",
+    "compile:cjs": "tsc -p tsconfig.cjs.json",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
     "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-    "test": "jest"
+    "test": "jest",
+    "clean": "yarn rimraf dist"
   },
   "keywords": [],
   "author": "",
@@ -22,18 +26,20 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@types/node": "20.0.0",
-    "build": "workspace:*",
+    "@types/node": "^22.7.4",
     "jest": "29.7.0",
+    "rimraf": "6.0.1",
     "ts-jest": "29.1.5",
-    "tsconfig": "workspace:*",
-    "typescript": "5.4.5"
+    "typescript": "^5.6.2"
   },
   "files": [
-    "lib"
+    "./dist/esm",
+    "./dist/cjs"
   ],
   "exports": {
-    "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/esm/index.js"
+    ".": {
+      "require": "./dist/cjs/signers/src/index.js",
+      "import": "./dist/esm/signers/src/index.js"
+    }
   }
 }
