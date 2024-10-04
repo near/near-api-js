@@ -1,5 +1,6 @@
 import { KeySize, KeyType } from './constants.js';
-import { KeyPairBase, Signature } from './key_pair_base.js';
+import { KeyPairBase } from './key_pair_base.js';
+import type { ISignatureCrypto } from './key_pair_base.js';
 import { PublicKey } from './public_key.js';
 import secp256k1 from 'secp256k1';
 import randombytes from 'randombytes';
@@ -58,7 +59,7 @@ export class KeyPairSecp256k1 extends KeyPairBase {
         return new KeyPairSecp256k1(baseEncode(extendedSecretKey));
     }
 
-    sign(message: Uint8Array): Signature {
+    sign(message: Uint8Array): ISignatureCrypto {
         // nearcore expects 65 byte signatures formed by appending the recovery id to the 64 byte signature
         const { signature, recid } = secp256k1.ecdsaSign(message, baseDecode(this.secretKey));
         return { signature: new Uint8Array([...signature, recid]), publicKey: this.publicKey };

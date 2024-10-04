@@ -3,8 +3,9 @@ import { ed25519 } from '@noble/curves/ed25519';
 import randombytes from 'randombytes';
 
 import { KeySize, KeyType } from './constants.js';
-import { KeyPairBase, Signature } from './key_pair_base.js';
+import { KeyPairBase } from './key_pair_base.js';
 import { PublicKey } from './public_key.js';
+import type { ISignatureCrypto } from './key_pair_base.js';
 import type { KeyPairString } from './types.js';
 
 /**
@@ -53,7 +54,7 @@ export class KeyPairEd25519 extends KeyPairBase {
      * @param message The message to be signed.
      * @returns {Signature} The signature object containing the signature and the public key.
      */
-    sign(message: Uint8Array): Signature {
+    sign(message: Uint8Array): ISignatureCrypto {
         const signature = ed25519.sign(message, baseDecode(this.secretKey));
         return { signature, publicKey: this.publicKey };
     }

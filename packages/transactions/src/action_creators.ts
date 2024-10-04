@@ -17,7 +17,7 @@ import {
     Transfer,
 } from './actions.js';
 import type { IDelegateAction } from './types.js';
-import { Signature } from './signature.js';
+import { ISignatureTx } from './ISignatureTx';
 
 /**
  * Creates a full access key with full access permissions.
@@ -179,7 +179,7 @@ function signedDelegate({
     signature,
 }: {
     delegateAction: IDelegateAction;
-    signature: Signature;
+    signature: ISignatureTx;
 }): Action {
     return new Action({
         signedDelegate: new SignedDelegate({ delegateAction, signature }),

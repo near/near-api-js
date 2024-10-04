@@ -1,7 +1,7 @@
-import { PublicKey } from '@near-js/crypto';
+import {ISignatureCrypto, PublicKey} from '@near-js/crypto';
 import { Enum } from '@near-js/types';
 import type { IDelegateAction } from './types.js';
-import { Signature } from './signature.js';
+import { ISignatureTx } from './ISignatureTx';
 
 export class FunctionCallPermission {
     allowance?: bigint;
@@ -106,11 +106,17 @@ export class DeleteAccount {
         this.beneficiaryId = beneficiaryId;
     }
 }
+
+export interface ISignedDelegate {
+  delegateAction: IDelegateAction;
+  signature: ISignatureTx;
+}
+
 export class SignedDelegate {
     delegateAction: IDelegateAction;
-    signature: Signature;
+    signature: ISignatureTx;
 
-    constructor({ delegateAction, signature }: { delegateAction: IDelegateAction, signature: Signature }) {
+    constructor({ delegateAction, signature }: { delegateAction: IDelegateAction, signature: ISignatureTx }) {
         this.delegateAction = delegateAction;
         this.signature = signature;
     }

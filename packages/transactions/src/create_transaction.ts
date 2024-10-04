@@ -1,7 +1,7 @@
 import { PublicKey } from '@near-js/crypto';
 
 import { Action } from './actions.js';
-import { Transaction } from './schema.js';
+import {ITransaction, Transaction} from './schema.js';
 
 /**
  * Creates a new transaction object with the provided parameters.
@@ -20,7 +20,7 @@ export function createTransaction(
     nonce: bigint | string | number,
     actions: Action[],
     blockHash: Uint8Array
-): Transaction {
+): ITransaction {
     const txNonce = typeof nonce === 'bigint' ? nonce : BigInt(nonce);
     return new Transaction({
         signerId,
@@ -29,5 +29,5 @@ export function createTransaction(
         receiverId,
         actions,
         blockHash,
-    });
+    }) as ITransaction;
 }

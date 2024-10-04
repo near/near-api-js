@@ -1,15 +1,13 @@
 random tidbits that are helpful to me during this branch focus
 
-look for cicular dependencies
-
-npx madge --circular --extensions ts packages/
 yarn install --refresh-lockfile
-yarn workspaces foreach --worktree -t run build
+yarn workspaces foreach --all -t run build
 
 yarn workspaces foreach --all install
 
 rm -rf lib && yarn cache clean && yarn && yarn tsc -p ../../tsconfig.esm.json
 
+yarn workspaces foreach --all -t run clean
 yarn workspaces foreach --all -t run compile:cjs
 yarn workspaces foreach --all -t run compile:esm
 

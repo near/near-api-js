@@ -1,13 +1,20 @@
 import { Signer } from '@near-js/signers';
 import { sha256 } from '@noble/hashes/sha256';
 
-import { Action, SignedDelegate } from './actions.js';
+import {Action, ISignedDelegate, SignedDelegate} from './actions.js';
 import { createTransaction } from './create_transaction.js';
 import type { DelegateAction } from './delegate.js';
-import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema.js';
-import { Signature } from './signature.js';
+import {
+  encodeDelegateAction,
+  encodeTransaction,
+  ISignedTransaction,
+  ITransaction,
+  SignedTransaction, Transaction
+} from './schema.js';
+import {createSignature, ISignatureTx} from './ISignatureTx';
+// can't use import type here because we're referencing the variants
 import { KeyType } from '@near-js/crypto';
-import {IDelegateAction} from "./types.js";
+import { IDelegateAction } from "./types.js";
 
 interface MessageSigner {
     sign(message: Uint8Array): Promise<Uint8Array>;
@@ -37,13 +44,15 @@ async function signTransactionObject(transaction: Transaction, signer: Signer, a
     const keyType = transaction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1;
     const signedTx = new SignedTransaction({
         transaction,
-        signature: new Signature({ keyType, data: signature.signature })
+        signature: createSignature({ keyType, data: signature.signature })
     });
     return [hash, signedTx];
 }
 
 export async function signTransaction(transaction: Transaction, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
+
 export async function signTransaction(receiverId: string, nonce: bigint, actions: Action[], blockHash: Uint8Array, signer: Signer, accountId?: string, networkId?: string): Promise<[Uint8Array, SignedTransaction]>;
+
 export async function signTransaction(...args): Promise<[Uint8Array, SignedTransaction]> {
     if (args[0].constructor === Transaction) {
         const [ transaction, signer, accountId, networkId ] = args;
@@ -67,13 +76,14 @@ export async function signDelegateAction({ delegateAction, signer }: SignDelegat
     const signature = await signer.sign(message);
 
     const keyType = delegateAction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1;
-    const signedDelegateAction = new SignedDelegate({
+    const delegateSignature = createSignature({
+      keyType,
+      data: signature,
+    })
+    const signedDelegateAction: ISignedDelegate = {
         delegateAction,
-        signature: new Signature({
-            keyType,
-            data: signature,
-        }),
-    });
+        signature: delegateSignature
+    };
 
     return {
         hash: new Uint8Array(sha256(message)),

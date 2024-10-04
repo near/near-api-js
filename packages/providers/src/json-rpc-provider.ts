@@ -112,7 +112,7 @@ export class JsonRpcProvider extends Provider {
      * @param waitUntil
      */
     async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
-        const bytes = encodeTransaction(signedTransaction);
+        const bytes = encodeTransaction(signedTransaction.transaction);
         return this.sendJsonRpc('send_tx', { signed_tx_base64: Buffer.from(bytes).toString('base64'), wait_until: waitUntil });
     }
 
