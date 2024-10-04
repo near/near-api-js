@@ -1,13 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "outDir": "./dist/cjs",
+    "module": "ESNext",
+    "outDir": "./dist/esm",
     "declaration": true,
     "declarationMap": true,
     "types": ["node"],
     "paths": {
-      "@near-js/*": ["../*/src/index.ts"]
+      "@near-js/*": ["../*"]
     }
   },
   "include": ["src/**/*"]

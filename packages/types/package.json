@@ -2,13 +2,11 @@
   "name": "@near-js/types",
   "version": "0.3.0",
   "description": "TypeScript types for working with the Near JS API",
-  "types": "./dist/esm/types/src/index.d.ts",
-  "main": "./dist/cjs/types/src/index.js",
-  "module": "./dist/esm/types/src/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
   "type": "module",
   "scripts": {
-    "build": "yarn compile:esm",
-    "postbuild": "yarn compile:cjs",
     "compile:esm": "tsc -p tsconfig.esm.json",
     "compile:cjs": "tsc -p tsconfig.cjs.json",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
@@ -31,8 +29,8 @@
   ],
   "exports": {
     ".": {
-      "require": "./dist/cjs/types/src/index.js",
-      "import": "./dist/esm/types/src/index.js"
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
     }
   }
 }

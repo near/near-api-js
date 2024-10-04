@@ -60,6 +60,7 @@ abstract class Enum {
  */
 export class PublicKey extends Enum {
     enum: string;
+    // todo: this has to get fixed
     ed25519Key?: ED25519PublicKey;
     secp256k1Key?: SECP256K1PublicKey;
 

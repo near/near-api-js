@@ -1,3 +1,21 @@
+random tidbits that are helpful to me during this branch focus
+
+look for cicular dependencies
+
+npx madge --circular --extensions ts packages/
+yarn install --refresh-lockfile
+yarn workspaces foreach --worktree -t run build
+
+yarn workspaces foreach --all install
+
+rm -rf lib && yarn cache clean && yarn && yarn tsc -p ../../tsconfig.esm.json
+
+yarn workspaces foreach --all -t run compile:cjs
+yarn workspaces foreach --all -t run compile:esm
+
+yarn workspaces foreach --all -t install
+
+
 # NEAR JavaScript API
 
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fnear%2Fnear-api-js%2Fbadge&style=flat&label=Build)](https://actions-badge.atrox.dev/near/near-api-js/goto)
