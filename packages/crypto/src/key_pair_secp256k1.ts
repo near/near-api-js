@@ -32,10 +32,10 @@ export class KeyPairSecp256k1 extends KeyPairBase {
         const secretKey = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
         const withHeader = secp256k1.publicKeyCreate(new Uint8Array(secretKey), false);
         const data = withHeader.subarray(1, withHeader.length); // remove the 0x04 header byte
-        this.publicKey = new PublicKey({
+        this.publicKey = {
             keyType: KeyType.SECP256K1,
             data
-        });
+        };
         this.secretKey = baseEncode(secretKey);
         this.extendedSecretKey = extendedSecretKey;
     }

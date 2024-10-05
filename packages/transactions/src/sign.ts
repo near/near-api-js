@@ -41,7 +41,8 @@ async function signTransactionObject(transaction: Transaction, signer: Signer, a
     const message = encodeTransaction(transaction);
     const hash = new Uint8Array(sha256(message));
     const signature = await signer.signMessage(message, accountId, networkId);
-    const keyType = transaction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1;
+    const keyType = transaction.publicKey.keyType
+    // const keyType = transaction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1;
     const signedTx = new SignedTransaction({
         transaction,
         signature: createSignature({ keyType, data: signature.signature })
@@ -75,7 +76,8 @@ export async function signDelegateAction({ delegateAction, signer }: SignDelegat
     const message = encodeDelegateAction(delegateAction);
     const signature = await signer.sign(message);
 
-    const keyType = delegateAction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1;
+    const keyType = delegateAction.publicKey.keyType
+    // const keyType = delegateAction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1;
     const delegateSignature = createSignature({
       keyType,
       data: signature,

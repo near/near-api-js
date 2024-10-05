@@ -19,6 +19,7 @@ import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transac
 import { serialize } from 'borsh';
 
 import { Near } from './near.js';
+import {publicKeyFrom} from "@near-js/crypto/src/public_key";
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -379,7 +380,7 @@ export class ConnectedWalletAccount extends Account {
         const block = await conn.provider.block({ finality: 'final' });
         const blockHash = baseDecode(block.header.hash);
 
-        const publicKey = PublicKey.from(accessKey.public_key);
+        const publicKey = publicKeyFrom(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
         const nonce = accessKey.access_key.nonce + 1n;
         const transaction = createTransaction(this.walletConnection.getAccountId(), publicKey, receiverId, nonce, actions, blockHash);

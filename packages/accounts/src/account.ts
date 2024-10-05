@@ -35,6 +35,7 @@ import {
 import { Connection } from './connection.js';
 import { viewFunction, viewState } from './utils.js';
 import { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface.js';
+import {publicKeyFrom} from "@near-js/crypto/src/public_key";
 
 const {
     addKey,
@@ -281,9 +282,10 @@ export class Account implements IntoConnection {
      */
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: bigint): Promise<Account> {
         const accessKey = fullAccessKey();
+
         await this.signAndSendTransaction({
             receiverId: contractId,
-            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]
+            actions: [createAccount(), transfer(amount), addKey(publicKeyFrom(publicKey), accessKey), deployContract(data)]
         });
         const contractAccount = new Account(this.connection, contractId);
         return contractAccount;
@@ -308,7 +310,7 @@ export class Account implements IntoConnection {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction({
             receiverId: newAccountId,
-            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]
+            actions: [createAccount(), transfer(amount), addKey(publicKeyFrom(publicKey), accessKey)]
         });
     }
 
@@ -396,7 +398,7 @@ export class Account implements IntoConnection {
         }
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [addKey(PublicKey.from(publicKey), accessKey)]
+            actions: [addKey(publicKeyFrom(publicKey), accessKey)]
         });
     }
 
@@ -407,7 +409,7 @@ export class Account implements IntoConnection {
     async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteKey(PublicKey.from(publicKey))]
+            actions: [deleteKey(publicKeyFrom(publicKey))]
         });
     }
 
@@ -420,7 +422,7 @@ export class Account implements IntoConnection {
     async stake(publicKey: string | PublicKey, amount: bigint): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [stake(amount, PublicKey.from(publicKey))]
+            actions: [stake(amount, publicKeyFrom(publicKey))]
         });
     }
 

@@ -14,6 +14,7 @@ import {
     MULTISIG_GAS,
 } from './constants.js';
 import { MultisigStateStatus } from './types.js';
+import {publicKeyFrom} from "@near-js/crypto/src/public_key";
 
 const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
 
@@ -183,8 +184,8 @@ export class Account2FA extends AccountMultisig {
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
         return [
             deleteKey(confirmOnlyKey),
-            ...lak2fak.map(({ public_key }) => deleteKey(PublicKey.from(public_key))),
-            ...lak2fak.map(({ public_key }) => addKey(PublicKey.from(public_key), fullAccessKey()))
+            ...lak2fak.map(({ public_key }) => deleteKey(publicKeyFrom(public_key))),
+            ...lak2fak.map(({ public_key }) => addKey(publicKeyFrom(public_key), fullAccessKey()))
         ];
     }
 
@@ -343,4 +344,4 @@ export class Account2FA extends AccountMultisig {
 }
 
 // helpers
-const toPK = (pk) => PublicKey.from(pk);
+const toPK = (pk) => publicKeyFrom(pk);
