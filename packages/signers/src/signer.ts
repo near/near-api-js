@@ -1,4 +1,5 @@
-import { Signature, PublicKey, KeyType } from '@near-js/crypto';
+import { PublicKey, KeyType } from '@near-js/crypto';
+import type { ISignatureCrypto } from '@near-js/crypto';
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
@@ -25,5 +26,5 @@ export abstract class Signer {
      * @param accountId accountId to use for signing.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
-    abstract signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
+    abstract signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<ISignatureCrypto>;
 }

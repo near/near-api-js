@@ -1,7 +1,7 @@
 /** All supported key types */
 export enum KeyType {
-    ED25519 = 0,
-    SECP256K1 = 1,
+    'ED25519',
+    'SECP256K1',
 }
 
 export const KeySize = {

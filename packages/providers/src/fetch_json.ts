@@ -1,5 +1,5 @@
 import { TypedError } from '@near-js/types';
-import { backOff } from 'exponential-backoff';
+import { exponentialBackoff } from './exponential-backoff.js';
 import unfetch from 'isomorphic-unfetch';
 
 const BACKOFF_MULTIPLIER = 1.5;
@@ -28,8 +28,8 @@ export interface ConnectionInfo {
 
 class ProviderError extends Error {
     cause: number;
-    constructor(message: string, options: any) {
-        super(message, options);
+    constructor(message: string) {
+        super(message);
     }
 }
 
@@ -48,7 +48,7 @@ interface JsonRpcRequest {
  * @returns Promise<any> }arsed JSON response from the HTTP request.
  */
 export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: object): Promise<any> {
-    const response = await backOff(async () => {
+    const response = await exponentialBackoff(async () => {
         const res = await unfetch(url, {
             method: 'POST',
             body: JSON.stringify(json),
@@ -57,17 +57,18 @@ export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: o
 
         const { ok, status } = res;
         if (!ok) {
-            throw new ProviderError(await res.text(), { cause: status });
+            throw new ProviderError(await res.text());
         }
 
         if (status === 503) {
-            throw new ProviderError(`${url} unavailable`, { cause: status });
+            throw new ProviderError(`${url} unavailable`);
         } else if (status === 408) {
-            throw new ProviderError('Unused connection', { cause: status });
+            throw new ProviderError('Unused connection');
         }
 
         return res;
-    }, retryConfig);
+        // todo: not sure this last parameter is supposed to be retry, hmm
+    }, retryConfig.numOfAttempts, retryConfig.timeMultiple, retryConfig.retry);
 
     if (!response) {
         throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${url}.`, 'RetriesExceeded');

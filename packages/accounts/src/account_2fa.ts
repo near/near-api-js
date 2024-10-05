@@ -4,16 +4,17 @@ import { actionCreators } from '@near-js/transactions';
 import { Logger } from '@near-js/utils'
 import unfetch from 'isomorphic-unfetch';
 
-import { SignAndSendTransactionOptions } from './account';
-import { AccountMultisig } from './account_multisig';
-import { Connection } from './connection';
+import { SignAndSendTransactionOptions } from './account.js';
+import { AccountMultisig } from './account_multisig.js';
+import { Connection } from './connection.js';
 import {
     MULTISIG_CHANGE_METHODS,
     MULTISIG_CONFIRM_METHODS,
     MULTISIG_DEPOSIT,
     MULTISIG_GAS,
-} from './constants';
-import { MultisigStateStatus } from './types';
+} from './constants.js';
+import { MultisigStateStatus } from './types.js';
+import {publicKeyFrom} from "@near-js/crypto/src/public_key";
 
 const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
 
@@ -47,7 +48,7 @@ export class Account2FA extends AccountMultisig {
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider.sendTransaction | JsonRpcProvider.sendTransaction}
-     * 
+     *
      * @param options Options for the transaction.
      * @param options.receiverId The NEAR account ID of the transaction receiver.
      * @param options.actions The list of actions to be included in the transaction.
@@ -183,8 +184,8 @@ export class Account2FA extends AccountMultisig {
         const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
         return [
             deleteKey(confirmOnlyKey),
-            ...lak2fak.map(({ public_key }) => deleteKey(PublicKey.from(public_key))),
-            ...lak2fak.map(({ public_key }) => addKey(PublicKey.from(public_key), fullAccessKey()))
+            ...lak2fak.map(({ public_key }) => deleteKey(publicKeyFrom(public_key))),
+            ...lak2fak.map(({ public_key }) => addKey(publicKeyFrom(public_key), fullAccessKey()))
         ];
     }
 
@@ -343,4 +344,4 @@ export class Account2FA extends AccountMultisig {
 }
 
 // helpers
-const toPK = (pk) => PublicKey.from(pk);
+const toPK = (pk) => publicKeyFrom(pk);

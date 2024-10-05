@@ -2,10 +2,11 @@ import { baseEncode, baseDecode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import randombytes from 'randombytes';
 
-import { KeySize, KeyType } from './constants';
-import { KeyPairBase, Signature } from './key_pair_base';
-import { PublicKey } from './public_key';
-import { KeyPairString } from './key_pair';
+import { KeySize, KeyType } from './constants.js';
+import { KeyPairBase } from './key_pair_base.js';
+import { PublicKey } from './public_key.js';
+import type { ISignatureCrypto } from './key_pair_base.js';
+import type { KeyPairString } from './types.js';
 
 /**
  * This class provides key pair functionality for Ed25519 curve:
@@ -26,7 +27,7 @@ export class KeyPairEd25519 extends KeyPairBase {
         const decoded = baseDecode(extendedSecretKey);
         const secretKey = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
         const publicKey = ed25519.getPublicKey(new Uint8Array(secretKey));
-        this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: publicKey });
+        this.publicKey = { keyType: KeyType.ED25519, data: publicKey };
         this.secretKey = baseEncode(secretKey);
         this.extendedSecretKey = extendedSecretKey;
     }
@@ -53,7 +54,7 @@ export class KeyPairEd25519 extends KeyPairBase {
      * @param message The message to be signed.
      * @returns {Signature} The signature object containing the signature and the public key.
      */
-    sign(message: Uint8Array): Signature {
+    sign(message: Uint8Array): ISignatureCrypto {
         const signature = ed25519.sign(message, baseDecode(this.secretKey));
         return { signature, publicKey: this.publicKey };
     }

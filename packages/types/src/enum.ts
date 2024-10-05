@@ -1,4 +1,4 @@
-
+// todo get rid of this class stuff altogether
 // TODO determine why subclassing is still necessary even though `enum`
 //  cannot be set in the base class or it will not be borsh-serializable
 export abstract class Enum {

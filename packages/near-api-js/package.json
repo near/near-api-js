@@ -2,14 +2,27 @@
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
     "version": "5.0.0",
+    "scripts": {
+        "build": "yarn compile:esm",
+        "postbuild": "yarn compile:cjs",
+        "compile:esm": "tsc -p tsconfig.esm.json",
+        "compile:cjs": "tsc -p tsconfig.cjs.json",
+        "test": "jest test --passWithNoTests",
+        "lint:src": "eslint --ext .ts src",
+        "lint:src:fix": "eslint --ext .ts --fix src",
+        "lint:test:fix": "eslint --ext .js --fix test",
+        "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
+        "clean": "yarn rimraf dist"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "homepage": "https://github.com/near/near-api-js",
-    "main": "lib/index.js",
-    "browser": "lib/browser-index.js",
-    "types": "lib/index.d.ts",
+    "types": "./dist/esm/near-api-js/src/index.d.ts",
+    "main": "./dist/cjs/near-api-js/src/index.js",
+    "module": "./dist/esm/near-api-js/src/index.js",
+    "browser": "./dist/esm/near-api-js/src/browser-index.js",
     "dependencies": {
         "@near-js/accounts": "workspace:*",
         "@near-js/crypto": "workspace:*",
@@ -31,7 +44,7 @@
     },
     "devDependencies": {
         "@types/http-errors": "1.6.1",
-        "@types/node": "18.11.18",
+        "@types/node": "^22.7.4",
         "bs58": "4.0.0",
         "concurrently": "7.3.0",
         "in-publish": "2.0.0",
@@ -40,27 +53,20 @@
         "near-workspaces": "3.5.0",
         "rimraf": "^6.0.1",
         "semver": "7.1.1",
-        "ts-jest": "29.1.5"
+        "ts-jest": "29.1.5",
+        "typescript": "^5.6.2"
     },
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
-    "scripts": {
-        "compile": "tsc -p ./tsconfig.json",
-        "dev": "pnpm compile -w",
-        "build": "pnpm compile",
-        "test": "jest test --passWithNoTests",
-        "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
-        "lint:src": "eslint --ext .ts src",
-        "lint:fix": "concurrently \"pnpm:lint:*:fix\"",
-        "lint:src:fix": "eslint --ext .ts --fix src",
-        "lint:test:fix": "eslint --ext .js --fix test",
-        "prefuzz": "pnpm build",
-        "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib"
-    },
     "files": [
-        "lib",
-        "dist"
+        "./dist/esm",
+        "./dist/cjs"
     ],
+    "exports": {
+        ".": {
+            "require": "./dist/cjs/near-api-js/src/index.js",
+            "import": "./dist/esm/near-api-js/src/index.js"
+        }
+    },
     "author": "NEAR Inc"
 }

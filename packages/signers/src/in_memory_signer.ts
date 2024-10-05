@@ -1,8 +1,9 @@
-import { KeyPair, PublicKey, Signature, KeyType } from '@near-js/crypto';
+import { KeyPair, PublicKey, KeyType } from '@near-js/crypto';
+import type { ISignatureCrypto } from '@near-js/crypto';
 import { InMemoryKeyStore, KeyStore } from '@near-js/keystores';
 import { sha256 } from '@noble/hashes/sha256';
 
-import { Signer } from './signer';
+import { Signer } from './signer.js';
 
 /**
  * Signs using in memory key store.
@@ -62,7 +63,7 @@ export class InMemorySigner extends Signer {
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns {Promise<Signature>}
      */
-    async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature> {
+    async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<ISignatureCrypto> {
         const hash = new Uint8Array(sha256(message));
         if (!accountId) {
             throw new Error('InMemorySigner requires provided account id');

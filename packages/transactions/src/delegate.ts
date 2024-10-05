@@ -1,7 +1,34 @@
 import { PublicKey } from '@near-js/crypto';
+import type { IDelegateAction } from './types.js';
+import { actionCreators } from './action_creators.js';
+import { Action } from './actions.js';
 
-import { actionCreators } from './action_creators';
-import { Action } from './actions';
+export class DelegateAction {
+  senderId: string;
+  receiverId: string;
+  actions: Array<Action>;
+  nonce: bigint;
+  maxBlockHeight: bigint;
+  publicKey: PublicKey;
+
+  constructor({ senderId, receiverId, actions, nonce, maxBlockHeight, publicKey }:
+                {
+                  senderId: string,
+                  receiverId: string,
+                  actions: Action[],
+                  nonce: bigint,
+                  maxBlockHeight: bigint,
+                  publicKey: PublicKey,
+                }
+  ) {
+    this.senderId = senderId;
+    this.receiverId = receiverId;
+    this.actions = actions;
+    this.nonce = nonce;
+    this.maxBlockHeight = maxBlockHeight;
+    this.publicKey = publicKey;
+  }
+}
 
 const {
     addKey,
@@ -13,33 +40,6 @@ const {
     stake,
     transfer,
 } = actionCreators;
-
-export class DelegateAction {
-    senderId: string;
-    receiverId: string;
-    actions: Array<Action>;
-    nonce: bigint;
-    maxBlockHeight: bigint;
-    publicKey: PublicKey;
-
-    constructor({ senderId, receiverId, actions, nonce, maxBlockHeight, publicKey }:
-      {
-          senderId: string,
-          receiverId: string,
-          actions: Action[],
-          nonce: bigint,
-          maxBlockHeight: bigint,
-          publicKey: PublicKey,
-      }
-    ) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
-        this.actions = actions;
-        this.nonce = nonce;
-        this.maxBlockHeight = maxBlockHeight;
-        this.publicKey = publicKey;
-    }
-}
 
 /**
  * Compose a delegate action for inclusion with a meta transaction signed on the sender's behalf
@@ -57,7 +57,7 @@ export function buildDelegateAction({
     publicKey,
     receiverId,
     senderId,
-}: DelegateAction): DelegateAction {
+}: DelegateAction): IDelegateAction {
     return new DelegateAction({
         senderId,
         receiverId,

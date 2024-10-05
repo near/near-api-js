@@ -16,13 +16,14 @@ export {
     SCHEMA,
     createTransaction,
     signTransaction,
-    Signature,
     SignedTransaction,
     Transaction,
     encodeSignedDelegate,
     encodeDelegateAction,
     encodeTransaction
 } from '@near-js/transactions';
+
+export type { ISignatureTx } from '@near-js/transactions';
 
 import { PublicKey } from '@near-js/crypto';
 import { AccessKey, actionCreators, stringifyJsonOrBytes } from '@near-js/transactions';

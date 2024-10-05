@@ -1,6 +1,6 @@
 import { getTransactionLastResult, Logger } from "@near-js/utils";
 import { ArgumentTypeError, PositionalArgsError } from "@near-js/types";
-import { LocalViewExecution } from "./local-view-execution";
+import { LocalViewExecution } from "./local-view-execution/index.js";
 import validator from "is-my-json-valid";
 import depd from "depd";
 import {
@@ -10,16 +10,16 @@ import {
     AbiSerializationType,
 } from "near-abi";
 
-import { Account } from "./account";
+import { Account } from "./account.js";
 import {
     UnsupportedSerializationError,
     UnknownArgumentError,
     ArgumentSchemaError,
     ConflictingOptions,
-} from "./errors";
-import { IntoConnection } from "./interface";
-import { Connection } from "./connection";
-import { viewFunction } from "./utils";
+} from "./errors.js";
+import { IntoConnection } from "./interface.js";
+import { Connection } from "./connection.js";
+import { viewFunction } from "./utils.js";
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {

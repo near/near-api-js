@@ -2,16 +2,16 @@ import { Action, actionCreators } from '@near-js/transactions';
 import { FinalExecutionOutcome } from '@near-js/types';
 import { Logger } from '@near-js/utils';
 
-import { Account, SignAndSendTransactionOptions } from './account';
-import { Connection } from './connection';
+import { Account, SignAndSendTransactionOptions } from './account.js';
+import { Connection } from './connection.js';
 import {
     MULTISIG_ALLOWANCE,
     MULTISIG_CHANGE_METHODS,
     MULTISIG_DEPOSIT,
     MULTISIG_GAS,
     MULTISIG_STORAGE_KEY,
-} from './constants';
-import { MultisigDeleteRequestRejectionError, MultisigStateStatus } from './types';
+} from './constants.js';
+import { MultisigDeleteRequestRejectionError, MultisigStateStatus } from './types.js';
 
 const { deployContract, functionCall } = actionCreators;
 
@@ -113,7 +113,7 @@ export class AccountMultisig extends Account {
     }
 
     /**
-     * This method submits a canary transaction that is expected to always fail in order to determine whether the contract currently has valid multisig state 
+     * This method submits a canary transaction that is expected to always fail in order to determine whether the contract currently has valid multisig state
      * and whether it is initialized. The canary transaction attempts to delete a request at index u32_max and will go through if a request exists at that index.
      * a u32_max + 1 and -1 value cannot be used for the canary due to expected u32 error thrown before deserialization attempt.
      * @param contractBytes The bytecode of the multisig contract.
@@ -134,7 +134,7 @@ export class AccountMultisig extends Account {
             } else {
                 await this.deleteRequest(u32_max);
             }
-            
+
             return { codeStatus: MultisigCodeStatus.VALID_CODE, stateStatus: MultisigStateStatus.VALID_STATE };
         } catch (e) {
             if (new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(e && e.kind && e.kind.ExecutionError)) {

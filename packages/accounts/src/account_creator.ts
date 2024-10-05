@@ -1,8 +1,8 @@
 import { PublicKey } from '@near-js/crypto';
 import unfetch from 'isomorphic-unfetch';
 
-import { Connection } from './connection';
-import { Account } from './account';
+import { Connection } from './connection.js';
+import { Account } from './account.js';
 
 /**
  * Account creator provides an interface for implementations to actually create accounts

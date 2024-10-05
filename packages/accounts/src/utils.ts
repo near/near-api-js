@@ -4,9 +4,9 @@ import {
     CodeResult,
     PositionalArgsError,
 } from '@near-js/types';
-import { Connection } from './connection';
+import { Connection } from './connection.js';
 import { printTxOutcomeLogs } from '@near-js/utils';
-import { ViewFunctionCallOptions } from './interface';
+import { ViewFunctionCallOptions } from './interface.js';
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());

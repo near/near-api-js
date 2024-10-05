@@ -32,9 +32,10 @@ import {
     printTxOutcomeLogsAndFailures,
 } from '@near-js/utils';
 
-import { Connection } from './connection';
-import { viewFunction, viewState } from './utils';
-import { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface';
+import { Connection } from './connection.js';
+import { viewFunction, viewState } from './utils.js';
+import { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface.js';
+import {publicKeyFrom} from "@near-js/crypto/src/public_key";
 
 const {
     addKey,
@@ -161,7 +162,7 @@ export class Account implements IntoConnection {
     /**
      * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider }
-     * 
+     *
      * @param options The options for signing and sending the transaction.
      * @param options.receiverId The NEAR account ID of the transaction receiver.
      * @param options.actions The list of actions to be performed in the transaction.
@@ -281,9 +282,10 @@ export class Account implements IntoConnection {
      */
     async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: bigint): Promise<Account> {
         const accessKey = fullAccessKey();
+
         await this.signAndSendTransaction({
             receiverId: contractId,
-            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]
+            actions: [createAccount(), transfer(amount), addKey(publicKeyFrom(publicKey), accessKey), deployContract(data)]
         });
         const contractAccount = new Account(this.connection, contractId);
         return contractAccount;
@@ -308,7 +310,7 @@ export class Account implements IntoConnection {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction({
             receiverId: newAccountId,
-            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]
+            actions: [createAccount(), transfer(amount), addKey(publicKeyFrom(publicKey), accessKey)]
         });
     }
 
@@ -396,7 +398,7 @@ export class Account implements IntoConnection {
         }
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [addKey(PublicKey.from(publicKey), accessKey)]
+            actions: [addKey(publicKeyFrom(publicKey), accessKey)]
         });
     }
 
@@ -407,7 +409,7 @@ export class Account implements IntoConnection {
     async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteKey(PublicKey.from(publicKey))]
+            actions: [deleteKey(publicKeyFrom(publicKey))]
         });
     }
 
@@ -420,7 +422,7 @@ export class Account implements IntoConnection {
     async stake(publicKey: string | PublicKey, amount: bigint): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [stake(amount, PublicKey.from(publicKey))]
+            actions: [stake(amount, publicKeyFrom(publicKey))]
         });
     }
 
@@ -569,7 +571,7 @@ export class Account implements IntoConnection {
 
     /**
      * Returns the NEAR tokens balance and validators of a given account that is delegated to the staking pools that are part of the validators set in the current epoch.
-     * 
+     *
      * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
