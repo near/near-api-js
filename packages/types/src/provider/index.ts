@@ -74,4 +74,5 @@ export {
     EpochValidatorInfo,
     NextEpochValidatorInfo,
     ValidatorStakeView,
+    StakedAccount
 } from './validator';
