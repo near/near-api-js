@@ -135,7 +135,7 @@ import {
   getTestnetRpcProvider,
   SignedTransactionComposer,
 } from '@near-js/client';
-import { KeyPairEd25519 } from '@near-js/keystores-browser';
+import { KeyPairEd25519 } from '@near-js/crypto';
 import { BrowserLocalStorageKeyStore } from '@near-js/keystores-browser';
 
 const keystore = new BrowserLocalStorageKeyStore();
@@ -162,14 +162,14 @@ await composer
 keystore.setKey('testnet', 'account.testnet', newKeyPair);
 ```
 
-For convenience, there are also functions wrapping individual actions:
+For convenience, there are also functions wrapping individual actions, e.g. `transfer`:
 ```ts
 import {
   getSignerFromKeystore,
   getTestnetRpcProvider,
   transfer,
 } from '@near-js/client';
-import { KeyPairEd25519 } from '@near-js/keystores-browser';
+import { KeyPairEd25519 } from '@near-js/crypto';
 import { BrowserLocalStorageKeyStore } from '@near-js/keystores-browser';
 
 const keystore = new BrowserLocalStorageKeyStore();
