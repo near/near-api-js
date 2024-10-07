@@ -129,7 +129,7 @@ export async function getAccessKey({ account, publicKey, blockReference, deps }:
 
   if (permission === 'FullAccess') {
     return {
-      nonce,
+      nonce: BigInt(nonce),
       publicKey,
     } as FullAccessKey;
   }
@@ -138,7 +138,7 @@ export async function getAccessKey({ account, publicKey, blockReference, deps }:
     allowance: BigInt(allowance),
     contract: receiver_id,
     methods: method_names,
-    nonce,
+    nonce: BigInt(nonce),
     publicKey,
   } as FunctionCallAccessKey;
 }
