@@ -1,4 +1,4 @@
-import { KeyPairString } from './key_pair';
+import type { KeyPairString } from './constants';
 import { PublicKey } from './public_key';
 
 export interface Signature {

@@ -66,11 +66,13 @@ export {
     FinalExecutionStatusBasic,
     FunctionCallPermissionView,
     QueryResponseKind,
+    SerializedReturnValue,
     ViewStateResult,
 } from './response';
 export {
     CurrentEpochValidatorInfo,
     EpochValidatorInfo,
     NextEpochValidatorInfo,
-    ValidatorStakeView,
+    StakedAccount,
+    ValidatorStakeView
 } from './validator';

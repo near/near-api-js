@@ -1,0 +1,41 @@
+{
+  "name": "@near-js/client",
+  "version": "0.0.1",
+  "description": "",
+  "main": "lib/esm/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm compile:esm && pnpm compile:cjs",
+    "compile:esm": "tsc -p tsconfig.json",
+    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
+    "lint": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern --fix"
+  },
+  "dependencies": {
+    "@near-js/crypto": "workspace:*",
+    "@near-js/keystores": "workspace:*",
+    "@near-js/providers": "workspace:*",
+    "@near-js/signers": "workspace:*",
+    "@near-js/transactions": "workspace:*",
+    "@near-js/types": "workspace:*",
+    "@near-js/utils": "workspace:*",
+    "@noble/hashes": "1.3.3",
+    "isomorphic-fetch": "3.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "20.0.0",
+    "build": "workspace:*",
+    "tsconfig": "workspace:*",
+    "typescript": "5.4.5"
+  },
+  "files": [
+    "lib"
+  ],
+  "exports": {
+    "require": "./lib/commonjs/index.cjs",
+    "import": "./lib/esm/index.js"
+  }
+}

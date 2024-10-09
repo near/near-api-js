@@ -5,7 +5,7 @@ const nearApi = require('../src/index');
 const networkId = 'unittest';
 
 const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
-const HELLO_WASM_BALANCE = BigInt('10000000000000000000000000');
+const HELLO_WASM_BALANCE = 10000000000000000000000000n;
 const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
     changeMethods: ['setValue', 'callPromise']
@@ -25,7 +25,7 @@ async function setUpTestConnection() {
     if (config.masterAccount) {
         // full accessKey on ci-testnet, dedicated rpc for tests.
         const secretKey = config.secretKey || 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
-        await keyStore.setKey(networkId, config.masterAccount, KeyPair.fromString(secretKey));
+        await keyStore.setKey(networkId, config.masterAccount, nearApi.utils.KeyPair.fromString(secretKey));
     }
     return nearApi.connect(config);
 }
@@ -65,7 +65,7 @@ async function createAccountMultisig(near, options) {
         accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
             switch (path) {
-            case '/2fa/getAccessKey': return { publicKey };
+                case '/2fa/getAccessKey': return { publicKey };
             }
         };
         await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
