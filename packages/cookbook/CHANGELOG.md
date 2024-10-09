@@ -1,5 +1,11 @@
 # @near-js/cookbook
 
+## 1.0.23
+
+### Patch Changes
+
+- [#1401](https://github.com/near/near-api-js/pull/1401) [`5b0bbbc1`](https://github.com/near/near-api-js/commit/5b0bbbc17ffe7d89d7767e405d2ca700dc2bba40) Thanks [@andy-haynes](https://github.com/andy-haynes)! - @near-js/client package
+
 ## 1.0.22
 
 ### Patch Changes
