@@ -143,8 +143,8 @@ importers:
   packages/biometric-ed25519:
     dependencies:
       '@hexagon/base64':
-        specifier: 1.1.26
-        version: 1.1.26
+        specifier: 2.0.3
+        version: 2.0.3
       '@near-js/crypto':
         specifier: workspace:*
         version: link:../crypto
@@ -1118,6 +1118,9 @@ packages:
 
   '@hexagon/base64@1.1.26':
     resolution: {integrity: sha512-9HYANYWJAwBbxjkz5P0ZB+JXX7kH7HhUG0FmIBcF7GUmnl6mXnAHFuGOkssW7v2RLNnVvjcKIeOqywSHfw21Qg==}
+
+  '@hexagon/base64@2.0.3':
+    resolution: {integrity: sha512-ZtQDPh0m9MXHK241Cutx4low/WwqtPr0fPeUsXTAEX5Nocrdk6oB9TvyUF9SePrZYkeTL4gFrd+ceMHVb/zC8A==}
 
   '@humanwhocodes/config-array@0.9.5':
     resolution: {integrity: sha512-ObyMyWxZiCu/yTisA7uzx81s40xR2fD5Cg/2Kq7G02ajkNubJf6BopgDTmDyc3U7sXpNKM8cYOw7s7Tyr+DnCw==}
@@ -2093,6 +2096,7 @@ packages:
   eslint@8.20.0:
     resolution: {integrity: sha512-d4ixhz5SKCa1D6SCPrivP7yYVi7nyD6A4vs6HIAul9ujBzcEmZVM3/0NN/yu5nKhmO1wjp5xQ46iRfmDGlOviA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -4607,6 +4611,8 @@ snapshots:
       - supports-color
 
   '@hexagon/base64@1.1.26': {}
+
+  '@hexagon/base64@2.0.3': {}
 
   '@humanwhocodes/config-array@0.9.5':
     dependencies:
