@@ -39,7 +39,7 @@
         "near-hello": "0.5.1",
         "near-workspaces": "3.5.0",
         "rimraf": "^6.0.1",
-        "semver": "7.1.1",
+        "semver": "7.6.3",
         "ts-jest": "29.1.5"
     },
     "keywords": [],
