@@ -2,6 +2,10 @@
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
     "version": "5.0.0",
+    "types": "./dist/esm/near-api-js/src/index.d.ts",
+    "main": "./dist/cjs/near-api-js/src/index.js",
+    "module": "./dist/esm/near-api-js/src/index.js",
+    "type": "module",
     "scripts": {
         "build": "yarn compile:esm",
         "postbuild": "yarn compile:cjs",
@@ -19,9 +23,6 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "homepage": "https://github.com/near/near-api-js",
-    "types": "./dist/esm/near-api-js/src/index.d.ts",
-    "main": "./dist/cjs/near-api-js/src/index.js",
-    "module": "./dist/esm/near-api-js/src/index.js",
     "browser": "./dist/esm/near-api-js/src/browser-index.js",
     "dependencies": {
         "@near-js/accounts": "workspace:*",

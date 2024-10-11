@@ -971,17 +971,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hexagon/base64@npm:*, @hexagon/base64@npm:~1.1.26":
+  version: 1.1.28
+  resolution: "@hexagon/base64@npm:1.1.28"
+  checksum: 10c0/f90876938cda7c369444f9abcf268a9d93fe26269ae9a16a95fa1f294a5e8f9d172a77905fac205d315b4538ab4da90c866ba73cc035cc0fcf5a6062bb6691ca
+  languageName: node
+  linkType: hard
+
 "@hexagon/base64@npm:1.1.26":
   version: 1.1.26
   resolution: "@hexagon/base64@npm:1.1.26"
   checksum: 10c0/3c334f179961871476bcf1b58e12773b97dcf1697dfca93895275a1bf4e0485b02ba91a4f1aa32581fb1743fcac96874609c2f8b3a7c6e68ba3324c4d79e0311
-  languageName: node
-  linkType: hard
-
-"@hexagon/base64@npm:~1.1.26":
-  version: 1.1.28
-  resolution: "@hexagon/base64@npm:1.1.28"
-  checksum: 10c0/f90876938cda7c369444f9abcf268a9d93fe26269ae9a16a95fa1f294a5e8f9d172a77905fac205d315b4538ab4da90c866ba73cc035cc0fcf5a6062bb6691ca
   languageName: node
   linkType: hard
 
@@ -1392,7 +1392,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@near-js/biometric-ed25519@workspace:packages/biometric-ed25519"
   dependencies:
-    "@hexagon/base64": "npm:1.1.26"
+    "@hexagon/base64": "npm:*"
     "@jest/globals": "npm:^29.7.0"
     "@near-js/crypto": "workspace:*"
     "@near-js/utils": "workspace:*"
@@ -1434,6 +1434,7 @@ __metadata:
     "@noble/hashes": "npm:^1.4.0"
     "@types/node": "npm:^22.7.4"
     borsh: "npm:1.0.0"
+    cbor-js: "npm:^0.1.0"
     jest: "npm:29.7.0"
     randombytes: "npm:2.1.0"
     rimraf: "npm:6.0.1"
@@ -1528,6 +1529,7 @@ __metadata:
     "@changesets/cli": "npm:2.24.4"
     "@commitlint/cli": "npm:19.3.0"
     "@commitlint/config-conventional": "npm:19.2.2"
+    "@hexagon/base64": "npm:1.1.26"
     "@types/node": "npm:^22.7.4"
     "@typescript-eslint/eslint-plugin": "npm:6.21.0"
     "@typescript-eslint/parser": "npm:6.21.0"

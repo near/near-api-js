@@ -26,6 +26,9 @@
   "engines": {
     "node": ">=20.15.0"
   },
+  "dependencies": {
+    "@hexagon/base64": "1.1.26"
+  },
   "devDependencies": {
     "@changesets/changelog-github": "0.4.6",
     "@changesets/cli": "2.24.4",

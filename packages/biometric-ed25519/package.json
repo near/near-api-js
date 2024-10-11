@@ -7,8 +7,6 @@
   "module": "./dist/esm/biometric-ed25519/src/index.js",
   "type": "module",
   "scripts": {
-    "build": "yarn compile:esm",
-    "postbuild": "yarn compile:cjs",
     "compile:esm": "tsc -p tsconfig.esm.json",
     "compile:cjs": "tsc -p tsconfig.cjs.json",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
@@ -20,7 +18,7 @@
   "author": "Pagoda",
   "license": "ISC",
   "dependencies": {
-    "@hexagon/base64": "1.1.26",
+    "@hexagon/base64": "*",
     "@near-js/crypto": "workspace:*",
     "@near-js/utils": "workspace:*",
     "@noble/curves": "1.2.0",
