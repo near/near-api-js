@@ -7,8 +7,6 @@
   "module": "./dist/esm/utils/src/index.js",
   "type": "module",
   "scripts": {
-    "build": "yarn compile:esm",
-    "postbuild": "yarn compile:cjs",
     "compile:esm": "tsc -p tsconfig.esm.json",
     "compile:cjs": "tsc -p tsconfig.cjs.json",
     "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
