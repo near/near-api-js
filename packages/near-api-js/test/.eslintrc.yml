@@ -1,4 +1,4 @@
-extends: '../../../.eslintrc.js.yml'
+extends: '../../../.eslintrc.base.yml'
 env:
   jest: true
 globals:

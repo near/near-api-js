@@ -1,10 +1,11 @@
-import { KeySize, KeyType } from './constants';
+import { baseDecode, baseEncode } from '@near-js/utils';
+import randombytes from 'randombytes';
+import secp256k1 from 'secp256k1';
+
+import { KeyPairString, KeySize, KeyType } from './constants';
 import { KeyPairBase, Signature } from './key_pair_base';
 import { PublicKey } from './public_key';
-import secp256k1 from 'secp256k1';
-import randombytes from 'randombytes';
-import { KeyPairString } from './key_pair';
-import { baseDecode, baseEncode } from '@near-js/utils';
+
 /**
  * This class provides key pair functionality for secp256k1 curve:
  * generating key pairs, encoding key pairs, signing and verifying.

@@ -1,7 +1,7 @@
 {
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
@@ -51,7 +51,7 @@
         "test": "jest test --passWithNoTests",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
-        "lint:fix": "concurrently \"pnpm:lint:*:fix\"",
+        "lint:fix": "pnpm lint:src:fix && pnpm lint:test:fix",
         "lint:src:fix": "eslint --ext .ts --fix src",
         "lint:test:fix": "eslint --ext .js --fix test",
         "prefuzz": "pnpm build",

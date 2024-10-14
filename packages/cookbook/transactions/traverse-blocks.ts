@@ -1,8 +1,7 @@
-const { connect, keyStores } = require("near-api-js");
-const path = require("path");
-const homedir = require("os").homedir();
+import {
+  getTestnetRpcArchivalProvider,
+} from '@near-js/client';
 
-const CREDENTIALS_DIR = ".near-credentials";
 // block hash of query start (oldest block)
 const START_BLOCK_HASH = "GZ8vKdcgsavkEndkDWHCjuhyqSR2TGnp9VDZbTzd6ufG";
 // block hash of query end (newest block)
@@ -10,40 +9,23 @@ const END_BLOCK_HASH = "8aEcKhF7N1Jyw84e6vHW6Hzp3Ep7mSXJ6Rvnsy5qGJPF";
 // contract ID or account ID you want to find transactions details for
 const CONTRACT_ID = "relayer.ropsten.testnet";
 
-const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
-const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
-
-// NOTE: we're using the archival rpc to look back in time for a specific set
-// of transactions. For a full list of what nodes are available, visit:
-// https://docs.near.org/docs/develop/node/intro/types-of-node
-const config = {
-  keyStore,
-  networkId: "testnet",
-  nodeUrl: "https://archival-rpc.testnet.near.org",
-};
-
-getTransactions(START_BLOCK_HASH, END_BLOCK_HASH, CONTRACT_ID);
-
-async function getTransactions(startBlock, endBlock, accountId) {
-  const near = await connect(config);
+export default async function traverseBlocks(startBlockHash: string = START_BLOCK_HASH, endBlockHash: string = END_BLOCK_HASH, contractId: string = CONTRACT_ID) {
+  // initialize testnet RPC provider
+  const rpcProvider = getTestnetRpcArchivalProvider();
 
   // creates an array of block hashes for given range
   const blockArr = [];
-  let blockHash = endBlock;
+  let blockHash = endBlockHash;
   do {
-    const currentBlock = await getBlockByID(blockHash);
+    const currentBlock = await rpcProvider.block({ blockId: blockHash });
     blockArr.push(currentBlock.header.hash);
     blockHash = currentBlock.header.prev_hash;
     console.log("working...", blockHash);
-  } while (blockHash !== startBlock);
+  } while (blockHash !== startBlockHash);
 
   // returns block details based on hashes in array
   const blockDetails = await Promise.all(
-    blockArr.map((blockId) =>
-      near.connection.provider.block({
-        blockId,
-      })
-    )
+    blockArr.map((blockId) => rpcProvider.block({ blockId }))
   );
 
   // returns an array of chunk hashes from block details
@@ -53,14 +35,14 @@ async function getTransactions(startBlock, endBlock, accountId) {
 
   //returns chunk details based from the array of hashes
   const chunkDetails = await Promise.all(
-    chunkHashArr.map(chunk => near.connection.provider.chunk(chunk))
+    chunkHashArr.map(chunk => rpcProvider.chunk(chunk))
   );
 
   // checks chunk details for transactions
   // if there are transactions in the chunk we
   // find ones associated with passed accountId
   const transactions = chunkDetails.flatMap((chunk) =>
-    (chunk.transactions || []).filter((tx) => tx.signer_id === accountId)
+    (chunk.transactions || []).filter((tx) => tx.signer_id === contractId)
   );
 
   //creates transaction links from matchingTxs
@@ -70,12 +52,4 @@ async function getTransactions(startBlock, endBlock, accountId) {
   }));
   console.log("MATCHING TRANSACTIONS: ", transactions);
   console.log("TRANSACTION LINKS: ", txsLinks);
-}
-
-async function getBlockByID(blockID) {
-  const near = await connect(config);
-  const blockInfoByHeight = await near.connection.provider.block({
-    blockId: blockID,
-  });
-  return blockInfoByHeight;
 }
