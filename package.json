@@ -29,7 +29,7 @@
     "husky": "7.0.4",
     "rimraf": "6.0.1",
     "turbo": "1.4.5",
-    "typedoc": "0.25.13",
+    "typedoc": "0.26.10",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
