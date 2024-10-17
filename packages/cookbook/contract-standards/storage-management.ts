@@ -1,6 +1,4 @@
 import {
-    createFundedTestnetAccount,
-    generateRandomKeyPair,
     getSignerFromKeystore,
     getTestnetRpcProvider,
     storageDeposit,
@@ -19,17 +17,22 @@ export default async function storageManagementStandard(
     accountId: string
 ) {
     // // run serially since calls may rely on previous calls
-    // await storageBalanceBoundsCall(contractAddress);
-    // await storageDepositCall(contractAddress, accountId);
+    await storageBalanceBoundsCall(contractAddress);
+    await storageDepositCall(contractAddress, accountId);
     // // check balance after deposit, should exist
-    // await storageBalanceOfCall(contractAddress, accountId);
-    // await storageWithdrawCall(contractAddress, accountId);
-    // await storageUnregisterCall(contractAddress, accountId);
+    await storageBalanceOfCall(contractAddress, accountId);
+    try  {
+        await storageWithdrawCall(contractAddress, accountId);
+    } catch (e) {
+        if (e.message.includes("amount is greater than the available storage balance")) {
+            console.log("EXPECTED FAILURE during storage_withdraw since testing against a contract with fixed storage amount:", e);
+        } else {
+            console.log("Unexpected error during storage_withdraw:", e);
+        }
+    }
+    await storageUnregisterCall(contractAddress, accountId);
     // // check balance after unregister, should not exist
-    // await storageBalanceOfCall(contractAddress, accountId);
-
-    
-    await storageWithdrawCall(contractAddress, accountId);
+    await storageBalanceOfCall(contractAddress, accountId);
 }
 
 export async function storageDepositCall(
@@ -101,7 +104,7 @@ export async function storageWithdrawCall(
         receiver: contractAddress,
         sender: accountId,
         args: {
-            amount: 1n,
+            amount: 1000000000000000000000000n,
         },
         deps: {
             rpcProvider,

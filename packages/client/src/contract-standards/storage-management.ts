@@ -1,5 +1,10 @@
 /**
  * Tailored functionCall invocations for StorageManagement contract standard
+ * 
+ * Pulls the storage_management interface from near-contract-standards and
+ * provides typed wrappers around functionCall and view calls
+ * 
+ * NEP: https://github.com/near/NEPs/blob/master/neps/nep-0145.md
  */
 
 import { functionCall } from "../transactions/actions";
@@ -11,10 +16,6 @@ import type {
 import type { FunctionCallParams, ViewParams } from "../interfaces";
 import type { FinalExecutionOutcome } from "@near-js/types";
 import { view } from "../view";
-
-// import type { StorageManagement, StorageBalance, StorageBalanceBounds } from 'near-contract-standards/lib/storage_management';
-// import { AccountId } from 'near-sdk-js';
-// import { Option } from 'near-contract-standards/lib/non_fungible_token/utils';
 
 type StorageManagementParams<T extends keyof StorageManagement> = Omit<
   FunctionCallParams,
@@ -90,13 +91,14 @@ export async function storageWithdraw(
   const {args, ...otherParams} = params;
   const convertedArgs = {
     ...args,
-    amount: args.amount.toString(),
+    amount: args.amount ? args.amount.toString() : undefined,
   };
 
   const { outcome, result } = await functionCall({
     args: convertedArgs,
     ...otherParams,
     method: "storage_withdraw",
+    deposit: 1n,
   });
 
   console.log("result", result);

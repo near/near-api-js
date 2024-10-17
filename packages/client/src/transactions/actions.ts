@@ -25,9 +25,10 @@ export async function functionCall({ sender, receiver, method, args, gas, deposi
     .functionCall(method, args, gas, deposit)
     .signAndSend(blockReference);
 
+  // the typing of failures is significantly different from the true failure
+  // object, so we can throw an error but the format will not be ideal
   if (typeof outcome.status === 'object' && 'Failure' in outcome.status) {
-    console.log(JSON.stringify(outcome.status, null, 2));
-    throw new Error(outcome.status.Failure.error_message);
+    throw new Error(JSON.stringify(outcome.status.Failure));
   }
 
   return {outcome, result};
