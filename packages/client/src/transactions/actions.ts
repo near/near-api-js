@@ -20,10 +20,18 @@ import { SignedTransactionComposer } from './composers';
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export function functionCall({ sender, receiver, method, args, gas, deposit, blockReference, deps }: FunctionCallParams) {
-  return SignedTransactionComposer.init({ sender, receiver, deps })
+export async function functionCall({ sender, receiver, method, args, gas, deposit, blockReference, deps }: FunctionCallParams) {
+  const {outcome, result}  = await SignedTransactionComposer.init({ sender, receiver, deps })
     .functionCall(method, args, gas, deposit)
     .signAndSend(blockReference);
+
+  // the typing of failures is significantly different from the true failure
+  // object, so we can throw an error but the format will not be ideal
+  if (typeof outcome.status === 'object' && 'Failure' in outcome.status) {
+    throw new Error(JSON.stringify(outcome.status.Failure));
+  }
+
+  return {outcome, result};
 }
 
 /**
