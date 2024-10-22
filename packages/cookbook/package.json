@@ -23,6 +23,9 @@
     "getTransactionStatus": "tsx -e \"import f from './transactions/get-tx-status.ts'; f(...process.argv.slice(1));\"",
     "metaTransaction": "tsx -e \"import f from './transactions/meta-transaction.ts'; f(...process.argv.slice(1));\"",
     "metaTransactionRelayer": "tsx -e \"import f from './transactions/meta-transaction-relayer.ts'; f(...process.argv.slice(1));\"",
+    "storageManagementStandard": "tsx -e \"import f from './contract-standards/storage-management.ts'; f(...process.argv.slice(1));\"",
+    "fungibleTokenStandard": "tsx -e \"import f from './contract-standards/fungible-token.ts'; f(...process.argv.slice(1));\"",
+    "nonFungibleTokenStandard": "tsx -e \"import f from './contract-standards/non-fungible-token.ts'; f(...process.argv.slice(1));\"",
     "traverseBlocks": "tsx -e \"import f from './transactions/traverse-blocks.ts'; f(...process.argv.slice(1));\"",
     "unwrapNear": "tsx -e \"import f from './utils/unwrap-near.ts'; f(...process.argv.slice(1));\"",
     "verifySignature": "tsx -e \"import f from './utils/verify-signature.ts'; f(...process.argv.slice(1));\"",
@@ -40,6 +43,7 @@
     "near-api-js": "workspace:*",
     "ts-node": "^10.9.2",
     "tsconfig": "workspace:*",
+    "tsx": "^4.19.1",
     "typescript": "5.4.5"
   }
 }
