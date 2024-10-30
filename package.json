@@ -2,7 +2,7 @@
   "name": "@near-js/monorepo",
   "private": true,
   "engines": {
-    "node": ">=20.15.0",
+    "node": ">=18",
     "pnpm": ">=9.4.0"
   },
   "scripts": {
