@@ -13,7 +13,7 @@ const retryConfig = {
             return true;
         }
 
-        if (['FetchError', 'Failed to fetch'].includes(e.toString())) {
+        if (e.toString().includes('FetchError') || e.toString().includes('Failed to fetch')) {
             return true;
         }
 
