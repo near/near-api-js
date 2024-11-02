@@ -43,3 +43,10 @@ export interface EpochValidatorInfo {
     // Epoch start height.
     epoch_start_height: number;
 }
+
+export interface StakedAccount {
+    account_id: string;
+    unstaked_balance: string;
+    staked_balance: string;
+    can_withdraw: boolean;
+}

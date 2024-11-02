@@ -58,6 +58,7 @@ abstract class Enum {
 /**
  * PublicKey representation that has type and bytes of the key.
  */
+
 export class PublicKey extends Enum {
     enum: string;
     ed25519Key?: ED25519PublicKey;

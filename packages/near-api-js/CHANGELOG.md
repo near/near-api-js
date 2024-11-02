@@ -1,5 +1,22 @@
 # near-api-js
 
+## 5.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`5b0bbbc1`](https://github.com/near/near-api-js/commit/5b0bbbc17ffe7d89d7767e405d2ca700dc2bba40)]:
+  - @near-js/crypto@1.4.1
+  - @near-js/providers@1.0.1
+  - @near-js/types@0.3.1
+  - @near-js/utils@1.0.1
+  - @near-js/accounts@1.3.1
+  - @near-js/keystores@0.2.1
+  - @near-js/keystores-browser@0.2.1
+  - @near-js/keystores-node@0.1.1
+  - @near-js/signers@0.2.1
+  - @near-js/transactions@1.3.1
+  - @near-js/wallet-account@1.3.1
+
 ## 5.0.0
 
 ### Major Changes

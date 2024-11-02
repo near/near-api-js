@@ -1,15 +1,14 @@
+import { CurveType, KeyPairString } from './constants';
 import { KeyPairBase } from './key_pair_base';
 import { KeyPairEd25519 } from './key_pair_ed25519';
 import { KeyPairSecp256k1 } from './key_pair_secp256k1';
-
-export type KeyPairString = `ed25519:${string}` | `secp256k1:${string}`;
 
 export abstract class KeyPair extends KeyPairBase {
     /**
      * @param curve Name of elliptical curve, case-insensitive
      * @returns Random KeyPair based on the curve
      */
-    static fromRandom(curve: 'ed25519' | 'secp256k1'): KeyPair {
+    static fromRandom(curve: CurveType): KeyPair {
         switch (curve.toUpperCase()) {
             case 'ED25519': return KeyPairEd25519.fromRandom();
             case 'SECP256K1': return KeyPairSecp256k1.fromRandom();
