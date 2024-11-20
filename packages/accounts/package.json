@@ -34,7 +34,7 @@
         "@jest/globals": "^29.7.0",
         "@near-js/keystores": "workspace:*",
         "@types/json-schema": "^7.0.15",
-        "@types/node": "20.0.0",
+        "@types/node": "22.9.1",
         "bs58": "4.0.0",
         "build": "workspace:*",
         "jest": "29.7.0",
