@@ -9,7 +9,7 @@ const retryConfig = {
     numOfAttempts: RETRY_NUMBER,
     timeMultiple: BACKOFF_MULTIPLIER,
     retry: (e: ProviderError) => {
-        if ([503, 408].includes(e.cause)) {
+        if ([503, 500, 408].includes(e.cause)) {
             return true;
         }
 
@@ -26,7 +26,7 @@ export interface ConnectionInfo {
     headers?: { [key: string]: string | number };
 }
 
-class ProviderError extends Error {
+export class ProviderError extends Error {
     cause: number;
     constructor(message: string, options: any) {
         super(message, options);
@@ -56,14 +56,19 @@ export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: o
         });
 
         const { ok, status } = res;
-        if (!ok) {
-            throw new ProviderError(await res.text(), { cause: status });
+
+        if (status === 500) {
+            throw new ProviderError(`Internal server error`, { cause: status });
+        } else if (status === 408) {
+            throw new ProviderError('Timeout error', { cause: status });
+        } else if (status === 400) {
+            throw new ProviderError('Request validation error', { cause: status });
+        } else if (status === 503) {
+            throw new ProviderError(`${url} unavailable`, { cause: status });
         }
 
-        if (status === 503) {
-            throw new ProviderError(`${url} unavailable`, { cause: status });
-        } else if (status === 408) {
-            throw new ProviderError('Unused connection', { cause: status });
+        if (!ok) {
+            throw new ProviderError(await res.text(), { cause: status });
         }
 
         return res;
