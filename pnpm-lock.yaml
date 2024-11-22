@@ -291,8 +291,8 @@ importers:
         specifier: 2.1.0
         version: 2.1.0
       secp256k1:
-        specifier: 5.0.0
-        version: 5.0.0
+        specifier: 5.0.1
+        version: 5.0.1
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -1999,8 +1999,8 @@ packages:
   electron-to-chromium@1.4.807:
     resolution: {integrity: sha512-kSmJl2ZwhNf/bcIuCH/imtNOKlpkLDn2jqT5FJ+/0CXjhnFaOa9cOe9gHKKy71eM49izwuQjZhKk+lWQ1JxB7A==}
 
-  elliptic@6.5.5:
-    resolution: {integrity: sha512-7EjbcmUm17NQFu4Pmgmq2olYMj8nwMnpcddByChSUjArp8F5DQWcIcpriwO4ZToLNAJig0yiyjswfyGNje/ixw==}
+  elliptic@6.5.7:
+    resolution: {integrity: sha512-ESVCtTwiA+XhY3wyh24QqRGBoP3rEdDUl3EDUUo9tft074fi19IrdpH7hLCMMP3CIj7jb3W96rn8lt/BqIlt5Q==}
 
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -2093,6 +2093,7 @@ packages:
   eslint@8.20.0:
     resolution: {integrity: sha512-d4ixhz5SKCa1D6SCPrivP7yYVi7nyD6A4vs6HIAul9ujBzcEmZVM3/0NN/yu5nKhmO1wjp5xQ46iRfmDGlOviA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -3450,9 +3451,9 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  secp256k1@5.0.0:
-    resolution: {integrity: sha512-TKWX8xvoGHrxVdqbYeZM9w+izTF4b9z3NhSaDkdn81btvuh+ivbIMGT/zQvDtTFWhRlThpoz6LEYTr7n8A5GcA==}
-    engines: {node: '>=14.0.0'}
+  secp256k1@5.0.1:
+    resolution: {integrity: sha512-lDFs9AAIaWP9UCdtWrotXWWF9t8PWgQDcxqgAnpM9rMqxb3Oaq2J0thzPVSxBwdJgyQtkU/sYtFtbM1RSt/iYA==}
+    engines: {node: '>=18.0.0'}
 
   semver@5.7.2:
     resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
@@ -5833,7 +5834,7 @@ snapshots:
 
   electron-to-chromium@1.4.807: {}
 
-  elliptic@6.5.5:
+  elliptic@6.5.7:
     dependencies:
       bn.js: 4.12.0
       brorand: 1.1.0
@@ -7731,9 +7732,9 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  secp256k1@5.0.0:
+  secp256k1@5.0.1:
     dependencies:
-      elliptic: 6.5.5
+      elliptic: 6.5.7
       node-addon-api: 5.1.0
       node-gyp-build: 4.8.1
 
