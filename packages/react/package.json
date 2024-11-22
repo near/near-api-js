@@ -1,0 +1,37 @@
+{
+  "name": "@near-js/react",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
+  "scripts": {
+    "build": "pnpm compile:esm && pnpm compile:cjs",
+    "compile:esm": "tsc -p tsconfig.json",
+    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
+    "lint": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern --fix"
+  },
+  "dependencies": {
+    "@near-js/client": "workspace:*",
+    "@near-js/keystores": "workspace:*"
+  },
+  "devDependencies": {
+    "@near-js/types": "workspace:*",
+    "build": "workspace:*",
+    "tsconfig": "workspace:*",
+    "typescript": "5.4.5"
+  },
+  "peerDependencies": {
+    "react": "18.3.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "lib"
+  ],
+  "exports": {
+    "require": "./lib/commonjs/index.cjs",
+    "import": "./lib/esm/index.js"
+  }
+}
