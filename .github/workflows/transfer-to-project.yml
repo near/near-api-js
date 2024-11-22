@@ -1,43 +1,22 @@
-name: Transfer Issues & PRs to DevTools Project
+name: 'Add to DevTools Project'
 
 on:
   issues:
-    types: [opened]
+    types:
+      - opened
+      - reopened
+  pull_request:
+    types:
+      - opened
+      - reopened
 
 jobs:
-  transfer:
+  add-to-project:
+    name: Add issue/PR to project
     runs-on: ubuntu-latest
     steps:
-      - name: Transfer Issue
-        uses: actions/github-script@v5
+      - uses: actions/add-to-project@v1.0.0
         with:
-          github-token: ${{secrets.GH_TOKEN}}
-          script: |
-            const issueTitle = context.payload.issue.title;
-            const issueBody = context.payload.issue.body;
-            const issueNumber = context.payload.issue.number;
-            const organizationName = 'near';
-            const projectName = 'DevTools';
-            // Fetch project ID and other necessary IDs
-            const query = `
-              query {
-                organization(login: "${organizationName}") {
-                  projectV2(number: 156) {
-                    id
-                  }
-                }
-              }
-            `;
-            const projectIdResponse = await github.graphql(query);
-            const projectId = projectIdResponse.organization.projectV2.id;
-            // Add issue to the project
-            const mutation = `
-              mutation($projectId: ID!, $contentId: ID!) {
-                addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
-                  item {
-                    id
-                  }
-                }
-              }
-            `;
-            await github.graphql(mutation, { projectId: projectId, contentId: context.payload.issue.node_id });
+          # add to DevTools Project #156
+          project-url: https://github.com/orgs/near/projects/156
+          github-token: ${{ secrets.GH_TOKEN }}
