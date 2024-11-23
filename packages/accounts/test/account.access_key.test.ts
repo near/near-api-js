@@ -79,8 +79,9 @@ test('view account details after adding access keys', async() => {
         publicKey: keyPair2.getPublicKey().toString(),
     }];
 
-    // @ts-expect-error test input
-    expect(JSON.stringify(details.authorizedApps.toSorted((a, b) => a.amount < b.amount))).toEqual(JSON.stringify(authorizedApps.toSorted((a, b) => a.amount < b.amount)));
+    expect(details.authorizedApps).toEqual(expect.arrayContaining(authorizedApps));
+    expect(authorizedApps).toEqual(expect.arrayContaining(details.authorizedApps));
+    expect(details.authorizedApps).toHaveLength(authorizedApps.length);
 });
 
 test('loading account after adding a full key', async() => {

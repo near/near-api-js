@@ -1,4 +1,4 @@
-import bs58 from "bs58";
+import { base58 } from "@scure/base";
 
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
@@ -133,7 +133,7 @@ export function baseEncode(value: Uint8Array | string): string {
         }
         value = new Uint8Array(bytes);
     }
-    return bs58.encode(value);
+    return base58.encode(value);
 }
 
 /**
@@ -142,5 +142,5 @@ export function baseEncode(value: Uint8Array | string): string {
  * @returns Uint8Array representing the decoded value
  */
 export function baseDecode(value: string): Uint8Array {
-    return new Uint8Array(bs58.decode(value));
+    return base58.decode(value);
 }
