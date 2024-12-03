@@ -214,6 +214,44 @@ export class Account implements IntoConnection {
         return result;
     }
 
+    /**
+     * Sign and send a transaction asynchronously, returning the transaction hash immediately
+     * without waiting for the transaction to complete.
+     * 
+     * @param options The options for signing and sending the transaction
+     * @returns Promise<string> The base58-encoded transaction hash
+     */
+    async signAndSendTransactionAsync({ receiverId, actions }: SignAndSendTransactionOptions): Promise<string> {
+        const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
+            const [txHash, signedTx] = await this.signTransaction(receiverId, actions);
+            const publicKey = signedTx.transaction.publicKey;
+
+            try {
+                // Send transaction without waiting for final execution
+                return await this.connection.provider.sendTransactionAsync(signedTx);
+            } catch (error) {
+                if (error.type === 'InvalidNonce') {
+                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
+                    delete this.accessKeyByPublicKeyCache[publicKey.toString()];
+                    return null;
+                }
+                if (error.type === 'Expired') {
+                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
+                    return null;
+                }
+    
+                error.context = new ErrorContext(baseEncode(txHash));
+                throw error;
+            }
+        });
+
+        if (!result) {
+            throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
+        }
+
+        return result;
+    }
+
     /** @hidden */
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 

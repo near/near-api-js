@@ -133,7 +133,7 @@ export class JsonRpcProvider extends Provider {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
-        return this.sendTransactionUntil(signedTransaction, 'NONE');
+        return this.sendTransactionUntil(signedTransaction, 'INCLUDED');
     }
 
     /**
