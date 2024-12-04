@@ -227,8 +227,9 @@ export class Account implements IntoConnection {
             const publicKey = signedTx.transaction.publicKey;
 
             try {
-                // Send transaction without waiting for final execution
-                return await this.connection.provider.sendTransactionAsync(signedTx);
+                // Wait for the async operation to complete or throw
+                await this.connection.provider.sendTransactionAsync(signedTx);
+                return baseEncode(txHash);
             } catch (error) {
                 if (error.type === 'InvalidNonce') {
                     Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
