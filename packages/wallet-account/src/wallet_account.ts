@@ -15,7 +15,7 @@ import { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
 import { FinalExecutionOutcome } from '@near-js/types';
 import { baseDecode } from '@near-js/utils';
-import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
+import { Transaction, Action, SCHEMA, createTransaction, SignedTransaction } from '@near-js/transactions';
 import { serialize } from 'borsh';
 
 import { Near } from './near';
@@ -483,6 +483,100 @@ export class ConnectedWalletAccount extends Account {
         const publicKey = PublicKey.from(accessKey.public_key);
         const nonce = Number(accessKey.access_key.nonce) + 1;
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+        
+        this.walletConnection.requestSignTransactions({
+            transactions: [transaction],
+            meta: walletMeta,
+            callbackUrl: walletCallbackUrl
+        });
+
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                reject(new Error('Failed to redirect to sign transaction'));
+            }, 1000);
+        });
+    }
+
+    /**
+     * Sign a transaction by redirecting to the NEAR Wallet
+     * @param options An optional options object
+     * @param options.receiverId The NEAR account ID of the transaction receiver.
+     * @param options.actions An array of transaction actions to be performed.
+     * @param options.walletMeta Additional metadata to be included in the wallet signing request.
+     * @param options.walletCallbackUrl URL to redirect upon completion of the wallet signing process. Default: current URL.
+     */
+    async signTransaction(receiverId: string, actions: Action[], walletMeta?: string, walletCallbackUrl?: string): Promise<[Uint8Array, SignedTransaction]> {
+        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
+        if (!accessKey) {
+            throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
+        }
+
+        if (localKey && localKey.toString() === accessKey.public_key) {
+            try {
+                return await super.signTransaction(receiverId, actions);
+            } catch (e) {
+                if (e.type === 'NotEnoughAllowance') {
+                    accessKey = await this.accessKeyForTransaction(receiverId, actions);
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = baseDecode(block.header.hash);
+        const publicKey = PublicKey.from(accessKey.public_key);
+        const nonce = Number(accessKey.access_key.nonce) + 1;
+        const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+        
+        this.walletConnection.requestSignTransactions({
+            transactions: [transaction],
+            meta: walletMeta,
+            callbackUrl: walletCallbackUrl
+        });
+
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                reject(new Error('Failed to redirect to sign transaction'));
+            }, 1000);
+        });
+    }
+
+    /**
+     * Send a signed transaction to the network and wait for its completion
+     * 
+     * @param hash The hash of the transaction to be sent
+     * @param signedTx The signed transaction to be sent
+     * @param walletMeta Additional metadata to be included in the wallet signing request.
+     * @param walletCallbackUrl URL to redirect upon completion of the wallet signing process. Default: current URL.
+     * 
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction
+     */
+    async sendTransaction(hash: Uint8Array, signedTx: SignedTransaction, walletMeta?: string, walletCallbackUrl?: string): Promise<FinalExecutionOutcome> {
+        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        let accessKey = await this.accessKeyForTransaction(signedTx.transaction.receiverId, signedTx.transaction.actions, localKey);
+        if (!accessKey) {
+            throw new Error(`Cannot find matching key for transaction sent to ${signedTx.transaction.receiverId}`);
+        }
+
+        if (localKey && localKey.toString() === accessKey.public_key) {
+            try {
+                return await super.sendTransaction(hash, signedTx);
+            } catch (e) {
+                if (e.type === 'NotEnoughAllowance') {
+                    accessKey = await this.accessKeyForTransaction(signedTx.transaction.receiverId, signedTx.transaction.actions);
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = baseDecode(block.header.hash);
+        const publicKey = PublicKey.from(accessKey.public_key);
+        const nonce = Number(accessKey.access_key.nonce) + 1;
+        const transaction = createTransaction(this.accountId, publicKey, signedTx.transaction.receiverId, nonce, signedTx.transaction.actions, blockHash);
         
         this.walletConnection.requestSignTransactions({
             transactions: [transaction],

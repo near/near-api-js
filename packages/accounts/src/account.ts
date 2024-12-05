@@ -253,6 +253,56 @@ export class Account implements IntoConnection {
         return result;
     }
 
+    /**
+     * Send a signed transaction to the network and wait for its completion
+     * 
+     * @param hash The hash of the transaction to be sent
+     * @param signedTx The signed transaction to be sent
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction
+     */
+    async sendTransaction(hash: Uint8Array, signedTx: SignedTransaction): Promise<FinalExecutionOutcome> {
+        const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
+            const publicKey = signedTx.transaction.publicKey;
+
+            try {
+                return await this.connection.provider.sendTransaction(signedTx);
+            } catch (error) {
+                if (error.type === 'InvalidNonce') {
+                    Logger.warn(`Retrying transaction ${signedTx.transaction.receiverId}:${baseEncode(hash)} with new nonce.`);
+                    delete this.accessKeyByPublicKeyCache[publicKey.toString()];
+                    return null;
+                }
+                if (error.type === 'Expired') {
+                    Logger.warn(`Retrying transaction ${signedTx.transaction.receiverId}:${baseEncode(hash)} due to expired block hash`);
+                    return null;
+                }
+
+                error.context = new ErrorContext(baseEncode(hash));
+                throw error;
+            }
+        });
+        if (!result) {
+            // TODO: This should have different code actually, as means "transaction not submitted for sure"
+            throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
+        }
+
+        printTxOutcomeLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
+
+        // Should be falsy if result.status.Failure is null
+        if (typeof result.status === 'object' && typeof result.status.Failure === 'object' && result.status.Failure !== null) {
+            // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+            if (result.status.Failure.error_message && result.status.Failure.error_type) {
+                throw new TypedError(
+                    `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
+                    result.status.Failure.error_type);
+            } else {
+                throw parseResultError(result);
+            }
+        }
+        // TODO: if Tx is Unknown or Started.
+        return result;
+    }
+
     /** @hidden */
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
