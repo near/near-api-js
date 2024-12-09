@@ -15,7 +15,7 @@ import { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
 import { FinalExecutionOutcome } from '@near-js/types';
 import { baseDecode } from '@near-js/utils';
-import { Transaction, Action, SCHEMA, createTransaction, SignedTransaction } from '@near-js/transactions';
+import { Transaction, Action, SCHEMA, createTransaction, SignedTransaction, SignedDelegate } from '@near-js/transactions';
 import { serialize } from 'borsh';
 
 import { Near } from './near';
@@ -587,6 +587,55 @@ export class ConnectedWalletAccount extends Account {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 reject(new Error('Failed to redirect to sign transaction'));
+            }, 1000);
+        });
+    }
+
+    /**
+     * Sign a delegate action to be executed in a meta transaction on behalf of this account
+     * 
+     * @param options Options for the delegate action
+     * @param options.actions Actions to be included in the meta transaction
+     * @param options.blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
+     * @param options.receiverId Receiver account of the meta transaction
+     * @param walletMeta Additional metadata to be included in the wallet signing request
+     * @param walletCallbackUrl URL to redirect upon completion of the wallet signing process. Default: current URL
+     */
+    async signDelegateAction(actions: Action[], blockHeightTtl: number, receiverId: string, walletMeta?: string, walletCallbackUrl?: string): Promise<SignedDelegate> {
+        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
+
+        if (!accessKey) {
+            throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
+        }
+
+        if (localKey && localKey.toString() === accessKey.public_key) {
+            try {
+                return await super.signedDelegate({ actions, blockHeightTtl, receiverId });
+            } catch (e) {
+                if (e.type === 'NotEnoughAllowance') {
+                    accessKey = await this.accessKeyForTransaction(receiverId, actions);
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        const block = await this.connection.provider.block({ finality: 'final' });
+        const blockHash = baseDecode(block.header.hash);
+        const publicKey = PublicKey.from(accessKey.public_key);
+        const nonce = Number(accessKey.access_key.nonce) + 1;
+        const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+
+        this.walletConnection.requestSignTransactions({
+            transactions: [transaction],
+            meta: walletMeta,
+            callbackUrl: walletCallbackUrl
+        });
+
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                reject(new Error('Failed to redirect to sign delegate action'));
             }, 1000);
         });
     }
