@@ -9,7 +9,6 @@ import {
     baseEncode,
     formatError,
     getErrorTypeFromErrorMessage,
-    Logger,
     parseRpcError,
     ServerError,
 } from '@near-js/utils';
@@ -39,9 +38,8 @@ import {
     SignedTransaction,
 } from '@near-js/transactions';
 
-import { exponentialBackoff } from './exponential-backoff';
 import { Provider } from './provider';
-import { ConnectionInfo, fetchJsonRpc } from './fetch_json';
+import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
 import { TxExecutionStatus } from '@near-js/types';
 
 /** @hidden */
@@ -378,56 +376,35 @@ export class JsonRpcProvider extends Provider {
      * @param params Parameters to the method
      */
     async sendJsonRpc<T>(method: string, params: object): Promise<T> {
-        const response = await exponentialBackoff(this.options.wait, this.options.retries, this.options.backoff, async () => {
-            try {
-                const request = {
-                    method,
-                    params,
-                    id: (_nextId++),
-                    jsonrpc: '2.0'
-                };
-                const response = await fetchJsonRpc(this.connection.url, request, this.connection.headers);
-                if (response.error) {
-                    if (typeof response.error.data === 'object') {
-                        if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
-                            // if error data has error_message and error_type properties, we consider that node returned an error in the old format
-                            throw new TypedError(response.error.data.error_message, response.error.data.error_type);
-                        }
-
-                        throw parseRpcError(response.error.data);
-                    } else {
-                        const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-                        // NOTE: All this hackery is happening because structured errors not implemented
-                        // TODO: Fix when https://github.com/nearprotocol/nearcore/issues/1839 gets resolved
-                        if (response.error.data === 'Timeout' || errorMessage.includes('Timeout error')
-                            || errorMessage.includes('query has timed out')) {
-                            throw new TypedError(errorMessage, 'TimeoutError');
-                        }
-
-                        const errorType = getErrorTypeFromErrorMessage(response.error.data, '');
-                        if (errorType) {
-                            throw new TypedError(formatError(errorType, params), errorType);
-                        }
-                        throw new TypedError(errorMessage, response.error.name);
-                    }
-                } else if (typeof response.result?.error === 'string') {
-                    const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
-
-                    if (errorType) {
-                        throw new ServerError(formatError(errorType, params), errorType);
-                    }
+        const request = {
+            method,
+            params,
+            id: (_nextId++),
+            jsonrpc: '2.0'
+        };
+        const response = await fetchJsonRpc(this.connection.url, request, this.connection.headers, retryConfig(this.options.retries, this.options.backoff, this.options.wait));
+        if (response.error) {
+            if (typeof response.error.data === 'object') {
+                if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
+                    // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+                    throw new TypedError(response.error.data.error_message, response.error.data.error_type);
                 }
-                // Success when response.error is not exist
-                return response;
-            } catch (error) {
-                if (error.type === 'TimeoutError') {
-                    Logger.warn(`Retrying request to ${method} as it has timed out`, params);
-                    return null;
-                }
+                throw parseRpcError(response.error.data);
+            } else {
+                const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
 
-                throw error;
+                const errorType = getErrorTypeFromErrorMessage(response.error.data, '');
+                if (errorType) {
+                    throw new TypedError(formatError(errorType, params), errorType);
+                }
+                throw new TypedError(errorMessage, response.error.name);
             }
-        });
+        } else if (typeof response.result?.error === 'string') {
+            const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
+            if (errorType) {
+                throw new ServerError(formatError(errorType, params), errorType);
+            }
+        }
         const { result } = response;
         // From jsonrpc spec:
         // result
