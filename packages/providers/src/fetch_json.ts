@@ -30,6 +30,9 @@ class ProviderError extends Error {
     cause: number;
     constructor(message: string, options: any) {
         super(message, options);
+        if (options.cause) {
+            this.cause = options.cause;
+        }
     }
 }
 
