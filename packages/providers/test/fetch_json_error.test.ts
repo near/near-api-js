@@ -1,5 +1,5 @@
 import { describe, expect, test, jest, afterEach } from '@jest/globals';
-import { fetchJsonRpc } from '../src/fetch_json';
+import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
 import unfetch from 'isomorphic-unfetch';
 import { ProviderError } from '../src/fetch_json'; 
 
@@ -27,7 +27,7 @@ describe('fetchJsonError', () => {
         });
     
         // @ts-expect-error test input
-        await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined))
+        await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
             .rejects
             .toThrowError(new ProviderError('Internal server error', { cause: 500 }));
     });
@@ -39,7 +39,7 @@ describe('fetchJsonError', () => {
             json: {},
         });
         // @ts-expect-error test input
-        await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined))
+        await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
             .rejects
             .toThrowError(new ProviderError('Timeout error', { cause: 408 }));
     });
@@ -52,8 +52,8 @@ describe('fetchJsonError', () => {
             text: '',
             json: {},
         });
-         // @ts-expect-error test input
-         await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined))
+        // @ts-expect-error test input
+        await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
             .rejects
             .toThrowError(new ProviderError('Request validation error', { cause: 400 }));
     });
@@ -66,8 +66,8 @@ describe('fetchJsonError', () => {
             json: {},
         });
 
-          // @ts-expect-error test input
-          await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined))
+        // @ts-expect-error test input
+        await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
             .rejects
             .toThrowError(new ProviderError(`${RPC_URL} unavailable`, { cause: 503 }));
     });

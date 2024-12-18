@@ -4,22 +4,26 @@ import unfetch from 'isomorphic-unfetch';
 
 const BACKOFF_MULTIPLIER = 1.5;
 const RETRY_NUMBER = 10;
+const RETRY_DELAY = 0;
 
-const retryConfig = {
-    numOfAttempts: RETRY_NUMBER,
-    timeMultiple: BACKOFF_MULTIPLIER,
-    retry: (e: ProviderError) => {
-        if ([503, 500, 408].includes(e.cause)) {
-            return true;
+export function retryConfig(numOfAttempts=RETRY_NUMBER, timeMultiple=BACKOFF_MULTIPLIER, startingDelay=RETRY_DELAY) {
+    return {
+        numOfAttempts: numOfAttempts,
+        timeMultiple: timeMultiple,
+        startingDelay: startingDelay,
+        retry: (e: ProviderError) => {
+            if ([503, 500, 408].includes(e.cause)) {
+                return true;
+            }
+
+            if (e.toString().includes('FetchError') || e.toString().includes('Failed to fetch')) {
+                return true;
+            }
+
+            return false;
         }
-
-        if (e.toString().includes('FetchError') || e.toString().includes('Failed to fetch')) {
-            return true;
-        }
-
-        return false;
-    }
-};
+    };
+}
 
 export interface ConnectionInfo {
     url: string;
@@ -30,6 +34,9 @@ export class ProviderError extends Error {
     cause: number;
     constructor(message: string, options: any) {
         super(message, options);
+        if (options.cause) {
+            this.cause = options.cause;
+        }
     }
 }
 
@@ -47,7 +54,7 @@ interface JsonRpcRequest {
  * @param headers HTTP headers to include with the request
  * @returns Promise<any> }arsed JSON response from the HTTP request.
  */
-export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: object): Promise<any> {
+export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: object, retryConfig: object): Promise<any> {
     const response = await backOff(async () => {
         const res = await unfetch(url, {
             method: 'POST',
@@ -58,7 +65,7 @@ export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: o
         const { ok, status } = res;
 
         if (status === 500) {
-            throw new ProviderError(`Internal server error`, { cause: status });
+            throw new ProviderError('Internal server error', { cause: status });
         } else if (status === 408) {
             throw new ProviderError('Timeout error', { cause: status });
         } else if (status === 400) {
