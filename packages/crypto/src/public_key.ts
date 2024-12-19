@@ -86,7 +86,7 @@ export class PublicKey extends Enum {
     /**
      * Creates a PublicKey instance from an encoded key string.
      * @param encodedKey The encoded key string.
-     * @returns {PublicKey} The PublicKey instance created from the encoded key string.
+     * @returns {PublicKey} The PublicKey instance is created from the encoded key string.
      */
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
