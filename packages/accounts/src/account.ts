@@ -72,7 +72,7 @@ export interface AccountAuthorizedApp {
 }
 
 /**
- * Options used to initiate sining and sending transactions
+ * Options used to initiate signing and sending transactions
  */
 export interface SignAndSendTransactionOptions {
     receiverId: string;
