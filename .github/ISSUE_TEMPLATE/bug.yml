@@ -16,7 +16,7 @@ body:
   - type: checkboxes
     attributes:
       label: Prerequisites
-      description: Please check the following items before creating a issue, these are basic sanity checks to make sure that the problem isn't something too obvious.
+      description: Please check the following items before creating an issue, these are basic sanity checks to make sure that the problem isn't something too obvious.
       options:
         - label: I'm using the latest version of `near-api-js`.
           required: true
