@@ -4,7 +4,7 @@ import { MultiContractKeyStore } from '@near-js/keystores';
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 
 /**
- * This class is used to store keys in the browsers local storage.
+ * This class is used to store keys in the browser's local storage.
  * 
  * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store](https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store)
  * @example
