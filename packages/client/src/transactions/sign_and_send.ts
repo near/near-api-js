@@ -25,7 +25,7 @@ export async function signTransaction({ transaction, deps: { signer } }: SignTra
   });
 
   return {
-    encodedTransactionHash: new Uint8Array(sha256(encodedTx)),
+    encodedTransactionHash: encodedTx,
     signedTransaction,
   };
 }
