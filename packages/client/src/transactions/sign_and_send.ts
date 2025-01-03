@@ -15,7 +15,7 @@ const DEFAULT_FINALITY: BlockReference = { finality: 'final' };
  * @param signer MessageSigner
  */
 export async function signTransaction({ transaction, deps: { signer } }: SignTransactionParams) {
-  const encodedTx = new Uint8Array(sha256.sha256.array(transaction.encode()));
+  const encodedTx = new Uint8Array(sha256(transaction.encode()));
   const signedTransaction = new SignedTransaction({
     transaction,
     signature: new Signature({
