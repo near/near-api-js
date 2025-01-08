@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm compile:esm && pnpm compile:cjs",
+    "test": "jest",
     "compile:esm": "tsc -p tsconfig.json",
     "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
     "lint": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern",
@@ -26,8 +27,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/node": "20.0.0",
     "build": "workspace:*",
+    "jest": "29.7.0",
+    "near-workspaces": "3.5.0",
+    "ts-jest": "29.1.5",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
