@@ -2,7 +2,7 @@ import { baseEncode, baseDecode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import randombytes from 'randombytes';
 
-import { KeySize, KeyType } from './constants';
+import { KeyPairString, KeySize, KeyType } from './constants';
 import { KeyPairBase, Signature } from './key_pair_base';
 import { PublicKey } from './public_key';
 
@@ -71,7 +71,7 @@ export class KeyPairEd25519 extends KeyPairBase {
      * Returns a string representation of the key pair in the format 'ed25519:[extendedSecretKey]'.
      * @returns {string} The string representation of the key pair.
      */
-    toString(): string {
+    toString(): KeyPairString {
         return `ed25519:${this.extendedSecretKey}`;
     }
 

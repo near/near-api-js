@@ -1,26 +1,30 @@
-const { KeyPair } = require('@near-js/crypto');
-const { InMemoryKeyStore } = require('@near-js/keystores');
-const fs = require('fs').promises;
-const path = require('path');
+import { KeyPair, KeyType } from '@near-js/crypto';
+import { InMemoryKeyStore } from '@near-js/keystores';
+import { ConsoleLogger, Logger } from '@near-js/utils';
+import fs from 'fs';
+import path from 'path';
 
-const { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } = require('../lib');
+import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../src';
+import Config from './config';
 
-const networkId = 'unittest';
+Logger.overrideLogger(new ConsoleLogger(['error', 'fatal']))
 
-const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
-const HELLO_WASM_BALANCE = BigInt('10000000000000000000000000');
-const HELLO_WASM_METHODS = {
+export const networkId = 'unittest';
+
+export const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
+export const HELLO_WASM_BALANCE = BigInt('10000000000000000000000000');
+export const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
     changeMethods: ['setValue', 'callPromise']
 };
-const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multisig.wasm';
+export const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multisig.wasm';
 // Length of a random account. Set to 40 because in the protocol minimal allowed top-level account length should be at
 // least 32.
-const RANDOM_ACCOUNT_LENGTH = 40;
+export const RANDOM_ACCOUNT_LENGTH = 40;
 
-const GUESTBOOK_CONTRACT_ID = 'guestbook-1690363526419-7138950000000000';
-const GUESTBOOK_WASM_PATH = path.resolve(__dirname, './wasm/guestbook.wasm');
-const GUESTBOOK_CONTRACT_STATE = [
+export const GUESTBOOK_CONTRACT_ID = 'guestbook-1690363526419-7138950000000000';
+export const GUESTBOOK_WASM_PATH = path.resolve(__dirname, './wasm/guestbook.wasm');
+export const GUESTBOOK_CONTRACT_STATE = [
     {
         key: Buffer.from('U1RBVEU=', 'base64'),
         value: Buffer.from(
@@ -44,13 +48,13 @@ const GUESTBOOK_CONTRACT_STATE = [
     },
 ];
 
-async function loadGuestBookContractCode() {
-    const contractCode = await fs.readFile(GUESTBOOK_WASM_PATH);
+export async function loadGuestBookContractCode() {
+    const contractCode = await fs.readFileSync(GUESTBOOK_WASM_PATH);
     return contractCode.toString('base64');
 }
-async function setUpTestConnection() {
+export async function setUpTestConnection() {
     const keyStore = new InMemoryKeyStore();
-    const config = Object.assign(await require('./config')(process.env.NODE_ENV || 'test'), {
+    const config = Object.assign(await Config(process.env.NODE_ENV || 'test'), {
         networkId,
         keyStore
     });
@@ -74,21 +78,21 @@ async function setUpTestConnection() {
 }
 
 // Generate some unique string of length at least RANDOM_ACCOUNT_LENGTH with a given prefix using the alice nonce.
-function generateUniqueString(prefix) {
+export function generateUniqueString(prefix) {
     let result = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
     let add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
     for (let i = add_symbols; i > 0; --i) result += '0';
     return result + '.test.near';
 }
 
-async function createAccount({ accountCreator, connection }) {
+export async function createAccount({ accountCreator, connection }, keyType = KeyType.ED25519) {
     const newAccountName = generateUniqueString('test');
-    const newPublicKey = await connection.signer.createKey(newAccountName, networkId);
+    const newPublicKey = await connection.signer.createKey(newAccountName, networkId, keyType);
     await accountCreator.createAccount(newAccountName, newPublicKey);
     return new Account(connection, newAccountName);
 }
 
-async function createAccountMultisig({ accountCreator, connection }, options) {
+export async function createAccountMultisig({ accountCreator, connection }, options) {
     const newAccountName = generateUniqueString('test');
     const newPublicKey = await connection.signer.createKey(newAccountName, networkId);
     await accountCreator.createAccount(newAccountName, newPublicKey);
@@ -107,34 +111,34 @@ async function createAccountMultisig({ accountCreator, connection }, options) {
                 case '/2fa/getAccessKey': return { publicKey };
             }
         };
-        await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
+        await accountMultisig.deployMultisig(fs.readFileSync(MULTISIG_WASM_PATH));
         return accountMultisig;
     } catch (e) {
         console.log(e);
     }
 }
 
-async function deployContract(workingAccount, contractId) {
+export async function deployContract(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
-    const data = [...(await fs.readFile(HELLO_WASM_PATH))];
+    const data = fs.readFileSync(HELLO_WASM_PATH);
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
     return new Contract(workingAccount, contractId, HELLO_WASM_METHODS);
 }
 
-async function deployContractGuestBook(workingAccount, contractId) {
+export async function deployContractGuestBook(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
-    const data = [...(await fs.readFile(GUESTBOOK_WASM_PATH))];
+    const data = fs.readFileSync(GUESTBOOK_WASM_PATH);
     const account = await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
     return new Contract(account, contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true });
 }
 
-function sleep(time) {
+export function sleep(time) {
     return new Promise(function (resolve) {
         setTimeout(resolve, time);
     });
 }
 
-function waitFor(fn) {
+export function waitFor(fn) {
     const _waitFor = async (count = 10) => {
         try {
             return await fn();
@@ -149,21 +153,3 @@ function waitFor(fn) {
 
     return _waitFor();
 }
-
-module.exports = {
-    setUpTestConnection,
-    networkId,
-    generateUniqueString,
-    createAccount,
-    createAccountMultisig,
-    deployContract,
-    HELLO_WASM_PATH,
-    HELLO_WASM_BALANCE,
-    loadGuestBookContractCode,
-    deployContractGuestBook,
-    GUESTBOOK_CONTRACT_ID,
-    GUESTBOOK_CONTRACT_STATE,
-    GUESTBOOK_WASM_PATH,
-    sleep,
-    waitFor,
-};

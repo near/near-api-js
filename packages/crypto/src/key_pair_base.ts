@@ -1,3 +1,4 @@
+import type { KeyPairString } from './constants';
 import { PublicKey } from './public_key';
 
 export interface Signature {
@@ -8,6 +9,6 @@ export interface Signature {
 export abstract class KeyPairBase {
     abstract sign(message: Uint8Array): Signature;
     abstract verify(message: Uint8Array, signature: Uint8Array): boolean;
-    abstract toString(): string;
+    abstract toString(): KeyPairString;
     abstract getPublicKey(): PublicKey;
 }

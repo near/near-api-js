@@ -1,5 +1,3 @@
-import { Assignable } from '@near-js/types';
-
 const ACTIONABLE_MESSAGE_BASE = Math.pow(2, 30);
 // const NON_ACTIONABLE_MESSAGE_BASE = Math.pow(2, 31);
 
@@ -9,8 +7,13 @@ const NEP = {
 };
 
 /** Base class for NEP message prefixes **/
-abstract class NEPPrefix extends Assignable {
+abstract class NEPPrefix {
     prefix: number;
+
+    constructor({ prefix }: { prefix: number }) {
+        this.prefix = prefix;
+    }
+
 }
 
 /** Class for constructing prefixes on actionable (on-chain) messages **/

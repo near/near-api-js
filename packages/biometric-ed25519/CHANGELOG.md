@@ -1,5 +1,54 @@
 # @near-js/biometric-ed25519
 
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies [[`5b0bbbc1`](https://github.com/near/near-api-js/commit/5b0bbbc17ffe7d89d7767e405d2ca700dc2bba40)]:
+  - @near-js/crypto@1.4.1
+  - @near-js/utils@1.0.1
+
+## 1.3.0
+
+### Minor Changes
+
+- [#1353](https://github.com/near/near-api-js/pull/1353) [`73690557`](https://github.com/near/near-api-js/commit/73690557c8e2a74386fca62f4ae123abe0651403) Thanks [@andy-haynes](https://github.com/andy-haynes)! - Update to Node.js 20 LTS & pnpm 9.4, modularize packages, simplify dependencies, and update tests
+
+  **Breaking Changes**
+
+  - `near-api-js@5.0.0`
+
+    - The following functions are no longer exported:
+      - `logWarning`
+      - `fetchJson`
+      - the unnamed wrapped `fetch` function exported from `setup-node-fetch.ts`
+    - The browser bundle is no longer being built in version 5; for browser support please use modules
+
+  - `@near-js/providers@1.0.0`
+
+    - The following functions are no longer exported:
+      - `fetchJson`
+
+  - `@near-js/utils@1.0.0`
+    - The following functions are no longer exported:
+      - `logWarning`
+
+### Patch Changes
+
+- Updated dependencies [[`73690557`](https://github.com/near/near-api-js/commit/73690557c8e2a74386fca62f4ae123abe0651403)]:
+  - @near-js/crypto@1.4.0
+  - @near-js/utils@1.0.0
+
+## 1.2.5
+
+### Patch Changes
+
+- [#1355](https://github.com/near/near-api-js/pull/1355) [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41) Thanks [@gtsonevv](https://github.com/gtsonevv)! - Add Secp256k1 support
+
+- Updated dependencies [[`bad95007`](https://github.com/near/near-api-js/commit/bad95007edde4ed9d5989ded7f2032b9f15f5c23), [`7d5a8244`](https://github.com/near/near-api-js/commit/7d5a8244a1683d7b5e82c4da1e40d834167a9a41)]:
+  - @near-js/utils@0.3.0
+  - @near-js/crypto@1.3.0
+
 ## 1.2.4
 
 ### Patch Changes

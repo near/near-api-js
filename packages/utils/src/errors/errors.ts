@@ -1,7 +1,3 @@
-import { Logger } from '../logger';
+import ErrorMessagesJson from './error_messages.json';
 
-/** @deprecated */
-export function logWarning(...args: any[]): void {
-    const [message, ...optionalParams] = args;
-    Logger.warn(message, ...optionalParams);
-}
+export const ErrorMessages: { [error: string]: string } = ErrorMessagesJson;

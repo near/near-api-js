@@ -152,7 +152,7 @@ export class Account implements IntoConnection {
         const block = await this.connection.provider.block({ finality: 'final' });
         const blockHash = block.header.hash;
 
-        const nonce = accessKey.nonce + BigInt(1);
+        const nonce = accessKey.nonce + 1n;
         return await signTransaction(
             receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
         );
@@ -533,7 +533,7 @@ export class Account implements IntoConnection {
         const delegateAction = buildDelegateAction({
             actions,
             maxBlockHeight: BigInt(header.height) + BigInt(blockHeightTtl),
-            nonce: BigInt(accessKey.nonce) + BigInt(1),
+            nonce: BigInt(accessKey.nonce) + 1n,
             publicKey,
             receiverId,
             senderId: this.accountId,
@@ -699,7 +699,7 @@ export class Account implements IntoConnection {
             const validatorId = uniquePools[index];
             if (state.status === 'fulfilled') {
                 const currentBN = BigInt(state.value);
-                if (currentBN !== BigInt(0)) {
+                if (currentBN !== 0n) {
                     return {
                         ...result,
                         stakedValidators: [...result.stakedValidators, { validatorId, amount: currentBN.toString() }],
@@ -715,7 +715,7 @@ export class Account implements IntoConnection {
             }
             return result;
         },
-            { stakedValidators: [], failedValidators: [], total: BigInt(0) });
+            { stakedValidators: [], failedValidators: [], total: 0n });
 
         return {
             ...summary,

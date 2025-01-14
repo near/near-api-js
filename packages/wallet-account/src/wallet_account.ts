@@ -31,6 +31,7 @@ interface SignInOptions {
     // TODO: Replace following with single callbackUrl
     successUrl?: string;
     failureUrl?: string;
+    keyType: 'ed25519' | 'secp256k1'
 }
 
 /**
@@ -179,7 +180,7 @@ export class WalletConnection {
      * const url = await wallet.requestSignInUrl({ contractId: 'account-with-deploy-contract.near' });
      * ```
      */
-    async requestSignInUrl({contractId, methodNames, successUrl, failureUrl}: SignInOptions): Promise<string> {
+    async requestSignInUrl({contractId, methodNames, successUrl, failureUrl, keyType = 'ed25519'}: SignInOptions): Promise<string> {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX);
         newUrl.searchParams.set('success_url', successUrl || currentUrl.href);
@@ -190,7 +191,7 @@ export class WalletConnection {
             await contractAccount.state();
 
             newUrl.searchParams.set('contract_id', contractId);
-            const accessKey = KeyPair.fromRandom('ed25519');
+            const accessKey = KeyPair.fromRandom(keyType);
             newUrl.searchParams.set('public_key', accessKey.getPublicKey().toString());
             await this._keyStore.setKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + accessKey.getPublicKey(), accessKey);
         }
@@ -370,7 +371,7 @@ export class ConnectedWalletAccount extends Account {
 
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
-        const nonce = accessKey.access_key.nonce + BigInt(1);
+        const nonce = accessKey.access_key.nonce + 1n;
         const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
         await this.walletConnection.requestSignTransactions({
             transactions: [transaction],
