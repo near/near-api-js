@@ -1,6 +1,6 @@
 ---
-"@near-js/accounts": major
-"@near-js/wallet-account": major
+"@near-js/accounts": minor
+"@near-js/wallet-account": minor
 "@near-js/providers": minor
 ---
 
