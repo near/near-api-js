@@ -2,7 +2,6 @@ import { PublicKey } from '@near-js/crypto';
 import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { actionCreators } from '@near-js/transactions';
 import { Logger } from '@near-js/utils'
-import unfetch from 'isomorphic-unfetch';
 
 import { SignAndSendTransactionOptions } from './account';
 import { AccountMultisig } from './account_multisig';
@@ -332,7 +331,7 @@ export class Account2FA extends AccountMultisig {
      * @returns {Promise<any>} - A promise that resolves to the response from the helper.
      */
     async postSignedJson(path, body) {
-        return await unfetch(this.helperUrl + path, {
+        return await fetch(this.helperUrl + path, {
             body: JSON.stringify({
                 ...body,
                 ...(await this.signatureFor()),

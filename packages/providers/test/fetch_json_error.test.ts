@@ -1,9 +1,7 @@
 import { describe, expect, test, jest, afterEach } from '@jest/globals';
 import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
-import unfetch from 'isomorphic-unfetch';
 import { ProviderError } from '../src/fetch_json'; 
-
-jest.mock('isomorphic-unfetch');
+import fetchMock from '@fetch-mock/jest';
 
 describe('fetchJsonError', () => {
     const RPC_URL = 'https://rpc.testnet.near.org';
@@ -14,17 +12,8 @@ describe('fetchJsonError', () => {
         params: [],
     };
 
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
     test('handles 500 Internal Server Error', async () => {
-        (unfetch as jest.Mock).mockReturnValue({
-            ok: false,
-            status: 500,
-            text: '',
-            json: {},
-        });
+        fetchMock.once(RPC_URL, 500, '');
     
         // @ts-expect-error test input
         await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
@@ -32,12 +21,7 @@ describe('fetchJsonError', () => {
             .toThrowError(new ProviderError('Internal server error', { cause: 500 }));
     });
     test('handles 408 Timeout Error', async () => {
-        (unfetch as jest.Mock).mockReturnValue({
-            ok: false,
-            status: 408,
-            text: '',
-            json: {},
-        });
+        fetchMock.once(RPC_URL, 408, '')
         // @ts-expect-error test input
         await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
             .rejects
@@ -46,12 +30,7 @@ describe('fetchJsonError', () => {
     // });
 
     test('handles 400 Request Validation Error', async () => {
-        (unfetch as jest.Mock).mockReturnValue({
-            ok: false,
-            status: 400,
-            text: '',
-            json: {},
-        });
+        fetchMock.once(RPC_URL, 400, '')
         // @ts-expect-error test input
         await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
             .rejects
@@ -59,12 +38,7 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 503 Service Unavailable', async () => {
-        (unfetch as jest.Mock).mockReturnValue({
-            ok: false,
-            status: 503,
-            text: '',
-            json: {},
-        });
+        fetchMock.once(RPC_URL, 503, '')
 
         // @ts-expect-error test input
         await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))

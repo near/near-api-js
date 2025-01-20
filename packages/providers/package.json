@@ -20,10 +20,10 @@
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "borsh": "1.0.0",
-    "exponential-backoff": "^3.1.1",
-    "isomorphic-unfetch": "^3.1.0"
+    "exponential-backoff": "^3.1.1"
   },
   "devDependencies": {
+    "@fetch-mock/jest": "^0.2.7",
     "@jest/globals": "^29.7.0",
     "@types/node": "20.0.0",
     "build": "workspace:*",

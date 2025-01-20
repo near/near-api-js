@@ -1,6 +1,5 @@
 import { TypedError } from '@near-js/types';
 import { backOff } from 'exponential-backoff';
-import unfetch from 'isomorphic-unfetch';
 
 const BACKOFF_MULTIPLIER = 1.5;
 const RETRY_NUMBER = 10;
@@ -56,7 +55,7 @@ interface JsonRpcRequest {
  */
 export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: object, retryConfig: object): Promise<any> {
     const response = await backOff(async () => {
-        const res = await unfetch(url, {
+        const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(json),
             headers: { ...headers, 'Content-Type': 'application/json' }

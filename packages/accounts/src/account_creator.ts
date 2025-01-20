@@ -1,5 +1,4 @@
 import { PublicKey } from '@near-js/crypto';
-import unfetch from 'isomorphic-unfetch';
 
 import { Connection } from './connection';
 import { Account } from './account';
@@ -50,7 +49,7 @@ export class UrlAccountCreator extends AccountCreator {
      * @returns {Promise<void>}
      */
     async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
-        await unfetch(`${this.helperUrl}/account`, {
+        await fetch(`${this.helperUrl}/account`, {
             body: JSON.stringify({ newAccountId, newAccountPublicKey: publicKey.toString() }),
             method: 'POST',
         });

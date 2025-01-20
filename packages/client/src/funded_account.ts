@@ -1,5 +1,4 @@
 import type { FinalExecutionOutcome } from '@near-js/types';
-import fetch from 'isomorphic-fetch';
 
 import { KITWALLET_FUNDED_TESTNET_ACCOUNT_ENDPOINT } from './constants';
 import { NewAccountParams } from './interfaces';
