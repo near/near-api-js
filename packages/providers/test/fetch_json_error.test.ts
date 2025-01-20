@@ -1,4 +1,4 @@
-import { describe, expect, test, jest, afterEach } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
 import { ProviderError } from '../src/fetch_json'; 
 import fetchMock from '@fetch-mock/jest';
@@ -21,7 +21,7 @@ describe('fetchJsonError', () => {
             .toThrowError(new ProviderError('Internal server error', { cause: 500 }));
     });
     test('handles 408 Timeout Error', async () => {
-        fetchMock.once(RPC_URL, 408, '')
+        fetchMock.once(RPC_URL, 408, '');
         // @ts-expect-error test input
         await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
             .rejects
@@ -30,7 +30,7 @@ describe('fetchJsonError', () => {
     // });
 
     test('handles 400 Request Validation Error', async () => {
-        fetchMock.once(RPC_URL, 400, '')
+        fetchMock.once(RPC_URL, 400, '');
         // @ts-expect-error test input
         await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
             .rejects
@@ -38,7 +38,7 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 503 Service Unavailable', async () => {
-        fetchMock.once(RPC_URL, 503, '')
+        fetchMock.once(RPC_URL, 503, '');
 
         // @ts-expect-error test input
         await expect(fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig()))
