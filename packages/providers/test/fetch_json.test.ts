@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { fetchJsonRpc } from '../src/fetch_json';
+import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
 
 describe('fetchJson', () => {
     test('string parameter in fetchJson', async () => {
@@ -11,7 +11,7 @@ describe('fetchJson', () => {
             params: []
         };
         // @ts-expect-error test input
-        const result = await fetchJsonRpc(RPC_URL, statusRequest, undefined);
+        const result = await fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig());
         expect(result.result.chain_id).toBe('testnet');
     });
     test('object parameter in fetchJson', async () => {
@@ -23,7 +23,7 @@ describe('fetchJson', () => {
             params: []
         };
         // @ts-expect-error test input
-        const result = await fetchJsonRpc(connection.url, statusRequest, undefined);
+        const result = await fetchJsonRpc(connection.url, statusRequest, undefined, retryConfig());
         expect(result.result.chain_id).toBe('testnet');
     });
 });
