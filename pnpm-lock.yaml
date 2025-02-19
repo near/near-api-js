@@ -103,15 +103,15 @@ importers:
       '@near-js/keystores':
         specifier: workspace:*
         version: link:../keystores
+      '@scure/base':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@types/json-schema':
         specifier: ^7.0.15
         version: 7.0.15
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      bs58:
-        specifier: 4.0.0
-        version: 4.0.0
       build:
         specifier: workspace:*
         version: link:../build
@@ -491,9 +491,6 @@ importers:
       '@types/node':
         specifier: 18.11.18
         version: 18.11.18
-      bs58:
-        specifier: 4.0.0
-        version: 4.0.0
       concurrently:
         specifier: 7.3.0
         version: 7.3.0
@@ -677,9 +674,9 @@ importers:
       '@near-js/types':
         specifier: workspace:*
         version: link:../types
-      bs58:
-        specifier: 4.0.0
-        version: 4.0.0
+      '@scure/base':
+        specifier: ^1.2.0
+        version: 1.2.0
       depd:
         specifier: 2.0.0
         version: 2.0.0
@@ -1454,6 +1451,9 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@scure/base@1.2.0':
+    resolution: {integrity: sha512-iGiGgAXDvDwiaBKbXbDL7hDGhKg9Shhd67GMalE/hkj9Vhf44+LoBNptn25vvw26+gO90rfsjHOuc7f/kGcMfg==}
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -2245,6 +2245,7 @@ packages:
   eslint@8.20.0:
     resolution: {integrity: sha512-d4ixhz5SKCa1D6SCPrivP7yYVi7nyD6A4vs6HIAul9ujBzcEmZVM3/0NN/yu5nKhmO1wjp5xQ46iRfmDGlOviA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -5281,6 +5282,8 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
+
+  '@scure/base@1.2.0': {}
 
   '@sinclair/typebox@0.27.8': {}
 
