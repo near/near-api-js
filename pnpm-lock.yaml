@@ -137,8 +137,8 @@ importers:
   packages/biometric-ed25519:
     dependencies:
       '@hexagon/base64':
-        specifier: 1.1.26
-        version: 1.1.26
+        specifier: 2.0.4
+        version: 2.0.4
       '@near-js/crypto':
         specifier: workspace:*
         version: link:../crypto
@@ -524,6 +524,10 @@ importers:
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
+    optionalDependencies:
+      node-fetch:
+        specifier: 2.6.7
+        version: 2.6.7(encoding@0.1.13)
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -549,10 +553,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-    optionalDependencies:
-      node-fetch:
-        specifier: 2.6.7
-        version: 2.6.7(encoding@0.1.13)
 
   packages/signers:
     dependencies:
@@ -1250,6 +1250,9 @@ packages:
 
   '@hexagon/base64@1.1.26':
     resolution: {integrity: sha512-9HYANYWJAwBbxjkz5P0ZB+JXX7kH7HhUG0FmIBcF7GUmnl6mXnAHFuGOkssW7v2RLNnVvjcKIeOqywSHfw21Qg==}
+
+  '@hexagon/base64@2.0.4':
+    resolution: {integrity: sha512-H/ZY6rGyaEuk0mwQgZ3BVi9hMjFTYpBNFbmtOuec/pPibuGhCMXd8fGtwBaO0h44FkWMurysMsDrpkJsBRmoWQ==}
 
   '@humanwhocodes/config-array@0.9.5':
     resolution: {integrity: sha512-ObyMyWxZiCu/yTisA7uzx81s40xR2fD5Cg/2Kq7G02ajkNubJf6BopgDTmDyc3U7sXpNKM8cYOw7s7Tyr+DnCw==}
@@ -4868,6 +4871,8 @@ snapshots:
       - supports-color
 
   '@hexagon/base64@1.1.26': {}
+
+  '@hexagon/base64@2.0.4': {}
 
   '@humanwhocodes/config-array@0.9.5':
     dependencies:
