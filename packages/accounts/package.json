@@ -27,7 +27,7 @@
         "depd": "2.0.0",
         "is-my-json-valid": "^2.20.6",
         "lru_map": "0.4.1",
-        "near-abi": "0.1.1"
+        "near-abi": "0.2.0"
     },
     "devDependencies": {
         "@jest/globals": "^29.7.0",

@@ -91,8 +91,8 @@ importers:
         specifier: 0.4.1
         version: 0.4.1
       near-abi:
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.2.0
+        version: 0.2.0
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -470,8 +470,8 @@ importers:
         specifier: 1.7.2
         version: 1.7.2
       near-abi:
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.2.0
+        version: 0.2.0
       node-fetch:
         specifier: 2.6.7
         version: 2.6.7(encoding@0.1.13)
@@ -3265,6 +3265,9 @@ packages:
 
   near-abi@0.1.1:
     resolution: {integrity: sha512-RVDI8O+KVxRpC3KycJ1bpfVj9Zv+xvq9PlW1yIFl46GhrnLw83/72HqHGjGDjQ8DtltkcpSjY9X3YIGZ+1QyzQ==}
+
+  near-abi@0.2.0:
+    resolution: {integrity: sha512-kCwSf/3fraPU2zENK18sh+kKG4uKbEUEQdyWQkmW8ZofmLarObIz2+zAYjA1teDZLeMvEQew3UysnPDXgjneaA==}
 
   near-api-js@4.0.0:
     resolution: {integrity: sha512-Gh4Lq9LXFDNtEHGXeqYFjbvS9lodX34srmFAxhOgGqjklK5QArrT7bTifWA9mi3QGe3MqwwwfAIVONbeZ0qSpg==}
@@ -7699,6 +7702,10 @@ snapshots:
   natural-compare@1.4.0: {}
 
   near-abi@0.1.1:
+    dependencies:
+      '@types/json-schema': 7.0.15
+
+  near-abi@0.2.0:
     dependencies:
       '@types/json-schema': 7.0.15
 
