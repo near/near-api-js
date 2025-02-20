@@ -1,6 +1,10 @@
-name: Pull Request
+name: CI
 
 on:
+  push:
+    branches:
+      - main
+      - master
   pull_request:
 
   workflow_dispatch:
