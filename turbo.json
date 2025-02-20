@@ -1,28 +1,28 @@
 {
-	"$schema": "https://turborepo.org/schema.json",
-	"tasks": {
-		"build": {
-			"dependsOn": ["^build"],
-			"outputs": ["dist/**", "lib/**"]
-		},
-		"test": {
-			"dependsOn": ["^transit"],
-			"outputs": []
-		},
-		"lint": {
-			"dependsOn": ["^transit"],
-			"outputs": []
-		},
-		"lint:fix": {
-			"dependsOn": ["^transit"],
-			"outputs": []
-		},
-		"transit": {
-			"dependsOn": ["^transit"]
-		},
-		"clean": {
-			"outputs": [],
-			"cache": false
-		}
-	}
+  "$schema": "https://turborepo.org/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "lib/**"]
+    },
+    "test": {
+      "dependsOn": ["^transit"],
+      "outputs": []
+    },
+    "lint": {
+      "dependsOn": ["^transit"],
+      "outputs": []
+    },
+    "lint:fix": {
+      "dependsOn": ["^transit"],
+      "outputs": []
+    },
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "clean": {
+      "outputs": [],
+      "cache": false
+    }
+  }
 }
