@@ -167,8 +167,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0
       fido2-lib:
-        specifier: 3.4.1
-        version: 3.4.1
+        specifier: 3.5.3
+        version: 3.5.3
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -1257,6 +1257,9 @@ packages:
 
   '@hexagon/base64@1.1.26':
     resolution: {integrity: sha512-9HYANYWJAwBbxjkz5P0ZB+JXX7kH7HhUG0FmIBcF7GUmnl6mXnAHFuGOkssW7v2RLNnVvjcKIeOqywSHfw21Qg==}
+
+  '@hexagon/base64@1.1.28':
+    resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
 
   '@humanwhocodes/config-array@0.9.5':
     resolution: {integrity: sha512-ObyMyWxZiCu/yTisA7uzx81s40xR2fD5Cg/2Kq7G02ajkNubJf6BopgDTmDyc3U7sXpNKM8cYOw7s7Tyr+DnCw==}
@@ -2356,8 +2359,8 @@ packages:
   fb-watchman@2.0.2:
     resolution: {integrity: sha512-p5161BqbuCaSnB8jIbzQHOlpgsPmK5rJVDfDKO91Axs5NC1uu3HRQm6wt9cd9/+GtQQIO53JdGXXoyDpTAsgYA==}
 
-  fido2-lib@3.4.1:
-    resolution: {integrity: sha512-efNrRbckp48AW7Q43o6gcp8/wnoBM7hwKikQntdiR2/NqVMPaCXFQs8kJ9wQqfv5V3PxZdg4kD9DpxdqYl6jxQ==}
+  fido2-lib@3.5.3:
+    resolution: {integrity: sha512-IwDuTvCcTpD6rhZkCr1MTp5oZkLUanuWr9xoSvLgc33VdFHl/hc/hkh9L/YzejoY18tP6mkXRkDWfFQMJ69ZfQ==}
     engines: {node: '>=10'}
 
   file-entry-cache@6.0.1:
@@ -3874,11 +3877,11 @@ packages:
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
 
-  tldts-core@6.1.28:
-    resolution: {integrity: sha512-MJIfu8oVA4GVEuZKxk1GaaLpdq45w8b/UoWwuq3k+oIWbFBFtFG37xCTe3qz7D/ZBcHFZ2LmQb66grE1/Q93Hw==}
+  tldts-core@6.1.42:
+    resolution: {integrity: sha512-MJKxTFpAyUNxST7IrONoeQcFXuF3tQvnVuJ8IRBlA9rzlsAt1speUZSQxai3jrWwxMJ29FWrdpUWBW2pN99Ftw==}
 
-  tldts@6.0.23:
-    resolution: {integrity: sha512-LaA60X7J9mts1EliB7Nq/OBqicaI7TgsheWeQ8RR1uqwcVLjvRVHTGOkWjKAPa/XF+0t2ZBy1oF6OW8ufqOsKA==}
+  tldts@6.1.42:
+    resolution: {integrity: sha512-4IQJNZrYPHLVdiaRGmg6X5XrtkwGcfV1BBudNsWlJrl3mXDPEs6IlDzb0rDcgyUx531thK6nT5OA13UpGfZUjA==}
     hasBin: true
 
   tmp@0.0.33:
@@ -4888,6 +4891,8 @@ snapshots:
       '@shikijs/vscode-textmate': 10.0.2
 
   '@hexagon/base64@1.1.26': {}
+
+  '@hexagon/base64@1.1.28': {}
 
   '@humanwhocodes/config-array@0.9.5':
     dependencies:
@@ -6440,15 +6445,16 @@ snapshots:
     dependencies:
       bser: 2.1.1
 
-  fido2-lib@3.4.1:
+  fido2-lib@3.5.3:
     dependencies:
-      '@hexagon/base64': 1.1.26
+      '@hexagon/base64': 1.1.28
       '@peculiar/webcrypto': 1.4.6
       asn1js: 3.0.5
       cbor-x: 1.5.9
       jose: 4.15.7
       pkijs: 3.0.16
-      tldts: 6.0.23
+      punycode.js: 2.3.1
+      tldts: 6.1.42
 
   file-entry-cache@6.0.1:
     dependencies:
@@ -8311,11 +8317,11 @@ snapshots:
 
   through@2.3.8: {}
 
-  tldts-core@6.1.28: {}
+  tldts-core@6.1.42: {}
 
-  tldts@6.0.23:
+  tldts@6.1.42:
     dependencies:
-      tldts-core: 6.1.28
+      tldts-core: 6.1.42
 
   tmp@0.0.33:
     dependencies:
