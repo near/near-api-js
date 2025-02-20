@@ -1,22 +1,24 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**/*.ts", "test/**/*.js", "tsconfig.json"],
       "outputs": ["dist/**", "lib/**"]
     },
     "test": {
-      "dependsOn": [],
-      "inputs": ["src/**/*.ts", "test/**/*.js"]
+      "dependsOn": ["^transit"],
+      "outputs": []
     },
     "lint": {
-      "inputs": ["src/**/*.ts", "test/**/*.ts"],
+      "dependsOn": ["^transit"],
       "outputs": []
     },
     "lint:fix": {
-      "inputs": ["src/**/*.ts", "test/**/*.ts"],
+      "dependsOn": ["^transit"],
       "outputs": []
+    },
+    "transit": {
+      "dependsOn": ["^transit"]
     },
     "clean": {
       "outputs": [],
