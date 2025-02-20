@@ -23,13 +23,12 @@
     "exponential-backoff": "^3.1.1"
   },
   "devDependencies": {
-    "@fetch-mock/jest": "^0.2.7",
     "@jest/globals": "^29.7.0",
     "@types/node": "20.0.0",
     "build": "workspace:*",
     "jest": "29.7.0",
     "near-workspaces": "3.5.0",
-    "ts-jest": "29.1.5",
+    "ts-jest": "29.2.5",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
