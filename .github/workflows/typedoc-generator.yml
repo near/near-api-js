@@ -6,7 +6,7 @@ on:
         master  
 
 env:
-  NODE_VERSION: 20.15.0
+  NODE_VERSION: 20.18.3
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
   USES_PNPM: 'true'
@@ -21,14 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4.0.0
+        uses: pnpm/action-setup@v4
         with:
-          version: 9.4.0
+          version: 10.4.1
 
       - name: Install dependencies
         run: pnpm install
