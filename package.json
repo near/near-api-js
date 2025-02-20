@@ -1,40 +1,41 @@
 {
-  "name": "@near-js/monorepo",
-  "private": true,
-  "engines": {
-    "node": ">=20.15.0",
-    "pnpm": ">=9.4.0"
-  },
-  "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "build": "turbo run build",
-    "clean": "turbo run clean",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
-    "autoclave": "rimraf packages/**/dist && rimraf packages/**/lib && rimraf packages/**/node_modules && rimraf packages/**/coverage && rimraf packages/**/.turbo && rm -rf node_modules",
-    "test": "turbo run test",
-    "release": "changeset publish",
-    "prepare": "husky install",
-    "docs:generate": "typedoc"
-  },
-  "devDependencies": {
-    "@changesets/changelog-github": "0.4.6",
-    "@changesets/cli": "2.24.4",
-    "@commitlint/cli": "19.3.0",
-    "@commitlint/config-conventional": "19.7.1",
-    "@typescript-eslint/eslint-plugin": "6.21.0",
-    "@typescript-eslint/parser": "6.21.0",
-    "commitlint": "19.3.0",
-    "eslint": "8.20.0",
-    "husky": "7.0.4",
-    "rimraf": "6.0.1",
-    "turbo": "1.4.5",
-    "typedoc": "0.27.7",
-    "tsconfig": "workspace:*",
-    "typescript": "5.4.5"
-  },
-  "resolutions": {
-    "near-sandbox": "0.0.18",
-    "near-api-js": "4.0.0"
-  }
+	"name": "@near-js/monorepo",
+	"private": true,
+	"engines": {
+		"node": ">=20.18.3",
+		"pnpm": ">=10.4.1"
+	},
+	"packageManager": "pnpm@10.4.1",
+	"scripts": {
+		"preinstall": "npx only-allow pnpm",
+		"build": "turbo run build",
+		"clean": "turbo run clean",
+		"lint": "turbo run lint",
+		"lint:fix": "turbo run lint:fix",
+		"autoclave": "rimraf packages/**/dist && rimraf packages/**/lib && rimraf packages/**/node_modules && rimraf packages/**/coverage && rimraf packages/**/.turbo && rm -rf node_modules",
+		"test": "turbo run test",
+		"release": "changeset publish",
+		"prepare": "husky install",
+		"docs:generate": "typedoc"
+	},
+	"devDependencies": {
+		"@changesets/changelog-github": "0.4.6",
+		"@changesets/cli": "2.24.4",
+		"@commitlint/cli": "19.3.0",
+		"@commitlint/config-conventional": "19.7.1",
+		"@typescript-eslint/eslint-plugin": "6.21.0",
+		"@typescript-eslint/parser": "6.21.0",
+		"commitlint": "19.3.0",
+		"eslint": "8.20.0",
+		"husky": "7.0.4",
+		"rimraf": "6.0.1",
+		"tsconfig": "workspace:*",
+		"turbo": "2.4.2",
+		"typedoc": "0.27.7",
+		"typescript": "5.4.5"
+	},
+	"resolutions": {
+		"near-sandbox": "0.0.18",
+		"near-api-js": "4.0.0"
+	}
 }
