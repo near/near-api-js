@@ -1,5 +1,12 @@
 # @near-js/crypto
 
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies [[`c85d12d3`](https://github.com/near/near-api-js/commit/c85d12d36b1d8cd9d02178506dcf9cf0598fe7a8)]:
+  - @near-js/utils@1.1.0
+
 ## 1.4.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@near-js/keystores-browser",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "KeyStore implementation for working with keys in browser LocalStorage",
   "main": "lib/esm/index.js",
   "type": "module",
