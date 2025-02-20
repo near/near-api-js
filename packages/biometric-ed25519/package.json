@@ -27,7 +27,7 @@
     "buffer": "6.0.3",
     "build": "workspace:*",
     "cbor-js": "^0.1.0",
-    "fido2-lib": "3.4.1"
+    "fido2-lib": "3.5.3"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
