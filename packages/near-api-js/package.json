@@ -48,8 +48,8 @@
         "dev": "pnpm compile -w",
         "build": "pnpm compile",
         "test": "jest test --passWithNoTests",
-        "lint": "biome lint .",
-        "lint:fix": "biome lint . --write",
+        "lint": "biome check .",
+        "lint:fix": "biome check . --write",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "pnpm rimraf lib"
