@@ -39,10 +39,13 @@ export interface CallFunctionRequest {
     args_base64: string;
 }
 
-export type RpcQueryRequest = (ViewAccountRequest |
-    ViewCodeRequest |
-    ViewStateRequest |
-    ViewAccountRequest |
-    ViewAccessKeyRequest |
-    ViewAccessKeyListRequest |
-    CallFunctionRequest) & BlockReference
+export type RpcQueryRequest = (
+    | ViewAccountRequest
+    | ViewCodeRequest
+    | ViewStateRequest
+    | ViewAccountRequest
+    | ViewAccessKeyRequest
+    | ViewAccessKeyListRequest
+    | CallFunctionRequest
+) &
+    BlockReference;

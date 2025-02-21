@@ -4,7 +4,6 @@ import type { Signature, PublicKey, KeyType } from '@near-js/crypto';
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
  */
 export abstract class Signer {
-
     /**
      * Creates new key and returns public key.
      * @param accountId accountId to retrieve from.

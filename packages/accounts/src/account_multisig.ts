@@ -18,12 +18,12 @@ const { deployContract, functionCall } = actionCreators;
 enum MultisigCodeStatus {
     INVALID_CODE = 0,
     VALID_CODE = 1,
-    UNKNOWN_CODE = 2
+    UNKNOWN_CODE = 2,
 }
 
 // in memory request cache for node w/o localStorage
 const storageFallback = {
-    [MULTISIG_STORAGE_KEY]: null
+    [MULTISIG_STORAGE_KEY]: null,
 };
 
 export class AccountMultisig extends Account {
@@ -61,28 +61,34 @@ export class AccountMultisig extends Account {
      * @param options.actions The list of actions to be included in the transaction.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({
+        receiverId,
+        actions,
+    }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
 
-        const args = Buffer.from(JSON.stringify({
-            request: {
-                receiver_id: receiverId,
-                actions: convertActions(actions, accountId, receiverId)
-            }
-        }));
+        const args = Buffer.from(
+            JSON.stringify({
+                request: {
+                    receiver_id: receiverId,
+                    actions: convertActions(actions, accountId, receiverId),
+                },
+            }),
+        );
 
         let result;
         try {
             result = await super.signAndSendTransaction({
                 receiverId: accountId,
-                actions: [
-                    functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)
-                ]
+                actions: [functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)],
             });
         } catch (e) {
             if (e.toString().includes('Account has too many active requests. Confirm or delete some')) {
                 await this.deleteUnconfirmedRequests();
-                return await this.signAndSendTransaction({ receiverId, actions });
+                return await this.signAndSendTransaction({
+                    receiverId,
+                    actions,
+                });
             }
             throw e;
         }
@@ -99,7 +105,7 @@ export class AccountMultisig extends Account {
         this.setRequest({
             accountId,
             actions,
-            requestId: Number.parseInt(Buffer.from(status.SuccessValue, 'base64').toString('ascii'), 10)
+            requestId: Number.parseInt(Buffer.from(status.SuccessValue, 'base64').toString('ascii'), 10),
         });
 
         if (this.onAddRequestResult) {
@@ -113,39 +119,72 @@ export class AccountMultisig extends Account {
     }
 
     /**
-     * This method submits a canary transaction that is expected to always fail in order to determine whether the contract currently has valid multisig state 
+     * This method submits a canary transaction that is expected to always fail in order to determine whether the contract currently has valid multisig state
      * and whether it is initialized. The canary transaction attempts to delete a request at index u32_max and will go through if a request exists at that index.
      * a u32_max + 1 and -1 value cannot be used for the canary due to expected u32 error thrown before deserialization attempt.
      * @param contractBytes The bytecode of the multisig contract.
      * @returns {Promise<{ codeStatus: MultisigCodeStatus; stateStatus: MultisigStateStatus }>} A promise that resolves to the status of the code and state.
      */
-    async checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{ codeStatus: MultisigCodeStatus; stateStatus: MultisigStateStatus }> {
+    async checkMultisigCodeAndStateStatus(contractBytes?: Uint8Array): Promise<{
+        codeStatus: MultisigCodeStatus;
+        stateStatus: MultisigStateStatus;
+    }> {
         const u32_max = 4_294_967_295;
-        const validCodeStatusIfNoDeploy = contractBytes ? MultisigCodeStatus.UNKNOWN_CODE : MultisigCodeStatus.VALID_CODE;
+        const validCodeStatusIfNoDeploy = contractBytes
+            ? MultisigCodeStatus.UNKNOWN_CODE
+            : MultisigCodeStatus.VALID_CODE;
 
         try {
-            if(contractBytes) {
+            if (contractBytes) {
                 await super.signAndSendTransaction({
-                    receiverId: this.accountId, actions: [
+                    receiverId: this.accountId,
+                    actions: [
                         deployContract(contractBytes),
-                        functionCall('delete_request', { request_id: u32_max }, MULTISIG_GAS, MULTISIG_DEPOSIT)
-                    ]
+                        functionCall('delete_request', { request_id: u32_max }, MULTISIG_GAS, MULTISIG_DEPOSIT),
+                    ],
                 });
             } else {
                 await this.deleteRequest(u32_max);
             }
-            
-            return { codeStatus: MultisigCodeStatus.VALID_CODE, stateStatus: MultisigStateStatus.VALID_STATE };
+
+            return {
+                codeStatus: MultisigCodeStatus.VALID_CODE,
+                stateStatus: MultisigStateStatus.VALID_STATE,
+            };
         } catch (e) {
-            if (new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(e && e.kind && e.kind.ExecutionError)) {
-                return { codeStatus: validCodeStatusIfNoDeploy, stateStatus: MultisigStateStatus.INVALID_STATE };
-            } else if (new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(e && e.kind && e.kind.ExecutionError)) {
-                return { codeStatus: validCodeStatusIfNoDeploy, stateStatus: MultisigStateStatus.STATE_NOT_INITIALIZED };
-            } else if (new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(e && e.kind && e.kind.ExecutionError)) {
-                return { codeStatus: validCodeStatusIfNoDeploy, stateStatus: MultisigStateStatus.VALID_STATE };
+            if (
+                new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(
+                    e && e.kind && e.kind.ExecutionError,
+                )
+            ) {
+                return {
+                    codeStatus: validCodeStatusIfNoDeploy,
+                    stateStatus: MultisigStateStatus.INVALID_STATE,
+                };
+            } else if (
+                new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(
+                    e && e.kind && e.kind.ExecutionError,
+                )
+            ) {
+                return {
+                    codeStatus: validCodeStatusIfNoDeploy,
+                    stateStatus: MultisigStateStatus.STATE_NOT_INITIALIZED,
+                };
+            } else if (
+                new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(
+                    e && e.kind && e.kind.ExecutionError,
+                )
+            ) {
+                return {
+                    codeStatus: validCodeStatusIfNoDeploy,
+                    stateStatus: MultisigStateStatus.VALID_STATE,
+                };
             } else if (new RegExp(MultisigDeleteRequestRejectionError.METHOD_NOT_FOUND).test(e && e.message)) {
                 // not reachable if transaction included a deploy
-                return { codeStatus: MultisigCodeStatus.INVALID_CODE, stateStatus: MultisigStateStatus.UNKNOWN_STATE };
+                return {
+                    codeStatus: MultisigCodeStatus.INVALID_CODE,
+                    stateStatus: MultisigStateStatus.UNKNOWN_STATE,
+                };
             }
             throw e;
         }
@@ -159,7 +198,7 @@ export class AccountMultisig extends Account {
     deleteRequest(request_id) {
         return super.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [functionCall('delete_request', { request_id }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
+            actions: [functionCall('delete_request', { request_id }, MULTISIG_GAS, MULTISIG_DEPOSIT)],
         });
     }
 
@@ -169,7 +208,7 @@ export class AccountMultisig extends Account {
      */
     async deleteAllRequests() {
         const request_ids = await this.getRequestIds();
-        if(request_ids.length) {
+        if (request_ids.length) {
             await Promise.all(request_ids.map((id) => this.deleteRequest(id)));
         }
     }
@@ -178,7 +217,7 @@ export class AccountMultisig extends Account {
      * Delete unconfirmed multisig requests associated with the account.
      * @returns {Promise<void>} A promise that resolves when unconfirmed requests are deleted.
      */
-    async deleteUnconfirmedRequests () {
+    async deleteUnconfirmedRequests() {
         // TODO: Delete in batch, don't delete unexpired
         // TODO: Delete in batch, don't delete unexpired (can reduce gas usage dramatically)
         const request_ids = await this.getRequestIds();
@@ -190,7 +229,14 @@ export class AccountMultisig extends Account {
             try {
                 await super.signAndSendTransaction({
                     receiverId: this.accountId,
-                    actions: [functionCall('delete_request', { request_id: requestIdToDelete }, MULTISIG_GAS, MULTISIG_DEPOSIT)]
+                    actions: [
+                        functionCall(
+                            'delete_request',
+                            { request_id: requestIdToDelete },
+                            MULTISIG_GAS,
+                            MULTISIG_DEPOSIT,
+                        ),
+                    ],
                 });
             } catch (e) {
                 Logger.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
@@ -226,36 +272,41 @@ export class AccountMultisig extends Account {
 
 const convertPKForContract = (pk) => pk.toString().replace('ed25519:', '');
 
-const convertActions = (actions, accountId, receiverId) => actions.map((a) => {
-    const type = a.enum;
-    const { gas, publicKey, methodName, args, deposit, accessKey, code } = a[type];
-    const action = {
-        type: type[0].toUpperCase() + type.substr(1),
-        gas: (gas && gas.toString()) || undefined,
-        public_key: (publicKey && convertPKForContract(publicKey)) || undefined,
-        method_name: methodName,
-        args: (args && Buffer.from(args).toString('base64')) || undefined,
-        code: (code && Buffer.from(code).toString('base64')) || undefined,
-        amount: (deposit && deposit.toString()) || undefined,
-        deposit: (deposit && deposit.toString()) || '0',
-        permission: undefined,
-    };
-    if (accessKey) {
-        if (receiverId === accountId && accessKey.permission.enum !== 'fullAccess') {
-            action.permission = {
-                receiver_id: accountId,
-                allowance: MULTISIG_ALLOWANCE.toString(),
-                method_names: MULTISIG_CHANGE_METHODS,
-            };
+const convertActions = (actions, accountId, receiverId) =>
+    actions.map((a) => {
+        const type = a.enum;
+        const { gas, publicKey, methodName, args, deposit, accessKey, code } = a[type];
+        const action = {
+            type: type[0].toUpperCase() + type.substr(1),
+            gas: (gas && gas.toString()) || undefined,
+            public_key: (publicKey && convertPKForContract(publicKey)) || undefined,
+            method_name: methodName,
+            args: (args && Buffer.from(args).toString('base64')) || undefined,
+            code: (code && Buffer.from(code).toString('base64')) || undefined,
+            amount: (deposit && deposit.toString()) || undefined,
+            deposit: (deposit && deposit.toString()) || '0',
+            permission: undefined,
+        };
+        if (accessKey) {
+            if (receiverId === accountId && accessKey.permission.enum !== 'fullAccess') {
+                action.permission = {
+                    receiver_id: accountId,
+                    allowance: MULTISIG_ALLOWANCE.toString(),
+                    method_names: MULTISIG_CHANGE_METHODS,
+                };
+            }
+            if (accessKey.permission.enum === 'functionCall') {
+                const {
+                    receiverId: receiver_id,
+                    methodNames: method_names,
+                    allowance,
+                } = accessKey.permission.functionCall;
+                action.permission = {
+                    receiver_id,
+                    allowance: (allowance && allowance.toString()) || undefined,
+                    method_names,
+                };
+            }
         }
-        if (accessKey.permission.enum === 'functionCall') {
-            const { receiverId: receiver_id, methodNames: method_names, allowance } = accessKey.permission.functionCall;
-            action.permission = {
-                receiver_id,
-                allowance: (allowance && allowance.toString()) || undefined,
-                method_names
-            };
-        }
-    }
-    return action;
-});
+        return action;
+    });

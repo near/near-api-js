@@ -48,13 +48,12 @@ export interface ExecutionOutcome {
     status: ExecutionStatus | ExecutionStatusBasic;
 }
 
-export type ReceiptAction =
-  { Transfer: { deposit: string }};
+export type ReceiptAction = { Transfer: { deposit: string } };
 
 export interface ExecutionOutcomeReceiptDetail {
     predecessor_id: string;
     receipt: {
-        Action: ExecutionOutcomeReceiptAction
+        Action: ExecutionOutcomeReceiptAction;
     };
     receipt_id: string;
     receiver_id: string;

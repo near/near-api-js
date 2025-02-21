@@ -14,11 +14,13 @@ export const preformatMakeCredReq = (makeCredReq) => {
             ...makeCredReq.user,
             id: userId,
         },
-        ...(makeCredReq.excludeCredentials ? {
-            excludeCredentials: makeCredReq.excludeCredentials.map((e) => {
-                return { id: base64.toArrayBuffer(e.id, true), type: e.type };
-            })
-        } : {})
+        ...(makeCredReq.excludeCredentials
+            ? {
+                  excludeCredentials: makeCredReq.excludeCredentials.map((e) => {
+                      return { id: base64.toArrayBuffer(e.id, true), type: e.type };
+                  }),
+              }
+            : {}),
     };
 };
 
@@ -46,12 +48,10 @@ export const preformatGetAssertReq = (getAssert) => {
     return getAssert;
 };
 
-
 export const publicKeyCredentialToJSON = (pubKeyCred) => {
     if (pubKeyCred instanceof Array) {
         const arr = [];
-        for (const i of pubKeyCred)
-            arr.push(publicKeyCredentialToJSON(i));
+        for (const i of pubKeyCred) arr.push(publicKeyCredentialToJSON(i));
 
         return arr;
     }
@@ -89,7 +89,7 @@ export const recoverPublicKey = async (r, s, message, recovery) => {
 
 export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
     const array = Array.from(uint8Array);
-    return BigInt('0x' + array.map(byte => byte.toString(16).padStart(2, '0')).join(''));
+    return BigInt('0x' + array.map((byte) => byte.toString(16).padStart(2, '0')).join(''));
 };
 
 const convertUint8ArrayToArrayBuffer = (obj: any) => {
@@ -104,13 +104,14 @@ const convertUint8ArrayToArrayBuffer = (obj: any) => {
 // https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAttestationResponse
 // an AuthenticatorAttestationResponse (when the PublicKeyCredential is created via CredentialsContainer.create())
 export const sanitizeCreateKeyResponse = (res: Credential) => {
-    if (res instanceof PublicKeyCredential && (
-        res.rawId instanceof Uint8Array ||
-        res.response.clientDataJSON instanceof Uint8Array ||
-        //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //  @ts-ignore - attestationObject is not defined in Credential
-        res.response.attestationObject instanceof Uint8Array
-    )) {
+    if (
+        res instanceof PublicKeyCredential &&
+        (res.rawId instanceof Uint8Array ||
+            res.response.clientDataJSON instanceof Uint8Array ||
+            //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //  @ts-ignore - attestationObject is not defined in Credential
+            res.response.attestationObject instanceof Uint8Array)
+    ) {
         return {
             ...res,
             rawId: convertUint8ArrayToArrayBuffer(res.rawId),
@@ -120,10 +121,10 @@ export const sanitizeCreateKeyResponse = (res: Credential) => {
                 //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //  @ts-ignore - attestationObject is not defined in Credential
                 attestationObject: convertUint8ArrayToArrayBuffer(res.response.attestationObject),
-            }
+            },
         };
     }
-    return res;  
+    return res;
 };
 
 // This function is used to sanitize the response from navigator.credentials.get(), seeking for any Uint8Array and converting them to ArrayBuffer
@@ -131,19 +132,20 @@ export const sanitizeCreateKeyResponse = (res: Credential) => {
 // https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAssertionResponse
 // an AuthenticatorAssertionResponse (when the PublicKeyCredential is obtained via CredentialsContainer.get()).
 export const sanitizeGetKeyResponse = (res: Credential) => {
-    if (res instanceof PublicKeyCredential && (
-        res.rawId instanceof Uint8Array ||
-      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //   @ts-ignore - authenticatorData is not defined in Credential
-      res.response.authenticatorData instanceof Uint8Array ||
-      res.response.clientDataJSON instanceof Uint8Array ||
-      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //   @ts-ignore - signature is not defined in Credential
-      res.response.signature instanceof Uint8Array ||
-      //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //   @ts-ignore - userHandle is not defined in Credential
-      res.response.userHandle instanceof Uint8Array
-    )) {
+    if (
+        res instanceof PublicKeyCredential &&
+        (res.rawId instanceof Uint8Array ||
+            //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //   @ts-ignore - authenticatorData is not defined in Credential
+            res.response.authenticatorData instanceof Uint8Array ||
+            res.response.clientDataJSON instanceof Uint8Array ||
+            //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //   @ts-ignore - signature is not defined in Credential
+            res.response.signature instanceof Uint8Array ||
+            //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //   @ts-ignore - userHandle is not defined in Credential
+            res.response.userHandle instanceof Uint8Array)
+    ) {
         return {
             ...res,
             rawId: convertUint8ArrayToArrayBuffer(res.rawId),
@@ -159,7 +161,7 @@ export const sanitizeGetKeyResponse = (res: Credential) => {
                 //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //   @ts-ignore - userHandle is not defined in Credential
                 userHandle: convertUint8ArrayToArrayBuffer(res.response.userHandle),
-            }
+            },
         };
     }
     return res;

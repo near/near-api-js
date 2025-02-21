@@ -15,7 +15,7 @@ export class Fido2 {
             cryptoParams: [-8, -7, -257],
             authenticatorAttachment: 'platform',
             authenticatorRequireResidentKey: true,
-            authenticatorUserVerification: 'preferred'
+            authenticatorUserVerification: 'preferred',
         });
     }
 
@@ -24,7 +24,7 @@ export class Fido2 {
         const user = {
             id: id,
             name: username,
-            displayName: displayName
+            displayName: displayName,
         };
         const challenge = base64.fromArrayBuffer(registrationOptions.challenge, true);
 
@@ -32,7 +32,7 @@ export class Fido2 {
             ...registrationOptions,
             user,
             status: 'ok',
-            challenge
+            challenge,
         };
     }
 
@@ -40,7 +40,7 @@ export class Fido2 {
         const attestationExpectations = {
             challenge: challenge,
             origin: origin,
-            factor: 'either'
+            factor: 'either',
         };
 
         // @ts-expect-error `factor` is defined as a union of strings for which "either" is valid...

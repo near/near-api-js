@@ -10,9 +10,12 @@ export abstract class KeyPair extends KeyPairBase {
      */
     static fromRandom(curve: CurveType): KeyPair {
         switch (curve.toUpperCase()) {
-            case 'ED25519': return KeyPairEd25519.fromRandom();
-            case 'SECP256K1': return KeyPairSecp256k1.fromRandom();
-            default: throw new Error(`Unknown curve ${curve}`);
+            case 'ED25519':
+                return KeyPairEd25519.fromRandom();
+            case 'SECP256K1':
+                return KeyPairSecp256k1.fromRandom();
+            default:
+                throw new Error(`Unknown curve ${curve}`);
         }
     }
 
@@ -25,9 +28,12 @@ export abstract class KeyPair extends KeyPairBase {
         const parts = encodedKey.split(':');
         if (parts.length === 2) {
             switch (parts[0].toUpperCase()) {
-                case 'ED25519': return new KeyPairEd25519(parts[1]);
-                case 'SECP256K1': return new KeyPairSecp256k1(parts[1]);
-                default: throw new Error(`Unknown curve: ${parts[0]}`);
+                case 'ED25519':
+                    return new KeyPairEd25519(parts[1]);
+                case 'SECP256K1':
+                    return new KeyPairSecp256k1(parts[1]);
+                default:
+                    throw new Error(`Unknown curve: ${parts[0]}`);
             }
         } else {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');

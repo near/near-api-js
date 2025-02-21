@@ -2,19 +2,31 @@ import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/global
 import { PositionalArgsError } from '@near-js/types';
 
 import { Contract, Account } from '../src';
-import { deployContractGuestBook, generateUniqueString, setUpTestConnection }  from './test-utils';
+import { deployContractGuestBook, generateUniqueString, setUpTestConnection } from './test-utils';
 
-const account = Object.setPrototypeOf({
-    getConnection() {
-        return {};
+const account = Object.setPrototypeOf(
+    {
+        getConnection() {
+            return {};
+        },
+        viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery }) {
+            return {
+                this: this,
+                contractId,
+                methodName,
+                args,
+                parse,
+                stringify,
+                jsContract,
+                blockQuery,
+            };
+        },
+        functionCall() {
+            return this;
+        },
     },
-    viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery }) {
-        return { this: this, contractId, methodName, args, parse, stringify, jsContract, blockQuery };
-    },
-    functionCall() {
-        return this;
-    }
-}, Account.prototype);
+    Account.prototype,
+);
 
 // @ts-expect-error test input
 const contract: any = new Contract(account, 'contractId', {
@@ -22,7 +34,7 @@ const contract: any = new Contract(account, 'contractId', {
     changeMethods: ['changeMethod'],
 });
 
-['viewMethod', 'changeMethod'].forEach(method => {
+['viewMethod', 'changeMethod'].forEach((method) => {
     describe(method, () => {
         test('returns what you expect for .name', () => {
             expect(contract[method].name).toBe(method);
@@ -35,7 +47,7 @@ const contract: any = new Contract(account, 'contractId', {
             expect(await callFuncInNewContext(contract[method]));
         });
 
-        test('throws PositionalArgsError if first argument is not an object', async() => {
+        test('throws PositionalArgsError if first argument is not an object', async () => {
             await expect(contract[method](1)).rejects.toBeInstanceOf(PositionalArgsError);
             await expect(contract[method]('lol')).rejects.toBeInstanceOf(PositionalArgsError);
             await expect(contract[method]([])).rejects.toBeInstanceOf(PositionalArgsError);
@@ -56,40 +68,44 @@ const contract: any = new Contract(account, 'contractId', {
 
 describe('viewMethod', () => {
     test('passes options through to account viewFunction', async () => {
-        function customParser () {}
-        const stubbedReturnValue = await account.viewFunction({ parse: customParser });
+        function customParser() {}
+        const stubbedReturnValue = await account.viewFunction({
+            parse: customParser,
+        });
         expect(stubbedReturnValue.parse).toBe(customParser);
     });
 
-    describe.each([
-        1,
-        'lol',
-        [],
-        new Date(),
-        null,
-        new Set(),
-    ])('throws PositionalArgsError if 2nd arg is not an object', badArg => {
-        test(String(badArg), async () => {
-            try {
-                await contract.viewMethod({ a: 1 }, badArg);
-                throw new Error(`Calling \`contract.viewMethod({ a: 1 }, ${badArg})\` worked. It shouldn't have worked.`);
-            } catch (e) {
-                if (!(e instanceof PositionalArgsError)) throw e;
-            }
-        });
-    });
+    describe.each([1, 'lol', [], new Date(), null, new Set()])(
+        'throws PositionalArgsError if 2nd arg is not an object',
+        (badArg) => {
+            test(String(badArg), async () => {
+                try {
+                    await contract.viewMethod({ a: 1 }, badArg);
+                    throw new Error(
+                        `Calling \`contract.viewMethod({ a: 1 }, ${badArg})\` worked. It shouldn't have worked.`,
+                    );
+                } catch (e) {
+                    if (!(e instanceof PositionalArgsError)) throw e;
+                }
+            });
+        },
+    );
 });
 
 describe('changeMethod', () => {
     test('throws error message for invalid gas argument', () => {
-        return expect(contract.changeMethod({ a: 1 }, 'whatever')).rejects.toThrow(/Expected number, decimal string or BigInt for 'gas' argument, but got.+/);
+        return expect(contract.changeMethod({ a: 1 }, 'whatever')).rejects.toThrow(
+            /Expected number, decimal string or BigInt for 'gas' argument, but got.+/,
+        );
     });
 
     test('gives error message for invalid amount argument', () => {
-        return expect(contract.changeMethod({ a: 1 }, 1000, 'whatever')).rejects.toThrow(/Expected number, decimal string or BigInt for 'amount' argument, but got.+/);
+        return expect(contract.changeMethod({ a: 1 }, 1000, 'whatever')).rejects.toThrow(
+            /Expected number, decimal string or BigInt for 'amount' argument, but got.+/,
+        );
     });
 
-    test('makes a functionCall and passes along walletCallbackUrl and walletMeta', async() => {
+    test('makes a functionCall and passes along walletCallbackUrl and walletMeta', async () => {
         account.functionCall = jest.fn(() => Promise.resolve(account));
         await contract.changeMethod({
             args: {},
@@ -102,11 +118,10 @@ describe('changeMethod', () => {
             contractId: 'contractId',
             methodName: 'changeMethod',
             walletMeta: 'someMeta',
-            walletCallbackUrl: 'http://neartest.test/somepath?and=query'
+            walletCallbackUrl: 'http://neartest.test/somepath?and=query',
         });
     });
 });
-
 
 describe('local view execution', () => {
     let nearjs;
@@ -117,17 +132,22 @@ describe('local view execution', () => {
 
     beforeAll(async () => {
         nearjs = await setUpTestConnection();
-        contract = await deployContractGuestBook(nearjs.accountCreator.masterAccount, generateUniqueString('guestbook'));
-        
+        contract = await deployContractGuestBook(
+            nearjs.accountCreator.masterAccount,
+            generateUniqueString('guestbook'),
+        );
+
         await contract.add_message({ text: 'first message' });
         await contract.add_message({ text: 'second message' });
-        
-        const block = await contract.account.connection.provider.block({ finality: 'optimistic' });
+
+        const block = await contract.account.connection.provider.block({
+            finality: 'optimistic',
+        });
 
         contract.account.connection.provider.query = jest.fn(contract.account.connection.provider.query);
         blockQuery = { blockId: block.header.height };
     });
-    
+
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -161,7 +181,10 @@ describe('local view execution', () => {
 
     test('local execution fails and fallbacks to normal RPC call', async () => {
         // @ts-expect-error test input
-        const _contract: any = new Contract(contract.account, contract.contractId, { viewMethods: ['get_msg'], useLocalViewExecution: true });
+        const _contract: any = new Contract(contract.account, contract.contractId, {
+            viewMethods: ['get_msg'],
+            useLocalViewExecution: true,
+        });
         _contract.account.viewFunction = jest.fn(_contract.account.viewFunction);
 
         try {
@@ -174,7 +197,7 @@ describe('local view execution', () => {
                 blockQuery,
             });
         }
-    }); 
+    });
 });
 
 describe('contract without account', () => {
@@ -203,13 +226,13 @@ describe('contract without account', () => {
             signerAccount: nearjs.accountCreator.masterAccount,
             args: {
                 text: 'first message',
-            }
+            },
         });
         await contract.add_message({
             signerAccount: nearjs.accountCreator.masterAccount,
             args: {
                 text: 'second message',
-            }
+            },
         });
 
         const totalMessagesAfter = await contract.total_messages({});
@@ -222,8 +245,8 @@ describe('contract without account', () => {
     });
 
     test('fails to call add_message() without signerAccount', async () => {
-        await expect(
-            contract.add_message({ text: 'third message' })
-        ).rejects.toThrow(/signerAccount must be specified/);
+        await expect(contract.add_message({ text: 'third message' })).rejects.toThrow(
+            /signerAccount must be specified/,
+        );
     });
 });

@@ -20,6 +20,8 @@ export class ArgumentSchemaError extends Error {
 
 export class ConflictingOptions extends Error {
     constructor() {
-        super('Conflicting contract method options have been passed. You can either specify ABI or a list of view/call methods.');
+        super(
+            'Conflicting contract method options have been passed. You can either specify ABI or a list of view/call methods.',
+        );
     }
 }

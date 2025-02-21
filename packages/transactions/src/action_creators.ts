@@ -39,11 +39,7 @@ function fullAccessKey(): AccessKey {
  * @param allowance An optional allowance (maximum amount) for the function call. Default: Unlimited.
  * @returns A new access key with function call permission.
  */
-function functionCallAccessKey(
-    receiverId: string,
-    methodNames: string[],
-    allowance?: bigint
-): AccessKey {
+function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: bigint): AccessKey {
     return new AccessKey({
         nonce: 0n,
         permission: new AccessKeyPermission({
@@ -79,8 +75,7 @@ function deployContract(code: Uint8Array): Action {
  * @returns A Buffer representation of the input argument.
  */
 export function stringifyJsonOrBytes(args: any): Buffer {
-    const isUint8Array =
-        args.byteLength !== undefined && args.byteLength === args.length;
+    const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
     return isUint8Array ? args : Buffer.from(JSON.stringify(args));
 }
 
@@ -101,7 +96,7 @@ function functionCall(
     gas = 0n,
     deposit = 0n,
     stringify = stringifyJsonOrBytes,
-    jsContract = false
+    jsContract = false,
 ): Action {
     if (jsContract) {
         return new Action({

@@ -10,7 +10,6 @@ jest.setTimeout(60000);
 let provider;
 let near;
 
-
 beforeAll(async () => {
     near = await setUpTestConnection();
     provider = near.connection.provider;
@@ -22,19 +21,28 @@ describe('providers', () => {
         const receiver = await createAccount(near);
         const outcome = await sender.sendMoney(receiver.accountId, 1n);
         const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
-        const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
+        const responseWithUint8Array = await provider.txStatus(
+            base58.decode(outcome.transaction.hash),
+            sender.accountId,
+        );
         expect(responseWithString).toMatchObject(outcome);
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
-    
+
     test('txStatusReciept with string hash and buffer hash', async () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
         const outcome = await sender.sendMoney(receiver.accountId, 1n);
-        const reciepts = await provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
-    
+        const reciepts = await provider.sendJsonRpc('EXPERIMENTAL_tx_status', [
+            outcome.transaction.hash,
+            sender.accountId,
+        ]);
+
         const responseWithString = await provider.txStatusReceipts(outcome.transaction.hash, sender.accountId);
-        const responseWithUint8Array = await provider.txStatusReceipts(base58.decode(outcome.transaction.hash), sender.accountId);
+        const responseWithUint8Array = await provider.txStatusReceipts(
+            base58.decode(outcome.transaction.hash),
+            sender.accountId,
+        );
         expect('transaction_outcome' in responseWithString).toBeTruthy();
         expect('logs' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('receipt_ids' in responseWithString.transaction_outcome.outcome).toBeTruthy();
@@ -45,93 +53,84 @@ describe('providers', () => {
         expect(responseWithString).toMatchObject(reciepts);
         expect(responseWithUint8Array).toMatchObject(reciepts);
     });
-    
+
     test('json rpc query account', async () => {
         const account = await createAccount(near);
         const response = await provider.query({
             request_type: 'view_account',
             finality: 'optimistic',
-            account_id: account.accountId });
+            account_id: account.accountId,
+        });
         expect(response.code_hash).toEqual('11111111111111111111111111111111');
     });
-    
+
     test('json rpc query view_state', async () => {
         const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
         // @ts-expect-error test input
         await contract.setValue({ args: { value: 'hello' } });
-    
+
         return waitFor(async () => {
             const response = await provider.query({
                 request_type: 'view_state',
                 finality: 'final',
                 account_id: contract.contractId,
-                prefix_base64: ''
+                prefix_base64: '',
             });
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
-                values: [
-                    { key: 'bmFtZQ==', value: 'aGVsbG8=' }
-                ]
+                values: [{ key: 'bmFtZQ==', value: 'aGVsbG8=' }],
             });
         });
     });
-    
+
     test('json rpc query view_code', async () => {
         const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
-    
+
         return waitFor(async () => {
             const response = await provider.query({
                 request_type: 'view_code',
                 finality: 'final',
-                account_id: contract.contractId
+                account_id: contract.contractId,
             });
-    
+
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
                 code_base64: expect.any(String),
-                hash: expect.any(String)
+                hash: expect.any(String),
             });
         });
     });
-    
+
     test('json rpc query call_function', async () => {
         const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
 
         // @ts-expect-error test input
         await contract.setValue({ args: { value: 'hello' } });
-    
+
         return waitFor(async () => {
             const response = await provider.query({
                 request_type: 'call_function',
                 finality: 'final',
                 account_id: contract.contractId,
                 method_name: 'getValue',
-                args_base64: ''
+                args_base64: '',
             });
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
                 logs: [],
-                result: [
-                    34,
-                    104,
-                    101,
-                    108,
-                    108,
-                    111,
-                    34
-                ]
+                result: [34, 104, 101, 108, 108, 111, 34],
             });
         });
     });
-    
+
     test('json rpc light client proof', async () => {
         const workingAccount = await createAccount(near);
         const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, 10000n);
         const provider = near.connection.provider;
-    
+
         async function waitForStatusMatching(isMatching) {
             const MAX_ATTEMPTS = 10;
             for (let i = 0; i < MAX_ATTEMPTS; i++) {
@@ -143,15 +142,22 @@ describe('providers', () => {
             }
             throw new Error(`Exceeded ${MAX_ATTEMPTS} attempts waiting for matching node status.`);
         }
-    
-        const comittedStatus = await waitForStatusMatching(status =>
-            // @ts-expect-error test input
-            status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash);
+
+        const comittedStatus = await waitForStatusMatching(
+            (status) =>
+                // @ts-expect-error test input
+                status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash,
+        );
         const BLOCKS_UNTIL_FINAL = 2;
-        const finalizedStatus = await waitForStatusMatching(status =>
-            status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL);
-    
-        const block = await provider.block({ blockId: finalizedStatus.sync_info.latest_block_hash });
+        const finalizedStatus = await waitForStatusMatching(
+            (status) =>
+                status.sync_info.latest_block_height >
+                comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL,
+        );
+
+        const block = await provider.block({
+            blockId: finalizedStatus.sync_info.latest_block_hash,
+        });
         const lightClientHead = block.header.last_final_block;
         let lightClientRequest = {
             type: 'transaction',
@@ -168,7 +174,7 @@ describe('providers', () => {
         expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
         expect(lightClientProof.outcome_root_proof).toEqual([]);
         expect(lightClientProof.block_proof.length).toBeGreaterThan(0);
-    
+
         // pass nonexistent hash for light client head will fail
         lightClientRequest = {
             type: 'transaction',
@@ -177,7 +183,7 @@ describe('providers', () => {
             sender_id: workingAccount.accountId,
         };
         await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
-    
+
         // Use old block hash as light client head should fail
         lightClientRequest = {
             type: 'transaction',
@@ -186,17 +192,16 @@ describe('providers', () => {
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
-    
-        await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
+
+        await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(
+            /.+ block .+ is ahead of head block .+/,
+        );
     });
 });
 
 describe('providers errors', () => {
     test('JSON RPC Error - MethodNotFound', async () => {
-        const contract = await deployContract(
-            near.accountCreator.masterAccount,
-            generateUniqueString('test')
-        );
+        const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
 
         // @ts-expect-error test input
         await contract.setValue({ args: { value: 'hello' } });
@@ -232,9 +237,7 @@ describe('providers errors', () => {
         } catch (e) {
             const errorType = 'CodeDoesNotExist';
             expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
-            );
+            expect(e.message.split(' ').slice(0, 5)).toEqual(ErrorMessages[errorType].split(' ').slice(0, 5));
         }
     });
 
@@ -252,9 +255,7 @@ describe('providers errors', () => {
         } catch (e) {
             const errorType = 'AccountDoesNotExist';
             expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
-            );
+            expect(e.message.split(' ').slice(0, 5)).toEqual(ErrorMessages[errorType].split(' ').slice(0, 5));
         }
     });
 
@@ -266,18 +267,13 @@ describe('providers errors', () => {
                 request_type: 'view_access_key',
                 finality: 'optimistic',
                 account_id: accountId,
-                public_key: KeyPair.fromRandom('ed25519')
-                    .getPublicKey()
-                    .toString(),
+                public_key: KeyPair.fromRandom('ed25519').getPublicKey().toString(),
             });
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'AccessKeyDoesNotExist';
             expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
-            );
+            expect(e.message.split(' ').slice(0, 5)).toEqual(ErrorMessages[errorType].split(' ').slice(0, 5));
         }
     });
 });
-

@@ -7,7 +7,7 @@ import path from 'path';
 import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../src';
 import Config from './config';
 
-Logger.overrideLogger(new ConsoleLogger(['error', 'fatal']))
+Logger.overrideLogger(new ConsoleLogger(['error', 'fatal']));
 
 export const networkId = 'unittest';
 
@@ -15,7 +15,7 @@ export const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near
 export const HELLO_WASM_BALANCE = BigInt('10000000000000000000000000');
 export const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
-    changeMethods: ['setValue', 'callPromise']
+    changeMethods: ['setValue', 'callPromise'],
 };
 export const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multisig.wasm';
 // Length of a random account. Set to 40 because in the protocol minimal allowed top-level account length should be at
@@ -27,23 +27,20 @@ export const GUESTBOOK_WASM_PATH = path.resolve(__dirname, './wasm/guestbook.was
 export const GUESTBOOK_CONTRACT_STATE = [
     {
         key: Buffer.from('U1RBVEU=', 'base64'),
-        value: Buffer.from(
-            'eyJtZXNzYWdlcyI6eyJwcmVmaXgiOiJ2LXVpZCIsImxlbmd0aCI6Mn19',
-            'base64'
-        ),
+        value: Buffer.from('eyJtZXNzYWdlcyI6eyJwcmVmaXgiOiJ2LXVpZCIsImxlbmd0aCI6Mn19', 'base64'),
     },
     {
         key: Buffer.from('di11aWQAAAAA', 'base64'),
         value: Buffer.from(
             'eyJwcmVtaXVtIjp0cnVlLCJzZW5kZXIiOiJkZXYtMTY4ODk4NzM5ODM2MC00NzExMjI2NjI3NTg2NyIsInRleHQiOiJhIG1lc3NhZ2UifQ==',
-            'base64'
+            'base64',
         ),
     },
     {
         key: Buffer.from('di11aWQBAAAA', 'base64'),
         value: Buffer.from(
             'eyJwcmVtaXVtIjp0cnVlLCJzZW5kZXIiOiJkZXYtMTY4ODk4NzM5ODM2MC00NzExMjI2NjI3NTg2NyIsInRleHQiOiJzZWNvbmQgbWVzc2FnZSJ9',
-            'base64'
+            'base64',
         ),
     },
 ];
@@ -56,23 +53,31 @@ export async function setUpTestConnection() {
     const keyStore = new InMemoryKeyStore();
     const config = Object.assign(await Config(process.env.NODE_ENV || 'test'), {
         networkId,
-        keyStore
+        keyStore,
     });
 
     if (config.masterAccount) {
         // full accessKey on ci-testnet, dedicated rpc for tests.
-        const secretKey = config.secretKey || 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
+        const secretKey =
+            config.secretKey ||
+            'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
         await keyStore.setKey(networkId, config.masterAccount, KeyPair.fromString(secretKey));
     }
 
     const connection = Connection.fromConfig({
         networkId: config.networkId,
-        provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
+        provider: {
+            type: 'JsonRpcProvider',
+            args: { url: config.nodeUrl, headers: config.headers },
+        },
         signer: { type: 'InMemorySigner', keyStore: config.keyStore },
     });
 
     return {
-        accountCreator: new LocalAccountCreator(new Account(connection, config.masterAccount), BigInt('500000000000000000000000000')),
+        accountCreator: new LocalAccountCreator(
+            new Account(connection, config.masterAccount),
+            BigInt('500000000000000000000000000'),
+        ),
         connection,
     };
 }
@@ -108,7 +113,8 @@ export async function createAccountMultisig({ accountCreator, connection }, opti
         accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
             switch (path) {
-                case '/2fa/getAccessKey': return { publicKey };
+                case '/2fa/getAccessKey':
+                    return { publicKey };
             }
         };
         await accountMultisig.deployMultisig(fs.readFileSync(MULTISIG_WASM_PATH));
@@ -129,7 +135,11 @@ export async function deployContractGuestBook(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = fs.readFileSync(GUESTBOOK_WASM_PATH);
     const account = await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-    return new Contract(account, contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true });
+    return new Contract(account, contractId, {
+        viewMethods: ['total_messages', 'get_messages'],
+        changeMethods: ['add_message'],
+        useLocalViewExecution: true,
+    });
 }
 
 export function sleep(time) {
@@ -146,8 +156,7 @@ export function waitFor(fn) {
             if (count > 0) {
                 await sleep(500);
                 return _waitFor(count - 1);
-            }
-            else throw e;
+            } else throw e;
         }
     };
 

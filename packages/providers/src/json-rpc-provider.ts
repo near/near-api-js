@@ -5,13 +5,7 @@
  * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
-import {
-    baseEncode,
-    formatError,
-    getErrorTypeFromErrorMessage,
-    parseRpcError,
-    ServerError,
-} from '@near-js/utils';
+import { baseEncode, formatError, getErrorTypeFromErrorMessage, parseRpcError, ServerError } from '@near-js/utils';
 import {
     type AccessKeyWithPublicKey,
     type BlockId,
@@ -33,10 +27,7 @@ import {
     type QueryResponseKind,
     TypedError,
 } from '@near-js/types';
-import {
-    encodeTransaction,
-    type SignedTransaction,
-} from '@near-js/transactions';
+import { encodeTransaction, type SignedTransaction } from '@near-js/transactions';
 
 import { Provider } from './provider';
 import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
@@ -68,7 +59,7 @@ type RequestOptions = {
      * Exponential back off for waiting to retry again
      */
     backoff: number;
-}
+};
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
@@ -90,7 +81,7 @@ export class JsonRpcProvider extends Provider {
         const defaultOptions: RequestOptions = {
             retries: REQUEST_RETRY_NUMBER,
             wait: REQUEST_RETRY_WAIT,
-            backoff: REQUEST_RETRY_WAIT_BACKOFF
+            backoff: REQUEST_RETRY_WAIT_BACKOFF,
         };
         this.options = Object.assign({}, defaultOptions, options);
     }
@@ -109,9 +100,15 @@ export class JsonRpcProvider extends Provider {
      * @param signedTransaction The signed transaction being sent
      * @param waitUntil
      */
-    async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
+    async sendTransactionUntil(
+        signedTransaction: SignedTransaction,
+        waitUntil: TxExecutionStatus,
+    ): Promise<FinalExecutionOutcome> {
         const bytes = encodeTransaction(signedTransaction);
-        return this.sendJsonRpc('send_tx', { signed_tx_base64: Buffer.from(bytes).toString('base64'), wait_until: waitUntil });
+        return this.sendJsonRpc('send_tx', {
+            signed_tx_base64: Buffer.from(bytes).toString('base64'),
+            wait_until: waitUntil,
+        });
     }
 
     /**
@@ -142,7 +139,11 @@ export class JsonRpcProvider extends Provider {
      * @param accountId The NEAR account that signed the transaction
      * @param waitUntil
      */
-    async txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'): Promise<FinalExecutionOutcome> {
+    async txStatus(
+        txHash: Uint8Array | string,
+        accountId: string,
+        waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC',
+    ): Promise<FinalExecutionOutcome> {
         if (typeof txHash === 'string') {
             return this.txStatusString(txHash, accountId, waitUntil);
         } else {
@@ -150,8 +151,16 @@ export class JsonRpcProvider extends Provider {
         }
     }
 
-    private async txStatusUint8Array(txHash: Uint8Array, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', { tx_hash: baseEncode(txHash), sender_account_id: accountId, wait_until: waitUntil });
+    private async txStatusUint8Array(
+        txHash: Uint8Array,
+        accountId: string,
+        waitUntil: TxExecutionStatus,
+    ): Promise<FinalExecutionOutcome> {
+        return this.sendJsonRpc('tx', {
+            tx_hash: baseEncode(txHash),
+            sender_account_id: accountId,
+            wait_until: waitUntil,
+        });
     }
 
     private async txStatusString(txHash: string, accountId: string, waitUntil: string): Promise<FinalExecutionOutcome> {
@@ -166,12 +175,23 @@ export class JsonRpcProvider extends Provider {
      * @param waitUntil
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'): Promise<FinalExecutionOutcome> {
+    async txStatusReceipts(
+        txHash: Uint8Array | string,
+        accountId: string,
+        waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC',
+    ): Promise<FinalExecutionOutcome> {
         if (typeof txHash === 'string') {
-            return this.sendJsonRpc('EXPERIMENTAL_tx_status', { tx_hash: txHash, sender_account_id: accountId, wait_until: waitUntil });
-        }
-        else {
-            return this.sendJsonRpc('EXPERIMENTAL_tx_status', { tx_hash: baseEncode(txHash), sender_account_id: accountId, wait_until: waitUntil });
+            return this.sendJsonRpc('EXPERIMENTAL_tx_status', {
+                tx_hash: txHash,
+                sender_account_id: accountId,
+                wait_until: waitUntil,
+            });
+        } else {
+            return this.sendJsonRpc('EXPERIMENTAL_tx_status', {
+                tx_hash: baseEncode(txHash),
+                sender_account_id: accountId,
+                wait_until: waitUntil,
+            });
         }
     }
 
@@ -193,7 +213,7 @@ export class JsonRpcProvider extends Provider {
         if (result && result.error) {
             throw new TypedError(
                 `Querying failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`,
-                getErrorTypeFromErrorMessage(result.error, result.error.name)
+                getErrorTypeFromErrorMessage(result.error, result.error.name),
             );
         }
         return result;
@@ -248,7 +268,9 @@ export class JsonRpcProvider extends Provider {
      *
      * @param blockReference specifies the block to get the protocol config for
      */
-    async experimental_protocolConfig(blockReference: BlockReference | { sync_checkpoint: 'genesis' }): Promise<NearProtocolConfig> {
+    async experimental_protocolConfig(
+        blockReference: BlockReference | { sync_checkpoint: 'genesis' },
+    ): Promise<NearProtocolConfig> {
         const { blockId, ...otherParams } = blockReference as any;
         return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', { ...otherParams, block_id: blockId });
     }
@@ -265,7 +287,7 @@ export class JsonRpcProvider extends Provider {
      * Returns the next light client block as far in the future as possible from the last known hash
      * to still be able to validate from that hash. This will either return the last block of the
      * next epoch, or the last final known block.
-     * 
+     *
      * @see [https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
      */
     async nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse> {
@@ -284,7 +306,7 @@ export class JsonRpcProvider extends Provider {
             changes_type: 'all_access_key_changes',
             account_ids: accountIdArray,
             block_id: blockId,
-            finality
+            finality,
         });
     }
 
@@ -294,14 +316,17 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-single)
      * @returns {Promise<ChangeResult>}
      */
-    async singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], blockQuery: BlockReference): Promise<ChangeResult> {
+    async singleAccessKeyChanges(
+        accessKeyArray: AccessKeyWithPublicKey[],
+        blockQuery: BlockReference,
+    ): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
             changes_type: 'single_access_key_changes',
             keys: accessKeyArray,
             block_id: blockId,
-            finality
+            finality,
         });
     }
 
@@ -318,7 +343,7 @@ export class JsonRpcProvider extends Provider {
             changes_type: 'account_changes',
             account_ids: accountIdArray,
             block_id: blockId,
-            finality
+            finality,
         });
     }
 
@@ -329,7 +354,11 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-state-changes)
      * @returns {Promise<ChangeResult>}
      */
-    async contractStateChanges(accountIdArray: string[], blockQuery: BlockReference, keyPrefix = ''): Promise<ChangeResult> {
+    async contractStateChanges(
+        accountIdArray: string[],
+        blockQuery: BlockReference,
+        keyPrefix = '',
+    ): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -337,7 +366,7 @@ export class JsonRpcProvider extends Provider {
             account_ids: accountIdArray,
             key_prefix_base64: keyPrefix,
             block_id: blockId,
-            finality
+            finality,
         });
     }
 
@@ -355,7 +384,7 @@ export class JsonRpcProvider extends Provider {
             changes_type: 'contract_code_changes',
             account_ids: accountIdArray,
             block_id: blockId,
-            finality
+            finality,
         });
     }
 
@@ -379,13 +408,21 @@ export class JsonRpcProvider extends Provider {
         const request = {
             method,
             params,
-            id: (_nextId++),
-            jsonrpc: '2.0'
+            id: _nextId++,
+            jsonrpc: '2.0',
         };
-        const response = await fetchJsonRpc(this.connection.url, request, this.connection.headers, retryConfig(this.options.retries, this.options.backoff, this.options.wait));
+        const response = await fetchJsonRpc(
+            this.connection.url,
+            request,
+            this.connection.headers,
+            retryConfig(this.options.retries, this.options.backoff, this.options.wait),
+        );
         if (response.error) {
             if (typeof response.error.data === 'object') {
-                if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
+                if (
+                    typeof response.error.data.error_message === 'string' &&
+                    typeof response.error.data.error_type === 'string'
+                ) {
                     // if error data has error_message and error_type properties, we consider that node returned an error in the old format
                     throw new TypedError(response.error.data.error_message, response.error.data.error_type);
                 }
@@ -412,7 +449,9 @@ export class JsonRpcProvider extends Provider {
         //   This member MUST NOT exist if there was an error invoking the method.
         if (typeof result === 'undefined') {
             throw new TypedError(
-                `Exceeded ${this.options.retries} attempts for request to ${method}.`, 'RetriesExceeded');
+                `Exceeded ${this.options.retries} attempts for request to ${method}.`,
+                'RetriesExceeded',
+            );
         }
         return result;
     }

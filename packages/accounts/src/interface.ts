@@ -1,5 +1,5 @@
-import type { BlockReference } from "@near-js/types";
-import type { Connection } from "./connection";
+import type { BlockReference } from '@near-js/types';
+import type { Connection } from './connection';
 
 export interface IntoConnection {
     getConnection(): Connection;
@@ -36,12 +36,12 @@ export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
      * @see RequestSignTransactionsOptions
-    */
+     */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
      * @see RequestSignTransactionsOptions
-    */
+     */
     walletCallbackUrl?: string;
 }
 export interface ViewFunctionCallOptions extends FunctionCallOptions {

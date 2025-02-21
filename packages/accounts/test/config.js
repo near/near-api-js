@@ -44,7 +44,7 @@ module.exports = async function getConfig(env) {
                 networkId: worker.config.network,
                 nodeUrl: worker.manager.config.rpcAddr,
                 masterAccount: worker.rootAccount._accountId,
-                secretKey: keyPair.secret_key || keyPair.private_key
+                secretKey: keyPair.secret_key || keyPair.private_key,
             };
         }
         default:

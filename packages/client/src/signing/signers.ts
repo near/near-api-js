@@ -1,17 +1,14 @@
-import {
-  KeyPair,
-  type KeyPairString,
-} from '@near-js/crypto';
+import { KeyPair, type KeyPairString } from '@near-js/crypto';
 import type { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
 
 import type {
-  AccessKeySigner,
-  FullAccessKey,
-  FunctionCallAccessKey,
-  MessageSigner,
-  SignerDependency,
-  ViewAccountParams,
+    AccessKeySigner,
+    FullAccessKey,
+    FunctionCallAccessKey,
+    MessageSigner,
+    SignerDependency,
+    ViewAccountParams,
 } from '../interfaces';
 import { getAccessKey } from '../view';
 
@@ -20,14 +17,14 @@ import { getAccessKey } from '../view';
  * @param keyPair used to sign transactions
  */
 export function getSignerFromKeyPair(keyPair: KeyPair): MessageSigner {
-  return {
-    async getPublicKey() {
-      return keyPair.getPublicKey();
-    },
-    async signMessage(m) {
-      return keyPair.sign(m).signature;
-    }
-  };
+    return {
+        async getPublicKey() {
+            return keyPair.getPublicKey();
+        },
+        async signMessage(m) {
+            return keyPair.sign(m).signature;
+        },
+    };
 }
 
 /**
@@ -35,7 +32,7 @@ export function getSignerFromKeyPair(keyPair: KeyPair): MessageSigner {
  * @param privateKey string representation of the private key used to sign transactions
  */
 export function getSignerFromPrivateKey(privateKey: KeyPairString): MessageSigner {
-  return getSignerFromKeyPair(KeyPair.fromString(privateKey));
+    return getSignerFromKeyPair(KeyPair.fromString(privateKey));
 }
 
 /**
@@ -45,17 +42,17 @@ export function getSignerFromPrivateKey(privateKey: KeyPairString): MessageSigne
  * @param keyStore used to store the signing key
  */
 export function getSignerFromKeystore(account: string, network: string, keyStore: KeyStore): MessageSigner {
-  const signer = new InMemorySigner(keyStore);
+    const signer = new InMemorySigner(keyStore);
 
-  return {
-    async getPublicKey() {
-      return signer.getPublicKey(account, network);
-    },
-    async signMessage(m) {
-      const { signature } = await signer.signMessage(m, account, network);
-      return signature;
-    }
-  };
+    return {
+        async getPublicKey() {
+            return signer.getPublicKey(account, network);
+        },
+        async signMessage(m) {
+            const { signature } = await signer.signMessage(m, account, network);
+            return signature;
+        },
+    };
 }
 
 /**
@@ -64,41 +61,45 @@ export function getSignerFromKeystore(account: string, network: string, keyStore
  * @param rpcProvider RPC provider instance
  * @param deps sign-and-send dependencies
  */
-export function getAccessKeySigner({ account, blockReference, deps: { rpcProvider, signer } }: ViewAccountParams & SignerDependency): AccessKeySigner {
-  let accessKey: FullAccessKey | FunctionCallAccessKey;
-  let nonce: bigint;
+export function getAccessKeySigner({
+    account,
+    blockReference,
+    deps: { rpcProvider, signer },
+}: ViewAccountParams & SignerDependency): AccessKeySigner {
+    let accessKey: FullAccessKey | FunctionCallAccessKey;
+    let nonce: bigint;
 
-  return {
-    async getAccessKey(ignoreCache = false) {
-      if (!accessKey || ignoreCache) {
-        accessKey = await getAccessKey({
-          account,
-          blockReference: blockReference || { finality: 'optimistic' },
-          publicKey: (await signer.getPublicKey()).toString(),
-          deps: { rpcProvider },
-        });
+    return {
+        async getAccessKey(ignoreCache = false) {
+            if (!accessKey || ignoreCache) {
+                accessKey = await getAccessKey({
+                    account,
+                    blockReference: blockReference || { finality: 'optimistic' },
+                    publicKey: (await signer.getPublicKey()).toString(),
+                    deps: { rpcProvider },
+                });
 
-        nonce = accessKey.nonce + 1n;
-      }
+                nonce = accessKey.nonce + 1n;
+            }
 
-      return accessKey;
-    },
-    async getNonce(ignoreCache = false) {
-      if (!nonce || ignoreCache) {
-        await this.getAccessKey(true);
-      }
+            return accessKey;
+        },
+        async getNonce(ignoreCache = false) {
+            if (!nonce || ignoreCache) {
+                await this.getAccessKey(true);
+            }
 
-      return nonce;
-    },
-    getPublicKey() {
-      return signer.getPublicKey();
-    },
-    getSigningAccount() {
-      return account;
-    },
-    signMessage(m: Uint8Array) {
-      nonce += 1n;
-      return signer.signMessage(m);
-    }
-  };
+            return nonce;
+        },
+        getPublicKey() {
+            return signer.getPublicKey();
+        },
+        getSigningAccount() {
+            return account;
+        },
+        signMessage(m: Uint8Array) {
+            nonce += 1n;
+            return signer.signMessage(m);
+        },
+    };
 }

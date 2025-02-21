@@ -40,7 +40,9 @@ async function ensureDir(dir: string): Promise<void> {
     try {
         await mkdir(dir, { recursive: true });
     } catch (err) {
-        if (err.code !== 'EEXIST') { throw err; }
+        if (err.code !== 'EEXIST') {
+            throw err;
+        }
     }
 }
 
@@ -57,15 +59,15 @@ export async function readKeyFile(filename: string): Promise<[string, KeyPair]> 
 
 /**
  * This class is used to store keys on the file system.
- * 
+ *
  * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store](https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store)
  * @example
  * ```js
  * const { homedir } = require('os');
  * const { connect, keyStores } = require('near-api-js');
- * 
+ *
  * const keyStore = new keyStores.UnencryptedFileSystemKeyStore(`${homedir()}/.near-credentials`);
- * const config = { 
+ * const config = {
  *   keyStore, // instance of UnencryptedFileSystemKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
@@ -73,7 +75,7 @@ export async function readKeyFile(filename: string): Promise<[string, KeyPair]> 
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };
- * 
+ *
  * // inside an async function
  * const near = await connect(config)
  * ```
@@ -98,7 +100,11 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
      */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
         await ensureDir(`${this.keyDir}/${networkId}`);
-        const content: AccountInfo = { account_id: accountId, public_key: keyPair.getPublicKey().toString(), private_key: keyPair.toString() };
+        const content: AccountInfo = {
+            account_id: accountId,
+            public_key: keyPair.getPublicKey().toString(),
+            private_key: keyPair.toString(),
+        };
         await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content), { mode: 0o600 });
     }
 
@@ -110,7 +116,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
      */
     async getKey(networkId: string, accountId: string): Promise<KeyPair> {
         // Find key / account id.
-        if (!await exists(this.getKeyFilePath(networkId, accountId))) {
+        if (!(await exists(this.getKeyFilePath(networkId, accountId)))) {
             return null;
         }
         const accountKeyPair = await readKeyFile(this.getKeyFilePath(networkId, accountId));
@@ -162,13 +168,11 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
     async getAccounts(networkId: string): Promise<string[]> {
-        if (!await exists(`${this.keyDir}/${networkId}`)) {
+        if (!(await exists(`${this.keyDir}/${networkId}`))) {
             return [];
         }
         const files: string[] = await readdir(`${this.keyDir}/${networkId}`);
-        return files
-            .filter(file => file.endsWith('.json'))
-            .map(file => file.replace(/.json$/, ''));
+        return files.filter((file) => file.endsWith('.json')).map((file) => file.replace(/.json$/, ''));
     }
 
     /** @hidden */

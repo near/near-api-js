@@ -3,25 +3,25 @@ import { KeyStore } from './keystore';
 
 /**
  * Keystore which can be used to merge multiple key stores into one virtual key store.
- * 
+ *
  * @example
  * ```js
  * const { homedir } = require('os');
  * import { connect, keyStores, utils } from 'near-api-js';
- * 
+ *
  * const privateKey = '.......';
  * const keyPair = utils.KeyPair.fromString(privateKey);
- * 
+ *
  * const inMemoryKeyStore = new keyStores.InMemoryKeyStore();
  * inMemoryKeyStore.setKey('testnet', 'example-account.testnet', keyPair);
- * 
+ *
  * const fileSystemKeyStore = new keyStores.UnencryptedFileSystemKeyStore(`${homedir()}/.near-credentials`);
- * 
+ *
  * const keyStore = new MergeKeyStore([
  *   inMemoryKeyStore,
  *   fileSystemKeyStore
  * ]);
- * const config = { 
+ * const config = {
  *   keyStore, // instance of MergeKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
@@ -29,7 +29,7 @@ import { KeyStore } from './keystore';
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };
- * 
+ *
  * // inside an async function
  * const near = await connect(config)
  * ```
@@ -79,7 +79,7 @@ export class MergeKeyStore extends KeyStore {
         }
         return null;
     }
-    
+
     /**
      * Removes a {@link KeyPair} from the array of key stores
      * @param networkId The targeted network. (ex. default, betanet, etc…)
@@ -90,7 +90,7 @@ export class MergeKeyStore extends KeyStore {
             await keyStore.removeKey(networkId, accountId);
         }
     }
-    
+
     /**
      * Removes all items from each key store
      */
@@ -99,11 +99,11 @@ export class MergeKeyStore extends KeyStore {
             await keyStore.clear();
         }
     }
-    
+
     /**
      * Get the network(s) from the array of key stores
      * @returns {Promise<string[]>}
-     */    
+     */
     async getNetworks(): Promise<string[]> {
         const result = new Set<string>();
         for (const keyStore of this.keyStores) {
@@ -113,11 +113,11 @@ export class MergeKeyStore extends KeyStore {
         }
         return Array.from(result);
     }
-    
+
     /**
      * Gets the account(s) from the array of key stores
      * @param networkId The targeted network. (ex. default, betanet, etc…)
-     */    
+     */
     async getAccounts(networkId: string): Promise<string[]> {
         const result = new Set<string>();
         for (const keyStore of this.keyStores) {

@@ -4,26 +4,26 @@ import type { RpcQueryProvider } from './providers';
 import type { FullAccessKey, FunctionCallAccessKey } from './view';
 
 interface Dependent<T> {
-  deps: T;
+    deps: T;
 }
 
 export interface MessageSigner {
-  getPublicKey(): Promise<PublicKey>;
-  signMessage(m: Uint8Array): Promise<Uint8Array>;
+    getPublicKey(): Promise<PublicKey>;
+    signMessage(m: Uint8Array): Promise<Uint8Array>;
 }
 
 export interface AccessKeySigner extends MessageSigner {
-  getAccessKey(ignoreCache?: boolean): Promise<FullAccessKey | FunctionCallAccessKey>;
-  getNonce(ignoreCache?: boolean): Promise<bigint>;
-  getSigningAccount(): string;
+    getAccessKey(ignoreCache?: boolean): Promise<FullAccessKey | FunctionCallAccessKey>;
+    getNonce(ignoreCache?: boolean): Promise<bigint>;
+    getSigningAccount(): string;
 }
 
 interface RpcProviderDependent {
-  rpcProvider: RpcQueryProvider;
+    rpcProvider: RpcQueryProvider;
 }
 
 interface SignerDependent {
-  signer: MessageSigner;
+    signer: MessageSigner;
 }
 
 export interface RpcProviderDependency extends Dependent<RpcProviderDependent> {}

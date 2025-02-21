@@ -19,7 +19,7 @@ export function createTransaction(
     receiverId: string,
     nonce: bigint | string | number,
     actions: Action[],
-    blockHash: Uint8Array
+    blockHash: Uint8Array,
 ): Transaction {
     const txNonce = typeof nonce === 'bigint' ? nonce : BigInt(nonce);
     return new Transaction({

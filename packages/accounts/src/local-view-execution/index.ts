@@ -9,7 +9,7 @@ import type { Connection } from '../connection';
 import type { IntoConnection } from '../interface';
 
 interface ViewFunctionCallOptions extends FunctionCallOptions {
-    blockQuery?: BlockReference
+    blockQuery?: BlockReference;
 }
 
 export class LocalViewExecution {
@@ -76,14 +76,26 @@ export class LocalViewExecution {
      * @param options.blockQuery The block query options.
      * @returns {Promise<any>} - A promise that resolves to the result of the view function.
      */
-    public async viewFunction({ contractId, methodName, args = {}, blockQuery = { finality: 'optimistic' } }: ViewFunctionCallOptions) {
+    public async viewFunction({
+        contractId,
+        methodName,
+        args = {},
+        blockQuery = { finality: 'optimistic' },
+    }: ViewFunctionCallOptions) {
         const methodArgs = JSON.stringify(args);
 
         const { contractCode, contractState, blockHeight, blockTimestamp } = await this.loadOrFetch(
             contractId,
-            blockQuery
+            blockQuery,
         );
-        const runtime = new Runtime({ contractId, contractCode, contractState, blockHeight, blockTimestamp, methodArgs });
+        const runtime = new Runtime({
+            contractId,
+            contractCode,
+            contractState,
+            blockHeight,
+            blockTimestamp,
+            methodArgs,
+        });
 
         const { result, logs } = await runtime.execute(methodName);
 

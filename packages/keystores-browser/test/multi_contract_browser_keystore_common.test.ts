@@ -7,10 +7,12 @@ import { MultiContractBrowserLocalStorageKeyStore } from '../src';
 const NETWORK_ID = 'networkid';
 const ACCOUNT_ID = 'accountid';
 const CONTRACT_ID = 'contractid';
-const KEYPAIR = new KeyPairEd25519('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
+const KEYPAIR = new KeyPairEd25519(
+    '2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw',
+);
 
 const ctx = {
-    keyStore: new MultiContractBrowserLocalStorageKeyStore(LocalStorageMemory)
+    keyStore: new MultiContractBrowserLocalStorageKeyStore(LocalStorageMemory),
 };
 
 beforeEach(async () => {

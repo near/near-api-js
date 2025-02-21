@@ -14,7 +14,7 @@ import {
     recoverPublicKey,
     uint8ArrayToBigInt,
     sanitizeCreateKeyResponse,
-    sanitizeGetKeyResponse
+    sanitizeGetKeyResponse,
 } from './utils';
 import { Fido2 } from './fido2';
 import type { AssertionResponse } from './index.d';
@@ -60,35 +60,36 @@ export const createKey = async (username: string): Promise<KeyPair> => {
     const publicKey = preformatMakeCredReq(challengeMakeCred);
 
     setBufferIfUndefined();
-    return navigator.credentials.create({ publicKey })
-        .then(async (res) => {
-            if (!res) {
-                throw new PasskeyProcessCanceled('Failed to retrieve response from navigator.credentials.create');
-            }
+    return navigator.credentials.create({ publicKey }).then(async (res) => {
+        if (!res) {
+            throw new PasskeyProcessCanceled('Failed to retrieve response from navigator.credentials.create');
+        }
 
-            const sanitizedResponse = sanitizeCreateKeyResponse(res);
+        const sanitizedResponse = sanitizeCreateKeyResponse(res);
 
-            const alg = await f2l.checkAlg(sanitizedResponse, {
-                challenge: challengeMakeCred.challenge,
-                origin,
-                factor: 'either'
-            });
-
-            if (+alg === -257) {
-                throw new Error('Unsupported device');
-            }
-
-            const result = await f2l.attestation({
-                clientAttestationResponse: sanitizedResponse,
-                origin,
-                challenge: challengeMakeCred.challenge
-            });
-            const publicKey = result.authnrData.get('credentialPublicKeyPem');
-            const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
-            const secretKey = sha256.create().update(Buffer.from(publicKeyBytes)).digest();
-            const pubKey = ed25519.getPublicKey(secretKey);
-            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]))) as KeyPairString);
+        const alg = await f2l.checkAlg(sanitizedResponse, {
+            challenge: challengeMakeCred.challenge,
+            origin,
+            factor: 'either',
         });
+
+        if (+alg === -257) {
+            throw new Error('Unsupported device');
+        }
+
+        const result = await f2l.attestation({
+            clientAttestationResponse: sanitizedResponse,
+            origin,
+            challenge: challengeMakeCred.challenge,
+        });
+        const publicKey = result.authnrData.get('credentialPublicKeyPem');
+        const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
+        const secretKey = sha256.create().update(Buffer.from(publicKeyBytes)).digest();
+        const pubKey = ed25519.getPublicKey(secretKey);
+        return KeyPair.fromString(
+            baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]))) as KeyPairString,
+        );
+    });
 };
 
 // Ecrecover returns two possible public keys for a given signature
@@ -106,34 +107,54 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
     const publicKey = preformatGetAssertReq(options);
 
     setBufferIfUndefined();
-    return navigator.credentials.get({ publicKey })
-        .then(async (response) => {
-            const sanitizedResponse = sanitizeGetKeyResponse(response);
-            const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(sanitizedResponse);
-            const signature = base64.toArrayBuffer(getAssertionResponse.response.signature, true);
+    return navigator.credentials.get({ publicKey }).then(async (response) => {
+        const sanitizedResponse = sanitizeGetKeyResponse(response);
+        const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(sanitizedResponse);
+        const signature = base64.toArrayBuffer(getAssertionResponse.response.signature, true);
 
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            const parser = asn1?.ASN1?.parse || window?.ASN1?.parse;
-            const rAndS = parser(new Uint8Array(signature));
-            const clientDataJSONHash = sha256.create().update(
-                Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.clientDataJSON, true)))
-            ).digest();
-            const authenticatorDataJSONHash = Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)));
-            const authenticatorAndClientDataJSONHash = Buffer.concat([Buffer.from(authenticatorDataJSONHash), Buffer.from(clientDataJSONHash)]);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        const parser = asn1?.ASN1?.parse || window?.ASN1?.parse;
+        const rAndS = parser(new Uint8Array(signature));
+        const clientDataJSONHash = sha256
+            .create()
+            .update(
+                Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.clientDataJSON, true))),
+            )
+            .digest();
+        const authenticatorDataJSONHash = Buffer.from(
+            new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)),
+        );
+        const authenticatorAndClientDataJSONHash = Buffer.concat([
+            Buffer.from(authenticatorDataJSONHash),
+            Buffer.from(clientDataJSONHash),
+        ]);
 
-            const r = rAndS.children[0].value;
-            const s = rAndS.children[1].value;
-            const correctPKs = await recoverPublicKey(uint8ArrayToBigInt(r), uint8ArrayToBigInt(s), authenticatorAndClientDataJSONHash, 0);
+        const r = rAndS.children[0].value;
+        const s = rAndS.children[1].value;
+        const correctPKs = await recoverPublicKey(
+            uint8ArrayToBigInt(r),
+            uint8ArrayToBigInt(s),
+            authenticatorAndClientDataJSONHash,
+            0,
+        );
 
-            const firstEDSecret = sha256.create().update(Buffer.from(correctPKs[0])).digest();
-            const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
-            const secondEDSecret = sha256.create().update(Buffer.from(correctPKs[1])).digest();
-            const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
-            const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)]))) as KeyPairString);
-            const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)]))) as KeyPairString);
-            return [firstKeyPair, secondKeyPair];
-        });
+        const firstEDSecret = sha256.create().update(Buffer.from(correctPKs[0])).digest();
+        const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
+        const secondEDSecret = sha256.create().update(Buffer.from(correctPKs[1])).digest();
+        const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
+        const firstKeyPair = KeyPair.fromString(
+            baseEncode(
+                new Uint8Array(Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)])),
+            ) as KeyPairString,
+        );
+        const secondKeyPair = KeyPair.fromString(
+            baseEncode(
+                new Uint8Array(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)])),
+            ) as KeyPairString,
+        );
+        return [firstKeyPair, secondKeyPair];
+    });
 };
 
 // To check if current browser supports WebAuthn

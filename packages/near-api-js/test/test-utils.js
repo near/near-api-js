@@ -8,7 +8,7 @@ const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/
 const HELLO_WASM_BALANCE = 10000000000000000000000000n;
 const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
-    changeMethods: ['setValue', 'callPromise']
+    changeMethods: ['setValue', 'callPromise'],
 };
 const MULTISIG_WASM_PATH = process.env.MULTISIG_WASM_PATH || './test/wasm/multisig.wasm';
 // Length of a random account. Set to 40 because in the protocol minimal allowed top-level account length should be at
@@ -19,12 +19,14 @@ async function setUpTestConnection() {
     const keyStore = new nearApi.keyStores.InMemoryKeyStore();
     const config = Object.assign(await require('./config')(process.env.NODE_ENV || 'test'), {
         networkId,
-        keyStore
+        keyStore,
     });
 
     if (config.masterAccount) {
         // full accessKey on ci-testnet, dedicated rpc for tests.
-        const secretKey = config.secretKey || 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
+        const secretKey =
+            config.secretKey ||
+            'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
         await keyStore.setKey(networkId, config.masterAccount, nearApi.utils.KeyPair.fromString(secretKey));
     }
     return nearApi.connect(config);
@@ -65,7 +67,8 @@ async function createAccountMultisig(near, options) {
         accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
             switch (path) {
-                case '/2fa/getAccessKey': return { publicKey };
+                case '/2fa/getAccessKey':
+                    return { publicKey };
             }
         };
         await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
@@ -96,8 +99,7 @@ function waitFor(fn) {
             if (count > 0) {
                 await sleep(500);
                 return _waitFor(count - 1);
-            }
-            else throw e;
+            } else throw e;
         }
     };
 

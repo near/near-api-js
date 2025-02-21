@@ -2,18 +2,12 @@
  * This module contains the main class developers will use to interact with NEAR.
  * The {@link Near} class is used to interact with {@link "@near-js/accounts".account.Account | Account} through the {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}.
  * It is configured via the {@link NearConfig}.
- * 
+ *
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
- * 
+ *
  * @module near
  */
-import {
-    Account,
-    type AccountCreator,
-    Connection,
-    LocalAccountCreator,
-    UrlAccountCreator,
-} from '@near-js/accounts';
+import { Account, type AccountCreator, Connection, LocalAccountCreator, UrlAccountCreator } from '@near-js/accounts';
 import type { PublicKey } from '@near-js/crypto';
 import type { KeyStore } from '@near-js/keystores';
 import type { Signer } from '@near-js/signers';
@@ -106,16 +100,22 @@ export class Near {
         this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
-            provider: config.provider || { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
+            provider: config.provider || {
+                type: 'JsonRpcProvider',
+                args: { url: config.nodeUrl, headers: config.headers },
+            },
             signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps?.keyStore },
-            jsvmAccountId: config.jsvmAccountId || `jsvm.${config.networkId}`
+            jsvmAccountId: config.jsvmAccountId || `jsvm.${config.networkId}`,
         });
-        
+
         if (config.masterAccount) {
             // TODO: figure out better way of specifiying initial balance.
             // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times
             const initialBalance = config.initialBalance ? BigInt(config.initialBalance) : 500000000000000000000000000n;
-            this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), initialBalance);
+            this.accountCreator = new LocalAccountCreator(
+                new Account(this.connection, config.masterAccount),
+                initialBalance,
+            );
         } else if (config.helperUrl) {
             this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);
         } else {
@@ -136,13 +136,15 @@ export class Near {
      * * using a masterAccount with {@link LocalAccountCreator}
      * * using the helperUrl with {@link UrlAccountCreator}
      * @see {@link NearConfig#masterAccount} and {@link NearConfig#helperUrl}
-     * 
+     *
      * @param accountId
      * @param publicKey
      */
     async createAccount(accountId: string, publicKey: PublicKey): Promise<Account> {
         if (!this.accountCreator) {
-            throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
+            throw new Error(
+                'Must specify account creator, either via masterAccount or helperUrl configuration settings.',
+            );
         }
         await this.accountCreator.createAccount(accountId, publicKey);
         return new Account(this.connection, accountId);

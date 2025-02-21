@@ -6,14 +6,7 @@ class PublicKeyCredentialMock {
     rawId: string;
     response: any;
 
-    constructor({
-        rawId,
-        clientDataJSON,
-        attestationObject,
-        authenticatorData,
-        signature,
-        userHandle
-    }) {
+    constructor({ rawId, clientDataJSON, attestationObject, authenticatorData, signature, userHandle }) {
         this.rawId = rawId;
         this.response = {
             clientDataJSON,
@@ -33,19 +26,18 @@ jest.mock('../src/utils', () => {
     const originalModule = jest.requireActual('../src/utils');
     return {
         ...originalModule,
-        convertUint8ArrayToArrayBuffer: jest.fn().mockImplementation(input => input.buffer),
+        convertUint8ArrayToArrayBuffer: jest.fn().mockImplementation((input) => input.buffer),
     };
 });
 
 describe('sanitizeCreateKeyResponse', () => {
     it('should convert Uint8Array properties to ArrayBuffer for PublicKeyCredential', () => {
-    // @ts-expect-error test input
+        // @ts-expect-error test input
         const mockCredential = new PublicKeyCredentialMock({
             rawId: new Uint8Array([10, 20, 30]),
             clientDataJSON: new Uint8Array([40, 50, 60]),
             attestationObject: new Uint8Array([70, 80, 90]),
         });
-
 
         // @ts-expect-error test input
         const result = sanitizeCreateKeyResponse(mockCredential);
@@ -58,7 +50,7 @@ describe('sanitizeCreateKeyResponse', () => {
     });
 
     it('should return the input unchanged if not PublicKeyCredential or without Uint8Arrays', () => {
-    // @ts-expect-error test input
+        // @ts-expect-error test input
         const mockCredential = new PublicKeyCredentialMock({
             rawId: [10, 20, 30],
             clientDataJSON: [40, 50, 60],
@@ -72,7 +64,7 @@ describe('sanitizeCreateKeyResponse', () => {
 
     it('should handle non-PublicKeyCredential input gracefully', () => {
         const nonPublicKeyCredential = {
-            someProp: 'test'
+            someProp: 'test',
         }; // No casting needed
 
         // @ts-expect-error test input
@@ -83,13 +75,13 @@ describe('sanitizeCreateKeyResponse', () => {
 
 describe('sanitizeGetKeyResponse', () => {
     it('should convert Uint8Array properties to ArrayBuffer in PublicKeyCredential', () => {
-    // @ts-expect-error test input
+        // @ts-expect-error test input
         const mockCredential = new PublicKeyCredentialMock({
             rawId: new Uint8Array([10, 20, 30]),
             clientDataJSON: new Uint8Array([40, 50, 60]),
             authenticatorData: new Uint8Array([70, 80, 90]),
             signature: new Uint8Array([100, 110, 120]),
-            userHandle: new Uint8Array([130, 140, 150])
+            userHandle: new Uint8Array([130, 140, 150]),
         });
 
         // @ts-expect-error test input
@@ -102,13 +94,13 @@ describe('sanitizeGetKeyResponse', () => {
     });
 
     it('should return the input unchanged if it does not meet conversion criteria', () => {
-    // @ts-expect-error test input
+        // @ts-expect-error test input
         const mockCredential = new PublicKeyCredentialMock({
             rawId: [10, 20, 30],
             clientDataJSON: [40, 50, 60],
             authenticatorData: [70, 80, 90],
             signature: [100, 110, 120],
-            userHandle: [130, 140, 150]
+            userHandle: [130, 140, 150],
         });
 
         // @ts-expect-error test input
@@ -118,7 +110,7 @@ describe('sanitizeGetKeyResponse', () => {
 
     it('should handle non-PublicKeyCredential input gracefully', () => {
         const nonPublicKeyCredential = {
-            someProp: 'test value'
+            someProp: 'test value',
         };
 
         // @ts-expect-error test input

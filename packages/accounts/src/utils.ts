@@ -1,9 +1,4 @@
-import {
-    type ViewStateResult,
-    type BlockReference,
-    type CodeResult,
-    PositionalArgsError,
-} from '@near-js/types';
+import { type ViewStateResult, type BlockReference, type CodeResult, PositionalArgsError } from '@near-js/types';
 import type { Connection } from './connection';
 import { printTxOutcomeLogs } from '@near-js/utils';
 import type { ViewFunctionCallOptions } from './interface';
@@ -28,7 +23,13 @@ export function validateArgs(args: any) {
 }
 
 export function encodeJSContractArgs(contractId: string, method: string, args) {
-    return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
+    return Buffer.concat([
+        Buffer.from(contractId),
+        Buffer.from([0]),
+        Buffer.from(method),
+        Buffer.from([0]),
+        Buffer.from(args),
+    ]);
 }
 
 /**
@@ -41,20 +42,24 @@ export function encodeJSContractArgs(contractId: string, method: string, args) {
  * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
  * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
  */
-export async function viewState(connection: Connection, accountId: string, prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' }): Promise<Array<{ key: Buffer; value: Buffer }>> {
+export async function viewState(
+    connection: Connection,
+    accountId: string,
+    prefix: string | Uint8Array,
+    blockQuery: BlockReference = { finality: 'optimistic' },
+): Promise<Array<{ key: Buffer; value: Buffer }>> {
     const { values } = await connection.provider.query<ViewStateResult>({
         request_type: 'view_state',
         ...blockQuery,
         account_id: accountId,
-        prefix_base64: Buffer.from(prefix).toString('base64')
+        prefix_base64: Buffer.from(prefix).toString('base64'),
     });
 
     return values.map(({ key, value }) => ({
         key: Buffer.from(key, 'base64'),
-        value: Buffer.from(value, 'base64')
+        value: Buffer.from(value, 'base64'),
     }));
 }
-
 
 /**
  * Invoke a contract view function using the RPC API.
@@ -70,21 +75,28 @@ export async function viewState(connection: Connection, accountId: string, prefi
  * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
  * @returns {Promise<any>}
  */
-export async function viewFunction(connection: Connection, {
-    contractId,
-    methodName,
-    args = {},
-    parse = parseJsonFromRawResponse,
-    stringify = bytesJsonStringify,
-    jsContract = false,
-    blockQuery = { finality: 'optimistic' }
-}: ViewFunctionCallOptions): Promise<any> {
+export async function viewFunction(
+    connection: Connection,
+    {
+        contractId,
+        methodName,
+        args = {},
+        parse = parseJsonFromRawResponse,
+        stringify = bytesJsonStringify,
+        jsContract = false,
+        blockQuery = { finality: 'optimistic' },
+    }: ViewFunctionCallOptions,
+): Promise<any> {
     let encodedArgs;
 
     validateArgs(args);
 
     if (jsContract) {
-        encodedArgs = encodeJSContractArgs(contractId, methodName, Object.keys(args).length > 0 ? JSON.stringify(args) : '');
+        encodedArgs = encodeJSContractArgs(
+            contractId,
+            methodName,
+            Object.keys(args).length > 0 ? JSON.stringify(args) : '',
+        );
     } else {
         encodedArgs = stringify(args);
     }
@@ -94,7 +106,7 @@ export async function viewFunction(connection: Connection, {
         ...blockQuery,
         account_id: jsContract ? connection.jsvmAccountId : contractId,
         method_name: jsContract ? 'view_js_contract' : methodName,
-        args_base64: encodedArgs.toString('base64')
+        args_base64: encodedArgs.toString('base64'),
     });
 
     if (result.logs) {

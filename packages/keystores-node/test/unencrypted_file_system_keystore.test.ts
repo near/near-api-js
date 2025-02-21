@@ -24,7 +24,7 @@ describe('Unencrypted file system keystore', () => {
 
     shouldStoreAndRetriveKeys(ctx);
 
-    it('test path resolve', async() => {
+    it('test path resolve', async () => {
         expect(ctx.keyStore.keyDir).toEqual(path.join(process.cwd(), KEYSTORE_PATH));
     });
 

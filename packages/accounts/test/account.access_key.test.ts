@@ -16,7 +16,6 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     try {
-
         contractId = generateUniqueString('test');
         workingAccount = await createAccount(nearjs);
         contract = await deployContract(nearjs.accountCreator.masterAccount, contractId);
@@ -25,7 +24,7 @@ beforeEach(async () => {
     }
 });
 
-test('make function call using access key', async() => {
+test('make function call using access key', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '2000000000000000000000000');
 
@@ -36,7 +35,7 @@ test('make function call using access key', async() => {
     expect(await contract.getValue()).toEqual(setCallValue);
 });
 
-test('remove access key no longer works', async() => {
+test('remove access key no longer works', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.getPublicKey();
     await nearjs.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000);
@@ -48,7 +47,9 @@ test('remove access key no longer works', async() => {
         await contract.setValue({ args: { value: 'test' } });
         failed = false;
     } catch (e) {
-        expect(e.message).toEqual(`Can not sign transactions for account ${nearjs.accountCreator.masterAccount.accountId} on network ${networkId}, no matching key pair exists for this account`);
+        expect(e.message).toEqual(
+            `Can not sign transactions for account ${nearjs.accountCreator.masterAccount.accountId} on network ${networkId}, no matching key pair exists for this account`,
+        );
         expect(e.type).toEqual('KeyNotFound');
     }
 
@@ -59,7 +60,7 @@ test('remove access key no longer works', async() => {
     nearjs = await setUpTestConnection();
 });
 
-test('view account details after adding access keys', async() => {
+test('view account details after adding access keys', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
     await nearjs.accountCreator.masterAccount.addKey(keyPair.getPublicKey(), contractId, '', 1000000000);
 
@@ -68,23 +69,25 @@ test('view account details after adding access keys', async() => {
     await nearjs.accountCreator.masterAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', 2000000000);
 
     const details = await nearjs.accountCreator.masterAccount.getAccountDetails();
-    const authorizedApps = [{
-        contractId,
-        amount: '1000000000',
-        publicKey: keyPair.getPublicKey().toString(),
-    },
-    {
-        contractId: contract2.contractId,
-        amount: '2000000000',
-        publicKey: keyPair2.getPublicKey().toString(),
-    }];
+    const authorizedApps = [
+        {
+            contractId,
+            amount: '1000000000',
+            publicKey: keyPair.getPublicKey().toString(),
+        },
+        {
+            contractId: contract2.contractId,
+            amount: '2000000000',
+            publicKey: keyPair2.getPublicKey().toString(),
+        },
+    ];
 
     expect(details.authorizedApps).toEqual(expect.arrayContaining(authorizedApps));
     expect(authorizedApps).toEqual(expect.arrayContaining(details.authorizedApps));
     expect(details.authorizedApps).toHaveLength(authorizedApps.length);
 });
 
-test('loading account after adding a full key', async() => {
+test('loading account after adding a full key', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
     // wallet calls this with an empty string for contract id and method
     await workingAccount.addKey(keyPair.getPublicKey(), '', '');
@@ -92,12 +95,12 @@ test('loading account after adding a full key', async() => {
     const accessKeys = await workingAccount.getAccessKeys();
 
     expect(accessKeys.length).toBe(2);
-    const addedKey = accessKeys.find(item => item.public_key == keyPair.getPublicKey().toString());
+    const addedKey = accessKeys.find((item) => item.public_key == keyPair.getPublicKey().toString());
     expect(addedKey).toBeTruthy();
     expect(addedKey.access_key.permission).toEqual('FullAccess');
 });
 
-test('load invalid key pair', async() => {
+test('load invalid key pair', async () => {
     // Override in the key store with invalid key pair
     await nearjs.connection.signer.keyStore.setKey(networkId, nearjs.accountCreator.masterAccount.accountId, '');
     let failed = true;

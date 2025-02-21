@@ -13,10 +13,7 @@ import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
 
-import {
-    ConnectedWalletAccount,
-    WalletConnection
-} from './wallet-account';
+import { ConnectedWalletAccount, WalletConnection } from './wallet-account';
 
 export {
     accountCreator,
@@ -24,7 +21,6 @@ export {
     utils,
     transactions,
     validators,
-
     multisig,
     Account,
     Connection,
@@ -32,9 +28,7 @@ export {
     InMemorySigner,
     Signer,
     KeyPair,
-
     Near,
-
     ConnectedWalletAccount,
-    WalletConnection
+    WalletConnection,
 };

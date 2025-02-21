@@ -50,7 +50,10 @@ export class UrlAccountCreator extends AccountCreator {
      */
     async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
         await fetch(`${this.helperUrl}/account`, {
-            body: JSON.stringify({ newAccountId, newAccountPublicKey: publicKey.toString() }),
+            body: JSON.stringify({
+                newAccountId,
+                newAccountPublicKey: publicKey.toString(),
+            }),
             method: 'POST',
         });
     }

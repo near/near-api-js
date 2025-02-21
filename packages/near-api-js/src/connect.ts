@@ -75,7 +75,7 @@ export async function connect(config: ConnectConfig): Promise<Near> {
     }
 
     // Try to find extra key in `KeyPath` if provided.
-    if (config.keyPath && (config.keyStore ||  config.deps?.keyStore)) {
+    if (config.keyPath && (config.keyStore || config.deps?.keyStore)) {
         try {
             const accountKeyFile = await readKeyFile(config.keyPath);
             if (accountKeyFile[0]) {
@@ -86,11 +86,12 @@ export async function connect(config: ConnectConfig): Promise<Near> {
                 if (!config.masterAccount) {
                     config.masterAccount = accountKeyFile[0];
                 }
-                config.keyStore = new MergeKeyStore([
-                    keyPathStore,
-                    config.keyStore || config.deps?.keyStore
-                ], { writeKeyStoreIndex: 1 });
-                Logger.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+                config.keyStore = new MergeKeyStore([keyPathStore, config.keyStore || config.deps?.keyStore], {
+                    writeKeyStoreIndex: 1,
+                });
+                Logger.log(
+                    `Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`,
+                );
             }
         } catch (error) {
             Logger.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);

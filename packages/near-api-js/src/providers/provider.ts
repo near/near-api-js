@@ -1,4 +1,3 @@
-
 export { getTransactionLastResult } from '@near-js/utils';
 export { Provider } from '@near-js/providers';
 export {
@@ -8,7 +7,6 @@ export {
     LightClientProofRequest,
     NextLightClientBlockRequest,
     NextLightClientBlockResponse,
-
     AccessKeyWithPublicKey,
     BlockHash,
     BlockChange,
@@ -37,7 +35,6 @@ export {
     SyncInfo,
     TotalWeight,
     ProviderTransaction as Transaction,
-
     CallFunctionRequest,
     RpcQueryRequest,
     ViewAccessKeyListRequest,
@@ -45,7 +42,6 @@ export {
     ViewAccountRequest,
     ViewCodeRequest,
     ViewStateRequest,
-
     AccessKeyInfoView,
     AccessKeyList,
     AccessKeyView,
@@ -65,7 +61,6 @@ export {
     FunctionCallPermissionView,
     QueryResponseKind,
     ViewStateResult,
-
     CurrentEpochValidatorInfo,
     EpochValidatorInfo,
     NextEpochValidatorInfo,

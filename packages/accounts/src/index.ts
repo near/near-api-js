@@ -2,7 +2,7 @@ export {
     Account,
     AccountBalance,
     AccountAuthorizedApp,
-    SignAndSendTransactionOptions
+    SignAndSendTransactionOptions,
 } from './account';
 export { Account2FA } from './account_2fa';
 export {
@@ -34,7 +34,7 @@ export {
     MultisigDeleteRequestRejectionError,
     MultisigStateStatus,
 } from './types';
-export {    
+export {
     FunctionCallOptions,
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,

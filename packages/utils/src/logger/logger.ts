@@ -1,14 +1,7 @@
 import { ConsoleLogger } from './console.logger';
 import type { LogLevel, LoggerService } from './interface';
 
-const DEFAULT_LOG_LEVELS: LogLevel[] = [
-    'verbose',
-    'debug',
-    'log',
-    'warn',
-    'error',
-    'fatal',
-];
+const DEFAULT_LOG_LEVELS: LogLevel[] = ['verbose', 'debug', 'log', 'warn', 'error', 'fatal'];
 
 const DEFAULT_LOGGER = new ConsoleLogger(DEFAULT_LOG_LEVELS);
 

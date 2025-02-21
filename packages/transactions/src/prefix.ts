@@ -13,7 +13,6 @@ abstract class NEPPrefix {
     constructor({ prefix }: { prefix: number }) {
         this.prefix = prefix;
     }
-
 }
 
 /** Class for constructing prefixes on actionable (on-chain) messages **/
@@ -36,4 +35,8 @@ abstract class ActionableMessagePrefix extends NEPPrefix {
 // }
 
 /** Prefix for delegate actions whose signatures must always be distinguishable from valid transaction signatures **/
-export class DelegateActionPrefix extends ActionableMessagePrefix { constructor() { super(NEP.MetaTransactions); } }
+export class DelegateActionPrefix extends ActionableMessagePrefix {
+    constructor() {
+        super(NEP.MetaTransactions);
+    }
+}

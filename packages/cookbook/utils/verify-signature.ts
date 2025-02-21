@@ -6,17 +6,19 @@ const ACCOUNT_ID = 'gornt.testnet';
 const TX_HASH = '4tMHzHU5p9dXc4WqopReNZ2TMJxZyu913zK4Fn9nMRoB';
 
 export default async function verifySignature(accountId: string = ACCOUNT_ID, transactionHash: string = TX_HASH) {
-  // initialize testnet RPC provider
-  const rpcProvider = getTestnetRpcProvider();
+    // initialize testnet RPC provider
+    const rpcProvider = getTestnetRpcProvider();
 
-  const { transaction: { public_key, signature } } = await rpcProvider.getTransaction({ transactionHash, account: accountId });
+    const {
+        transaction: { public_key, signature },
+    } = await rpcProvider.getTransaction({ transactionHash, account: accountId });
 
-  const hashBytes = baseDecode(transactionHash);
-  const publicKeyBytes = baseDecode(public_key.slice('ed25519:'.length));
-  const signatureBytes = baseDecode(signature.slice('ed25519:'.length));
-  const publicKey = new PublicKey({ keyType: KeyType.ED25519, data: publicKeyBytes });
+    const hashBytes = baseDecode(transactionHash);
+    const publicKeyBytes = baseDecode(public_key.slice('ed25519:'.length));
+    const signatureBytes = baseDecode(signature.slice('ed25519:'.length));
+    const publicKey = new PublicKey({ keyType: KeyType.ED25519, data: publicKeyBytes });
 
-  const isVerified = publicKey.verify(hashBytes, signatureBytes);
+    const isVerified = publicKey.verify(hashBytes, signatureBytes);
 
-  console.log(isVerified);
+    console.log(isVerified);
 }

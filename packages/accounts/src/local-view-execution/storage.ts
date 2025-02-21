@@ -3,14 +3,14 @@ import type { BlockHash, BlockReference } from '@near-js/types';
 import type { ContractState } from './types';
 
 export interface StorageData {
-    blockHeight: number,
-    blockTimestamp: number,
-    contractCode: string,
-    contractState: ContractState
+    blockHeight: number;
+    blockTimestamp: number;
+    contractCode: string;
+    contractState: ContractState;
 }
 
 export interface StorageOptions {
-    max: number
+    max: number;
 }
 
 export class Storage {
@@ -43,6 +43,11 @@ export class Storage {
 
     public save(blockHash: BlockHash, { blockHeight, blockTimestamp, contractCode, contractState }: StorageData) {
         this.blockHeights.set(blockHash, blockHeight);
-        this.cache.set(blockHeight, { blockHeight, blockTimestamp, contractCode, contractState });
+        this.cache.set(blockHeight, {
+            blockHeight,
+            blockTimestamp,
+            contractCode,
+            contractState,
+        });
     }
 }
