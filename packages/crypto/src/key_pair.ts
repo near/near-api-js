@@ -35,8 +35,7 @@ export abstract class KeyPair extends KeyPairBase {
                 default:
                     throw new Error(`Unknown curve: ${parts[0]}`);
             }
-        } else {
-            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
+        throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
     }
 }

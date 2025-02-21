@@ -37,8 +37,8 @@ function findSeatPriceForProtocolBefore49(
         throw new Error('Stakes are below seats');
     }
     // assert stakesSum >= numSeats
-    let left = 1n,
-        right = stakesSum + 1n;
+    let left = 1n;
+    let right = stakesSum + 1n;
     while (left !== right - 1n) {
         const mid = (left + right) / 2n;
         let found = false;
@@ -64,16 +64,15 @@ function findSeatPriceForProtocolAfter49(
     maxNumberOfSeats: number,
     minimumStakeRatio: number[],
 ): bigint {
-    if (minimumStakeRatio.length != 2) {
+    if (minimumStakeRatio.length !== 2) {
         throw Error('minimumStakeRatio should have 2 elements');
     }
     const stakes = validators.map((v) => BigInt(v.stake)).sort(sortBigIntAsc);
     const stakesSum = stakes.reduce((a, b) => a + b);
     if (validators.length < maxNumberOfSeats) {
         return (stakesSum * BigInt(minimumStakeRatio[0])) / BigInt(minimumStakeRatio[1]);
-    } else {
-        return stakes[0] + 1n;
     }
+    return stakes[0] + 1n;
 }
 
 export interface ChangedValidatorInfo {
@@ -103,7 +102,7 @@ export function diffEpochValidators(
         newValidators: nextValidators.filter((v) => !validatorsMap.has(v.account_id)),
         removedValidators: currentValidators.filter((v) => !nextValidatorsSet.has(v.account_id)),
         changedValidators: nextValidators
-            .filter((v) => validatorsMap.has(v.account_id) && validatorsMap.get(v.account_id).stake != v.stake)
+            .filter((v) => validatorsMap.has(v.account_id) && validatorsMap.get(v.account_id).stake !== v.stake)
             .map((v) => ({ current: validatorsMap.get(v.account_id), next: v })),
     };
 }

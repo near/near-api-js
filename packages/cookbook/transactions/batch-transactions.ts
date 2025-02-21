@@ -1,9 +1,9 @@
-import { getSignerFromKeystore, getTestnetRpcProvider, SignedTransactionComposer } from '@near-js/client';
+import { readFile } from 'node:fs/promises';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { SignedTransactionComposer, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
 
 // NOTE: replace "example" with your accountId
 const CONTRACT_NAME = 'contract.example.testnet';

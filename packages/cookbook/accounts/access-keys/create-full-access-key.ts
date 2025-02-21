@@ -1,8 +1,8 @@
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { addFullAccessKey, generateRandomKeyPair, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
 
 export default async function createFullAccessKey(accountId: string) {
     if (!accountId) {

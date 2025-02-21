@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { Account, Contract, ArgumentSchemaError, UnknownArgumentError, UnsupportedSerializationError } from '../src';
+import { Account, ArgumentSchemaError, Contract, UnknownArgumentError, UnsupportedSerializationError } from '../src';
 
 const rawAbi = `{
   "schema_version": "0.3.0",

@@ -1,40 +1,40 @@
 import { PublicKey } from '@near-js/crypto';
 import { exponentialBackoff } from '@near-js/providers';
 import {
-    actionCreators,
     type Action,
+    type SignedDelegate,
+    type SignedTransaction,
+    actionCreators,
     buildDelegateAction,
     signDelegateAction,
     signTransaction,
-    type SignedDelegate,
-    type SignedTransaction,
     stringifyJsonOrBytes,
 } from '@near-js/transactions';
 import {
-    PositionalArgsError,
-    type FinalExecutionOutcome,
-    TypedError,
-    ErrorContext,
-    type AccountView,
+    type AccessKeyInfoView,
+    type AccessKeyList,
     type AccessKeyView,
     type AccessKeyViewRaw,
-    type AccessKeyList,
-    type AccessKeyInfoView,
-    type FunctionCallPermissionView,
+    type AccountView,
     type BlockReference,
+    ErrorContext,
+    type FinalExecutionOutcome,
+    type FunctionCallPermissionView,
+    PositionalArgsError,
+    TypedError,
 } from '@near-js/types';
 import {
+    DEFAULT_FUNCTION_CALL_GAS,
+    Logger,
     baseDecode,
     baseEncode,
-    Logger,
     parseResultError,
-    DEFAULT_FUNCTION_CALL_GAS,
     printTxOutcomeLogsAndFailures,
 } from '@near-js/utils';
 
 import type { Connection } from './connection';
-import { viewFunction, viewState } from './utils';
 import type { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface';
+import { viewFunction, viewState } from './utils';
 
 const {
     addKey,
@@ -184,7 +184,8 @@ export class Account implements IntoConnection {
         actions,
         returnError,
     }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
-        let txHash, signedTx;
+        let txHash;
+        let signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(
             TX_NONCE_RETRY_WAIT,
@@ -240,9 +241,8 @@ export class Account implements IntoConnection {
                     `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
                     result.status.Failure.error_type,
                 );
-            } else {
-                throw parseResultError(result);
             }
+            throw parseResultError(result);
         }
         // TODO: if Tx is Unknown or Started.
         return result;
@@ -261,8 +261,8 @@ export class Account implements IntoConnection {
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
     async findAccessKey(
-        receiverId: string,
-        actions: Action[],
+        _receiverId: string,
+        _actions: Action[],
     ): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
         // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
         const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
@@ -302,7 +302,7 @@ export class Account implements IntoConnection {
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
-            if (e.type == 'AccessKeyDoesNotExist') {
+            if (e.type === 'AccessKeyDoesNotExist') {
                 return null;
             }
 

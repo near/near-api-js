@@ -1,8 +1,8 @@
-import { getSignerFromKeystore, getTestnetRpcProvider, SignedTransactionComposer } from '@near-js/client';
-import chalk from 'chalk';
-import { join } from 'node:path';
 import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { SignedTransactionComposer, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
+import chalk from 'chalk';
 
 // access keys are required for the sender and signer
 const RECEIVER_ACCOUNT_ID = 'receiver.testnet'; // the ultimate recipient of the meta transaction execution

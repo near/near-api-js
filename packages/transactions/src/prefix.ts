@@ -1,4 +1,4 @@
-const ACTIONABLE_MESSAGE_BASE = Math.pow(2, 30);
+const ACTIONABLE_MESSAGE_BASE = 2 ** 30;
 // const NON_ACTIONABLE_MESSAGE_BASE = Math.pow(2, 31);
 
 /** The set of NEPs for which an [NEP-461](https://github.com/near/NEPs/pull/461) prefix is required on the message prior to hashing **/

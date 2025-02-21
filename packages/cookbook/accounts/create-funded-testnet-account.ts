@@ -1,8 +1,8 @@
-import { createFundedTestnetAccount, generateRandomKeyPair } from '@near-js/client';
-import chalk from 'chalk';
-import { join } from 'node:path';
 import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { createFundedTestnetAccount, generateRandomKeyPair } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
+import chalk from 'chalk';
 
 export default async function createFundedTestnetAccountCookbook(accountId: string) {
     if (!accountId) {

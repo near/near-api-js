@@ -1,6 +1,6 @@
-import { type ViewStateResult, type BlockReference, type CodeResult, PositionalArgsError } from '@near-js/types';
-import type { Connection } from './connection';
+import { type BlockReference, type CodeResult, PositionalArgsError, type ViewStateResult } from '@near-js/types';
 import { printTxOutcomeLogs } from '@near-js/utils';
+import type { Connection } from './connection';
 import type { ViewFunctionCallOptions } from './interface';
 
 function parseJsonFromRawResponse(response: Uint8Array): any {

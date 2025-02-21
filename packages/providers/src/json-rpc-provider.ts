@@ -1,17 +1,10 @@
-/**
- * @module
- * @description
- * This module contains the {@link JsonRpcProvider} client class
- * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
- * @see {@link "@near-js/types".provider | provider} for a list of request and response types
- */
-import { baseEncode, formatError, getErrorTypeFromErrorMessage, parseRpcError, ServerError } from '@near-js/utils';
+import { type SignedTransaction, encodeTransaction } from '@near-js/transactions';
 import {
     type AccessKeyWithPublicKey,
+    type BlockChangeResult,
     type BlockId,
     type BlockReference,
     type BlockResult,
-    type BlockChangeResult,
     type ChangeResult,
     type ChunkId,
     type ChunkResult,
@@ -20,18 +13,25 @@ import {
     type GasPrice,
     type LightClientProof,
     type LightClientProofRequest,
+    type NearProtocolConfig,
     type NextLightClientBlockRequest,
     type NextLightClientBlockResponse,
-    type NearProtocolConfig,
     type NodeStatusResult,
     type QueryResponseKind,
     TypedError,
 } from '@near-js/types';
-import { encodeTransaction, type SignedTransaction } from '@near-js/transactions';
+/**
+ * @module
+ * @description
+ * This module contains the {@link JsonRpcProvider} client class
+ * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
+ * @see {@link "@near-js/types".provider | provider} for a list of request and response types
+ */
+import { ServerError, baseEncode, formatError, getErrorTypeFromErrorMessage, parseRpcError } from '@near-js/utils';
 
-import { Provider } from './provider';
-import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
 import type { TxExecutionStatus } from '@near-js/types';
+import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
+import { Provider } from './provider';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
@@ -146,9 +146,8 @@ export class JsonRpcProvider extends Provider {
     ): Promise<FinalExecutionOutcome> {
         if (typeof txHash === 'string') {
             return this.txStatusString(txHash, accountId, waitUntil);
-        } else {
-            return this.txStatusUint8Array(txHash, accountId, waitUntil);
         }
+        return this.txStatusUint8Array(txHash, accountId, waitUntil);
     }
 
     private async txStatusUint8Array(
@@ -186,13 +185,12 @@ export class JsonRpcProvider extends Provider {
                 sender_account_id: accountId,
                 wait_until: waitUntil,
             });
-        } else {
-            return this.sendJsonRpc('EXPERIMENTAL_tx_status', {
-                tx_hash: baseEncode(txHash),
-                sender_account_id: accountId,
-                wait_until: waitUntil,
-            });
         }
+        return this.sendJsonRpc('EXPERIMENTAL_tx_status', {
+            tx_hash: baseEncode(txHash),
+            sender_account_id: accountId,
+            wait_until: waitUntil,
+        });
     }
 
     /**
@@ -210,7 +208,7 @@ export class JsonRpcProvider extends Provider {
             const [path, data] = args;
             result = await this.sendJsonRpc<T>('query', [path, data]);
         }
-        if (result && result.error) {
+        if (result?.error) {
             throw new TypedError(
                 `Querying failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`,
                 getErrorTypeFromErrorMessage(result.error, result.error.name),
@@ -427,16 +425,16 @@ export class JsonRpcProvider extends Provider {
                     throw new TypedError(response.error.data.error_message, response.error.data.error_type);
                 }
                 throw parseRpcError(response.error.data);
-            } else {
-                const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-
-                const errorType = getErrorTypeFromErrorMessage(response.error.data, '');
-                if (errorType) {
-                    throw new TypedError(formatError(errorType, params), errorType);
-                }
-                throw new TypedError(errorMessage, response.error.name);
             }
-        } else if (typeof response.result?.error === 'string') {
+            const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
+
+            const errorType = getErrorTypeFromErrorMessage(response.error.data, '');
+            if (errorType) {
+                throw new TypedError(formatError(errorType, params), errorType);
+            }
+            throw new TypedError(errorMessage, response.error.name);
+        }
+        if (typeof response.result?.error === 'string') {
             const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
             if (errorType) {
                 throw new ServerError(formatError(errorType, params), errorType);

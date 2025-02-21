@@ -1,4 +1,4 @@
-import { describe, expect, test, jest, beforeEach, afterAll } from '@jest/globals';
+import { afterAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
 import { ProviderError } from '../src/fetch_json';
 

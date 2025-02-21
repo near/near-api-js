@@ -1,5 +1,5 @@
-import { LRUMap } from 'lru_map';
 import type { BlockHash, BlockReference } from '@near-js/types';
+import { LRUMap } from 'lru_map';
 import type { ContractState } from './types';
 
 export interface StorageData {
@@ -34,7 +34,7 @@ export class Storage {
         let blockId = blockRef.blockId;
 
         // block hash is passed, so get its corresponding block height
-        if (blockId.toString().length == 44) {
+        if (blockId.toString().length === 44) {
             blockId = this.blockHeights.get(blockId.toString());
         }
         // get cached values for the given block height

@@ -1,18 +1,18 @@
+import * as fs from 'node:fs';
 import { describe, expect, test } from '@jest/globals';
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { InMemoryKeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
 import { baseDecode, baseEncode } from '@near-js/utils';
 import { deserialize, serialize } from 'borsh';
-import * as fs from 'fs';
 
 import {
+    SCHEMA,
     actionCreators,
     createTransaction,
     decodeSignedTransaction,
     decodeTransaction,
     encodeTransaction,
-    SCHEMA,
     signTransaction,
 } from '../src';
 
@@ -187,7 +187,7 @@ describe('roundtrip test', () => {
     for (const testFile of testFiles) {
         if (/.+\.json$/.test(testFile)) {
             // @ts-expect-error test input
-            const testDefinition = JSON.parse(fs.readFileSync(dataDir + '/' + testFile));
+            const testDefinition = JSON.parse(fs.readFileSync(`${dataDir}/${testFile}`));
             test(testFile, () => {
                 const data = Buffer.from(testDefinition.data, 'hex');
                 const type = testDefinition.type;

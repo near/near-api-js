@@ -8,7 +8,7 @@ export function getTransactionLastResult(
         const value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();
         try {
             return JSON.parse(value);
-        } catch (e) {
+        } catch (_e) {
             return value;
         }
     }

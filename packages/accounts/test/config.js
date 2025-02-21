@@ -1,5 +1,5 @@
+import fs from 'node:fs';
 import { Worker } from 'near-workspaces';
-import fs from 'fs';
 
 let worker;
 module.exports = async function getConfig(env) {

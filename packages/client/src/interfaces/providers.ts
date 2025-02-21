@@ -1,3 +1,4 @@
+import type { SignedTransaction } from '@near-js/transactions';
 import type {
     BlockReference,
     BlockResult,
@@ -7,7 +8,6 @@ import type {
     QueryResponseKind,
     TxExecutionStatus,
 } from '@near-js/types';
-import type { SignedTransaction } from '@near-js/transactions';
 
 interface GetTransactionParams {
     transactionHash: string;

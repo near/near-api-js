@@ -1,6 +1,6 @@
 import { PublicKey } from '@near-js/crypto';
-import { type FinalExecutionOutcome, TypedError, type FunctionCallPermissionView } from '@near-js/types';
 import { actionCreators } from '@near-js/transactions';
+import { type FinalExecutionOutcome, type FunctionCallPermissionView, TypedError } from '@near-js/types';
 import { Logger } from '@near-js/utils';
 
 import type { SignAndSendTransactionOptions } from './account';
@@ -139,7 +139,7 @@ export class Account2FA extends AccountMultisig {
 
         const accessKeyInfo = await this.findAccessKey(this.accountId, actions);
 
-        if (accessKeyInfo && accessKeyInfo.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
+        if (accessKeyInfo?.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
             throw new TypedError('No full access key found in keystore. Unable to bypass multisig', 'NoFAKFound');
         }
 
@@ -153,11 +153,11 @@ export class Account2FA extends AccountMultisig {
      */
     async get2faDisableCleanupActions(cleanupContractBytes: Uint8Array) {
         const currentAccountState: { key: Buffer; value: Buffer }[] = await this.viewState('').catch((error) => {
-            const cause = error.cause && error.cause.name;
-            if (cause == 'NO_CONTRACT_CODE') {
+            const cause = error.cause?.name;
+            if (cause === 'NO_CONTRACT_CODE') {
                 return [];
             }
-            throw cause == 'TOO_LARGE_CONTRACT_STATE'
+            throw cause === 'TOO_LARGE_CONTRACT_STATE'
                 ? new TypedError(
                       `Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`,
                       'ContractHasExistingState',
@@ -326,7 +326,7 @@ export class Account2FA extends AccountMultisig {
     async get2faMethod() {
         let { data } = await this.getRecoveryMethods();
         // @ts-ignore
-        if (data && data.length) {
+        if (data?.length) {
             // @ts-ignore
             data = data.find((m) => m.kind.indexOf('2fa-') === 0);
         }

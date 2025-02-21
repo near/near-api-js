@@ -1,6 +1,6 @@
 import type { CreateAccountParams, CreateTopLevelAccountParams } from '../interfaces';
-import { SignedTransactionComposer } from './composers';
 import { functionCall } from './actions';
+import { SignedTransactionComposer } from './composers';
 
 /**
  * Create a new top-level account using an existing account

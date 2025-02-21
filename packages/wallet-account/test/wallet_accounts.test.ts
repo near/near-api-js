@@ -1,12 +1,12 @@
+import * as url from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from '@jest/globals';
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { InMemoryKeyStore } from '@near-js/keystores';
-import { baseDecode } from '@near-js/utils';
 import { InMemorySigner } from '@near-js/signers';
-import { actionCreators, createTransaction, SCHEMA } from '@near-js/transactions';
+import { SCHEMA, actionCreators, createTransaction } from '@near-js/transactions';
+import { baseDecode } from '@near-js/utils';
 import { deserialize } from 'borsh';
 import localStorage from 'localstorage-memory';
-import * as url from 'url';
 import { WalletConnection } from '../src';
 
 const { functionCall, transfer } = actionCreators;
@@ -138,7 +138,7 @@ describe('Wallet account tests', () => {
 
         it('can access other props on the instance', () => {
             const serverWalletConnection = new WalletConnection(nearFake, '');
-            expect(serverWalletConnection['randomValue']).toEqual(undefined);
+            expect(serverWalletConnection.randomValue).toEqual(undefined);
         });
     });
 
@@ -205,7 +205,7 @@ describe('Wallet account tests', () => {
         await keyStore.setKey(
             'networkId',
             // @ts-expect-error test input
-            'pending_key' + keyPair.publicKey,
+            `pending_key${keyPair.publicKey}`,
             keyPair,
         );
 
@@ -223,7 +223,7 @@ describe('Wallet account tests', () => {
         await keyStore.setKey(
             'networkId',
             // @ts-expect-error test input
-            'pending_key' + keyPair.publicKey,
+            `pending_key${keyPair.publicKey}`,
             keyPair,
         );
 

@@ -1,3 +1,5 @@
+import { Logger } from '@near-js/utils';
+import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 /**
  * Connect to NEAR using the provided configuration.
  *
@@ -32,9 +34,7 @@
  * @module connect
  */
 import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
-import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 import { Near, type NearConfig } from './near';
-import { Logger } from '@near-js/utils';
 
 export interface ConnectConfig extends NearConfig {
     /**

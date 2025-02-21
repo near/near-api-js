@@ -13,17 +13,17 @@ import type {
     ChangeResult,
     ChunkId,
     ChunkResult,
+    EpochValidatorInfo,
     FinalExecutionOutcome,
     GasPrice,
     LightClientProof,
     LightClientProofRequest,
+    NearProtocolConfig,
     NextLightClientBlockRequest,
     NextLightClientBlockResponse,
-    NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
     RpcQueryRequest,
-    EpochValidatorInfo,
 } from '@near-js/types';
 import type { TxExecutionStatus } from '@near-js/types';
 

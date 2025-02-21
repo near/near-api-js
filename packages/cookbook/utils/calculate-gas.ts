@@ -1,8 +1,8 @@
-import { formatNearAmount, functionCall, getSignerFromKeystore, getTestnetRpcProvider, MAX_GAS } from '@near-js/client';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { MAX_GAS, formatNearAmount, functionCall, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
 
 const CONTRACT_ID = 'guest-book.testnet';
 const METHOD_NAME = 'addMessage';

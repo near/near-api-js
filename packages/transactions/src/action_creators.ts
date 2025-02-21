@@ -129,7 +129,7 @@ function transfer(deposit = 0n): Action {
  * @param publicKey The public key associated with the staking action.
  * @returns A new action for staking tokens.
  */
-function stake(stake = 0n, publicKey: PublicKey): Action {
+function stake(stake, publicKey: PublicKey): Action {
     return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 

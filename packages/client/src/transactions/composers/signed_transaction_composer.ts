@@ -11,9 +11,9 @@ import type {
     SignedTransactionOptions,
     TransactionOptions,
 } from '../../interfaces';
+import { getAccessKeySigner } from '../../signing/signers';
 import { signTransaction } from '../sign_and_send';
 import { TransactionComposer } from './transaction_composer';
-import { getAccessKeySigner } from '../../signing/signers';
 
 export class SignedTransactionComposer extends TransactionComposer {
     messageSigner: MessageSigner;

@@ -10,9 +10,9 @@
 import { Account, type AccountCreator, Connection, LocalAccountCreator, UrlAccountCreator } from '@near-js/accounts';
 import type { PublicKey } from '@near-js/crypto';
 import type { KeyStore } from '@near-js/keystores';
+import type { Provider } from '@near-js/providers';
 import type { Signer } from '@near-js/signers';
 import type { LoggerService } from '@near-js/utils';
-import type { Provider } from '@near-js/providers';
 
 export interface NearConfig {
     /** Holds {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} for signing transactions */

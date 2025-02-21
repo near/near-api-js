@@ -1,17 +1,10 @@
-/**
- * @module
- * @description
- * This module contains the {@link FailoverRpcProvider} client class
- * which can be used to interact with multiple [NEAR RPC APIs](https://docs.near.org/api/rpc/introduction).
- * @see {@link "@near-js/types".provider | provider} for a list of request and response types
- */
-import { Logger } from '@near-js/utils';
+import type { SignedTransaction } from '@near-js/transactions';
 import {
     type AccessKeyWithPublicKey,
+    type BlockChangeResult,
     type BlockId,
     type BlockReference,
     type BlockResult,
-    type BlockChangeResult,
     type ChangeResult,
     type ChunkId,
     type ChunkResult,
@@ -20,17 +13,24 @@ import {
     type GasPrice,
     type LightClientProof,
     type LightClientProofRequest,
+    type NearProtocolConfig,
     type NextLightClientBlockRequest,
     type NextLightClientBlockResponse,
-    type NearProtocolConfig,
     type NodeStatusResult,
     type QueryResponseKind,
-    TypedError,
     type RpcQueryRequest,
+    TypedError,
 } from '@near-js/types';
-import type { SignedTransaction } from '@near-js/transactions';
-import { Provider } from './provider';
 import type { TxExecutionStatus } from '@near-js/types';
+/**
+ * @module
+ * @description
+ * This module contains the {@link FailoverRpcProvider} client class
+ * which can be used to interact with multiple [NEAR RPC APIs](https://docs.near.org/api/rpc/introduction).
+ * @see {@link "@near-js/types".provider | provider} for a list of request and response types
+ */
+import { Logger } from '@near-js/utils';
+import { Provider } from './provider';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).

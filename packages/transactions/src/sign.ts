@@ -1,12 +1,12 @@
 import type { Signer } from '@near-js/signers';
 import { sha256 } from '@noble/hashes/sha256';
 
+import { KeyType } from '@near-js/crypto';
 import { type Action, SignedDelegate } from './actions';
 import { createTransaction } from './create_transaction';
 import type { DelegateAction } from './delegate';
-import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema';
+import { SignedTransaction, Transaction, encodeDelegateAction, encodeTransaction } from './schema';
 import { Signature } from './signature';
-import { KeyType } from '@near-js/crypto';
 
 interface MessageSigner {
     sign(message: Uint8Array): Promise<Uint8Array>;
@@ -65,12 +65,11 @@ export async function signTransaction(...args): Promise<[Uint8Array, SignedTrans
     if (args[0].constructor === Transaction) {
         const [transaction, signer, accountId, networkId] = args;
         return signTransactionObject(transaction, signer, accountId, networkId);
-    } else {
-        const [receiverId, nonce, actions, blockHash, signer, accountId, networkId] = args;
-        const publicKey = await signer.getPublicKey(accountId, networkId);
-        const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
-        return signTransactionObject(transaction, signer, accountId, networkId);
     }
+    const [receiverId, nonce, actions, blockHash, signer, accountId, networkId] = args;
+    const publicKey = await signer.getPublicKey(accountId, networkId);
+    const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
+    return signTransactionObject(transaction, signer, accountId, networkId);
 }
 
 /**

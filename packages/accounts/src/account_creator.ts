@@ -1,7 +1,7 @@
 import type { PublicKey } from '@near-js/crypto';
 
-import type { Connection } from './connection';
 import type { Account } from './account';
+import type { Connection } from './connection';
 
 /**
  * Account creator provides an interface for implementations to actually create accounts

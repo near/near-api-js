@@ -1,15 +1,15 @@
 /** @hidden @module */
 
+import { FailoverRpcProvider } from './failover-rpc-provider';
+import { ErrorContext, JsonRpcProvider, TypedError } from './json-rpc-provider';
 import {
-    Provider,
-    FinalExecutionOutcome,
     ExecutionOutcomeWithId,
-    getTransactionLastResult,
+    FinalExecutionOutcome,
     FinalExecutionStatus,
     FinalExecutionStatusBasic,
+    Provider,
+    getTransactionLastResult,
 } from './provider';
-import { JsonRpcProvider, TypedError, ErrorContext } from './json-rpc-provider';
-import { FailoverRpcProvider } from './failover-rpc-provider';
 
 export {
     Provider,

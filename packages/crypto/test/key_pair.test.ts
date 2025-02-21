@@ -1,9 +1,9 @@
 import { describe, expect, test } from '@jest/globals';
 import { baseEncode } from '@near-js/utils';
 import { sha256 } from '@noble/hashes/sha256';
-import { KeyPair, KeyPairEd25519, PublicKey, KeyPairSecp256k1 } from '../src';
+import { KeyPair, KeyPairEd25519, KeyPairSecp256k1, PublicKey } from '../src';
 
-import { TextEncoder } from 'util';
+import { TextEncoder } from 'node:util';
 global.TextEncoder = TextEncoder;
 
 describe('Using Ed25519 Curve', () => {

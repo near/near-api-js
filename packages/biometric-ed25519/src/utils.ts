@@ -1,7 +1,7 @@
 import base64 from '@hexagon/base64';
+import type { PublicKey } from '@near-js/crypto';
 import { p256 } from '@noble/curves/p256';
 import { sha256 } from '@noble/hashes/sha256';
-import type { PublicKey } from '@near-js/crypto';
 
 export const preformatMakeCredReq = (makeCredReq) => {
     const challenge = base64.toArrayBuffer(makeCredReq.challenge, true);
@@ -49,7 +49,7 @@ export const preformatGetAssertReq = (getAssert) => {
 };
 
 export const publicKeyCredentialToJSON = (pubKeyCred) => {
-    if (pubKeyCred instanceof Array) {
+    if (Array.isArray(pubKeyCred)) {
         const arr = [];
         for (const i of pubKeyCred) arr.push(publicKeyCredentialToJSON(i));
 
@@ -89,7 +89,7 @@ export const recoverPublicKey = async (r, s, message, recovery) => {
 
 export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
     const array = Array.from(uint8Array);
-    return BigInt('0x' + array.map((byte) => byte.toString(16).padStart(2, '0')).join(''));
+    return BigInt(`0x${array.map((byte) => byte.toString(16).padStart(2, '0')).join('')}`);
 };
 
 const convertUint8ArrayToArrayBuffer = (obj: any) => {

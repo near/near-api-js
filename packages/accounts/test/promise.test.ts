@@ -12,7 +12,9 @@ beforeAll(async () => {
 });
 
 describe('with promises', () => {
-    let contract, contract1, contract2;
+    let contract;
+    let contract1;
+    let contract2;
     let oldLog;
     let logs;
     const contractName = generateUniqueString('cnt');

@@ -1,6 +1,6 @@
 import { beforeAll, describe } from '@jest/globals';
-import { shouldStoreAndRetrieveKeys } from './keystore_common';
 import { InMemoryKeyStore } from '../src';
+import { shouldStoreAndRetrieveKeys } from './keystore_common';
 
 describe('In-memory keystore', () => {
     const ctx: any = {};

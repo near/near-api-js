@@ -1,11 +1,11 @@
 import { FailoverRpcProvider, JsonRpcProvider } from '@near-js/providers';
 
-import type { RpcQueryProvider } from './interfaces';
 import {
     PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET,
     PAGODA_RPC_ENDPOINTS_MAINNET,
     PAGODA_RPC_ENDPOINTS_TESTNET,
 } from './constants';
+import type { RpcQueryProvider } from './interfaces';
 
 /**
  * Get the set of public endpoints for the provided network

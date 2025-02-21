@@ -2,11 +2,11 @@ import { sha256 } from '@noble/hashes/sha256';
 import type { ContractState } from './types';
 
 const notImplemented = (name: string) => () => {
-    throw new Error('method not implemented: ' + name);
+    throw new Error(`method not implemented: ${name}`);
 };
 
 const prohibitedInView = (name: string) => () => {
-    throw new Error('method not available for view calls: ' + name);
+    throw new Error(`method not available for view calls: ${name}`);
 };
 
 interface RuntimeCtx {
@@ -41,7 +41,7 @@ export class Runtime {
         const arr: number[] = [];
         const mem = new Uint16Array(this.memory.buffer);
         let key = Number(ptr) / 2;
-        while (mem[key] != 0) {
+        while (mem[key] !== 0) {
             arr.push(mem[key]);
             key++;
         }
@@ -52,7 +52,7 @@ export class Runtime {
         const arr: number[] = [];
         const mem = new Uint8Array(this.memory.buffer);
         let key = Number(ptr);
-        for (let i = 0; i < len && mem[key] != 0; i++) {
+        for (let i = 0; i < len && mem[key] !== 0; i++) {
             arr.push(mem[key]);
             key++;
         }
@@ -81,8 +81,8 @@ export class Runtime {
         }
 
         const version = input.readUInt32LE(4);
-        if (version != 1) {
-            throw new Error('Invalid version: ' + version);
+        if (version !== 1) {
+            throw new Error(`Invalid version: ${version}`);
         }
 
         let offset = 8;
@@ -140,11 +140,11 @@ export class Runtime {
             const sectionSize = decodeLEB128();
             const sectionEnd = offset + sectionSize;
 
-            if (sectionId == 5) {
+            if (sectionId === 5) {
                 // Memory section
                 // Make sure it's empty and only imported memory is used
                 parts.push(Buffer.from([5, 1, 0]));
-            } else if (sectionId == 2) {
+            } else if (sectionId === 2) {
                 // Import section
                 const sectionParts: Buffer[] = [];
                 const numImports = decodeLEB128();
@@ -178,7 +178,7 @@ export class Runtime {
                             offset++; // mutability
                             break;
                         default:
-                            throw new Error('Invalid import kind: ' + kind);
+                            throw new Error(`Invalid import kind: ${kind}`);
                     }
 
                     if (!skipImport) {
@@ -205,7 +205,7 @@ export class Runtime {
                         sectionData,
                     ]),
                 );
-            } else if (sectionId == 7) {
+            } else if (sectionId === 7) {
                 // Export section
                 const sectionParts: Buffer[] = [];
                 const numExports = decodeLEB128();
@@ -281,7 +281,7 @@ export class Runtime {
     }
 
     private panic(message: string) {
-        throw new Error('panic: ' + message);
+        throw new Error(`panic: ${message}`);
     }
 
     private abort(msg_ptr: bigint, filename_ptr: bigint, line: number, col: number) {
@@ -291,7 +291,7 @@ export class Runtime {
         if (!msg || !filename) {
             throw new Error('abort: ' + 'String encoding is bad UTF-16 sequence.');
         }
-        throw new Error('abort: ' + message);
+        throw new Error(`abort: ${message}`);
     }
 
     private appendToLog(len: bigint, ptr: bigint) {
@@ -391,7 +391,7 @@ export class Runtime {
 
         const callMethod = instance.exports[methodName] as CallableFunction | undefined;
 
-        if (callMethod == undefined) {
+        if (callMethod === undefined) {
             throw new Error(
                 `Contract method '${methodName}' does not exists in contract ${this.context.contractId} for block id ${this.context.blockHeight}`,
             );

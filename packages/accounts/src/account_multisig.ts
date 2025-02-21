@@ -153,33 +153,28 @@ export class AccountMultisig extends Account {
             };
         } catch (e) {
             if (
-                new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(
-                    e && e.kind && e.kind.ExecutionError,
-                )
+                new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(e?.kind?.ExecutionError)
             ) {
                 return {
                     codeStatus: validCodeStatusIfNoDeploy,
                     stateStatus: MultisigStateStatus.INVALID_STATE,
                 };
-            } else if (
-                new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(
-                    e && e.kind && e.kind.ExecutionError,
-                )
+            }
+            if (
+                new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(e?.kind?.ExecutionError)
             ) {
                 return {
                     codeStatus: validCodeStatusIfNoDeploy,
                     stateStatus: MultisigStateStatus.STATE_NOT_INITIALIZED,
                 };
-            } else if (
-                new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(
-                    e && e.kind && e.kind.ExecutionError,
-                )
-            ) {
+            }
+            if (new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(e?.kind?.ExecutionError)) {
                 return {
                     codeStatus: validCodeStatusIfNoDeploy,
                     stateStatus: MultisigStateStatus.VALID_STATE,
                 };
-            } else if (new RegExp(MultisigDeleteRequestRejectionError.METHOD_NOT_FOUND).test(e && e.message)) {
+            }
+            if (new RegExp(MultisigDeleteRequestRejectionError.METHOD_NOT_FOUND).test(e?.message)) {
                 // not reachable if transaction included a deploy
                 return {
                     codeStatus: MultisigCodeStatus.INVALID_CODE,
@@ -223,7 +218,7 @@ export class AccountMultisig extends Account {
         const request_ids = await this.getRequestIds();
         const { requestId } = this.getRequest();
         for (const requestIdToDelete of request_ids) {
-            if (requestIdToDelete == requestId) {
+            if (requestIdToDelete === requestId) {
                 continue;
             }
             try {
@@ -238,7 +233,7 @@ export class AccountMultisig extends Account {
                         ),
                     ],
                 });
-            } catch (e) {
+            } catch (_e) {
                 Logger.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
             }
         }
@@ -278,13 +273,13 @@ const convertActions = (actions, accountId, receiverId) =>
         const { gas, publicKey, methodName, args, deposit, accessKey, code } = a[type];
         const action = {
             type: type[0].toUpperCase() + type.substr(1),
-            gas: (gas && gas.toString()) || undefined,
+            gas: gas?.toString() || undefined,
             public_key: (publicKey && convertPKForContract(publicKey)) || undefined,
             method_name: methodName,
             args: (args && Buffer.from(args).toString('base64')) || undefined,
             code: (code && Buffer.from(code).toString('base64')) || undefined,
-            amount: (deposit && deposit.toString()) || undefined,
-            deposit: (deposit && deposit.toString()) || '0',
+            amount: deposit?.toString() || undefined,
+            deposit: deposit?.toString() || '0',
             permission: undefined,
         };
         if (accessKey) {
@@ -303,7 +298,7 @@ const convertActions = (actions, accountId, receiverId) =>
                 } = accessKey.permission.functionCall;
                 action.permission = {
                     receiver_id,
-                    allowance: (allowance && allowance.toString()) || undefined,
+                    allowance: allowance?.toString() || undefined,
                     method_names,
                 };
             }

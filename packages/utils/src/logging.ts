@@ -24,9 +24,8 @@ export function printTxOutcomeLogsAndFailures({
                         ? parseRpcError(it.outcome.status.Failure)
                         : null,
             });
-        } else {
-            return acc;
         }
+        return acc;
     }, []);
 
     for (const result of flatLogs) {

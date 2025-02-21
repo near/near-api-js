@@ -1,9 +1,9 @@
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { functionCall, getSignerFromKeystore, getTestnetRpcProvider, view } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import { formatNearAmount, parseNearAmount } from '@near-js/utils';
 import chalk from 'chalk';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
 
 // On mainnet it's wrap.near, by the way
 const WRAP_NEAR_CONTRACT_ID = 'wrap.testnet';

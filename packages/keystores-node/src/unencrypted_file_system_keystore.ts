@@ -1,8 +1,8 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { promisify as _promisify } from 'node:util';
 import { KeyPair } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
-import fs from 'fs';
-import path from 'path';
-import { promisify as _promisify } from 'util';
 
 /* remove for versions not referenced by near-api-js */
 const promisify = (fn: any) => {

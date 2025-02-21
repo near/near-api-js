@@ -1,9 +1,9 @@
+import * as fs from 'node:fs/promises';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { deployContract, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
-import * as fs from 'node:fs/promises';
 
 const WASM_PATH = join(__dirname, '/wasm-files/status_message.wasm');
 

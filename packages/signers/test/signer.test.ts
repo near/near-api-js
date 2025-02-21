@@ -1,6 +1,6 @@
+import { TextEncoder } from 'node:util';
 import { expect, test } from '@jest/globals';
 import { InMemoryKeyStore } from '@near-js/keystores';
-import { TextEncoder } from 'util';
 
 import { InMemorySigner } from '../src';
 

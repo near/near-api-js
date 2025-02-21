@@ -1,14 +1,14 @@
-import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
-import { LocalViewExecution } from './local-view-execution';
-import validator from 'is-my-json-valid';
+import { Logger, getTransactionLastResult } from '@near-js/utils';
 import depd from 'depd';
+import validator from 'is-my-json-valid';
 import { type AbiFunction, AbiFunctionKind, type AbiRoot, AbiSerializationType } from 'near-abi';
+import { LocalViewExecution } from './local-view-execution';
 
 import { Account } from './account';
-import { UnsupportedSerializationError, UnknownArgumentError, ArgumentSchemaError, ConflictingOptions } from './errors';
-import type { IntoConnection } from './interface';
 import type { Connection } from './connection';
+import { ArgumentSchemaError, ConflictingOptions, UnknownArgumentError, UnsupportedSerializationError } from './errors';
+import type { IntoConnection } from './interface';
 import { viewFunction } from './utils';
 
 // Makes `function.name` return given name
@@ -194,7 +194,7 @@ export class Contract {
                             });
                         } catch (error) {
                             Logger.warn(`Local view execution failed with: "${error.message}"`);
-                            Logger.warn(`Fallback to normal RPC call`);
+                            Logger.warn('Fallback to normal RPC call');
                         }
                     }
 
@@ -225,7 +225,7 @@ export class Contract {
                         throw new PositionalArgsError();
                     }
 
-                    if (args.length > 1 || !(args[0] && args[0].args)) {
+                    if (args.length > 1 || !args[0]?.args) {
                         const deprecate = depd('contract.methodName(args, gas, amount)');
                         deprecate(
                             'use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead',
@@ -260,7 +260,7 @@ export class Contract {
 
         const account = this.account || signerAccount;
 
-        if (!account) throw new Error(`signerAccount must be specified`);
+        if (!account) throw new Error('signerAccount must be specified');
 
         const rawResult = await account.functionCall({
             contractId: this.contractId,
@@ -284,7 +284,7 @@ function validateBNLike(argMap: { [name: string]: any }) {
     const bnLike = 'number, decimal string or BigInt';
     for (const argName of Object.keys(argMap)) {
         const argValue = argMap[argName];
-        if (argValue && typeof argValue !== 'bigint' && isNaN(argValue)) {
+        if (argValue && typeof argValue !== 'bigint' && Number.isNaN(argValue)) {
             throw new ArgumentTypeError(argName, bnLike, argValue);
         }
     }

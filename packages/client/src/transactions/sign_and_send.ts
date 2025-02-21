@@ -2,10 +2,10 @@ import { Signature, SignedTransaction } from '@near-js/transactions';
 import { getTransactionLastResult } from '@near-js/utils';
 import { sha256 } from '@noble/hashes/sha256';
 
-import type { SignTransactionParams, SignAndSendTransactionParams } from '../interfaces';
-import { getNonce } from '../view';
 import type { BlockReference } from '@near-js/types';
 import type { SerializedReturnValue } from '@near-js/types/lib/esm/provider/response';
+import type { SignAndSendTransactionParams, SignTransactionParams } from '../interfaces';
+import { getNonce } from '../view';
 
 const DEFAULT_FINALITY: BlockReference = { finality: 'final' };
 

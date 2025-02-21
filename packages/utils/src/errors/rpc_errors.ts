@@ -69,7 +69,6 @@ function walkSubtype(errorObj, schema, result, typeName) {
             type = schema[errorName];
             errorTypeName = errorName;
         } else {
-            continue;
         }
     }
     if (error && type) {
@@ -77,11 +76,10 @@ function walkSubtype(errorObj, schema, result, typeName) {
             result[prop] = error[prop];
         }
         return walkSubtype(error, schema, result, errorTypeName);
-    } else {
-        // TODO: is this the right thing to do?
-        result.kind = errorObj;
-        return typeName;
     }
+    // TODO: is this the right thing to do?
+    result.kind = errorObj;
+    return typeName;
 }
 
 export function getErrorTypeFromErrorMessage(errorMessage, errorType) {

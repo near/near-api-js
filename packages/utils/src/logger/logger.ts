@@ -21,35 +21,35 @@ export class Logger {
     public static error(message: any, stack?: string): void;
     public static error(message: any, ...optionalParams: [string, ...any[]]): void;
     public static error(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.error(message, ...optionalParams);
+        Logger.instanceRef?.error(message, ...optionalParams);
     }
 
     /**
      * Write a 'log' level log.
      */
     public static log(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.log(message, ...optionalParams);
+        Logger.instanceRef?.log(message, ...optionalParams);
     }
 
     /**
      * Write a 'warn' level log.
      */
     public static warn(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.warn(message, ...optionalParams);
+        Logger.instanceRef?.warn(message, ...optionalParams);
     }
 
     /**
      * Write a 'debug' level log.
      */
     public static debug(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.debug?.(message, ...optionalParams);
+        Logger.instanceRef?.debug?.(message, ...optionalParams);
     }
 
     /**
      * Write a 'verbose' level log.
      */
     public static verbose(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.verbose?.(message, ...optionalParams);
+        Logger.instanceRef?.verbose?.(message, ...optionalParams);
     }
 
     /**
@@ -58,6 +58,6 @@ export class Logger {
     public static fatal(message: any, stack?: string): void;
     public static fatal(message: any, ...optionalParams: [string, ...any[]]): void;
     public static fatal(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.fatal?.(message, ...optionalParams);
+        Logger.instanceRef?.fatal?.(message, ...optionalParams);
     }
 }

@@ -12,8 +12,8 @@ import type {
 
 import type {
     AccountState,
-    FunctionCallAccessKey,
     FullAccessKey,
+    FunctionCallAccessKey,
     RpcProviderDependency,
     RpcProviderQueryParams,
     ViewAccessKeyParams,
@@ -107,7 +107,7 @@ export async function view<T extends SerializedReturnValue>({
         return JSON.parse(stringResult);
     } catch {
         const numeric = +stringResult;
-        if (isNaN(numeric)) {
+        if (Number.isNaN(numeric)) {
             return stringResult as T;
         }
 

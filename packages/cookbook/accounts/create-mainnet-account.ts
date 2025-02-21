@@ -1,3 +1,5 @@
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import {
     createTopLevelAccount,
     generateRandomKeyPair,
@@ -6,8 +8,6 @@ import {
 } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
 
 export default async function createMainnetAccountCookbook(accountId: string, newAccountId?: string) {
     if (!accountId) {

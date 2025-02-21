@@ -1,24 +1,24 @@
+import { Buffer } from 'node:buffer';
 import base64 from '@hexagon/base64';
+import { KeyPair } from '@near-js/crypto';
+import type { KeyPairString } from '@near-js/crypto';
+import { baseEncode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import { sha256 } from '@noble/hashes/sha256';
-import { Buffer } from 'buffer';
 import asn1 from 'asn1-parser';
-import { KeyPair } from '@near-js/crypto';
-import { baseEncode } from '@near-js/utils';
-import {
-    validateUsername,
-    preformatMakeCredReq,
-    get64BytePublicKeyFromPEM,
-    preformatGetAssertReq,
-    publicKeyCredentialToJSON,
-    recoverPublicKey,
-    uint8ArrayToBigInt,
-    sanitizeCreateKeyResponse,
-    sanitizeGetKeyResponse,
-} from './utils';
 import { Fido2 } from './fido2';
 import type { AssertionResponse } from './index.d';
-import type { KeyPairString } from '@near-js/crypto';
+import {
+    get64BytePublicKeyFromPEM,
+    preformatGetAssertReq,
+    preformatMakeCredReq,
+    publicKeyCredentialToJSON,
+    recoverPublicKey,
+    sanitizeCreateKeyResponse,
+    sanitizeGetKeyResponse,
+    uint8ArrayToBigInt,
+    validateUsername,
+} from './utils';
 
 const CHALLENGE_TIMEOUT_MS = 90 * 1000;
 const RP_NAME = 'NEAR_API_JS_WEBAUTHN';
@@ -167,7 +167,7 @@ export const isDeviceSupported = async (): Promise<boolean> => {
     try {
         await createKey('test-device');
         return true;
-    } catch (e) {
+    } catch (_e) {
         return false;
     }
 };

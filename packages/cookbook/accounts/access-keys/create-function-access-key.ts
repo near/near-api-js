@@ -1,3 +1,5 @@
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import {
     addFunctionCallAccessKey,
     generateRandomKeyPair,
@@ -6,8 +8,6 @@ import {
 } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
 
 const CONTRACT_NAME = 'example-account.testnet';
 const METHOD_NAMES = ['example_method'];

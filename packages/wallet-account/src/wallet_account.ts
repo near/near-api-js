@@ -9,9 +9,9 @@ import { Account, type Connection, type SignAndSendTransactionOptions } from '@n
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import type { KeyStore } from '@near-js/keystores';
 import type { InMemorySigner } from '@near-js/signers';
+import { type Action, SCHEMA, type Transaction, createTransaction } from '@near-js/transactions';
 import type { FinalExecutionOutcome } from '@near-js/types';
 import { baseDecode } from '@near-js/utils';
-import { type Transaction, type Action, SCHEMA, createTransaction } from '@near-js/transactions';
 import { serialize } from 'borsh';
 
 import type { Near } from './near';
@@ -397,7 +397,7 @@ export class ConnectedWalletAccount extends Account {
             callbackUrl: walletCallbackUrl,
         });
 
-        return new Promise((resolve, reject) => {
+        return new Promise((_resolve, reject) => {
             setTimeout(() => {
                 reject(new Error('Failed to redirect to sign transaction'));
             }, 1000);

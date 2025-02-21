@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('node:fs').promises;
 
 const nearApi = require('../src/index');
 
@@ -99,7 +99,8 @@ function waitFor(fn) {
             if (count > 0) {
                 await sleep(500);
                 return _waitFor(count - 1);
-            } else throw e;
+            }
+            throw e;
         }
     };
 

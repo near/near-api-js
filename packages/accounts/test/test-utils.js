@@ -1,10 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { KeyPair, KeyType } from '@near-js/crypto';
 import { InMemoryKeyStore } from '@near-js/keystores';
 import { ConsoleLogger, Logger } from '@near-js/utils';
-import fs from 'fs';
-import path from 'path';
 
-import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../src';
+import { Account, AccountMultisig, Connection, Contract, LocalAccountCreator } from '../src';
 import Config from './config';
 
 Logger.overrideLogger(new ConsoleLogger(['error', 'fatal']));
@@ -87,7 +87,7 @@ export function generateUniqueString(prefix) {
     let result = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
     const add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
     for (let i = add_symbols; i > 0; --i) result += '0';
-    return result + '.test.near';
+    return `${result}.test.near`;
 }
 
 export async function createAccount({ accountCreator, connection }, keyType = KeyType.ED25519) {
@@ -156,7 +156,8 @@ export function waitFor(fn) {
             if (count > 0) {
                 await sleep(500);
                 return _waitFor(count - 1);
-            } else throw e;
+            }
+            throw e;
         }
     };
 

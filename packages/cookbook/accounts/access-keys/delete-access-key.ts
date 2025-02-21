@@ -1,9 +1,9 @@
-import { deleteAccessKey, getSignerFromKeystore, getTestnetRpcProvider, parseKeyPair } from '@near-js/client';
-import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
-import type { KeyPairString } from '@near-js/crypto';
-import chalk from 'chalk';
-import { join } from 'node:path';
 import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { deleteAccessKey, getSignerFromKeystore, getTestnetRpcProvider, parseKeyPair } from '@near-js/client';
+import type { KeyPairString } from '@near-js/crypto';
+import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
+import chalk from 'chalk';
 
 export default async function deleteAccessKeyCookbook(accountId: string, publicKey: string) {
     if (!accountId) {

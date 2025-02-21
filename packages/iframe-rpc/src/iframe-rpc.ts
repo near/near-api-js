@@ -1,15 +1,15 @@
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 
 import { IFrameRPCError } from './iframe-rpc-error';
 import {
-    windowReceiver,
     type IMessageEvent,
     type IMessagePoster,
     type IMessageReceiver,
     type IRPCMethod,
     type IRPCResponse,
-    isRPCMessage,
     type RPCMessage,
+    isRPCMessage,
+    windowReceiver,
 } from './types';
 
 function responseObjToError(obj: { code: number; message: string }) {
@@ -189,7 +189,7 @@ export class IFrameRPC extends EventEmitter {
         let message: RPCMessage<any>;
         try {
             message = JSON.parse(ev.data);
-        } catch (e) {
+        } catch (_e) {
             return;
         }
 

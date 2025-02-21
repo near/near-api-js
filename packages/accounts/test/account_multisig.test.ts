@@ -1,9 +1,9 @@
+import * as fs from 'node:fs';
 import { beforeAll, describe, expect, jest, test } from '@jest/globals';
-import { parseNearAmount } from '@near-js/utils';
 import { KeyPair } from '@near-js/crypto';
 import { InMemorySigner } from '@near-js/signers';
 import { actionCreators } from '@near-js/transactions';
-import * as fs from 'fs';
+import { parseNearAmount } from '@near-js/utils';
 import semver from 'semver';
 
 import { Account2FA, MULTISIG_DEPOSIT, MULTISIG_GAS, MultisigStateStatus } from '../src';

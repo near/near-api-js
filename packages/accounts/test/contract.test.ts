@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { PositionalArgsError } from '@near-js/types';
 
-import { Contract, Account } from '../src';
+import { Account, Contract } from '../src';
 import { deployContractGuestBook, generateUniqueString, setUpTestConnection } from './test-utils';
 
 const account = Object.setPrototypeOf(
@@ -189,7 +189,7 @@ describe('local view execution', () => {
 
         try {
             await _contract.get_msg({}, { blockQuery });
-        } catch (error) {
+        } catch (_error) {
             expect(_contract.account.viewFunction).toHaveBeenCalledWith({
                 contractId: _contract.contractId,
                 methodName: 'get_msg',

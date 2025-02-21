@@ -1,5 +1,5 @@
-const https = require('https');
-const fs = require('fs');
+const https = require('node:https');
+const fs = require('node:fs');
 
 const ERROR_SCHEMA_URL =
     'https://raw.githubusercontent.com/near/nearcore/master/chain/jsonrpc/res/rpc_errors_schema.json';
@@ -18,5 +18,5 @@ https
         });
     })
     .on('error', (err) => {
-        console.log('Unable to fetch schema file: ' + err.message);
+        console.log(`Unable to fetch schema file: ${err.message}`);
     });

@@ -1,16 +1,16 @@
+import * as fs from 'node:fs';
 import { afterAll, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { KeyType } from '@near-js/crypto';
-import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { actionCreators } from '@near-js/transactions';
 import { type BlockResult, TypedError } from '@near-js/types';
-import * as fs from 'fs';
+import { Logger, getTransactionLastResult } from '@near-js/utils';
 
 import { Account, Contract } from '../src';
 import {
+    HELLO_WASM_BALANCE,
+    HELLO_WASM_PATH,
     createAccount,
     generateUniqueString,
-    HELLO_WASM_PATH,
-    HELLO_WASM_BALANCE,
     networkId,
     setUpTestConnection,
 } from './test-utils';
@@ -502,9 +502,8 @@ describe('with deploy contract', () => {
                     throw CUSTOM_ERROR;
                 }
                 return Promise.resolve('10000');
-            } else {
-                return await account.viewFunction({ methodName, ...args });
             }
+            return await account.viewFunction({ methodName, ...args });
         };
         account.connection.provider.block = async () => {
             return Promise.resolve({
@@ -557,9 +556,8 @@ describe('with deploy contract', () => {
                     throw CUSTOM_ERROR;
                 }
                 return Promise.resolve('10000');
-            } else {
-                return await account.viewFunction({ methodName, ...args });
             }
+            return await account.viewFunction({ methodName, ...args });
         };
         account.connection.provider.block = async () => {
             return Promise.resolve({

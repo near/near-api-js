@@ -1,5 +1,5 @@
 import type { PublicKey } from '@near-js/crypto';
-import { deserialize, serialize, type Schema } from 'borsh';
+import { type Schema, deserialize, serialize } from 'borsh';
 
 import type { Action, SignedDelegate } from './actions';
 import type { DelegateAction } from './delegate';
