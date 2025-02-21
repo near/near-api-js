@@ -41,7 +41,10 @@ export class Storage {
         return this.cache.get(blockId);
     }
 
-    public save(blockHash: BlockHash, { blockHeight, blockTimestamp, contractCode, contractState }: StorageData) {
+    public save(
+        blockHash: BlockHash,
+        { blockHeight, blockTimestamp, contractCode, contractState }: StorageData,
+    ) {
         this.blockHeights.set(blockHash, blockHeight);
         this.cache.set(blockHeight, {
             blockHeight,

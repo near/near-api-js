@@ -114,11 +114,17 @@ export class PublicKey extends Enum {
         }
         const decodedPublicKey = baseDecode(publicKey);
         if (!keyType) {
-            keyType = decodedPublicKey.length === KeySize.SECP256k1_PUBLIC_KEY ? KeyType.SECP256K1 : KeyType.ED25519;
+            keyType =
+                decodedPublicKey.length === KeySize.SECP256k1_PUBLIC_KEY
+                    ? KeyType.SECP256K1
+                    : KeyType.ED25519;
         }
-        const keySize = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY;
+        const keySize =
+            keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY;
         if (decodedPublicKey.length !== keySize) {
-            throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${keySize}`);
+            throw new Error(
+                `Invalid public key size (${decodedPublicKey.length}), must be ${keySize}`,
+            );
         }
         return new PublicKey({ keyType, data: decodedPublicKey });
     }
@@ -145,7 +151,11 @@ export class PublicKey extends Enum {
             case KeyType.ED25519:
                 return ed25519.verify(signature, message, data);
             case KeyType.SECP256K1:
-                return secp256k1.ecdsaVerify(signature.subarray(0, 64), message, new Uint8Array([0x04, ...data]));
+                return secp256k1.ecdsaVerify(
+                    signature.subarray(0, 64),
+                    message,
+                    new Uint8Array([0x04, ...data]),
+                );
             default:
                 throw new Error(`Unknown key type: ${keyType}`);
         }

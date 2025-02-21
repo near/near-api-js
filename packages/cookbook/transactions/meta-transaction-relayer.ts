@@ -1,6 +1,10 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { SignedTransactionComposer, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
+import {
+    SignedTransactionComposer,
+    getSignerFromKeystore,
+    getTestnetRpcProvider,
+} from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import { encodeSignedDelegate } from '@near-js/transactions';
 import chalk from 'chalk';
@@ -17,7 +21,9 @@ export default async function sendMetaTransactionViaRelayer(
     relayerUrl: string,
 ) {
     if (!signerAccountId || !receiverAccountId) {
-        console.log(chalk`{red pnpm metaTransaction -- SENDER_ACCOUNT_ID RECEIVER_ACCOUNT_ID RELAYER_URL}`);
+        console.log(
+            chalk`{red pnpm metaTransaction -- SENDER_ACCOUNT_ID RECEIVER_ACCOUNT_ID RELAYER_URL}`,
+        );
         return;
     }
 

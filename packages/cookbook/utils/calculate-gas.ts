@@ -1,13 +1,23 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { MAX_GAS, formatNearAmount, functionCall, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
+import {
+    MAX_GAS,
+    formatNearAmount,
+    functionCall,
+    getSignerFromKeystore,
+    getTestnetRpcProvider,
+} from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
 
 const CONTRACT_ID = 'guest-book.testnet';
 const METHOD_NAME = 'addMessage';
 
-export default async function calculateGas(accountId: string, method = METHOD_NAME, contract = CONTRACT_ID) {
+export default async function calculateGas(
+    accountId: string,
+    method = METHOD_NAME,
+    contract = CONTRACT_ID,
+) {
     if (!accountId) {
         console.log(chalk`{red pnpm calculateGas -- ACCOUNT_ID}`);
         return;
@@ -53,16 +63,22 @@ export default async function calculateGas(accountId: string, method = METHOD_NA
         },
     );
 
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(
         chalk`{bold.green RESULTS} {white for: [ {bold.blue ${method}} ] called on contract: [ {bold.blue ${contract}} ]}`,
     );
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(
         chalk`{bold.white Gas Burnt}     {white |}  {bold.yellow ${formatNearAmount(totalGasBurned.toString())}}`,
     );
     console.log(
         chalk`{bold.white Tokens Burnt}  {white |}  {bold.yellow ${formatNearAmount(totalTokensBurned.toString())}}`,
     );
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

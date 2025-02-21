@@ -62,7 +62,9 @@ export const createKey = async (username: string): Promise<KeyPair> => {
     setBufferIfUndefined();
     return navigator.credentials.create({ publicKey }).then(async (res) => {
         if (!res) {
-            throw new PasskeyProcessCanceled('Failed to retrieve response from navigator.credentials.create');
+            throw new PasskeyProcessCanceled(
+                'Failed to retrieve response from navigator.credentials.create',
+            );
         }
 
         const sanitizedResponse = sanitizeCreateKeyResponse(res);
@@ -87,7 +89,9 @@ export const createKey = async (username: string): Promise<KeyPair> => {
         const secretKey = sha256.create().update(Buffer.from(publicKeyBytes)).digest();
         const pubKey = ed25519.getPublicKey(secretKey);
         return KeyPair.fromString(
-            baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]))) as KeyPairString,
+            baseEncode(
+                new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)])),
+            ) as KeyPairString,
         );
     });
 };
@@ -109,7 +113,8 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
     setBufferIfUndefined();
     return navigator.credentials.get({ publicKey }).then(async (response) => {
         const sanitizedResponse = sanitizeGetKeyResponse(response);
-        const getAssertionResponse: AssertionResponse = publicKeyCredentialToJSON(sanitizedResponse);
+        const getAssertionResponse: AssertionResponse =
+            publicKeyCredentialToJSON(sanitizedResponse);
         const signature = base64.toArrayBuffer(getAssertionResponse.response.signature, true);
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -119,11 +124,17 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
         const clientDataJSONHash = sha256
             .create()
             .update(
-                Buffer.from(new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.clientDataJSON, true))),
+                Buffer.from(
+                    new Uint8Array(
+                        base64.toArrayBuffer(getAssertionResponse.response.clientDataJSON, true),
+                    ),
+                ),
             )
             .digest();
         const authenticatorDataJSONHash = Buffer.from(
-            new Uint8Array(base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true)),
+            new Uint8Array(
+                base64.toArrayBuffer(getAssertionResponse.response.authenticatorData, true),
+            ),
         );
         const authenticatorAndClientDataJSONHash = Buffer.concat([
             Buffer.from(authenticatorDataJSONHash),
@@ -145,12 +156,16 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
         const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
         const firstKeyPair = KeyPair.fromString(
             baseEncode(
-                new Uint8Array(Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)])),
+                new Uint8Array(
+                    Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)]),
+                ),
             ) as KeyPairString,
         );
         const secondKeyPair = KeyPair.fromString(
             baseEncode(
-                new Uint8Array(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)])),
+                new Uint8Array(
+                    Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)]),
+                ),
             ) as KeyPairString,
         );
         return [firstKeyPair, secondKeyPair];

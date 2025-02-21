@@ -76,7 +76,9 @@ export function callViewMethod({ account, method, args = {}, blockReference, dep
         request: RequestType.CallFunction,
         account,
         args: {
-            args_base64: Buffer.isBuffer(args) ? args : Buffer.from(JSON.stringify(args)).toString('base64'),
+            args_base64: Buffer.isBuffer(args)
+                ? args
+                : Buffer.from(JSON.stringify(args)).toString('base64'),
             method_name: method,
         },
         blockReference,
@@ -122,7 +124,12 @@ export async function view<T extends SerializedReturnValue>({
  * @param blockReference block ID/finality
  * @param deps readonly RPC dependencies
  */
-export async function getAccessKey({ account, publicKey, blockReference, deps }: ViewAccessKeyParams) {
+export async function getAccessKey({
+    account,
+    publicKey,
+    blockReference,
+    deps,
+}: ViewAccessKeyParams) {
     const { nonce, permission } = await query<AccessKeyView>({
         request: RequestType.ViewAccessKey,
         account,
@@ -209,7 +216,10 @@ export async function getAccessKeys({ account, blockReference, deps }: ViewAccou
 
             return accessKeys;
         },
-        { fullAccessKeys: [] as FullAccessKey[], functionCallAccessKeys: [] as FunctionCallAccessKey[] },
+        {
+            fullAccessKeys: [] as FullAccessKey[],
+            functionCallAccessKeys: [] as FunctionCallAccessKey[],
+        },
     );
 }
 
@@ -238,7 +248,12 @@ export async function getContractCode({ account, blockReference, deps }: ViewAcc
  * @param deps readonly RPC dependencies
  * @returns object key-value pairs
  */
-export async function getContractState({ account, prefix, blockReference, deps }: ViewContractStateParams) {
+export async function getContractState({
+    account,
+    prefix,
+    blockReference,
+    deps,
+}: ViewContractStateParams) {
     const { values } = await query<ViewStateResult>({
         request: RequestType.ViewState,
         account,
@@ -283,7 +298,12 @@ export async function getNonce({ account, publicKey, blockReference, deps }: Vie
  * @param blockReference block ID/finality
  * @param deps readonly RPC dependencies
  */
-export async function getStakedBalance({ account, validator, blockReference, deps }: ViewValidatorStakeParams) {
+export async function getStakedBalance({
+    account,
+    validator,
+    blockReference,
+    deps,
+}: ViewValidatorStakeParams) {
     const staked = await view<StakedAccount>({
         account: validator,
         blockReference,

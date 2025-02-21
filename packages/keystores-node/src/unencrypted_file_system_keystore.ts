@@ -8,7 +8,9 @@ import { KeyStore } from '@near-js/keystores';
 const promisify = (fn: any) => {
     if (!fn) {
         return () => {
-            throw new Error('Trying to use unimplemented function. `fs` module not available in web build?');
+            throw new Error(
+                'Trying to use unimplemented function. `fs` module not available in web build?',
+            );
         };
     }
     return _promisify(fn);
@@ -105,7 +107,9 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
             public_key: keyPair.getPublicKey().toString(),
             private_key: keyPair.toString(),
         };
-        await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content), { mode: 0o600 });
+        await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content), {
+            mode: 0o600,
+        });
     }
 
     /**
@@ -172,7 +176,9 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
             return [];
         }
         const files: string[] = await readdir(`${this.keyDir}/${networkId}`);
-        return files.filter((file) => file.endsWith('.json')).map((file) => file.replace(/.json$/, ''));
+        return files
+            .filter((file) => file.endsWith('.json'))
+            .map((file) => file.replace(/.json$/, ''));
     }
 
     /** @hidden */

@@ -1,7 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { SignedTransactionComposer, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
+import {
+    SignedTransactionComposer,
+    getSignerFromKeystore,
+    getTestnetRpcProvider,
+} from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
 
@@ -16,7 +20,9 @@ export default async function batchTransactions(
     wasmPath: string = WASM_PATH,
 ) {
     if (!accountId || !whitelistAccountId || !wasmPath) {
-        console.log(chalk`{red pnpm batchTransactions -- [ACCOUNT_ID] [WHITELIST_ACCOUNT_ID] [WASM_PATH]}`);
+        console.log(
+            chalk`{red pnpm batchTransactions -- [ACCOUNT_ID] [WHITELIST_ACCOUNT_ID] [WASM_PATH]}`,
+        );
         return;
     }
 
@@ -37,14 +43,26 @@ export default async function batchTransactions(
         .deployContract(await readFile(wasmPath))
         .functionCall(
             'new',
-            Buffer.from(JSON.stringify({ staking_pool_whitelist_account_id: WHITELIST_ACCOUNT_ID })),
+            Buffer.from(
+                JSON.stringify({ staking_pool_whitelist_account_id: WHITELIST_ACCOUNT_ID }),
+            ),
             10000000000000n,
         )
         .signAndSend();
 
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
-    console.log(chalk`{bold.green RESULTS} {white Deployed contract at ${wasmPath} to ${accountId}}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
-    console.log(chalk`{bold.white Call result} {white |}  {bold.yellow ${JSON.stringify(result, null, 2)}}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
+    console.log(
+        chalk`{bold.green RESULTS} {white Deployed contract at ${wasmPath} to ${accountId}}`,
+    );
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
+    console.log(
+        chalk`{bold.white Call result} {white |}  {bold.yellow ${JSON.stringify(result, null, 2)}}`,
+    );
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

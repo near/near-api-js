@@ -343,7 +343,9 @@ test('json rpc get next light client block', async () => {
     // @ts-expect-error test input
     const prevEpochHeight = height - protocolConfig.epoch_length;
     const prevBlock = await provider.block({ blockId: prevEpochHeight });
-    const nextBlock = await provider.nextLightClientBlock({ last_block_hash: prevBlock.header.hash });
+    const nextBlock = await provider.nextLightClientBlock({
+        last_block_hash: prevBlock.header.hash,
+    });
     expect('inner_lite' in nextBlock).toBeTruthy();
     // Verify that requesting from previous epoch includes the set of new block producers.
     expect('next_bps' in nextBlock).toBeTruthy();

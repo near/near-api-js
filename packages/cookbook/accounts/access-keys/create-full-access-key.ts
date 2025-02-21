@@ -1,6 +1,11 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { addFullAccessKey, generateRandomKeyPair, getSignerFromKeystore, getTestnetRpcProvider } from '@near-js/client';
+import {
+    addFullAccessKey,
+    generateRandomKeyPair,
+    getSignerFromKeystore,
+    getTestnetRpcProvider,
+} from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
 
@@ -34,10 +39,18 @@ export default async function createFullAccessKey(accountId: string) {
     // above with the new FAK in the key store
     await keystore.setKey('testnet', accountId, keyPair);
 
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(chalk`{bold.green RESULTS} {white Added new full access key and set in keystore}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(chalk`{bold.white Previous Key} {white |} {bold.yellow ${previousKey.toString()}}`);
-    console.log(chalk`{bold.white New Key}      {white |} {bold.yellow ${keyPair.getPublicKey().toString()}}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{bold.white New Key}      {white |} {bold.yellow ${keyPair.getPublicKey().toString()}}`,
+    );
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

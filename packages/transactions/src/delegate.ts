@@ -3,8 +3,16 @@ import type { PublicKey } from '@near-js/crypto';
 import { actionCreators } from './action_creators';
 import type { Action } from './actions';
 
-const { addKey, createAccount, deleteAccount, deleteKey, deployContract, functionCall, stake, transfer } =
-    actionCreators;
+const {
+    addKey,
+    createAccount,
+    deleteAccount,
+    deleteKey,
+    deployContract,
+    functionCall,
+    stake,
+    transfer,
+} = actionCreators;
 
 export class DelegateAction {
     senderId: string;

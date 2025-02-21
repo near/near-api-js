@@ -30,4 +30,5 @@ export interface RpcProviderDependency extends Dependent<RpcProviderDependent> {
 
 export interface SignerDependency extends Dependent<SignerDependent> {}
 
-export interface SignAndSendTransactionDependency extends Dependent<RpcProviderDependent & SignerDependent> {}
+export interface SignAndSendTransactionDependency
+    extends Dependent<RpcProviderDependent & SignerDependent> {}

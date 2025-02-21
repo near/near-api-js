@@ -7,4 +7,15 @@ import * as serialize from './serialize';
 import { KeyPair, KeyPairEd25519, KeyPairString, PublicKey } from './key_pair';
 import { Logger } from './logger';
 
-export { key_pair, serialize, enums, format, PublicKey, KeyPair, KeyPairString, KeyPairEd25519, rpc_errors, Logger };
+export {
+    key_pair,
+    serialize,
+    enums,
+    format,
+    PublicKey,
+    KeyPair,
+    KeyPairString,
+    KeyPairEd25519,
+    rpc_errors,
+    Logger,
+};

@@ -27,7 +27,11 @@ async function setUpTestConnection() {
         const secretKey =
             config.secretKey ||
             'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
-        await keyStore.setKey(networkId, config.masterAccount, nearApi.utils.KeyPair.fromString(secretKey));
+        await keyStore.setKey(
+            networkId,
+            config.masterAccount,
+            nearApi.utils.KeyPair.fromString(secretKey),
+        );
     }
     return nearApi.connect(config);
 }
@@ -60,7 +64,11 @@ async function createAccountMultisig(near, options) {
         // const account = new nearApi.Account(near.connection, newAccountName);
         // await account.addKey(publicKey, account.accountId, nearApi.multisig.MULTISIG_CONFIRM_METHODS, '0')
         // create multisig account instance and deploy contract
-        const accountMultisig = new nearApi.multisig.AccountMultisig(near.connection, newAccountName, options);
+        const accountMultisig = new nearApi.multisig.AccountMultisig(
+            near.connection,
+            newAccountName,
+            options,
+        );
         accountMultisig.useConfirmKey = async () => {
             await near.connection.signer.setKey(networkId, options.masterAccount, confirmKeyPair);
         };
@@ -71,7 +79,9 @@ async function createAccountMultisig(near, options) {
                     return { publicKey };
             }
         };
-        await accountMultisig.deployMultisig(new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]));
+        await accountMultisig.deployMultisig(
+            new Uint8Array([...(await fs.readFile(MULTISIG_WASM_PATH))]),
+        );
         return accountMultisig;
     } catch (e) {
         console.log(e);
@@ -81,7 +91,12 @@ async function createAccountMultisig(near, options) {
 async function deployContract(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = [...(await fs.readFile(HELLO_WASM_PATH))];
-    await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
+    await workingAccount.createAndDeployContract(
+        contractId,
+        newPublicKey,
+        data,
+        HELLO_WASM_BALANCE,
+    );
     return new nearApi.Contract(workingAccount, contractId, HELLO_WASM_METHODS);
 }
 

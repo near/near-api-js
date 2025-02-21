@@ -39,7 +39,11 @@ test('create account and then view account returns the created account', async (
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
     const { amount } = await workingAccount.state();
     const newAmount = BigInt(amount) / 10n;
-    await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
+    await nearjs.accountCreator.masterAccount.createAccount(
+        newAccountName,
+        newAccountPublicKey,
+        newAmount,
+    );
     const newAccount = new Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
     expect(state.amount).toEqual(newAmount.toString());
@@ -51,7 +55,11 @@ test('create account with a secp256k1 key and then view account returns the crea
         'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28';
     const { amount } = await workingAccount.state();
     const newAmount = BigInt(amount) / 10n;
-    await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
+    await nearjs.accountCreator.masterAccount.createAccount(
+        newAccountName,
+        newAccountPublicKey,
+        newAmount,
+    );
     const newAccount = new Account(nearjs.connection, newAccountName);
     const state = await newAccount.state();
     expect(state.amount).toEqual(newAmount.toString());
@@ -143,7 +151,11 @@ describe('errors', () => {
 
     test('create existing account', async () => {
         await expect(
-            workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100),
+            workingAccount.createAccount(
+                workingAccount.accountId,
+                '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE',
+                100,
+            ),
         ).rejects.toThrow(/Can't create a new account .+, because it already exists/);
     });
 });
@@ -165,7 +177,13 @@ describe('with deploy contract', () => {
         // @ts-expect-error test input
         contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
-            changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract'],
+            changeMethods: [
+                'setValue',
+                'generateLogs',
+                'triggerAssert',
+                'testSetRemove',
+                'crossContract',
+            ],
         });
 
         const custom = {
@@ -196,7 +214,9 @@ describe('with deploy contract', () => {
         expect(logs[1]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ${contractId}$`));
         expect(logs[2]).toMatch(/^Receipt: \w+$/);
         //   Log [test_contract1591459677449181]: log before planned panic
-        expect(logs[3]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before planned panic$`));
+        expect(logs[3]).toMatch(
+            new RegExp(`^\\s+Log \\[${contractId}\\]: log before planned panic$`),
+        );
         expect(logs[4]).toMatch(/^Receipt: \w+$/);
         expect(logs[5]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before assert$`));
         expect(logs[6]).toMatch(
@@ -388,7 +408,10 @@ describe('with deploy contract', () => {
         await contract.generateLogs();
         expect(logs.length).toEqual(3);
         expect(logs[0].substr(0, 8)).toEqual('Receipt:');
-        expect(logs.slice(1)).toEqual([`\tLog [${contractId}]: log1`, `\tLog [${contractId}]: log2`]);
+        expect(logs.slice(1)).toEqual([
+            `\tLog [${contractId}]: log1`,
+            `\tLog [${contractId}]: log2`,
+        ]);
     });
 
     test('can get logs from view call', async () => {
@@ -398,7 +421,9 @@ describe('with deploy contract', () => {
     });
 
     test('can get assert message from method result', async () => {
-        await expect(contract.triggerAssert()).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
+        await expect(contract.triggerAssert()).rejects.toThrow(
+            /Smart contract panicked: expected to fail.+/,
+        );
         expect(logs[1]).toEqual(`\tLog [${contractId}]: log before assert`);
         expect(logs[2]).toMatch(
             new RegExp(

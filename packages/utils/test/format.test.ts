@@ -24,9 +24,12 @@ test.each`
     ${'1000000100000000000000000000000'} | ${undefined} | ${'1,000,000.1'}
     ${'1000100000000000000000000000000'} | ${undefined} | ${'1,000,100'}
     ${'910000000000000000000000'}        | ${0}         | ${'1'}
-`('formatNearAmount($balance, $fracDigits) returns $expected', ({ balance, fracDigits, expected }) => {
-    expect(formatNearAmount(balance, fracDigits)).toEqual(expected);
-});
+`(
+    'formatNearAmount($balance, $fracDigits) returns $expected',
+    ({ balance, fracDigits, expected }) => {
+        expect(formatNearAmount(balance, fracDigits)).toEqual(expected);
+    },
+);
 
 test.each`
     amt                               | expected

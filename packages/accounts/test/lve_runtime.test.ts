@@ -1,6 +1,10 @@
 import { beforeAll, describe, expect, test } from '@jest/globals';
 import { Runtime } from '../src/local-view-execution/runtime';
-import { GUESTBOOK_CONTRACT_ID, GUESTBOOK_CONTRACT_STATE, loadGuestBookContractCode } from './test-utils';
+import {
+    GUESTBOOK_CONTRACT_ID,
+    GUESTBOOK_CONTRACT_STATE,
+    loadGuestBookContractCode,
+} from './test-utils';
 
 let contractCode;
 const blockHeight = 1;
@@ -56,7 +60,10 @@ describe('Local View Execution - Runtime', () => {
 
         const { result } = await runtime.execute(methodName);
 
-        expect(parse(result)).toEqual([parse(contractState[1].value), parse(contractState[2].value)]);
+        expect(parse(result)).toEqual([
+            parse(contractState[1].value),
+            parse(contractState[2].value),
+        ]);
     });
 
     test('executes get_messages(1, 1) function in WASM runtime', async () => {
@@ -78,7 +85,10 @@ describe('Local View Execution - Runtime', () => {
 
         const { result } = await runtime.execute(methodName);
 
-        expect(parse(result)).toEqual([parse(contractState[1].value), parse(contractState[2].value)]);
+        expect(parse(result)).toEqual([
+            parse(contractState[1].value),
+            parse(contractState[2].value),
+        ]);
     });
 
     test('throws UnknownContractMethodError on non-existing function from WASM runtime', async () => {

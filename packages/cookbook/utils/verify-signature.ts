@@ -5,7 +5,10 @@ import { baseDecode } from '@near-js/utils';
 const ACCOUNT_ID = 'gornt.testnet';
 const TX_HASH = '4tMHzHU5p9dXc4WqopReNZ2TMJxZyu913zK4Fn9nMRoB';
 
-export default async function verifySignature(accountId: string = ACCOUNT_ID, transactionHash: string = TX_HASH) {
+export default async function verifySignature(
+    accountId: string = ACCOUNT_ID,
+    transactionHash: string = TX_HASH,
+) {
     // initialize testnet RPC provider
     const rpcProvider = getTestnetRpcProvider();
 

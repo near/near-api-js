@@ -6,7 +6,14 @@ class PublicKeyCredentialMock {
     rawId: string;
     response: any;
 
-    constructor({ rawId, clientDataJSON, attestationObject, authenticatorData, signature, userHandle }) {
+    constructor({
+        rawId,
+        clientDataJSON,
+        attestationObject,
+        authenticatorData,
+        signature,
+        userHandle,
+    }) {
         this.rawId = rawId;
         this.response = {
             clientDataJSON,

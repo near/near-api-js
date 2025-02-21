@@ -1,15 +1,25 @@
 import { PublicKey } from '@near-js/crypto';
 import { actionCreators } from '@near-js/transactions';
-import { type FinalExecutionOutcome, type FunctionCallPermissionView, TypedError } from '@near-js/types';
+import {
+    type FinalExecutionOutcome,
+    type FunctionCallPermissionView,
+    TypedError,
+} from '@near-js/types';
 import { Logger } from '@near-js/utils';
 
 import type { SignAndSendTransactionOptions } from './account';
 import { AccountMultisig } from './account_multisig';
 import type { Connection } from './connection';
-import { MULTISIG_CHANGE_METHODS, MULTISIG_CONFIRM_METHODS, MULTISIG_DEPOSIT, MULTISIG_GAS } from './constants';
+import {
+    MULTISIG_CHANGE_METHODS,
+    MULTISIG_CONFIRM_METHODS,
+    MULTISIG_DEPOSIT,
+    MULTISIG_GAS,
+} from './constants';
 import { MultisigStateStatus } from './types';
 
-const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
+const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } =
+    actionCreators;
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
@@ -73,7 +83,10 @@ export class Account2FA extends AccountMultisig {
 
         const seedOrLedgerKey = (await this.getRecoveryMethods()).data
             // @ts-ignore
-            .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
+            .filter(
+                ({ kind, publicKey }) =>
+                    (kind === 'phrase' || kind === 'ledger') && publicKey !== null,
+            )
             .map((rm) => rm.publicKey);
 
         const fak2lak = (await this.getAccessKeys())
@@ -85,23 +98,36 @@ export class Account2FA extends AccountMultisig {
             .map(toPK);
 
         // @ts-ignore
-        const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+        const confirmOnlyKey = toPK(
+            (await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey,
+        );
 
         const newArgs = Buffer.from(JSON.stringify({ num_confirmations: 2 }));
 
         const actions = [
             ...fak2lak.map((pk) => deleteKey(pk)),
-            ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
-            addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
+            ...fak2lak.map((pk) =>
+                addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null)),
+            ),
+            addKey(
+                confirmOnlyKey,
+                functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null),
+            ),
             deployContract(contractBytes),
         ];
-        const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT));
+        const newFunctionCallActionBatch = actions.concat(
+            functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),
+        );
         Logger.log('deploying multisig contract for', accountId);
 
-        const { stateStatus: multisigStateStatus } = await this.checkMultisigCodeAndStateStatus(contractBytes);
+        const { stateStatus: multisigStateStatus } =
+            await this.checkMultisigCodeAndStateStatus(contractBytes);
         switch (multisigStateStatus) {
             case MultisigStateStatus.STATE_NOT_INITIALIZED:
-                return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
+                return await super.signAndSendTransactionWithAccount(
+                    accountId,
+                    newFunctionCallActionBatch,
+                );
             case MultisigStateStatus.VALID_STATE:
                 return await super.signAndSendTransactionWithAccount(accountId, actions);
             case MultisigStateStatus.INVALID_STATE:
@@ -140,7 +166,10 @@ export class Account2FA extends AccountMultisig {
         const accessKeyInfo = await this.findAccessKey(this.accountId, actions);
 
         if (accessKeyInfo?.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
-            throw new TypedError('No full access key found in keystore. Unable to bypass multisig', 'NoFAKFound');
+            throw new TypedError(
+                'No full access key found in keystore. Unable to bypass multisig',
+                'NoFAKFound',
+            );
         }
 
         return this.signAndSendTransactionWithAccount(this.accountId, actions);
@@ -152,7 +181,9 @@ export class Account2FA extends AccountMultisig {
      * @returns {Promise<Action[]>} - A promise that resolves to an array of cleanup actions.
      */
     async get2faDisableCleanupActions(cleanupContractBytes: Uint8Array) {
-        const currentAccountState: { key: Buffer; value: Buffer }[] = await this.viewState('').catch((error) => {
+        const currentAccountState: { key: Buffer; value: Buffer }[] = await this.viewState(
+            '',
+        ).catch((error) => {
             const cause = error.cause?.name;
             if (cause === 'NO_CONTRACT_CODE') {
                 return [];
@@ -165,7 +196,9 @@ export class Account2FA extends AccountMultisig {
                 : error;
         });
 
-        const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'));
+        const currentAccountStateKeys = currentAccountState.map(({ key }) =>
+            key.toString('base64'),
+        );
         return currentAccountState.length
             ? [
                   deployContract(cleanupContractBytes),
@@ -223,12 +256,14 @@ export class Account2FA extends AccountMultisig {
         let deleteAllRequestsError;
         await this.deleteAllRequests().catch((e) => (deleteAllRequestsError = e));
 
-        const cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch((e) => {
-            if (e.type === 'ContractHasExistingState') {
-                throw deleteAllRequestsError || e;
-            }
-            throw e;
-        });
+        const cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch(
+            (e) => {
+                if (e.type === 'ContractHasExistingState') {
+                    throw deleteAllRequestsError || e;
+                }
+                throw e;
+            },
+        );
 
         const actions = [
             ...cleanupActions,
@@ -278,7 +313,10 @@ export class Account2FA extends AccountMultisig {
             return result;
         } catch (e) {
             Logger.warn('Error validating security code:', e);
-            if (e.toString().includes('invalid 2fa code provided') || e.toString().includes('2fa code not valid')) {
+            if (
+                e.toString().includes('invalid 2fa code provided') ||
+                e.toString().includes('2fa code not valid')
+            ) {
                 return await this.promptAndVerify();
             }
 

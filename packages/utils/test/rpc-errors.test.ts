@@ -18,7 +18,9 @@ describe('rpc-errors', () => {
         expect(error.index).toBe(1);
         // @ts-expect-error test input
         expect(error.account_id).toBe('bob.near');
-        expect(formatError(error.type, error)).toBe("Can't create a new account bob.near, because it already exists");
+        expect(formatError(error.type, error)).toBe(
+            "Can't create a new account bob.near, because it already exists",
+        );
     });
 
     test('test ReceiverMismatch error', async () => {
@@ -159,7 +161,8 @@ describe('rpc-errors', () => {
     test('test getErrorTypeFromErrorMessage', () => {
         const err1 = 'account random.near does not exist while viewing';
         const err2 = "Account random2.testnet doesn't exist";
-        const err3 = 'access key ed25519:DvXowCpBHKdbD2qutgfhG6jvBMaXyUh7DxrDSjkLxMHp does not exist while viewing';
+        const err3 =
+            'access key ed25519:DvXowCpBHKdbD2qutgfhG6jvBMaXyUh7DxrDSjkLxMHp does not exist while viewing';
         const err4 =
             'wasm execution failed with error: CompilationError(CodeDoesNotExist { account_id: "random.testnet" })';
         const err5 =
@@ -167,7 +170,8 @@ describe('rpc-errors', () => {
         const err6 = 'wasm execution failed with error: MethodResolveError(MethodNotFound)';
         const err7 =
             'wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: "random.testnet" }))';
-        const err8 = 'wasm execution failed with error: FunctionCallError(MethodResolveError(MethodNotFound))';
+        const err8 =
+            'wasm execution failed with error: FunctionCallError(MethodResolveError(MethodNotFound))';
 
         // @ts-expect-error test input
         expect(getErrorTypeFromErrorMessage(err1)).toEqual('AccountDoesNotExist');
@@ -196,7 +200,9 @@ describe('rpc-errors', () => {
             },
         });
 
-        expect(error.message).toEqual('Sender test.near does not have enough balance 1 for operation costing 10');
+        expect(error.message).toEqual(
+            'Sender test.near does not have enough balance 1 for operation costing 10',
+        );
     });
 
     test('test TriesToStake message uses human readable values', () => {
@@ -209,6 +215,8 @@ describe('rpc-errors', () => {
             },
         });
 
-        expect(error.message).toEqual('Account test.near tried to stake 10, but has staked 1 and only has 9');
+        expect(error.message).toEqual(
+            'Account test.near tried to stake 10, but has staked 1 and only has 9',
+        );
     });
 });

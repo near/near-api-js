@@ -115,7 +115,10 @@ export class SignedDelegate {
     delegateAction: DelegateAction;
     signature: Signature;
 
-    constructor({ delegateAction, signature }: { delegateAction: DelegateAction; signature: Signature }) {
+    constructor({
+        delegateAction,
+        signature,
+    }: { delegateAction: DelegateAction; signature: Signature }) {
         this.delegateAction = delegateAction;
         this.signature = signature;
     }

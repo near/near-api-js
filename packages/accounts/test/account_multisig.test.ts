@@ -16,7 +16,10 @@ let startFromVersion;
 
 jest.setTimeout(50000);
 
-const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) => ({ publicKey, kind: 'phone' })) => {
+const getAccount2FA = async (
+    account,
+    keyMapping = ({ public_key: publicKey }) => ({ publicKey, kind: 'phone' }),
+) => {
     // modifiers to functions replaces contract helper (CH)
     const { accountId } = account;
     const keys = await account.getAccessKeys();
@@ -38,7 +41,14 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
             // 2nd confirmation signing with confirmKey from Account instance
             await account.signAndSendTransaction({
                 receiverId: accountId,
-                actions: [functionCall('confirm', { request_id: requestId }, MULTISIG_GAS, MULTISIG_DEPOSIT)],
+                actions: [
+                    functionCall(
+                        'confirm',
+                        { request_id: requestId },
+                        MULTISIG_GAS,
+                        MULTISIG_DEPOSIT,
+                    ),
+                ],
             });
             nearjs.connection.signer = originalSigner;
         },
@@ -78,14 +88,17 @@ describe('deployMultisig key rotations', () => {
             ({ public_key: publicKey }, i) => ({ publicKey, kind: kinds[i] }),
         );
         const currentKeys = await account2fa.getAccessKeys();
-        expect(currentKeys.find(({ public_key }) => keys[0].public_key === public_key).access_key.permission).toEqual(
-            'FullAccess',
-        );
-        expect(currentKeys.find(({ public_key }) => keys[1].public_key === public_key).access_key.permission).toEqual(
-            'FullAccess',
-        );
         expect(
-            currentKeys.find(({ public_key }) => keys[2].public_key === public_key).access_key.permission,
+            currentKeys.find(({ public_key }) => keys[0].public_key === public_key).access_key
+                .permission,
+        ).toEqual('FullAccess');
+        expect(
+            currentKeys.find(({ public_key }) => keys[1].public_key === public_key).access_key
+                .permission,
+        ).toEqual('FullAccess');
+        expect(
+            currentKeys.find(({ public_key }) => keys[2].public_key === public_key).access_key
+                .permission,
         ).not.toEqual('FullAccess');
     });
 });
@@ -96,18 +109,23 @@ describe('account2fa transactions', () => {
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
         const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, BigInt(parseNearAmount('0.25')));
+        await account.addKey(
+            appPublicKey.toString(),
+            appAccountId,
+            appMethodNames,
+            BigInt(parseNearAmount('0.25')),
+        );
         account = await getAccount2FA(account);
         const keys = await account.getAccessKeys();
         expect(
             // @ts-expect-error test input
-            keys.find(({ public_key }) => appPublicKey.toString() === public_key).access_key.permission.FunctionCall
-                .method_names,
+            keys.find(({ public_key }) => appPublicKey.toString() === public_key).access_key
+                .permission.FunctionCall.method_names,
         ).toEqual(appMethodNames);
         expect(
             // @ts-expect-error test input
-            keys.find(({ public_key }) => appPublicKey.toString() === public_key).access_key.permission.FunctionCall
-                .receiver_id,
+            keys.find(({ public_key }) => appPublicKey.toString() === public_key).access_key
+                .permission.FunctionCall.receiver_id,
         ).toEqual(appAccountId);
     });
 
@@ -117,17 +135,22 @@ describe('account2fa transactions', () => {
         const appPublicKey = KeyPair.fromRandom('ed25519').getPublicKey();
         const appAccountId = 'foobar';
         const appMethodNames = ['some_app_stuff', 'some_more_app_stuff'];
-        await account.addKey(appPublicKey.toString(), appAccountId, appMethodNames, BigInt(parseNearAmount('0.25')));
+        await account.addKey(
+            appPublicKey.toString(),
+            appAccountId,
+            appMethodNames,
+            BigInt(parseNearAmount('0.25')),
+        );
         const keys = await account.getAccessKeys();
         expect(
             // @ts-expect-error test input
-            keys.find(({ public_key }) => appPublicKey.toString() === public_key).access_key.permission.FunctionCall
-                .method_names,
+            keys.find(({ public_key }) => appPublicKey.toString() === public_key).access_key
+                .permission.FunctionCall.method_names,
         ).toEqual(appMethodNames);
         expect(
             // @ts-expect-error test input
-            keys.find(({ public_key }) => appPublicKey.toString() === public_key).access_key.permission.FunctionCall
-                .receiver_id,
+            keys.find(({ public_key }) => appPublicKey.toString() === public_key).access_key
+                .permission.FunctionCall.receiver_id,
         ).toEqual(appAccountId);
     });
 

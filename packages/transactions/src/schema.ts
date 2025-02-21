@@ -33,7 +33,8 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
  * @returns A serialized representation of the input transaction.
  */
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
-    const schema: Schema = transaction instanceof SignedTransaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
+    const schema: Schema =
+        transaction instanceof SignedTransaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
     return serialize(schema, transaction);
 }
 
@@ -139,7 +140,10 @@ export const SCHEMA = new (class BorshSchema {
         },
     };
     PublicKey: Schema = {
-        enum: [{ struct: { ed25519Key: this.Ed25519Data } }, { struct: { secp256k1Key: this.Secp256k1Data } }],
+        enum: [
+            { struct: { ed25519Key: this.Ed25519Data } },
+            { struct: { secp256k1Key: this.Secp256k1Data } },
+        ],
     };
     FunctionCallPermission: Schema = {
         struct: {

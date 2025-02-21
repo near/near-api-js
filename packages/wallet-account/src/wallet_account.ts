@@ -244,7 +244,11 @@ export class WalletConnection {
      * @param options.meta Meta information the wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
      *
      */
-    requestSignTransactionsUrl({ transactions, meta, callbackUrl }: RequestSignTransactionsOptions): string {
+    requestSignTransactionsUrl({
+        transactions,
+        meta,
+        callbackUrl,
+    }: RequestSignTransactionsOptions): string {
         const currentUrl = new URL(window.location.href);
         const newUrl = new URL('sign', this._walletBaseUrl);
 
@@ -312,7 +316,10 @@ export class WalletConnection {
      * @param publicKey The public key being set to the key store
      */
     async _moveKeyFromTempToPermanent(accountId: string, publicKey: string) {
-        const keyPair = await this._keyStore.getKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
+        const keyPair = await this._keyStore.getKey(
+            this._networkId,
+            PENDING_ACCESS_KEY_PREFIX + publicKey,
+        );
         await this._keyStore.setKey(this._networkId, accountId, keyPair);
         await this._keyStore.removeKey(this._networkId, PENDING_ACCESS_KEY_PREFIX + publicKey);
     }
@@ -332,7 +339,11 @@ export class WalletConnection {
      */
     account() {
         if (!this._connectedAccount) {
-            this._connectedAccount = new ConnectedWalletAccount(this, this._near.connection, this._authData.accountId);
+            this._connectedAccount = new ConnectedWalletAccount(
+                this,
+                this._near.connection,
+                this._authData.accountId,
+            );
         }
         return this._connectedAccount;
     }
@@ -366,7 +377,10 @@ export class ConnectedWalletAccount extends Account {
         walletMeta,
         walletCallbackUrl = window.location.href,
     }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
-        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        const localKey = await this.connection.signer.getPublicKey(
+            this.accountId,
+            this.connection.networkId,
+        );
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
             throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
@@ -390,7 +404,14 @@ export class ConnectedWalletAccount extends Account {
         const publicKey = PublicKey.from(accessKey.public_key);
         // TODO: Cache & listen for nonce updates for given access key
         const nonce = accessKey.access_key.nonce + 1n;
-        const transaction = createTransaction(this.accountId, publicKey, receiverId, nonce, actions, blockHash);
+        const transaction = createTransaction(
+            this.accountId,
+            publicKey,
+            receiverId,
+            nonce,
+            actions,
+            blockHash,
+        );
         await this.walletConnection.requestSignTransactions({
             transactions: [transaction],
             meta: walletMeta,
@@ -413,7 +434,11 @@ export class ConnectedWalletAccount extends Account {
      * @param receiverId The NEAR account attempting to have access
      * @param actions The action(s) needed to be checked for access
      */
-    async accessKeyMatchesTransaction(accessKey, receiverId: string, actions: Action[]): Promise<boolean> {
+    async accessKeyMatchesTransaction(
+        accessKey,
+        receiverId: string,
+        actions: Action[],
+    ): Promise<boolean> {
         const {
             access_key: { permission },
         } = accessKey;
@@ -422,12 +447,16 @@ export class ConnectedWalletAccount extends Account {
         }
 
         if (permission.FunctionCall) {
-            const { receiver_id: allowedReceiverId, method_names: allowedMethods } = permission.FunctionCall;
+            const { receiver_id: allowedReceiverId, method_names: allowedMethods } =
+                permission.FunctionCall;
             /********************************
             Accept multisig access keys and let wallets attempt to signAndSendTransaction
             If an access key has itself as receiverId and method permission add_request_and_confirm, then it is being used in a wallet with multisig contract: https://github.com/near/core-contracts/blob/671c05f09abecabe7a7e58efe942550a35fc3292/multisig/src/lib.rs#L149-L153
             ********************************/
-            if (allowedReceiverId === this.accountId && allowedMethods.includes(MULTISIG_HAS_METHOD)) {
+            if (
+                allowedReceiverId === this.accountId &&
+                allowedMethods.includes(MULTISIG_HAS_METHOD)
+            ) {
                 return true;
             }
             if (allowedReceiverId === receiverId) {
@@ -438,7 +467,8 @@ export class ConnectedWalletAccount extends Account {
                 return (
                     functionCall &&
                     (!functionCall.deposit || functionCall.deposit.toString() === '0') && // TODO: Should support charging amount smaller than allowance?
-                    (allowedMethods.length === 0 || allowedMethods.includes(functionCall.methodName))
+                    (allowedMethods.length === 0 ||
+                        allowedMethods.includes(functionCall.methodName))
                 );
                 // TODO: Handle cases when allowance doesn't have enough to pay for gas
             }
@@ -454,12 +484,21 @@ export class ConnectedWalletAccount extends Account {
      * @param actions The action(s) sought to gain access to
      * @param localKey A local public key provided to check for access
      */
-    async accessKeyForTransaction(receiverId: string, actions: Action[], localKey?: PublicKey): Promise<any> {
+    async accessKeyForTransaction(
+        receiverId: string,
+        actions: Action[],
+        localKey?: PublicKey,
+    ): Promise<any> {
         const accessKeys = await this.getAccessKeys();
 
         if (localKey) {
-            const accessKey = accessKeys.find((key) => key.public_key.toString() === localKey.toString());
-            if (accessKey && (await this.accessKeyMatchesTransaction(accessKey, receiverId, actions))) {
+            const accessKey = accessKeys.find(
+                (key) => key.public_key.toString() === localKey.toString(),
+            );
+            if (
+                accessKey &&
+                (await this.accessKeyMatchesTransaction(accessKey, receiverId, actions))
+            ) {
                 return accessKey;
             }
         }

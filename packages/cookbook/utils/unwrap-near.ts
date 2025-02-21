@@ -50,14 +50,22 @@ export default async function unwrapNear(
     });
 
     const { total: postTotal, available: postAvailable } = await getStorageBalance();
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
-    console.log(chalk`{bold.green RESULTS} {white Unwrapped ${unwrapAmount}yN with ${wrapContract}}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
+    console.log(
+        chalk`{bold.green RESULTS} {white Unwrapped ${unwrapAmount}yN with ${wrapContract}}`,
+    );
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(
         chalk`{bold.white Starting Balance} {white |}  {bold.yellow ${formatNearAmount(preAvailable)} / ${formatNearAmount(preTotal)}}`,
     );
     console.log(
         chalk`{bold.white Ending Balance}   {white |}  {bold.yellow ${formatNearAmount(postAvailable)} / ${formatNearAmount(postTotal)}}`,
     );
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

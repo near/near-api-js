@@ -41,7 +41,11 @@ export function getSignerFromPrivateKey(privateKey: KeyPairString): MessageSigne
  * @param network to sign transactions on
  * @param keyStore used to store the signing key
  */
-export function getSignerFromKeystore(account: string, network: string, keyStore: KeyStore): MessageSigner {
+export function getSignerFromKeystore(
+    account: string,
+    network: string,
+    keyStore: KeyStore,
+): MessageSigner {
     const signer = new InMemorySigner(keyStore);
 
     return {

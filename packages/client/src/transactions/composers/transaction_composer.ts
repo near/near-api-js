@@ -1,5 +1,11 @@
 import { PublicKey } from '@near-js/crypto';
-import { type Action, type DelegateAction, type Signature, Transaction, actionCreators } from '@near-js/transactions';
+import {
+    type Action,
+    type DelegateAction,
+    type Signature,
+    Transaction,
+    actionCreators,
+} from '@near-js/transactions';
 import type { BlockHash } from '@near-js/types';
 import { DEFAULT_FUNCTION_CALL_GAS, baseDecode } from '@near-js/utils';
 import type { TransactionOptions } from '../../interfaces';
@@ -43,7 +49,14 @@ export class TransactionComposer {
             signerId: transaction?.sender || this.sender,
         };
 
-        if (!tx.actions.length || !tx.blockHash || !tx.nonce || !tx.publicKey || !tx.receiverId || !tx.signerId) {
+        if (
+            !tx.actions.length ||
+            !tx.blockHash ||
+            !tx.nonce ||
+            !tx.publicKey ||
+            !tx.receiverId ||
+            !tx.signerId
+        ) {
             throw new Error(`invalid transaction: ${JSON.stringify(tx)}`);
         }
 
@@ -63,7 +76,9 @@ export class TransactionComposer {
      * @param publicKey string representation of the public key on the new access key
      */
     addFullAccessKey(publicKey: string): this {
-        this.actions.push(actionCreators.addKey(PublicKey.from(publicKey), actionCreators.fullAccessKey()));
+        this.actions.push(
+            actionCreators.addKey(PublicKey.from(publicKey), actionCreators.fullAccessKey()),
+        );
         return this;
     }
 
@@ -74,7 +89,12 @@ export class TransactionComposer {
      * @param methodNames set of permitted methods
      * @param allowance max allowable balance attached to transactions signed with this key
      */
-    addFunctionCallAccessKey(publicKey: string, contractId: string, methodNames: string[], allowance?: bigint): this {
+    addFunctionCallAccessKey(
+        publicKey: string,
+        contractId: string,
+        methodNames: string[],
+        allowance?: bigint,
+    ): this {
         const accessKey = actionCreators.functionCallAccessKey(contractId, methodNames, allowance);
         this.actions.push(actionCreators.addKey(PublicKey.from(publicKey), accessKey));
         return this;

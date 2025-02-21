@@ -7,8 +7,17 @@ import type { KeyPair } from '@near-js/crypto';
  * @see {@link connect}
  */
 export abstract class MultiContractKeyStore {
-    abstract setKey(networkId: string, accountId: string, keyPair: KeyPair, contractId: string): Promise<void>;
-    abstract getKey(networkId: string, accountId: string, contractId: string): Promise<KeyPair | null>;
+    abstract setKey(
+        networkId: string,
+        accountId: string,
+        keyPair: KeyPair,
+        contractId: string,
+    ): Promise<void>;
+    abstract getKey(
+        networkId: string,
+        accountId: string,
+        contractId: string,
+    ): Promise<KeyPair | null>;
     abstract removeKey(networkId: string, accountId: string, contractId: string): Promise<void>;
     abstract clear(): Promise<void>;
     abstract getNetworks(): Promise<string[]>;

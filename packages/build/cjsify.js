@@ -33,7 +33,10 @@ async function cjsIfy() {
                 continue;
             }
 
-            const absolutePath = path.resolve(projectFilePath.split('/').slice(0, -1).join('/'), relativePath);
+            const absolutePath = path.resolve(
+                projectFilePath.split('/').slice(0, -1).join('/'),
+                relativePath,
+            );
             let isDirectory = false;
             try {
                 isDirectory = (await lstat(absolutePath)).isDirectory();
@@ -41,7 +44,9 @@ async function cjsIfy() {
                 /* lstat has failed because `absolutePath` points to a JS file but is missing the .js extension */
             }
 
-            const replacementPath = isDirectory ? `${relativePath}/index.cjs` : `${relativePath}.cjs`;
+            const replacementPath = isDirectory
+                ? `${relativePath}/index.cjs`
+                : `${relativePath}.cjs`;
             contents = contents.replaceAll(matchedText, `require("${replacementPath}")`);
         }
 
@@ -49,7 +54,10 @@ async function cjsIfy() {
             await writeFile(projectFilePath, contents);
         }
 
-        await rename(projectFilePath, [...projectFilePath.split('.').slice(0, -1), 'cjs'].join('.'));
+        await rename(
+            projectFilePath,
+            [...projectFilePath.split('.').slice(0, -1), 'cjs'].join('.'),
+        );
     }
 }
 

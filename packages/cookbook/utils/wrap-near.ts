@@ -13,7 +13,11 @@ import chalk from 'chalk';
 // On mainnet it's wrap.near, by the way
 const WRAP_NEAR_CONTRACT_ID = 'wrap.testnet';
 
-export default async function wrapNear(accountId: string, wrapAmount: bigint, wrapContract = WRAP_NEAR_CONTRACT_ID) {
+export default async function wrapNear(
+    accountId: string,
+    wrapAmount: bigint,
+    wrapContract = WRAP_NEAR_CONTRACT_ID,
+) {
     if (!accountId || !wrapAmount) {
         console.log(chalk`{red pnpm wrapNear -- ACCOUNT_ID WRAP_AMOUNT [WRAP_CONTRACT]}`);
         return;
@@ -52,14 +56,20 @@ export default async function wrapNear(accountId: string, wrapAmount: bigint, wr
     await wrapTransaction.signAndSend();
 
     const { total: postTotal, available: postAvailable } = await getStorageBalance();
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(chalk`{bold.green RESULTS} {white Wrapped ${wrapAmount}yN with ${wrapContract}}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(
         chalk`{bold.white Starting Balance} {white |}  {bold.yellow ${formatNearAmount(preAvailable)} / ${formatNearAmount(preTotal)}}`,
     );
     console.log(
         chalk`{bold.white Ending Balance}   {white |}  {bold.yellow ${formatNearAmount(postAvailable)} / ${formatNearAmount(postTotal)}}`,
     );
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

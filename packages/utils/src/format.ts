@@ -25,7 +25,10 @@ for (let i = 0, offset = 5n; i < NEAR_NOMINATION_EXP; i++, offset = offset * BN1
  * @param fracDigits number of fractional digits to preserve in formatted string. Balance is rounded to match given number of digits.
  * @returns Value in Ⓝ
  */
-export function formatNearAmount(balance: string, fracDigits: number = NEAR_NOMINATION_EXP): string {
+export function formatNearAmount(
+    balance: string,
+    fracDigits: number = NEAR_NOMINATION_EXP,
+): string {
     let balanceBN = BigInt(balance);
     if (fracDigits !== NEAR_NOMINATION_EXP) {
         // Adjust balance for rounding at given number of digits

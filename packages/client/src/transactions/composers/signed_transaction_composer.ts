@@ -53,7 +53,8 @@ export class SignedTransactionComposer extends TransactionComposer {
             actions: this.actions,
             maxBlockHeight,
             nonce: transaction?.nonce || this.nonce || (await this.signer.getNonce()),
-            publicKey: transaction?.publicKey || this.publicKey || (await this.signer.getPublicKey()),
+            publicKey:
+                transaction?.publicKey || this.publicKey || (await this.signer.getPublicKey()),
             receiverId: transaction?.receiver || this.receiver,
             senderId: transaction?.sender || this.sender,
         });
@@ -83,7 +84,9 @@ export class SignedTransactionComposer extends TransactionComposer {
 
         const signerAccount = this.signer.getSigningAccount();
         if (signingAccount !== signerAccount) {
-            throw new Error(`Cannot sign transaction as ${signingAccount} with AccessKeySigner for ${signerAccount}`);
+            throw new Error(
+                `Cannot sign transaction as ${signingAccount} with AccessKeySigner for ${signerAccount}`,
+            );
         }
     }
 
@@ -104,12 +107,15 @@ export class SignedTransactionComposer extends TransactionComposer {
      * Sign and send the composed transaction
      * @param blockReference block to use for determining hash
      */
-    async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
+    async signAndSend<T extends SerializedReturnValue>(
+        blockReference: BlockReference = { finality: 'final' },
+    ) {
         this.verifySigner(this.sender);
         const { signedTransaction } = await this.toSignedTransaction({
             nonce: this.nonce || (await this.signer.getNonce()),
             publicKey: this.publicKey || (await this.signer.getPublicKey()),
-            blockHash: this.blockHash || (await this.rpcProvider.block(blockReference))?.header?.hash,
+            blockHash:
+                this.blockHash || (await this.rpcProvider.block(blockReference))?.header?.hash,
         });
 
         const outcome = await this.rpcProvider.sendTransaction(signedTransaction);

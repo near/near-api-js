@@ -41,7 +41,9 @@ export class IFrameRPC extends EventEmitter {
      */
     constructor(private readonly options: IRPCOptions) {
         super();
-        this.removeMessageListener = (options.receiver || windowReceiver).readMessages(this.messageEventListener);
+        this.removeMessageListener = (options.receiver || windowReceiver).readMessages(
+            this.messageEventListener,
+        );
 
         this.isReady = this.createReadyPromise();
     }
@@ -182,7 +184,11 @@ export class IFrameRPC extends EventEmitter {
     }
 
     private messageEventListener = (ev: IMessageEvent) => {
-        if (this.options.origin && this.options.origin !== '*' && ev.origin !== this.options.origin) {
+        if (
+            this.options.origin &&
+            this.options.origin !== '*' &&
+            ev.origin !== this.options.origin
+        ) {
             return;
         }
 

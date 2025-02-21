@@ -26,10 +26,14 @@ export default async function traverseBlocks(
     } while (blockHash !== startBlockHash);
 
     // returns block details based on hashes in array
-    const blockDetails = await Promise.all(blockArr.map((blockId) => rpcProvider.block({ blockId })));
+    const blockDetails = await Promise.all(
+        blockArr.map((blockId) => rpcProvider.block({ blockId })),
+    );
 
     // returns an array of chunk hashes from block details
-    const chunkHashArr = blockDetails.flatMap((block) => block.chunks.map(({ chunk_hash }) => chunk_hash));
+    const chunkHashArr = blockDetails.flatMap((block) =>
+        block.chunks.map(({ chunk_hash }) => chunk_hash),
+    );
 
     //returns chunk details based from the array of hashes
     const chunkDetails = await Promise.all(chunkHashArr.map((chunk) => rpcProvider.chunk(chunk)));

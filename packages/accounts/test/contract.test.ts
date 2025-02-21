@@ -57,7 +57,9 @@ const contract: any = new Contract(account, 'contractId', {
         });
 
         test('throws PositionalArgsError if given too many arguments', () => {
-            return expect(contract[method]({}, 1, 0, 'oops')).rejects.toBeInstanceOf(PositionalArgsError);
+            return expect(contract[method]({}, 1, 0, 'oops')).rejects.toBeInstanceOf(
+                PositionalArgsError,
+            );
         });
 
         test('allows args encoded as Uint8Array (for borsh)', async () => {
@@ -144,7 +146,9 @@ describe('local view execution', () => {
             finality: 'optimistic',
         });
 
-        contract.account.connection.provider.query = jest.fn(contract.account.connection.provider.query);
+        contract.account.connection.provider.query = jest.fn(
+            contract.account.connection.provider.query,
+        );
         blockQuery = { blockId: block.header.height };
     });
 

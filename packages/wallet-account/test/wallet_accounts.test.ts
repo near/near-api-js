@@ -314,10 +314,16 @@ describe('Wallet account tests', () => {
                 if (params.request_type === 'view_account' && params.account_id === 'signer.near') {
                     return {};
                 }
-                if (params.request_type === 'view_access_key_list' && params.account_id === 'signer.near') {
+                if (
+                    params.request_type === 'view_access_key_list' &&
+                    params.account_id === 'signer.near'
+                ) {
                     return { keys: accountAccessKeys };
                 }
-                if (params.request_type === 'view_access_key' && params.account_id === 'signer.near') {
+                if (
+                    params.request_type === 'view_access_key' &&
+                    params.account_id === 'signer.near'
+                ) {
                     for (const accessKey of accountAccessKeys) {
                         if (accessKey.public_key === params.public_key) {
                             return accessKey;
@@ -377,7 +383,10 @@ describe('Wallet account tests', () => {
             if (!failed) {
                 throw new Error('expected to throw');
             }
-            transactions = parseTransactionsFromUrl(lastRedirectUrl, 'http://callback.com/callback');
+            transactions = parseTransactionsFromUrl(
+                lastRedirectUrl,
+                'http://callback.com/callback',
+            );
         });
 
         afterEach(() => {
@@ -400,7 +409,9 @@ describe('Wallet account tests', () => {
                 ? transactions[0].publicKey.ed25519Key.data
                 : transactions[0].publicKey.secp256k1Key.data;
             const publicKey = keyPair.getPublicKey();
-            const keyPairData = publicKey.ed25519Key.data ? publicKey.ed25519Key.data : publicKey.secp256k1Key.data;
+            const keyPairData = publicKey.ed25519Key.data
+                ? publicKey.ed25519Key.data
+                : publicKey.secp256k1Key.data;
             expect(Buffer.from(txData)).toEqual(Buffer.from(keyPairData));
         });
     });
@@ -458,7 +469,10 @@ describe('Wallet account tests', () => {
                 throw new Error('expected to throw');
             }
 
-            const transactions = parseTransactionsFromUrl(lastRedirectUrl, 'http://example.com/after');
+            const transactions = parseTransactionsFromUrl(
+                lastRedirectUrl,
+                'http://example.com/after',
+            );
             expect(transactions).toHaveLength(1);
         });
     });

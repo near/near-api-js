@@ -54,7 +54,11 @@ export async function signAndSendTransaction<T extends SerializedReturnValue>({
  * @param rpcProvider RPC provider instance
  * @param deps sign-and-send dependencies
  */
-export async function getSignerNonce({ account, blockReference = DEFAULT_FINALITY, deps: { rpcProvider, signer } }) {
+export async function getSignerNonce({
+    account,
+    blockReference = DEFAULT_FINALITY,
+    deps: { rpcProvider, signer },
+}) {
     return getNonce({
         account,
         publicKey: (await signer.getPublicKey()).toString(),

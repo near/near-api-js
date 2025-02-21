@@ -27,7 +27,13 @@ import {
  * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
-import { ServerError, baseEncode, formatError, getErrorTypeFromErrorMessage, parseRpcError } from '@near-js/utils';
+import {
+    ServerError,
+    baseEncode,
+    formatError,
+    getErrorTypeFromErrorMessage,
+    parseRpcError,
+} from '@near-js/utils';
 
 import type { TxExecutionStatus } from '@near-js/types';
 import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
@@ -127,7 +133,9 @@ export class JsonRpcProvider extends Provider {
      * @param signedTransaction The signed transaction being sent
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
+    async sendTransactionAsync(
+        signedTransaction: SignedTransaction,
+    ): Promise<FinalExecutionOutcome> {
         return this.sendTransactionUntil(signedTransaction, 'NONE');
     }
 
@@ -162,8 +170,16 @@ export class JsonRpcProvider extends Provider {
         });
     }
 
-    private async txStatusString(txHash: string, accountId: string, waitUntil: string): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', { tx_hash: txHash, sender_account_id: accountId, wait_until: waitUntil });
+    private async txStatusString(
+        txHash: string,
+        accountId: string,
+        waitUntil: string,
+    ): Promise<FinalExecutionOutcome> {
+        return this.sendJsonRpc('tx', {
+            tx_hash: txHash,
+            sender_account_id: accountId,
+            wait_until: waitUntil,
+        });
     }
 
     /**
@@ -203,7 +219,10 @@ export class JsonRpcProvider extends Provider {
         let result;
         if (args.length === 1) {
             const { block_id, blockId, ...otherParams } = args[0];
-            result = await this.sendJsonRpc<T>('query', { ...otherParams, block_id: block_id || blockId });
+            result = await this.sendJsonRpc<T>('query', {
+                ...otherParams,
+                block_id: block_id || blockId,
+            });
         } else {
             const [path, data] = args;
             result = await this.sendJsonRpc<T>('query', [path, data]);
@@ -270,7 +289,10 @@ export class JsonRpcProvider extends Provider {
         blockReference: BlockReference | { sync_checkpoint: 'genesis' },
     ): Promise<NearProtocolConfig> {
         const { blockId, ...otherParams } = blockReference as any;
-        return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', { ...otherParams, block_id: blockId });
+        return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', {
+            ...otherParams,
+            block_id: blockId,
+        });
     }
 
     /**
@@ -288,7 +310,9 @@ export class JsonRpcProvider extends Provider {
      *
      * @see [https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
      */
-    async nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse> {
+    async nextLightClientBlock(
+        request: NextLightClientBlockRequest,
+    ): Promise<NextLightClientBlockResponse> {
         return await this.sendJsonRpc('next_light_client_block', request);
     }
 
@@ -297,7 +321,10 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-all)
      * @returns {Promise<ChangeResult>}
      */
-    async accessKeyChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
+    async accessKeyChanges(
+        accountIdArray: string[],
+        blockQuery: BlockReference,
+    ): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -334,7 +361,10 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-account-changes)
      * @returns {Promise<ChangeResult>}
      */
-    async accountChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
+    async accountChanges(
+        accountIdArray: string[],
+        blockQuery: BlockReference,
+    ): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -375,7 +405,10 @@ export class JsonRpcProvider extends Provider {
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-code-changes)
      * @returns {Promise<ChangeResult>}
      */
-    async contractCodeChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
+    async contractCodeChanges(
+        accountIdArray: string[],
+        blockQuery: BlockReference,
+    ): Promise<ChangeResult> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -422,7 +455,10 @@ export class JsonRpcProvider extends Provider {
                     typeof response.error.data.error_type === 'string'
                 ) {
                     // if error data has error_message and error_type properties, we consider that node returned an error in the old format
-                    throw new TypedError(response.error.data.error_message, response.error.data.error_type);
+                    throw new TypedError(
+                        response.error.data.error_message,
+                        response.error.data.error_type,
+                    );
                 }
                 throw parseRpcError(response.error.data);
             }

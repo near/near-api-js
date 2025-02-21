@@ -33,7 +33,11 @@ import {
 } from '@near-js/utils';
 
 import type { Connection } from './connection';
-import type { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface';
+import type {
+    ChangeFunctionCallOptions,
+    IntoConnection,
+    ViewFunctionCallOptions,
+} from './interface';
 import { viewFunction, viewState } from './utils';
 
 const {
@@ -142,7 +146,10 @@ export class Account implements IntoConnection {
      * @param actions list of actions to perform as part of the transaction
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider.sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
+    protected async signTransaction(
+        receiverId: string,
+        actions: Action[],
+    ): Promise<[Uint8Array, SignedTransaction]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
         if (!accessKeyInfo) {
             throw new TypedError(
@@ -199,7 +206,9 @@ export class Account implements IntoConnection {
                     return await this.connection.provider.sendTransaction(signedTx);
                 } catch (error) {
                     if (error.type === 'InvalidNonce') {
-                        Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
+                        Logger.warn(
+                            `Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`,
+                        );
                         delete this.accessKeyByPublicKeyCache[publicKey.toString()];
                         return null;
                     }
@@ -265,9 +274,15 @@ export class Account implements IntoConnection {
         _actions: Action[],
     ): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
         // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
-        const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        const publicKey = await this.connection.signer.getPublicKey(
+            this.accountId,
+            this.connection.networkId,
+        );
         if (!publicKey) {
-            throw new TypedError(`no matching key pair found in ${this.connection.signer}`, 'PublicKeyNotFound');
+            throw new TypedError(
+                `no matching key pair found in ${this.connection.signer}`,
+                'PublicKeyNotFound',
+            );
         }
 
         const cachedAccessKey = this.accessKeyByPublicKeyCache[publicKey.toString()];
@@ -361,7 +376,11 @@ export class Account implements IntoConnection {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction({
             receiverId: newAccountId,
-            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)],
+            actions: [
+                createAccount(),
+                transfer(amount),
+                addKey(PublicKey.from(publicKey), accessKey),
+            ],
         });
     }
 
@@ -428,7 +447,11 @@ export class Account implements IntoConnection {
         let functionCallArgs;
 
         if (jsContract) {
-            const encodedArgs = this.encodeJSContractArgs(contractId, methodName, JSON.stringify(args));
+            const encodedArgs = this.encodeJSContractArgs(
+                contractId,
+                methodName,
+                JSON.stringify(args),
+            );
             functionCallArgs = ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true];
         } else {
             const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
@@ -458,18 +481,18 @@ export class Account implements IntoConnection {
         methodNames?: string | string[],
         amount?: bigint,
     ): Promise<FinalExecutionOutcome> {
-        if (!methodNames) {
-            methodNames = [];
+        let allowedMethods: string[] = [];
+        if (Array.isArray(methodNames)) {
+            allowedMethods = methodNames;
+        } else if (methodNames !== null) {
+            allowedMethods = [methodNames];
         }
-        if (!Array.isArray(methodNames)) {
-            methodNames = [methodNames];
-        }
-        let accessKey;
-        if (!contractId) {
-            accessKey = fullAccessKey();
-        } else {
-            accessKey = functionCallAccessKey(contractId, methodNames, amount);
-        }
+
+        // Determine access key type
+        const accessKey = contractId
+            ? functionCallAccessKey(contractId, allowedMethods, amount)
+            : fullAccessKey();
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [addKey(PublicKey.from(publicKey), accessKey)],
@@ -508,7 +531,11 @@ export class Account implements IntoConnection {
      * @param options.blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
      * @param options.receiverId Receiver account of the meta transaction
      */
-    async signedDelegate({ actions, blockHeightTtl, receiverId }: SignedDelegateOptions): Promise<SignedDelegate> {
+    async signedDelegate({
+        actions,
+        blockHeightTtl,
+        receiverId,
+    }: SignedDelegateOptions): Promise<SignedDelegate> {
         const { provider, signer } = this.connection;
         const { header } = await provider.block({ finality: 'final' });
         const { accessKey, publicKey } = await this.findAccessKey(null, null);
@@ -713,7 +740,10 @@ export class Account implements IntoConnection {
                 if (state.status === 'rejected') {
                     return {
                         ...result,
-                        failedValidators: [...result.failedValidators, { validatorId, error: state.reason }],
+                        failedValidators: [
+                            ...result.failedValidators,
+                            { validatorId, error: state.reason },
+                        ],
                     };
                 }
                 return result;

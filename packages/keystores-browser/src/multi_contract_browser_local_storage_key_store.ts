@@ -48,8 +48,16 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
      * @param keyPair The key pair to store in local storage
      * @param contractId The contract to store in local storage
      */
-    async setKey(networkId: string, accountId: string, keyPair: KeyPair, contractId: string): Promise<void> {
-        this.localStorage.setItem(this.storageKeyForSecretKey(networkId, accountId, contractId), keyPair.toString());
+    async setKey(
+        networkId: string,
+        accountId: string,
+        keyPair: KeyPair,
+        contractId: string,
+    ): Promise<void> {
+        this.localStorage.setItem(
+            this.storageKeyForSecretKey(networkId, accountId, contractId),
+            keyPair.toString(),
+        );
     }
 
     /**
@@ -59,8 +67,14 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
      * @param contractId The NEAR contract tied to the key pair
      * @returns {Promise<KeyPair>}
      */
-    async getKey(networkId: string, accountId: string, contractId: string): Promise<KeyPair | null> {
-        const value = this.localStorage.getItem(this.storageKeyForSecretKey(networkId, accountId, contractId));
+    async getKey(
+        networkId: string,
+        accountId: string,
+        contractId: string,
+    ): Promise<KeyPair | null> {
+        const value = this.localStorage.getItem(
+            this.storageKeyForSecretKey(networkId, accountId, contractId),
+        );
         if (!value) {
             return null;
         }
@@ -146,7 +160,11 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
      * @param contractId The NEAR contract tied to the storage keythat's sought
      * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */
-    private storageKeyForSecretKey(networkId: string, accountId: string, contractId: string): string {
+    private storageKeyForSecretKey(
+        networkId: string,
+        accountId: string,
+        contractId: string,
+    ): string {
         return `${this.prefix}${accountId}:${networkId}:${contractId}`;
     }
 

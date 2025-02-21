@@ -1,5 +1,11 @@
 import { describe, expect, test } from '@jest/globals';
-import { Account, ArgumentSchemaError, Contract, UnknownArgumentError, UnsupportedSerializationError } from '../src';
+import {
+    Account,
+    ArgumentSchemaError,
+    Contract,
+    UnknownArgumentError,
+    UnsupportedSerializationError,
+} from '../src';
 
 const rawAbi = `{
   "schema_version": "0.3.0",
@@ -136,7 +142,9 @@ describe('add', () => {
     });
 
     test('throws UnknownArgumentError if unknown argument was supplied', async () => {
-        await expect(contract.add({ a: [1, 2], b: [3, 4], c: 5 })).rejects.toBeInstanceOf(UnknownArgumentError);
+        await expect(contract.add({ a: [1, 2], b: [3, 4], c: 5 })).rejects.toBeInstanceOf(
+            UnknownArgumentError,
+        );
     });
 });
 
@@ -150,13 +158,15 @@ describe('add_call', () => {
     });
 
     test('throws ArgumentSchemaError if argument has unexpected type', async () => {
-        await expect(contract.add_call({ args: { a: 1, b: [3, 4] } })).rejects.toBeInstanceOf(ArgumentSchemaError);
+        await expect(contract.add_call({ args: { a: 1, b: [3, 4] } })).rejects.toBeInstanceOf(
+            ArgumentSchemaError,
+        );
     });
 
     test('throws UnknownArgumentError if unknown argument was supplied', async () => {
-        await expect(contract.add_call({ args: { a: [1, 2], b: [3, 4], c: 5 } })).rejects.toBeInstanceOf(
-            UnknownArgumentError,
-        );
+        await expect(
+            contract.add_call({ args: { a: [1, 2], b: [3, 4], c: 5 } }),
+        ).rejects.toBeInstanceOf(UnknownArgumentError);
     });
 });
 

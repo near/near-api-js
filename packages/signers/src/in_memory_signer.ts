@@ -24,7 +24,11 @@ export class InMemorySigner extends Signer {
      * @param accountId The NEAR account to assign the key pair to
      * @param keyPair The keyPair to use for signing
      */
-    static async fromKeyPair(networkId: string, accountId: string, keyPair: KeyPair): Promise<Signer> {
+    static async fromKeyPair(
+        networkId: string,
+        accountId: string,
+        keyPair: KeyPair,
+    ): Promise<Signer> {
         const keyStore = new InMemoryKeyStore();
         await keyStore.setKey(networkId, accountId, keyPair);
         return new InMemorySigner(keyStore);
@@ -37,7 +41,10 @@ export class InMemorySigner extends Signer {
      * @returns {Promise<PublicKey>}
      */
     async createKey(accountId: string, networkId: string, keyType?: KeyType): Promise<PublicKey> {
-        const keyPair = keyType === KeyType.SECP256K1 ? KeyPair.fromRandom('secp256k1') : KeyPair.fromRandom('ed25519');
+        const keyPair =
+            keyType === KeyType.SECP256K1
+                ? KeyPair.fromRandom('secp256k1')
+                : KeyPair.fromRandom('ed25519');
         await this.keyStore.setKey(networkId, accountId, keyPair);
         return keyPair.getPublicKey();
     }
@@ -62,7 +69,11 @@ export class InMemorySigner extends Signer {
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @returns {Promise<Signature>}
      */
-    async signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature> {
+    async signMessage(
+        message: Uint8Array,
+        accountId?: string,
+        networkId?: string,
+    ): Promise<Signature> {
         const hash = new Uint8Array(sha256(message));
         if (!accountId) {
             throw new Error('InMemorySigner requires provided account id');

@@ -48,7 +48,10 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
      * @param keyPair The key pair to store in local storage
      */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        this.localStorage.setItem(this.storageKeyForSecretKey(networkId, accountId), keyPair.toString());
+        this.localStorage.setItem(
+            this.storageKeyForSecretKey(networkId, accountId),
+            keyPair.toString(),
+        );
     }
 
     /**

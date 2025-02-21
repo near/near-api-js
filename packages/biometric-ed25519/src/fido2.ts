@@ -44,7 +44,10 @@ export class Fido2 {
         };
 
         // @ts-expect-error `factor` is defined as a union of strings for which "either" is valid...
-        const regResult = await this.f2l.attestationResult(clientAttestationResponse, attestationExpectations);
+        const regResult = await this.f2l.attestationResult(
+            clientAttestationResponse,
+            attestationExpectations,
+        );
         return regResult;
     }
 

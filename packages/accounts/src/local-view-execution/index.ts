@@ -31,7 +31,10 @@ export class LocalViewExecution {
         return result.code_base64;
     }
 
-    private async fetchContractState(contractId: string, blockQuery: BlockReference): Promise<ContractState> {
+    private async fetchContractState(
+        contractId: string,
+        blockQuery: BlockReference,
+    ): Promise<ContractState> {
         return viewState(this.connection, contractId, '', blockQuery);
     }
 

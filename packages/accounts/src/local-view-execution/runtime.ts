@@ -60,7 +60,9 @@ export class Runtime {
     }
 
     private storageRead(keyLen: bigint, keyPtr: bigint) {
-        const storageKey = Buffer.from(new Uint8Array(this.memory.buffer, Number(keyPtr), Number(keyLen)));
+        const storageKey = Buffer.from(
+            new Uint8Array(this.memory.buffer, Number(keyPtr), Number(keyLen)),
+        );
 
         const stateVal = this.context.contractState
             .filter((obj) => Buffer.compare(obj.key, storageKey) === 0)
@@ -196,7 +198,10 @@ export class Runtime {
 
                 sectionParts.push(importMemory);
 
-                const sectionData = Buffer.concat([encodeLEB128(sectionParts.length), ...sectionParts]);
+                const sectionData = Buffer.concat([
+                    encodeLEB128(sectionParts.length),
+                    ...sectionParts,
+                ]);
 
                 parts.push(
                     Buffer.concat([
@@ -222,7 +227,10 @@ export class Runtime {
                     }
                 }
 
-                const sectionData = Buffer.concat([encodeLEB128(sectionParts.length), ...sectionParts]);
+                const sectionData = Buffer.concat([
+                    encodeLEB128(sectionParts.length),
+                    ...sectionParts,
+                ]);
 
                 parts.push(
                     Buffer.concat([
@@ -277,7 +285,9 @@ export class Runtime {
     }
 
     private returnValue(valueLen: bigint, valuePtr: bigint) {
-        this.result = Buffer.from(new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen)));
+        this.result = Buffer.from(
+            new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen)),
+        );
     }
 
     private panic(message: string) {
@@ -361,10 +371,18 @@ export class Runtime {
             promise_and: prohibitedInView('promise_and'),
             promise_batch_create: prohibitedInView('promise_batch_create'),
             promise_batch_then: prohibitedInView('promise_batch_then'),
-            promise_batch_action_create_account: prohibitedInView('promise_batch_action_create_account'),
-            promise_batch_action_deploy_contract: prohibitedInView('promise_batch_action_deploy_contract'),
-            promise_batch_action_function_call: prohibitedInView('promise_batch_action_function_call'),
-            promise_batch_action_function_call_weight: prohibitedInView('promise_batch_action_function_call_weight'),
+            promise_batch_action_create_account: prohibitedInView(
+                'promise_batch_action_create_account',
+            ),
+            promise_batch_action_deploy_contract: prohibitedInView(
+                'promise_batch_action_deploy_contract',
+            ),
+            promise_batch_action_function_call: prohibitedInView(
+                'promise_batch_action_function_call',
+            ),
+            promise_batch_action_function_call_weight: prohibitedInView(
+                'promise_batch_action_function_call_weight',
+            ),
             promise_batch_action_transfer: prohibitedInView('promise_batch_action_transfer'),
             promise_batch_action_stake: prohibitedInView('promise_batch_action_stake'),
             promise_batch_action_add_key_with_full_access: prohibitedInView(
@@ -374,7 +392,9 @@ export class Runtime {
                 'promise_batch_action_add_key_with_function_call',
             ),
             promise_batch_action_delete_key: prohibitedInView('promise_batch_action_delete_key'),
-            promise_batch_action_delete_account: prohibitedInView('promise_batch_action_delete_account'),
+            promise_batch_action_delete_account: prohibitedInView(
+                'promise_batch_action_delete_account',
+            ),
             promise_results_count: prohibitedInView('promise_results_count'),
             promise_result: prohibitedInView('promise_result'),
             promise_return: prohibitedInView('promise_return'),

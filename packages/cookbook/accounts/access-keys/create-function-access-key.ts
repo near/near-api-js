@@ -47,11 +47,17 @@ export default async function createFunctionCallAccessKey(
         },
     });
 
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(chalk`{bold.green RESULTS} {white Added new function call access key}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(
         chalk`{bold.white New Key} {white |} {bold.yellow ${keyPair.getPublicKey().toString()}} {white |} {bold.yellow ${contract}} {white |} {bold.yellow ${methods}}`,
     );
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

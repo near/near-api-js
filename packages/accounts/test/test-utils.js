@@ -11,7 +11,8 @@ Logger.overrideLogger(new ConsoleLogger(['error', 'fatal']));
 
 export const networkId = 'unittest';
 
-export const HELLO_WASM_PATH = process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
+export const HELLO_WASM_PATH =
+    process.env.HELLO_WASM_PATH || 'node_modules/near-hello/dist/main.wasm';
 export const HELLO_WASM_BALANCE = BigInt('10000000000000000000000000');
 export const HELLO_WASM_METHODS = {
     viewMethods: ['getValue', 'getLastResult'],
@@ -127,14 +128,24 @@ export async function createAccountMultisig({ accountCreator, connection }, opti
 export async function deployContract(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = fs.readFileSync(HELLO_WASM_PATH);
-    await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
+    await workingAccount.createAndDeployContract(
+        contractId,
+        newPublicKey,
+        data,
+        HELLO_WASM_BALANCE,
+    );
     return new Contract(workingAccount, contractId, HELLO_WASM_METHODS);
 }
 
 export async function deployContractGuestBook(workingAccount, contractId) {
     const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
     const data = fs.readFileSync(GUESTBOOK_WASM_PATH);
-    const account = await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
+    const account = await workingAccount.createAndDeployContract(
+        contractId,
+        newPublicKey,
+        data,
+        HELLO_WASM_BALANCE,
+    );
     return new Contract(account, contractId, {
         viewMethods: ['total_messages', 'get_messages'],
         changeMethods: ['add_message'],

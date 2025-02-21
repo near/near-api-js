@@ -9,7 +9,11 @@ export abstract class Signer {
      * @param accountId accountId to retrieve from.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
-    abstract createKey(accountId: string, networkId?: string, keyType?: KeyType): Promise<PublicKey>;
+    abstract createKey(
+        accountId: string,
+        networkId?: string,
+        keyType?: KeyType,
+    ): Promise<PublicKey>;
 
     /**
      * Returns public key for given account / network.
@@ -24,5 +28,9 @@ export abstract class Signer {
      * @param accountId accountId to use for signing.
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
-    abstract signMessage(message: Uint8Array, accountId?: string, networkId?: string): Promise<Signature>;
+    abstract signMessage(
+        message: Uint8Array,
+        accountId?: string,
+        networkId?: string,
+    ): Promise<Signature>;
 }

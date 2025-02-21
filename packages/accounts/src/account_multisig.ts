@@ -50,7 +50,10 @@ export class AccountMultisig extends Account {
      * @param actions - The list of actions to be included in the transaction.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransactionWithAccount(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
+    async signAndSendTransactionWithAccount(
+        receiverId: string,
+        actions: Action[],
+    ): Promise<FinalExecutionOutcome> {
         return super.signAndSendTransaction({ receiverId, actions });
     }
 
@@ -80,10 +83,16 @@ export class AccountMultisig extends Account {
         try {
             result = await super.signAndSendTransaction({
                 receiverId: accountId,
-                actions: [functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT)],
+                actions: [
+                    functionCall('add_request_and_confirm', args, MULTISIG_GAS, MULTISIG_DEPOSIT),
+                ],
             });
         } catch (e) {
-            if (e.toString().includes('Account has too many active requests. Confirm or delete some')) {
+            if (
+                e
+                    .toString()
+                    .includes('Account has too many active requests. Confirm or delete some')
+            ) {
                 await this.deleteUnconfirmedRequests();
                 return await this.signAndSendTransaction({
                     receiverId,
@@ -105,7 +114,10 @@ export class AccountMultisig extends Account {
         this.setRequest({
             accountId,
             actions,
-            requestId: Number.parseInt(Buffer.from(status.SuccessValue, 'base64').toString('ascii'), 10),
+            requestId: Number.parseInt(
+                Buffer.from(status.SuccessValue, 'base64').toString('ascii'),
+                10,
+            ),
         });
 
         if (this.onAddRequestResult) {
@@ -140,7 +152,12 @@ export class AccountMultisig extends Account {
                     receiverId: this.accountId,
                     actions: [
                         deployContract(contractBytes),
-                        functionCall('delete_request', { request_id: u32_max }, MULTISIG_GAS, MULTISIG_DEPOSIT),
+                        functionCall(
+                            'delete_request',
+                            { request_id: u32_max },
+                            MULTISIG_GAS,
+                            MULTISIG_DEPOSIT,
+                        ),
                     ],
                 });
             } else {
@@ -153,7 +170,9 @@ export class AccountMultisig extends Account {
             };
         } catch (e) {
             if (
-                new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(e?.kind?.ExecutionError)
+                new RegExp(MultisigDeleteRequestRejectionError.CANNOT_DESERIALIZE_STATE).test(
+                    e?.kind?.ExecutionError,
+                )
             ) {
                 return {
                     codeStatus: validCodeStatusIfNoDeploy,
@@ -161,14 +180,20 @@ export class AccountMultisig extends Account {
                 };
             }
             if (
-                new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(e?.kind?.ExecutionError)
+                new RegExp(MultisigDeleteRequestRejectionError.MULTISIG_NOT_INITIALIZED).test(
+                    e?.kind?.ExecutionError,
+                )
             ) {
                 return {
                     codeStatus: validCodeStatusIfNoDeploy,
                     stateStatus: MultisigStateStatus.STATE_NOT_INITIALIZED,
                 };
             }
-            if (new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(e?.kind?.ExecutionError)) {
+            if (
+                new RegExp(MultisigDeleteRequestRejectionError.NO_SUCH_REQUEST).test(
+                    e?.kind?.ExecutionError,
+                )
+            ) {
                 return {
                     codeStatus: validCodeStatusIfNoDeploy,
                     stateStatus: MultisigStateStatus.VALID_STATE,
@@ -193,7 +218,9 @@ export class AccountMultisig extends Account {
     deleteRequest(request_id) {
         return super.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [functionCall('delete_request', { request_id }, MULTISIG_GAS, MULTISIG_DEPOSIT)],
+            actions: [
+                functionCall('delete_request', { request_id }, MULTISIG_GAS, MULTISIG_DEPOSIT),
+            ],
         });
     }
 
@@ -234,7 +261,9 @@ export class AccountMultisig extends Account {
                     ],
                 });
             } catch (_e) {
-                Logger.warn('Attempt to delete an earlier request before 15 minutes failed. Will try again.');
+                Logger.warn(
+                    'Attempt to delete an earlier request before 15 minutes failed. Will try again.',
+                );
             }
         }
     }

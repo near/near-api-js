@@ -44,7 +44,9 @@ export function functionCall({
  * @param deps sign-and-send dependencies
  */
 export function transfer({ sender, receiver, amount, blockReference, deps }: TransferParams) {
-    return SignedTransactionComposer.init({ sender, receiver, deps }).transfer(amount).signAndSend(blockReference);
+    return SignedTransactionComposer.init({ sender, receiver, deps })
+        .transfer(amount)
+        .signAndSend(blockReference);
 }
 
 /**
@@ -68,7 +70,12 @@ export function stake({ account, amount, publicKey, blockReference, deps }: Stak
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export function addFullAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
+export function addFullAccessKey({
+    account,
+    publicKey,
+    blockReference,
+    deps,
+}: ModifyAccessKeyParams) {
     return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
         .addFullAccessKey(publicKey)
         .signAndSend(blockReference);
@@ -105,7 +112,12 @@ export function addFunctionCallAccessKey({
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export function deleteAccessKey({ account, publicKey, blockReference, deps }: ModifyAccessKeyParams) {
+export function deleteAccessKey({
+    account,
+    publicKey,
+    blockReference,
+    deps,
+}: ModifyAccessKeyParams) {
     return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
         .deleteKey(publicKey)
         .signAndSend(blockReference);
@@ -118,7 +130,12 @@ export function deleteAccessKey({ account, publicKey, blockReference, deps }: Mo
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export function deleteAccount({ account, beneficiaryId, blockReference, deps }: DeleteAccountParams) {
+export function deleteAccount({
+    account,
+    beneficiaryId,
+    blockReference,
+    deps,
+}: DeleteAccountParams) {
     return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
         .deleteAccount(beneficiaryId)
         .signAndSend(blockReference);

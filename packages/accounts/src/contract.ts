@@ -7,7 +7,12 @@ import { LocalViewExecution } from './local-view-execution';
 
 import { Account } from './account';
 import type { Connection } from './connection';
-import { ArgumentSchemaError, ConflictingOptions, UnknownArgumentError, UnsupportedSerializationError } from './errors';
+import {
+    ArgumentSchemaError,
+    ConflictingOptions,
+    UnknownArgumentError,
+    UnsupportedSerializationError,
+} from './errors';
 import type { IntoConnection } from './interface';
 import { viewFunction } from './utils';
 
@@ -24,11 +29,17 @@ function validateArguments(args: object, abiFunction: AbiFunction, abiRoot: AbiR
     if (!isObject(args)) return;
 
     if (abiFunction.params && abiFunction.params.serialization_type !== AbiSerializationType.Json) {
-        throw new UnsupportedSerializationError(abiFunction.name, abiFunction.params.serialization_type);
+        throw new UnsupportedSerializationError(
+            abiFunction.name,
+            abiFunction.params.serialization_type,
+        );
     }
 
     if (abiFunction.result && abiFunction.result.serialization_type !== AbiSerializationType.Json) {
-        throw new UnsupportedSerializationError(abiFunction.name, abiFunction.result.serialization_type);
+        throw new UnsupportedSerializationError(
+            abiFunction.name,
+            abiFunction.result.serialization_type,
+        );
     }
 
     const params = abiFunction.params?.args || [];
@@ -149,7 +160,12 @@ export class Contract {
         }
         this.contractId = contractId;
         this.lve = new LocalViewExecution(connection);
-        const { viewMethods = [], changeMethods = [], abi: abiRoot, useLocalViewExecution } = options;
+        const {
+            viewMethods = [],
+            changeMethods = [],
+            abi: abiRoot,
+            useLocalViewExecution,
+        } = options;
 
         let viewMethodsWithAbi = viewMethods.map((name) => ({
             name,
@@ -176,7 +192,11 @@ export class Contract {
                 writable: false,
                 enumerable: true,
                 value: nameFunction(name, async (args: object = {}, options = {}, ...ignored) => {
-                    if (ignored.length || !(isObject(args) || isUint8Array(args)) || !isObject(options)) {
+                    if (
+                        ignored.length ||
+                        !(isObject(args) || isUint8Array(args)) ||
+                        !isObject(options)
+                    ) {
                         throw new PositionalArgsError();
                     }
 
@@ -221,7 +241,10 @@ export class Contract {
                 writable: false,
                 enumerable: true,
                 value: nameFunction(name, async (...args: any[]) => {
-                    if (args.length && (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))) {
+                    if (
+                        args.length &&
+                        (args.length > 3 || !(isObject(args[0]) || isUint8Array(args[0])))
+                    ) {
                         throw new PositionalArgsError();
                     }
 

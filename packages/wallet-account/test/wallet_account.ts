@@ -81,10 +81,16 @@ export const createTransactions = () => {
                 if (params.request_type === 'view_account' && params.account_id === 'signer.near') {
                     return {};
                 }
-                if (params.request_type === 'view_access_key_list' && params.account_id === 'signer.near') {
+                if (
+                    params.request_type === 'view_access_key_list' &&
+                    params.account_id === 'signer.near'
+                ) {
                     return { keys: accountAccessKeys };
                 }
-                if (params.request_type === 'view_access_key' && params.account_id === 'signer.near') {
+                if (
+                    params.request_type === 'view_access_key' &&
+                    params.account_id === 'signer.near'
+                ) {
                     for (const accessKey of accountAccessKeys) {
                         if (accessKey.public_key === params.public_key) {
                             return accessKey;

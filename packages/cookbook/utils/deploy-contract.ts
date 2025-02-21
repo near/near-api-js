@@ -7,7 +7,10 @@ import chalk from 'chalk';
 
 const WASM_PATH = join(__dirname, '/wasm-files/status_message.wasm');
 
-export default async function deployContractCookbook(accountId: string, wasmPath: string = WASM_PATH) {
+export default async function deployContractCookbook(
+    accountId: string,
+    wasmPath: string = WASM_PATH,
+) {
     if (!accountId) {
         console.log(chalk`{red pnpm deployContract -- ACCOUNT_ID [WASM_PATH]}`);
         return;
@@ -31,11 +34,17 @@ export default async function deployContractCookbook(accountId: string, wasmPath
         },
     });
 
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(chalk`{bold.green RESULTS} {white Deployed contract}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(
         chalk`{bold.white Contract Deployed} {white |} {bold.yellow WASM at ${wasmPath} deployed to ${accountId}}`,
     );
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

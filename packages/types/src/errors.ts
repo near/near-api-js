@@ -8,7 +8,9 @@ export class PositionalArgsError extends Error {
 
 export class ArgumentTypeError extends Error {
     constructor(argName: string, argType: string, argValue: any) {
-        super(`Expected ${argType} for '${argName}' argument, but got '${JSON.stringify(argValue)}'`);
+        super(
+            `Expected ${argType} for '${argName}' argument, but got '${JSON.stringify(argValue)}'`,
+        );
     }
 }
 

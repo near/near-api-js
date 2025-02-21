@@ -9,7 +9,10 @@ import {
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
 
-export default async function createMainnetAccountCookbook(accountId: string, newAccountId?: string) {
+export default async function createMainnetAccountCookbook(
+    accountId: string,
+    newAccountId?: string,
+) {
     if (!accountId) {
         console.log(chalk`{red pnpm createMainnetAccount -- CREATOR_ACCOUNT_ID [NEW_ACCOUNT_ID]}`);
         return;
@@ -24,7 +27,8 @@ export default async function createMainnetAccountCookbook(accountId: string, ne
     // create a new key from random data
     const keyPair = generateRandomKeyPair('ed25519');
 
-    const newAccount = newAccountId || `${new Date().valueOf()}-${Math.ceil(Math.random() * 10e12)}.near`;
+    const newAccount =
+        newAccountId || `${new Date().valueOf()}-${Math.ceil(Math.random() * 10e12)}.near`;
 
     await createTopLevelAccount({
         account: accountId,
@@ -41,11 +45,17 @@ export default async function createMainnetAccountCookbook(accountId: string, ne
     // save new account in plaintext filesystem keystore
     await keystore.setKey('mainnet', accountId, keyPair);
 
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(chalk`{bold.green RESULTS} {white Created mainnet account}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(
         chalk`{bold.white New Account} {white |} {bold.yellow ${accountId}} {white |} {bold.yellow ${keyPair.getPublicKey().toString()}}`,
     );
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

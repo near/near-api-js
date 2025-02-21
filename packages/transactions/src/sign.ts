@@ -68,7 +68,14 @@ export async function signTransaction(...args): Promise<[Uint8Array, SignedTrans
     }
     const [receiverId, nonce, actions, blockHash, signer, accountId, networkId] = args;
     const publicKey = await signer.getPublicKey(accountId, networkId);
-    const transaction = createTransaction(accountId, publicKey, receiverId, nonce, actions, blockHash);
+    const transaction = createTransaction(
+        accountId,
+        publicKey,
+        receiverId,
+        nonce,
+        actions,
+        blockHash,
+    );
     return signTransactionObject(transaction, signer, accountId, networkId);
 }
 

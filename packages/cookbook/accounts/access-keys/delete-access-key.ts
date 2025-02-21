@@ -1,6 +1,11 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { deleteAccessKey, getSignerFromKeystore, getTestnetRpcProvider, parseKeyPair } from '@near-js/client';
+import {
+    deleteAccessKey,
+    getSignerFromKeystore,
+    getTestnetRpcProvider,
+    parseKeyPair,
+} from '@near-js/client';
 import type { KeyPairString } from '@near-js/crypto';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 import chalk from 'chalk';
@@ -33,9 +38,17 @@ export default async function deleteAccessKeyCookbook(accountId: string, publicK
         },
     });
 
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
     console.log(chalk`{bold.green RESULTS} {white Deleted access key}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
-    console.log(chalk`{bold.white Deleted Key} {white |} {bold.yellow ${keyPair.getPublicKey().toString()}}`);
-    console.log(chalk`{white ------------------------------------------------------------------------ }`);
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
+    console.log(
+        chalk`{bold.white Deleted Key} {white |} {bold.yellow ${keyPair.getPublicKey().toString()}}`,
+    );
+    console.log(
+        chalk`{white ------------------------------------------------------------------------ }`,
+    );
 }

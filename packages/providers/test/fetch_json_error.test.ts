@@ -25,7 +25,9 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 500 Internal Server Error', async () => {
-        jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 500 })));
+        jest.spyOn(global, 'fetch').mockImplementation(() =>
+            Promise.resolve(new Response('', { status: 500 })),
+        );
 
         await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
             new ProviderError('Internal server error', { cause: 500 }),
@@ -33,7 +35,9 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 408 Timeout Error', async () => {
-        jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 408 })));
+        jest.spyOn(global, 'fetch').mockImplementation(() =>
+            Promise.resolve(new Response('', { status: 408 })),
+        );
 
         await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
             new ProviderError('Timeout error', { cause: 408 }),
@@ -41,7 +45,9 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 400 Request Validation Error', async () => {
-        jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 400 })));
+        jest.spyOn(global, 'fetch').mockImplementation(() =>
+            Promise.resolve(new Response('', { status: 400 })),
+        );
 
         await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
             new ProviderError('Request validation error', { cause: 400 }),
@@ -49,7 +55,9 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 503 Service Unavailable', async () => {
-        jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 503 })));
+        jest.spyOn(global, 'fetch').mockImplementation(() =>
+            Promise.resolve(new Response('', { status: 503 })),
+        );
 
         await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
             new ProviderError(`${RPC_URL} unavailable`, { cause: 503 }),

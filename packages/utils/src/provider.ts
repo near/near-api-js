@@ -3,7 +3,7 @@ import type { FinalExecutionOutcome } from '@near-js/types';
 /** @hidden */
 export function getTransactionLastResult(
     txResult: FinalExecutionOutcome,
-): Exclude<object | string | number | null, Function> {
+): object | string | number | null {
     if (typeof txResult.status === 'object' && typeof txResult.status.SuccessValue === 'string') {
         const value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();
         try {

@@ -13,23 +13,31 @@ export function printTxOutcomeLogsAndFailures({
     contractId,
     outcome,
 }: { contractId: string; outcome: FinalExecutionOutcome }) {
-    const flatLogs = [outcome.transaction_outcome, ...outcome.receipts_outcome].reduce((acc, it) => {
-        const isFailure = typeof it.outcome.status === 'object' && typeof it.outcome.status.Failure === 'object';
-        if (it.outcome.logs.length || isFailure) {
-            return acc.concat({
-                receiptIds: it.outcome.receipt_ids,
-                logs: it.outcome.logs,
-                failure:
-                    typeof it.outcome.status === 'object' && it.outcome.status.Failure !== undefined
-                        ? parseRpcError(it.outcome.status.Failure)
-                        : null,
-            });
-        }
-        return acc;
-    }, []);
+    const flatLogs = [outcome.transaction_outcome, ...outcome.receipts_outcome].reduce(
+        (acc, it) => {
+            const isFailure =
+                typeof it.outcome.status === 'object' &&
+                typeof it.outcome.status.Failure === 'object';
+            if (it.outcome.logs.length || isFailure) {
+                return acc.concat({
+                    receiptIds: it.outcome.receipt_ids,
+                    logs: it.outcome.logs,
+                    failure:
+                        typeof it.outcome.status === 'object' &&
+                        it.outcome.status.Failure !== undefined
+                            ? parseRpcError(it.outcome.status.Failure)
+                            : null,
+                });
+            }
+            return acc;
+        },
+        [],
+    );
 
     for (const result of flatLogs) {
-        Logger.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
+        Logger.log(
+            `Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`,
+        );
         printTxOutcomeLogs({
             contractId,
             logs: result.logs,

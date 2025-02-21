@@ -20,6 +20,8 @@ export default async function accountExists() {
 
     for (const account of ['does-not-exist.mike.testnet', 'mike.testnet']) {
         const succeeded = await isRegisteredAccount(account);
-        console.log(succeeded ? `The account ${account} exists.` : `There is no account ${account}.`);
+        console.log(
+            succeeded ? `The account ${account} exists.` : `There is no account ${account}.`,
+        );
     }
 }

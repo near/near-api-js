@@ -1,7 +1,13 @@
 import { beforeAll, beforeEach, expect, jest, test } from '@jest/globals';
 import { KeyPair } from '@near-js/crypto';
 
-import { createAccount, deployContract, generateUniqueString, networkId, setUpTestConnection } from './test-utils';
+import {
+    createAccount,
+    deployContract,
+    generateUniqueString,
+    networkId,
+    setUpTestConnection,
+} from './test-utils';
 
 let nearjs;
 let workingAccount;
@@ -26,7 +32,12 @@ beforeEach(async () => {
 
 test('make function call using access key', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '2000000000000000000000000');
+    await workingAccount.addKey(
+        keyPair.getPublicKey(),
+        contractId,
+        '',
+        '2000000000000000000000000',
+    );
 
     // Override in the key store the workingAccount key to the given access key.
     await nearjs.connection.signer.keyStore.setKey(networkId, workingAccount.accountId, keyPair);
@@ -41,7 +52,11 @@ test('remove access key no longer works', async () => {
     await nearjs.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000);
     await nearjs.accountCreator.masterAccount.deleteKey(publicKey);
     // Override in the key store the workingAccount key to the given access key.
-    await nearjs.connection.signer.keyStore.setKey(networkId, nearjs.accountCreator.masterAccount.accountId, keyPair);
+    await nearjs.connection.signer.keyStore.setKey(
+        networkId,
+        nearjs.accountCreator.masterAccount.accountId,
+        keyPair,
+    );
     let failed = true;
     try {
         await contract.setValue({ args: { value: 'test' } });
@@ -62,11 +77,24 @@ test('remove access key no longer works', async () => {
 
 test('view account details after adding access keys', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
-    await nearjs.accountCreator.masterAccount.addKey(keyPair.getPublicKey(), contractId, '', 1000000000);
+    await nearjs.accountCreator.masterAccount.addKey(
+        keyPair.getPublicKey(),
+        contractId,
+        '',
+        1000000000,
+    );
 
-    const contract2 = await deployContract(nearjs.accountCreator.masterAccount, generateUniqueString('test_contract2'));
+    const contract2 = await deployContract(
+        nearjs.accountCreator.masterAccount,
+        generateUniqueString('test_contract2'),
+    );
     const keyPair2 = KeyPair.fromRandom('ed25519');
-    await nearjs.accountCreator.masterAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', 2000000000);
+    await nearjs.accountCreator.masterAccount.addKey(
+        keyPair2.getPublicKey(),
+        contract2.contractId,
+        '',
+        2000000000,
+    );
 
     const details = await nearjs.accountCreator.masterAccount.getAccountDetails();
     const authorizedApps = [
@@ -95,14 +123,20 @@ test('loading account after adding a full key', async () => {
     const accessKeys = await workingAccount.getAccessKeys();
 
     expect(accessKeys.length).toBe(2);
-    const addedKey = accessKeys.find((item) => item.public_key === keyPair.getPublicKey().toString());
+    const addedKey = accessKeys.find(
+        (item) => item.public_key === keyPair.getPublicKey().toString(),
+    );
     expect(addedKey).toBeTruthy();
     expect(addedKey.access_key.permission).toEqual('FullAccess');
 });
 
 test('load invalid key pair', async () => {
     // Override in the key store with invalid key pair
-    await nearjs.connection.signer.keyStore.setKey(networkId, nearjs.accountCreator.masterAccount.accountId, '');
+    await nearjs.connection.signer.keyStore.setKey(
+        networkId,
+        nearjs.accountCreator.masterAccount.accountId,
+        '',
+    );
     let failed = true;
     try {
         await contract.setValue({ args: { value: 'test' } });

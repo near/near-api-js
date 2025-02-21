@@ -7,7 +7,7 @@ export class ConsoleLogger implements LoggerService {
         return this.logLevels.includes(level);
     };
 
-    private print(level: LogLevel, message: any, ...optionalParams: any[]): void {
+    private print(level: LogLevel, message, ...optionalParams: any[]) {
         switch (level) {
             case 'error':
             case 'fatal':

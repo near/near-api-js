@@ -39,7 +39,11 @@ function fullAccessKey(): AccessKey {
  * @param allowance An optional allowance (maximum amount) for the function call. Default: Unlimited.
  * @returns A new access key with function call permission.
  */
-function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: bigint): AccessKey {
+function functionCallAccessKey(
+    receiverId: string,
+    methodNames: string[],
+    allowance?: bigint,
+): AccessKey {
     return new AccessKey({
         nonce: 0n,
         permission: new AccessKeyPermission({

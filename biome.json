@@ -14,7 +14,7 @@
         "enabled": true,
         "indentStyle": "space",
         "indentWidth": 4,
-        "lineWidth": 120,
+        "lineWidth": 100,
         "lineEnding": "lf"
     },
     "organizeImports": {
@@ -27,6 +27,10 @@
             "correctness": {
                 "noUnusedImports": "error",
                 "noUnusedVariables": "error"
+            },
+            "suspicious": {
+                "noExplicitAny": "warn",
+                "noImplicitAnyLet": "warn"
             }
         }
     },

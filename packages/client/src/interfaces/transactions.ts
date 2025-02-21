@@ -6,7 +6,9 @@ import type { TransactionComposer } from '../transactions';
 import type { SignAndSendTransactionDependency, SignerDependency } from './dependencies';
 import type { RpcProviderQueryParams } from './view';
 
-export interface SignAndSendParams extends SignAndSendTransactionDependency, RpcProviderQueryParams {}
+export interface SignAndSendParams
+    extends SignAndSendTransactionDependency,
+        RpcProviderQueryParams {}
 
 export interface ExternalActionTransaction extends SignAndSendParams {
     receiver: string;
@@ -92,4 +94,6 @@ export interface MetaTransactionOptions extends TransactionOptions {
     maxBlockHeight?: bigint;
 }
 
-export interface SignedTransactionOptions extends TransactionOptions, SignAndSendTransactionDependency {}
+export interface SignedTransactionOptions
+    extends TransactionOptions,
+        SignAndSendTransactionDependency {}
