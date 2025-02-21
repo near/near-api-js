@@ -106,11 +106,8 @@ function trimLeadingZeroes(value: string): string {
  * @returns string A value with commas
  */
 function formatWithCommas(value: string): string {
-    const pattern = /(-?\d+)(\d{3})/;
-    while (pattern.test(value)) {
-        value = value.replace(pattern, '$1,$2');
-    }
-    return value;
+    const formatter = new Intl.NumberFormat('en-US');
+    return formatter.format(Number(value));
 }
 
 /**

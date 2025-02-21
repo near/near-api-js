@@ -191,9 +191,9 @@ export class Account implements IntoConnection {
         actions,
         returnError,
     }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
-        let txHash;
-        let signedTx;
-        // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
+        let txHash: Uint8Array;
+        let signedTx: SignedTransaction;
+
         const result = await exponentialBackoff(
             TX_NONCE_RETRY_WAIT,
             TX_NONCE_RETRY_NUMBER,

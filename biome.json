@@ -26,11 +26,22 @@
             "recommended": true,
             "correctness": {
                 "noUnusedImports": "error",
-                "noUnusedVariables": "error"
+                "noUnusedVariables": "error",
+                "noConstructorReturn": "warn"
             },
             "suspicious": {
                 "noExplicitAny": "warn",
                 "noImplicitAnyLet": "warn"
+            },
+            "style": {
+                "noParameterAssign": "warn"
+            },
+            "complexity": {
+                "noForEach": "warn",
+                "noStaticOnlyClass": "warn"
+            },
+            "performance": {
+                "noAccumulatingSpread": "warn"
             }
         }
     },

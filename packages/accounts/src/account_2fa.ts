@@ -254,7 +254,9 @@ export class Account2FA extends AccountMultisig {
         }
 
         let deleteAllRequestsError;
-        await this.deleteAllRequests().catch((e) => (deleteAllRequestsError = e));
+        await this.deleteAllRequests().catch((e) => {
+            deleteAllRequestsError = e;
+        });
 
         const cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch(
             (e) => {
