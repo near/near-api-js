@@ -18,17 +18,18 @@ jobs:
     environment: NPM
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4.0.0
+        uses: pnpm/action-setup@v4
         with:
-          version: 9.4.0
+          version: 10.4.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.15.0
+          node-version: 20.18.3
+          cache: pnpm
 
       - name: Install Dependencies
         run: pnpm install
