@@ -2,7 +2,7 @@ import {
   KeyPair,
   type KeyPairString,
 } from '@near-js/crypto';
-import { KeyStore } from '@near-js/keystores';
+import type { KeyStore } from '@near-js/keystores';
 import { InMemorySigner } from '@near-js/signers';
 
 import type {

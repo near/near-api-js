@@ -1,5 +1,5 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { ContractState } from './types';
+import type { ContractState } from './types';
 
 const notImplemented =
     (name: string) =>

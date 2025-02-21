@@ -3,7 +3,7 @@
  * @module
  */
 
-import { BlockReference } from './protocol';
+import type { BlockReference } from './protocol';
 
 export interface ViewAccountRequest {
     request_type: 'view_account';

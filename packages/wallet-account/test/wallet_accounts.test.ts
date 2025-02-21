@@ -26,7 +26,7 @@ global.document = {
 let history;
 let nearFake;
 let walletConnection;
-let keyStore = new InMemoryKeyStore();
+const keyStore = new InMemoryKeyStore();
 describe("Wallet account tests", () => {
     beforeEach(() => {
         keyStore.clear();
@@ -171,7 +171,7 @@ describe("Wallet account tests", () => {
         });
 
         afterEach(async () => {
-            let accounts = await keyStore.getAccounts("networkId");
+            const accounts = await keyStore.getAccounts("networkId");
             expect(accounts).toHaveLength(1);
             expect(accounts[0]).toMatch(/^pending_key.+/);
             expect(url.parse(lastRedirectUrl, true)).toMatchObject({
@@ -198,7 +198,7 @@ describe("Wallet account tests", () => {
             failureUrl: "http://example.com/fail",
         });
 
-        let accounts = await keyStore.getAccounts("networkId");
+        const accounts = await keyStore.getAccounts("networkId");
         expect(accounts).toHaveLength(1);
         expect(accounts[0]).toMatch(/^pending_key.+/);
         expect(url.parse(lastRedirectUrl, true)).toMatchObject({
@@ -366,7 +366,7 @@ describe("Wallet account tests", () => {
                     params.request_type === "view_access_key" &&
                     params.account_id === "signer.near"
                 ) {
-                    for (let accessKey of accountAccessKeys) {
+                    for (const accessKey of accountAccessKeys) {
                         if (accessKey.public_key === params.public_key) {
                             return accessKey;
                         }

@@ -1,11 +1,11 @@
 import { PublicKey } from '@near-js/crypto';
-import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
+import { type FinalExecutionOutcome, TypedError, type FunctionCallPermissionView } from '@near-js/types';
 import { actionCreators } from '@near-js/transactions';
 import { Logger } from '@near-js/utils'
 
-import { SignAndSendTransactionOptions } from './account';
+import type { SignAndSendTransactionOptions } from './account';
 import { AccountMultisig } from './account_multisig';
-import { Connection } from './connection';
+import type { Connection } from './connection';
 import {
     MULTISIG_CHANGE_METHODS,
     MULTISIG_CONFIRM_METHODS,

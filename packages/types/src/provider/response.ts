@@ -2,7 +2,7 @@
  * NEAR RPC API request types and responses
  * @module
  */
-import { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol';
+import type { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol';
 
 export type SerializedReturnValue = string | number | bigint | boolean | object;
 

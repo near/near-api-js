@@ -1,9 +1,9 @@
-import { Action, actionCreators } from '@near-js/transactions';
-import { FinalExecutionOutcome } from '@near-js/types';
+import { type Action, actionCreators } from '@near-js/transactions';
+import type { FinalExecutionOutcome } from '@near-js/types';
 import { Logger } from '@near-js/utils';
 
-import { Account, SignAndSendTransactionOptions } from './account';
-import { Connection } from './connection';
+import { Account, type SignAndSendTransactionOptions } from './account';
+import type { Connection } from './connection';
 import {
     MULTISIG_ALLOWANCE,
     MULTISIG_CHANGE_METHODS,
@@ -16,9 +16,9 @@ import { MultisigDeleteRequestRejectionError, MultisigStateStatus } from './type
 const { deployContract, functionCall } = actionCreators;
 
 enum MultisigCodeStatus {
-    INVALID_CODE,
-    VALID_CODE,
-    UNKNOWN_CODE
+    INVALID_CODE = 0,
+    VALID_CODE = 1,
+    UNKNOWN_CODE = 2
 }
 
 // in memory request cache for node w/o localStorage
@@ -99,7 +99,7 @@ export class AccountMultisig extends Account {
         this.setRequest({
             accountId,
             actions,
-            requestId: parseInt(Buffer.from(status.SuccessValue, 'base64').toString('ascii'), 10)
+            requestId: Number.parseInt(Buffer.from(status.SuccessValue, 'base64').toString('ascii'), 10)
         });
 
         if (this.onAddRequestResult) {

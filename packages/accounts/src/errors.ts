@@ -1,4 +1,4 @@
-import { ValidationError } from 'is-my-json-valid';
+import type { ValidationError } from 'is-my-json-valid';
 
 export class UnsupportedSerializationError extends Error {
     constructor(methodName: string, serializationType: string) {

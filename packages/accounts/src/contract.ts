@@ -4,9 +4,9 @@ import { LocalViewExecution } from "./local-view-execution";
 import validator from "is-my-json-valid";
 import depd from "depd";
 import {
-    AbiFunction,
+    type AbiFunction,
     AbiFunctionKind,
-    AbiRoot,
+    type AbiRoot,
     AbiSerializationType,
 } from "near-abi";
 
@@ -17,8 +17,8 @@ import {
     ArgumentSchemaError,
     ConflictingOptions,
 } from "./errors";
-import { IntoConnection } from "./interface";
-import { Connection } from "./connection";
+import type { IntoConnection } from "./interface";
+import type { Connection } from "./connection";
 import { viewFunction } from "./utils";
 
 // Makes `function.name` return given name

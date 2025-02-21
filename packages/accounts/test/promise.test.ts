@@ -28,7 +28,7 @@ describe('with promises', () => {
     beforeEach(async () => {
         oldLog = console.log;
         logs = [];
-        console.log = function(...args: any[]) {
+        console.log = (...args: any[]) => {
             logs.push(Array.from(args).join(' '));
         };
     });

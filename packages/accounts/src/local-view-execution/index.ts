@@ -1,12 +1,12 @@
-import { BlockReference, ContractCodeView } from '@near-js/types';
+import type { BlockReference, ContractCodeView } from '@near-js/types';
 import { printTxOutcomeLogs } from '@near-js/utils';
-import { FunctionCallOptions } from '../interface';
+import type { FunctionCallOptions } from '../interface';
 import { Storage } from './storage';
 import { Runtime } from './runtime';
-import { ContractState } from './types';
+import type { ContractState } from './types';
 import { viewState } from '../utils';
-import { Connection } from '../connection';
-import { IntoConnection } from '../interface';
+import type { Connection } from '../connection';
+import type { IntoConnection } from '../interface';
 
 interface ViewFunctionCallOptions extends FunctionCallOptions {
     blockQuery?: BlockReference

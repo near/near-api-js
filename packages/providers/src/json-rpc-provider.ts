@@ -13,34 +13,34 @@ import {
     ServerError,
 } from '@near-js/utils';
 import {
-    AccessKeyWithPublicKey,
-    BlockId,
-    BlockReference,
-    BlockResult,
-    BlockChangeResult,
-    ChangeResult,
-    ChunkId,
-    ChunkResult,
-    EpochValidatorInfo,
-    FinalExecutionOutcome,
-    GasPrice,
-    LightClientProof,
-    LightClientProofRequest,
-    NextLightClientBlockRequest,
-    NextLightClientBlockResponse,
-    NearProtocolConfig,
-    NodeStatusResult,
-    QueryResponseKind,
+    type AccessKeyWithPublicKey,
+    type BlockId,
+    type BlockReference,
+    type BlockResult,
+    type BlockChangeResult,
+    type ChangeResult,
+    type ChunkId,
+    type ChunkResult,
+    type EpochValidatorInfo,
+    type FinalExecutionOutcome,
+    type GasPrice,
+    type LightClientProof,
+    type LightClientProofRequest,
+    type NextLightClientBlockRequest,
+    type NextLightClientBlockResponse,
+    type NearProtocolConfig,
+    type NodeStatusResult,
+    type QueryResponseKind,
     TypedError,
 } from '@near-js/types';
 import {
     encodeTransaction,
-    SignedTransaction,
+    type SignedTransaction,
 } from '@near-js/transactions';
 
 import { Provider } from './provider';
-import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
-import { TxExecutionStatus } from '@near-js/types';
+import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
+import type { TxExecutionStatus } from '@near-js/types';
 
 /** @hidden */
 // Default number of retries before giving up on a request.

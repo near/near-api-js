@@ -1,14 +1,14 @@
 import { PublicKey } from '@near-js/crypto';
 import {
-  Action,
+  type Action,
   actionCreators,
-  DelegateAction,
-  Signature,
+  type DelegateAction,
+  type Signature,
   Transaction,
 } from '@near-js/transactions';
 import { baseDecode, DEFAULT_FUNCTION_CALL_GAS } from '@near-js/utils';
-import { BlockHash } from '@near-js/types';
-import { TransactionOptions } from '../../interfaces';
+import type { BlockHash } from '@near-js/types';
+import type { TransactionOptions } from '../../interfaces';
 
 export class TransactionComposer {
   protected actions: Action[] = [];

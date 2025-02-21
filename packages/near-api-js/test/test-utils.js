@@ -33,7 +33,7 @@ async function setUpTestConnection() {
 // Generate some unique string of length at least RANDOM_ACCOUNT_LENGTH with a given prefix using the alice nonce.
 function generateUniqueString(prefix) {
     let result = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
-    let add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
+    const add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
     for (let i = add_symbols; i > 0; --i) result += '0';
     return result;
 }
@@ -83,7 +83,7 @@ async function deployContract(workingAccount, contractId) {
 }
 
 function sleep(time) {
-    return new Promise(function (resolve) {
+    return new Promise((resolve) => {
         setTimeout(resolve, time);
     });
 }

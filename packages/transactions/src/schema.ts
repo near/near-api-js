@@ -1,13 +1,13 @@
-import { PublicKey } from '@near-js/crypto';
-import { deserialize, serialize, Schema } from 'borsh';
+import type { PublicKey } from '@near-js/crypto';
+import { deserialize, serialize, type Schema } from 'borsh';
 
-import {
+import type {
     Action,
     SignedDelegate,
 } from './actions';
-import { DelegateAction } from './delegate';
+import type { DelegateAction } from './delegate';
 import { DelegateActionPrefix } from './prefix';
-import { Signature } from './signature';
+import type { Signature } from './signature';
 
 /**
  * Borsh-encode a delegate action for inclusion as an action within a meta transaction

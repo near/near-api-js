@@ -1,7 +1,7 @@
 import type { FinalExecutionOutcome } from '@near-js/types';
 
 import { KITWALLET_FUNDED_TESTNET_ACCOUNT_ENDPOINT } from './constants';
-import { NewAccountParams } from './interfaces';
+import type { NewAccountParams } from './interfaces';
 
 interface CreateFundedTestnetAccountParams extends NewAccountParams {
   endpointUrl?: string;

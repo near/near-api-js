@@ -24,8 +24,8 @@ export {
     encodeTransaction
 } from '@near-js/transactions';
 
-import { PublicKey } from '@near-js/crypto';
-import { AccessKey, actionCreators, stringifyJsonOrBytes } from '@near-js/transactions';
+import type { PublicKey } from '@near-js/crypto';
+import { type AccessKey, actionCreators, type stringifyJsonOrBytes } from '@near-js/transactions';
 
 export const addKey = (publicKey: PublicKey, accessKey: AccessKey) => actionCreators.addKey(publicKey, accessKey);
 export const createAccount = () => actionCreators.createAccount();

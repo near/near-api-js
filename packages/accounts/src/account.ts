@@ -2,26 +2,26 @@ import { PublicKey } from '@near-js/crypto';
 import { exponentialBackoff } from '@near-js/providers';
 import {
     actionCreators,
-    Action,
+    type Action,
     buildDelegateAction,
     signDelegateAction,
     signTransaction,
-    SignedDelegate,
-    SignedTransaction,
+    type SignedDelegate,
+    type SignedTransaction,
     stringifyJsonOrBytes,
 } from '@near-js/transactions';
 import {
     PositionalArgsError,
-    FinalExecutionOutcome,
+    type FinalExecutionOutcome,
     TypedError,
     ErrorContext,
-    AccountView,
-    AccessKeyView,
-    AccessKeyViewRaw,
-    AccessKeyList,
-    AccessKeyInfoView,
-    FunctionCallPermissionView,
-    BlockReference,
+    type AccountView,
+    type AccessKeyView,
+    type AccessKeyViewRaw,
+    type AccessKeyList,
+    type AccessKeyInfoView,
+    type FunctionCallPermissionView,
+    type BlockReference,
 } from '@near-js/types';
 import {
     baseDecode,
@@ -32,9 +32,9 @@ import {
     printTxOutcomeLogsAndFailures,
 } from '@near-js/utils';
 
-import { Connection } from './connection';
+import type { Connection } from './connection';
 import { viewFunction, viewState } from './utils';
-import { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface';
+import type { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface';
 
 const {
     addKey,

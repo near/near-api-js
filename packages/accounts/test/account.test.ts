@@ -2,7 +2,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, jest, test } from '@
 import { KeyType } from '@near-js/crypto';
 import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { actionCreators } from '@near-js/transactions';
-import { BlockResult, TypedError } from '@near-js/types';
+import { type BlockResult, TypedError } from '@near-js/types';
 import * as fs from 'fs';
 
 import { Account, Contract } from '../src';
@@ -174,13 +174,13 @@ describe('with deploy contract', () => {
             gas: 300000000000000
         })).rejects.toThrow(/Smart contract panicked: expected to fail./);
         expect(logs.length).toEqual(7);
-        expect(logs[0]).toMatch(new RegExp('^Receipts: \\w+, \\w+, \\w+$'));
+        expect(logs[0]).toMatch(/^Receipts: \w+, \w+, \w+$/);
         //  Log [test_contract1591458385248117]: test_contract1591458385248117
         expect(logs[1]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ${contractId}$`));
-        expect(logs[2]).toMatch(new RegExp('^Receipt: \\w+$'));
+        expect(logs[2]).toMatch(/^Receipt: \w+$/);
         //   Log [test_contract1591459677449181]: log before planned panic
         expect(logs[3]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before planned panic$`));
-        expect(logs[4]).toMatch(new RegExp('^Receipt: \\w+$'));
+        expect(logs[4]).toMatch(/^Receipt: \w+$/);
         expect(logs[5]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: log before assert$`));
         expect(logs[6]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });

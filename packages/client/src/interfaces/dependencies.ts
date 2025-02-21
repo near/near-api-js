@@ -1,7 +1,7 @@
 import type { PublicKey } from '@near-js/crypto';
 
 import type { RpcQueryProvider } from './providers';
-import { FullAccessKey, FunctionCallAccessKey } from './view';
+import type { FullAccessKey, FunctionCallAccessKey } from './view';
 
 interface Dependent<T> {
   deps: T;

@@ -5,7 +5,7 @@ import {
   parseKeyPair,
 } from '@near-js/client';
 import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
-import { type KeyPairString } from '@near-js/crypto';
+import type { KeyPairString } from '@near-js/crypto';
 import chalk from 'chalk';
 import { join } from 'node:path';
 import { homedir } from 'node:os';

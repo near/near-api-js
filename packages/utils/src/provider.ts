@@ -1,4 +1,4 @@
-import { FinalExecutionOutcome } from '@near-js/types';
+import type { FinalExecutionOutcome } from '@near-js/types';
 
 /** @hidden */
 export function getTransactionLastResult(txResult: FinalExecutionOutcome): Exclude<object | string | number | null, Function> {

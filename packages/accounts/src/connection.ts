@@ -1,6 +1,6 @@
-import { Signer, InMemorySigner } from '@near-js/signers';
-import { Provider, JsonRpcProvider, FailoverRpcProvider } from '@near-js/providers';
-import { IntoConnection } from './interface';
+import { type Signer, InMemorySigner } from '@near-js/signers';
+import { type Provider, JsonRpcProvider, FailoverRpcProvider } from '@near-js/providers';
+import type { IntoConnection } from './interface';
 
 /**
  * @param config Contains connection info details

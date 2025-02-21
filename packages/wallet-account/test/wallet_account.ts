@@ -25,7 +25,7 @@ global.document = {
 let history;
 let nearFake;
 let walletConnection;
-let keyStore = new InMemoryKeyStore();
+const keyStore = new InMemoryKeyStore();
 export const createTransactions = () => {
     beforeEach(() => {
         keyStore.clear();
@@ -86,7 +86,7 @@ export const createTransactions = () => {
                     return { keys: accountAccessKeys };
                 }
                 if (params.request_type === 'view_access_key' && params.account_id === 'signer.near') {
-                    for (let accessKey of accountAccessKeys) {
+                    for (const accessKey of accountAccessKeys) {
                         if (accessKey.public_key === params.public_key) {
                             return accessKey;
                         }
@@ -113,8 +113,8 @@ export const createTransactions = () => {
 
     describe('requests transaction signing with 2fa access key', () => {
         beforeEach(async () => {
-            let localKeyPair = KeyPair.fromRandom('ed25519');
-            let walletKeyPair = KeyPair.fromRandom('ed25519');
+            const localKeyPair = KeyPair.fromRandom('ed25519');
+            const walletKeyPair = KeyPair.fromRandom('ed25519');
             setupWalletConnectionForSigning({
                 // @ts-ignore
                 allKeys: [ walletKeyPair.publicKey.toString() ],

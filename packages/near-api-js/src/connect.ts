@@ -33,7 +33,7 @@
  */
 import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
-import { Near, NearConfig } from './near';
+import { Near, type NearConfig } from './near';
 import { Logger } from '@near-js/utils';
 
 export interface ConnectConfig extends NearConfig {

@@ -3,8 +3,8 @@ import type { Transaction } from '@near-js/transactions';
 import type { TransactionComposer } from '../transactions';
 import type { SignAndSendTransactionDependency, SignerDependency } from './dependencies';
 import type { RpcProviderQueryParams } from './view';
-import { BlockHash } from '@near-js/types';
-import { PublicKey } from '@near-js/crypto';
+import type { BlockHash } from '@near-js/types';
+import type { PublicKey } from '@near-js/crypto';
 
 export interface SignAndSendParams extends SignAndSendTransactionDependency, RpcProviderQueryParams {}
 

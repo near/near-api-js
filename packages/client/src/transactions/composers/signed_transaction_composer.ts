@@ -6,7 +6,7 @@ import type { BlockReference, SerializedReturnValue } from '@near-js/types';
 import { getTransactionLastResult } from '@near-js/utils';
 
 import { DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL } from '../../constants';
-import {
+import type {
   AccessKeySigner,
   MessageSigner,
   MetaTransactionOptions,

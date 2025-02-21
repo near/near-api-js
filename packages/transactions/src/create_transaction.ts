@@ -1,6 +1,6 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 
-import { Action } from './actions';
+import type { Action } from './actions';
 import { Transaction } from './schema';
 
 /**

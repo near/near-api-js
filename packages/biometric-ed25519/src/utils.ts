@@ -1,7 +1,7 @@
 import base64 from '@hexagon/base64';
 import { p256 } from '@noble/curves/p256';
 import { sha256 } from '@noble/hashes/sha256';
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 
 export const preformatMakeCredReq = (makeCredReq) => {
     const challenge = base64.toArrayBuffer(makeCredReq.challenge, true);

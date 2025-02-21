@@ -1,7 +1,7 @@
-import { Signer } from '@near-js/signers';
+import type { Signer } from '@near-js/signers';
 import { sha256 } from '@noble/hashes/sha256';
 
-import { Action, SignedDelegate } from './actions';
+import { type Action, SignedDelegate } from './actions';
 import { createTransaction } from './create_transaction';
 import type { DelegateAction } from './delegate';
 import { encodeDelegateAction, encodeTransaction, SignedTransaction, Transaction } from './schema';

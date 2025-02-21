@@ -7,8 +7,8 @@ export enum MultisigDeleteRequestRejectionError {
 }
 
 export enum MultisigStateStatus {
-    INVALID_STATE,
-    STATE_NOT_INITIALIZED,
-    VALID_STATE,
-    UNKNOWN_STATE
+    INVALID_STATE = 0,
+    STATE_NOT_INITIALIZED = 1,
+    VALID_STATE = 2,
+    UNKNOWN_STATE = 3
 }

@@ -4,7 +4,7 @@ import path from 'node:path';
 async function enumerateContents(contentPath) {
   const dir = await opendir(contentPath);
   let files = [];
-  for await (let entry of dir) {
+  for await (const entry of dir) {
     if (entry.name === 'node_modules') {
       continue;
     }
@@ -24,10 +24,10 @@ async function cjsIfy() {
   const [,, inputPath] = process.argv;
   const basePath = path.resolve(process.cwd(), inputPath);
 
-  for (let projectFilePath of await enumerateContents(basePath)) {
+  for (const projectFilePath of await enumerateContents(basePath)) {
     let contents = (await readFile(projectFilePath)).toString();
     const relativeImports = [...contents.matchAll(/require\("(\.\.?\/+[^"]+)"\)/ig)];
-    for (let localImport of relativeImports) {
+    for (const localImport of relativeImports) {
       const [matchedText, relativePath] = [...localImport];
       if (relativePath.endsWith('.json')) {
         continue;
@@ -53,6 +53,6 @@ async function cjsIfy() {
   }
 }
 
-(async function() {
+((async () => {
   await cjsIfy();
-}());
+})());

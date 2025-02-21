@@ -17,8 +17,8 @@ import {
     sanitizeGetKeyResponse
 } from './utils';
 import { Fido2 } from './fido2';
-import { AssertionResponse } from './index.d';
-import { KeyPairString } from '@near-js/crypto';
+import type { AssertionResponse } from './index.d';
+import type { KeyPairString } from '@near-js/crypto';
 
 const CHALLENGE_TIMEOUT_MS = 90 * 1000;
 const RP_NAME = 'NEAR_API_JS_WEBAUTHN';

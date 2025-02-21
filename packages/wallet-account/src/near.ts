@@ -9,16 +9,16 @@
  */
 import {
     Account,
-    AccountCreator,
+    type AccountCreator,
     Connection,
     LocalAccountCreator,
     UrlAccountCreator,
 } from '@near-js/accounts';
-import { PublicKey } from '@near-js/crypto';
-import { KeyStore } from '@near-js/keystores';
-import { Signer } from '@near-js/signers';
-import { LoggerService } from '@near-js/utils';
-import { Provider } from '@near-js/providers';
+import type { PublicKey } from '@near-js/crypto';
+import type { KeyStore } from '@near-js/keystores';
+import type { Signer } from '@near-js/signers';
+import type { LoggerService } from '@near-js/utils';
+import type { Provider } from '@near-js/providers';
 
 export interface NearConfig {
     /** Holds {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} for signing transactions */

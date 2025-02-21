@@ -1,4 +1,4 @@
-import { CurveType, KeyPairString } from './constants';
+import type { CurveType, KeyPairString } from './constants';
 import { KeyPairBase } from './key_pair_base';
 import { KeyPairEd25519 } from './key_pair_ed25519';
 import { KeyPairSecp256k1 } from './key_pair_secp256k1';

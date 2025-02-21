@@ -3,13 +3,13 @@ import EventEmitter from 'events';
 import {IFrameRPCError} from './iframe-rpc-error';
 import {
     windowReceiver,
-    IMessageEvent,
-    IMessagePoster,
-    IMessageReceiver,
-    IRPCMethod,
-    IRPCResponse,
+    type IMessageEvent,
+    type IMessagePoster,
+    type IMessageReceiver,
+    type IRPCMethod,
+    type IRPCResponse,
     isRPCMessage,
-    RPCMessage,
+    type RPCMessage,
 } from './types';
 
 function responseObjToError(obj: { code: number; message: string; }) {

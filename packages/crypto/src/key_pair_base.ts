@@ -1,5 +1,5 @@
 import type { KeyPairString } from './constants';
-import { PublicKey } from './public_key';
+import type { PublicKey } from './public_key';
 
 export interface Signature {
     signature: Uint8Array;

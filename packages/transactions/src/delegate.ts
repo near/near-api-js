@@ -1,7 +1,7 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 
 import { actionCreators } from './action_creators';
-import { Action } from './actions';
+import type { Action } from './actions';
 
 const {
     addKey,

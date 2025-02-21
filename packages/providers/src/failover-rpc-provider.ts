@@ -7,30 +7,30 @@
  */
 import { Logger } from '@near-js/utils';
 import {
-    AccessKeyWithPublicKey,
-    BlockId,
-    BlockReference,
-    BlockResult,
-    BlockChangeResult,
-    ChangeResult,
-    ChunkId,
-    ChunkResult,
-    EpochValidatorInfo,
-    FinalExecutionOutcome,
-    GasPrice,
-    LightClientProof,
-    LightClientProofRequest,
-    NextLightClientBlockRequest,
-    NextLightClientBlockResponse,
-    NearProtocolConfig,
-    NodeStatusResult,
-    QueryResponseKind,
+    type AccessKeyWithPublicKey,
+    type BlockId,
+    type BlockReference,
+    type BlockResult,
+    type BlockChangeResult,
+    type ChangeResult,
+    type ChunkId,
+    type ChunkResult,
+    type EpochValidatorInfo,
+    type FinalExecutionOutcome,
+    type GasPrice,
+    type LightClientProof,
+    type LightClientProofRequest,
+    type NextLightClientBlockRequest,
+    type NextLightClientBlockResponse,
+    type NearProtocolConfig,
+    type NodeStatusResult,
+    type QueryResponseKind,
     TypedError,
-    RpcQueryRequest,
+    type RpcQueryRequest,
 } from '@near-js/types';
-import { SignedTransaction } from '@near-js/transactions';
+import type { SignedTransaction } from '@near-js/transactions';
 import { Provider } from './provider';
-import { TxExecutionStatus } from '@near-js/types';
+import type { TxExecutionStatus } from '@near-js/types';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).

@@ -1,4 +1,4 @@
-import { KeyPair, KeyPairString } from '@near-js/crypto';
+import { KeyPair, type KeyPairString } from '@near-js/crypto';
 import { MultiContractKeyStore } from '@near-js/keystores';
 
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';

@@ -2,8 +2,8 @@ import { baseDecode, baseEncode } from '@near-js/utils';
 import randombytes from 'randombytes';
 import secp256k1 from 'secp256k1';
 
-import { KeyPairString, KeySize, KeyType } from './constants';
-import { KeyPairBase, Signature } from './key_pair_base';
+import { type KeyPairString, KeySize, KeyType } from './constants';
+import { KeyPairBase, type Signature } from './key_pair_base';
 import { PublicKey } from './public_key';
 
 /**
