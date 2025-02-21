@@ -165,7 +165,7 @@ describe('Wallet account tests', () => {
                     success_url: 'http://example.com/success',
                     failure_url: 'http://example.com/fail',
                     public_key: (await keyStore.getKey('networkId', accounts[0])).publicKey
-                    // @ts-expect-error test input
+                        // @ts-expect-error test input
                         .toString(),
                 },
             });
@@ -192,7 +192,7 @@ describe('Wallet account tests', () => {
                 success_url: 'http://example.com/success',
                 failure_url: 'http://example.com/fail',
                 public_key: (await keyStore.getKey('networkId', accounts[0])).publicKey
-                // @ts-expect-error test input
+                    // @ts-expect-error test input
                     .toString(),
             },
         });
