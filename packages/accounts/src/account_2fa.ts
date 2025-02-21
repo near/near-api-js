@@ -97,8 +97,8 @@ export class Account2FA extends AccountMultisig {
             .map((ak) => ak.public_key)
             .map(toPK);
 
-        // @ts-ignore
         const confirmOnlyKey = toPK(
+            // @ts-ignore
             (await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey,
         );
 
@@ -224,8 +224,8 @@ export class Account2FA extends AccountMultisig {
                     perm.method_names.includes('add_request_and_confirm')
                 );
             });
-        // @ts-ignore
         const confirmOnlyKey = PublicKey.from(
+            // @ts-ignore
             (await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey,
         );
         return [

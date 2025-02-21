@@ -43,9 +43,9 @@ export class Fido2 {
             factor: 'either',
         };
 
-        // @ts-expect-error `factor` is defined as a union of strings for which "either" is valid...
         const regResult = await this.f2l.attestationResult(
             clientAttestationResponse,
+            // @ts-expect-error `factor` is defined as a union of strings for which "either" is valid...
             attestationExpectations,
         );
         return regResult;
