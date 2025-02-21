@@ -8,8 +8,9 @@
     "build": "pnpm compile:esm && pnpm compile:cjs",
     "compile:esm": "tsc -p tsconfig.json",
     "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
-    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
-    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --fix"
+    "lint": "biome lint .",
+    "lint:fix": "biome lint . --write",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",

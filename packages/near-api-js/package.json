@@ -48,11 +48,8 @@
         "dev": "pnpm compile -w",
         "build": "pnpm compile",
         "test": "jest test --passWithNoTests",
-        "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
-        "lint:src": "eslint --ext .ts src",
-        "lint:fix": "pnpm lint:src:fix && pnpm lint:test:fix",
-        "lint:src:fix": "eslint --ext .ts --fix src",
-        "lint:test:fix": "eslint --ext .js --fix test",
+        "lint": "biome lint .",
+        "lint:fix": "biome lint . --write",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "pnpm rimraf lib"
