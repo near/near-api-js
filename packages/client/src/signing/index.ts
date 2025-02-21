@@ -1,5 +1,5 @@
 export {
-  getSignerFromKeyPair,
-  getSignerFromKeystore,
-  getSignerFromPrivateKey,
+    getSignerFromKeyPair,
+    getSignerFromKeystore,
+    getSignerFromPrivateKey,
 } from './signers';

@@ -10,8 +10,6 @@ export const KeySize = {
     SECP256k1_PUBLIC_KEY: 64,
 };
 
-export type CurveType =
-    'ed25519' | 'ED25519'
-    | 'secp256k1' | 'SECP256K1';
+export type CurveType = 'ed25519' | 'ED25519' | 'secp256k1' | 'SECP256K1';
 
 export type KeyPairString = `ed25519:${string}` | `secp256k1:${string}`;

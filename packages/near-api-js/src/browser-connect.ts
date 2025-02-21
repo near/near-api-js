@@ -20,7 +20,7 @@
  *
  * @module browserConnect
  */
-import { Near, NearConfig } from './near';
+import { Near, type NearConfig } from './near';
 
 export interface ConnectConfig extends NearConfig {
     /** @hidden */

@@ -1,10 +1,7 @@
 import { beforeAll, describe, expect, test } from '@jest/globals';
 import { sha256 } from '@noble/hashes/sha256';
 import { Storage } from '../src/local-view-execution/storage';
-import {
-    GUESTBOOK_CONTRACT_STATE,
-    loadGuestBookContractCode,
-} from './test-utils';
+import { GUESTBOOK_CONTRACT_STATE, loadGuestBookContractCode } from './test-utils';
 
 let contractCode;
 const contractState = GUESTBOOK_CONTRACT_STATE;

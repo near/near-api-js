@@ -1,3 +1,27 @@
+import type { SignedTransaction } from '@near-js/transactions';
+import {
+    type AccessKeyWithPublicKey,
+    type BlockChangeResult,
+    type BlockId,
+    type BlockReference,
+    type BlockResult,
+    type ChangeResult,
+    type ChunkId,
+    type ChunkResult,
+    type EpochValidatorInfo,
+    type FinalExecutionOutcome,
+    type GasPrice,
+    type LightClientProof,
+    type LightClientProofRequest,
+    type NearProtocolConfig,
+    type NextLightClientBlockRequest,
+    type NextLightClientBlockResponse,
+    type NodeStatusResult,
+    type QueryResponseKind,
+    type RpcQueryRequest,
+    TypedError,
+} from '@near-js/types';
+import type { TxExecutionStatus } from '@near-js/types';
 /**
  * @module
  * @description
@@ -6,31 +30,7 @@
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
 import { Logger } from '@near-js/utils';
-import {
-    AccessKeyWithPublicKey,
-    BlockId,
-    BlockReference,
-    BlockResult,
-    BlockChangeResult,
-    ChangeResult,
-    ChunkId,
-    ChunkResult,
-    EpochValidatorInfo,
-    FinalExecutionOutcome,
-    GasPrice,
-    LightClientProof,
-    LightClientProofRequest,
-    NextLightClientBlockRequest,
-    NextLightClientBlockResponse,
-    NearProtocolConfig,
-    NodeStatusResult,
-    QueryResponseKind,
-    TypedError,
-    RpcQueryRequest,
-} from '@near-js/types';
-import { SignedTransaction } from '@near-js/transactions';
 import { Provider } from './provider';
-import { TxExecutionStatus } from '@near-js/types';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
@@ -65,18 +65,14 @@ export class FailoverRpcProvider extends Provider {
             this.currentProviderIndex += 1;
         }
 
-        Logger.debug(
-            `Switched to provider at the index ${this.currentProviderIndex}`
-        );
+        Logger.debug(`Switched to provider at the index ${this.currentProviderIndex}`);
     }
 
     private get currentProvider(): Provider {
         const provider = this.providers[this.currentProviderIndex];
 
         if (!provider)
-            throw new Error(
-                `Provider wasn't found at index ${this.currentProviderIndex}`
-            );
+            throw new Error(`Provider wasn't found at index ${this.currentProviderIndex}`);
 
         return provider;
     }
@@ -96,7 +92,7 @@ export class FailoverRpcProvider extends Provider {
 
         throw new TypedError(
             `Exceeded ${this.providers.length} providers to execute request`,
-            'RetriesExceeded'
+            'RetriesExceeded',
         );
     }
 
@@ -108,8 +104,13 @@ export class FailoverRpcProvider extends Provider {
         return this.withBackoff((currentProvider) => currentProvider.status());
     }
 
-    async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.sendTransactionUntil(signedTransaction, waitUntil));
+    async sendTransactionUntil(
+        signedTransaction: SignedTransaction,
+        waitUntil: TxExecutionStatus,
+    ): Promise<FinalExecutionOutcome> {
+        return this.withBackoff((currentProvider) =>
+            currentProvider.sendTransactionUntil(signedTransaction, waitUntil),
+        );
     }
 
     /**
@@ -118,10 +119,9 @@ export class FailoverRpcProvider extends Provider {
      *
      * @param signedTransaction The signed transaction being sent
      */
-    async sendTransaction(
-        signedTransaction: SignedTransaction
-    ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.sendTransaction(signedTransaction)
+    async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
+        return this.withBackoff((currentProvider) =>
+            currentProvider.sendTransaction(signedTransaction),
         );
     }
 
@@ -132,9 +132,10 @@ export class FailoverRpcProvider extends Provider {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     async sendTransactionAsync(
-        signedTransaction: SignedTransaction
+        signedTransaction: SignedTransaction,
     ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.sendTransactionAsync(signedTransaction)
+        return this.withBackoff((currentProvider) =>
+            currentProvider.sendTransactionAsync(signedTransaction),
         );
     }
 
@@ -147,10 +148,11 @@ export class FailoverRpcProvider extends Provider {
      */
     async txStatus(
         txHash: Uint8Array | string,
-        accountId: string, 
-        waitUntil: TxExecutionStatus
+        accountId: string,
+        waitUntil: TxExecutionStatus,
     ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.txStatus(txHash, accountId, waitUntil)
+        return this.withBackoff((currentProvider) =>
+            currentProvider.txStatus(txHash, accountId, waitUntil),
         );
     }
 
@@ -164,9 +166,10 @@ export class FailoverRpcProvider extends Provider {
     async txStatusReceipts(
         txHash: Uint8Array | string,
         accountId: string,
-        waitUntil: TxExecutionStatus
+        waitUntil: TxExecutionStatus,
     ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.txStatusReceipts(txHash, accountId, waitUntil)
+        return this.withBackoff((currentProvider) =>
+            currentProvider.txStatusReceipts(txHash, accountId, waitUntil),
         );
     }
 
@@ -176,24 +179,16 @@ export class FailoverRpcProvider extends Provider {
      *
      * @typeParam T the shape of the returned query response
      */
-    async query<T extends QueryResponseKind>(
-        params: RpcQueryRequest
-    ): Promise<T>;
-    async query<T extends QueryResponseKind>(
-        path: string,
-        data: string
-    ): Promise<T>;
-    async query<T extends QueryResponseKind>(
-        paramsOrPath: any,
-        data?: any
-    ): Promise<T> {
+    async query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
+    async query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
+    async query<T extends QueryResponseKind>(paramsOrPath: any, data?: any): Promise<T> {
         if (data) {
-            return this.withBackoff((currentProvider) => currentProvider.query<T>(paramsOrPath, data)
+            return this.withBackoff((currentProvider) =>
+                currentProvider.query<T>(paramsOrPath, data),
             );
         }
 
-        return this.withBackoff((currentProvider) => currentProvider.query<T>(paramsOrPath)
-        );
+        return this.withBackoff((currentProvider) => currentProvider.query<T>(paramsOrPath));
     }
 
     /**
@@ -213,8 +208,7 @@ export class FailoverRpcProvider extends Provider {
      * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
      */
     async blockChanges(blockQuery: BlockReference): Promise<BlockChangeResult> {
-        return this.withBackoff((currentProvider) => currentProvider.blockChanges(blockQuery)
-        );
+        return this.withBackoff((currentProvider) => currentProvider.blockChanges(blockQuery));
     }
 
     /**
@@ -243,9 +237,10 @@ export class FailoverRpcProvider extends Provider {
      * @param blockReference specifies the block to get the protocol config for
      */
     async experimental_protocolConfig(
-        blockReference: BlockReference | { sync_checkpoint: 'genesis' }
+        blockReference: BlockReference | { sync_checkpoint: 'genesis' },
     ): Promise<NearProtocolConfig> {
-        return this.withBackoff((currentProvider) => currentProvider.experimental_protocolConfig(blockReference)
+        return this.withBackoff((currentProvider) =>
+            currentProvider.experimental_protocolConfig(blockReference),
         );
     }
 
@@ -253,11 +248,8 @@ export class FailoverRpcProvider extends Provider {
      * Gets a light client execution proof for verifying execution outcomes
      * @see [https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof](https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      */
-    async lightClientProof(
-        request: LightClientProofRequest
-    ): Promise<LightClientProof> {
-        return this.withBackoff((currentProvider) => currentProvider.lightClientProof(request)
-        );
+    async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
+        return this.withBackoff((currentProvider) => currentProvider.lightClientProof(request));
     }
 
     /**
@@ -268,10 +260,9 @@ export class FailoverRpcProvider extends Provider {
      * @see [https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
      */
     async nextLightClientBlock(
-        request: NextLightClientBlockRequest
+        request: NextLightClientBlockRequest,
     ): Promise<NextLightClientBlockResponse> {
-        return this.withBackoff((currentProvider) => currentProvider.nextLightClientBlock(request)
-        );
+        return this.withBackoff((currentProvider) => currentProvider.nextLightClientBlock(request));
     }
 
     /**
@@ -281,9 +272,10 @@ export class FailoverRpcProvider extends Provider {
      */
     async accessKeyChanges(
         accountIdArray: string[],
-        blockQuery: BlockReference
+        blockQuery: BlockReference,
     ): Promise<ChangeResult> {
-        return this.withBackoff((currentProvider) => currentProvider.accessKeyChanges(accountIdArray, blockQuery)
+        return this.withBackoff((currentProvider) =>
+            currentProvider.accessKeyChanges(accountIdArray, blockQuery),
         );
     }
 
@@ -295,12 +287,10 @@ export class FailoverRpcProvider extends Provider {
      */
     async singleAccessKeyChanges(
         accessKeyArray: AccessKeyWithPublicKey[],
-        blockQuery: BlockReference
+        blockQuery: BlockReference,
     ): Promise<ChangeResult> {
-        return this.withBackoff((currentProvider) => currentProvider.singleAccessKeyChanges(
-            accessKeyArray,
-            blockQuery
-        )
+        return this.withBackoff((currentProvider) =>
+            currentProvider.singleAccessKeyChanges(accessKeyArray, blockQuery),
         );
     }
 
@@ -312,9 +302,10 @@ export class FailoverRpcProvider extends Provider {
      */
     async accountChanges(
         accountIdArray: string[],
-        blockQuery: BlockReference
+        blockQuery: BlockReference,
     ): Promise<ChangeResult> {
-        return this.withBackoff((currentProvider) => currentProvider.accountChanges(accountIdArray, blockQuery)
+        return this.withBackoff((currentProvider) =>
+            currentProvider.accountChanges(accountIdArray, blockQuery),
         );
     }
 
@@ -328,13 +319,10 @@ export class FailoverRpcProvider extends Provider {
     async contractStateChanges(
         accountIdArray: string[],
         blockQuery: BlockReference,
-        keyPrefix = ''
+        keyPrefix = '',
     ): Promise<ChangeResult> {
-        return this.withBackoff((currentProvider) => currentProvider.contractStateChanges(
-            accountIdArray,
-            blockQuery,
-            keyPrefix
-        )
+        return this.withBackoff((currentProvider) =>
+            currentProvider.contractStateChanges(accountIdArray, blockQuery, keyPrefix),
         );
     }
 
@@ -347,9 +335,10 @@ export class FailoverRpcProvider extends Provider {
      */
     async contractCodeChanges(
         accountIdArray: string[],
-        blockQuery: BlockReference
+        blockQuery: BlockReference,
     ): Promise<ChangeResult> {
-        return this.withBackoff((currentProvider) => currentProvider.contractCodeChanges(accountIdArray, blockQuery)
+        return this.withBackoff((currentProvider) =>
+            currentProvider.contractCodeChanges(accountIdArray, blockQuery),
         );
     }
 

@@ -1,18 +1,18 @@
-import { KeyPair, KeyPairString } from '@near-js/crypto';
+import { KeyPair, type KeyPairString } from '@near-js/crypto';
 import { MultiContractKeyStore } from '@near-js/keystores';
 
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 
 /**
  * This class is used to store keys in the browsers local storage.
- * 
+ *
  * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store](https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store)
  * @example
  * ```js
  * import { connect, keyStores } from 'near-api-js';
- * 
+ *
  * const keyStore = new keyStores.MultiContractBrowserLocalStorageKeyStore();
- * const config = { 
+ * const config = {
  *   keyStore, // instance of MultiContractBrowserLocalStorageKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
@@ -20,7 +20,7 @@ const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };
- * 
+ *
  * // inside an async function
  * const near = await connect(config)
  * ```
@@ -48,8 +48,16 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
      * @param keyPair The key pair to store in local storage
      * @param contractId The contract to store in local storage
      */
-    async setKey(networkId: string, accountId: string, keyPair: KeyPair, contractId: string): Promise<void> {
-        this.localStorage.setItem(this.storageKeyForSecretKey(networkId, accountId, contractId), keyPair.toString());
+    async setKey(
+        networkId: string,
+        accountId: string,
+        keyPair: KeyPair,
+        contractId: string,
+    ): Promise<void> {
+        this.localStorage.setItem(
+            this.storageKeyForSecretKey(networkId, accountId, contractId),
+            keyPair.toString(),
+        );
     }
 
     /**
@@ -59,8 +67,14 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
      * @param contractId The NEAR contract tied to the key pair
      * @returns {Promise<KeyPair>}
      */
-    async getKey(networkId: string, accountId: string, contractId: string): Promise<KeyPair | null> {
-        const value = this.localStorage.getItem(this.storageKeyForSecretKey(networkId, accountId, contractId));
+    async getKey(
+        networkId: string,
+        accountId: string,
+        contractId: string,
+    ): Promise<KeyPair | null> {
+        const value = this.localStorage.getItem(
+            this.storageKeyForSecretKey(networkId, accountId, contractId),
+        );
         if (!value) {
             return null;
         }
@@ -146,7 +160,11 @@ export class MultiContractBrowserLocalStorageKeyStore extends MultiContractKeySt
      * @param contractId The NEAR contract tied to the storage keythat's sought
      * @returns {string} An example might be: `near-api-js:keystore:near-friend:default`
      */
-    private storageKeyForSecretKey(networkId: string, accountId: string, contractId: string): string {
+    private storageKeyForSecretKey(
+        networkId: string,
+        accountId: string,
+        contractId: string,
+    ): string {
         return `${this.prefix}${accountId}:${networkId}:${contractId}`;
     }
 

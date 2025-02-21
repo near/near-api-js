@@ -1,7 +1,7 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 
 import { actionCreators } from './action_creators';
-import { Action } from './actions';
+import type { Action } from './actions';
 
 const {
     addKey,
@@ -22,16 +22,21 @@ export class DelegateAction {
     maxBlockHeight: bigint;
     publicKey: PublicKey;
 
-    constructor({ senderId, receiverId, actions, nonce, maxBlockHeight, publicKey }:
-      {
-          senderId: string,
-          receiverId: string,
-          actions: Action[],
-          nonce: bigint,
-          maxBlockHeight: bigint,
-          publicKey: PublicKey,
-      }
-    ) {
+    constructor({
+        senderId,
+        receiverId,
+        actions,
+        nonce,
+        maxBlockHeight,
+        publicKey,
+    }: {
+        senderId: string;
+        receiverId: string;
+        actions: Action[];
+        nonce: bigint;
+        maxBlockHeight: bigint;
+        publicKey: PublicKey;
+    }) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.actions = actions;

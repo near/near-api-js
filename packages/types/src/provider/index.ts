@@ -1,4 +1,3 @@
-
 export {
     IdType,
     LightClientBlockLiteView,
@@ -36,7 +35,7 @@ export {
     SyncInfo,
     TotalWeight,
     Transaction as ProviderTransaction,
-    TxExecutionStatus
+    TxExecutionStatus,
 } from './protocol';
 export {
     CallFunctionRequest,
@@ -74,5 +73,5 @@ export {
     EpochValidatorInfo,
     NextEpochValidatorInfo,
     StakedAccount,
-    ValidatorStakeView
+    ValidatorStakeView,
 } from './validator';

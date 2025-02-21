@@ -8,7 +8,7 @@ describe('fetchJson', () => {
             jsonrpc: '2.0',
             id: 'dontcare',
             method: 'status',
-            params: []
+            params: [],
         };
         // @ts-expect-error test input
         const result = await fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig());
@@ -20,7 +20,7 @@ describe('fetchJson', () => {
             jsonrpc: '2.0',
             id: 'dontcare',
             method: 'status',
-            params: []
+            params: [],
         };
         // @ts-expect-error test input
         const result = await fetchJsonRpc(connection.url, statusRequest, undefined, retryConfig());

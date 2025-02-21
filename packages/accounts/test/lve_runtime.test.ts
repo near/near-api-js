@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, test } from '@jest/globals';
+import { Runtime } from '../src/local-view-execution/runtime';
 import {
     GUESTBOOK_CONTRACT_ID,
     GUESTBOOK_CONTRACT_STATE,
     loadGuestBookContractCode,
 } from './test-utils';
-import { Runtime } from '../src/local-view-execution/runtime';
 
 let contractCode;
 const blockHeight = 1;

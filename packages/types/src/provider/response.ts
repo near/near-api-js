@@ -2,7 +2,7 @@
  * NEAR RPC API request types and responses
  * @module
  */
-import { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol';
+import type { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol';
 
 export type SerializedReturnValue = string | number | bigint | boolean | object;
 
@@ -48,13 +48,12 @@ export interface ExecutionOutcome {
     status: ExecutionStatus | ExecutionStatusBasic;
 }
 
-export type ReceiptAction =
-  { Transfer: { deposit: string }};
+export type ReceiptAction = { Transfer: { deposit: string } };
 
 export interface ExecutionOutcomeReceiptDetail {
     predecessor_id: string;
     receipt: {
-        Action: ExecutionOutcomeReceiptAction
+        Action: ExecutionOutcomeReceiptAction;
     };
     receipt_id: string;
     receiver_id: string;

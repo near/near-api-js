@@ -5,14 +5,14 @@ const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
 
 /**
  * This class is used to store keys in the browsers local storage.
- * 
+ *
  * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store](https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store)
  * @example
  * ```js
  * import { connect, keyStores } from 'near-api-js';
- * 
+ *
  * const keyStore = new keyStores.BrowserLocalStorageKeyStore();
- * const config = { 
+ * const config = {
  *   keyStore, // instance of BrowserLocalStorageKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
@@ -20,7 +20,7 @@ const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:';
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };
- * 
+ *
  * // inside an async function
  * const near = await connect(config)
  * ```
@@ -48,7 +48,10 @@ export class BrowserLocalStorageKeyStore extends KeyStore {
      * @param keyPair The key pair to store in local storage
      */
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        this.localStorage.setItem(this.storageKeyForSecretKey(networkId, accountId), keyPair.toString());
+        this.localStorage.setItem(
+            this.storageKeyForSecretKey(networkId, accountId),
+            keyPair.toString(),
+        );
     }
 
     /**

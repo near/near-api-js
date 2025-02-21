@@ -1,15 +1,15 @@
-import { BlockReference, ContractCodeView } from '@near-js/types';
+import type { BlockReference, ContractCodeView } from '@near-js/types';
 import { printTxOutcomeLogs } from '@near-js/utils';
-import { FunctionCallOptions } from '../interface';
-import { Storage } from './storage';
-import { Runtime } from './runtime';
-import { ContractState } from './types';
+import type { Connection } from '../connection';
+import type { FunctionCallOptions } from '../interface';
+import type { IntoConnection } from '../interface';
 import { viewState } from '../utils';
-import { Connection } from '../connection';
-import { IntoConnection } from '../interface';
+import { Runtime } from './runtime';
+import { Storage } from './storage';
+import type { ContractState } from './types';
 
 interface ViewFunctionCallOptions extends FunctionCallOptions {
-    blockQuery?: BlockReference
+    blockQuery?: BlockReference;
 }
 
 export class LocalViewExecution {
@@ -31,7 +31,10 @@ export class LocalViewExecution {
         return result.code_base64;
     }
 
-    private async fetchContractState(contractId: string, blockQuery: BlockReference): Promise<ContractState> {
+    private async fetchContractState(
+        contractId: string,
+        blockQuery: BlockReference,
+    ): Promise<ContractState> {
         return viewState(this.connection, contractId, '', blockQuery);
     }
 
@@ -76,14 +79,26 @@ export class LocalViewExecution {
      * @param options.blockQuery The block query options.
      * @returns {Promise<any>} - A promise that resolves to the result of the view function.
      */
-    public async viewFunction({ contractId, methodName, args = {}, blockQuery = { finality: 'optimistic' } }: ViewFunctionCallOptions) {
+    public async viewFunction({
+        contractId,
+        methodName,
+        args = {},
+        blockQuery = { finality: 'optimistic' },
+    }: ViewFunctionCallOptions) {
         const methodArgs = JSON.stringify(args);
 
         const { contractCode, contractState, blockHeight, blockTimestamp } = await this.loadOrFetch(
             contractId,
-            blockQuery
+            blockQuery,
         );
-        const runtime = new Runtime({ contractId, contractCode, contractState, blockHeight, blockTimestamp, methodArgs });
+        const runtime = new Runtime({
+            contractId,
+            contractCode,
+            contractState,
+            blockHeight,
+            blockTimestamp,
+            methodArgs,
+        });
 
         const { result, logs } = await runtime.execute(methodName);
 

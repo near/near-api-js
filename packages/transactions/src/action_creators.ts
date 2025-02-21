@@ -1,4 +1,4 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 
 import {
     AccessKey,
@@ -16,8 +16,8 @@ import {
     Stake,
     Transfer,
 } from './actions';
-import { DelegateAction } from './delegate';
-import { Signature } from './signature';
+import type { DelegateAction } from './delegate';
+import type { Signature } from './signature';
 
 /**
  * Creates a full access key with full access permissions.
@@ -42,7 +42,7 @@ function fullAccessKey(): AccessKey {
 function functionCallAccessKey(
     receiverId: string,
     methodNames: string[],
-    allowance?: bigint
+    allowance?: bigint,
 ): AccessKey {
     return new AccessKey({
         nonce: 0n,
@@ -79,8 +79,7 @@ function deployContract(code: Uint8Array): Action {
  * @returns A Buffer representation of the input argument.
  */
 export function stringifyJsonOrBytes(args: any): Buffer {
-    const isUint8Array =
-        args.byteLength !== undefined && args.byteLength === args.length;
+    const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
     return isUint8Array ? args : Buffer.from(JSON.stringify(args));
 }
 
@@ -101,7 +100,7 @@ function functionCall(
     gas = 0n,
     deposit = 0n,
     stringify = stringifyJsonOrBytes,
-    jsContract = false
+    jsContract = false,
 ): Action {
     if (jsContract) {
         return new Action({
@@ -134,7 +133,7 @@ function transfer(deposit = 0n): Action {
  * @param publicKey The public key associated with the staking action.
  * @returns A new action for staking tokens.
  */
-function stake(stake = 0n, publicKey: PublicKey): Action {
+function stake(stake, publicKey: PublicKey): Action {
     return new Action({ stake: new Stake({ stake, publicKey }) });
 }
 

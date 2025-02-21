@@ -1,7 +1,7 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 
-import { Connection } from './connection';
-import { Account } from './account';
+import type { Account } from './account';
+import type { Connection } from './connection';
 
 /**
  * Account creator provides an interface for implementations to actually create accounts
@@ -50,7 +50,10 @@ export class UrlAccountCreator extends AccountCreator {
      */
     async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
         await fetch(`${this.helperUrl}/account`, {
-            body: JSON.stringify({ newAccountId, newAccountPublicKey: publicKey.toString() }),
+            body: JSON.stringify({
+                newAccountId,
+                newAccountPublicKey: publicKey.toString(),
+            }),
             method: 'POST',
         });
     }

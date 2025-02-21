@@ -1,11 +1,15 @@
 import { PublicKey } from '@near-js/crypto';
-import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { actionCreators } from '@near-js/transactions';
-import { Logger } from '@near-js/utils'
+import {
+    type FinalExecutionOutcome,
+    type FunctionCallPermissionView,
+    TypedError,
+} from '@near-js/types';
+import { Logger } from '@near-js/utils';
 
-import { SignAndSendTransactionOptions } from './account';
+import type { SignAndSendTransactionOptions } from './account';
 import { AccountMultisig } from './account_multisig';
-import { Connection } from './connection';
+import type { Connection } from './connection';
 import {
     MULTISIG_CHANGE_METHODS,
     MULTISIG_CONFIRM_METHODS,
@@ -14,7 +18,8 @@ import {
 } from './constants';
 import { MultisigStateStatus } from './types';
 
-const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
+const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } =
+    actionCreators;
 
 type sendCodeFunction = () => Promise<any>;
 type getCodeFunction = (method: any) => Promise<string>;
@@ -46,13 +51,16 @@ export class Account2FA extends AccountMultisig {
     /**
      * Sign a transaction to preform a list of actions and broadcast it using the RPC API.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider.sendTransaction | JsonRpcProvider.sendTransaction}
-     * 
+     *
      * @param options Options for the transaction.
      * @param options.receiverId The NEAR account ID of the transaction receiver.
      * @param options.actions The list of actions to be included in the transaction.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransaction({ receiverId, actions }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({
+        receiverId,
+        actions,
+    }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         await super.signAndSendTransaction({ receiverId, actions });
         // TODO: Should following override onRequestResult in superclass instead of doing custom signAndSendTransaction?
         await this.sendCode();
@@ -74,39 +82,64 @@ export class Account2FA extends AccountMultisig {
         const { accountId } = this;
 
         const seedOrLedgerKey = (await this.getRecoveryMethods()).data
-          // @ts-ignore
-            .filter(({ kind, publicKey }) => (kind === 'phrase' || kind === 'ledger') && publicKey !== null)
+            // @ts-ignore
+            .filter(
+                ({ kind, publicKey }) =>
+                    (kind === 'phrase' || kind === 'ledger') && publicKey !== null,
+            )
             .map((rm) => rm.publicKey);
 
         const fak2lak = (await this.getAccessKeys())
-            .filter(({ public_key, access_key: { permission } }) => permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key))
+            .filter(
+                ({ public_key, access_key: { permission } }) =>
+                    permission === 'FullAccess' && !seedOrLedgerKey.includes(public_key),
+            )
             .map((ak) => ak.public_key)
             .map(toPK);
 
-        // @ts-ignore
-        const confirmOnlyKey = toPK((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+        const confirmOnlyKey = toPK(
+            // @ts-ignore
+            (await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey,
+        );
 
-        const newArgs = Buffer.from(JSON.stringify({ 'num_confirmations': 2 }));
+        const newArgs = Buffer.from(JSON.stringify({ num_confirmations: 2 }));
 
         const actions = [
             ...fak2lak.map((pk) => deleteKey(pk)),
-            ...fak2lak.map((pk) => addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null))),
-            addKey(confirmOnlyKey, functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null)),
+            ...fak2lak.map((pk) =>
+                addKey(pk, functionCallAccessKey(accountId, MULTISIG_CHANGE_METHODS, null)),
+            ),
+            addKey(
+                confirmOnlyKey,
+                functionCallAccessKey(accountId, MULTISIG_CONFIRM_METHODS, null),
+            ),
             deployContract(contractBytes),
         ];
-        const newFunctionCallActionBatch = actions.concat(functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT));
+        const newFunctionCallActionBatch = actions.concat(
+            functionCall('new', newArgs, MULTISIG_GAS, MULTISIG_DEPOSIT),
+        );
         Logger.log('deploying multisig contract for', accountId);
 
-        const { stateStatus: multisigStateStatus } = await this.checkMultisigCodeAndStateStatus(contractBytes);
+        const { stateStatus: multisigStateStatus } =
+            await this.checkMultisigCodeAndStateStatus(contractBytes);
         switch (multisigStateStatus) {
             case MultisigStateStatus.STATE_NOT_INITIALIZED:
-                return await super.signAndSendTransactionWithAccount(accountId, newFunctionCallActionBatch);
+                return await super.signAndSendTransactionWithAccount(
+                    accountId,
+                    newFunctionCallActionBatch,
+                );
             case MultisigStateStatus.VALID_STATE:
                 return await super.signAndSendTransactionWithAccount(accountId, actions);
             case MultisigStateStatus.INVALID_STATE:
-                throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
+                throw new TypedError(
+                    `Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`,
+                    'ContractHasExistingState',
+                );
             default:
-                throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
+                throw new TypedError(
+                    `Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`,
+                    'ContractStateUnknown',
+                );
         }
     }
 
@@ -117,24 +150,26 @@ export class Account2FA extends AccountMultisig {
      * @param options.cleanupContractBytes The bytecode of the cleanup contract (optional).
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the operation.
      */
-    async disableWithFAK({ contractBytes, cleanupContractBytes }: { contractBytes: Uint8Array; cleanupContractBytes?: Uint8Array }) {
+    async disableWithFAK({
+        contractBytes,
+        cleanupContractBytes,
+    }: { contractBytes: Uint8Array; cleanupContractBytes?: Uint8Array }) {
         let cleanupActions = [];
-        if(cleanupContractBytes) {
-            await this.deleteAllRequests().catch(e => e);
+        if (cleanupContractBytes) {
+            await this.deleteAllRequests().catch((e) => e);
             cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes);
         }
         const keyConversionActions = await this.get2faDisableKeyConversionActions();
 
-        const actions = [
-            ...cleanupActions,
-            ...keyConversionActions,
-            deployContract(contractBytes)
-        ];
+        const actions = [...cleanupActions, ...keyConversionActions, deployContract(contractBytes)];
 
         const accessKeyInfo = await this.findAccessKey(this.accountId, actions);
 
-        if(accessKeyInfo && accessKeyInfo.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
-            throw new TypedError('No full access key found in keystore. Unable to bypass multisig', 'NoFAKFound');
+        if (accessKeyInfo?.accessKey && accessKeyInfo.accessKey.permission !== 'FullAccess') {
+            throw new TypedError(
+                'No full access key found in keystore. Unable to bypass multisig',
+                'NoFAKFound',
+            );
         }
 
         return this.signAndSendTransactionWithAccount(this.accountId, actions);
@@ -146,21 +181,30 @@ export class Account2FA extends AccountMultisig {
      * @returns {Promise<Action[]>} - A promise that resolves to an array of cleanup actions.
      */
     async get2faDisableCleanupActions(cleanupContractBytes: Uint8Array) {
-        const currentAccountState: { key: Buffer; value: Buffer }[] = await this.viewState('').catch(error => {
-            const cause = error.cause && error.cause.name;
-            if (cause == 'NO_CONTRACT_CODE') {
+        const currentAccountState: { key: Buffer; value: Buffer }[] = await this.viewState(
+            '',
+        ).catch((error) => {
+            const cause = error.cause?.name;
+            if (cause === 'NO_CONTRACT_CODE') {
                 return [];
             }
-            throw cause == 'TOO_LARGE_CONTRACT_STATE'
-                ? new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState')
+            throw cause === 'TOO_LARGE_CONTRACT_STATE'
+                ? new TypedError(
+                      `Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`,
+                      'ContractHasExistingState',
+                  )
                 : error;
         });
 
-        const currentAccountStateKeys = currentAccountState.map(({ key }) => key.toString('base64'));
-        return currentAccountState.length ? [
-            deployContract(cleanupContractBytes),
-            functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, 0n)
-        ] : [];
+        const currentAccountStateKeys = currentAccountState.map(({ key }) =>
+            key.toString('base64'),
+        );
+        return currentAccountState.length
+            ? [
+                  deployContract(cleanupContractBytes),
+                  functionCall('clean', { keys: currentAccountStateKeys }, MULTISIG_GAS, 0n),
+              ]
+            : [];
     }
 
     /**
@@ -174,16 +218,20 @@ export class Account2FA extends AccountMultisig {
             .filter(({ access_key }) => access_key.permission !== 'FullAccess')
             .filter(({ access_key }) => {
                 const perm = (access_key.permission as FunctionCallPermissionView).FunctionCall;
-                return perm.receiver_id === accountId &&
+                return (
+                    perm.receiver_id === accountId &&
                     perm.method_names.length === 4 &&
-                    perm.method_names.includes('add_request_and_confirm');
+                    perm.method_names.includes('add_request_and_confirm')
+                );
             });
-        // @ts-ignore
-        const confirmOnlyKey = PublicKey.from((await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey);
+        const confirmOnlyKey = PublicKey.from(
+            // @ts-ignore
+            (await this.postSignedJson('/2fa/getAccessKey', { accountId })).publicKey,
+        );
         return [
             deleteKey(confirmOnlyKey),
             ...lak2fak.map(({ public_key }) => deleteKey(PublicKey.from(public_key))),
-            ...lak2fak.map(({ public_key }) => addKey(PublicKey.from(public_key), fullAccessKey()))
+            ...lak2fak.map(({ public_key }) => addKey(PublicKey.from(public_key), fullAccessKey())),
         ];
     }
 
@@ -195,19 +243,29 @@ export class Account2FA extends AccountMultisig {
      */
     async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
         const { stateStatus } = await this.checkMultisigCodeAndStateStatus();
-        if(stateStatus !== MultisigStateStatus.VALID_STATE && stateStatus !== MultisigStateStatus.STATE_NOT_INITIALIZED) {
-            throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
+        if (
+            stateStatus !== MultisigStateStatus.VALID_STATE &&
+            stateStatus !== MultisigStateStatus.STATE_NOT_INITIALIZED
+        ) {
+            throw new TypedError(
+                `Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`,
+                'ContractStateUnknown',
+            );
         }
 
         let deleteAllRequestsError;
-        await this.deleteAllRequests().catch(e => deleteAllRequestsError = e);
-
-        const cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch(e => {
-            if(e.type === 'ContractHasExistingState') {
-                throw deleteAllRequestsError || e;
-            }
-            throw e;
+        await this.deleteAllRequests().catch((e) => {
+            deleteAllRequestsError = e;
         });
+
+        const cleanupActions = await this.get2faDisableCleanupActions(cleanupContractBytes).catch(
+            (e) => {
+                if (e.type === 'ContractHasExistingState') {
+                    throw deleteAllRequestsError || e;
+                }
+                throw e;
+            },
+        );
 
         const actions = [
             ...cleanupActions,
@@ -217,7 +275,7 @@ export class Account2FA extends AccountMultisig {
         Logger.log('disabling 2fa for', this.accountId);
         return await this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions
+            actions,
         });
     }
 
@@ -238,7 +296,9 @@ export class Account2FA extends AccountMultisig {
     }
 
     async getCodeDefault(): Promise<string> {
-        throw new Error('There is no getCode callback provided. Please provide your own in AccountMultisig constructor options. It has a parameter method where method.kind is "email" or "phone".');
+        throw new Error(
+            'There is no getCode callback provided. Please provide your own in AccountMultisig constructor options. It has a parameter method where method.kind is "email" or "phone".',
+        );
     }
 
     /**
@@ -255,7 +315,10 @@ export class Account2FA extends AccountMultisig {
             return result;
         } catch (e) {
             Logger.warn('Error validating security code:', e);
-            if (e.toString().includes('invalid 2fa code provided') || e.toString().includes('2fa code not valid')) {
+            if (
+                e.toString().includes('invalid 2fa code provided') ||
+                e.toString().includes('2fa code not valid')
+            ) {
                 return await this.promptAndVerify();
             }
 
@@ -278,7 +341,7 @@ export class Account2FA extends AccountMultisig {
         return await this.postSignedJson('/2fa/verify', {
             accountId,
             securityCode,
-            requestId
+            requestId,
         });
     }
 
@@ -290,7 +353,9 @@ export class Account2FA extends AccountMultisig {
         const { accountId } = this;
         return {
             accountId,
-            data: await this.postSignedJson('/account/recoveryMethods', { accountId })
+            data: await this.postSignedJson('/account/recoveryMethods', {
+                accountId,
+            }),
         };
     }
 
@@ -301,7 +366,7 @@ export class Account2FA extends AccountMultisig {
     async get2faMethod() {
         let { data } = await this.getRecoveryMethods();
         // @ts-ignore
-        if (data && data.length) {
+        if (data?.length) {
             // @ts-ignore
             data = data.find((m) => m.kind.indexOf('2fa-') === 0);
         }
@@ -311,20 +376,26 @@ export class Account2FA extends AccountMultisig {
         return { kind, detail };
     }
 
-     /**
+    /**
      * Generates a signature for the latest finalized block.
      * @returns {Promise<{ blockNumber: string, blockNumberSignature: string }>} - A promise that resolves to the signature information.
      */
     async signatureFor() {
         const { accountId } = this;
-        const block = await this.connection.provider.block({ finality: 'final' });
+        const block = await this.connection.provider.block({
+            finality: 'final',
+        });
         const blockNumber = block.header.height.toString();
-        const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, this.connection.networkId);
+        const signed = await this.connection.signer.signMessage(
+            Buffer.from(blockNumber),
+            accountId,
+            this.connection.networkId,
+        );
         const blockNumberSignature = Buffer.from(signed.signature).toString('base64');
         return { blockNumber, blockNumberSignature };
     }
 
-     /**
+    /**
      * Sends a signed JSON request to a specified path.
      * @param path - The path for the request.
      * @param body - The request body.

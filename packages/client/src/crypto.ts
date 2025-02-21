@@ -1,11 +1,11 @@
-import { CurveType, KeyPair, KeyPairString } from '@near-js/crypto';
+import { type CurveType, KeyPair, type KeyPairString } from '@near-js/crypto';
 
 /**
  * Generate a random key pair for the specified elliptic curve
  * @param curve elliptic curve (e.g. `ed25519`)
  */
 export function generateRandomKeyPair(curve: CurveType) {
-  return KeyPair.fromRandom(curve);
+    return KeyPair.fromRandom(curve);
 }
 
 /**
@@ -13,5 +13,5 @@ export function generateRandomKeyPair(curve: CurveType) {
  * @param privateKey private key string
  */
 export function parseKeyPair(privateKey: KeyPairString) {
-  return KeyPair.fromString(privateKey);
+    return KeyPair.fromString(privateKey);
 }

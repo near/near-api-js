@@ -1,6 +1,6 @@
-import { Signer, InMemorySigner } from '@near-js/signers';
-import { Provider, JsonRpcProvider, FailoverRpcProvider } from '@near-js/providers';
-import { IntoConnection } from './interface';
+import { FailoverRpcProvider, JsonRpcProvider, type Provider } from '@near-js/providers';
+import { InMemorySigner, type Signer } from '@near-js/signers';
+import type { IntoConnection } from './interface';
 
 /**
  * @param config Contains connection info details
@@ -10,12 +10,14 @@ function getProvider(config: any): Provider {
     switch (config.type) {
         case undefined:
             return config;
-        case 'JsonRpcProvider': return new JsonRpcProvider({ ...config.args });
+        case 'JsonRpcProvider':
+            return new JsonRpcProvider({ ...config.args });
         case 'FailoverRpcProvider': {
             const providers = (config?.args || []).map((arg) => new JsonRpcProvider(arg));
             return new FailoverRpcProvider(providers);
         }
-        default: throw new Error(`Unknown provider type ${config.type}`);
+        default:
+            throw new Error(`Unknown provider type ${config.type}`);
     }
 }
 
@@ -30,7 +32,8 @@ function getSigner(config: any): Signer {
         case 'InMemorySigner': {
             return new InMemorySigner(config.keyStore);
         }
-        default: throw new Error(`Unknown signer type ${config.type}`);
+        default:
+            throw new Error(`Unknown signer type ${config.type}`);
     }
 }
 
@@ -47,7 +50,7 @@ export class Connection implements IntoConnection {
         this.networkId = networkId;
         this.provider = provider;
         this.signer = signer;
-        this.jsvmAccountId = jsvmAccountId; 
+        this.jsvmAccountId = jsvmAccountId;
     }
 
     getConnection(): Connection {

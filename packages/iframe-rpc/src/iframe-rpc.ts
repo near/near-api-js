@@ -1,18 +1,18 @@
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 
-import {IFrameRPCError} from './iframe-rpc-error';
+import { IFrameRPCError } from './iframe-rpc-error';
 import {
-    windowReceiver,
-    IMessageEvent,
-    IMessagePoster,
-    IMessageReceiver,
-    IRPCMethod,
-    IRPCResponse,
+    type IMessageEvent,
+    type IMessagePoster,
+    type IMessageReceiver,
+    type IRPCMethod,
+    type IRPCResponse,
+    type RPCMessage,
     isRPCMessage,
-    RPCMessage,
+    windowReceiver,
 } from './types';
 
-function responseObjToError(obj: { code: number; message: string; }) {
+function responseObjToError(obj: { code: number; message: string }) {
     return new IFrameRPCError(obj.message, obj.code);
 }
 
@@ -41,23 +41,23 @@ export class IFrameRPC extends EventEmitter {
      */
     constructor(private readonly options: IRPCOptions) {
         super();
-        this.removeMessageListener = (options.receiver || windowReceiver).readMessages(this.messageEventListener);
+        this.removeMessageListener = (options.receiver || windowReceiver).readMessages(
+            this.messageEventListener,
+        );
 
         this.isReady = this.createReadyPromise();
     }
 
     private createReadyPromise() {
-        return new Promise<void>(resolve => {
-            const response = {protocolVersion: this.options.protocolVersion || '1.0'};
+        return new Promise<void>((resolve) => {
+            const response = { protocolVersion: this.options.protocolVersion || '1.0' };
 
             this.bindMethodHandler('ready', () => {
                 resolve();
                 return response;
             });
 
-            this.callMethod<void>('ready', response)
-                .then(resolve)
-                .catch(resolve);
+            this.callMethod<void>('ready', response).then(resolve).catch(resolve);
         });
     }
 
@@ -79,23 +79,29 @@ export class IFrameRPC extends EventEmitter {
      */
     public bindMethodHandler<T>(method: string, handler: (params: T) => Promise<any> | any): this {
         this.on(method, (data: IRPCMethod<T>) => {
-            new Promise(resolve => resolve(handler(data.params)))
-                .then((result) => ({
-                    type: 'response',
-                    requesterId: this.options.requesterId,
-                    id: data.id,
-                    result,
-                } as IRPCResponse<any>))
-                .catch((err: Error) => ({
-                    type: 'response',
-                    requesterId: this.options.requesterId,
-                    id: data.id,
-                    error:
-                        err instanceof IFrameRPCError
-                            ? err.toResponseError()
-                            : {code: 0, message: err.stack || err.message},
-                } as IRPCResponse<any>))
-                .then(message => {
+            new Promise((resolve) => resolve(handler(data.params)))
+                .then(
+                    (result) =>
+                        ({
+                            type: 'response',
+                            requesterId: this.options.requesterId,
+                            id: data.id,
+                            result,
+                        }) as IRPCResponse<any>,
+                )
+                .catch(
+                    (err: Error) =>
+                        ({
+                            type: 'response',
+                            requesterId: this.options.requesterId,
+                            id: data.id,
+                            error:
+                                err instanceof IFrameRPCError
+                                    ? err.toResponseError()
+                                    : { code: 0, message: err.stack || err.message },
+                        }) as IRPCResponse<any>,
+                )
+                .then((message) => {
                     this.emit('sendResponse', message);
                     this.post(message);
                 });
@@ -178,14 +184,18 @@ export class IFrameRPC extends EventEmitter {
     }
 
     private messageEventListener = (ev: IMessageEvent) => {
-        if (this.options.origin && this.options.origin !== '*' && ev.origin !== this.options.origin) {
+        if (
+            this.options.origin &&
+            this.options.origin !== '*' &&
+            ev.origin !== this.options.origin
+        ) {
             return;
         }
 
         let message: RPCMessage<any>;
         try {
             message = JSON.parse(ev.data);
-        } catch (e) {
+        } catch (_e) {
             return;
         }
 
@@ -219,7 +229,7 @@ export class IFrameRPC extends EventEmitter {
                     type: 'response',
                     requesterId: this.options.requesterId,
                     id: message.id,
-                    error: {code: 4003, message: `Unknown method name "${message.method}"`},
+                    error: { code: 4003, message: `Unknown method name "${message.method}"` },
                     result: null,
                 });
                 break;

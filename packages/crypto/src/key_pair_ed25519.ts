@@ -1,9 +1,9 @@
-import { baseEncode, baseDecode } from '@near-js/utils';
+import { baseDecode, baseEncode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import randombytes from 'randombytes';
 
-import { KeyPairString, KeySize, KeyType } from './constants';
-import { KeyPairBase, Signature } from './key_pair_base';
+import { type KeyPairString, KeySize, KeyType } from './constants';
+import { KeyPairBase, type Signature } from './key_pair_base';
 import { PublicKey } from './public_key';
 
 /**

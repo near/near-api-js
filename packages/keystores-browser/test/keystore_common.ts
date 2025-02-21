@@ -3,9 +3,11 @@ import { KeyPairEd25519 } from '@near-js/crypto';
 
 const NETWORK_ID_SINGLE_KEY = 'singlekeynetworkid';
 const ACCOUNT_ID_SINGLE_KEY = 'singlekey_accountid';
-const KEYPAIR_SINGLE_KEY = new KeyPairEd25519('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
+const KEYPAIR_SINGLE_KEY = new KeyPairEd25519(
+    '2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw',
+);
 
-export const shouldStoreAndRetrieveKeys = ctx => {
+export const shouldStoreAndRetrieveKeys = (ctx) => {
     beforeEach(async () => {
         await ctx.keyStore.clear();
         await ctx.keyStore.setKey(NETWORK_ID_SINGLE_KEY, ACCOUNT_ID_SINGLE_KEY, KEYPAIR_SINGLE_KEY);
@@ -14,8 +16,8 @@ export const shouldStoreAndRetrieveKeys = ctx => {
     test('Get all keys with empty network returns empty list', async () => {
         const emptyList = await ctx.keyStore.getAccounts('emptynetwork');
         expect(emptyList).toEqual([]);
-    });  
-    
+    });
+
     test('Get all keys with single key in keystore', async () => {
         const accountIds = await ctx.keyStore.getAccounts(NETWORK_ID_SINGLE_KEY);
         expect(accountIds).toEqual([ACCOUNT_ID_SINGLE_KEY]);

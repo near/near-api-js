@@ -6,11 +6,10 @@ import { ErrorMessages } from './errors';
 import schema from './rpc_error_schema.json';
 
 const mustacheHelpers = {
-    formatNear: () => (n, render) => formatNearAmount(render(n))
+    formatNear: () => (n, render) => formatNearAmount(render(n)),
 };
 
-export class ServerError extends TypedError {
-}
+export class ServerError extends TypedError {}
 
 class ServerTransactionError extends ServerError {
     public transaction_outcome: any;
@@ -39,7 +38,7 @@ export function formatError(errorClassName: string, errorData): string {
     if (typeof ErrorMessages[errorClassName] === 'string') {
         return Mustache.render(ErrorMessages[errorClassName], {
             ...errorData,
-            ...mustacheHelpers
+            ...mustacheHelpers,
         });
     }
     return JSON.stringify(errorData);
@@ -70,7 +69,6 @@ function walkSubtype(errorObj, schema, result, typeName) {
             type = schema[errorName];
             errorTypeName = errorName;
         } else {
-            continue;
         }
     }
     if (error && type) {
@@ -78,11 +76,10 @@ function walkSubtype(errorObj, schema, result, typeName) {
             result[prop] = error[prop];
         }
         return walkSubtype(error, schema, result, errorTypeName);
-    } else {
-        // TODO: is this the right thing to do?
-        result.kind = errorObj;
-        return typeName;
     }
+    // TODO: is this the right thing to do?
+    result.kind = errorObj;
+    return typeName;
 }
 
 export function getErrorTypeFromErrorMessage(errorMessage, errorType) {
@@ -94,15 +91,25 @@ export function getErrorTypeFromErrorMessage(errorMessage, errorType) {
             return 'AccountDoesNotExist';
         case /^access key .*? does not exist while viewing$/.test(errorMessage):
             return 'AccessKeyDoesNotExist';
-        case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(errorMessage):
+        case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(
+            errorMessage,
+        ):
             return 'CodeDoesNotExist';
-        case /wasm execution failed with error: CompilationError\(CodeDoesNotExist/.test(errorMessage):
+        case /wasm execution failed with error: CompilationError\(CodeDoesNotExist/.test(
+            errorMessage,
+        ):
             return 'CodeDoesNotExist';
-        case /wasm execution failed with error: FunctionCallError\(MethodResolveError\(MethodNotFound/.test(errorMessage):
+        case /wasm execution failed with error: FunctionCallError\(MethodResolveError\(MethodNotFound/.test(
+            errorMessage,
+        ):
             return 'MethodNotFound';
-        case /wasm execution failed with error: MethodResolveError\(MethodNotFound/.test(errorMessage):
+        case /wasm execution failed with error: MethodResolveError\(MethodNotFound/.test(
+            errorMessage,
+        ):
             return 'MethodNotFound';
-        case /Transaction nonce \d+ must be larger than nonce of the used access key \d+/.test(errorMessage):
+        case /Transaction nonce \d+ must be larger than nonce of the used access key \d+/.test(
+            errorMessage,
+        ):
             return 'InvalidNonce';
         default:
             return errorType;

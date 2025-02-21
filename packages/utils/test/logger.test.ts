@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, test } from '@jest/globals';
 import { Logger } from '../src';
 
-
 describe('logger', () => {
     let logs;
 

@@ -1,9 +1,5 @@
 {
-  "extends": [
-    "../../typedoc.json"
-  ],
-  "entryPoints": [
-    "src"
-  ],
-  "entryPointStrategy": "expand",
+    "extends": ["../../typedoc.json"],
+    "entryPoints": ["src"],
+    "entryPointStrategy": "expand"
 }

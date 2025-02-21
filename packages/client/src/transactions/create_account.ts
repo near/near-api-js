@@ -1,9 +1,6 @@
-import type {
-  CreateAccountParams,
-  CreateTopLevelAccountParams,
-} from '../interfaces';
-import { SignedTransactionComposer } from './composers';
+import type { CreateAccountParams, CreateTopLevelAccountParams } from '../interfaces';
 import { functionCall } from './actions';
+import { SignedTransactionComposer } from './composers';
 
 /**
  * Create a new top-level account using an existing account
@@ -16,19 +13,27 @@ import { functionCall } from './actions';
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function createTopLevelAccount({ account, contract, newAccount, newPublicKey, initialBalance, blockReference, deps }: CreateTopLevelAccountParams) {
-  return functionCall({
-    sender: account,
-    receiver: contract,
-    method: 'create_account',
-    args: {
-      new_account_id: newAccount,
-      new_public_key: newPublicKey,
-    },
-    deposit: initialBalance,
+export async function createTopLevelAccount({
+    account,
+    contract,
+    newAccount,
+    newPublicKey,
+    initialBalance,
     blockReference,
     deps,
-  });
+}: CreateTopLevelAccountParams) {
+    return functionCall({
+        sender: account,
+        receiver: contract,
+        method: 'create_account',
+        args: {
+            new_account_id: newAccount,
+            new_public_key: newPublicKey,
+        },
+        deposit: initialBalance,
+        blockReference,
+        deps,
+    });
 }
 
 /**
@@ -42,11 +47,17 @@ export async function createTopLevelAccount({ account, contract, newAccount, new
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function createSubAccount({ account, newAccount, newPublicKey, initialBalance, blockReference, deps }: CreateAccountParams) {
-  return SignedTransactionComposer.init({ sender: account, receiver: newAccount, deps })
-    .createAccount()
-    .transfer(initialBalance)
-    .addFullAccessKey(newPublicKey)
-    .signAndSend(blockReference);
+export async function createSubAccount({
+    account,
+    newAccount,
+    newPublicKey,
+    initialBalance,
+    blockReference,
+    deps,
+}: CreateAccountParams) {
+    return SignedTransactionComposer.init({ sender: account, receiver: newAccount, deps })
+        .createAccount()
+        .transfer(initialBalance)
+        .addFullAccessKey(newPublicKey)
+        .signAndSend(blockReference);
 }
-

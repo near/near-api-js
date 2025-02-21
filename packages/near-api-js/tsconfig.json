@@ -1,11 +1,7 @@
 {
     "compilerOptions": {
         "esModuleInterop": true,
-        "lib": [
-            "es2020",
-            "esnext",
-            "dom"
-        ],
+        "lib": ["es2020", "esnext", "dom"],
         "module": "commonjs",
         "target": "es2020",
         "moduleResolution": "node",
@@ -21,10 +17,7 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "experimentalDecorators": true,
-        "resolveJsonModule": true,
+        "resolveJsonModule": true
     },
-    "files": [
-        "src/index.ts",
-        "src/browser-index.ts",
-    ],
+    "files": ["src/index.ts", "src/browser-index.ts"]
 }
