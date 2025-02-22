@@ -1,5 +1,25 @@
 # near-api-js
 
+## 5.1.0
+
+### Minor Changes
+
+- [#1433](https://github.com/near/near-api-js/pull/1433) [`c85d12d3`](https://github.com/near/near-api-js/commit/c85d12d36b1d8cd9d02178506dcf9cf0598fe7a8) Thanks [@r-near](https://github.com/r-near)! - Update base58 dependency
+
+### Patch Changes
+
+- Updated dependencies [[`ef530cf6`](https://github.com/near/near-api-js/commit/ef530cf62b0ed0d7eb2a77482c4d908449a863c2), [`c85d12d3`](https://github.com/near/near-api-js/commit/c85d12d36b1d8cd9d02178506dcf9cf0598fe7a8)]:
+  - @near-js/accounts@1.4.0
+  - @near-js/providers@1.0.2
+  - @near-js/utils@1.1.0
+  - @near-js/wallet-account@1.3.2
+  - @near-js/crypto@1.4.2
+  - @near-js/transactions@1.3.2
+  - @near-js/keystores@0.2.2
+  - @near-js/keystores-browser@0.2.2
+  - @near-js/keystores-node@0.1.2
+  - @near-js/signers@0.2.2
+
 ## 5.0.1
 
 ### Patch Changes

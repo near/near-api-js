@@ -1,5 +1,15 @@
 # @near-js/providers
 
+## 1.0.2
+
+### Patch Changes
+
+- [#1450](https://github.com/near/near-api-js/pull/1450) [`ef530cf6`](https://github.com/near/near-api-js/commit/ef530cf62b0ed0d7eb2a77482c4d908449a863c2) Thanks [@talentlessguy](https://github.com/talentlessguy)! - drop unfetch polyfill
+
+- Updated dependencies [[`c85d12d3`](https://github.com/near/near-api-js/commit/c85d12d36b1d8cd9d02178506dcf9cf0598fe7a8)]:
+  - @near-js/utils@1.1.0
+  - @near-js/transactions@1.3.2
+
 ## 1.0.1
 
 ### Patch Changes

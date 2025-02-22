@@ -1,6 +1,6 @@
 {
   "name": "@near-js/client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "lib/esm/index.js",
   "type": "module",
