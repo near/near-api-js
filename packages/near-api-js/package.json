@@ -39,7 +39,7 @@
         "near-workspaces": "3.5.0",
         "rimraf": "^6.0.1",
         "semver": "7.7.1",
-        "ts-jest": "29.2.5"
+        "ts-jest": "29.2.6"
     },
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
