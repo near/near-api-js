@@ -35,7 +35,7 @@
     "@near-js/transactions": "workspace:*",
     "@near-js/utils": "workspace:*",
     "build": "workspace:*",
-    "chalk": "4.1.1",
+    "chalk": "5.4.1",
     "homedir": "0.6.0",
     "near-api-js": "workspace:*",
     "ts-node": "^10.9.2",
