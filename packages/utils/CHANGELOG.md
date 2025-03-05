@@ -1,5 +1,11 @@
 # @near-js/utils
 
+## 1.1.0
+
+### Minor Changes
+
+- [#1433](https://github.com/near/near-api-js/pull/1433) [`c85d12d3`](https://github.com/near/near-api-js/commit/c85d12d36b1d8cd9d02178506dcf9cf0598fe7a8) Thanks [@r-near](https://github.com/r-near)! - Update base58 dependency
+
 ## 1.0.1
 
 ### Patch Changes
