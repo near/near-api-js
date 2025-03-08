@@ -1,5 +1,11 @@
 # @near-js/providers
 
+## 1.0.3
+
+### Patch Changes
+
+- [#1467](https://github.com/near/near-api-js/pull/1467) [`e408cfc`](https://github.com/near/near-api-js/commit/e408cfc4b4be4ea82e1e34314d9ee92885d03253) Thanks [@dependabot](https://github.com/apps/dependabot)! - build(deps): bump exponential-backoff from 3.1.1 to 3.1.2
+
 ## 1.0.2
 
 ### Patch Changes
