@@ -32,7 +32,7 @@
     "devDependencies": {
         "@types/http-errors": "1.6.1",
         "@types/node": "18.11.18",
-        "concurrently": "7.3.0",
+        "concurrently": "9.1.2",
         "in-publish": "2.0.0",
         "jest": "29.7.0",
         "near-hello": "0.5.1",
