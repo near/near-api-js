@@ -28,7 +28,7 @@
     "build": "workspace:*",
     "jest": "29.7.0",
     "near-workspaces": "3.5.0",
-    "ts-jest": "29.2.5",
+    "ts-jest": "29.2.6",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
