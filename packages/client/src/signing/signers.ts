@@ -14,6 +14,7 @@ import type {
   ViewAccountParams,
 } from '../interfaces';
 import { getAccessKey } from '../view';
+import { sha256 } from '@noble/hashes/sha256';
 
 /**
  * Initialize a message signer from a KeyPair
@@ -25,7 +26,8 @@ export function getSignerFromKeyPair(keyPair: KeyPair): MessageSigner {
       return keyPair.getPublicKey();
     },
     async signMessage(m) {
-      return keyPair.sign(m).signature;
+      const hashedMessage  = new Uint8Array(sha256(m));
+      return keyPair.sign(hashedMessage).signature;
     }
   };
 }
