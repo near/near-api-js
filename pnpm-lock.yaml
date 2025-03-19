@@ -234,8 +234,8 @@ importers:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5))
       near-workspaces:
-        specifier: 3.5.0
-        version: 3.5.0(encoding@0.1.13)
+        specifier: 5.0.0
+        version: 5.0.0(encoding@0.1.13)
       ts-jest:
         specifier: 29.1.5
         version: 29.1.5(@babel/core@7.24.7)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.7))(jest@29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5)))(typescript@5.4.5)
@@ -548,10 +548,6 @@ importers:
       isomorphic-unfetch:
         specifier: ^3.1.0
         version: 3.1.0(encoding@0.1.13)
-    optionalDependencies:
-      node-fetch:
-        specifier: 2.6.7
-        version: 2.6.7(encoding@0.1.13)
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -577,6 +573,10 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
+    optionalDependencies:
+      node-fetch:
+        specifier: 2.6.7
+        version: 2.6.7(encoding@0.1.13)
 
   packages/signers:
     dependencies:
@@ -1320,6 +1320,9 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
+  '@scure/base@1.2.4':
+    resolution: {integrity: sha512-5Yy9czTO47mqz+/J8GM6GIId4umdCk1wc1q8rKERQulIoc8VP9pzDcghv10Tl2E7R96ZUx/PhND3ESYUQX8NuQ==}
+
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
 
@@ -1652,6 +1655,9 @@ packages:
 
   borsh@1.0.0:
     resolution: {integrity: sha512-fSVWzzemnyfF89EPwlUNsrS5swF5CrtiN4e+h0/lLf4dz2he4L3ndM20PS9wj7ICSkXJe/TQUHdaPTq15b1mNQ==}
+
+  borsh@2.0.0:
+    resolution: {integrity: sha512-kc9+BgR3zz9+cjbwM8ODoUB4fs3X3I5A/HtX7LZKxCLaMrEeDFoBpnhZY//DTS1VZBSs6S5v46RZRbZjRFspEg==}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -3098,6 +3104,10 @@ packages:
   near-workspaces@3.5.0:
     resolution: {integrity: sha512-lkRCP2os8v7W+q1maQPSEI98f+YiPb86ibDyIy8bxr6fqnJPOsIRR3xE33rOwBsiph3WuUH46qtpYK0a+Co+EQ==}
     engines: {node: '>= 14.0.0', npm: '>= 6.0.0'}
+
+  near-workspaces@5.0.0:
+    resolution: {integrity: sha512-fktOa9A6gge8JPa+Gp6vMJSF3mE3H6dEMvVPTa0bXx9cNp142bAAderX8dZLtN1fYduPFkV3yb+OGM8V0d6JdA==}
+    engines: {node: '>=20.15.0', pnpm: '>= 9.15'}
 
   node-addon-api@5.1.0:
     resolution: {integrity: sha512-eh0GgfEkpnoWDq+VY8OyvYhFEzBk6jIYbRKdIlyTiAXIVJ8PyBaKb0rp7oDtoddbdoHWhq8wwr+XZ81F1rpNdA==}
@@ -5060,6 +5070,8 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
+  '@scure/base@1.2.4': {}
+
   '@sinclair/typebox@0.27.8': {}
 
   '@sindresorhus/is@4.6.0': {}
@@ -5448,6 +5460,8 @@ snapshots:
       text-encoding-utf-8: 1.0.2
 
   borsh@1.0.0: {}
+
+  borsh@2.0.0: {}
 
   brace-expansion@1.1.11:
     dependencies:
@@ -7403,6 +7417,24 @@ snapshots:
       proper-lockfile: 4.1.2
       pure-uuid: 1.8.1
       rimraf: 3.0.2
+      temp-dir: 2.0.0
+    transitivePeerDependencies:
+      - encoding
+
+  near-workspaces@5.0.0(encoding@0.1.13):
+    dependencies:
+      '@scure/base': 1.2.4
+      base64url: 3.0.1
+      borsh: 2.0.0
+      callsites: 4.1.0
+      fs-extra: 10.1.0
+      js-sha256: 0.9.0
+      near-api-js: 4.0.0(encoding@0.1.13)
+      near-sandbox: 0.0.18
+      node-port-check: 2.0.1
+      promisify-child-process: 4.1.2
+      proper-lockfile: 4.1.2
+      pure-uuid: 1.8.1
       temp-dir: 2.0.0
     transitivePeerDependencies:
       - encoding
