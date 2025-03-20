@@ -1,5 +1,19 @@
 # @near-js/client
 
+## 0.0.4
+
+### Patch Changes
+
+- [#1495](https://github.com/near/near-api-js/pull/1495) [`9cb5f56`](https://github.com/near/near-api-js/commit/9cb5f5621364c370fb2321f6a22dbee146f0f368) Thanks [@AlexKushnir1](https://github.com/AlexKushnir1)! - client: The signer implementation was incorrectly handling transactions by not hashing the encoded transaction before signing
+
+  transactions: Non trivial arguments given to the test so people could use them as an example.
+
+- [#1492](https://github.com/near/near-api-js/pull/1492) [`518e3c6`](https://github.com/near/near-api-js/commit/518e3c68d3d2242c6f9eba411e44f7ea372243ae) Thanks [@frol](https://github.com/frol)! - Fixed "Cannot mix BigInt and other types" error when signing transactions with explicitly provided nonce
+
+- Updated dependencies [[`e408cfc`](https://github.com/near/near-api-js/commit/e408cfc4b4be4ea82e1e34314d9ee92885d03253), [`9cb5f56`](https://github.com/near/near-api-js/commit/9cb5f5621364c370fb2321f6a22dbee146f0f368)]:
+  - @near-js/providers@1.0.3
+  - @near-js/transactions@1.3.3
+
 ## 0.0.3
 
 ### Patch Changes
