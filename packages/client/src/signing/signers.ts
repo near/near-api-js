@@ -66,7 +66,7 @@ export function getSignerFromKeystore(account: string, network: string, keyStore
  */
 export function getAccessKeySigner({ account, blockReference, deps: { rpcProvider, signer } }: ViewAccountParams & SignerDependency): AccessKeySigner {
   let accessKey: FullAccessKey | FunctionCallAccessKey;
-  let nonce: bigint;
+  let nonce: bigint | undefined;
 
   return {
     async getAccessKey(ignoreCache = false) {
@@ -97,7 +97,11 @@ export function getAccessKeySigner({ account, blockReference, deps: { rpcProvide
       return account;
     },
     signMessage(m: Uint8Array) {
-      nonce += 1n;
+      // Nonce can be uninitialized here if it is provided explicitly by developer (see toSignedDelegateAction),
+      // we don't need to track it here in that case.
+      if (nonce) {
+        nonce += 1n;
+      }
       return signer.signMessage(m);
     }
   };
