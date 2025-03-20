@@ -1,6 +1,6 @@
 {
   "name": "@near-js/keystores-node",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "KeyStore implementation for working with keys in the local filesystem",
   "main": "lib/esm/index.js",
   "type": "module",
@@ -25,7 +25,7 @@
     "build": "workspace:*",
     "jest": "29.7.0",
     "rimraf": "^6.0.1",
-    "ts-jest": "29.1.5",
+    "ts-jest": "29.2.6",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },

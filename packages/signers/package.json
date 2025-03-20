@@ -1,6 +1,6 @@
 {
   "name": "@near-js/signers",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Modules for cryptographically signing messages",
   "main": "lib/esm/index.js",
   "type": "module",
@@ -18,14 +18,14 @@
   "dependencies": {
     "@near-js/crypto": "workspace:*",
     "@near-js/keystores": "workspace:*",
-    "@noble/hashes": "1.3.3"
+    "@noble/hashes": "1.7.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/node": "20.0.0",
     "build": "workspace:*",
     "jest": "29.7.0",
-    "ts-jest": "29.1.5",
+    "ts-jest": "29.2.6",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },

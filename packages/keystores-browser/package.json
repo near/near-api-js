@@ -1,6 +1,6 @@
 {
   "name": "@near-js/keystores-browser",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "KeyStore implementation for working with keys in browser LocalStorage",
   "main": "lib/esm/index.js",
   "type": "module",
@@ -24,7 +24,7 @@
     "build": "workspace:*",
     "jest": "29.7.0",
     "localstorage-memory": "1.0.3",
-    "ts-jest": "29.1.5",
+    "ts-jest": "29.2.6",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },

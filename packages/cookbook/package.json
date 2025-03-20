@@ -35,11 +35,12 @@
     "@near-js/transactions": "workspace:*",
     "@near-js/utils": "workspace:*",
     "build": "workspace:*",
-    "chalk": "4.1.1",
+    "chalk": "5.4.1",
     "homedir": "0.6.0",
     "near-api-js": "workspace:*",
     "ts-node": "^10.9.2",
     "tsconfig": "workspace:*",
+    "tsx": "^4.19.2",
     "typescript": "5.4.5"
   }
 }

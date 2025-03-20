@@ -1,6 +1,6 @@
 {
   "name": "@near-js/providers",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Library of implementations for interfacing with the NEAR blockchain",
   "main": "lib/esm/index.js",
   "type": "module",
@@ -20,16 +20,15 @@
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "borsh": "1.0.0",
-    "exponential-backoff": "^3.1.1",
-    "isomorphic-unfetch": "^3.1.0"
+    "exponential-backoff": "^3.1.2"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/node": "20.0.0",
     "build": "workspace:*",
     "jest": "29.7.0",
-    "near-workspaces": "3.5.0",
-    "ts-jest": "29.1.5",
+    "near-workspaces": "4.0.0",
+    "ts-jest": "29.2.6",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
