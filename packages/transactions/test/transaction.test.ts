@@ -4,7 +4,7 @@ import { actionCreators } from '../src';
 const { functionCall } = actionCreators;
 
 test('functionCall with already serialized args', () => {
-    const serializedArgs = Buffer.from('{}');
+    const serializedArgs = Buffer.from('{key: value}');
     const action = functionCall('methodName', serializedArgs, 1n, 2n);    
     expect(action).toMatchObject({ 
         functionCall: {
@@ -17,8 +17,8 @@ test('functionCall with already serialized args', () => {
 });
 
 test('functionCall with non-serialized args', () => {
-    const serializedArgs = Buffer.from('{}');
-    const action = functionCall('methodName', {}, 1n, 2n);    
+    const serializedArgs = Buffer.from(JSON.stringify({ key: 'value' }));
+    const action = functionCall('methodName', { key: 'value' }, 1n, 2n);
     expect(action).toMatchObject({ 
         functionCall: {
             methodName: 'methodName',
