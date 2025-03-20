@@ -25,8 +25,14 @@ export function getSignerFromKeyPair(keyPair: KeyPair): MessageSigner {
     async getPublicKey() {
       return keyPair.getPublicKey();
     },
+
+    /**
+     * Signs a message using the provided KeyPair
+     * @param m The message to be signed as a Uint8Array
+     * @returns A Promise containing the signature of hashed message as a Uint8Array
+     */
     async signMessage(m) {
-      const hashedMessage  = new Uint8Array(sha256(m));
+      const hashedMessage = new Uint8Array(sha256(m));
       return keyPair.sign(hashedMessage).signature;
     }
   };
