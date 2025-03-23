@@ -26,7 +26,8 @@
     "traverseBlocks": "tsx -e \"import f from './transactions/traverse-blocks.ts'; f(...process.argv.slice(1));\"",
     "unwrapNear": "tsx -e \"import f from './utils/unwrap-near.ts'; f(...process.argv.slice(1));\"",
     "verifySignature": "tsx -e \"import f from './utils/verify-signature.ts'; f(...process.argv.slice(1));\"",
-    "wrapNear": "tsx -e \"import f from './utils/wrap-near.ts'; f(...process.argv.slice(1));\""
+    "wrapNear": "tsx -e \"import f from './utils/wrap-near.ts'; f(...process.argv.slice(1));\"",
+    "v2": "tsx account_v2.ts"
   },
   "devDependencies": {
     "@near-js/client": "workspace:*",
