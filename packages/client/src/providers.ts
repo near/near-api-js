@@ -27,7 +27,7 @@ export function getEndpointsByNetwork(network: string) {
  * @param urls RPC endpoint URLs
  */
 export function createRpcClientWrapper(urls: string[]): RpcQueryProvider {
-  if (!urls) {
+  if (!urls || urls.length === 0) {
     throw new Error('at least one RPC endpoint URL required');
   }
 
