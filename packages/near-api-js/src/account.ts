@@ -151,12 +151,16 @@ export class ContractV2 extends PublicAccountV2 {
     }
 }
 
+// PublicAccount
+
+// Wallet -> accountId, signer, provider
+// Signer -> signNep413Message, signTransaction
+
 export class SignerAccountV2 extends PublicAccountV2 {
-    public readonly signer: SignerV2;
+    public signer: SignerV2;
 
     constructor(accountId: string, provider: Provider, signer: SignerV2) {
         super(accountId, provider);
-
         this.signer = signer;
     }
 
@@ -164,35 +168,8 @@ export class SignerAccountV2 extends PublicAccountV2 {
         throw new Error(`Not implemented yet!`);
     }
 
-    // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
-    protected async matchAccessKeyBasedOnReceiverAndActions(
-        publicKeys: Array<PublicKey>,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        receiverId: string,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        actions: Array<Action>
-    ): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView } | undefined> {
-        const pk = publicKeys.at(0)!;
-
-        const rawAccessKey = await this.provider.query<AccessKeyViewRaw>({
-            request_type: "view_access_key",
-            account_id: this.accountId,
-            public_key: pk.toString(),
-            finality: "optimistic",
-        });
-
-        // store nonce as BigInt to preserve precision on big number
-        const accessKey = {
-            ...rawAccessKey,
-            nonce: BigInt(rawAccessKey.nonce || 0),
-        };
-
-        return { publicKey: pk, accessKey };
-    }
-
-    protected async findRecentBlockHash(): Promise<BlockHash> {
-        const block = await this.provider.block({ finality: "final" });
-        return block.header.hash;
+    public setSigner(signer: SignerV2): void {
+        this.signer = signer;
     }
 
     public async constructTransaction(
@@ -201,26 +178,19 @@ export class SignerAccountV2 extends PublicAccountV2 {
     ): Promise<Transaction> {
         if (!this.signer) throw new Error(`Signer is required!`);
 
-        const publicKeys = await this.signer.getPublicKeys();
+        const block = await this.provider.block({ finality: "final" });
+        const recentBlockHash = block.header.hash;
 
-        if (publicKeys.length === 0)
-            throw new Error(`No public keys available!`);
+        const publicKey = this.signer.getPublicKey();
 
-        const signerKey = await this.matchAccessKeyBasedOnReceiverAndActions(
-            publicKeys,
-            receiverId,
-            actions
-        );
-
-        if (!signerKey) throw new Error(`No public key found`);
-
-        const recentBlockHash = await this.findRecentBlockHash();
+        // get the nonce for the public key for this account
+        const nonce = this.provider.getNonce(this.accountId, publicKey);
 
         return createTransaction(
             this.accountId,
-            signerKey.publicKey,
+            publicKey,
             receiverId,
-            signerKey.accessKey.nonce + 1n,
+            nonce + 1n,
             actions,
             baseDecode(recentBlockHash)
         );
@@ -247,7 +217,7 @@ export class SignerAccountV2 extends PublicAccountV2 {
             actions
         );
 
-        return this.signer.signAndSendTransaction(transaction, this.provider);
+        return this.signAndSendTransaction(transaction);
     }
 
     public async deleteAccount(
@@ -262,7 +232,7 @@ export class SignerAccountV2 extends PublicAccountV2 {
             actions
         );
 
-        return this.signer.signAndSendTransaction(transaction, this.provider);
+        return this.signAndSendTransaction(transaction);
     }
 
     public async addFullAccessKey(
@@ -277,7 +247,7 @@ export class SignerAccountV2 extends PublicAccountV2 {
             actions
         );
 
-        return this.signer.signAndSendTransaction(transaction, this.provider);
+        return this.signAndSendTransaction(transaction);
     }
 
     public async addFunctionAccessKey(
@@ -300,7 +270,7 @@ export class SignerAccountV2 extends PublicAccountV2 {
             actions
         );
 
-        return this.signer.signAndSendTransaction(transaction, this.provider);
+        return this.signAndSendTransaction(transaction);
     }
     public async deleteKey(pk: PublicKey): Promise<FinalExecutionOutcome> {
         if (!this.signer) throw new Error(`Signer is required!`);
@@ -312,7 +282,7 @@ export class SignerAccountV2 extends PublicAccountV2 {
             actions
         );
 
-        return this.signer.signAndSendTransaction(transaction, this.provider);
+        return this.signAndSendTransaction(transaction);
     }
 
     public async transfer(
@@ -328,7 +298,7 @@ export class SignerAccountV2 extends PublicAccountV2 {
             actions
         );
 
-        return this.signer.signAndSendTransaction(transaction, this.provider);
+        return this.signAndSendTransaction(transaction);
     }
     public async deployContract(
         code: Uint8Array
@@ -342,22 +312,35 @@ export class SignerAccountV2 extends PublicAccountV2 {
             actions
         );
 
-        return this.signer.signAndSendTransaction(transaction, this.provider);
+        return this.signAndSendTransaction(transaction);
     }
 
     public async signTransaction(
         transaction: Transaction
     ): Promise<SignedTransaction> {
-        if (!this.signer) throw new Error(`Signer is required!`);
-
         return this.signer.signTransaction(transaction);
     }
 
     public async signAndSendTransaction(
-        transaction: Transaction
+        transaction: Transaction | { receiverId: string; actions: Array<Action> }
     ): Promise<FinalExecutionOutcome> {
-        if (!this.signer) throw new Error(`Signer is required!`);
-
-        return this.signer.signAndSendTransaction(transaction, this.provider);
+        return this.signAndSendTransaction(transaction);
     }
+
+
+    // public async signAndSendTransaction({
+    //     receiverId: string,
+    //     actions: Array<Action>
+    // }): Promise<FinalExecutionOutcome> {
+    // }
+
+    // public async signAndSendTransactions(
+    //      transactions: Array<Transaction>,
+    // ): Promise<FinalExecutionOutcome> {
+    // }
+
+    // public async signAndSendTransactions(
+    //      transactions: Array<{receiverId: string, actions: Array<Action>}>,
+    // ): Promise<FinalExecutionOutcome> {
+    // }
 }

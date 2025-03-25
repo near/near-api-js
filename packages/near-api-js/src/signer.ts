@@ -1,12 +1,10 @@
 import { KeyPair, PublicKey } from "@near-js/crypto";
-import { Provider } from "@near-js/providers";
 import {
     encodeTransaction,
     Signature,
     SignedTransaction,
     Transaction,
 } from "@near-js/transactions";
-import { FinalExecutionOutcome } from "@near-js/types";
 
 export { InMemorySigner, Signer } from "@near-js/signers";
 
@@ -29,7 +27,7 @@ export interface SignedMessage {
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
  */
 export abstract class SignerV2 {
-    abstract getPublicKeys(): Promise<Array<PublicKey>>;
+    abstract getPublicKey(): PublicKey;
 
     abstract signNep413Message(
         params: SignMessageParams,
@@ -39,27 +37,20 @@ export abstract class SignerV2 {
     abstract signTransaction(
         transaction: Transaction
     ): Promise<SignedTransaction>;
-
-    /**
-     * This method is required for compatibility with WalletSelector
-     */
-    abstract signAndSendTransaction(
-        transaction: Transaction,
-        // not sure if this Provider should be here
-        provider?: Provider
-    ): Promise<FinalExecutionOutcome>;
 }
 
 export class KeyPairSigner extends SignerV2 {
+    public readonly key: KeyPair;
+
     constructor(
-        private readonly keys: Array<KeyPair>,
-        private readonly provider: Provider
+        key: KeyPair,
     ) {
         super();
+        this.key = key;
     }
 
-    public async getPublicKeys(): Promise<Array<PublicKey>> {
-        return this.keys.map((key) => key.getPublicKey());
+    public getPublicKey(): PublicKey {
+        return this.key.getPublicKey();
     }
 
     public async signNep413Message(
@@ -76,34 +67,14 @@ export class KeyPairSigner extends SignerV2 {
     ): Promise<SignedTransaction> {
         const message = encodeTransaction(transaction);
 
-        const keyPair = this.keys.find(
-            (key) => key.getPublicKey() === transaction.publicKey
-        );
-
-        if (!keyPair)
-            throw new Error(
-                `Transaction can't be signed with ${transaction.publicKey} as this key doesn't belong to a Signer`
-            );
-
-        const { signature } = keyPair.sign(message);
+        const { signature } = this.key.sign(message);
 
         return new SignedTransaction({
             transaction,
             signature: new Signature({
-                keyType: keyPair.getPublicKey().keyType,
+                keyType: this.key.getPublicKey().keyType,
                 data: signature,
             }),
         });
-    }
-
-    public async signAndSendTransaction(
-        transaction: Transaction,
-        provider?: Provider
-    ): Promise<FinalExecutionOutcome> {
-        const signedTx = await this.signTransaction(transaction);
-
-        const rpcProvider = provider || this.provider;
-
-        return rpcProvider.sendTransaction(signedTx);
     }
 }
