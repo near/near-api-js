@@ -115,7 +115,7 @@ export class Near {
             // TODO: figure out better way of specifiying initial balance.
             // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times
             const initialBalance = config.initialBalance ? BigInt(config.initialBalance) : 500000000000000000000000000n;
-            this.accountCreator = new LocalAccountCreator(new Account(this.connection, config.masterAccount), initialBalance);
+            this.accountCreator = new LocalAccountCreator(new Account(config.masterAccount, this.connection.provider, this.connection.signer), initialBalance);
         } else if (config.helperUrl) {
             this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);
         } else {
@@ -127,7 +127,7 @@ export class Near {
      * @param accountId near accountId used to interact with the network.
      */
     async account(accountId: string): Promise<Account> {
-        const account = new Account(this.connection, accountId);
+        const account = new Account(accountId, this.connection.provider, this.connection.signer);
         return account;
     }
 
@@ -145,6 +145,6 @@ export class Near {
             throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
         }
         await this.accountCreator.createAccount(accountId, publicKey);
-        return new Account(this.connection, accountId);
+        return new Account(accountId, this.connection.provider, this.connection.signer);
     }
 }

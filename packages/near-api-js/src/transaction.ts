@@ -15,7 +15,6 @@ export {
     Transfer,
     SCHEMA,
     createTransaction,
-    signTransaction,
     Signature,
     SignedTransaction,
     Transaction,

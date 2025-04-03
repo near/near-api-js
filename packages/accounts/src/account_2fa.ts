@@ -1,4 +1,4 @@
-import { PublicKey } from '@near-js/crypto';
+import { KeyPair, PublicKey } from '@near-js/crypto';
 import { FinalExecutionOutcome, TypedError, FunctionCallPermissionView } from '@near-js/types';
 import { actionCreators } from '@near-js/transactions';
 import { Logger } from '@near-js/utils'
@@ -13,6 +13,7 @@ import {
     MULTISIG_GAS,
 } from './constants';
 import { MultisigStateStatus } from './types';
+import { KeyPairSigner } from '@near-js/signers';
 
 const { addKey, deleteKey, deployContract, fullAccessKey, functionCall, functionCallAccessKey } = actionCreators;
 
@@ -104,9 +105,9 @@ export class Account2FA extends AccountMultisig {
             case MultisigStateStatus.VALID_STATE:
                 return await super.signAndSendTransactionWithAccount(accountId, actions);
             case MultisigStateStatus.INVALID_STATE:
-                throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState');
+                throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.getConnection().networkId}, the account has existing state.`, 'ContractHasExistingState');
             default:
-                throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
+                throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.getConnection().networkId}, the account state could not be verified.`, 'ContractStateUnknown');
         }
     }
 
@@ -152,7 +153,7 @@ export class Account2FA extends AccountMultisig {
                 return [];
             }
             throw cause == 'TOO_LARGE_CONTRACT_STATE'
-                ? new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account has existing state.`, 'ContractHasExistingState')
+                ? new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.getConnection().networkId}, the account has existing state.`, 'ContractHasExistingState')
                 : error;
         });
 
@@ -196,7 +197,7 @@ export class Account2FA extends AccountMultisig {
     async disable(contractBytes: Uint8Array, cleanupContractBytes: Uint8Array) {
         const { stateStatus } = await this.checkMultisigCodeAndStateStatus();
         if(stateStatus !== MultisigStateStatus.VALID_STATE && stateStatus !== MultisigStateStatus.STATE_NOT_INITIALIZED) {
-            throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.connection.networkId}, the account state could not be verified.`, 'ContractStateUnknown');
+            throw new TypedError(`Can not deploy a contract to account ${this.accountId} on network ${this.getConnection().networkId}, the account state could not be verified.`, 'ContractStateUnknown');
         }
 
         let deleteAllRequestsError;
@@ -316,10 +317,11 @@ export class Account2FA extends AccountMultisig {
      * @returns {Promise<{ blockNumber: string, blockNumberSignature: string }>} - A promise that resolves to the signature information.
      */
     async signatureFor() {
-        const { accountId } = this;
-        const block = await this.connection.provider.block({ finality: 'final' });
+        const block = await this.getConnection().provider.block({ finality: 'final' });
         const blockNumber = block.header.height.toString();
-        const signed = await this.connection.signer.signMessage(Buffer.from(blockNumber), accountId, this.connection.networkId);
+        // @ts-expect-error keyPair isn't public
+        const keyPair = (this.getConnection().signer as KeyPairSigner).keyPair as KeyPair;
+        const signed = keyPair.sign(Buffer.from(blockNumber));
         const blockNumberSignature = Buffer.from(signed.signature).toString('base64');
         return { blockNumber, blockNumberSignature };
     }

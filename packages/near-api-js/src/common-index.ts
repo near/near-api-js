@@ -8,7 +8,7 @@ import { Account } from './account';
 import * as multisig from './account_multisig';
 import * as accountCreator from './account_creator';
 import { Connection } from './connection';
-import { Signer, InMemorySigner } from './signer';
+import { Signer, KeyPairSigner } from './signer';
 import { Contract } from './contract';
 import { KeyPair } from './utils/key_pair';
 import { Near } from './near';
@@ -29,7 +29,7 @@ export {
     Account,
     Connection,
     Contract,
-    InMemorySigner,
+    KeyPairSigner,
     Signer,
     KeyPair,
 

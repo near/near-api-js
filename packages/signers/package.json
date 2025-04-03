@@ -18,6 +18,7 @@
   "dependencies": {
     "@near-js/crypto": "workspace:*",
     "@near-js/keystores": "workspace:*",
+    "@near-js/transactions": "workspace:*",
     "@noble/hashes": "1.7.1"
   },
   "devDependencies": {

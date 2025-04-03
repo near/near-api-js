@@ -1,20 +1,18 @@
-import { PublicKey } from '@near-js/crypto';
-import { exponentialBackoff } from '@near-js/providers';
+import { PublicKey } from "@near-js/crypto";
+import { exponentialBackoff, Provider } from "@near-js/providers";
 import {
     actionCreators,
     Action,
     buildDelegateAction,
-    signDelegateAction,
-    signTransaction,
     SignedDelegate,
     SignedTransaction,
+    createTransaction,
     stringifyJsonOrBytes,
-} from '@near-js/transactions';
+} from "@near-js/transactions";
 import {
     PositionalArgsError,
     FinalExecutionOutcome,
     TypedError,
-    ErrorContext,
     AccountView,
     AccessKeyView,
     AccessKeyViewRaw,
@@ -22,19 +20,28 @@ import {
     AccessKeyInfoView,
     FunctionCallPermissionView,
     BlockReference,
-} from '@near-js/types';
+    ContractCodeView,
+    ViewStateResult,
+    CodeResult,
+    ErrorContext,
+} from "@near-js/types";
 import {
     baseDecode,
-    baseEncode,
     Logger,
-    parseResultError,
     DEFAULT_FUNCTION_CALL_GAS,
+    baseEncode,
+    parseResultError,
     printTxOutcomeLogsAndFailures,
-} from '@near-js/utils';
+} from "@near-js/utils";
 
-import { Connection } from './connection';
-import { viewFunction, viewState } from './utils';
-import { ChangeFunctionCallOptions, IntoConnection, ViewFunctionCallOptions } from './interface';
+import { Signer } from "@near-js/signers";
+import { Connection } from "./connection";
+import { viewFunction, viewState } from "./utils";
+import {
+    ChangeFunctionCallOptions,
+    IntoConnection,
+    ViewFunctionCallOptions,
+} from "./interface";
 
 const {
     addKey,
@@ -108,31 +115,136 @@ interface SignedDelegateOptions {
     receiverId: string;
 }
 
-/**
- * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
- */
-export class Account implements IntoConnection {
-    readonly connection: Connection;
-    readonly accountId: string;
+export class PublicAccount {
+    public readonly accountId: string;
+    public readonly provider: Provider;
 
-    constructor(connection: Connection, accountId: string) {
-        this.connection = connection;
+    constructor(accountId: string, provider: Provider) {
         this.accountId = accountId;
+        this.provider = provider;
     }
 
-    getConnection(): Connection {
-        return this.connection;
+    public withSigner(signer: Signer): Account {
+        return new Account(this.accountId, this.provider, signer);
     }
 
     /**
      * Returns basic NEAR account information via the `view_account` RPC query method
      * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
      */
-    async state(): Promise<AccountView> {
-        return this.connection.provider.query<AccountView>({
-            request_type: 'view_account',
+    public async getInformation(): Promise<AccountView> {
+        return this.provider.query<AccountView>({
+            request_type: "view_account",
             account_id: this.accountId,
-            finality: 'optimistic'
+            finality: "optimistic",
+        });
+    }
+
+    /**
+     * Returns basic NEAR account information via the `view_account` RPC query method
+     * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
+     */
+    public async getAccessKey(pk: PublicKey): Promise<AccessKeyViewRaw> {
+        return this.provider.query<AccessKeyViewRaw>({
+            request_type: "view_access_key",
+            public_key: pk.toString(),
+            account_id: this.accountId,
+            finality: "optimistic",
+        });
+    }
+
+    public async getAccessKeyList(): Promise<AccessKeyList> {
+        return this.provider.query<AccessKeyList>({
+            request_type: "view_access_key_list",
+            account_id: this.accountId,
+            finality: "optimistic",
+        });
+    }
+
+    public async getContractCode(): Promise<ContractCodeView> {
+        return this.provider.query<ContractCodeView>({
+            request_type: "view_code",
+            account_id: this.accountId,
+            finality: "optimistic",
+        });
+    }
+
+    public async getContractState(
+        prefix: string = ""
+    ): Promise<ViewStateResult> {
+        const prefixBase64 = Buffer.from(prefix).toString("base64");
+
+        return this.provider.query<ViewStateResult>({
+            request_type: "view_state",
+            account_id: this.accountId,
+            finality: "optimistic",
+            prefix_base64: prefixBase64,
+        });
+    }
+
+    public async getTransactionStatus(
+        txHash: string
+    ): Promise<FinalExecutionOutcome> {
+        return this.provider.txStatus(
+            txHash,
+            this.accountId,
+            "EXECUTED_OPTIMISTIC"
+        );
+    }
+
+    /**
+     * Invoke a contract view function using the RPC API.
+     * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
+     *
+     * @returns {Promise<string>}
+     */
+    public async invokeReadFunction(
+        contractId: string,
+        methodName: string,
+        args: Record<string, any> = {}
+    ): Promise<any> {
+        const argsBase64 = Buffer.from(JSON.stringify(args)).toString("base64");
+
+        const { result } = await this.provider.query<CodeResult>({
+            request_type: "call_function",
+            account_id: contractId,
+            method_name: methodName,
+            args_base64: argsBase64,
+            finality: "optimistic",
+        });
+
+        if (result.length === 0) return undefined;
+
+        return JSON.parse(Buffer.from(result).toString());
+    }
+}
+
+/**
+ * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
+ */
+export class Account extends PublicAccount implements IntoConnection {
+    protected readonly signer: Signer;
+
+    constructor(accountId: string, provider: Provider, signer: Signer) {
+        super(accountId, provider);
+        this.signer = signer;
+    }
+
+    public getConnection(): Connection {
+        return new Connection('', this.provider, this.signer, '');
+    }
+
+    /**
+     * Returns basic NEAR account information via the `view_account` RPC query method
+     * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
+     *
+     * @deprecated
+     */
+    async state(): Promise<AccountView> {
+        return this.provider.query<AccountView>({
+            request_type: "view_account",
+            account_id: this.accountId,
+            finality: "optimistic",
         });
     }
 
@@ -142,70 +254,111 @@ export class Account implements IntoConnection {
      * @param actions list of actions to perform as part of the transaction
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider.sendTransaction | JsonRpcProvider.sendTransaction}
      */
-    protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
-        const accessKeyInfo = await this.findAccessKey(receiverId, actions);
-        if (!accessKeyInfo) {
-            throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair exists for this account`, 'KeyNotFound');
-        }
-        const { accessKey } = accessKeyInfo;
+    public async signTransaction(
+        receiverId: string,
+        actions: Action[]
+    ): Promise<[Uint8Array, SignedTransaction]> {
+        const pk = await this.signer.getPublicKey();
 
-        const block = await this.connection.provider.block({ finality: 'final' });
-        const blockHash = block.header.hash;
+        const accessKey = await this.getAccessKey(pk);
 
-        const nonce = accessKey.nonce + 1n;
-        return await signTransaction(
-            receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
+        const block = await this.provider.block({
+            finality: "final",
+        });
+        const recentBlockHash = block.header.hash;
+
+        const nonce = BigInt(accessKey.nonce) + 1n;
+
+        const tx = createTransaction(
+            this.accountId,
+            pk,
+            receiverId,
+            nonce + 1n,
+            actions,
+            baseDecode(recentBlockHash)
         );
+
+        return this.signer.signTransaction(tx);
     }
 
     /**
      * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider }
-     * 
+     *
      * @param options The options for signing and sending the transaction.
      * @param options.receiverId The NEAR account ID of the transaction receiver.
      * @param options.actions The list of actions to be performed in the transaction.
      * @param options.returnError Whether to return an error if the transaction fails.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransaction({ receiverId, actions, returnError }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({
+        receiverId,
+        actions,
+        returnError,
+    }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
-        const result = await exponentialBackoff(TX_NONCE_RETRY_WAIT, TX_NONCE_RETRY_NUMBER, TX_NONCE_RETRY_WAIT_BACKOFF, async () => {
-            [txHash, signedTx] = await this.signTransaction(receiverId, actions);
-            const publicKey = signedTx.transaction.publicKey;
+        const result = await exponentialBackoff(
+            TX_NONCE_RETRY_WAIT,
+            TX_NONCE_RETRY_NUMBER,
+            TX_NONCE_RETRY_WAIT_BACKOFF,
+            async () => {
+                [txHash, signedTx] = await this.signTransaction(
+                    receiverId,
+                    actions
+                );
 
-            try {
-                return await this.connection.provider.sendTransaction(signedTx);
-            } catch (error) {
-                if (error.type === 'InvalidNonce') {
-                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} with new nonce.`);
-                    delete this.accessKeyByPublicKeyCache[publicKey.toString()];
-                    return null;
-                }
-                if (error.type === 'Expired') {
-                    Logger.warn(`Retrying transaction ${receiverId}:${baseEncode(txHash)} due to expired block hash`);
-                    return null;
-                }
+                try {
+                    return await this.provider.sendTransaction(signedTx);
+                } catch (error) {
+                    if (error.type === "InvalidNonce") {
+                        Logger.warn(
+                            `Retrying transaction ${receiverId}:${baseEncode(
+                                txHash
+                            )} with new nonce.`
+                        );
+                        return null;
+                    }
+                    if (error.type === "Expired") {
+                        Logger.warn(
+                            `Retrying transaction ${receiverId}:${baseEncode(
+                                txHash
+                            )} due to expired block hash`
+                        );
+                        return null;
+                    }
 
-                error.context = new ErrorContext(baseEncode(txHash));
-                throw error;
+                    error.context = new ErrorContext(baseEncode(txHash));
+                    throw error;
+                }
             }
-        });
+        );
         if (!result) {
             // TODO: This should have different code actually, as means "transaction not submitted for sure"
-            throw new TypedError('nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.', 'RetriesExceeded');
+            throw new TypedError(
+                "nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.",
+                "RetriesExceeded"
+            );
         }
 
         printTxOutcomeLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
 
         // Should be falsy if result.status.Failure is null
-        if (!returnError && typeof result.status === 'object' && typeof result.status.Failure === 'object' && result.status.Failure !== null) {
+        if (
+            !returnError &&
+            typeof result.status === "object" &&
+            typeof result.status.Failure === "object" &&
+            result.status.Failure !== null
+        ) {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
-            if (result.status.Failure.error_message && result.status.Failure.error_type) {
+            if (
+                result.status.Failure.error_message &&
+                result.status.Failure.error_type
+            ) {
                 throw new TypedError(
                     `Transaction ${result.transaction_outcome.id} failed. ${result.status.Failure.error_message}`,
-                    result.status.Failure.error_type);
+                    result.status.Failure.error_type
+                );
             } else {
                 throw parseResultError(result);
             }
@@ -222,48 +375,60 @@ export class Account implements IntoConnection {
      *
      * @todo Find matching access key based on transaction (i.e. receiverId and actions)
      *
+     * @deprecated
+     *
      * @param receiverId currently unused (see todo)
      * @param actions currently unused (see todo)
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async findAccessKey(receiverId: string, actions: Action[]): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
-        // TODO: Find matching access key based on transaction (i.e. receiverId and actions)
-        const publicKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+    async findAccessKey(
+        receiverId: string,
+        actions: Action[]
+    ): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
+        const publicKey = await this.signer.getPublicKey();
         if (!publicKey) {
-            throw new TypedError(`no matching key pair found in ${this.connection.signer}`, 'PublicKeyNotFound');
+            throw new TypedError(
+                `no matching key pair found in ${this.signer.constructor.name}`,
+                "PublicKeyNotFound"
+            );
         }
 
-        const cachedAccessKey = this.accessKeyByPublicKeyCache[publicKey.toString()];
+        const cachedAccessKey =
+            this.accessKeyByPublicKeyCache[publicKey.toString()];
         if (cachedAccessKey !== undefined) {
             return { publicKey, accessKey: cachedAccessKey };
         }
 
         try {
-            const rawAccessKey = await this.connection.provider.query<AccessKeyViewRaw>({
-                request_type: 'view_access_key',
+            const rawAccessKey = await this.provider.query<AccessKeyViewRaw>({
+                request_type: "view_access_key",
                 account_id: this.accountId,
                 public_key: publicKey.toString(),
-                finality: 'optimistic'
+                finality: "optimistic",
             });
 
             // store nonce as BigInt to preserve precision on big number
             const accessKey = {
                 ...rawAccessKey,
-                nonce: BigInt(rawAccessKey.nonce || 0)
+                nonce: BigInt(rawAccessKey.nonce || 0),
             };
             // this function can be called multiple times and retrieve the same access key
             // this checks to see if the access key was already retrieved and cached while
             // the above network call was in flight. To keep nonce values in line, we return
             // the cached access key.
             if (this.accessKeyByPublicKeyCache[publicKey.toString()]) {
-                return { publicKey, accessKey: this.accessKeyByPublicKeyCache[publicKey.toString()] };
+                return {
+                    publicKey,
+                    accessKey:
+                        this.accessKeyByPublicKeyCache[publicKey.toString()],
+                };
             }
 
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
-            if (e.type == 'AccessKeyDoesNotExist') {
+            if (e.type == "AccessKeyDoesNotExist") {
                 return null;
             }
 
@@ -274,71 +439,156 @@ export class Account implements IntoConnection {
     /**
      * Create a new account and deploy a contract to it
      *
+     * @deprecated
+     *
      * @param contractId NEAR account where the contract is deployed
      * @param publicKey The public key to add to the created contract account
      * @param data The compiled contract code
      * @param amount of NEAR to transfer to the created contract account. Transfer enough to pay for storage https://docs.near.org/docs/concepts/storage-staking
      */
-    async createAndDeployContract(contractId: string, publicKey: string | PublicKey, data: Uint8Array, amount: bigint): Promise<Account> {
+    async createAndDeployContract(
+        contractId: string,
+        publicKey: string | PublicKey,
+        data: Uint8Array,
+        amount: bigint
+    ): Promise<PublicAccount> {
         const accessKey = fullAccessKey();
         await this.signAndSendTransaction({
             receiverId: contractId,
-            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey), deployContract(data)]
+            actions: [
+                createAccount(),
+                transfer(amount),
+                addKey(PublicKey.from(publicKey), accessKey),
+                deployContract(data),
+            ],
         });
-        const contractAccount = new Account(this.connection, contractId);
-        return contractAccount;
+        return new PublicAccount(contractId, this.provider);
     }
 
     /**
+     * @deprecated
+     *
      * @param receiverId NEAR account receiving Ⓝ
      * @param amount Amount to send in yoctoⓃ
      */
-    async sendMoney(receiverId: string, amount: bigint): Promise<FinalExecutionOutcome> {
+    async sendMoney(
+        receiverId: string,
+        amount: bigint
+    ): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId,
-            actions: [transfer(amount)]
+            actions: [transfer(amount)],
         });
     }
 
     /**
+     * @deprecated
+     *
      * @param newAccountId NEAR account name to be created
      * @param publicKey A public key created from the masterAccount
      */
-    async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: bigint): Promise<FinalExecutionOutcome> {
+    async createAccount(
+        newAccountId: string,
+        publicKey: string | PublicKey,
+        amount: bigint
+    ): Promise<FinalExecutionOutcome> {
         const accessKey = fullAccessKey();
         return this.signAndSendTransaction({
             receiverId: newAccountId,
-            actions: [createAccount(), transfer(amount), addKey(PublicKey.from(publicKey), accessKey)]
+            actions: [
+                createAccount(),
+                transfer(amount),
+                addKey(PublicKey.from(publicKey), accessKey),
+            ],
+        });
+    }
+
+    public async createSubAccount(
+        accountOrPrefix: string,
+        pk: PublicKey,
+        amount: bigint
+    ): Promise<FinalExecutionOutcome> {
+        const newAccountId = accountOrPrefix.includes(".")
+            ? accountOrPrefix
+            : `${accountOrPrefix}.${this.accountId}`;
+        const actions = [
+            createAccount(),
+            transfer(amount),
+            addKey(pk, fullAccessKey()),
+        ];
+
+        return this.signAndSendTransaction({
+            receiverId: newAccountId,
+            actions: actions,
+        });
+    }
+
+    public async createSubAccountAndDeployContract(
+        accountOrPrefix: string,
+        pk: PublicKey,
+        amount: bigint,
+        code: Uint8Array
+    ): Promise<FinalExecutionOutcome> {
+        const newAccountId = accountOrPrefix.includes(".")
+            ? accountOrPrefix
+            : `${accountOrPrefix}.${this.accountId}`;
+        const actions = [
+            createAccount(),
+            transfer(amount),
+            addKey(pk, fullAccessKey()),
+            deployContract(code),
+        ];
+
+        return this.signAndSendTransaction({
+            receiverId: newAccountId,
+            actions: actions,
         });
     }
 
     /**
      * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
      */
-    async deleteAccount(beneficiaryId: string) {
-        Logger.log('Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting.');
+    public async deleteAccount(
+        beneficiaryId: string
+    ): Promise<FinalExecutionOutcome> {
+        Logger.log(
+            "Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting."
+        );
+
+        const actions = [deleteAccount(beneficiaryId)];
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteAccount(beneficiaryId)]
+            actions: actions,
         });
     }
 
     /**
-     * @param data The compiled contract code
+     * @param code The compiled contract code bytes
      */
-    async deployContract(data: Uint8Array): Promise<FinalExecutionOutcome> {
+    public async deployContract(
+        code: Uint8Array
+    ): Promise<FinalExecutionOutcome> {
+        const actions = [deployContract(code)];
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deployContract(data)]
+            actions: actions,
         });
     }
 
     /** @hidden */
     private encodeJSContractArgs(contractId: string, method: string, args) {
-        return Buffer.concat([Buffer.from(contractId), Buffer.from([0]), Buffer.from(method), Buffer.from([0]), Buffer.from(args)]);
+        return Buffer.concat([
+            Buffer.from(contractId),
+            Buffer.from([0]),
+            Buffer.from(method),
+            Buffer.from([0]),
+            Buffer.from(args),
+        ]);
     }
 
-   /**
+    /**
      * Execute a function call.
      * @param options The options for the function call.
      * @param options.contractId The NEAR account ID of the smart contract.
@@ -352,28 +602,61 @@ export class Account implements IntoConnection {
      * @param options.jsContract Whether the contract is from JS SDK, automatically encodes args from JS SDK to binary.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the function call.
      */
-    async functionCall({ contractId, methodName, args = {}, gas = DEFAULT_FUNCTION_CALL_GAS, attachedDeposit, walletMeta, walletCallbackUrl, stringify, jsContract }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
+    async functionCall({
+        contractId,
+        methodName,
+        args = {},
+        gas = DEFAULT_FUNCTION_CALL_GAS,
+        attachedDeposit,
+        walletMeta,
+        walletCallbackUrl,
+        stringify,
+        jsContract,
+    }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
         let functionCallArgs;
 
         if (jsContract) {
-            const encodedArgs = this.encodeJSContractArgs(contractId, methodName, JSON.stringify(args));
-            functionCallArgs = ['call_js_contract', encodedArgs, gas, attachedDeposit, null, true];
+            const encodedArgs = this.encodeJSContractArgs(
+                contractId,
+                methodName,
+                JSON.stringify(args)
+            );
+            functionCallArgs = [
+                "call_js_contract",
+                encodedArgs,
+                gas,
+                attachedDeposit,
+                null,
+                true,
+            ];
         } else {
-            const stringifyArg = stringify === undefined ? stringifyJsonOrBytes : stringify;
-            functionCallArgs = [methodName, args, gas, attachedDeposit, stringifyArg, false];
+            const stringifyArg =
+                stringify === undefined ? stringifyJsonOrBytes : stringify;
+            functionCallArgs = [
+                methodName,
+                args,
+                gas,
+                attachedDeposit,
+                stringifyArg,
+                false,
+            ];
         }
 
         return this.signAndSendTransaction({
-            receiverId: jsContract ? this.connection.jsvmAccountId : contractId,
+            receiverId: jsContract
+                ? process.env.NEAR_JSVM_ACCOUNT_ID
+                : contractId,
             // eslint-disable-next-line prefer-spread
             actions: [functionCall.apply(void 0, functionCallArgs)],
             walletMeta,
-            walletCallbackUrl
+            walletCallbackUrl,
         });
     }
 
     /**
+     * @deprecated
+     *
      * @see [https://docs.near.org/concepts/basics/accounts/access-keys](https://docs.near.org/concepts/basics/accounts/access-keys)
      * @todo expand this API to support more options.
      * @param publicKey A public key to be associated with the contract
@@ -381,7 +664,12 @@ export class Account implements IntoConnection {
      * @param methodNames The method names on the contract that should be allowed to be called. Pass null for no method names and '' or [] for any method names.
      * @param amount Payment in yoctoⓃ that is sent to the contract during this function call
      */
-    async addKey(publicKey: string | PublicKey, contractId?: string, methodNames?: string | string[], amount?: bigint): Promise<FinalExecutionOutcome> {
+    async addKey(
+        publicKey: string | PublicKey,
+        contractId?: string,
+        methodNames?: string | string[],
+        amount?: bigint
+    ): Promise<FinalExecutionOutcome> {
         if (!methodNames) {
             methodNames = [];
         }
@@ -396,7 +684,37 @@ export class Account implements IntoConnection {
         }
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [addKey(PublicKey.from(publicKey), accessKey)]
+            actions: [addKey(PublicKey.from(publicKey), accessKey)],
+        });
+    }
+
+    public async addFullAccessKey(
+        pk: PublicKey
+    ): Promise<FinalExecutionOutcome> {
+        const actions = [addKey(pk, fullAccessKey())];
+
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: actions,
+        });
+    }
+
+    public async addFunctionAccessKey(
+        pk: PublicKey,
+        receiverId: string,
+        methodNames: string[] = [],
+        allowance?: bigint
+    ): Promise<FinalExecutionOutcome> {
+        const actions = [
+            addKey(
+                pk,
+                functionCallAccessKey(receiverId, methodNames, allowance)
+            ),
+        ];
+
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: actions,
         });
     }
 
@@ -404,10 +722,26 @@ export class Account implements IntoConnection {
      * @param publicKey The public key to be deleted
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async deleteKey(publicKey: string | PublicKey): Promise<FinalExecutionOutcome> {
+    public async deleteKey(
+        publicKey: string | PublicKey
+    ): Promise<FinalExecutionOutcome> {
+        const actions = [deleteKey(PublicKey.from(publicKey))];
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteKey(PublicKey.from(publicKey))]
+            actions: actions,
+        });
+    }
+
+    public async transfer(
+        receiverId: string,
+        amount: bigint
+    ): Promise<FinalExecutionOutcome> {
+        const actions = [transfer(amount)];
+
+        return this.signAndSendTransaction({
+            receiverId: receiverId,
+            actions: actions,
         });
     }
 
@@ -417,10 +751,15 @@ export class Account implements IntoConnection {
      * @param publicKey The public key for the account that's staking
      * @param amount The account to stake in yoctoⓃ
      */
-    async stake(publicKey: string | PublicKey, amount: bigint): Promise<FinalExecutionOutcome> {
+    public async stake(
+        publicKey: string | PublicKey,
+        amount: bigint
+    ): Promise<FinalExecutionOutcome> {
+        const actions = [stake(amount, PublicKey.from(publicKey))];
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [stake(amount, PublicKey.from(publicKey))]
+            actions: actions,
         });
     }
 
@@ -432,50 +771,42 @@ export class Account implements IntoConnection {
      * @param options.blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
      * @param options.receiverId Receiver account of the meta transaction
      */
-    async signedDelegate({
+    public async signedDelegate({
         actions,
         blockHeightTtl,
         receiverId,
     }: SignedDelegateOptions): Promise<SignedDelegate> {
-        const { provider, signer } = this.connection;
-        const { header } = await provider.block({ finality: 'final' });
-        const { accessKey, publicKey } = await this.findAccessKey(null, null);
+        const { header } = await this.provider.block({ finality: "final" });
+
+        const pk = await this.signer.getPublicKey();
+
+        const accessKey = await this.getAccessKey(pk);
 
         const delegateAction = buildDelegateAction({
             actions,
             maxBlockHeight: BigInt(header.height) + BigInt(blockHeightTtl),
             nonce: BigInt(accessKey.nonce) + 1n,
-            publicKey,
+            publicKey: pk,
             receiverId,
             senderId: this.accountId,
         });
 
-        const { signedDelegateAction } = await signDelegateAction({
-            delegateAction,
-            signer: {
-                sign: async (message) => {
-                    const { signature } = await signer.signMessage(
-                        message,
-                        delegateAction.senderId,
-                        this.connection.networkId
-                    );
+        const [, signedDelegate] = await this.signer.signDelegate(
+            delegateAction
+        );
 
-                    return signature;
-                },
-            }
-        });
-
-        return signedDelegateAction;
+        return signedDelegate;
     }
 
     /** @hidden */
     private validateArgs(args: any) {
-        const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
+        const isUint8Array =
+            args.byteLength !== undefined && args.byteLength === args.length;
         if (isUint8Array) {
             return;
         }
 
-        if (Array.isArray(args) || typeof args !== 'object') {
+        if (Array.isArray(args) || typeof args !== "object") {
             throw new PositionalArgsError();
         }
     }
@@ -483,6 +814,8 @@ export class Account implements IntoConnection {
     /**
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
+     *
+     * @deprecated
      *
      * @param options Function call options.
      * @param options.contractId NEAR account where the contract is deployed
@@ -496,7 +829,10 @@ export class Account implements IntoConnection {
      */
 
     async viewFunction(options: ViewFunctionCallOptions): Promise<any> {
-        return await viewFunction(this.connection, options);
+        return await viewFunction(
+            new Connection("", this.provider, this.signer, ""),
+            options
+        );
     }
 
     /**
@@ -504,39 +840,62 @@ export class Account implements IntoConnection {
      * Pass an empty string for prefix if you would like to return the entire state.
      * @see [https://docs.near.org/api/rpc/contracts#view-contract-state](https://docs.near.org/api/rpc/contracts#view-contract-state)
      *
+     * @deprecated
+     *
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      */
-    async viewState(prefix: string | Uint8Array, blockQuery: BlockReference = { finality: 'optimistic' }): Promise<Array<{ key: Buffer; value: Buffer }>> {
-        return await viewState(this.connection, this.accountId, prefix, blockQuery);
+    async viewState(
+        prefix: string | Uint8Array,
+        blockQuery: BlockReference = { finality: "optimistic" }
+    ): Promise<Array<{ key: Buffer; value: Buffer }>> {
+        return await viewState(
+            new Connection("", this.provider, this.signer, ""),
+            this.accountId,
+            prefix,
+            blockQuery
+        );
     }
 
     /**
      * Get all access keys for the account
      * @see [https://docs.near.org/api/rpc/access-keys#view-access-key-list](https://docs.near.org/api/rpc/access-keys#view-access-key-list)
+     *
+     * @deprecated
      */
     async getAccessKeys(): Promise<AccessKeyInfoView[]> {
-        const response = await this.connection.provider.query<AccessKeyList>({
-            request_type: 'view_access_key_list',
+        const response = await this.provider.query<AccessKeyList>({
+            request_type: "view_access_key_list",
             account_id: this.accountId,
-            finality: 'optimistic'
+            finality: "optimistic",
         });
         // Replace raw nonce into a new BigInt
-        return response?.keys?.map((key) => ({ ...key, access_key: { ...key.access_key, nonce: BigInt(key.access_key.nonce) } }));
+        return response?.keys?.map((key) => ({
+            ...key,
+            access_key: {
+                ...key.access_key,
+                nonce: BigInt(key.access_key.nonce),
+            },
+        }));
     }
 
     /**
      * Returns a list of authorized apps
      * @todo update the response value to return all the different keys, not just app keys.
+     *
+     * @deprecated
      */
-    async getAccountDetails(): Promise<{ authorizedApps: AccountAuthorizedApp[] }> {
+    async getAccountDetails(): Promise<{
+        authorizedApps: AccountAuthorizedApp[];
+    }> {
         // TODO: update the response value to return all the different keys, not just app keys.
         // Also if we need this function, or getAccessKeys is good enough.
         const accessKeys = await this.getAccessKeys();
         const authorizedApps = accessKeys
-            .filter(item => item.access_key.permission !== 'FullAccess')
-            .map(item => {
-                const perm = (item.access_key.permission as FunctionCallPermissionView);
+            .filter((item) => item.access_key.permission !== "FullAccess")
+            .map((item) => {
+                const perm = item.access_key
+                    .permission as FunctionCallPermissionView;
                 return {
                     contractId: perm.FunctionCall.receiver_id,
                     amount: perm.FunctionCall.allowance,
@@ -548,55 +907,70 @@ export class Account implements IntoConnection {
 
     /**
      * Returns calculated account balance
+     *
+     * @deprecated
      */
     async getAccountBalance(): Promise<AccountBalance> {
-        const protocolConfig = await this.connection.provider.experimental_protocolConfig({ finality: 'final' });
+        const protocolConfig = await this.provider.experimental_protocolConfig({
+            finality: "final",
+        });
         const state = await this.state();
 
-        const costPerByte = BigInt(protocolConfig.runtime_config.storage_amount_per_byte);
+        const costPerByte = BigInt(
+            protocolConfig.runtime_config.storage_amount_per_byte
+        );
         const stateStaked = BigInt(state.storage_usage) * costPerByte;
         const staked = BigInt(state.locked);
         const totalBalance = BigInt(state.amount) + staked;
-        const availableBalance = totalBalance - (staked > stateStaked ? staked : stateStaked);
+        const availableBalance =
+            totalBalance - (staked > stateStaked ? staked : stateStaked);
 
         return {
             total: totalBalance.toString(),
             stateStaked: stateStaked.toString(),
             staked: staked.toString(),
-            available: availableBalance.toString()
+            available: availableBalance.toString(),
         };
     }
 
     /**
      * Returns the NEAR tokens balance and validators of a given account that is delegated to the staking pools that are part of the validators set in the current epoch.
-     * 
+     *
+     * @deprecated
+     *
      * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
     async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance> {
-        const block = await this.connection.provider.block({ finality: 'final' });
+        const block = await this.provider.block({ finality: "final" });
         const blockHash = block.header.hash;
         const epochId = block.header.epoch_id;
-        const { current_validators, next_validators, current_proposals } = await this.connection.provider.validators(epochId);
+        const { current_validators, next_validators, current_proposals } =
+            await this.provider.validators(epochId);
         const pools: Set<string> = new Set();
-        [...current_validators, ...next_validators, ...current_proposals]
-            .forEach((validator) => pools.add(validator.account_id));
+        [
+            ...current_validators,
+            ...next_validators,
+            ...current_proposals,
+        ].forEach((validator) => pools.add(validator.account_id));
 
         const uniquePools = [...pools];
-        const promises = uniquePools
-            .map((validator) => (
-                this.viewFunction({
-                    contractId: validator,
-                    methodName: 'get_account_total_balance',
-                    args: { account_id: this.accountId },
-                    blockQuery: { blockId: blockHash }
-                })
-            ));
+        const promises = uniquePools.map((validator) =>
+            this.viewFunction({
+                contractId: validator,
+                methodName: "get_account_total_balance",
+                args: { account_id: this.accountId },
+                blockQuery: { blockId: blockHash },
+            })
+        );
 
         const results = await Promise.allSettled(promises);
 
         const hasTimeoutError = results.some((result) => {
-            if (result.status === 'rejected' && result.reason.type === 'TimeoutError') {
+            if (
+                result.status === "rejected" &&
+                result.reason.type === "TimeoutError"
+            ) {
                 return true;
             }
             return false;
@@ -604,33 +978,66 @@ export class Account implements IntoConnection {
 
         // When RPC is down and return timeout error, throw error
         if (hasTimeoutError) {
-            throw new Error('Failed to get delegated stake balance');
+            throw new Error("Failed to get delegated stake balance");
         }
-        const summary = results.reduce((result, state, index) => {
-            const validatorId = uniquePools[index];
-            if (state.status === 'fulfilled') {
-                const currentBN = BigInt(state.value);
-                if (currentBN !== 0n) {
+        const summary = results.reduce(
+            (result, state, index) => {
+                const validatorId = uniquePools[index];
+                if (state.status === "fulfilled") {
+                    const currentBN = BigInt(state.value);
+                    if (currentBN !== 0n) {
+                        return {
+                            ...result,
+                            stakedValidators: [
+                                ...result.stakedValidators,
+                                { validatorId, amount: currentBN.toString() },
+                            ],
+                            total: result.total + currentBN,
+                        };
+                    }
+                }
+                if (state.status === "rejected") {
                     return {
                         ...result,
-                        stakedValidators: [...result.stakedValidators, { validatorId, amount: currentBN.toString() }],
-                        total: result.total + currentBN,
+                        failedValidators: [
+                            ...result.failedValidators,
+                            { validatorId, error: state.reason },
+                        ],
                     };
                 }
-            }
-            if (state.status === 'rejected') {
-                return {
-                    ...result,
-                    failedValidators: [...result.failedValidators, { validatorId, error: state.reason }],
-                };
-            }
-            return result;
-        },
-            { stakedValidators: [], failedValidators: [], total: 0n });
+                return result;
+            },
+            { stakedValidators: [], failedValidators: [], total: 0n }
+        );
 
         return {
             ...summary,
             total: summary.total.toString(),
         };
+    }
+
+    /**
+     * Execute a function call
+     *
+     * @param contractId
+     * @param methodName
+     * @param args
+     * @param deposit
+     * @param gas
+     * @returns
+     */
+    public async invokeWriteFunction(
+        contractId: string,
+        methodName: string,
+        args: Record<string, any> = {},
+        deposit: bigint = 0n,
+        gas: bigint = DEFAULT_FUNCTION_CALL_GAS
+    ): Promise<FinalExecutionOutcome> {
+        const actions = [functionCall(methodName, args, gas, deposit)];
+
+        return this.signAndSendTransaction({
+            receiverId: contractId,
+            actions: actions,
+        });
     }
 }

@@ -562,6 +562,9 @@ importers:
       '@near-js/keystores':
         specifier: workspace:*
         version: link:../keystores
+      '@near-js/transactions':
+        specifier: workspace:*
+        version: link:../transactions
       '@noble/hashes':
         specifier: 1.7.1
         version: 1.7.1
@@ -593,9 +596,6 @@ importers:
       '@near-js/crypto':
         specifier: workspace:*
         version: link:../crypto
-      '@near-js/signers':
-        specifier: workspace:*
-        version: link:../signers
       '@near-js/types':
         specifier: workspace:*
         version: link:../types

@@ -11,8 +11,8 @@ import {
     SignAndSendTransactionOptions,
 } from '@near-js/accounts';
 import { KeyPair, PublicKey } from '@near-js/crypto';
-import { KeyStore } from '@near-js/keystores';
-import { InMemorySigner } from '@near-js/signers';
+import { InMemoryKeyStore, KeyStore } from '@near-js/keystores';
+import { KeyPairSigner } from '@near-js/signers';
 import { FinalExecutionOutcome } from '@near-js/types';
 import { baseDecode } from '@near-js/utils';
 import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
@@ -115,7 +115,11 @@ export class WalletConnection {
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
-        this._keyStore = (near.connection.signer as InMemorySigner).keyStore;
+        // @ts-expect-error keyPair isn't public
+        const keyPair = (near.connection.signer as KeyPairSigner).keyPair as KeyPair;
+        const keyStore = new InMemoryKeyStore();
+        keyStore.setKey(near.connection.networkId, this._authData.accountId, keyPair);
+        this._keyStore = keyStore;
         this._authData = authData || { allKeys: [] };
         this._authDataKey = authDataKey;
         if (!this.isSignedIn()) {
@@ -332,7 +336,7 @@ export class ConnectedWalletAccount extends Account {
     walletConnection: WalletConnection;
 
     constructor(walletConnection: WalletConnection, connection: Connection, accountId: string) {
-        super(connection, accountId);
+        super(accountId, connection.provider, connection.signer);
         this.walletConnection = walletConnection;
     }
 
@@ -348,7 +352,7 @@ export class ConnectedWalletAccount extends Account {
      * @param options.walletCallbackUrl URL to redirect upon completion of the wallet signing process. Default: current URL.
      */
     async signAndSendTransaction({ receiverId, actions, walletMeta, walletCallbackUrl = window.location.href }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
-        const localKey = await this.connection.signer.getPublicKey(this.accountId, this.connection.networkId);
+        const localKey = await this.signer.getPublicKey();
         let accessKey = await this.accessKeyForTransaction(receiverId, actions, localKey);
         if (!accessKey) {
             throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
@@ -366,7 +370,7 @@ export class ConnectedWalletAccount extends Account {
             }
         }
 
-        const block = await this.connection.provider.block({ finality: 'final' });
+        const block = await this.provider.block({ finality: 'final' });
         const blockHash = baseDecode(block.header.hash);
 
         const publicKey = PublicKey.from(accessKey.public_key);

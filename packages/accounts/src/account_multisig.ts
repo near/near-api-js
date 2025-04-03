@@ -39,7 +39,7 @@ export class AccountMultisig extends Account {
      * @param options.onAddRequestResult Callback function to handle the result of adding a request.
      */
     constructor(connection: Connection, accountId: string, options: any) {
-        super(connection, accountId);
+        super(accountId, connection.provider, connection.signer);
         this.storage = options.storage;
         this.onAddRequestResult = options.onAddRequestResult;
     }
