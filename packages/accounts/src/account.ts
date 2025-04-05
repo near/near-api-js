@@ -198,7 +198,7 @@ export class PublicAccount {
      *
      * @returns {Promise<string>}
      */
-    public async invokeReadFunction(
+    public async callReadFunction(
         contractId: string,
         methodName: string,
         args: Record<string, any> = {}
@@ -1026,7 +1026,7 @@ export class Account extends PublicAccount implements IntoConnection {
      * @param gas
      * @returns
      */
-    public async invokeWriteFunction(
+    public async callFunction(
         contractId: string,
         methodName: string,
         args: Record<string, any> = {},
