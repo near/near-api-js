@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from '@jest/globals';
 import { KeyPair } from '@near-js/crypto';
 import { InMemoryKeyStore } from '@near-js/keystores';
-import { InMemorySigner } from '@near-js/signers';
+import { KeyPairSigner } from '@near-js/signers';
 import { actionCreators } from '@near-js/transactions';
 import localStorage from 'localstorage-memory';
 import { WalletConnection } from '../src';
@@ -34,10 +34,11 @@ export const createTransactions = () => {
                 networkId: 'networkId',
                 contractName: 'contractId',
                 walletUrl: 'http://example.com/wallet',
+                keyStore: keyStore
             },
             connection: {
                 networkId: 'networkId',
-                signer: new InMemorySigner(keyStore)
+                signer: new KeyPairSigner(KeyPair.fromRandom('ed25519'))
             },
             account() {
                 return {
@@ -72,7 +73,7 @@ export const createTransactions = () => {
 
     const BLOCK_HASH = '244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM';
 
-    function setupWalletConnectionForSigning({ allKeys, accountAccessKeys }) {
+    function setupWalletConnectionForSigning({ allKeys, accountAccessKeys, signer }) {
         walletConnection._authData = {
             allKeys: allKeys,
             accountId: 'signer.near'
@@ -88,7 +89,7 @@ export const createTransactions = () => {
                 if (params.request_type === 'view_access_key' && params.account_id === 'signer.near') {
                     for (let accessKey of accountAccessKeys) {
                         if (accessKey.public_key === params.public_key) {
-                            return accessKey;
+                            return accessKey.access_key;
                         }
                     }
                 }
@@ -109,6 +110,8 @@ export const createTransactions = () => {
                 };
             }
         };
+
+        nearFake.connection.signer = signer;
     }
 
     describe('requests transaction signing with 2fa access key', () => {
@@ -131,7 +134,8 @@ export const createTransactions = () => {
                     },
                     // @ts-ignore
                     public_key: localKeyPair.publicKey.toString()
-                }]
+                }],
+                signer: new KeyPairSigner(localKeyPair)
             });
             await keyStore.setKey('networkId', 'signer.near', localKeyPair);
         });
@@ -168,7 +172,8 @@ export const createTransactions = () => {
                     },
                     // @ts-ignore
                     public_key: localKeyPair.publicKey.toString()
-                }]
+                }],
+                signer: new KeyPairSigner(localKeyPair)
             });
             await keyStore.setKey('networkId', 'signer.near', localKeyPair);
         });
@@ -201,7 +206,8 @@ export const createTransactions = () => {
                     },
                     // @ts-ignore
                     public_key: localKeyPair.publicKey.toString()
-                }]
+                }],
+                signer: new KeyPairSigner(localKeyPair)
             });
             await keyStore.setKey('networkId', 'signer.near', localKeyPair);
         });

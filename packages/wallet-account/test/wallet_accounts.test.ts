@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from '@jest/globals';
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { InMemoryKeyStore } from '@near-js/keystores';
 import { baseDecode } from '@near-js/utils';
-import { InMemorySigner } from '@near-js/signers';
+import { KeyPairSigner } from '@near-js/signers';
 import { actionCreators, createTransaction, SCHEMA } from '@near-js/transactions';
 import { deserialize } from 'borsh';
 import localStorage from 'localstorage-memory';
@@ -35,10 +35,11 @@ describe("Wallet account tests", () => {
                 networkId: 'networkId',
                 contractName: 'contractId',
                 walletUrl: 'http://example.com/wallet',
+                keyStore: keyStore
             },
             connection: {
                 networkId: 'networkId',
-                signer: new InMemorySigner(keyStore)
+                signer: new KeyPairSigner(KeyPair.fromRandom('ed25519'))
             },
             account() {
                 return {

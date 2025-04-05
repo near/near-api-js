@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { parseNearAmount } from '@near-js/utils';
 import { KeyPair } from '@near-js/crypto';
-import { InMemorySigner } from '@near-js/signers';
+import { KeyPairSigner } from '@near-js/signers';
 import { actionCreators } from '@near-js/transactions';
 import * as fs from 'fs';
 import semver from 'semver';
@@ -20,7 +20,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
     // modifiers to functions replaces contract helper (CH)
     const { accountId } = account;
     const keys = await account.getAccessKeys();
-    const account2fa: any = new Account2FA(nearjs.connection, accountId, {
+    const account2fa: any = new Account2FA(account.getConnection(), accountId, {
         // skip this (not using CH)
         getCode: () => {},
         sendCode: () => {},
@@ -28,17 +28,13 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
         verifyCode: () => ({  }), // TODO: Is there any content needed in result?
         onAddRequestResult: async () => {
             const { requestId } = account2fa.getRequest();
-            // set confirmKey as signer
-            const originalSigner = nearjs.connection.signer;
-            nearjs.connection.signer = await InMemorySigner.fromKeyPair(nearjs.connection.networkId, accountId, account2fa.confirmKey);
             // 2nd confirmation signing with confirmKey from Account instance
-            await account.signAndSendTransaction({
+            await account.withSigner(new KeyPairSigner(account2fa.confirmKey)).signAndSendTransaction({
                 receiverId: accountId,
                 actions: [
                     functionCall('confirm', { request_id: requestId }, MULTISIG_GAS, MULTISIG_DEPOSIT)
                 ]
             });
-            nearjs.connection.signer = originalSigner;
         }
     });
     account2fa.confirmKey = KeyPair.fromRandom('ed25519');

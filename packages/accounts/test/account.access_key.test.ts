@@ -1,10 +1,12 @@
 import { beforeAll, beforeEach, expect, jest, test } from '@jest/globals';
 import { KeyPair } from '@near-js/crypto';
 
-import { createAccount, deployContract, generateUniqueString, networkId, setUpTestConnection } from './test-utils';
+import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
+import { Account } from '../src';
+import { KeyPairSigner } from '@near-js/signers';
 
 let nearjs;
-let workingAccount;
+let workingAccount: Account;
 let contractId;
 let contract;
 
@@ -16,7 +18,6 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     try {
-
         contractId = generateUniqueString('test');
         workingAccount = await createAccount(nearjs);
         contract = await deployContract(nearjs.accountCreator.masterAccount, contractId);
@@ -27,12 +28,14 @@ beforeEach(async () => {
 
 test('make function call using access key', async() => {
     const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', '2000000000000000000000000');
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 2000000000000000000000000n);
 
-    // Override in the key store the workingAccount key to the given access key.
-    await nearjs.connection.signer.keyStore.setKey(networkId, workingAccount.accountId, keyPair);
     const setCallValue = generateUniqueString('setCallPrefix');
-    await contract.setValue({ args: { value: setCallValue } });
+    await contract.setValue({
+        // Override signer in the workingAccount to the given access key.
+        signerAccount: workingAccount.withSigner(new KeyPairSigner(keyPair)),
+        args: { value: setCallValue },
+    });
     expect(await contract.getValue()).toEqual(setCallValue);
 });
 
@@ -41,15 +44,16 @@ test('remove access key no longer works', async() => {
     const publicKey = keyPair.getPublicKey();
     await nearjs.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000);
     await nearjs.accountCreator.masterAccount.deleteKey(publicKey);
-    // Override in the key store the workingAccount key to the given access key.
-    await nearjs.connection.signer.keyStore.setKey(networkId, nearjs.accountCreator.masterAccount.accountId, keyPair);
+    // Override account in the Contract to the masterAccount with the given access key.
+    contract.account = (nearjs.accountCreator.masterAccount as Account).withSigner(new KeyPairSigner(keyPair));
+
     let failed = true;
     try {
         await contract.setValue({ args: { value: 'test' } });
         failed = false;
     } catch (e) {
-        expect(e.message).toEqual(`Can not sign transactions for account ${nearjs.accountCreator.masterAccount.accountId} on network ${networkId}, no matching key pair exists for this account`);
-        expect(e.type).toEqual('KeyNotFound');
+        expect(e.message).toEqual(`Can't complete the action because access key ${keyPair.getPublicKey().toString()} doesn't exist`);
+        expect(e.type).toEqual('AccessKeyDoesNotExist');
     }
 
     if (!failed) {
@@ -94,22 +98,5 @@ test('loading account after adding a full key', async() => {
     expect(accessKeys.length).toBe(2);
     const addedKey = accessKeys.find(item => item.public_key == keyPair.getPublicKey().toString());
     expect(addedKey).toBeTruthy();
-    expect(addedKey.access_key.permission).toEqual('FullAccess');
-});
-
-test('load invalid key pair', async() => {
-    // Override in the key store with invalid key pair
-    await nearjs.connection.signer.keyStore.setKey(networkId, nearjs.accountCreator.masterAccount.accountId, '');
-    let failed = true;
-    try {
-        await contract.setValue({ args: { value: 'test' } });
-        failed = false;
-    } catch (e) {
-        expect(e.message).toEqual(`no matching key pair found in ${nearjs.connection.signer}`);
-        expect(e.type).toEqual('PublicKeyNotFound');
-    }
-
-    if (!failed) {
-        throw new Error('should throw an error');
-    }
+    expect(addedKey!.access_key.permission).toEqual('FullAccess');
 });
