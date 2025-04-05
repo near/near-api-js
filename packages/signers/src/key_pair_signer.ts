@@ -42,7 +42,7 @@ export class KeyPairSigner extends Signer {
     ): Promise<[Uint8Array, SignedTransaction]> {
         const pk = this.key.getPublicKey();
 
-        if (transaction.publicKey !== pk)
+        if (transaction.publicKey.toString() !== pk.toString())
             throw new Error("The public key doesn't match the signer's key");
 
         const message = encodeTransaction(transaction);
@@ -67,7 +67,7 @@ export class KeyPairSigner extends Signer {
     ): Promise<[Uint8Array, SignedDelegate]> {
         const pk = this.key.getPublicKey();
 
-        if (delegateAction.publicKey !== pk)
+        if (delegateAction.publicKey.toString() !== pk.toString())
             throw new Error("The public key doesn't match the signer's key");
 
         const message = encodeDelegateAction(delegateAction);

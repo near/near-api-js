@@ -12,13 +12,12 @@ import {
 } from '@near-js/accounts';
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { InMemoryKeyStore, KeyStore } from '@near-js/keystores';
-import { KeyPairSigner } from '@near-js/signers';
 import { FinalExecutionOutcome } from '@near-js/types';
 import { baseDecode } from '@near-js/utils';
 import { Transaction, Action, SCHEMA, createTransaction } from '@near-js/transactions';
 import { serialize } from 'borsh';
 
-import { Near } from './near';
+import { Near, NearConfig } from './near';
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/';
 const MULTISIG_HAS_METHOD = 'add_request_and_confirm';
@@ -115,11 +114,7 @@ export class WalletConnection {
         this._networkId = near.config.networkId;
         this._walletBaseUrl = near.config.walletUrl;
         appKeyPrefix = appKeyPrefix || near.config.contractName || 'default';
-        // @ts-expect-error keyPair isn't public
-        const keyPair = (near.connection.signer as KeyPairSigner).keyPair as KeyPair;
-        const keyStore = new InMemoryKeyStore();
-        keyStore.setKey(near.connection.networkId, this._authData.accountId, keyPair);
-        this._keyStore = keyStore;
+        this._keyStore = (near.config as NearConfig).keyStore || new InMemoryKeyStore();
         this._authData = authData || { allKeys: [] };
         this._authDataKey = authDataKey;
         if (!this.isSignedIn()) {
