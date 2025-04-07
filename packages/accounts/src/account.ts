@@ -503,6 +503,36 @@ export class Account extends PublicAccount implements IntoConnection {
         });
     }
 
+    public async createTopLevelAccount(
+        account: string,
+        pk: PublicKey,
+        amount: bigint
+    ): Promise<FinalExecutionOutcome> {
+        const topAccount = account.split(".").at(-1);
+
+        if (!topAccount)
+            throw new Error(
+                `Failed to parse top account out of the name for new account`
+            );
+
+        const actions = [
+            functionCall(
+                "create_account",
+                {
+                    new_account_id: account,
+                    new_public_key: pk.toString(),
+                },
+                BigInt(60_000_000_000_000),
+                amount
+            ),
+        ];
+
+        return this.signAndSendTransaction({
+            receiverId: topAccount,
+            actions: actions,
+        });
+    }
+
     public async createSubAccount(
         accountOrPrefix: string,
         pk: PublicKey,
