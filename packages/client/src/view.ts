@@ -3,7 +3,7 @@ import type {
   AccessKeyView,
   AccountView,
   CodeResult,
-  ContractCodeView,
+  ContractCodeViewRaw,
   QueryResponseKind,
   SerializedReturnValue,
   StakedAccount,
@@ -207,7 +207,7 @@ export async function getAccessKeys({ account, blockReference, deps }: ViewAccou
  * @param deps readonly RPC dependencies
  */
 export async function getContractCode({ account, blockReference, deps }: ViewAccountParams) {
-  const { code_base64, hash } = await query<ContractCodeView>({
+  const { code_base64, hash } = await query<ContractCodeViewRaw>({
     request: RequestType.ViewCode,
     account,
     blockReference,

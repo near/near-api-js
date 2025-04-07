@@ -26,6 +26,7 @@ export {
     ChunkId,
     ChunkResult,
     Finality,
+    FinalityReference,
     GasPrice,
     MerkleNode,
     MerklePath,
@@ -36,7 +37,7 @@ export {
     SyncInfo,
     TotalWeight,
     Transaction as ProviderTransaction,
-    TxExecutionStatus
+    TxExecutionStatus,
 } from './protocol';
 export {
     CallFunctionRequest,
@@ -53,8 +54,10 @@ export {
     AccessKeyView,
     AccessKeyViewRaw,
     AccountView,
+    AccountViewRaw,
     CodeResult,
     ContractCodeView,
+    ContractCodeViewRaw,
     ExecutionError,
     ExecutionOutcome,
     ExecutionOutcomeWithId,
@@ -68,6 +71,10 @@ export {
     QueryResponseKind,
     SerializedReturnValue,
     ViewStateResult,
+    ExecutionOutcomeReceiptDetail,
+    ContractStateView,
+    CallContractViewFunctionResultRaw,
+    CallContractViewFunctionResult
 } from './response';
 export {
     CurrentEpochValidatorInfo,

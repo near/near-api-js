@@ -1,4 +1,4 @@
-import { BlockReference, ContractCodeView } from '@near-js/types';
+import { BlockReference, ContractCodeViewRaw } from '@near-js/types';
 import { printTxOutcomeLogs } from '@near-js/utils';
 import { FunctionCallOptions } from '../interface';
 import { Storage } from './storage';
@@ -22,7 +22,7 @@ export class LocalViewExecution {
     }
 
     private async fetchContractCode(contractId: string, blockQuery: BlockReference) {
-        const result = await this.connection.provider.query<ContractCodeView>({
+        const result = await this.connection.provider.query<ContractCodeViewRaw>({
             request_type: 'view_code',
             account_id: contractId,
             ...blockQuery,
