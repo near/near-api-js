@@ -28,7 +28,7 @@
     "@types/node": "20.0.0",
     "build": "workspace:*",
     "tsconfig": "workspace:*",
-    "typescript": "5.4.5"
+    "typescript": "5.8.3"
   },
   "files": [
     "lib"
