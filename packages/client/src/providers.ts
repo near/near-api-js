@@ -1,6 +1,5 @@
-import { FailoverRpcProvider, JsonRpcProvider } from '@near-js/providers';
+import { FailoverRpcProvider, JsonRpcProvider, Provider } from '@near-js/providers';
 
-import type { RpcQueryProvider } from './interfaces';
 import {
   PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET,
   PAGODA_RPC_ENDPOINTS_MAINNET,
@@ -26,24 +25,12 @@ export function getEndpointsByNetwork(network: string) {
  * Initialize a failover RPC provider capable of retrying requests against a set of endpoints
  * @param urls RPC endpoint URLs
  */
-export function createRpcClientWrapper(urls: string[]): RpcQueryProvider {
+export function createRpcClientWrapper(urls: string[]): Provider {
   if (!urls) {
     throw new Error('at least one RPC endpoint URL required');
   }
 
-  const provider = new FailoverRpcProvider(urls.map((url) => new JsonRpcProvider({ url })));
-  return {
-    block: (block) => provider.block(block),
-    chunk: (chunkId) => provider.chunk(chunkId),
-    getTransaction: ({ transactionHash, account, includeReceipts, waitUntil}) => {
-      if (includeReceipts) {
-        return provider.txStatusReceipts(transactionHash, account, waitUntil);
-      }
-      return provider.txStatus(transactionHash, account, waitUntil);
-    },
-    sendTransaction: (transaction) => provider.sendTransaction(transaction),
-    query: (params) => provider.query(params),
-  };
+  return new FailoverRpcProvider(urls.map((url) => new JsonRpcProvider({ url })));
 }
 
 /**

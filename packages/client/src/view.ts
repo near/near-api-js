@@ -56,6 +56,7 @@ export function query<T extends QueryResponseKind>({
   deps: { rpcProvider },
 }: QueryParams): Promise<T> {
   return rpcProvider.query<T>({
+    // @ts-expect-error request_type isn't just a string, but a set of methods
     request_type: request,
     account_id: account,
     ...(blockReference ? blockReference : DEFAULT_VIEW_BLOCK_REFERENCE),

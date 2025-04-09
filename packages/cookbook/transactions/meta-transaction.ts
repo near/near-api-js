@@ -28,7 +28,7 @@ export default async function metaTransaction(signerAccountId: string = SIGNER_A
     // initialize testnet RPC provider
     const rpcProvider = getTestnetRpcProvider();
     // initialize the transaction signer using a pre-existing key for `accountId`
-    const signer = getSignerFromKeystore(
+    const signer = await getSignerFromKeystore(
       signerAccountId,
       'testnet',
       new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials'))
@@ -46,7 +46,7 @@ export default async function metaTransaction(signerAccountId: string = SIGNER_A
       .toSignedDelegateAction();
 
     // initialize the relayer's signer
-    const relayerSigner = getSignerFromKeystore(
+    const relayerSigner = await getSignerFromKeystore(
       senderAccountId,
       'testnet',
       new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials'))

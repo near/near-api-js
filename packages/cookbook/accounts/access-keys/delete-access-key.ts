@@ -19,7 +19,7 @@ export default async function deleteAccessKeyCookbook(accountId: string, publicK
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcProvider();
   // initialize the transaction signer using a pre-existing key for ACCOUNT_ID
-  const signer = getSignerFromKeystore(accountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
+  const signer = await getSignerFromKeystore(accountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
 
   // parse the target key from its string representation
   const keyPair = parseKeyPair(publicKey as KeyPairString);

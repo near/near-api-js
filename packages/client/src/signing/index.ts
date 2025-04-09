@@ -1,5 +1,1 @@
-export {
-  getSignerFromKeyPair,
-  getSignerFromKeystore,
-  getSignerFromPrivateKey,
-} from './signers';
+export * from './signers';

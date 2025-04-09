@@ -23,7 +23,7 @@ export default async function batchTransactions(accountId: string = CONTRACT_NAM
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcProvider();
   // initialize the transaction signer using a pre-existing key for `accountId`
-  const signer = getSignerFromKeystore(accountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
+  const signer = await getSignerFromKeystore(accountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
 
   const { result } = await SignedTransactionComposer.init({
     sender: accountId,

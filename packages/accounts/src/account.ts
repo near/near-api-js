@@ -223,7 +223,7 @@ export class PublicAccount {
  * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
  */
 export class Account extends PublicAccount implements IntoConnection {
-    protected readonly signer: Signer;
+    public readonly signer: Signer;
 
     constructor(accountId: string, provider: Provider, signer: Signer) {
         super(accountId, provider);

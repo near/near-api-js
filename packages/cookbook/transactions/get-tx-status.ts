@@ -10,11 +10,7 @@ export default async function getTransactionStatus(accountId: string = ACCOUNT_I
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcArchivalProvider();
 
-  const result = await rpcProvider.getTransaction({
-    account: accountId,
-    transactionHash,
-    includeReceipts: true, // toggle flag to include/exclude the `receipts` field
-  });
+  const result = await rpcProvider.viewTransactionStatusWithReceipts(transactionHash, accountId, 'FINAL');
 
   console.log(JSON.stringify(result, null, 2));
 }
