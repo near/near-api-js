@@ -20,7 +20,8 @@
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "borsh": "1.0.0",
-    "exponential-backoff": "^3.1.2"
+    "exponential-backoff": "^3.1.2",
+    "https-proxy-agent": "^7.0.6"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
