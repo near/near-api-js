@@ -72,6 +72,13 @@ export interface AccountBalance {
     available: string;
 }
 
+export interface AccountBalanceInfo {
+    total: bigint;
+    stateStaked: bigint;
+    staked: bigint;
+    available: bigint;
+}
+
 export interface AccountAuthorizedApp {
     contractId: string;
     amount: string;
@@ -138,6 +145,32 @@ export class PublicAccount {
             account_id: this.accountId,
             finality: "optimistic",
         });
+    }
+
+    /**
+     * Returns calculated account balance
+     */
+    async getBalance(): Promise<AccountBalanceInfo> {
+        const protocolConfig = await this.provider.experimental_protocolConfig({
+            finality: "final",
+        });
+        const state = await this.getInformation();
+
+        const costPerByte = BigInt(
+            protocolConfig.runtime_config.storage_amount_per_byte
+        );
+        const stateStaked = BigInt(state.storage_usage) * costPerByte;
+        const totalBalance = BigInt(state.amount) + state.locked;
+        const availableBalance =
+            totalBalance -
+            (state.locked > stateStaked ? state.locked : stateStaked);
+
+        return {
+            total: totalBalance,
+            stateStaked: stateStaked,
+            staked: state.locked,
+            available: availableBalance,
+        };
     }
 
     /**
