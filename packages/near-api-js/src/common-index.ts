@@ -4,7 +4,7 @@ import * as utils from './utils';
 import * as transactions from './transaction';
 import * as validators from './validators';
 
-import { Account } from './account';
+import { Account, PublicAccount } from './account';
 import * as multisig from './account_multisig';
 import * as accountCreator from './account_creator';
 import { Connection } from './connection';
@@ -26,6 +26,7 @@ export {
     validators,
 
     multisig,
+    PublicAccount,
     Account,
     Connection,
     Contract,
