@@ -140,9 +140,7 @@ export class PublicAccount {
      * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
      */
     public async getInformation(): Promise<AccountView> {
-        return this.provider.query<AccountView>({
-            request_type: "view_account",
-            account_id: this.accountId,
+        return this.provider.viewAccount(this.accountId, {
             finality: "optimistic",
         });
     }
@@ -654,6 +652,8 @@ export class Account extends PublicAccount implements IntoConnection {
     }
 
     /**
+     * @deprecated
+     *
      * Execute a function call.
      * @param options The options for the function call.
      * @param options.contractId The NEAR account ID of the smart contract.
