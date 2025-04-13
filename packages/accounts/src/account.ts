@@ -177,7 +177,9 @@ export class PublicAccount {
      * Returns basic NEAR account information via the `view_account` RPC query method
      * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
      */
-    public async getAccessKey(pk: PublicKey): Promise<AccessKeyViewRaw> {
+    public async getAccessKey(
+        pk: PublicKey | string
+    ): Promise<AccessKeyViewRaw> {
         return this.provider.query<AccessKeyViewRaw>({
             request_type: "view_access_key",
             public_key: pk.toString(),
@@ -538,8 +540,8 @@ export class Account extends PublicAccount implements IntoConnection {
 
     public async createTopLevelAccount(
         account: string,
-        pk: PublicKey,
-        amount: bigint
+        pk: PublicKey | string,
+        amount: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         const topAccount = account.split(".").at(-1);
 
@@ -556,7 +558,7 @@ export class Account extends PublicAccount implements IntoConnection {
                     new_public_key: pk.toString(),
                 },
                 BigInt(60_000_000_000_000),
-                amount
+                BigInt(amount)
             ),
         ];
 
@@ -568,16 +570,16 @@ export class Account extends PublicAccount implements IntoConnection {
 
     public async createSubAccount(
         accountOrPrefix: string,
-        pk: PublicKey,
-        amount: bigint
+        pk: PublicKey | string,
+        amount: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         const newAccountId = accountOrPrefix.includes(".")
             ? accountOrPrefix
             : `${accountOrPrefix}.${this.accountId}`;
         const actions = [
             createAccount(),
-            transfer(amount),
-            addKey(pk, fullAccessKey()),
+            transfer(BigInt(amount)),
+            addKey(PublicKey.from(pk), fullAccessKey()),
         ];
 
         return this.signAndSendTransaction({
@@ -588,8 +590,8 @@ export class Account extends PublicAccount implements IntoConnection {
 
     public async createSubAccountAndDeployContract(
         accountOrPrefix: string,
-        pk: PublicKey,
-        amount: bigint,
+        pk: PublicKey | string,
+        amount: bigint | string | number,
         code: Uint8Array
     ): Promise<FinalExecutionOutcome> {
         const newAccountId = accountOrPrefix.includes(".")
@@ -597,8 +599,8 @@ export class Account extends PublicAccount implements IntoConnection {
             : `${accountOrPrefix}.${this.accountId}`;
         const actions = [
             createAccount(),
-            transfer(amount),
-            addKey(pk, fullAccessKey()),
+            transfer(BigInt(amount)),
+            addKey(PublicKey.from(pk), fullAccessKey()),
             deployContract(code),
         ];
 
@@ -752,9 +754,9 @@ export class Account extends PublicAccount implements IntoConnection {
     }
 
     public async addFullAccessKey(
-        pk: PublicKey
+        pk: PublicKey | string
     ): Promise<FinalExecutionOutcome> {
-        const actions = [addKey(pk, fullAccessKey())];
+        const actions = [addKey(PublicKey.from(pk), fullAccessKey())];
 
         return this.signAndSendTransaction({
             receiverId: this.accountId,
@@ -763,15 +765,19 @@ export class Account extends PublicAccount implements IntoConnection {
     }
 
     public async addFunctionAccessKey(
-        pk: PublicKey,
+        pk: PublicKey | string,
         receiverId: string,
-        methodNames: string[] = [],
-        allowance?: bigint
+        methodNames: string[],
+        allowance?: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         const actions = [
             addKey(
-                pk,
-                functionCallAccessKey(receiverId, methodNames, allowance)
+                PublicKey.from(pk),
+                functionCallAccessKey(
+                    receiverId,
+                    methodNames,
+                    BigInt(allowance)
+                )
             ),
         ];
 
@@ -798,9 +804,9 @@ export class Account extends PublicAccount implements IntoConnection {
 
     public async transfer(
         receiverId: string,
-        amount: bigint
+        amount: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
-        const actions = [transfer(amount)];
+        const actions = [transfer(BigInt(amount))];
 
         return this.signAndSendTransaction({
             receiverId: receiverId,
@@ -816,9 +822,9 @@ export class Account extends PublicAccount implements IntoConnection {
      */
     public async stake(
         publicKey: string | PublicKey,
-        amount: bigint
+        amount: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
-        const actions = [stake(amount, PublicKey.from(publicKey))];
+        const actions = [stake(BigInt(amount), PublicKey.from(publicKey))];
 
         return this.signAndSendTransaction({
             receiverId: this.accountId,
@@ -1093,10 +1099,12 @@ export class Account extends PublicAccount implements IntoConnection {
         contractId: string,
         methodName: string,
         args: Record<string, any> = {},
-        deposit: bigint = 0n,
-        gas: bigint = DEFAULT_FUNCTION_CALL_GAS
+        deposit: bigint | string | number = 0n,
+        gas: bigint | string | number = DEFAULT_FUNCTION_CALL_GAS
     ): Promise<FinalExecutionOutcome> {
-        const actions = [functionCall(methodName, args, gas, deposit)];
+        const actions = [
+            functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
+        ];
 
         return this.signAndSendTransaction({
             receiverId: contractId,
