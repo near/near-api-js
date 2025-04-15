@@ -108,7 +108,14 @@ export const createTransactions = () => {
                         hash: BLOCK_HASH
                     }
                 };
-            }
+            },
+            viewAccessKey(accountId, pk) {
+                return this.query({
+                    request_type: "view_access_key",
+                    account_id: accountId,
+                    public_key: pk.toString(),
+                });
+            },
         };
 
         nearFake.connection.signer = signer;

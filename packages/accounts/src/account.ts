@@ -21,9 +21,9 @@ import {
     FunctionCallPermissionView,
     BlockReference,
     ContractCodeView,
-    ViewStateResult,
-    CodeResult,
+    ContractStateView,
     ErrorContext,
+    CallContractViewFunctionResult,
 } from "@near-js/types";
 import {
     baseDecode,
@@ -175,52 +175,36 @@ export class PublicAccount {
      * Returns basic NEAR account information via the `view_account` RPC query method
      * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
      */
-    public async getAccessKey(
-        pk: PublicKey | string
-    ): Promise<AccessKeyViewRaw> {
-        return this.provider.query<AccessKeyViewRaw>({
-            request_type: "view_access_key",
-            public_key: pk.toString(),
-            account_id: this.accountId,
+    public async getAccessKey(pk: PublicKey | string): Promise<AccessKeyView> {
+        return this.provider.viewAccessKey(this.accountId, pk, {
             finality: "optimistic",
         });
     }
 
     public async getAccessKeyList(): Promise<AccessKeyList> {
-        return this.provider.query<AccessKeyList>({
-            request_type: "view_access_key_list",
-            account_id: this.accountId,
+        return this.provider.viewAccessKeyList(this.accountId, {
             finality: "optimistic",
         });
     }
 
     public async getContractCode(): Promise<ContractCodeView> {
-        return this.provider.query<ContractCodeView>({
-            request_type: "view_code",
-            account_id: this.accountId,
+        return this.provider.viewContractCode(this.accountId, {
             finality: "optimistic",
         });
     }
 
-    public async getContractState(
-        prefix: string = ""
-    ): Promise<ViewStateResult> {
-        const prefixBase64 = Buffer.from(prefix).toString("base64");
-
-        return this.provider.query<ViewStateResult>({
-            request_type: "view_state",
-            account_id: this.accountId,
+    public async getContractState(prefix?: string): Promise<ContractStateView> {
+        return this.provider.viewContractState(this.accountId, prefix, {
             finality: "optimistic",
-            prefix_base64: prefixBase64,
         });
     }
 
     public async getTransactionStatus(
-        txHash: string
+        txHash: string | Uint8Array
     ): Promise<FinalExecutionOutcome> {
-        return this.provider.txStatus(
+        return this.provider.viewTransactionStatus(
             txHash,
-            this.accountId,
+            this.accountId, // accountId is used to determine on which shard to look for a tx
             "EXECUTED_OPTIMISTIC"
         );
     }
@@ -235,20 +219,13 @@ export class PublicAccount {
         contractId: string,
         methodName: string,
         args: Record<string, any> = {}
-    ): Promise<any> {
-        const argsBase64 = Buffer.from(JSON.stringify(args)).toString("base64");
-
-        const { result } = await this.provider.query<CodeResult>({
-            request_type: "call_function",
-            account_id: contractId,
-            method_name: methodName,
-            args_base64: argsBase64,
-            finality: "optimistic",
-        });
-
-        if (result.length === 0) return undefined;
-
-        return JSON.parse(Buffer.from(result).toString());
+    ): Promise<CallContractViewFunctionResult> {
+        return this.provider.callContractViewFunction(
+            contractId,
+            methodName,
+            args,
+            { finality: "optimistic" }
+        );
     }
 }
 
