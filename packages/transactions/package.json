@@ -20,7 +20,7 @@
     "@near-js/signers": "workspace:*",
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
-    "@noble/hashes": "1.7.1",
+    "@noble/hashes": "1.7.2",
     "borsh": "1.0.0"
   },
   "devDependencies": {
