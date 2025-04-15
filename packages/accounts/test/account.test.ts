@@ -352,7 +352,6 @@ describe('with deploy contract', () => {
 
     test('test set/remove', async () => {
         await contract.testSetRemove({
-            signerAccount: workingAccount,
             args: { value: '123' }
         });
     });
