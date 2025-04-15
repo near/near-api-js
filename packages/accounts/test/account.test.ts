@@ -151,7 +151,7 @@ describe('with deploy contract', () => {
         const data = fs.readFileSync(HELLO_WASM_PATH);
         await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
         // @ts-expect-error test input
-        contract = new Contract(nearjs.connection, contractId, {
+        contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
             viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
             changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
         });
@@ -173,7 +173,6 @@ describe('with deploy contract', () => {
 
     test('cross-contact assertion and panic', async () => {
         await expect(contract.crossContract({
-            signerAccount: workingAccount,
             args: {},
             gas: 300000000000000
         })).rejects.toThrow(/Smart contract panicked: expected to fail./);
@@ -238,14 +237,14 @@ describe('with deploy contract', () => {
         expect(result).toEqual('hello trex');
 
         const setCallValue = generateUniqueString('setCallPrefix');
-        const result2 = await contract.setValue({ signerAccount: workingAccount, args: { value: setCallValue } });
+        const result2 = await contract.setValue({ args: { value: setCallValue } });
         expect(result2).toEqual(setCallValue);
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
     test('view function calls by block Id and finality', async() => {
         const setCallValue1 = generateUniqueString('setCallPrefix');
-        const result1 = await contract.setValue({ signerAccount: workingAccount, args: { value: setCallValue1 } });
+        const result1 = await contract.setValue({ args: { value: setCallValue1 } });
         expect(result1).toEqual(setCallValue1);
         expect(await contract.getValue()).toEqual(setCallValue1);
 
@@ -277,7 +276,7 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue1);
 
         const setCallValue2 = generateUniqueString('setCallPrefix');
-        const result2 = await contract.setValue({ signerAccount: workingAccount, args: { value: setCallValue2 } });
+        const result2 = await contract.setValue({ args: { value: setCallValue2 } });
         expect(result2).toEqual(setCallValue2);
         expect(await contract.getValue()).toEqual(setCallValue2);
 
@@ -325,7 +324,6 @@ describe('with deploy contract', () => {
     test('make function calls via contract with gas', async() => {
         const setCallValue = generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({
-            signerAccount: workingAccount,
             args: { value: setCallValue },
             gas: 1000000 * 1000000
         });
@@ -334,10 +332,7 @@ describe('with deploy contract', () => {
     });
 
     test('can get logs from method result', async () => {
-        await contract.generateLogs({
-            signerAccount: workingAccount,
-            args: {}
-        });
+        await contract.generateLogs();
         expect(logs.length).toEqual(3);
         expect(logs[0].substr(0, 8)).toEqual('Receipt:');
         expect(logs.slice(1)).toEqual([`\tLog [${contractId}]: log1`, `\tLog [${contractId}]: log2`]);
@@ -350,10 +345,7 @@ describe('with deploy contract', () => {
     });
 
     test('can get assert message from method result', async () => {
-        await expect(() => contract.triggerAssert({
-            signerAccount: workingAccount,
-            args: {}
-        })).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
+        await expect(contract.triggerAssert()).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
         expect(logs[1]).toEqual(`\tLog [${contractId}]: log before assert`);
         expect(logs[2]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
@@ -367,7 +359,7 @@ describe('with deploy contract', () => {
 
     test('can have view methods only', async () => {
         // @ts-expect-error test input
-        const contract: any = new Contract(nearjs.connection, contractId, {
+        const contract: any = new Contract(workingAccount, contractId, {
             viewMethods: ['hello'],
         });
         expect(await contract.hello({ name: 'world' })).toEqual('hello world');
@@ -375,11 +367,10 @@ describe('with deploy contract', () => {
 
     test('can have change methods only', async () => {
         // @ts-expect-error test input
-        const contract: any = new Contract(nearjs.connection, contractId, {
+        const contract: any = new Contract(workingAccount, contractId, {
             changeMethods: ['hello'],
         });
         expect(await contract.hello({
-            signerAccount: workingAccount,
             args: { name: 'world' }
         })).toEqual('hello world');
     });

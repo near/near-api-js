@@ -144,7 +144,7 @@ export async function deployContractGuestBook(workingAccount, contractId) {
 
     const data = fs.readFileSync(GUESTBOOK_WASM_PATH);
     const account = await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-    return new Contract(new Connection('', account.provider, {}, ''), contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true });
+    return new Contract(new Account(contractId, account.provider, new KeyPairSigner(keyPair)), contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true });
 }
 
 export function sleep(time) {

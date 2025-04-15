@@ -119,14 +119,8 @@ describe('local view execution', () => {
         nearjs = await setUpTestConnection();
         contract = await deployContractGuestBook(nearjs.accountCreator.masterAccount, generateUniqueString('guestbook'));
         
-        await contract.add_message({
-            signerAccount: nearjs.accountCreator.masterAccount,
-            args: { text: "first message" },
-        });
-        await contract.add_message({
-            signerAccount: nearjs.accountCreator.masterAccount,
-            args: { text: "second message" },
-        });
+        await contract.add_message({ text: "first message" });
+        await contract.add_message({ text: "second message" });
         
         const block = await contract.connection.provider.block({ finality: 'optimistic' });
 
