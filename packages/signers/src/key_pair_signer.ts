@@ -1,7 +1,12 @@
 import { KeyPair, PublicKey, KeyPairString, KeyType } from "@near-js/crypto";
 import { sha256 } from "@noble/hashes/sha256";
 
-import { SignedMessage, Signer } from "./signer";
+import {
+    Nep413MessageSchema,
+    SignedMessage,
+    Signer,
+    SignMessageParams,
+} from "./signer";
 import {
     Transaction,
     SignedTransaction,
@@ -11,6 +16,7 @@ import {
     SignedDelegate,
     encodeDelegateAction,
 } from "@near-js/transactions";
+import { serialize } from "borsh";
 
 /**
  * Signs using in memory key store.
@@ -33,8 +39,34 @@ export class KeyPairSigner extends Signer {
         return this.key.getPublicKey();
     }
 
-    public async signNep413Message(): Promise<SignedMessage> {
-        throw new Error("Not implemented!");
+    public async signNep413Message(
+        params: SignMessageParams,
+        accountId: string
+    ): Promise<SignedMessage> {
+        if (params.nonce.length !== 32)
+            throw new Error(`Nonce must be [u8; 32]`);
+
+        const pk = this.key.getPublicKey();
+
+        // 2**31 + 413 == 2147484061
+        const PREFIX = 2147484061;
+        const serializedPrefix = serialize("u32", PREFIX);
+
+        const serializedParams = serialize(Nep413MessageSchema, params);
+
+        const message = new Uint8Array(serializedPrefix.length + serializedParams.length);
+        message.set(serializedPrefix);
+        message.set(serializedParams, serializedPrefix.length)
+
+        const hash = new Uint8Array(sha256(message));
+
+        const { signature } = this.key.sign(hash);
+
+        return {
+            accountId: accountId,
+            publicKey: pk,
+            signature: signature,
+        };
     }
 
     public async signTransaction(

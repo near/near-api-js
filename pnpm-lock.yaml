@@ -574,6 +574,9 @@ importers:
       '@noble/hashes':
         specifier: 1.7.1
         version: 1.7.1
+      borsh:
+        specifier: 1.0.0
+        version: 1.0.0
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0

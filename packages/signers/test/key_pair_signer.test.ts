@@ -3,7 +3,13 @@ import { TextEncoder } from "util";
 
 import { KeyPairSigner } from "../src";
 import { KeyPair, PublicKey } from "@near-js/crypto";
-import { createTransaction, encodeTransaction, actionCreators, decodeSignedTransaction } from "@near-js/transactions";
+import {
+    createTransaction,
+    encodeTransaction,
+    actionCreators,
+    decodeSignedTransaction,
+} from "@near-js/transactions";
+import { SignMessageParams } from "../src/signer";
 
 global.TextEncoder = TextEncoder;
 
@@ -72,7 +78,9 @@ test("serialize and sign transfer tx object", async () => {
     ]);
     const transaction = createTransaction(
         "test.near",
-        PublicKey.fromString("ed25519:Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC"),
+        PublicKey.fromString(
+            "ed25519:Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC"
+        ),
         "whatever.near",
         1,
         actions,
@@ -95,4 +103,71 @@ test("serialize and sign transfer tx object", async () => {
 
     const deserialized = decodeSignedTransaction(serialized);
     expect(encodeTransaction(deserialized)).toEqual(serialized);
+});
+
+test("test sign NEP-413 message with callback url", async () => {
+    const signer = new KeyPairSigner(
+        KeyPair.fromString(
+            "ed25519:3FyRtUUMxiNT1g2ST6mbj7W1CN7KfQBbomawC7YG4A1zwHmw2TRsn1Wc8NaFcBCoJDu3zt3znJDSwKQ31oRaKXH7"
+        )
+    );
+
+    const message: SignMessageParams = {
+        message: "Hello NEAR!",
+        nonce: new Uint8Array(
+            Buffer.from(
+                "KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=",
+                "base64"
+            )
+        ),
+        recipient: "example.near",
+        callbackUrl: "http://localhost:3000",
+    };
+
+    const { signature } = await signer.signNep413Message(
+        message,
+        "round-toad.testnet"
+    );
+
+    const expectedSignature = new Uint8Array(
+        Buffer.from(
+            "zzZQ/GwAjrZVrTIFlvmmQbDQHllfzrr8urVWHaRt5cPfcXaCSZo35c5LDpPpTKivR6BxLyb3lcPM0FfCW5lcBQ==",
+            "base64"
+        )
+    );
+
+    expect(signature).toStrictEqual(expectedSignature);
+});
+
+test("test sign NEP-413 message without callback url", async () => {
+    const signer = new KeyPairSigner(
+        KeyPair.fromString(
+            "ed25519:3FyRtUUMxiNT1g2ST6mbj7W1CN7KfQBbomawC7YG4A1zwHmw2TRsn1Wc8NaFcBCoJDu3zt3znJDSwKQ31oRaKXH7"
+        )
+    );
+
+    const message: SignMessageParams = {
+        message: "Hello NEAR!",
+        nonce: new Uint8Array(
+            Buffer.from(
+                "KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=",
+                "base64"
+            )
+        ),
+        recipient: "example.near",
+    };
+
+    const { signature } = await signer.signNep413Message(
+        message,
+        "round-toad.testnet"
+    );
+
+    const expectedSignature = new Uint8Array(
+        Buffer.from(
+            "NnJgPU1Ql7ccRTITIoOVsIfElmvH1RV7QAT4a9Vh6ShCOnjIzRwxqX54JzoQ/nK02p7VBMI2vJn48rpImIJwAw==",
+            "base64"
+        )
+    );
+
+    expect(signature).toStrictEqual(expectedSignature);
 });
