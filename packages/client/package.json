@@ -2,8 +2,9 @@
   "name": "@near-js/client",
   "version": "0.0.4",
   "description": "",
-  "main": "lib/esm/index.js",
-  "type": "module",
+  "main": "lib/commonjs/index.cjs",
+  "module": "lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
   "scripts": {
     "build": "pnpm compile:esm && pnpm compile:cjs",
     "compile:esm": "tsc -p tsconfig.json",
@@ -36,6 +37,8 @@
   ],
   "exports": {
     "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/esm/index.js"
+    "import": "./lib/commonjs/index.cjs",
+    "types": "./lib/esm/index.d.ts",
+    "default": "./lib/esm/index.js"
   }
 }
