@@ -42,6 +42,8 @@ import {
     IntoConnection,
     ViewFunctionCallOptions,
 } from "./interface";
+import { randomBytes } from "crypto";
+import { SignedMessage } from "@near-js/signers/lib/esm/signer";
 
 const {
     addKey,
@@ -289,6 +291,57 @@ export class Account extends PublicAccount implements IntoConnection {
         );
 
         return this.signer.signTransaction(tx);
+    }
+
+    /**
+     * Create a signed transaction which can be broadcasted to the relayer
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions list of actions to perform as part of the neta transaction
+     * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     */
+    public async signMetaTransaction(
+        receiverId: string,
+        actions: Action[],
+        blockHeightTtl: number = 200
+    ): Promise<[Uint8Array, SignedDelegate]> {
+        const pk = await this.signer.getPublicKey();
+
+        const accessKey = await this.getAccessKey(pk);
+
+        const nonce = BigInt(accessKey.nonce) + 1n;
+
+        const { header } = await this.provider.viewBlock({
+            finality: "final",
+        });
+
+        const maxBlockHeight = BigInt(header.height) + BigInt(blockHeightTtl);
+
+        const delegateAction = buildDelegateAction({
+            receiverId: receiverId,
+            senderId: this.accountId,
+            actions: actions,
+            publicKey: pk,
+            nonce: nonce,
+            maxBlockHeight: maxBlockHeight,
+        });
+
+        return this.signer.signDelegateAction(delegateAction);
+    }
+
+    public async signMessage(
+        message: string,
+        recipient: string,
+        callbackUrl?: string
+    ): Promise<SignedMessage> {
+        const nonce = new Uint8Array(randomBytes(32));
+
+        return this.signer.signNep413Message(
+            message,
+            this.accountId,
+            recipient,
+            nonce,
+            callbackUrl
+        );
     }
 
     /**
@@ -810,6 +863,8 @@ export class Account extends PublicAccount implements IntoConnection {
     }
 
     /**
+     * @deprecated please use {@link Account.signMetaTransaction} instead
+     *
      * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
      *
      * @param options Options for the transaction.
@@ -837,7 +892,7 @@ export class Account extends PublicAccount implements IntoConnection {
             senderId: this.accountId,
         });
 
-        const [, signedDelegate] = await this.signer.signDelegate(
+        const [, signedDelegate] = await this.signer.signDelegateAction(
             delegateAction
         );
 
