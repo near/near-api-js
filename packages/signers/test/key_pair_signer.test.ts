@@ -8,12 +8,12 @@ import {
     encodeTransaction,
     actionCreators,
     decodeSignedTransaction,
+    buildDelegateAction,
 } from "@near-js/transactions";
-import { SignMessageParams } from "../src/signer";
 
 global.TextEncoder = TextEncoder;
 
-test("test throws if transaction gets signed with different public key", async () => {
+test("test sign transaction with different public key", async () => {
     const signer = new KeyPairSigner(
         KeyPair.fromString(
             "ed25519:sDa8GRWHy16zXzE5ALViy17miA7Lo39DWp8DY5HsTBEayarAWefzbgXmSpW4f8tQn3V8odsY7yGLGmgGaQN2BBF"
@@ -37,7 +37,7 @@ test("test throws if transaction gets signed with different public key", async (
     );
 });
 
-test("test transaction gets signed with relevant public key", async () => {
+test("test sign transaction with relevant public key", async () => {
     const signer = new KeyPairSigner(
         KeyPair.fromString(
             "ed25519:sDa8GRWHy16zXzE5ALViy17miA7Lo39DWp8DY5HsTBEayarAWefzbgXmSpW4f8tQn3V8odsY7yGLGmgGaQN2BBF"
@@ -112,21 +112,17 @@ test("test sign NEP-413 message with callback url", async () => {
         )
     );
 
-    const message: SignMessageParams = {
-        message: "Hello NEAR!",
-        nonce: new Uint8Array(
+    const { signature } = await signer.signNep413Message(
+        "Hello NEAR!",
+        "round-toad.testnet",
+        "example.near",
+        new Uint8Array(
             Buffer.from(
                 "KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=",
                 "base64"
             )
         ),
-        recipient: "example.near",
-        callbackUrl: "http://localhost:3000",
-    };
-
-    const { signature } = await signer.signNep413Message(
-        message,
-        "round-toad.testnet"
+        "http://localhost:3000"
     );
 
     const expectedSignature = new Uint8Array(
@@ -146,20 +142,16 @@ test("test sign NEP-413 message without callback url", async () => {
         )
     );
 
-    const message: SignMessageParams = {
-        message: "Hello NEAR!",
-        nonce: new Uint8Array(
+    const { signature } = await signer.signNep413Message(
+        "Hello NEAR!",
+        "round-toad.testnet",
+        "example.near",
+        new Uint8Array(
             Buffer.from(
                 "KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=",
                 "base64"
             )
-        ),
-        recipient: "example.near",
-    };
-
-    const { signature } = await signer.signNep413Message(
-        message,
-        "round-toad.testnet"
+        )
     );
 
     const expectedSignature = new Uint8Array(
@@ -170,4 +162,96 @@ test("test sign NEP-413 message without callback url", async () => {
     );
 
     expect(signature).toStrictEqual(expectedSignature);
+});
+
+test("test sign NEP-413 message throws error on invalid nonce", async () => {
+    const signer = new KeyPairSigner(
+        KeyPair.fromString(
+            "ed25519:3FyRtUUMxiNT1g2ST6mbj7W1CN7KfQBbomawC7YG4A1zwHmw2TRsn1Wc8NaFcBCoJDu3zt3znJDSwKQ31oRaKXH7"
+        )
+    );
+
+    await expect(() =>
+        signer.signNep413Message(
+            "Hello NEAR!",
+            "round-toad.testnet",
+            "example.near",
+            new Uint8Array(new Array(28))
+        )
+    ).rejects.toThrow();
+});
+
+test("test getPublicKey returns correct public key", async () => {
+    const keyPair = KeyPair.fromString(
+        "ed25519:4RDn17Y8bm6FRg57BhW7eVnrHTF2nsmRfkj1nPXR1zYB"
+    );
+    const signer = new KeyPairSigner(keyPair);
+
+    const publicKey = (await signer.getPublicKey()).toString();
+    expect(publicKey).toBe(
+        "ed25519:Bpz2oUnMM8MM8trXmdAJW5sS1TtPkMot4cosa16ZeYFQ"
+    );
+});
+
+test("test static fromSecretKey creates a corresponding KeyPair", async () => {
+    const signer = KeyPairSigner.fromSecretKey(
+        "ed25519:4RDn17Y8bm6FRg57BhW7eVnrHTF2nsmRfkj1nPXR1zYB"
+    );
+
+    const publicKey = (await signer.getPublicKey()).toString();
+    expect(publicKey).toBe(
+        "ed25519:Bpz2oUnMM8MM8trXmdAJW5sS1TtPkMot4cosa16ZeYFQ"
+    );
+});
+
+test("test sign delegate action", async () => {
+    const signer = new KeyPairSigner(
+        KeyPair.fromString(
+            "ed25519:3FyRtUUMxiNT1g2ST6mbj7W1CN7KfQBbomawC7YG4A1zwHmw2TRsn1Wc8NaFcBCoJDu3zt3znJDSwKQ31oRaKXH7"
+        )
+    );
+
+    const delegateAction = buildDelegateAction({
+        receiverId: "receiver.testnet",
+        senderId: "sender.testnet",
+        nonce: 1n,
+        maxBlockHeight: 1848319858n,
+        actions: [],
+        publicKey: await signer.getPublicKey(),
+    });
+
+    const [hash, { signature }] = await signer.signDelegateAction(
+        delegateAction
+    );
+
+    expect(Buffer.from(hash).toString("hex")).toBe(
+        "6d35575b3566fddf04f79317c3e574eb89c5bc228c5e755f2a3179e164dbb36b"
+    );
+
+    expect(Buffer.from(signature.signature.data).toString("hex")).toBe(
+        "77e5e92877d64ae27b1facc5ddf09205863b2af7a8264d2d01a44a9684975a17f2b8b9d706fbe3c3ffa2cd4377b49f20614245549dc061bcaccc0ad3abd81c01"
+    );
+});
+
+test("test sign delegate action with wrong public key", async () => {
+    const signer = new KeyPairSigner(
+        KeyPair.fromString(
+            "ed25519:3FyRtUUMxiNT1g2ST6mbj7W1CN7KfQBbomawC7YG4A1zwHmw2TRsn1Wc8NaFcBCoJDu3zt3znJDSwKQ31oRaKXH7"
+        )
+    );
+
+    const delegateAction = buildDelegateAction({
+        receiverId: "receiver.testnet",
+        senderId: "sender.testnet",
+        nonce: 1n,
+        maxBlockHeight: 1848319858n,
+        actions: [],
+        publicKey: KeyPair.fromString(
+            "ed25519:2Pm1R2qRtkbFErVrjqgtNutMqEVvrErQ3wSns6rN4jd7nnmzCbda4kwRCBAnBR7RWf2faRqVMuFaJzhJp1eYfhvV"
+        ).getPublicKey(),
+    });
+
+    await expect(() =>
+        signer.signDelegateAction(delegateAction)
+    ).rejects.toThrow();
 });
