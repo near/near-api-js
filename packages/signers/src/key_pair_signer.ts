@@ -40,11 +40,14 @@ export class KeyPairSigner extends Signer {
     }
 
     public async signNep413Message(
-        params: SignMessageParams,
-        accountId: string
+        message: string,
+        accountId: string,
+        recipient: string,
+        nonce: Uint8Array,
+        callbackUrl?: string
     ): Promise<SignedMessage> {
-        if (params.nonce.length !== 32)
-            throw new Error(`Nonce must be [u8; 32]`);
+        if (nonce.length !== 32)
+            throw new Error(`Nonce must be exactly 32 bytes long`);
 
         const pk = this.key.getPublicKey();
 
@@ -52,13 +55,21 @@ export class KeyPairSigner extends Signer {
         const PREFIX = 2147484061;
         const serializedPrefix = serialize("u32", PREFIX);
 
+        const params: SignMessageParams = {
+            message,
+            recipient,
+            nonce,
+            callbackUrl
+        };
         const serializedParams = serialize(Nep413MessageSchema, params);
 
-        const message = new Uint8Array(serializedPrefix.length + serializedParams.length);
-        message.set(serializedPrefix);
-        message.set(serializedParams, serializedPrefix.length)
+        const serializedMessage = new Uint8Array(
+            serializedPrefix.length + serializedParams.length
+        );
+        serializedMessage.set(serializedPrefix);
+        serializedMessage.set(serializedParams, serializedPrefix.length);
 
-        const hash = new Uint8Array(sha256(message));
+        const hash = new Uint8Array(sha256(serializedMessage));
 
         const { signature } = this.key.sign(hash);
 
@@ -94,7 +105,7 @@ export class KeyPairSigner extends Signer {
         return [hash, signedTx];
     }
 
-    public async signDelegate(
+    public async signDelegateAction(
         delegateAction: DelegateAction
     ): Promise<[Uint8Array, SignedDelegate]> {
         const pk = this.key.getPublicKey();

@@ -47,15 +47,18 @@ export abstract class Signer {
      * @param accountId
      */
     public abstract signNep413Message(
-        params: SignMessageParams,
-        accountId: string
+        message: string,
+        accountId: string,
+        recipient: string,
+        nonce: Uint8Array,
+        callbackUrl?: string
     ): Promise<SignedMessage>;
 
     public abstract signTransaction(
         transaction: Transaction
     ): Promise<[Uint8Array, SignedTransaction]>;
 
-    public abstract signDelegate(
+    public abstract signDelegateAction(
         delegateAction: DelegateAction
     ): Promise<[Uint8Array, SignedDelegate]>;
 }
