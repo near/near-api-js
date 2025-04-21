@@ -41,6 +41,19 @@
         "semver": "7.7.1",
         "ts-jest": "29.2.6"
     },
+    "peerDependencies": {
+        "@near-js/accounts": "^2.0.0",
+        "@near-js/crypto": "^2.0.0",
+        "@near-js/keystores": "^2.0.0",
+        "@near-js/keystores-browser": "^2.0.0",
+        "@near-js/keystores-node": "^2.0.0",
+        "@near-js/providers": "^2.0.0",
+        "@near-js/signers": "^2.0.0",
+        "@near-js/transactions": "^2.0.0",
+        "@near-js/types": "^2.0.0",
+        "@near-js/utils": "^2.0.0",
+        "@near-js/wallet-account": "^2.0.0"
+    },
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
     "scripts": {

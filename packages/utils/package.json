@@ -31,6 +31,9 @@
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
+  "peerDependencies": {
+    "@near-js/types": "^2.0.0"
+  },
   "files": [
     "lib"
   ],
