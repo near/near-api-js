@@ -41,6 +41,8 @@ export interface Provider {
 /** @deprecated use {@link viewNodeStatus} */
     status(): Promise<NodeStatusResult>;
 
+    getNetworkId(): Promise<string>;
+
     viewAccessKey(accountId: string, publicKey: PublicKey | string, finalityQuery?: FinalityReference): Promise<AccessKeyView>;
     viewAccessKeyList(accountId: string, finalityQuery?: FinalityReference): Promise<AccessKeyList>;
 

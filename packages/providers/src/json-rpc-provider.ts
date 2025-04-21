@@ -94,6 +94,9 @@ export class JsonRpcProvider implements Provider {
     /** @hidden */
     readonly options: RequestOptions;
 
+    /** @hidden */
+    private networkId: string | undefined;
+
     /**
      * @param connectionInfo Connection info
      */
@@ -105,6 +108,17 @@ export class JsonRpcProvider implements Provider {
             backoff: REQUEST_RETRY_WAIT_BACKOFF
         };
         this.options = Object.assign({}, defaultOptions, options);
+        this.networkId = undefined;
+    }
+
+    public async getNetworkId(): Promise<string> {
+        if (this.networkId) return this.networkId;
+
+        const { chain_id } = await this.viewNodeStatus();
+
+        this.networkId = chain_id;
+
+        return this.networkId;
     }
 
     public async viewAccessKey(

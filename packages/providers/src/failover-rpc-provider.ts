@@ -115,6 +115,10 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.status());
     }
 
+    async getNetworkId(): Promise<string> {
+        return this.withBackoff((currentProvider) => currentProvider.getNetworkId());
+    }
+
     public async viewAccessKey(accountId: string, publicKey: PublicKey, finalityQuery?: FinalityReference): Promise<AccessKeyView> {
         return this.withBackoff((currentProvider) => currentProvider.viewAccessKey(accountId, publicKey, finalityQuery));
     }
