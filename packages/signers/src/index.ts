@@ -1,2 +1,2 @@
 export { KeyPairSigner } from './key_pair_signer';
-export { Signer } from './signer';
+export { Signer, SignedMessage } from './signer';
