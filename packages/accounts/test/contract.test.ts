@@ -119,8 +119,8 @@ describe('local view execution', () => {
         nearjs = await setUpTestConnection();
         contract = await deployContractGuestBook(nearjs.accountCreator.masterAccount, generateUniqueString('guestbook'));
         
-        await contract.add_message({ text: "first message" });
-        await contract.add_message({ text: "second message" });
+        await contract.add_message({ text: 'first message' });
+        await contract.add_message({ text: 'second message' });
         
         const block = await contract.connection.provider.block({ finality: 'optimistic' });
 
@@ -177,7 +177,7 @@ describe('local view execution', () => {
     }); 
 });
 
-describe("contract without account", () => {
+describe('contract without account', () => {
     let nearjs;
     let contract;
 
@@ -185,7 +185,7 @@ describe("contract without account", () => {
 
     beforeAll(async () => {
         nearjs = await setUpTestConnection();
-        const contractId = generateUniqueString("guestbook");
+        const contractId = generateUniqueString('guestbook');
         await deployContractGuestBook(
             nearjs.accountCreator.masterAccount,
             contractId
@@ -193,25 +193,25 @@ describe("contract without account", () => {
 
         // @ts-expect-error test input
         contract = new Contract(nearjs.connection, contractId, {
-            viewMethods: ["total_messages", "get_messages"],
-            changeMethods: ["add_message"],
+            viewMethods: ['total_messages', 'get_messages'],
+            changeMethods: ['add_message'],
         });
     });
 
-    test("view & change methods work", async () => {
+    test('view & change methods work', async () => {
         const totalMessagesBefore = await contract.total_messages({});
         expect(totalMessagesBefore).toBe(0);
 
         await contract.add_message({
             signerAccount: nearjs.accountCreator.masterAccount,
             args: {
-                text: "first message",
+                text: 'first message',
             },
         });
         await contract.add_message({
             signerAccount: nearjs.accountCreator.masterAccount,
             args: {
-                text: "second message",
+                text: 'second message',
             },
         });
 
@@ -220,15 +220,15 @@ describe("contract without account", () => {
 
         const messages = await contract.get_messages({});
         expect(messages.length).toBe(2);
-        expect(messages[0].text).toEqual("first message");
-        expect(messages[1].text).toEqual("second message");
+        expect(messages[0].text).toEqual('first message');
+        expect(messages[1].text).toEqual('second message');
     });
 
-    test("fails to call add_message() without signerAccount", async () => {
+    test('fails to call add_message() without signerAccount', async () => {
         await expect(
             contract.add_message({
                 args: {
-                    text: "third message",
+                    text: 'third message',
                 },
             })
         ).rejects.toThrow(/signerAccount must be specified/);

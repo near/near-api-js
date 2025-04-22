@@ -1,12 +1,12 @@
-import { KeyPair, PublicKey, KeyPairString, KeyType } from "@near-js/crypto";
-import { sha256 } from "@noble/hashes/sha256";
+import { KeyPair, PublicKey, KeyPairString, KeyType } from '@near-js/crypto';
+import { sha256 } from '@noble/hashes/sha256';
 
 import {
     Nep413MessageSchema,
     SignedMessage,
     Signer,
     SignMessageParams,
-} from "./signer";
+} from './signer';
 import {
     Transaction,
     SignedTransaction,
@@ -15,8 +15,8 @@ import {
     DelegateAction,
     SignedDelegate,
     encodeDelegateAction,
-} from "@near-js/transactions";
-import { serialize } from "borsh";
+} from '@near-js/transactions';
+import { serialize } from 'borsh';
 
 /**
  * Signs using in memory key store.
@@ -47,13 +47,13 @@ export class KeyPairSigner extends Signer {
         callbackUrl?: string
     ): Promise<SignedMessage> {
         if (nonce.length !== 32)
-            throw new Error(`Nonce must be exactly 32 bytes long`);
+            throw new Error('Nonce must be exactly 32 bytes long');
 
         const pk = this.key.getPublicKey();
 
         // 2**31 + 413 == 2147484061
         const PREFIX = 2147484061;
-        const serializedPrefix = serialize("u32", PREFIX);
+        const serializedPrefix = serialize('u32', PREFIX);
 
         const params: SignMessageParams = {
             message,
@@ -86,7 +86,7 @@ export class KeyPairSigner extends Signer {
         const pk = this.key.getPublicKey();
 
         if (transaction.publicKey.toString() !== pk.toString())
-            throw new Error("The public key doesn't match the signer's key");
+            throw new Error('The public key doesn\'t match the signer\'s key');
 
         const message = encodeTransaction(transaction);
         const hash = new Uint8Array(sha256(message));
@@ -111,7 +111,7 @@ export class KeyPairSigner extends Signer {
         const pk = this.key.getPublicKey();
 
         if (delegateAction.publicKey.toString() !== pk.toString())
-            throw new Error("The public key doesn't match the signer's key");
+            throw new Error('The public key doesn\'t match the signer\'s key');
 
         const message = encodeDelegateAction(delegateAction);
         const hash = new Uint8Array(sha256(message));

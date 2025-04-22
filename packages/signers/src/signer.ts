@@ -1,11 +1,11 @@
-import { PublicKey } from "@near-js/crypto";
+import { PublicKey } from '@near-js/crypto';
 import {
     DelegateAction,
     SignedDelegate,
     SignedTransaction,
     Transaction,
-} from "@near-js/transactions";
-import { Schema } from "borsh";
+} from '@near-js/transactions';
+import { Schema } from 'borsh';
 
 export interface SignMessageParams {
     message: string; // The message that wants to be transmitted.
@@ -23,10 +23,10 @@ export interface SignedMessage {
 
 export const Nep413MessageSchema: Schema = {
     struct: {
-        message: "string",
-        nonce: { array: { type: "u8", len: 32 } },
-        recipient: "string",
-        callbackUrl: { option: "string" },
+        message: 'string',
+        nonce: { array: { type: 'u8', len: 32 } },
+        recipient: 'string',
+        callbackUrl: { option: 'string' },
     },
 };
 

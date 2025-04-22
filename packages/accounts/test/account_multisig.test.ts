@@ -34,7 +34,7 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
                 actions: [
                     functionCall('confirm', { request_id: requestId }, MULTISIG_GAS, MULTISIG_DEPOSIT)
                 ]
-            }, {signer: new KeyPairSigner(account2fa.confirmKey)});
+            }, { signer: new KeyPairSigner(account2fa.confirmKey) });
         }
     });
     account2fa.confirmKey = KeyPair.fromRandom('ed25519');
