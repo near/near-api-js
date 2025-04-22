@@ -18,7 +18,7 @@
   "dependencies": {
     "@near-js/crypto": "workspace:*",
     "@near-js/keystores": "workspace:*",
-    "@noble/hashes": "1.7.1"
+    "@noble/hashes": "1.8.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
