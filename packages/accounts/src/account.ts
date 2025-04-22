@@ -143,7 +143,7 @@ export class Account implements IntoConnection {
     }
 
     public getConnection(): Connection {
-        return new Connection("", this.provider, this.signer, "");
+        return new Connection("", this.provider, this.signer);
     }
 
     /**
@@ -362,11 +362,10 @@ export class Account implements IntoConnection {
      * @param options.returnError Whether to return an error if the transaction fails.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      */
-    async signAndSendTransaction({
-        receiverId,
-        actions,
-        returnError,
-    }: SignAndSendTransactionOptions, opts?: SignerOptions): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction(
+        { receiverId, actions, returnError }: SignAndSendTransactionOptions,
+        opts?: SignerOptions
+    ): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(
@@ -605,10 +604,13 @@ export class Account implements IntoConnection {
             ),
         ];
 
-        return this.signAndSendTransaction({
-            receiverId: topAccount,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: topAccount,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     public async createSubAccount(
@@ -626,10 +628,13 @@ export class Account implements IntoConnection {
             addKey(PublicKey.from(pk), fullAccessKey()),
         ];
 
-        return this.signAndSendTransaction({
-            receiverId: newAccountId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: newAccountId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     public async createSubAccountAndDeployContract(
@@ -649,10 +654,13 @@ export class Account implements IntoConnection {
             deployContract(code),
         ];
 
-        return this.signAndSendTransaction({
-            receiverId: newAccountId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: newAccountId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     /**
@@ -668,10 +676,13 @@ export class Account implements IntoConnection {
 
         const actions = [deleteAccount(beneficiaryId)];
 
-        return this.signAndSendTransaction({
-            receiverId: this.accountId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: this.accountId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     /**
@@ -683,21 +694,13 @@ export class Account implements IntoConnection {
     ): Promise<FinalExecutionOutcome> {
         const actions = [deployContract(code)];
 
-        return this.signAndSendTransaction({
-            receiverId: this.accountId,
-            actions: actions,
-        }, opts);
-    }
-
-    /** @hidden */
-    private encodeJSContractArgs(contractId: string, method: string, args) {
-        return Buffer.concat([
-            Buffer.from(contractId),
-            Buffer.from([0]),
-            Buffer.from(method),
-            Buffer.from([0]),
-            Buffer.from(args),
-        ]);
+        return this.signAndSendTransaction(
+            {
+                receiverId: this.accountId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     /**
@@ -713,7 +716,6 @@ export class Account implements IntoConnection {
      * @param options.walletMeta Metadata for wallet integration.
      * @param options.walletCallbackUrl The callback URL for wallet integration.
      * @param options.stringify A function to convert input arguments into bytes array
-     * @param options.jsContract Whether the contract is from JS SDK, automatically encodes args from JS SDK to binary.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the function call.
      */
     async functionCall({
@@ -725,42 +727,22 @@ export class Account implements IntoConnection {
         walletMeta,
         walletCallbackUrl,
         stringify,
-        jsContract,
     }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
         this.validateArgs(args);
-        let functionCallArgs;
 
-        if (jsContract) {
-            const encodedArgs = this.encodeJSContractArgs(
-                contractId,
-                methodName,
-                JSON.stringify(args)
-            );
-            functionCallArgs = [
-                "call_js_contract",
-                encodedArgs,
-                gas,
-                attachedDeposit,
-                null,
-                true,
-            ];
-        } else {
-            const stringifyArg =
-                stringify === undefined ? stringifyJsonOrBytes : stringify;
-            functionCallArgs = [
-                methodName,
-                args,
-                gas,
-                attachedDeposit,
-                stringifyArg,
-                false,
-            ];
-        }
+        const stringifyArg =
+            stringify === undefined ? stringifyJsonOrBytes : stringify;
+        const functionCallArgs = [
+            methodName,
+            args,
+            gas,
+            attachedDeposit,
+            stringifyArg,
+            false,
+        ];
 
         return this.signAndSendTransaction({
-            receiverId: jsContract
-                ? process.env.NEAR_JSVM_ACCOUNT_ID
-                : contractId,
+            receiverId: contractId,
             // eslint-disable-next-line prefer-spread
             actions: [functionCall.apply(void 0, functionCallArgs)],
             walletMeta,
@@ -808,10 +790,13 @@ export class Account implements IntoConnection {
     ): Promise<FinalExecutionOutcome> {
         const actions = [addKey(PublicKey.from(pk), fullAccessKey())];
 
-        return this.signAndSendTransaction({
-            receiverId: this.accountId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: this.accountId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     public async addFunctionAccessKey(
@@ -832,10 +817,13 @@ export class Account implements IntoConnection {
             ),
         ];
 
-        return this.signAndSendTransaction({
-            receiverId: this.accountId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: this.accountId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     /**
@@ -848,10 +836,13 @@ export class Account implements IntoConnection {
     ): Promise<FinalExecutionOutcome> {
         const actions = [deleteKey(PublicKey.from(publicKey))];
 
-        return this.signAndSendTransaction({
-            receiverId: this.accountId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: this.accountId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     public async transfer(
@@ -861,10 +852,13 @@ export class Account implements IntoConnection {
     ): Promise<FinalExecutionOutcome> {
         const actions = [transfer(BigInt(amount))];
 
-        return this.signAndSendTransaction({
-            receiverId: receiverId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: receiverId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     /**
@@ -880,10 +874,13 @@ export class Account implements IntoConnection {
     ): Promise<FinalExecutionOutcome> {
         const actions = [stake(BigInt(amount), PublicKey.from(publicKey))];
 
-        return this.signAndSendTransaction({
-            receiverId: this.accountId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: this.accountId,
+                actions: actions,
+            },
+            opts
+        );
     }
 
     /**
@@ -950,16 +947,12 @@ export class Account implements IntoConnection {
      * @param options.args Any arguments to the view contract method, wrapped in JSON
      * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
      * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
-     * @param options.jsContract Is contract from JS SDK, automatically encodes args from JS SDK to binary.
      * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
 
     async viewFunction(options: ViewFunctionCallOptions): Promise<any> {
-        return await viewFunction(
-            this.getConnection(),
-            options
-        );
+        return await viewFunction(this.getConnection(), options);
     }
 
     /**
@@ -1165,9 +1158,12 @@ export class Account implements IntoConnection {
             functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
         ];
 
-        return this.signAndSendTransaction({
-            receiverId: contractId,
-            actions: actions,
-        }, opts);
+        return this.signAndSendTransaction(
+            {
+                receiverId: contractId,
+                actions: actions,
+            },
+            opts
+        );
     }
 }

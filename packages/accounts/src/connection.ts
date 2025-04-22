@@ -50,18 +50,15 @@ export class Connection implements IntoConnection {
     readonly networkId: string;
     readonly provider: Provider;
     readonly signer: Signer;
-    readonly jsvmAccountId: string;
 
     constructor(
         networkId: string,
         provider: Provider,
         signer: Signer,
-        jsvmAccountId: string
     ) {
         this.networkId = networkId;
         this.provider = provider;
         this.signer = signer;
-        this.jsvmAccountId = jsvmAccountId;
     }
 
     getConnection(): Connection {
@@ -78,7 +75,6 @@ export class Connection implements IntoConnection {
             config.networkId,
             provider,
             signer,
-            config.jsvmAccountId
         );
     }
 }

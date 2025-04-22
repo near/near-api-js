@@ -97,8 +97,8 @@ const account = Object.setPrototypeOf({
     getConnection() {
         return {};
     },
-    viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery }) {
-        return { this: this, contractId, methodName, args, parse, stringify, jsContract, blockQuery };
+    viewFunction({ contractId, methodName, args, parse, stringify, blockQuery }) {
+        return { this: this, contractId, methodName, args, parse, stringify, blockQuery };
     },
     functionCall() {
         return this;

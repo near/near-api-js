@@ -26,10 +26,6 @@ export interface FunctionCallOptions {
      * Convert input arguments into bytes array.
      */
     stringify?: (input: any) => Buffer;
-    /**
-     * Is contract from JS SDK, automatically encodes args from JS SDK to binary.
-     */
-    jsContract?: boolean;
 }
 
 export interface ChangeFunctionCallOptions extends FunctionCallOptions {
