@@ -87,6 +87,10 @@ export interface AccountAuthorizedApp {
     publicKey: string;
 }
 
+interface SignerOptions {
+    signer?: Signer;
+}
+
 /**
  * Options used to initiate sining and sending transactions
  */
@@ -124,17 +128,22 @@ interface SignedDelegateOptions {
     receiverId: string;
 }
 
-export class PublicAccount {
+/**
+ * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
+ */
+export class Account implements IntoConnection {
     public readonly accountId: string;
     public readonly provider: Provider;
+    public readonly signer?: Signer;
 
-    constructor(accountId: string, provider: Provider) {
+    constructor(accountId: string, provider: Provider, signer?: Signer) {
         this.accountId = accountId;
         this.provider = provider;
+        this.signer = signer;
     }
 
-    public withSigner(signer: Signer): Account {
-        return new Account(this.accountId, this.provider, signer);
+    public getConnection(): Connection {
+        return new Connection("", this.provider, this.signer, "");
     }
 
     /**
@@ -229,22 +238,6 @@ export class PublicAccount {
             { finality: "optimistic" }
         );
     }
-}
-
-/**
- * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
- */
-export class Account extends PublicAccount implements IntoConnection {
-    public readonly signer: Signer;
-
-    constructor(accountId: string, provider: Provider, signer: Signer) {
-        super(accountId, provider);
-        this.signer = signer;
-    }
-
-    public getConnection(): Connection {
-        return new Connection('', this.provider, this.signer, '');
-    }
 
     /**
      * Returns basic NEAR account information via the `view_account` RPC query method
@@ -268,9 +261,14 @@ export class Account extends PublicAccount implements IntoConnection {
      */
     public async signTransaction(
         receiverId: string,
-        actions: Action[]
+        actions: Action[],
+        opts?: SignerOptions
     ): Promise<[Uint8Array, SignedTransaction]> {
-        const pk = await this.signer.getPublicKey();
+        const signer = opts?.signer || this.signer;
+
+        if (!signer) throw new Error(`Signer is required`);
+
+        const pk = await signer.getPublicKey();
 
         const accessKey = await this.getAccessKey(pk);
 
@@ -290,7 +288,7 @@ export class Account extends PublicAccount implements IntoConnection {
             baseDecode(recentBlockHash)
         );
 
-        return this.signer.signTransaction(tx);
+        return signer.signTransaction(tx);
     }
 
     /**
@@ -302,9 +300,14 @@ export class Account extends PublicAccount implements IntoConnection {
     public async signMetaTransaction(
         receiverId: string,
         actions: Action[],
-        blockHeightTtl: number = 200
+        blockHeightTtl: number = 200,
+        opts?: SignerOptions
     ): Promise<[Uint8Array, SignedDelegate]> {
-        const pk = await this.signer.getPublicKey();
+        const signer = opts?.signer || this.signer;
+
+        if (!signer) throw new Error(`Signer is required`);
+
+        const pk = await signer.getPublicKey();
 
         const accessKey = await this.getAccessKey(pk);
 
@@ -325,17 +328,22 @@ export class Account extends PublicAccount implements IntoConnection {
             maxBlockHeight: maxBlockHeight,
         });
 
-        return this.signer.signDelegateAction(delegateAction);
+        return signer.signDelegateAction(delegateAction);
     }
 
     public async signMessage(
         message: string,
         recipient: string,
-        callbackUrl?: string
+        callbackUrl?: string,
+        opts?: SignerOptions
     ): Promise<SignedMessage> {
+        const signer = opts?.signer || this.signer;
+
+        if (!signer) throw new Error(`Signer is required`);
+
         const nonce = new Uint8Array(randomBytes(32));
 
-        return this.signer.signNep413Message(
+        return signer.signNep413Message(
             message,
             this.accountId,
             recipient,
@@ -358,7 +366,7 @@ export class Account extends PublicAccount implements IntoConnection {
         receiverId,
         actions,
         returnError,
-    }: SignAndSendTransactionOptions): Promise<FinalExecutionOutcome> {
+    }: SignAndSendTransactionOptions, opts?: SignerOptions): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(
@@ -368,7 +376,8 @@ export class Account extends PublicAccount implements IntoConnection {
             async () => {
                 [txHash, signedTx] = await this.signTransaction(
                     receiverId,
-                    actions
+                    actions,
+                    opts
                 );
 
                 try {
@@ -404,7 +413,10 @@ export class Account extends PublicAccount implements IntoConnection {
             );
         }
 
-        printTxOutcomeLogsAndFailures({ contractId: signedTx.transaction.receiverId, outcome: result });
+        printTxOutcomeLogsAndFailures({
+            contractId: signedTx.transaction.receiverId,
+            outcome: result,
+        });
 
         // Should be falsy if result.status.Failure is null
         if (
@@ -449,6 +461,8 @@ export class Account extends PublicAccount implements IntoConnection {
         receiverId: string,
         actions: Action[]
     ): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
+        if (!this.signer) throw new Error(`Signer is required`);
+
         const publicKey = await this.signer.getPublicKey();
         if (!publicKey) {
             throw new TypedError(
@@ -514,7 +528,7 @@ export class Account extends PublicAccount implements IntoConnection {
         publicKey: string | PublicKey,
         data: Uint8Array,
         amount: bigint
-    ): Promise<PublicAccount> {
+    ): Promise<Account> {
         const accessKey = fullAccessKey();
         await this.signAndSendTransaction({
             receiverId: contractId,
@@ -525,7 +539,7 @@ export class Account extends PublicAccount implements IntoConnection {
                 deployContract(data),
             ],
         });
-        return new PublicAccount(contractId, this.provider);
+        return new Account(contractId, this.provider);
     }
 
     /**
@@ -569,7 +583,8 @@ export class Account extends PublicAccount implements IntoConnection {
     public async createTopLevelAccount(
         account: string,
         pk: PublicKey | string,
-        amount: bigint | string | number
+        amount: bigint | string | number,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const topAccount = account.split(".").at(-1);
 
@@ -593,13 +608,14 @@ export class Account extends PublicAccount implements IntoConnection {
         return this.signAndSendTransaction({
             receiverId: topAccount,
             actions: actions,
-        });
+        }, opts);
     }
 
     public async createSubAccount(
         accountOrPrefix: string,
         pk: PublicKey | string,
-        amount: bigint | string | number
+        amount: bigint | string | number,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const newAccountId = accountOrPrefix.includes(".")
             ? accountOrPrefix
@@ -613,14 +629,15 @@ export class Account extends PublicAccount implements IntoConnection {
         return this.signAndSendTransaction({
             receiverId: newAccountId,
             actions: actions,
-        });
+        }, opts);
     }
 
     public async createSubAccountAndDeployContract(
         accountOrPrefix: string,
         pk: PublicKey | string,
         amount: bigint | string | number,
-        code: Uint8Array
+        code: Uint8Array,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const newAccountId = accountOrPrefix.includes(".")
             ? accountOrPrefix
@@ -635,14 +652,15 @@ export class Account extends PublicAccount implements IntoConnection {
         return this.signAndSendTransaction({
             receiverId: newAccountId,
             actions: actions,
-        });
+        }, opts);
     }
 
     /**
      * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
      */
     public async deleteAccount(
-        beneficiaryId: string
+        beneficiaryId: string,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         Logger.log(
             "Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting."
@@ -653,21 +671,22 @@ export class Account extends PublicAccount implements IntoConnection {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: actions,
-        });
+        }, opts);
     }
 
     /**
      * @param code The compiled contract code bytes
      */
     public async deployContract(
-        code: Uint8Array
+        code: Uint8Array,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const actions = [deployContract(code)];
 
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: actions,
-        });
+        }, opts);
     }
 
     /** @hidden */
@@ -784,21 +803,23 @@ export class Account extends PublicAccount implements IntoConnection {
     }
 
     public async addFullAccessKey(
-        pk: PublicKey | string
+        pk: PublicKey | string,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const actions = [addKey(PublicKey.from(pk), fullAccessKey())];
 
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: actions,
-        });
+        }, opts);
     }
 
     public async addFunctionAccessKey(
         pk: PublicKey | string,
         receiverId: string,
         methodNames: string[],
-        allowance?: bigint | string | number
+        allowance?: bigint | string | number,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const actions = [
             addKey(
@@ -814,7 +835,7 @@ export class Account extends PublicAccount implements IntoConnection {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: actions,
-        });
+        }, opts);
     }
 
     /**
@@ -822,26 +843,28 @@ export class Account extends PublicAccount implements IntoConnection {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     public async deleteKey(
-        publicKey: string | PublicKey
+        publicKey: string | PublicKey,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const actions = [deleteKey(PublicKey.from(publicKey))];
 
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: actions,
-        });
+        }, opts);
     }
 
     public async transfer(
         receiverId: string,
-        amount: bigint | string | number
+        amount: bigint | string | number,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const actions = [transfer(BigInt(amount))];
 
         return this.signAndSendTransaction({
             receiverId: receiverId,
             actions: actions,
-        });
+        }, opts);
     }
 
     /**
@@ -852,14 +875,15 @@ export class Account extends PublicAccount implements IntoConnection {
      */
     public async stake(
         publicKey: string | PublicKey,
-        amount: bigint | string | number
+        amount: bigint | string | number,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const actions = [stake(BigInt(amount), PublicKey.from(publicKey))];
 
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: actions,
-        });
+        }, opts);
     }
 
     /**
@@ -878,6 +902,8 @@ export class Account extends PublicAccount implements IntoConnection {
         receiverId,
     }: SignedDelegateOptions): Promise<SignedDelegate> {
         const { header } = await this.provider.block({ finality: "final" });
+
+        if (!this.signer) throw new Error(`Signer is required`);
 
         const pk = await this.signer.getPublicKey();
 
@@ -931,7 +957,7 @@ export class Account extends PublicAccount implements IntoConnection {
 
     async viewFunction(options: ViewFunctionCallOptions): Promise<any> {
         return await viewFunction(
-            new Connection("", this.provider, this.signer, ""),
+            this.getConnection(),
             options
         );
     }
@@ -951,7 +977,7 @@ export class Account extends PublicAccount implements IntoConnection {
         blockQuery: BlockReference = { finality: "optimistic" }
     ): Promise<Array<{ key: Buffer; value: Buffer }>> {
         return await viewState(
-            new Connection("", this.provider, this.signer, ""),
+            this.getConnection(),
             this.accountId,
             prefix,
             blockQuery
@@ -1132,7 +1158,8 @@ export class Account extends PublicAccount implements IntoConnection {
         methodName: string,
         args: Record<string, any> = {},
         deposit: bigint | string | number = 0n,
-        gas: bigint | string | number = DEFAULT_FUNCTION_CALL_GAS
+        gas: bigint | string | number = DEFAULT_FUNCTION_CALL_GAS,
+        opts?: SignerOptions
     ): Promise<FinalExecutionOutcome> {
         const actions = [
             functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
@@ -1141,6 +1168,6 @@ export class Account extends PublicAccount implements IntoConnection {
         return this.signAndSendTransaction({
             receiverId: contractId,
             actions: actions,
-        });
+        }, opts);
     }
 }

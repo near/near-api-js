@@ -33,7 +33,7 @@ test('make function call using access key', async() => {
     const setCallValue = generateUniqueString('setCallPrefix');
     await contract.setValue({
         // Override signer in the workingAccount to the given access key.
-        signerAccount: workingAccount.withSigner(new KeyPairSigner(keyPair)),
+        signerAccount: new Account(workingAccount.accountId, workingAccount.provider, new KeyPairSigner(keyPair)),
         args: { value: setCallValue },
     });
     expect(await contract.getValue()).toEqual(setCallValue);
@@ -45,7 +45,7 @@ test('remove access key no longer works', async() => {
     await nearjs.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000);
     await nearjs.accountCreator.masterAccount.deleteKey(publicKey);
     // Override account in the Contract to the masterAccount with the given access key.
-    contract.account = (nearjs.accountCreator.masterAccount as Account).withSigner(new KeyPairSigner(keyPair));
+    contract.account = new Account(nearjs.accountCreator.masterAccount.accountId, nearjs.accountCreator.masterAccount.provider, new KeyPairSigner(keyPair));
 
     let failed = true;
     try {

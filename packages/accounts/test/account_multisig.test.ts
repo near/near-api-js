@@ -28,13 +28,13 @@ const getAccount2FA = async (account, keyMapping = ({ public_key: publicKey }) =
         verifyCode: () => ({  }), // TODO: Is there any content needed in result?
         onAddRequestResult: async () => {
             const { requestId } = account2fa.getRequest();
-            // 2nd confirmation signing with confirmKey from Account instance
-            await account.withSigner(new KeyPairSigner(account2fa.confirmKey)).signAndSendTransaction({
+            // 2nd confirmation signing with confirmKey from Account instance 
+            await account.signAndSendTransaction({
                 receiverId: accountId,
                 actions: [
                     functionCall('confirm', { request_id: requestId }, MULTISIG_GAS, MULTISIG_DEPOSIT)
                 ]
-            });
+            }, {signer: new KeyPairSigner(account2fa.confirmKey)});
         }
     });
     account2fa.confirmKey = KeyPair.fromRandom('ed25519');

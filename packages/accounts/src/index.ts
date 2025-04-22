@@ -1,5 +1,4 @@
 export {
-    PublicAccount,
     Account,
     AccountBalance,
     AccountAuthorizedApp,
