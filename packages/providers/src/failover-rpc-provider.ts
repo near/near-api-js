@@ -139,8 +139,8 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewContractState(accountId, prefix, blockQuery));
     }
 
-    public async callContractViewFunction(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResult> {
-        return this.withBackoff((currentProvider) => currentProvider.callContractViewFunction(accountId, method, args, blockQuery));
+    public async callFunction(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResult> {
+        return this.withBackoff((currentProvider) => currentProvider.callFunction(accountId, method, args, blockQuery));
     }
 
     public async viewBlock(blockQuery: BlockReference): Promise<BlockResult> {

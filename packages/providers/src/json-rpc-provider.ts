@@ -198,7 +198,7 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async callContractViewFunction(
+    public async callFunction(
         contractId: string,
         method: string,
         args: Record<string, unknown>,

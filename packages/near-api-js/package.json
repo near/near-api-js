@@ -21,7 +21,6 @@
         "@near-js/transactions": "workspace:*",
         "@near-js/types": "workspace:*",
         "@near-js/utils": "workspace:*",
-        "@near-js/wallet-account": "workspace:*",
         "@noble/curves": "1.8.1",
         "borsh": "1.0.0",
         "depd": "2.0.0",
@@ -51,8 +50,7 @@
         "@near-js/signers": "^2.0.0",
         "@near-js/transactions": "^2.0.0",
         "@near-js/types": "^2.0.0",
-        "@near-js/utils": "^2.0.0",
-        "@near-js/wallet-account": "^2.0.0"
+        "@near-js/utils": "^2.0.0"
     },
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
