@@ -128,7 +128,7 @@ export interface CallContractViewFunctionResultRaw extends QueryResponseKind {
 }
 
 export interface CallContractViewFunctionResult extends QueryResponseKind {
-    result?: string;
+    result?: string | number | any;
     logs: string[];
 }
 

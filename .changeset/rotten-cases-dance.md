@@ -8,6 +8,7 @@
 "@near-js/signers": major
 "@near-js/client": major
 "@near-js/types": major
+"@near-js/tokens": major
 ---
 
 Major update for Signer and Account APIs to streamline development

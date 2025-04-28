@@ -44,6 +44,7 @@ import {
 } from "./interface";
 import { randomBytes } from "crypto";
 import { SignedMessage } from "@near-js/signers/lib/esm/signer";
+import { NearToken, FungibleToken } from "@near-js/tokens";
 
 const {
     addKey,
@@ -1134,6 +1135,57 @@ export class Account implements IntoConnection {
             ...summary,
             total: summary.total.toString(),
         };
+    }
+
+    public async getTokenBalance(
+        token: NearToken | FungibleToken
+    ): Promise<bigint> {
+        if (token instanceof NearToken) {
+            const { amount } = await this.getInformation();
+            return amount;
+        } else if (token instanceof FungibleToken) {
+            const { result } = await this.callReadFunction(
+                token.contractId,
+                "ft_balance_of",
+                { account_id: this.accountId }
+            );
+            return BigInt(result);
+        } else {
+            throw new Error(`Invalid token`);
+        }
+    }
+
+    public async getFormattedTokenBalance(
+        token: NearToken | FungibleToken
+    ): Promise<string> {
+        const balance = await this.getTokenBalance(token);
+
+        return token.toAmount(balance);
+    }
+
+    public async transferToken(
+        token: NearToken | FungibleToken,
+        amount: bigint | string | number,
+        receiverId: string
+    ): Promise<FinalExecutionOutcome> {
+        if (token instanceof NearToken) {
+            return this.signAndSendTransaction({
+                receiverId,
+                actions: [transfer(BigInt(amount))],
+            });
+        } else if (token instanceof FungibleToken) {
+            return this.callFunction(
+                token.contractId,
+                "ft_transfer",
+                {
+                    amount: String(amount),
+                    receiver_id: receiverId,
+                },
+                "1"
+            );
+        } else {
+            throw new Error(`Invalid token`);
+        }
     }
 
     /**

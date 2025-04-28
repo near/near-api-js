@@ -225,7 +225,7 @@ export class JsonRpcProvider implements Provider {
 
         return {
             ...data,
-            result: Buffer.from(data.result).toString(),
+            result: JSON.parse(Buffer.from(data.result).toString()),
         };
     }
 

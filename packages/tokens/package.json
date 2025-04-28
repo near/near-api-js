@@ -1,0 +1,52 @@
+{
+    "name": "@near-js/tokens",
+    "version": "0.1.0",
+    "description": "Modules with tokens",
+    "main": "lib/commonjs/index.cjs",
+    "module": "lib/esm/index.js",
+    "types": "./lib/esm/index.d.ts",
+    "scripts": {
+        "build": "pnpm compile:esm && pnpm compile:cjs",
+        "compile:esm": "tsc -p tsconfig.json",
+        "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
+        "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
+        "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
+        "test": "jest"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {},
+    "devDependencies": {
+        "@jest/globals": "^29.7.0",
+        "@types/node": "20.0.0",
+        "build": "workspace:*",
+        "jest": "29.7.0",
+        "ts-jest": "29.2.6",
+        "tsconfig": "workspace:*",
+        "typescript": "5.4.5"
+    },
+    "files": [
+        "lib"
+    ],
+    "exports": {
+        ".": {
+            "require": "./lib/commonjs/index.cjs",
+            "import": "./lib/commonjs/index.cjs",
+            "types": "./lib/esm/index.d.ts",
+            "default": "./lib/esm/index.js"
+        },
+        "./usdt/*": {
+            "require": "./lib/commonjs/usdt/*.cjs",
+            "import": "./lib/commonjs/usdt/*.cjs",
+            "types": "./lib/esm/usdt/*.d.ts",
+            "default": "./lib/esm/usdt/*.js"
+        },
+        "./usdc/*": {
+            "require": "./lib/commonjs/usdc/*.cjs",
+            "import": "./lib/commonjs/usdc/*.cjs",
+            "types": "./lib/esm/usdc/*.d.ts",
+            "default": "./lib/esm/usdc/*.js"
+        }
+    }
+}
