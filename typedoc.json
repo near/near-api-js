@@ -11,6 +11,7 @@
     "packages/keystores-node",
     "packages/providers",
     "packages/signers",
+    "packages/tokens",
     "packages/transactions",
     "packages/types",
     "packages/utils",

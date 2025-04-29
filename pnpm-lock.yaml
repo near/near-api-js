@@ -66,6 +66,9 @@ importers:
       '@near-js/signers':
         specifier: workspace:*
         version: link:../signers
+      '@near-js/tokens':
+        specifier: workspace:*
+        version: link:../tokens
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
@@ -577,6 +580,30 @@ importers:
       borsh:
         specifier: 1.0.0
         version: 1.0.0
+    devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
+      '@types/node':
+        specifier: 20.0.0
+        version: 20.0.0
+      build:
+        specifier: workspace:*
+        version: link:../build
+      jest:
+        specifier: 29.7.0
+        version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5))
+      ts-jest:
+        specifier: 29.2.6
+        version: 29.2.6(@babel/core@7.24.7)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.7))(jest@29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5)))(typescript@5.4.5)
+      tsconfig:
+        specifier: workspace:*
+        version: link:../tsconfig
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+
+  packages/tokens:
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -4542,7 +4569,7 @@ snapshots:
       jest-util: 29.7.0
       jest-validate: 29.7.0
       jest-watcher: 29.7.0
-      micromatch: 4.0.7
+      micromatch: 4.0.8
       pretty-format: 29.7.0
       slash: 3.0.0
       strip-ansi: 6.0.1
@@ -4579,7 +4606,7 @@ snapshots:
       jest-util: 29.7.0
       jest-validate: 29.7.0
       jest-watcher: 29.7.0
-      micromatch: 4.0.7
+      micromatch: 4.0.8
       pretty-format: 29.7.0
       slash: 3.0.0
       strip-ansi: 6.0.1
@@ -4616,7 +4643,7 @@ snapshots:
       jest-util: 29.7.0
       jest-validate: 29.7.0
       jest-watcher: 29.7.0
-      micromatch: 4.0.7
+      micromatch: 4.0.8
       pretty-format: 29.7.0
       slash: 3.0.0
       strip-ansi: 6.0.1
@@ -6218,7 +6245,7 @@ snapshots:
       jest-runner: 29.7.0
       jest-util: 29.7.0
       jest-validate: 29.7.0
-      micromatch: 4.0.7
+      micromatch: 4.0.8
       parse-json: 5.2.0
       pretty-format: 29.7.0
       slash: 3.0.0
@@ -6249,7 +6276,7 @@ snapshots:
       jest-runner: 29.7.0
       jest-util: 29.7.0
       jest-validate: 29.7.0
-      micromatch: 4.0.7
+      micromatch: 4.0.8
       parse-json: 5.2.0
       pretty-format: 29.7.0
       slash: 3.0.0
@@ -6280,7 +6307,7 @@ snapshots:
       jest-runner: 29.7.0
       jest-util: 29.7.0
       jest-validate: 29.7.0
-      micromatch: 4.0.7
+      micromatch: 4.0.8
       parse-json: 5.2.0
       pretty-format: 29.7.0
       slash: 3.0.0
@@ -6311,7 +6338,7 @@ snapshots:
       jest-runner: 29.7.0
       jest-util: 29.7.0
       jest-validate: 29.7.0
-      micromatch: 4.0.7
+      micromatch: 4.0.8
       parse-json: 5.2.0
       pretty-format: 29.7.0
       slash: 3.0.0
@@ -6342,7 +6369,7 @@ snapshots:
       jest-runner: 29.7.0
       jest-util: 29.7.0
       jest-validate: 29.7.0
-      micromatch: 4.0.7
+      micromatch: 4.0.8
       parse-json: 5.2.0
       pretty-format: 29.7.0
       slash: 3.0.0

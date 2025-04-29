@@ -42,6 +42,7 @@ import {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
 } from "./interface";
+import { NearToken, FungibleToken } from "@near-js/tokens";
 
 const {
     addKey,
@@ -57,7 +58,7 @@ const {
 
 // Default values to wait for
 const DEFAULT_FINALITY = "optimistic";
-export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC"
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
 
 export interface AccountBalance {
     total: string;
@@ -135,7 +136,7 @@ export class Account {
 
     /**
      * Allows to set the signer used to control the account
-     * 
+     *
      * @param signer holds the private key and can sign Transactions
      */
     public setSigner(signer: Signer): void {
@@ -148,7 +149,7 @@ export class Account {
 
     /**
      * Calls {@link Provider.viewAccount} to retrieve the account's balance,
-     * locked tokens, storage usage, and code hash 
+     * locked tokens, storage usage, and code hash
      */
     public async getState(): Promise<AccountView> {
         return this.provider.viewAccount(this.accountId, {
@@ -163,7 +164,7 @@ export class Account {
     public async getBalance(): Promise<AccountBalanceInfo> {
         const state = await this.getState();
 
-        const usedOnStorage = BigInt(state.storage_usage) * BigInt(1E19);
+        const usedOnStorage = BigInt(state.storage_usage) * BigInt(1e19);
         const totalBalance = BigInt(state.amount) + state.locked;
         const availableBalance =
             totalBalance -
@@ -218,17 +219,17 @@ export class Account {
 
     /**
      * Create a transaction that can be later signed with a {@link Signer}
-     * 
+     *
      * @param receiverId Account against which to perform the actions
      * @param actions Actions to perform
-     * @param publicKey The public part of the key that will be used to sign the transaction 
+     * @param publicKey The public part of the key that will be used to sign the transaction
      */
     public async createTransaction(
         receiverId: string,
         actions: Action[],
         publicKey: PublicKey
     ) {
-        if (!publicKey) throw new Error("Please provide a public key")
+        if (!publicKey) throw new Error("Please provide a public key");
 
         const accessKey = await this.getAccessKey(publicKey);
 
@@ -254,24 +255,24 @@ export class Account {
      */
     public async createSignedTransaction(
         receiverId: string,
-        actions: Action[],
+        actions: Action[]
     ): Promise<SignedTransaction> {
-        if (!this.signer) throw new Error("Please set a signer")
+        if (!this.signer) throw new Error("Please set a signer");
 
         const tx = await this.createTransaction(
             receiverId,
             actions,
             await this.signer.getPublicKey()
-        )
+        );
 
-        const [,signedTx] = await this.signer.signTransaction(tx);
+        const [, signedTx] = await this.signer.signTransaction(tx);
 
         return signedTx;
     }
 
     /**
      * Create a meta transaction ready to be signed by a {@link Signer}
-     * 
+     *
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the meta transaction
      * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
@@ -305,7 +306,7 @@ export class Account {
 
     /**
      * Create a signed MetaTransaction that can be broadcasted to a relayer
-     * 
+     *
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the meta transaction
      * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
@@ -313,7 +314,7 @@ export class Account {
     public async createSignedMetaTransaction(
         receiverId: string,
         actions: Action[],
-        blockHeightTtl: number = 200,
+        blockHeightTtl: number = 200
     ): Promise<[Uint8Array, SignedDelegate]> {
         if (!this.signer) throw new Error(`Please set a signer`);
 
@@ -322,50 +323,54 @@ export class Account {
             actions,
             blockHeightTtl,
             await this.signer.getPublicKey()
-        )
+        );
 
         return this.signer.signDelegateAction(delegateAction);
     }
 
     /**
      * Creates a transaction, signs it and broadcast it to the network
-     * 
+     *
      * @param receiverId The NEAR account ID of the transaction receiver.
      * @param actions The list of actions to be performed in the transaction.
      * @param returnError Whether to return an error if the transaction fails.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
-     * 
+     *
      */
-    async signAndSendTransaction({ receiverId, actions, waitUntil = DEFAULT_WAIT_STATUS }:
-        {
-            receiverId: string,
-            actions: Action[],
-            waitUntil?: TxExecutionStatus
-        }
-    ): Promise<FinalExecutionOutcome> {
+    async signAndSendTransaction({
+        receiverId,
+        actions,
+        waitUntil = DEFAULT_WAIT_STATUS,
+    }: {
+        receiverId: string;
+        actions: Action[];
+        waitUntil?: TxExecutionStatus;
+    }): Promise<FinalExecutionOutcome> {
         const signedTx = await this.createSignedTransaction(
             receiverId,
             actions
-        )
+        );
         return await this.provider.sendTransactionUntil(signedTx, waitUntil);
     }
 
     /**
      * Creates an account of the form <name>.<tla>, e.g. ana.testnet or ana.near
-     * 
+     *
      * @param newAccountId the new account to create (e.g. ana.near)
      * @param publicKey the public part of the key that will control the account
      * @param amountToTransfer how much NEAR to transfer to the account
-     * 
+     *
      */
     public async createTopLevelAccount(
         newAccountId: string,
         publicKey: PublicKey | string,
-        amountToTransfer: bigint | string | number,
+        amountToTransfer: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         const splitted = newAccountId.split(".");
         if (splitted.length != 2) {
-            throw new Error("newAccountId needs to be of the form <string>.<tla>")
+            throw new Error(
+                "newAccountId needs to be of the form <string>.<tla>"
+            );
         }
 
         const TLA = splitted[1];
@@ -377,36 +382,36 @@ export class Account {
                 new_public_key: publicKey.toString(),
             },
             gas: BigInt("60000000000000"),
-            deposit: BigInt(amountToTransfer)
-        })
+            deposit: BigInt(amountToTransfer),
+        });
     }
 
     /**
      * Creates a sub account of this account. For example, if the account is
-     * ana.near, you can create sub.ana.near. 
-     * 
+     * ana.near, you can create sub.ana.near.
+     *
      * @param accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
      * @param publicKey the public part of the key that will control the account
      * @param amountToTransfer how much NEAR to transfer to the account
-     * 
+     *
      */
     public async createSubAccount(
         accountOrPrefix: string,
         publicKey: PublicKey | string,
-        amountToTransfer: bigint | string | number,
+        amountToTransfer: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
-        if (!this.signer) throw new Error("Please set a signer")
+        if (!this.signer) throw new Error("Please set a signer");
 
         const newAccountId = accountOrPrefix.includes(".")
             ? accountOrPrefix
             : `${accountOrPrefix}.${this.accountId}`;
 
         if (newAccountId.length > 64) {
-            throw new Error(`Accounts cannot exceed 64 characters`)
+            throw new Error(`Accounts cannot exceed 64 characters`);
         }
 
         if (!newAccountId.endsWith(this.accountId)) {
-            throw new Error(`New account must end up with ${this.accountId}`)
+            throw new Error(`New account must end up with ${this.accountId}`);
         }
 
         const actions = [
@@ -415,54 +420,57 @@ export class Account {
             addKey(PublicKey.from(publicKey), fullAccessKey()),
         ];
 
-        return this.signAndSendTransaction({ receiverId: newAccountId, actions })
+        return this.signAndSendTransaction({
+            receiverId: newAccountId,
+            actions,
+        });
     }
 
     /**
      * Deletes the account, transferring all remaining NEAR to a beneficiary
      * account
-     * 
+     *
      * Important: Deleting an account does not transfer FTs or NFTs
-     * 
+     *
      * @param beneficiaryId Will receive the account's remaining balance
      */
     public async deleteAccount(
-        beneficiaryId: string,
+        beneficiaryId: string
     ): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteAccount(beneficiaryId)]
-        })
-    }
-
-    /**
-     * Deploy a smart contract in the account
-     * 
-     * @param code The compiled contract code bytes
-     */
-    public async deployContract(
-        code: Uint8Array,
-    ): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
-            receiverId: this.accountId,
-            actions: [deployContract(code)]
+            actions: [deleteAccount(beneficiaryId)],
         });
     }
 
     /**
-     * 
+     * Deploy a smart contract in the account
+     *
+     * @param code The compiled contract code bytes
+     */
+    public async deployContract(
+        code: Uint8Array
+    ): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [deployContract(code)],
+        });
+    }
+
+    /**
+     *
      * @param publicKey The key to add to the account
-     * @param contractId The contract that this key can call 
+     * @param contractId The contract that this key can call
      * @param methodNames The methods this key is allowed to call
      * @param allowance The amount of NEAR this key can expend in gas
-     * @param opts 
-     * @returns 
+     * @param opts
+     * @returns
      */
     public async addFunctionCallKey(
         publicKey: PublicKey,
         contractId: string,
         methodNames: string[],
-        allowance?: bigint | string | number,
+        allowance?: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         const actions = [
             addKey(
@@ -475,7 +483,10 @@ export class Account {
             ),
         ];
 
-        return this.signAndSendTransaction({ receiverId: this.accountId, actions });
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions,
+        });
     }
 
     /**
@@ -487,24 +498,24 @@ export class Account {
     ): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteKey(publicKey)]
-        })
+            actions: [deleteKey(publicKey)],
+        });
     }
 
     /**
      * Transfer NEAR Tokens to another account
-     * 
+     *
      * @param receiverId The NEAR account that will receive the Ⓝ balance
      * @param amount Amount to send in yoctoⓃ
      */
     public async transferNEAR(
         receiverId: string,
-        amount: bigint | string | number,
+        amount: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId,
-            actions: [transfer(BigInt(amount))]
-        })
+            actions: [transfer(BigInt(amount))],
+        });
     }
 
     /**
@@ -513,7 +524,7 @@ export class Account {
      * @param options
      * @param options.contractId The contract in which to call the function
      * @param options.methodName The method that will be called
-     * @param options.args Arguments, either as a valid JSON Object or a raw Uint8Array 
+     * @param options.args Arguments, either as a valid JSON Object or a raw Uint8Array
      * @param options.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
      * @param options.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
      * @returns
@@ -523,18 +534,19 @@ export class Account {
         methodName,
         args = {},
         deposit = "0",
-        gas = DEFAULT_FUNCTION_CALL_GAS
+        gas = DEFAULT_FUNCTION_CALL_GAS,
     }: {
-        contractId: string,
-        methodName: string,
-        args: Uint8Array | Record<string, any>,
-        deposit: bigint | string | number,
-        gas: bigint | string | number
-    }
-    ): Promise<FinalExecutionOutcome> {
+        contractId: string;
+        methodName: string;
+        args: Uint8Array | Record<string, any>;
+        deposit: bigint | string | number;
+        gas: bigint | string | number;
+    }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: contractId,
-            actions: [functionCall(methodName, args, BigInt(gas), BigInt(deposit))]
+            actions: [
+                functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
+            ],
         });
     }
 
@@ -544,16 +556,27 @@ export class Account {
      * @param options.recipient Who will receive the message (e.g. auth.app.com)
      * @param options.nonce A challenge sent by the recipient
      * @param options.callbackUrl (optional) Deprecated parameter used only by browser wallets
-     * @returns 
+     * @returns
      */
-    public async signNep413Message({ message, recipient, nonce, callbackUrl }: {
-        message: string,
-        recipient: string,
-        nonce: Uint8Array,
-        callbackUrl?: string
+    public async signNep413Message({
+        message,
+        recipient,
+        nonce,
+        callbackUrl,
+    }: {
+        message: string;
+        recipient: string;
+        nonce: Uint8Array;
+        callbackUrl?: string;
     }): Promise<SignedMessage> {
-        if (!this.signer) throw new Error("Please set a signer")
-        return this.signer.signNep413Message(message, this.accountId, recipient, nonce, callbackUrl)
+        if (!this.signer) throw new Error("Please set a signer");
+        return this.signer.signNep413Message(
+            message,
+            this.accountId,
+            recipient,
+            nonce,
+            callbackUrl
+        );
     }
 
     // DEPRECATED FUNCTIONS BELLOW - Please remove in next release
@@ -573,7 +596,9 @@ export class Account {
         blockHeightTtl,
         receiverId,
     }: SignedDelegateOptions): Promise<SignedDelegate> {
-        const { header } = await this.provider.viewBlock({ finality: DEFAULT_FINALITY });
+        const { header } = await this.provider.viewBlock({
+            finality: DEFAULT_FINALITY,
+        });
 
         if (!this.signer) throw new Error(`Please set a signer`);
 
@@ -724,7 +749,7 @@ export class Account {
      * 3. deployContract
      * 4. (optional) addKey
      * 5. (optional) functionCall to an initialization function
-     * 
+     *
      * Create a new account and deploy a contract to it
      * @param contractId NEAR account where the contract is deployed
      * @param publicKey The public key to add to the created contract account
@@ -789,7 +814,7 @@ export class Account {
 
     /**
      * @deprecated please instead use {@link signAndSendTransaction}
-     * 
+     *
      * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider }
      *
@@ -798,7 +823,7 @@ export class Account {
      * @param options.actions The list of actions to be performed in the transaction.
      * @param options.returnError Whether to return an error if the transaction fails.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
-     * 
+     *
      */
     async signAndSendTransactionLegacy(
         { receiverId, actions, returnError }: SignAndSendTransactionOptions,
@@ -894,7 +919,7 @@ export class Account {
 
     /**
      * @deprecated, accounts will no longer handle keystores
-     * 
+     *
      * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link "@near-js/keystores".keystore.KeyStore | Keystore}.
      *
      * @param receiverId currently unused
@@ -1028,11 +1053,11 @@ export class Account {
 
     /**
      * @deprecated please use {@link getContractState} instead
-     * 
+     *
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
      * Pass an empty string for prefix if you would like to return the entire state.
      * @see [https://docs.near.org/api/rpc/contracts#view-contract-state](https://docs.near.org/api/rpc/contracts#view-contract-state)
-     * 
+     *
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
      * @param blockQuery specifies which block to query state at. By default returns last DEFAULT_FINALITY block (i.e. not necessarily finalized).
      */
@@ -1207,5 +1232,57 @@ export class Account {
             ...summary,
             total: summary.total.toString(),
         };
+    }
+
+    public async getTokenBalance(
+        token: NearToken | FungibleToken
+    ): Promise<bigint> {
+        if (token instanceof NearToken) {
+            const { amount } = await this.getState();
+            return amount;
+        } else if (token instanceof FungibleToken) {
+            const { result } = await this.provider.callFunction(
+                token.contractId,
+                "ft_balance_of",
+                { account_id: this.accountId }
+            );
+            return BigInt(result);
+        } else {
+            throw new Error(`Invalid token`);
+        }
+    }
+
+    public async getFormattedTokenBalance(
+        token: NearToken | FungibleToken
+    ): Promise<string> {
+        const balance = await this.getTokenBalance(token);
+
+        return token.toAmount(balance);
+    }
+
+    public async transferToken(
+        token: NearToken | FungibleToken,
+        amount: bigint | string | number,
+        receiverId: string
+    ): Promise<FinalExecutionOutcome> {
+        if (token instanceof NearToken) {
+            return this.signAndSendTransaction({
+                receiverId,
+                actions: [transfer(BigInt(amount))],
+            });
+        } else if (token instanceof FungibleToken) {
+            return this.callFunction({
+                contractId: token.contractId,
+                methodName: "ft_transfer",
+                args: {
+                    amount: String(amount),
+                    receiver_id: receiverId,
+                },
+                deposit: 1,
+                gas: 30_000_000_000_000, // 30 Tgas
+            });
+        } else {
+            throw new Error(`Invalid token`);
+        }
     }
 }
