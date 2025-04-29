@@ -36,7 +36,7 @@ test('create account and then view account returns the created account', async (
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
     const state = await newAccount.getState();
-    expect(state.amount).toEqual(newAmount.toString());
+    expect(state.amount).toEqual(newAmount);
 });
 
 test('create account with a secp256k1 key and then view account returns the created account', async () => {
@@ -47,7 +47,7 @@ test('create account with a secp256k1 key and then view account returns the crea
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
     const state = await newAccount.getState();
-    expect(state.amount).toEqual(newAmount.toString());
+    expect(state.amount).toEqual(newAmount);
 });
 
 test('Secp256k1 send money', async() => {
@@ -56,7 +56,7 @@ test('Secp256k1 send money', async() => {
     const { amount: receiverAmount } = await receiver.getState();
     await sender.sendMoney(receiver.accountId, 10000n);
     const state = await receiver.getState();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
 });
 
 test('send money', async() => {
@@ -65,7 +65,7 @@ test('send money', async() => {
     const { amount: receiverAmount } = await receiver.getState();
     await sender.sendMoney(receiver.accountId, 10000n);
     const state = await receiver.getState();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
 });
 
 test('send money through signAndSendTransaction', async() => {
@@ -77,7 +77,7 @@ test('send money through signAndSendTransaction', async() => {
         actions: [actionCreators.transfer(10000n)],
     });
     const state = await receiver.getState();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
 });
 
 test('delete account', async() => {

@@ -56,7 +56,7 @@ const {
 } = actionCreators;
 
 // Default values to wait for
-const DEFAULT_FINALITY = "near-final"
+const DEFAULT_FINALITY = "optimistic";
 export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC"
 
 export interface AccountBalance {
@@ -264,7 +264,9 @@ export class Account {
             await this.signer.getPublicKey()
         )
 
-        return this.signer.signTransaction(tx)[1]
+        const [,signedTx] = await this.signer.signTransaction(tx);
+
+        return signedTx;
     }
 
     /**
@@ -1131,7 +1133,9 @@ export class Account {
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
     async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance> {
-        const block = await this.provider.viewBlock({ finality: DEFAULT_FINALITY });
+        const block = await this.provider.block({
+            finality: DEFAULT_FINALITY,
+        });
         const blockHash = block.header.hash;
         const epochId = block.header.epoch_id;
         const { current_validators, next_validators, current_proposals } =
