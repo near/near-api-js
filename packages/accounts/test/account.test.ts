@@ -10,7 +10,7 @@ import { createAccount, generateUniqueString, HELLO_WASM_PATH, HELLO_WASM_BALANC
 import { InMemoryKeyStore } from '@near-js/keystores';
 
 let nearjs;
-let workingAccount;
+let workingAccount: Account;
 
 jest.setTimeout(50000);
 
@@ -24,60 +24,60 @@ afterAll(async () => {
 });
 
 test('view pre-defined account works and returns correct name', async () => {
-    const status = await workingAccount.state();
+    const status = await workingAccount.getState();
     expect(status.code_hash).toEqual('11111111111111111111111111111111');
 });
 
 test('create account and then view account returns the created account', async () => {
     const newAccountName = generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
-    const { amount } = await workingAccount.state();
+    const { amount } = await workingAccount.getState();
     const newAmount = BigInt(amount) / 10n;
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
-    const state = await newAccount.state();
-    expect(state.amount).toEqual(newAmount.toString());
+    const state = await newAccount.getState();
+    expect(state.amount).toEqual(newAmount);
 });
 
 test('create account with a secp256k1 key and then view account returns the created account', async () => {
     const newAccountName = generateUniqueString('test');
     const newAccountPublicKey = 'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28';
-    const { amount } = await workingAccount.state();
+    const { amount } = await workingAccount.getState();
     const newAmount = BigInt(amount) / 10n;
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
-    const state = await newAccount.state();
-    expect(state.amount).toEqual(newAmount.toString());
+    const state = await newAccount.getState();
+    expect(state.amount).toEqual(newAmount);
 });
 
 test('Secp256k1 send money', async() => {
     const sender = await createAccount(nearjs, KeyType.SECP256K1);
     const receiver = await createAccount(nearjs, KeyType.SECP256K1);
-    const { amount: receiverAmount } = await receiver.state();
+    const { amount: receiverAmount } = await receiver.getState();
     await sender.sendMoney(receiver.accountId, 10000n);
-    const state = await receiver.state();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    const state = await receiver.getState();
+    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
 });
 
 test('send money', async() => {
     const sender = await createAccount(nearjs);
     const receiver = await createAccount(nearjs);
-    const { amount: receiverAmount } = await receiver.state();
+    const { amount: receiverAmount } = await receiver.getState();
     await sender.sendMoney(receiver.accountId, 10000n);
-    const state = await receiver.state();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    const state = await receiver.getState();
+    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
 });
 
 test('send money through signAndSendTransaction', async() => {
     const sender = await createAccount(nearjs);
     const receiver = await createAccount(nearjs);
-    const { amount: receiverAmount } = await receiver.state();
+    const { amount: receiverAmount } = await receiver.getState();
     await sender.signAndSendTransaction({
         receiverId: receiver.accountId,
         actions: [actionCreators.transfer(10000n)],
     });
-    const state = await receiver.state();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    const state = await receiver.getState();
+    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
 });
 
 test('delete account', async() => {
@@ -86,14 +86,14 @@ test('delete account', async() => {
     await sender.deleteAccount(receiver.accountId);
     // @ts-expect-error test input
     const reloaded = new Account(sender.connection, sender);
-    await expect(reloaded.state()).rejects.toThrow();
+    await expect(reloaded.getState()).rejects.toThrow();
 });
 
 test('multiple parallel transactions', async () => {
     const PARALLEL_NUMBER = 5;
     // @ts-expect-error test input
     await Promise.all(new Array(PARALLEL_NUMBER).fill().map(async (_, i) => {
-        const account = new Account(workingAccount.accountId, workingAccount.provider, workingAccount.signer);
+        const account = new Account(workingAccount.accountId, workingAccount.provider, workingAccount.getSigner());
         // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
         // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
         await account.sendMoney(account.accountId, BigInt(i));
@@ -134,7 +134,7 @@ describe('errors', () => {
     });
 
     test('create existing account', async() => {
-        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100))
+        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100n))
             .rejects.toThrow(/Can't create a new account .+, because it already exists/);
     });
 });

@@ -8,6 +8,7 @@ import {
     SignedTransaction,
     createTransaction,
     stringifyJsonOrBytes,
+    DelegateAction,
 } from "@near-js/transactions";
 import {
     PositionalArgsError,
@@ -23,7 +24,8 @@ import {
     ContractCodeView,
     ContractStateView,
     ErrorContext,
-    CallContractViewFunctionResult,
+    TxExecutionStatus,
+    AccountBalanceInfo,
 } from "@near-js/types";
 import {
     baseDecode,
@@ -34,16 +36,13 @@ import {
     printTxOutcomeLogsAndFailures,
 } from "@near-js/utils";
 
-import { Signer } from "@near-js/signers";
+import { SignedMessage, Signer } from "@near-js/signers";
 import { Connection } from "./connection";
 import { viewFunction, viewState } from "./utils";
 import {
     ChangeFunctionCallOptions,
-    IntoConnection,
     ViewFunctionCallOptions,
 } from "./interface";
-import { randomBytes } from "crypto";
-import { SignedMessage } from "@near-js/signers/lib/esm/signer";
 import { NearToken, FungibleToken } from "@near-js/tokens";
 
 const {
@@ -55,18 +54,12 @@ const {
     fullAccessKey,
     functionCall,
     functionCallAccessKey,
-    stake,
     transfer,
 } = actionCreators;
 
-// Default number of retries with different nonce before giving up on a transaction.
-const TX_NONCE_RETRY_NUMBER = 12;
-
-// Default wait until next retry in millis.
-const TX_NONCE_RETRY_WAIT = 500;
-
-// Exponential back off for waiting to retry.
-const TX_NONCE_RETRY_WAIT_BACKOFF = 1.5;
+// Default values to wait for
+const DEFAULT_FINALITY = "optimistic";
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
 
 export interface AccountBalance {
     total: string;
@@ -75,21 +68,10 @@ export interface AccountBalance {
     available: string;
 }
 
-export interface AccountBalanceInfo {
-    total: bigint;
-    stateStaked: bigint;
-    staked: bigint;
-    available: bigint;
-}
-
 export interface AccountAuthorizedApp {
     contractId: string;
     amount: string;
     publicKey: string;
-}
-
-interface SignerOptions {
-    signer?: Signer;
 }
 
 /**
@@ -130,12 +112,15 @@ interface SignedDelegateOptions {
 }
 
 /**
- * This class provides common account related RPC calls including signing transactions with a {@link "@near-js/crypto".key_pair.KeyPair | KeyPair}.
+ * This class allows to access common account information.
+ * If a {@link Signer} is provider, then the account can
+ * be used to perform all common actions such as
+ * transferring tokens and calling functions
  */
-export class Account implements IntoConnection {
+export class Account {
     public readonly accountId: string;
     public readonly provider: Provider;
-    public readonly signer?: Signer;
+    private signer?: Signer;
 
     constructor(accountId: string, provider: Provider, signer?: Signer) {
         this.accountId = accountId;
@@ -143,74 +128,559 @@ export class Account implements IntoConnection {
         this.signer = signer;
     }
 
+    /**
+     * Allows to set the signer used to control the account
+     *
+     * @param signer holds the private key and can sign Transactions
+     */
+    public setSigner(signer: Signer): void {
+        this.signer = signer;
+    }
+
+    public getSigner(): Signer | undefined {
+        return this.signer;
+    }
+
+    /**
+     * Calls {@link Provider.viewAccount} to retrieve the account's balance,
+     * locked tokens, storage usage, and code hash
+     */
+    public async getState(): Promise<AccountView> {
+        return this.provider.viewAccount(this.accountId, {
+            finality: DEFAULT_FINALITY,
+        });
+    }
+
+    /**
+     * Returns information on the account's balance including the total
+     * balance, the amount locked for storage and the amount available
+     */
+    public async getBalance(): Promise<AccountBalanceInfo> {
+        return this.provider.viewAccountBalance(this.accountId, {
+            finality: DEFAULT_FINALITY,
+        });
+    }
+
+    /**
+     * Calls {@link Provider.viewAccessKey} to retrieve information for a
+     * specific key in the account
+     */
+    public async getAccessKey(
+        publicKey: PublicKey | string
+    ): Promise<AccessKeyView> {
+        return this.provider.viewAccessKey(this.accountId, publicKey, {
+            finality: DEFAULT_FINALITY,
+        });
+    }
+
+    /**
+     * Calls {@link Provider.viewAccessKeyList} to retrieve the account's keys
+     */
+    public async getAccessKeyList(): Promise<AccessKeyList> {
+        return this.provider.viewAccessKeyList(this.accountId, {
+            finality: DEFAULT_FINALITY,
+        });
+    }
+
+    /**
+     * Calls {@link Provider.viewContractCode} to retrieve the account's
+     * contract code and its hash
+     */
+    public async getContractCode(): Promise<ContractCodeView> {
+        return this.provider.viewContractCode(this.accountId, {
+            finality: DEFAULT_FINALITY,
+        });
+    }
+
+    /**
+     * Calls {@link Provider.viewContractState} to retrieve the keys and values
+     * stored on the account's contract
+     */
+    public async getContractState(prefix?: string): Promise<ContractStateView> {
+        return this.provider.viewContractState(this.accountId, prefix, {
+            finality: DEFAULT_FINALITY,
+        });
+    }
+
+    /**
+     * Create a transaction that can be later signed with a {@link Signer}
+     *
+     * @param receiverId Account against which to perform the actions
+     * @param actions Actions to perform
+     * @param publicKey The public part of the key that will be used to sign the transaction
+     */
+    public async createTransaction(
+        receiverId: string,
+        actions: Action[],
+        publicKey: PublicKey | string
+    ) {
+        if (!publicKey) throw new Error("Please provide a public key");
+
+        const pk = PublicKey.from(publicKey);
+
+        const accessKey = await this.getAccessKey(pk);
+
+        const block = await this.provider.viewBlock({
+            finality: DEFAULT_FINALITY,
+        });
+        const recentBlockHash = block.header.hash;
+
+        const nonce = BigInt(accessKey.nonce) + 1n;
+
+        return createTransaction(
+            this.accountId,
+            pk,
+            receiverId,
+            nonce + 1n,
+            actions,
+            baseDecode(recentBlockHash)
+        );
+    }
+
+    /**
+     * Create a signed transaction ready to be broadcast by a {@link Provider}
+     */
+    public async createSignedTransaction(
+        receiverId: string,
+        actions: Action[]
+    ): Promise<SignedTransaction> {
+        if (!this.signer) throw new Error("Please set a signer");
+
+        const tx = await this.createTransaction(
+            receiverId,
+            actions,
+            await this.signer.getPublicKey()
+        );
+
+        const [, signedTx] = await this.signer.signTransaction(tx);
+
+        return signedTx;
+    }
+
+    /**
+     * Create a meta transaction ready to be signed by a {@link Signer}
+     *
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions list of actions to perform as part of the meta transaction
+     * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     */
+    public async createMetaTransaction(
+        receiverId: string,
+        actions: Action[],
+        blockHeightTtl: number = 200,
+        publicKey: PublicKey | string
+    ): Promise<DelegateAction> {
+        if (!publicKey) throw new Error(`Please provide a public key`);
+
+        const pk = PublicKey.from(publicKey);
+
+        const accessKey = await this.getAccessKey(pk);
+        const nonce = BigInt(accessKey.nonce) + 1n;
+
+        const { header } = await this.provider.viewBlock({
+            finality: DEFAULT_FINALITY,
+        });
+
+        const maxBlockHeight = BigInt(header.height) + BigInt(blockHeightTtl);
+
+        return buildDelegateAction({
+            receiverId,
+            senderId: this.accountId,
+            actions,
+            publicKey: pk,
+            nonce,
+            maxBlockHeight,
+        });
+    }
+
+    /**
+     * Create a signed MetaTransaction that can be broadcasted to a relayer
+     *
+     * @param receiverId NEAR account receiving the transaction
+     * @param actions list of actions to perform as part of the meta transaction
+     * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     */
+    public async createSignedMetaTransaction(
+        receiverId: string,
+        actions: Action[],
+        blockHeightTtl: number = 200
+    ): Promise<[Uint8Array, SignedDelegate]> {
+        if (!this.signer) throw new Error(`Please set a signer`);
+
+        const delegateAction = await this.createMetaTransaction(
+            receiverId,
+            actions,
+            blockHeightTtl,
+            await this.signer.getPublicKey()
+        );
+
+        return this.signer.signDelegateAction(delegateAction);
+    }
+
+    /**
+     * Creates a transaction, signs it and broadcast it to the network
+     *
+     * @param receiverId The NEAR account ID of the transaction receiver.
+     * @param actions The list of actions to be performed in the transaction.
+     * @param returnError Whether to return an error if the transaction fails.
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
+     *
+     */
+    async signAndSendTransaction({
+        receiverId,
+        actions,
+        waitUntil = DEFAULT_WAIT_STATUS,
+    }: {
+        receiverId: string;
+        actions: Action[];
+        waitUntil?: TxExecutionStatus;
+    }): Promise<FinalExecutionOutcome> {
+        const signedTx = await this.createSignedTransaction(
+            receiverId,
+            actions
+        );
+        return await this.provider.sendTransactionUntil(signedTx, waitUntil);
+    }
+
+    /**
+     * Creates an account of the form <name>.<tla>, e.g. ana.testnet or ana.near
+     *
+     * @param newAccountId the new account to create (e.g. ana.near)
+     * @param publicKey the public part of the key that will control the account
+     * @param amountToTransfer how much NEAR to transfer to the account
+     *
+     */
+    public async createTopLevelAccount(
+        newAccountId: string,
+        publicKey: PublicKey | string,
+        amountToTransfer: bigint | string | number
+    ): Promise<FinalExecutionOutcome> {
+        const splitted = newAccountId.split(".");
+        if (splitted.length != 2) {
+            throw new Error(
+                "newAccountId needs to be of the form <string>.<tla>"
+            );
+        }
+
+        const TLA = splitted[1];
+        return await this.callFunction({
+            contractId: TLA,
+            methodName: "create_account",
+            args: {
+                new_account_id: newAccountId,
+                new_public_key: publicKey.toString(),
+            },
+            gas: BigInt("60000000000000"),
+            deposit: BigInt(amountToTransfer),
+        });
+    }
+
+    /**
+     * Creates a sub account of this account. For example, if the account is
+     * ana.near, you can create sub.ana.near.
+     *
+     * @param accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
+     * @param publicKey the public part of the key that will control the account
+     * @param amountToTransfer how much NEAR to transfer to the account
+     *
+     */
+    public async createSubAccount(
+        accountOrPrefix: string,
+        publicKey: PublicKey | string,
+        amountToTransfer: bigint | string | number
+    ): Promise<FinalExecutionOutcome> {
+        if (!this.signer) throw new Error("Please set a signer");
+
+        const newAccountId = accountOrPrefix.includes(".")
+            ? accountOrPrefix
+            : `${accountOrPrefix}.${this.accountId}`;
+
+        if (newAccountId.length > 64) {
+            throw new Error(`Accounts cannot exceed 64 characters`);
+        }
+
+        if (!newAccountId.endsWith(this.accountId)) {
+            throw new Error(`New account must end up with ${this.accountId}`);
+        }
+
+        const actions = [
+            createAccount(),
+            transfer(BigInt(amountToTransfer)),
+            addKey(PublicKey.from(publicKey), fullAccessKey()),
+        ];
+
+        return this.signAndSendTransaction({
+            receiverId: newAccountId,
+            actions,
+        });
+    }
+
+    /**
+     * Deletes the account, transferring all remaining NEAR to a beneficiary
+     * account
+     *
+     * Important: Deleting an account does not transfer FTs or NFTs
+     *
+     * @param beneficiaryId Will receive the account's remaining balance
+     */
+    public async deleteAccount(
+        beneficiaryId: string
+    ): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [deleteAccount(beneficiaryId)],
+        });
+    }
+
+    /**
+     * Deploy a smart contract in the account
+     *
+     * @param code The compiled contract code bytes
+     */
+    public async deployContract(
+        code: Uint8Array
+    ): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [deployContract(code)],
+        });
+    }
+
+    /**
+     *
+     * @param publicKey The key to add to the account
+     * @param contractId The contract that this key can call
+     * @param methodNames The methods this key is allowed to call
+     * @param allowance The amount of NEAR this key can expend in gas
+     * @param opts
+     * @returns
+     */
+    public async addFunctionCallAccessKey(
+        publicKey: PublicKey | string,
+        contractId: string,
+        methodNames: string[],
+        allowance?: bigint | string | number
+    ): Promise<FinalExecutionOutcome> {
+        const actions = [
+            addKey(
+                PublicKey.from(publicKey),
+                functionCallAccessKey(
+                    contractId,
+                    methodNames,
+                    BigInt(allowance)
+                )
+            ),
+        ];
+
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions,
+        });
+    }
+
+    /**
+     * @param publicKey The public key to be deleted
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
+    public async deleteKey(
+        publicKey: PublicKey | string
+    ): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [deleteKey(PublicKey.from(publicKey))],
+        });
+    }
+
+    /**
+     * Transfer NEAR Tokens to another account
+     *
+     * @param receiverId The NEAR account that will receive the Ⓝ balance
+     * @param amount Amount to send in yoctoⓃ
+     */
+    public async transferNEAR(
+        receiverId: string,
+        amount: bigint | string | number
+    ): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction({
+            receiverId,
+            actions: [transfer(BigInt(amount))],
+        });
+    }
+
+    /**
+     * Call a function on a smart contract
+     *
+     * @param options
+     * @param options.contractId The contract in which to call the function
+     * @param options.methodName The method that will be called
+     * @param options.args Arguments, either as a valid JSON Object or a raw Uint8Array
+     * @param options.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
+     * @param options.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
+     * @returns
+     */
+    public async callFunction({
+        contractId,
+        methodName,
+        args = {},
+        deposit = "0",
+        gas = DEFAULT_FUNCTION_CALL_GAS,
+    }: {
+        contractId: string;
+        methodName: string;
+        args: Uint8Array | Record<string, any>;
+        deposit: bigint | string | number;
+        gas: bigint | string | number;
+    }): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction({
+            receiverId: contractId,
+            actions: [
+                functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
+            ],
+        });
+    }
+
+    /**
+     * @param options
+     * @param options.message The message to be signed (e.g. "authenticating")
+     * @param options.recipient Who will receive the message (e.g. auth.app.com)
+     * @param options.nonce A challenge sent by the recipient
+     * @param options.callbackUrl (optional) Deprecated parameter used only by browser wallets
+     * @returns
+     */
+    public async signNep413Message({
+        message,
+        recipient,
+        nonce,
+        callbackUrl,
+    }: {
+        message: string;
+        recipient: string;
+        nonce: Uint8Array;
+        callbackUrl?: string;
+    }): Promise<SignedMessage> {
+        if (!this.signer) throw new Error("Please set a signer");
+        return this.signer.signNep413Message(
+            message,
+            this.accountId,
+            recipient,
+            nonce,
+            callbackUrl
+        );
+    }
+
+    // DEPRECATED FUNCTIONS BELLOW - Please remove in next release
+
+    /**
+     * @deprecated please use {@link Account.createSignedMetaTransaction} instead
+     *
+     * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
+     *
+     * @param options Options for the transaction.
+     * @param options.actions Actions to be included in the meta transaction
+     * @param options.blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
+     * @param options.receiverId Receiver account of the meta transaction
+     */
+    public async signedDelegate({
+        actions,
+        blockHeightTtl,
+        receiverId,
+    }: SignedDelegateOptions): Promise<SignedDelegate> {
+        const { header } = await this.provider.viewBlock({
+            finality: DEFAULT_FINALITY,
+        });
+
+        if (!this.signer) throw new Error(`Please set a signer`);
+
+        const pk = await this.signer.getPublicKey();
+
+        const accessKey = await this.getAccessKey(pk);
+
+        const delegateAction = buildDelegateAction({
+            actions,
+            maxBlockHeight: BigInt(header.height) + BigInt(blockHeightTtl),
+            nonce: BigInt(accessKey.nonce) + 1n,
+            publicKey: pk,
+            receiverId,
+            senderId: this.accountId,
+        });
+
+        const [, signedDelegate] = await this.signer.signDelegateAction(
+            delegateAction
+        );
+
+        return signedDelegate;
+    }
+
+    /**
+     * @deprecated
+     */
     public getConnection(): Connection {
         return new Connection("", this.provider, this.signer);
     }
 
-    /**
-     * Returns basic NEAR account information via the `view_account` RPC query method
-     * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
-     */
-    public async getInformation(): Promise<AccountView> {
-        return this.provider.viewAccount(this.accountId, {
-            finality: "optimistic",
-        });
+    /** @hidden */
+    private validateArgs(args: any) {
+        const isUint8Array =
+            args.byteLength !== undefined && args.byteLength === args.length;
+        if (isUint8Array) {
+            return;
+        }
+
+        if (Array.isArray(args) || typeof args !== "object") {
+            throw new PositionalArgsError();
+        }
     }
 
     /**
-     * Returns calculated account balance
+     * @deprecated please use callFunction instead
+     *
+     * Execute a function call.
+     * @param options The options for the function call.
+     * @param options.contractId The NEAR account ID of the smart contract.
+     * @param options.methodName The name of the method to be called on the smart contract.
+     * @param options.args The arguments to be passed to the method.
+     * @param options.gas The maximum amount of gas to be used for the function call.
+     * @param options.attachedDeposit The amount of NEAR tokens to be attached to the function call.
+     * @param options.walletMeta Metadata for wallet integration.
+     * @param options.walletCallbackUrl The callback URL for wallet integration.
+     * @param options.stringify A function to convert input arguments into bytes array
+     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the function call.
      */
-    async getBalance(): Promise<AccountBalanceInfo> {
-        const protocolConfig = await this.provider.experimental_protocolConfig({
-            finality: "final",
+    async functionCall({
+        contractId,
+        methodName,
+        args = {},
+        gas = DEFAULT_FUNCTION_CALL_GAS,
+        attachedDeposit,
+        walletMeta,
+        walletCallbackUrl,
+        stringify,
+    }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
+        this.validateArgs(args);
+
+        const stringifyArg =
+            stringify === undefined ? stringifyJsonOrBytes : stringify;
+        const functionCallArgs = [
+            methodName,
+            args,
+            gas,
+            attachedDeposit,
+            stringifyArg,
+            false,
+        ];
+
+        return this.signAndSendTransactionLegacy({
+            receiverId: contractId,
+            // eslint-disable-next-line prefer-spread
+            actions: [functionCall.apply(void 0, functionCallArgs)],
+            walletMeta,
+            walletCallbackUrl,
         });
-        const state = await this.getInformation();
-
-        const costPerByte = BigInt(
-            protocolConfig.runtime_config.storage_amount_per_byte
-        );
-        const stateStaked = BigInt(state.storage_usage) * costPerByte;
-        const totalBalance = BigInt(state.amount) + state.locked;
-        const availableBalance =
-            totalBalance -
-            (state.locked > stateStaked ? state.locked : stateStaked);
-
-        return {
-            total: totalBalance,
-            stateStaked: stateStaked,
-            staked: state.locked,
-            available: availableBalance,
-        };
     }
 
     /**
-     * Returns basic NEAR account information via the `view_account` RPC query method
-     * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
+     * @deprecated use instead {@link Provider.viewTransactionStatus}
      */
-    public async getAccessKey(pk: PublicKey | string): Promise<AccessKeyView> {
-        return this.provider.viewAccessKey(this.accountId, pk, {
-            finality: "optimistic",
-        });
-    }
-
-    public async getAccessKeyList(): Promise<AccessKeyList> {
-        return this.provider.viewAccessKeyList(this.accountId, {
-            finality: "optimistic",
-        });
-    }
-
-    public async getContractCode(): Promise<ContractCodeView> {
-        return this.provider.viewContractCode(this.accountId, {
-            finality: "optimistic",
-        });
-    }
-
-    public async getContractState(prefix?: string): Promise<ContractStateView> {
-        return this.provider.viewContractState(this.accountId, prefix, {
-            finality: "optimistic",
-        });
-    }
-
     public async getTransactionStatus(
         txHash: string | Uint8Array
     ): Promise<FinalExecutionOutcome> {
@@ -222,39 +692,7 @@ export class Account implements IntoConnection {
     }
 
     /**
-     * Invoke a contract view function using the RPC API.
-     * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
-     *
-     * @returns {Promise<string>}
-     */
-    public async callReadFunction(
-        contractId: string,
-        methodName: string,
-        args: Record<string, any> = {}
-    ): Promise<CallContractViewFunctionResult> {
-        return this.provider.callContractViewFunction(
-            contractId,
-            methodName,
-            args,
-            { finality: "optimistic" }
-        );
-    }
-
-    /**
-     * Returns basic NEAR account information via the `view_account` RPC query method
-     * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
-     *
-     * @deprecated
-     */
-    async state(): Promise<AccountView> {
-        return this.provider.query<AccountView>({
-            request_type: "view_account",
-            account_id: this.accountId,
-            finality: "optimistic",
-        });
-    }
-
-    /**
+     * @deprecated use ${@link createSignedTransaction}
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
@@ -263,18 +701,18 @@ export class Account implements IntoConnection {
     public async signTransaction(
         receiverId: string,
         actions: Action[],
-        opts?: SignerOptions
+        opts?: { signer: Signer }
     ): Promise<[Uint8Array, SignedTransaction]> {
         const signer = opts?.signer || this.signer;
 
-        if (!signer) throw new Error(`Signer is required`);
+        if (!signer) throw new Error(`Please set a signer`);
 
         const pk = await signer.getPublicKey();
 
         const accessKey = await this.getAccessKey(pk);
 
-        const block = await this.provider.block({
-            finality: "final",
+        const block = await this.provider.viewBlock({
+            finality: DEFAULT_FINALITY,
         });
         const recentBlockHash = block.header.hash;
 
@@ -293,67 +731,79 @@ export class Account implements IntoConnection {
     }
 
     /**
-     * Create a signed transaction which can be broadcasted to the relayer
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the neta transaction
-     * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     * @deprecated instead please create a transaction with
+     * the actions bellow and broadcast it to the network
+     * 1. createAccount
+     * 2. transfer some tokens
+     * 3. deployContract
+     * 4. (optional) addKey
+     * 5. (optional) functionCall to an initialization function
+     *
+     * Create a new account and deploy a contract to it
+     * @param contractId NEAR account where the contract is deployed
+     * @param publicKey The public key to add to the created contract account
+     * @param data The compiled contract code
+     * @param amount of NEAR to transfer to the created contract account. Transfer enough to pay for storage https://docs.near.org/docs/concepts/storage-staking
      */
-    public async signMetaTransaction(
-        receiverId: string,
-        actions: Action[],
-        blockHeightTtl: number = 200,
-        opts?: SignerOptions
-    ): Promise<[Uint8Array, SignedDelegate]> {
-        const signer = opts?.signer || this.signer;
-
-        if (!signer) throw new Error(`Signer is required`);
-
-        const pk = await signer.getPublicKey();
-
-        const accessKey = await this.getAccessKey(pk);
-
-        const nonce = BigInt(accessKey.nonce) + 1n;
-
-        const { header } = await this.provider.viewBlock({
-            finality: "final",
+    async createAndDeployContract(
+        contractId: string,
+        publicKey: string | PublicKey,
+        data: Uint8Array,
+        amount: bigint
+    ): Promise<Account> {
+        const accessKey = fullAccessKey();
+        await this.signAndSendTransactionLegacy({
+            receiverId: contractId,
+            actions: [
+                createAccount(),
+                transfer(amount),
+                addKey(PublicKey.from(publicKey), accessKey),
+                deployContract(data),
+            ],
         });
-
-        const maxBlockHeight = BigInt(header.height) + BigInt(blockHeightTtl);
-
-        const delegateAction = buildDelegateAction({
-            receiverId: receiverId,
-            senderId: this.accountId,
-            actions: actions,
-            publicKey: pk,
-            nonce: nonce,
-            maxBlockHeight: maxBlockHeight,
-        });
-
-        return signer.signDelegateAction(delegateAction);
-    }
-
-    public async signMessage(
-        message: string,
-        recipient: string,
-        callbackUrl?: string,
-        opts?: SignerOptions
-    ): Promise<SignedMessage> {
-        const signer = opts?.signer || this.signer;
-
-        if (!signer) throw new Error(`Signer is required`);
-
-        const nonce = new Uint8Array(randomBytes(32));
-
-        return signer.signNep413Message(
-            message,
-            this.accountId,
-            recipient,
-            nonce,
-            callbackUrl
-        );
+        return new Account(contractId, this.provider);
     }
 
     /**
+     * @deprecated please instead use {@link transfer}
+     *
+     * @param receiverId NEAR account receiving Ⓝ
+     * @param amount Amount to send in yoctoⓃ
+     */
+    async sendMoney(
+        receiverId: string,
+        amount: bigint
+    ): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransactionLegacy({
+            receiverId,
+            actions: [transfer(amount)],
+        });
+    }
+
+    /**
+     * @deprecated please instead use {@link createTopLevelAccount}
+     *
+     * @param newAccountId NEAR account name to be created
+     * @param publicKey A public key created from the masterAccount
+     */
+    async createAccount(
+        newAccountId: string,
+        publicKey: string | PublicKey,
+        amount: bigint
+    ): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransactionLegacy({
+            receiverId: newAccountId,
+            actions: [
+                createAccount(),
+                transfer(amount),
+                addKey(PublicKey.from(publicKey), fullAccessKey()),
+            ],
+        });
+    }
+
+    /**
+     * @deprecated please instead use {@link signAndSendTransaction}
+     *
      * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider }
      *
@@ -362,12 +812,23 @@ export class Account implements IntoConnection {
      * @param options.actions The list of actions to be performed in the transaction.
      * @param options.returnError Whether to return an error if the transaction fails.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
+     *
      */
-    async signAndSendTransaction(
+    async signAndSendTransactionLegacy(
         { receiverId, actions, returnError }: SignAndSendTransactionOptions,
-        opts?: SignerOptions
+        opts?: { signer: Signer }
     ): Promise<FinalExecutionOutcome> {
         let txHash, signedTx;
+
+        // Default number of retries with different nonce before giving up on a transaction.
+        const TX_NONCE_RETRY_NUMBER = 12;
+
+        // Default wait until next retry in millis.
+        const TX_NONCE_RETRY_WAIT = 500;
+
+        // Exponential back off for waiting to retry.
+        const TX_NONCE_RETRY_WAIT_BACKOFF = 1.5;
+
         // TODO: TX_NONCE (different constants for different uses of exponentialBackoff?)
         const result = await exponentialBackoff(
             TX_NONCE_RETRY_WAIT,
@@ -446,14 +907,12 @@ export class Account implements IntoConnection {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
+     * @deprecated, accounts will no longer handle keystores
+     *
      * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link "@near-js/keystores".keystore.KeyStore | Keystore}.
      *
-     * @todo Find matching access key based on transaction (i.e. receiverId and actions)
-     *
-     * @deprecated
-     *
-     * @param receiverId currently unused (see todo)
-     * @param actions currently unused (see todo)
+     * @param receiverId currently unused
+     * @param actions currently unused
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -461,7 +920,7 @@ export class Account implements IntoConnection {
         receiverId: string,
         actions: Action[]
     ): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
-        if (!this.signer) throw new Error(`Signer is required`);
+        if (!this.signer) throw new Error(`Please set a signer`);
 
         const publicKey = await this.signer.getPublicKey();
         if (!publicKey) {
@@ -482,7 +941,7 @@ export class Account implements IntoConnection {
                 request_type: "view_access_key",
                 account_id: this.accountId,
                 public_key: publicKey.toString(),
-                finality: "optimistic",
+                finality: DEFAULT_FINALITY,
             });
 
             // store nonce as BigInt to preserve precision on big number
@@ -514,245 +973,7 @@ export class Account implements IntoConnection {
     }
 
     /**
-     * Create a new account and deploy a contract to it
-     *
-     * @deprecated
-     *
-     * @param contractId NEAR account where the contract is deployed
-     * @param publicKey The public key to add to the created contract account
-     * @param data The compiled contract code
-     * @param amount of NEAR to transfer to the created contract account. Transfer enough to pay for storage https://docs.near.org/docs/concepts/storage-staking
-     */
-    async createAndDeployContract(
-        contractId: string,
-        publicKey: string | PublicKey,
-        data: Uint8Array,
-        amount: bigint
-    ): Promise<Account> {
-        const accessKey = fullAccessKey();
-        await this.signAndSendTransaction({
-            receiverId: contractId,
-            actions: [
-                createAccount(),
-                transfer(amount),
-                addKey(PublicKey.from(publicKey), accessKey),
-                deployContract(data),
-            ],
-        });
-        return new Account(contractId, this.provider);
-    }
-
-    /**
-     * @deprecated
-     *
-     * @param receiverId NEAR account receiving Ⓝ
-     * @param amount Amount to send in yoctoⓃ
-     */
-    async sendMoney(
-        receiverId: string,
-        amount: bigint
-    ): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
-            receiverId,
-            actions: [transfer(amount)],
-        });
-    }
-
-    /**
-     * @deprecated
-     *
-     * @param newAccountId NEAR account name to be created
-     * @param publicKey A public key created from the masterAccount
-     */
-    async createAccount(
-        newAccountId: string,
-        publicKey: string | PublicKey,
-        amount: bigint
-    ): Promise<FinalExecutionOutcome> {
-        const accessKey = fullAccessKey();
-        return this.signAndSendTransaction({
-            receiverId: newAccountId,
-            actions: [
-                createAccount(),
-                transfer(amount),
-                addKey(PublicKey.from(publicKey), accessKey),
-            ],
-        });
-    }
-
-    public async createTopLevelAccount(
-        account: string,
-        pk: PublicKey | string,
-        amount: bigint | string | number,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const topAccount = account.split(".").at(-1);
-
-        if (!topAccount)
-            throw new Error(
-                `Failed to parse top account out of the name for new account`
-            );
-
-        const actions = [
-            functionCall(
-                "create_account",
-                {
-                    new_account_id: account,
-                    new_public_key: pk.toString(),
-                },
-                BigInt(60_000_000_000_000),
-                BigInt(amount)
-            ),
-        ];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: topAccount,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    public async createSubAccount(
-        accountOrPrefix: string,
-        pk: PublicKey | string,
-        amount: bigint | string | number,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const newAccountId = accountOrPrefix.includes(".")
-            ? accountOrPrefix
-            : `${accountOrPrefix}.${this.accountId}`;
-        const actions = [
-            createAccount(),
-            transfer(BigInt(amount)),
-            addKey(PublicKey.from(pk), fullAccessKey()),
-        ];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: newAccountId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    public async createSubAccountAndDeployContract(
-        accountOrPrefix: string,
-        pk: PublicKey | string,
-        amount: bigint | string | number,
-        code: Uint8Array,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const newAccountId = accountOrPrefix.includes(".")
-            ? accountOrPrefix
-            : `${accountOrPrefix}.${this.accountId}`;
-        const actions = [
-            createAccount(),
-            transfer(BigInt(amount)),
-            addKey(PublicKey.from(pk), fullAccessKey()),
-            deployContract(code),
-        ];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: newAccountId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    /**
-     * @param beneficiaryId The NEAR account that will receive the remaining Ⓝ balance from the account being deleted
-     */
-    public async deleteAccount(
-        beneficiaryId: string,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        Logger.log(
-            "Deleting an account does not automatically transfer NFTs and FTs to the beneficiary address. Ensure to transfer assets before deleting."
-        );
-
-        const actions = [deleteAccount(beneficiaryId)];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: this.accountId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    /**
-     * @param code The compiled contract code bytes
-     */
-    public async deployContract(
-        code: Uint8Array,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const actions = [deployContract(code)];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: this.accountId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    /**
-     * @deprecated
-     *
-     * Execute a function call.
-     * @param options The options for the function call.
-     * @param options.contractId The NEAR account ID of the smart contract.
-     * @param options.methodName The name of the method to be called on the smart contract.
-     * @param options.args The arguments to be passed to the method.
-     * @param options.gas The maximum amount of gas to be used for the function call.
-     * @param options.attachedDeposit The amount of NEAR tokens to be attached to the function call.
-     * @param options.walletMeta Metadata for wallet integration.
-     * @param options.walletCallbackUrl The callback URL for wallet integration.
-     * @param options.stringify A function to convert input arguments into bytes array
-     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the function call.
-     */
-    async functionCall({
-        contractId,
-        methodName,
-        args = {},
-        gas = DEFAULT_FUNCTION_CALL_GAS,
-        attachedDeposit,
-        walletMeta,
-        walletCallbackUrl,
-        stringify,
-    }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
-        this.validateArgs(args);
-
-        const stringifyArg =
-            stringify === undefined ? stringifyJsonOrBytes : stringify;
-        const functionCallArgs = [
-            methodName,
-            args,
-            gas,
-            attachedDeposit,
-            stringifyArg,
-            false,
-        ];
-
-        return this.signAndSendTransaction({
-            receiverId: contractId,
-            // eslint-disable-next-line prefer-spread
-            actions: [functionCall.apply(void 0, functionCallArgs)],
-            walletMeta,
-            walletCallbackUrl,
-        });
-    }
-
-    /**
-     * @deprecated
+     * @deprecated please use {@link addFullAccessKey} or {@link addFunctionAccessKey}
      *
      * @see [https://docs.near.org/concepts/basics/accounts/access-keys](https://docs.near.org/concepts/basics/accounts/access-keys)
      * @todo expand this API to support more options.
@@ -779,7 +1000,7 @@ export class Account implements IntoConnection {
         } else {
             accessKey = functionCallAccessKey(contractId, methodNames, amount);
         }
-        return this.signAndSendTransaction({
+        return this.signAndSendTransactionLegacy({
             receiverId: this.accountId,
             actions: [addKey(PublicKey.from(publicKey), accessKey)],
         });
@@ -787,160 +1008,24 @@ export class Account implements IntoConnection {
 
     public async addFullAccessKey(
         pk: PublicKey | string,
-        opts?: SignerOptions
+        opts?: { signer: Signer }
     ): Promise<FinalExecutionOutcome> {
         const actions = [addKey(PublicKey.from(pk), fullAccessKey())];
 
-        return this.signAndSendTransaction(
+        return this.signAndSendTransactionLegacy(
             {
                 receiverId: this.accountId,
                 actions: actions,
             },
             opts
         );
-    }
-
-    public async addFunctionAccessKey(
-        pk: PublicKey | string,
-        receiverId: string,
-        methodNames: string[],
-        allowance?: bigint | string | number,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const actions = [
-            addKey(
-                PublicKey.from(pk),
-                functionCallAccessKey(
-                    receiverId,
-                    methodNames,
-                    BigInt(allowance)
-                )
-            ),
-        ];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: this.accountId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    /**
-     * @param publicKey The public key to be deleted
-     * @returns {Promise<FinalExecutionOutcome>}
-     */
-    public async deleteKey(
-        publicKey: string | PublicKey,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const actions = [deleteKey(PublicKey.from(publicKey))];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: this.accountId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    public async transfer(
-        receiverId: string,
-        amount: bigint | string | number,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const actions = [transfer(BigInt(amount))];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: receiverId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    /**
-     * @see [https://near-nodes.io/validator/staking-and-delegation](https://near-nodes.io/validator/staking-and-delegation)
-     *
-     * @param publicKey The public key for the account that's staking
-     * @param amount The account to stake in yoctoⓃ
-     */
-    public async stake(
-        publicKey: string | PublicKey,
-        amount: bigint | string | number,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const actions = [stake(BigInt(amount), PublicKey.from(publicKey))];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: this.accountId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
-    /**
-     * @deprecated please use {@link Account.signMetaTransaction} instead
-     *
-     * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
-     *
-     * @param options Options for the transaction.
-     * @param options.actions Actions to be included in the meta transaction
-     * @param options.blockHeightTtl Number of blocks past the current block height for which the SignedDelegate action may be included in a meta transaction
-     * @param options.receiverId Receiver account of the meta transaction
-     */
-    public async signedDelegate({
-        actions,
-        blockHeightTtl,
-        receiverId,
-    }: SignedDelegateOptions): Promise<SignedDelegate> {
-        const { header } = await this.provider.block({ finality: "final" });
-
-        if (!this.signer) throw new Error(`Signer is required`);
-
-        const pk = await this.signer.getPublicKey();
-
-        const accessKey = await this.getAccessKey(pk);
-
-        const delegateAction = buildDelegateAction({
-            actions,
-            maxBlockHeight: BigInt(header.height) + BigInt(blockHeightTtl),
-            nonce: BigInt(accessKey.nonce) + 1n,
-            publicKey: pk,
-            receiverId,
-            senderId: this.accountId,
-        });
-
-        const [, signedDelegate] = await this.signer.signDelegateAction(
-            delegateAction
-        );
-
-        return signedDelegate;
-    }
-
-    /** @hidden */
-    private validateArgs(args: any) {
-        const isUint8Array =
-            args.byteLength !== undefined && args.byteLength === args.length;
-        if (isUint8Array) {
-            return;
-        }
-
-        if (Array.isArray(args) || typeof args !== "object") {
-            throw new PositionalArgsError();
-        }
     }
 
     /**
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
      *
-     * @deprecated
+     * @deprecated please use {@link Provider.callFunction} instead
      *
      * @param options Function call options.
      * @param options.contractId NEAR account where the contract is deployed
@@ -948,27 +1033,26 @@ export class Account implements IntoConnection {
      * @param options.args Any arguments to the view contract method, wrapped in JSON
      * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
      * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
-     * @param options.blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     * @param options.blockQuery specifies which block to query state at. By default returns last DEFAULT_FINALITY block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
      */
-
     async viewFunction(options: ViewFunctionCallOptions): Promise<any> {
         return await viewFunction(this.getConnection(), options);
     }
 
     /**
+     * @deprecated please use {@link getContractState} instead
+     *
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
      * Pass an empty string for prefix if you would like to return the entire state.
      * @see [https://docs.near.org/api/rpc/contracts#view-contract-state](https://docs.near.org/api/rpc/contracts#view-contract-state)
      *
-     * @deprecated
-     *
      * @param prefix allows to filter which keys should be returned. Empty prefix means all keys. String prefix is utf-8 encoded.
-     * @param blockQuery specifies which block to query state at. By default returns last "optimistic" block (i.e. not necessarily finalized).
+     * @param blockQuery specifies which block to query state at. By default returns last DEFAULT_FINALITY block (i.e. not necessarily finalized).
      */
     async viewState(
         prefix: string | Uint8Array,
-        blockQuery: BlockReference = { finality: "optimistic" }
+        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<Array<{ key: Buffer; value: Buffer }>> {
         return await viewState(
             this.getConnection(),
@@ -988,7 +1072,7 @@ export class Account implements IntoConnection {
         const response = await this.provider.query<AccessKeyList>({
             request_type: "view_access_key_list",
             account_id: this.accountId,
-            finality: "optimistic",
+            finality: DEFAULT_FINALITY,
         });
         // Replace raw nonce into a new BigInt
         return response?.keys?.map((key) => ({
@@ -1033,9 +1117,9 @@ export class Account implements IntoConnection {
      */
     async getAccountBalance(): Promise<AccountBalance> {
         const protocolConfig = await this.provider.experimental_protocolConfig({
-            finality: "final",
+            finality: DEFAULT_FINALITY,
         });
-        const state = await this.state();
+        const state = await this.getState();
 
         const costPerByte = BigInt(
             protocolConfig.runtime_config.storage_amount_per_byte
@@ -1063,7 +1147,9 @@ export class Account implements IntoConnection {
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
     async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance> {
-        const block = await this.provider.block({ finality: "final" });
+        const block = await this.provider.block({
+            finality: DEFAULT_FINALITY,
+        });
         const blockHash = block.header.hash;
         const epochId = block.header.epoch_id;
         const { current_validators, next_validators, current_proposals } =
@@ -1141,10 +1227,10 @@ export class Account implements IntoConnection {
         token: NearToken | FungibleToken
     ): Promise<bigint> {
         if (token instanceof NearToken) {
-            const { amount } = await this.getInformation();
+            const { amount } = await this.getState();
             return amount;
         } else if (token instanceof FungibleToken) {
-            const { result } = await this.callReadFunction(
+            const { result } = await this.provider.callFunction(
                 token.contractId,
                 "ft_balance_of",
                 { account_id: this.accountId }
@@ -1174,48 +1260,18 @@ export class Account implements IntoConnection {
                 actions: [transfer(BigInt(amount))],
             });
         } else if (token instanceof FungibleToken) {
-            return this.callFunction(
-                token.contractId,
-                "ft_transfer",
-                {
+            return this.callFunction({
+                contractId: token.contractId,
+                methodName: "ft_transfer",
+                args: {
                     amount: String(amount),
                     receiver_id: receiverId,
                 },
-                "1"
-            );
+                deposit: 1,
+                gas: 30_000_000_000_000, // 30 Tgas
+            });
         } else {
             throw new Error(`Invalid token`);
         }
-    }
-
-    /**
-     * Execute a function call
-     *
-     * @param contractId
-     * @param methodName
-     * @param args
-     * @param deposit
-     * @param gas
-     * @returns
-     */
-    public async callFunction(
-        contractId: string,
-        methodName: string,
-        args: Record<string, any> = {},
-        deposit: bigint | string | number = 0n,
-        gas: bigint | string | number = DEFAULT_FUNCTION_CALL_GAS,
-        opts?: SignerOptions
-    ): Promise<FinalExecutionOutcome> {
-        const actions = [
-            functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
-        ];
-
-        return this.signAndSendTransaction(
-            {
-                receiverId: contractId,
-                actions: actions,
-            },
-            opts
-        );
     }
 }

@@ -35,6 +35,7 @@ import {
     CallContractViewFunctionResult,
     ExecutionOutcomeReceiptDetail,
     FinalityReference,
+    AccountBalanceInfo,
 } from '@near-js/types';
 import { SignedTransaction } from '@near-js/transactions';
 import { Provider } from './provider';
@@ -131,6 +132,10 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewAccount(accountId, blockQuery));
     }
 
+    public async viewAccountBalance(accountId: string, blockQuery?: BlockReference): Promise<AccountBalanceInfo> {
+        return this.withBackoff((currentProvider) => currentProvider.viewAccountBalance(accountId, blockQuery));
+    }
+
     public async viewContractCode(accountId: string, blockQuery?: BlockReference): Promise<ContractCodeView> {
         return this.withBackoff((currentProvider) => currentProvider.viewContractCode(accountId, blockQuery));
     }
@@ -139,8 +144,8 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewContractState(accountId, prefix, blockQuery));
     }
 
-    public async callContractViewFunction(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResult> {
-        return this.withBackoff((currentProvider) => currentProvider.callContractViewFunction(accountId, method, args, blockQuery));
+    public async callFunction(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResult> {
+        return this.withBackoff((currentProvider) => currentProvider.callFunction(accountId, method, args, blockQuery));
     }
 
     public async viewBlock(blockQuery: BlockReference): Promise<BlockResult> {

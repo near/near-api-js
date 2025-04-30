@@ -68,7 +68,7 @@ export class SignedTransactionComposer extends TransactionComposer {
     this.verifySigner(transaction.signerId);
     return signTransaction({
       transaction,
-      deps: { signer: this.account.signer },
+      deps: { signer: this.account.getSigner() },
     });
   }
 
@@ -79,7 +79,7 @@ export class SignedTransactionComposer extends TransactionComposer {
   async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
     this.verifySigner(this.sender);
     const { signedTransaction } = await this.toSignedTransaction({
-      publicKey: this.publicKey || await this.account.signer.getPublicKey(),
+      publicKey: this.publicKey || await this.account.getSigner().getPublicKey(),
       blockHash: this.blockHash || (await this.account.provider.viewBlock(blockReference))?.header?.hash,
     });
 
