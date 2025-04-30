@@ -55,6 +55,7 @@ export {
     AccessKeyViewRaw,
     AccountView,
     AccountViewRaw,
+    AccountBalanceInfo,
     CodeResult,
     ContractCodeView,
     ContractCodeViewRaw,

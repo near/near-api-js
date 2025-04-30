@@ -35,6 +35,7 @@ import {
     CallContractViewFunctionResult,
     ExecutionOutcomeReceiptDetail,
     FinalityReference,
+    AccountBalanceInfo,
 } from '@near-js/types';
 import { SignedTransaction } from '@near-js/transactions';
 import { Provider } from './provider';
@@ -129,6 +130,10 @@ export class FailoverRpcProvider implements Provider {
 
     public async viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView> {
         return this.withBackoff((currentProvider) => currentProvider.viewAccount(accountId, blockQuery));
+    }
+
+    public async viewAccountBalance(accountId: string, blockQuery?: BlockReference): Promise<AccountBalanceInfo> {
+        return this.withBackoff((currentProvider) => currentProvider.viewAccountBalance(accountId, blockQuery));
     }
 
     public async viewContractCode(accountId: string, blockQuery?: BlockReference): Promise<ContractCodeView> {

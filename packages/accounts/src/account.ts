@@ -25,6 +25,7 @@ import {
     ContractStateView,
     ErrorContext,
     TxExecutionStatus,
+    AccountBalanceInfo,
 } from "@near-js/types";
 import {
     baseDecode,
@@ -65,13 +66,6 @@ export interface AccountBalance {
     stateStaked: string;
     staked: string;
     available: string;
-}
-
-export interface AccountBalanceInfo {
-    total: bigint;
-    usedOnStorage: bigint;
-    locked: bigint;
-    available: bigint;
 }
 
 export interface AccountAuthorizedApp {
@@ -162,20 +156,9 @@ export class Account {
      * balance, the amount locked for storage and the amount available
      */
     public async getBalance(): Promise<AccountBalanceInfo> {
-        const state = await this.getState();
-
-        const usedOnStorage = BigInt(state.storage_usage) * BigInt(1e19);
-        const totalBalance = BigInt(state.amount) + state.locked;
-        const availableBalance =
-            totalBalance -
-            (state.locked > usedOnStorage ? state.locked : usedOnStorage);
-
-        return {
-            total: totalBalance,
-            usedOnStorage,
-            locked: state.locked,
-            available: availableBalance,
-        };
+        return this.provider.viewAccountBalance(this.accountId, {
+            finality: DEFAULT_FINALITY,
+        });
     }
 
     /**

@@ -106,6 +106,13 @@ export interface AccountView extends QueryResponseKind {
     storage_paid_at: BlockHeight;
 }
 
+export interface AccountBalanceInfo {
+    total: bigint;
+    usedOnStorage: bigint;
+    locked: bigint;
+    available: bigint;
+}
+
 interface StateItem {
     key: string;
     value: string;
