@@ -460,9 +460,6 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-      '@near-js/wallet-account':
-        specifier: workspace:*
-        version: link:../wallet-account
       '@noble/curves':
         specifier: 1.8.1
         version: 1.8.1
@@ -720,61 +717,6 @@ importers:
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5))
-      ts-jest:
-        specifier: 29.2.6
-        version: 29.2.6(@babel/core@7.24.7)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.7))(jest@29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5)))(typescript@5.4.5)
-      tsconfig:
-        specifier: workspace:*
-        version: link:../tsconfig
-      typescript:
-        specifier: 5.4.5
-        version: 5.4.5
-
-  packages/wallet-account:
-    dependencies:
-      '@near-js/accounts':
-        specifier: workspace:*
-        version: link:../accounts
-      '@near-js/crypto':
-        specifier: workspace:*
-        version: link:../crypto
-      '@near-js/keystores':
-        specifier: workspace:*
-        version: link:../keystores
-      '@near-js/providers':
-        specifier: workspace:*
-        version: link:../providers
-      '@near-js/signers':
-        specifier: workspace:*
-        version: link:../signers
-      '@near-js/transactions':
-        specifier: workspace:*
-        version: link:../transactions
-      '@near-js/types':
-        specifier: workspace:*
-        version: link:../types
-      '@near-js/utils':
-        specifier: workspace:*
-        version: link:../utils
-      borsh:
-        specifier: 1.0.0
-        version: 1.0.0
-    devDependencies:
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
-      '@types/node':
-        specifier: 20.0.0
-        version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
-      jest:
-        specifier: 29.7.0
-        version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5))
-      localstorage-memory:
-        specifier: 1.0.3
-        version: 1.0.3
       ts-jest:
         specifier: 29.2.6
         version: 29.2.6(@babel/core@7.24.7)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.7))(jest@29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5)))(typescript@5.4.5)
