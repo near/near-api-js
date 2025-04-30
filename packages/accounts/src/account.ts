@@ -165,7 +165,9 @@ export class Account {
      * Calls {@link Provider.viewAccessKey} to retrieve information for a
      * specific key in the account
      */
-    public async getAccessKey(publicKey: PublicKey): Promise<AccessKeyView> {
+    public async getAccessKey(
+        publicKey: PublicKey | string
+    ): Promise<AccessKeyView> {
         return this.provider.viewAccessKey(this.accountId, publicKey, {
             finality: DEFAULT_FINALITY,
         });
@@ -210,11 +212,13 @@ export class Account {
     public async createTransaction(
         receiverId: string,
         actions: Action[],
-        publicKey: PublicKey
+        publicKey: PublicKey | string
     ) {
         if (!publicKey) throw new Error("Please provide a public key");
 
-        const accessKey = await this.getAccessKey(publicKey);
+        const pk = PublicKey.from(publicKey);
+
+        const accessKey = await this.getAccessKey(pk);
 
         const block = await this.provider.viewBlock({
             finality: DEFAULT_FINALITY,
@@ -225,7 +229,7 @@ export class Account {
 
         return createTransaction(
             this.accountId,
-            publicKey,
+            pk,
             receiverId,
             nonce + 1n,
             actions,
@@ -264,11 +268,13 @@ export class Account {
         receiverId: string,
         actions: Action[],
         blockHeightTtl: number = 200,
-        publicKey: PublicKey
+        publicKey: PublicKey | string
     ): Promise<DelegateAction> {
         if (!publicKey) throw new Error(`Please provide a public key`);
 
-        const accessKey = await this.getAccessKey(publicKey);
+        const pk = PublicKey.from(publicKey);
+
+        const accessKey = await this.getAccessKey(pk);
         const nonce = BigInt(accessKey.nonce) + 1n;
 
         const { header } = await this.provider.viewBlock({
@@ -281,7 +287,7 @@ export class Account {
             receiverId,
             senderId: this.accountId,
             actions,
-            publicKey,
+            publicKey: pk,
             nonce,
             maxBlockHeight,
         });
@@ -449,15 +455,15 @@ export class Account {
      * @param opts
      * @returns
      */
-    public async addFunctionCallKey(
-        publicKey: PublicKey,
+    public async addFunctionCallAccessKey(
+        publicKey: PublicKey | string,
         contractId: string,
         methodNames: string[],
         allowance?: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         const actions = [
             addKey(
-                publicKey,
+                PublicKey.from(publicKey),
                 functionCallAccessKey(
                     contractId,
                     methodNames,
@@ -477,11 +483,11 @@ export class Account {
      * @returns {Promise<FinalExecutionOutcome>}
      */
     public async deleteKey(
-        publicKey: PublicKey
+        publicKey: PublicKey | string
     ): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteKey(publicKey)],
+            actions: [deleteKey(PublicKey.from(publicKey))],
         });
     }
 
