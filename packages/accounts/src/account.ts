@@ -492,22 +492,6 @@ export class Account {
     }
 
     /**
-     * Transfer NEAR Tokens to another account
-     *
-     * @param receiverId The NEAR account that will receive the Ⓝ balance
-     * @param amount Amount to send in yoctoⓃ
-     */
-    public async transferNEAR(
-        receiverId: string,
-        amount: bigint | string | number
-    ): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
-            receiverId,
-            actions: [transfer(BigInt(amount))],
-        });
-    }
-
-    /**
      * Call a function on a smart contract
      *
      * @param options
@@ -528,8 +512,8 @@ export class Account {
         contractId: string;
         methodName: string;
         args: Uint8Array | Record<string, any>;
-        deposit: bigint | string | number;
-        gas: bigint | string | number;
+        deposit?: bigint | string | number;
+        gas?: bigint | string | number;
     }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: contractId,
@@ -1249,6 +1233,15 @@ export class Account {
         return token.toAmount(balance);
     }
 
+    /**
+     * Transfers a token to the specified receiver.
+     *
+     * Supports sending either the native NEAR token or any supported Fungible Token (FT).
+     *
+     * @param token
+     * @param amount - The amount of tokens to transfer (in the smallest units)
+     * @param receiverId
+     */
     public async transferToken(
         token: NearToken | FungibleToken,
         amount: bigint | string | number,
@@ -1264,14 +1257,96 @@ export class Account {
                 contractId: token.contractId,
                 methodName: "ft_transfer",
                 args: {
-                    amount: String(amount),
+                    amount: amount.toString(),
                     receiver_id: receiverId,
                 },
                 deposit: 1,
-                gas: 30_000_000_000_000, // 30 Tgas
             });
         } else {
             throw new Error(`Invalid token`);
         }
+    }
+
+    /**
+     * Transfers a Fungible Token to a receiver with a callback message.
+     *
+     * Only works with Fungible Tokens that implement the NEP-141 standard.
+     *
+     * The {@link message} will be forwarded to the receiver's contract
+     * and typically triggers further logic on their side.
+     *
+     * @param token
+     * @param amount - The amount of tokens to transfer (in the smallest units)
+     * @param receiverId
+     * @param message
+     */
+    public async transferTokenWithCallback(
+        token: FungibleToken,
+        amount: bigint | string | number,
+        receiverId: string,
+        message: string
+    ): Promise<FinalExecutionOutcome> {
+        return this.callFunction({
+            contractId: token.contractId,
+            methodName: "ft_transfer_call",
+            args: {
+                amount: amount.toString(),
+                receiver_id: receiverId,
+                msg: message,
+            },
+            deposit: 1,
+        });
+    }
+
+    /**
+     * Registers an account in the token contract's state.
+     *
+     * Creates a record for the specified account with an initial balance of zero, allowing it
+     * to send and receive tokens. If the account is already registered, the function performs
+     * no state changes and returns the attached deposit back to the caller.
+     */
+    public async registerTokenAccount(
+        token: FungibleToken,
+        accountId?: string
+    ): Promise<FinalExecutionOutcome> {
+        accountId = accountId ?? this.accountId;
+
+        const { result } = await this.provider.callFunction(
+            token.contractId,
+            "storage_balance_bounds",
+            {}
+        );
+
+        const requiredDeposit = result.min as string;
+
+        return this.callFunction({
+            contractId: token.contractId,
+            methodName: "storage_deposit",
+            args: {
+                account_id: accountId,
+                registration_only: true,
+            },
+            deposit: requiredDeposit,
+        });
+    }
+
+    /**
+     * Unregisters an account from the token contract's state.
+     *
+     * Removes the account's record from the contract, effectively disabling it from sending
+     * or receiving tokens. This operation requires the account's token balance to be exactly zero;
+     * otherwise, the function will panic.
+     */
+    public async unregisterTokenAccount(
+        token: FungibleToken
+    ): Promise<FinalExecutionOutcome> {
+        return this.callFunction({
+            contractId: token.contractId,
+            methodName: "storage_unregister",
+            args: {
+                force: false,
+            },
+            deposit: "1",
+        });
     }
 }
