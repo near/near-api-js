@@ -512,8 +512,8 @@ export class Account {
         contractId: string;
         methodName: string;
         args: Uint8Array | Record<string, any>;
-        deposit: bigint | string | number;
-        gas: bigint | string | number;
+        deposit?: bigint | string | number;
+        gas?: bigint | string | number;
     }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: contractId,
