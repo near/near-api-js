@@ -492,22 +492,6 @@ export class Account {
     }
 
     /**
-     * Transfer NEAR Tokens to another account
-     *
-     * @param receiverId The NEAR account that will receive the Ⓝ balance
-     * @param amount Amount to send in yoctoⓃ
-     */
-    public async transferNEAR(
-        receiverId: string,
-        amount: bigint | string | number
-    ): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
-            receiverId,
-            actions: [transfer(BigInt(amount))],
-        });
-    }
-
-    /**
      * Call a function on a smart contract
      *
      * @param options
