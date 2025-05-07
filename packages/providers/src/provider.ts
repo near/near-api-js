@@ -33,7 +33,6 @@ import {
     ChunkId,
     ChunkResult,
     FinalityReference,
-    AccountBalanceInfo,
 } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
 
@@ -48,7 +47,6 @@ export interface Provider {
     viewAccessKeyList(accountId: string, finalityQuery?: FinalityReference): Promise<AccessKeyList>;
 
     viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView>;
-    viewAccountBalance(accountId: string, blockQuery?: BlockReference): Promise<AccountBalanceInfo>;
     viewContractCode(contractId: string, blockQuery?: BlockReference): Promise<ContractCodeView>;
     viewContractState(contractId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView>;
     callFunction(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResult>;

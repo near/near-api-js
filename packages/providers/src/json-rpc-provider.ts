@@ -44,7 +44,6 @@ import {
     CallContractViewFunctionResultRaw,
     CallContractViewFunctionResult,
     ExecutionOutcomeReceiptDetail,
-    AccountBalanceInfo,
 } from '@near-js/types';
 import {
     encodeTransaction,
@@ -165,26 +164,6 @@ export class JsonRpcProvider implements Provider {
             ...data,
             amount: BigInt(data.amount),
             locked: BigInt(data.locked),
-        };
-    }
-
-    public async viewAccountBalance(
-        accountId: string,
-        blockQuery: BlockReference = { finality: 'final' }
-    ): Promise<AccountBalanceInfo> {
-        const state = await this.viewAccount(accountId, blockQuery);
-
-        const usedOnStorage = BigInt(state.storage_usage) * BigInt(1e19);
-        const totalBalance = BigInt(state.amount) + state.locked;
-        const availableBalance =
-            totalBalance -
-            (state.locked > usedOnStorage ? state.locked : usedOnStorage);
-
-        return {
-            total: totalBalance,
-            usedOnStorage,
-            locked: state.locked,
-            available: availableBalance,
         };
     }
 

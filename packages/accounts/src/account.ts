@@ -152,16 +152,6 @@ export class Account {
     }
 
     /**
-     * Returns information on the account's balance including the total
-     * balance, the amount locked for storage and the amount available
-     */
-    public async getBalance(): Promise<AccountBalanceInfo> {
-        return this.provider.viewAccountBalance(this.accountId, {
-            finality: DEFAULT_FINALITY,
-        });
-    }
-
-    /**
      * Calls {@link Provider.viewAccessKey} to retrieve information for a
      * specific key in the account
      */
@@ -1091,13 +1081,37 @@ export class Account {
                     publicKey: item.public_key,
                 };
             });
+
         return { authorizedApps };
     }
 
     /**
-     * Returns calculated account balance
+     * Returns the total amount of NEAR in the account, how much is used for storage,
+     * and how much is available
+     */
+    async getDetailedNearBalance(): Promise<AccountBalanceInfo> {
+        const protocolConfig = await this.provider.experimental_protocolConfig({
+            finality: DEFAULT_FINALITY,
+        });
+        const state = await this.provider.viewAccount(this.accountId)
+
+        const costPerByte = BigInt(
+            protocolConfig.runtime_config.storage_amount_per_byte
+        );
+        const usedOnStorage = BigInt(state.storage_usage) * costPerByte;
+        const locked = BigInt(state.locked);
+        const total = BigInt(state.amount) + locked;
+        const available =
+            total - (locked > usedOnStorage ? locked : usedOnStorage);
+
+        return { total, usedOnStorage, locked, available };
+    }
+
+    /**
+     * @deprecated please use {@link getDetailedNearBalance} instead
+     * 
+     * Returns a 
      *
-     * @deprecated
      */
     async getAccountBalance(): Promise<AccountBalance> {
         const protocolConfig = await this.provider.experimental_protocolConfig({
