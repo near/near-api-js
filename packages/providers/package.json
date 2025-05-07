@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@types/node": "20.0.0",
+    "@types/node": "22.15.14",
     "build": "workspace:*",
     "jest": "29.7.0",
     "near-workspaces": "4.0.0",
