@@ -20,7 +20,7 @@
     "@hexagon/base64": "2.0.4",
     "@near-js/crypto": "workspace:*",
     "@near-js/utils": "workspace:*",
-    "@noble/curves": "1.8.1",
+    "@noble/curves": "1.9.0",
     "@noble/hashes": "1.7.1",
     "asn1-parser": "1.1.8",
     "borsh": "1.0.0",
