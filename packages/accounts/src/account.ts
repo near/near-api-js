@@ -14,7 +14,6 @@ import {
     PositionalArgsError,
     FinalExecutionOutcome,
     TypedError,
-    AccountView,
     AccessKeyView,
     AccessKeyViewRaw,
     AccessKeyList,
@@ -25,7 +24,7 @@ import {
     ContractStateView,
     ErrorContext,
     TxExecutionStatus,
-    AccountBalanceInfo,
+    AccountView,
 } from "@near-js/types";
 import {
     baseDecode,
@@ -60,6 +59,17 @@ const {
 // Default values to wait for
 const DEFAULT_FINALITY = "optimistic";
 export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
+
+export interface AccountState {
+    balance: {
+        total: bigint;
+        usedOnStorage: bigint;
+        locked: bigint;
+        available: bigint;
+    }
+    storageUsage: number;
+    codeHash: string;
+}
 
 export interface AccountBalance {
     total: string;
@@ -142,13 +152,33 @@ export class Account {
     }
 
     /**
-     * Calls {@link Provider.viewAccount} to retrieve the account's balance,
-     * locked tokens, storage usage, and code hash
+     * Returns an overview of the account's state, including the account's
+     * balance, storage usage, and code hash
      */
-    public async getState(): Promise<AccountView> {
-        return this.provider.viewAccount(this.accountId, {
+    public async getState(): Promise<AccountState> {
+        const protocolConfig = await this.provider.experimental_protocolConfig({
             finality: DEFAULT_FINALITY,
         });
+        const state = await this.provider.viewAccount(this.accountId, {
+            finality: DEFAULT_FINALITY,
+        });
+
+        const costPerByte = BigInt(
+            protocolConfig.runtime_config.storage_amount_per_byte
+        );
+        const usedOnStorage = BigInt(state.storage_usage) * costPerByte;
+        const locked = BigInt(state.locked);
+        const total = BigInt(state.amount) + locked;
+        const available =
+            total - (locked > usedOnStorage ? locked : usedOnStorage);
+
+        return {
+            balance: {
+                total, usedOnStorage, locked, available
+            },
+            storageUsage: state.storage_usage,
+            codeHash: state.code_hash,
+        };
     }
 
     /**
@@ -451,21 +481,42 @@ export class Account {
         methodNames: string[],
         allowance?: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
-        const actions = [
-            addKey(
-                PublicKey.from(publicKey),
-                functionCallAccessKey(
-                    contractId,
-                    methodNames,
-                    BigInt(allowance)
-                )
-            ),
-        ];
-
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions,
+            actions: [
+                addKey(
+                    PublicKey.from(publicKey),
+                    functionCallAccessKey(
+                        contractId,
+                        methodNames,
+                        BigInt(allowance)
+                    )
+                ),
+            ]
         });
+    }
+
+    /**
+     * Add a full access key to the account
+     *
+     * @param publicKey The public key to be added
+     * @param opts
+     * @returns {Promise<FinalExecutionOutcome>}
+     */
+    public async addFullAccessKey(
+        publicKey: PublicKey | string
+    ): Promise<FinalExecutionOutcome> {
+        return this.signAndSendTransaction(
+            {
+                receiverId: this.accountId,
+                actions: [
+                    addKey(
+                        PublicKey.from(publicKey),
+                        fullAccessKey()
+                    ),
+                ],
+            }
+        );
     }
 
     /**
@@ -980,21 +1031,6 @@ export class Account {
         });
     }
 
-    public async addFullAccessKey(
-        pk: PublicKey | string,
-        opts?: { signer: Signer }
-    ): Promise<FinalExecutionOutcome> {
-        const actions = [addKey(PublicKey.from(pk), fullAccessKey())];
-
-        return this.signAndSendTransactionLegacy(
-            {
-                receiverId: this.accountId,
-                actions: actions,
-            },
-            opts
-        );
-    }
-
     /**
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
@@ -1059,10 +1095,11 @@ export class Account {
     }
 
     /**
+     * @deprecated
+     * 
      * Returns a list of authorized apps
      * @todo update the response value to return all the different keys, not just app keys.
      *
-     * @deprecated
      */
     async getAccountDetails(): Promise<{
         authorizedApps: AccountAuthorizedApp[];
@@ -1086,38 +1123,28 @@ export class Account {
     }
 
     /**
-     * Returns the total amount of NEAR in the account, how much is used for storage,
-     * and how much is available
+     * @deprecated please use {@link getState} instead
+     * 
+     * Returns basic NEAR account information via the `view_account` RPC query method
+     * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
      */
-    async getDetailedNearBalance(): Promise<AccountBalanceInfo> {
-        const protocolConfig = await this.provider.experimental_protocolConfig({
-            finality: DEFAULT_FINALITY,
+    async state(): Promise<AccountView> {
+        return this.provider.query<AccountView>({
+            request_type: 'view_account',
+            account_id: this.accountId,
+            finality: 'optimistic'
         });
-        const state = await this.provider.viewAccount(this.accountId)
-
-        const costPerByte = BigInt(
-            protocolConfig.runtime_config.storage_amount_per_byte
-        );
-        const usedOnStorage = BigInt(state.storage_usage) * costPerByte;
-        const locked = BigInt(state.locked);
-        const total = BigInt(state.amount) + locked;
-        const available =
-            total - (locked > usedOnStorage ? locked : usedOnStorage);
-
-        return { total, usedOnStorage, locked, available };
     }
 
     /**
-     * @deprecated please use {@link getDetailedNearBalance} instead
+     * @deprecated please use {@link getState} instead
      * 
-     * Returns a 
-     *
      */
     async getAccountBalance(): Promise<AccountBalance> {
         const protocolConfig = await this.provider.experimental_protocolConfig({
             finality: DEFAULT_FINALITY,
         });
-        const state = await this.getState();
+        const state = await this.state();
 
         const costPerByte = BigInt(
             protocolConfig.runtime_config.storage_amount_per_byte
@@ -1225,7 +1252,7 @@ export class Account {
         token: NearToken | FungibleToken
     ): Promise<bigint> {
         if (token instanceof NearToken) {
-            const { amount } = await this.getState();
+            const { amount } = await this.state();
             return amount;
         } else if (token instanceof FungibleToken) {
             const { result } = await this.provider.callFunction(

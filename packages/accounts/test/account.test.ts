@@ -25,62 +25,62 @@ afterAll(async () => {
 
 test('view pre-defined account works and returns correct name', async () => {
     const status = await workingAccount.getState();
-    expect(status.code_hash).toEqual('11111111111111111111111111111111');
+    expect(status.codeHash).toEqual('11111111111111111111111111111111');
 });
 
 test('create account and then view account returns the created account', async () => {
     const newAccountName = generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
-    const { amount } = await workingAccount.getState();
-    const newAmount = BigInt(amount) / 10n;
+    const { balance: { total } } = await workingAccount.getState();
+    const newAmount = total / 10n;
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
     const state = await newAccount.getState();
-    expect(state.amount).toEqual(newAmount);
+    expect(state.balance.total.toString()).toEqual(newAmount.toString());
 });
 
 test('create account with a secp256k1 key and then view account returns the created account', async () => {
     const newAccountName = generateUniqueString('test');
     const newAccountPublicKey = 'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28';
-    const { amount } = await workingAccount.getState();
-    const newAmount = BigInt(amount) / 10n;
+    const { balance: { total } } = await workingAccount.getState();
+    const newAmount = total / 10n;
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
     const state = await newAccount.getState();
-    expect(state.amount).toEqual(newAmount);
+    expect(state.balance.total.toString()).toEqual(newAmount.toString());
 });
 
-test('Secp256k1 send money', async() => {
+test('Secp256k1 send money', async () => {
     const sender = await createAccount(nearjs, KeyType.SECP256K1);
     const receiver = await createAccount(nearjs, KeyType.SECP256K1);
-    const { amount: receiverAmount } = await receiver.getState();
+    const { balance: { total } } = await receiver.getState();
     await sender.sendMoney(receiver.accountId, 10000n);
     const state = await receiver.getState();
-    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
+    expect(state.balance.total).toEqual(total + 10000n);
 });
 
-test('send money', async() => {
+test('send money', async () => {
     const sender = await createAccount(nearjs);
     const receiver = await createAccount(nearjs);
-    const { amount: receiverAmount } = await receiver.getState();
+    const { balance: { total } } = await receiver.getState();
     await sender.sendMoney(receiver.accountId, 10000n);
     const state = await receiver.getState();
-    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
+    expect(state.balance.total).toEqual(total + 10000n);
 });
 
-test('send money through signAndSendTransaction', async() => {
+test('send money through signAndSendTransaction', async () => {
     const sender = await createAccount(nearjs);
     const receiver = await createAccount(nearjs);
-    const { amount: receiverAmount } = await receiver.getState();
+    const { balance: { total } } = await receiver.getState();
     await sender.signAndSendTransaction({
         receiverId: receiver.accountId,
         actions: [actionCreators.transfer(10000n)],
     });
     const state = await receiver.getState();
-    expect(state.amount).toEqual(BigInt(receiverAmount) + 10000n);
+    expect(state.balance.total).toEqual(total + 10000n);
 });
 
-test('delete account', async() => {
+test('delete account', async () => {
     const sender = await createAccount(nearjs);
     const receiver = await createAccount(nearjs);
     await sender.deleteAccount(receiver.accountId);
@@ -100,7 +100,7 @@ test('multiple parallel transactions', async () => {
     }));
 });
 
-test('findAccessKey returns the same access key when fetched simultaneously', async() => {
+test('findAccessKey returns the same access key when fetched simultaneously', async () => {
     const account = await createAccount(nearjs);
 
     const [key1, key2] = await Promise.all([
@@ -121,8 +121,8 @@ describe('errors', () => {
             log: (...args) => {
                 logs.push(args.join(' '));
             },
-            warn: () => {},
-            error: () => {},
+            warn: () => { },
+            error: () => { },
         };
 
         Logger.overrideLogger(custom);
@@ -130,10 +130,9 @@ describe('errors', () => {
 
     beforeEach(async () => {
         logs = [];
-
     });
 
-    test('create existing account', async() => {
+    test('create existing account', async () => {
         await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100n))
             .rejects.toThrow(/Can't create a new account .+, because it already exists/);
     });
@@ -160,8 +159,8 @@ describe('with deploy contract', () => {
             log: (...args) => {
                 logs.push(args.join(' '));
             },
-            warn: () => {},
-            error: () => {},
+            warn: () => { },
+            error: () => { },
         };
 
         Logger.overrideLogger(custom);
@@ -188,7 +187,7 @@ describe('with deploy contract', () => {
         expect(logs[6]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
-    test('make function calls via account', async() => {
+    test('make function calls via account', async () => {
         const result = await workingAccount.viewFunction({
             contractId,
             methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
@@ -209,7 +208,7 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue);
     });
 
-    test('view contract state', async() => {
+    test('view contract state', async () => {
         const setCallValue = generateUniqueString('setCallPrefix');
         await workingAccount.functionCall({
             contractId,
@@ -222,17 +221,17 @@ describe('with deploy contract', () => {
         expect(state).toEqual([['name', setCallValue]]);
     });
 
-    test('make function calls via account with custom parser', async() => {
+    test('make function calls via account with custom parser', async () => {
         const result = await workingAccount.viewFunction({
             contractId,
-            methodName:'hello', // this is the function defined in hello.wasm file that we are calling
+            methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
             args: { name: 'trex' },
             parse: x => JSON.parse(x.toString()).replace('trex', 'friend')
         });
         expect(result).toEqual('hello friend');
     });
 
-    test('make function calls via contract', async() => {
+    test('make function calls via contract', async () => {
         const result = await contract.hello({ name: 'trex' });
         expect(result).toEqual('hello trex');
 
@@ -242,7 +241,7 @@ describe('with deploy contract', () => {
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
-    test('view function calls by block Id and finality', async() => {
+    test('view function calls by block Id and finality', async () => {
         const setCallValue1 = generateUniqueString('setCallPrefix');
         const result1 = await contract.setValue({ args: { value: setCallValue1 } });
         expect(result1).toEqual(setCallValue1);
@@ -321,7 +320,7 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue2);
     });
 
-    test('make function calls via contract with gas', async() => {
+    test('make function calls via contract with gas', async () => {
         const setCallValue = generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({
             args: { value: setCallValue },
@@ -374,7 +373,7 @@ describe('with deploy contract', () => {
         })).toEqual('hello world');
     });
 
-    test('make viewFunction call with object format', async() => {
+    test('make viewFunction call with object format', async () => {
         const result = await workingAccount.viewFunction({
             contractId,
             methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
@@ -383,7 +382,7 @@ describe('with deploy contract', () => {
         expect(result).toEqual('hello trex');
     });
 
-    test('get total stake balance and validator responses', async() => {
+    test('get total stake balance and validator responses', async () => {
         const CUSTOM_ERROR = new TypedError('Querying failed: wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: AccountId("invalid_account_id") })).', 'UntypedError');
         const mockConnection = {
             ...nearjs.connection,
@@ -399,7 +398,7 @@ describe('with deploy contract', () => {
                             num_produced_blocks: 7,
                             num_produced_chunks: 18,
                             public_key: 'ed25519:5QzHuNZ4stznMwf3xbDfYGUbjVt8w48q8hinDRmVx41z',
-                            shards: [ 1 ],
+                            shards: [1],
                             stake: '73527610191458905577047103204'
                         },
                         {
@@ -410,7 +409,7 @@ describe('with deploy contract', () => {
                             num_produced_blocks: 4,
                             num_produced_chunks: 20,
                             public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
-                            shards: [ 2 ],
+                            shards: [2],
                             stake: '74531922534760985104659653178'
                         },
                         {
@@ -421,7 +420,7 @@ describe('with deploy contract', () => {
                             num_produced_blocks: 4,
                             num_produced_chunks: 20,
                             public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
-                            shards: [ 2 ],
+                            shards: [2],
                             stake: '0'
                         },
                     ],
@@ -471,7 +470,7 @@ describe('with deploy contract', () => {
                             num_produced_blocks: 4,
                             num_produced_chunks: 20,
                             public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
-                            shards: [ 2 ],
+                            shards: [2],
                             stake: '0'
                         },
                     ],
@@ -500,7 +499,7 @@ describe('with deploy contract', () => {
 
         try {
             await account.getActiveDelegatedStakeBalance();
-        } catch(e) {
+        } catch (e) {
             expect(e).toEqual(new Error(ERROR_MESSAGE));
         }
     });

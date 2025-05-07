@@ -38,7 +38,7 @@ import { PublicKey } from '@near-js/crypto';
 
 /** @hidden */
 export interface Provider {
-/** @deprecated use {@link viewNodeStatus} */
+    /** @deprecated use {@link viewNodeStatus} */
     status(): Promise<NodeStatusResult>;
 
     getNetworkId(): Promise<string>;
