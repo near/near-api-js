@@ -32,7 +32,7 @@
     "devDependencies": {
         "@jest/globals": "^29.7.0",
         "@near-js/keystores": "workspace:*",
-        "@scure/base": "^1.2.4",
+        "@scure/base": "^1.2.5",
         "@types/json-schema": "^7.0.15",
         "@types/node": "20.0.0",
         "build": "workspace:*",
