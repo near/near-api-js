@@ -40,7 +40,7 @@
         "build": "workspace:*",
         "jest": "29.7.0",
         "near-hello": "0.5.1",
-        "near-workspaces": "4.0.0",
+        "near-workspaces": "5.0.0",
         "semver": "7.7.1",
         "ts-jest": "29.2.6",
         "tsconfig": "workspace:*",
