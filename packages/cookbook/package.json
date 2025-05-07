@@ -40,7 +40,7 @@
     "near-api-js": "workspace:*",
     "ts-node": "^10.9.2",
     "tsconfig": "workspace:*",
-    "tsx": "^4.19.2",
+    "tsx": "^4.19.4",
     "typescript": "5.4.5"
   }
 }
