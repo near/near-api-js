@@ -1,7 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { NearToken } from '../src';
-
-const NEAR = new NearToken();
+import { NEAR } from '../src';
 
 test('test toUnits parses formatted amount', () => {
     expect(NEAR.toUnits('1.234')).toBe(BigInt('1234000000000000000000000'));

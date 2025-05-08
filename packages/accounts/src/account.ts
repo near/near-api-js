@@ -33,6 +33,7 @@ import {
     baseEncode,
     parseResultError,
     printTxOutcomeLogsAndFailures,
+    getTransactionLastResult,
 } from "@near-js/utils";
 
 import { SignedMessage, Signer } from "@near-js/signers";
@@ -42,7 +43,9 @@ import {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
 } from "./interface";
-import { NearToken, FungibleToken } from "@near-js/tokens";
+
+import { NEAR } from "@near-js/tokens";
+import type { NativeToken, FungibleToken } from "@near-js/tokens";
 
 const {
     addKey,
@@ -400,15 +403,19 @@ export class Account {
         }
 
         const TLA = splitted[1];
-        return await this.callFunction({
-            contractId: TLA,
-            methodName: "create_account",
-            args: {
-                new_account_id: newAccountId,
-                new_public_key: publicKey.toString(),
-            },
-            gas: BigInt("60000000000000"),
-            deposit: BigInt(amountToTransfer),
+        return this.signAndSendTransaction({
+            receiverId: TLA,
+            actions: [
+                functionCall(
+                    "create_account",
+                    {
+                        new_account_id: newAccountId,
+                        new_public_key: publicKey.toString(),
+                    },
+                    BigInt("60000000000000"),
+                    BigInt(amountToTransfer)
+                ),
+            ],
         });
     }
 
@@ -572,13 +579,15 @@ export class Account {
         args: Uint8Array | Record<string, any>;
         deposit?: bigint | string | number;
         gas?: bigint | string | number;
-    }): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction({
+    }): Promise<object | string | number> {
+        const result = await this.signAndSendTransaction({
             receiverId: contractId,
             actions: [
                 functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
             ],
         });
+
+        return getTransactionLastResult(result);
     }
 
     /**
@@ -610,22 +619,15 @@ export class Account {
         );
     }
 
+    /**
+     * 
+     * @param token The token to check the balance of. Defaults to Native NEAR.
+     * @returns The available balance of the account in units (e.g. yoctoNEAR).
+     */
     public async getBalance(
-        token: NearToken | FungibleToken
+        token: NativeToken | FungibleToken = NEAR
     ): Promise<bigint> {
-        if (token instanceof NearToken) {
-            const { amount } = await this.state();
-            return amount;
-        } else if (token instanceof FungibleToken) {
-            const { result } = await this.provider.callFunction(
-                token.contractId,
-                "ft_balance_of",
-                { account_id: this.accountId }
-            );
-            return BigInt(result);
-        } else {
-            throw new Error(`Invalid token`);
-        }
+        return token.getBalance(this);
     }
 
     /**
@@ -633,117 +635,25 @@ export class Account {
      *
      * Supports sending either the native NEAR token or any supported Fungible Token (FT).
      *
-     * @param token
-     * @param amount - The amount of tokens to transfer (in the smallest units)
-     * @param receiverId
+     * @param amount - The amount of tokens to transfer in units (e.g. yoctoNEAR).
+     * @param receiverId - The NEAR account ID of the receiver.
+     * @param token - The token to transfer. Defaults to Native NEAR.
+     * 
      */
-    public async transferToken(
-        token: NearToken | FungibleToken,
-        amount: bigint | string | number,
-        receiverId: string
-    ): Promise<FinalExecutionOutcome> {
-        if (token instanceof NearToken) {
-            return this.signAndSendTransaction({
-                receiverId,
-                actions: [transfer(BigInt(amount))],
-            });
-        } else if (token instanceof FungibleToken) {
-            return this.callFunction({
-                contractId: token.contractId,
-                methodName: "ft_transfer",
-                args: {
-                    amount: amount.toString(),
-                    receiver_id: receiverId,
-                },
-                deposit: 1,
-            });
-        } else {
-            throw new Error(`Invalid token`);
+    public async transfer(
+        {
+            receiverId,
+            amount,
+            token = NEAR
+        }: {
+            receiverId: string;
+            amount: bigint | string | number;
+            token?: NativeToken | FungibleToken;
         }
-    }
-
-    /**
-     * Transfers a Fungible Token to a receiver with a callback message.
-     *
-     * Only works with Fungible Tokens that implement the NEP-141 standard.
-     *
-     * The {@link message} will be forwarded to the receiver's contract
-     * and typically triggers further logic on their side.
-     *
-     * @param token
-     * @param amount - The amount of tokens to transfer (in the smallest units)
-     * @param receiverId
-     * @param message
-     */
-    public async transferTokenWithCallback(
-        token: FungibleToken,
-        amount: bigint | string | number,
-        receiverId: string,
-        message: string
     ): Promise<FinalExecutionOutcome> {
-        return this.callFunction({
-            contractId: token.contractId,
-            methodName: "ft_transfer_call",
-            args: {
-                amount: amount.toString(),
-                receiver_id: receiverId,
-                msg: message,
-            },
-            deposit: 1,
-        });
+        return token.transfer({ from: this, receiverId, amount });
     }
 
-    /**
-     * Registers an account in the token contract's state.
-     *
-     * Creates a record for the specified account with an initial balance of zero, allowing it
-     * to send and receive tokens. If the account is already registered, the function performs
-     * no state changes and returns the attached deposit back to the caller.
-     */
-    public async registerTokenAccount(
-        token: FungibleToken,
-        accountId?: string
-    ): Promise<FinalExecutionOutcome> {
-        accountId = accountId ?? this.accountId;
-
-        const { result } = await this.provider.callFunction(
-            token.contractId,
-            "storage_balance_bounds",
-            {}
-        );
-
-        const requiredDeposit = result.min as string;
-
-        return this.callFunction({
-            contractId: token.contractId,
-            methodName: "storage_deposit",
-            args: {
-                account_id: accountId,
-                registration_only: true,
-            },
-            deposit: requiredDeposit,
-        });
-    }
-
-    /**
-     * Unregisters an account from the token contract's state.
-     *
-     * Removes the account's record from the contract, effectively disabling it from sending
-     * or receiving tokens. This operation requires the account's token balance to be exactly zero;
-     * otherwise, the function will panic.
-     */
-    public async unregisterTokenAccount(
-        token: FungibleToken
-    ): Promise<FinalExecutionOutcome> {
-        return this.callFunction({
-            contractId: token.contractId,
-            methodName: "storage_unregister",
-            args: {
-                force: false,
-            },
-            deposit: "1",
-        });
-    }
 
     // DEPRECATED FUNCTIONS BELLOW - Please remove in next release
 

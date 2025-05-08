@@ -19,6 +19,7 @@
     "dependencies": {},
     "devDependencies": {
         "@jest/globals": "^29.7.0",
+        "@near-js/types": "workspace:*",
         "@types/node": "20.0.0",
         "build": "workspace:*",
         "jest": "29.7.0",
@@ -36,17 +37,17 @@
             "types": "./lib/esm/index.d.ts",
             "default": "./lib/esm/index.js"
         },
-        "./usdt/*": {
-            "require": "./lib/commonjs/usdt/*.cjs",
-            "import": "./lib/commonjs/usdt/*.cjs",
-            "types": "./lib/esm/usdt/*.d.ts",
-            "default": "./lib/esm/usdt/*.js"
+        "./ft/mainnet": {
+            "require": "./lib/commonjs/mainnet/*.cjs",
+            "import": "./lib/commonjs/mainnet/*.cjs",
+            "types": "./lib/esm/mainnet/*.d.ts",
+            "default": "./lib/esm/mainnet/*.js"
         },
-        "./usdc/*": {
-            "require": "./lib/commonjs/usdc/*.cjs",
-            "import": "./lib/commonjs/usdc/*.cjs",
-            "types": "./lib/esm/usdc/*.d.ts",
-            "default": "./lib/esm/usdc/*.js"
+        "./ft/testnet*": {
+            "require": "./lib/commonjs/testnet/*.cjs",
+            "import": "./lib/commonjs/testnet/*.cjs",
+            "types": "./lib/esm/testnet/*.d.ts",
+            "default": "./lib/esm/testnet/*.js"
         }
     }
 }
