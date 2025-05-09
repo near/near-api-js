@@ -1,4 +1,4 @@
-import type { AccountLike } from "@near-js/types";
+import type { AccountLike } from '@near-js/types';
 
 interface ContractMetadata {
     spec?: string;
@@ -30,7 +30,7 @@ export class NFTContract {
     public readonly accountId: string;
 
     constructor(accountId: string, metadata: ContractMetadata) {
-        metadata.spec = metadata.spec || "nft-1.0.0";
+        metadata.spec = metadata.spec || 'nft-1.0.0';
         this.metadata = metadata;
         this.accountId = accountId;
     }
@@ -46,7 +46,7 @@ export class NFTContract {
     }): Promise<any> {
         return from.callFunction({
             contractId: this.accountId,
-            methodName: "nft_transfer",
+            methodName: 'nft_transfer',
             args: {
                 receiver_id: receiverId,
                 token_id: tokenId

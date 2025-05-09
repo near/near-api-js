@@ -9,11 +9,11 @@ export function formatAmount(
 ): string {
     units = cleanupUnits(units);
 
-    const wholeStr = units.substring(0, units.length - fracDigits) || "0";
+    const wholeStr = units.substring(0, units.length - fracDigits) || '0';
     const fractionStr = units
         .substring(units.length - fracDigits)
         .substring(0, fracDigits)
-        .padStart(fracDigits, "0");
+        .padStart(fracDigits, '0');
 
     return trimTrailingZeroes(`${wholeStr}.${fractionStr}`);
 }
@@ -23,7 +23,7 @@ export function formatAmount(
  */
 export function parseAmount(amount: string, fracDigits: number): string {
     amount = cleanupAmount(amount);
-    const split = amount.split(".");
+    const split = amount.split('.');
 
     if (split.length > 2) {
         throw new Error(
@@ -32,7 +32,7 @@ export function parseAmount(amount: string, fracDigits: number): string {
     }
 
     const wholePart = split[0];
-    const fracPart = split[1] || "";
+    const fracPart = split[1] || '';
 
     if (fracPart.length > MAX_NOMINATION_EXP) {
         throw new Error(
@@ -41,7 +41,7 @@ export function parseAmount(amount: string, fracDigits: number): string {
     }
 
     return trimLeadingZeroes(
-        wholePart + fracPart.substring(0, fracDigits).padEnd(fracDigits, "0")
+        wholePart + fracPart.substring(0, fracDigits).padEnd(fracDigits, '0')
     );
 }
 
@@ -51,7 +51,7 @@ export function parseAmount(amount: string, fracDigits: number): string {
  * @returns string The cleaned value
  */
 function cleanupAmount(amount: string): string {
-    return amount.replace(/,/g, ".").trim();
+    return amount.replace(/,/g, '.').trim();
 }
 
 /**
@@ -60,7 +60,7 @@ function cleanupAmount(amount: string): string {
  * @returns string The value without the trailing zeros
  */
 function trimTrailingZeroes(value: string): string {
-    return value.replace(/\.?0*$/, "");
+    return value.replace(/\.?0*$/, '');
 }
 
 /**
@@ -69,9 +69,9 @@ function trimTrailingZeroes(value: string): string {
  * @returns string The value without the leading zeroes
  */
 function trimLeadingZeroes(value: string): string {
-    value = value.replace(/^0+/, "");
-    if (value === "") {
-        return "0";
+    value = value.replace(/^0+/, '');
+    if (value === '') {
+        return '0';
     }
     return value;
 }

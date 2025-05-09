@@ -1,7 +1,7 @@
 import { expect, test } from '@jest/globals';
 import { FungibleToken } from '../src';
 
-const FT = new FungibleToken('ft.testnet', { decimals: 6, symbol: 'TEST', name: "Test Token" });
+const FT = new FungibleToken('ft.testnet', { decimals: 6, symbol: 'TEST', name: 'Test Token' });
 
 test('test props are accessible', () => {
     expect(FT.accountId).toBe('ft.testnet');
