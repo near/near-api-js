@@ -75,7 +75,6 @@ export {
     ExecutionOutcomeReceiptDetail,
     ContractStateView,
     CallContractViewFunctionResultRaw,
-    CallContractViewFunctionResult
 } from './response';
 export {
     CurrentEpochValidatorInfo,

@@ -29,10 +29,10 @@ import {
     TxExecutionStatus,
     ContractCodeView,
     ContractStateView,
-    CallContractViewFunctionResult,
     ChunkId,
     ChunkResult,
     FinalityReference,
+    CallContractViewFunctionResultRaw,
 } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
 
@@ -49,7 +49,8 @@ export interface Provider {
     viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView>;
     viewContractCode(contractId: string, blockQuery?: BlockReference): Promise<ContractCodeView>;
     viewContractState(contractId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView>;
-    callFunction(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResult>;
+    callFunction(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<string | number | boolean | object | undefined>;
+    callFunctionRaw(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw>;
 
     viewBlock(blockQuery: BlockReference): Promise<BlockResult>;
     viewChunk(chunkId: ChunkId): Promise<ChunkResult>;

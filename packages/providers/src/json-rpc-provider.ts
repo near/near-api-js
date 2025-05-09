@@ -42,7 +42,6 @@ import {
     ContractCodeView,
     ContractStateView,
     CallContractViewFunctionResultRaw,
-    CallContractViewFunctionResult,
     ExecutionOutcomeReceiptDetail,
 } from '@near-js/types';
 import {
@@ -203,7 +202,7 @@ export class JsonRpcProvider implements Provider {
         method: string,
         args: Record<string, unknown>,
         blockQuery: BlockReference = { finality: 'final' }
-    ): Promise<CallContractViewFunctionResult> {
+    ): Promise<string | number | boolean | object | undefined> {
         const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
 
         const data = await (
@@ -217,16 +216,29 @@ export class JsonRpcProvider implements Provider {
         });
 
         if (data.result.length === 0) {
-            return {
-                ...data,
-                result: undefined,
-            };
+            return undefined;
         }
 
-        return {
-            ...data,
-            result: JSON.parse(Buffer.from(data.result).toString()),
-        };
+        return JSON.parse(Buffer.from(data.result).toString());
+    }
+
+    public async callFunctionRaw(
+        contractId: string,
+        method: string,
+        args: Record<string, unknown>,
+        blockQuery: BlockReference = { finality: 'final' }
+    ): Promise<CallContractViewFunctionResultRaw> {
+        const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
+
+        return await (
+            this as Provider
+        ).query<CallContractViewFunctionResultRaw>({
+            ...blockQuery,
+            request_type: 'call_function',
+            account_id: contractId,
+            method_name: method,
+            args_base64: argsBase64,
+        });
     }
 
     public async viewBlock(blockQuery: BlockReference): Promise<BlockResult> {
