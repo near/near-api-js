@@ -732,7 +732,7 @@ export class Account {
     }
 
     /**
-     * @deprecated please use callFunction instead
+     * @deprecated please use {@link callFunction} instead
      *
      * Execute a function call.
      * @param options The options for the function call.
