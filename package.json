@@ -37,5 +37,13 @@
   "resolutions": {
     "near-sandbox": "0.0.18",
     "near-api-js": "workspace:*"
+  },
+  "pnpm": {
+    "overrides": {
+      "packages": "link:packages"
+    }
+  },
+  "dependencies": {
+    "packages": "link:packages"
   }
 }

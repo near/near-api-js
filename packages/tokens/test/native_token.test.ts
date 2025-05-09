@@ -59,47 +59,47 @@ test('test toUnits fails on non-numeric symbols', () => {
     expect(() => NEAR.toUnits('abcdefg')).toThrow();
 });
 
-test('test toAmount formats units', () => {
-    expect(NEAR.toAmount('1000000')).toBe('0.000000000000000001');
-    expect(NEAR.toAmount(1_000_000)).toBe('0.000000000000000001');
-    expect(NEAR.toAmount(BigInt(1_000_000))).toBe('0.000000000000000001');
+test('test toDecimal formats units', () => {
+    expect(NEAR.toDecimal('1000000')).toBe('0.000000000000000001');
+    expect(NEAR.toDecimal(1_000_000)).toBe('0.000000000000000001');
+    expect(NEAR.toDecimal(BigInt(1_000_000))).toBe('0.000000000000000001');
 
-    expect(NEAR.toAmount('1000001')).toBe('0.000000000000000001000001');
-    expect(NEAR.toAmount(1_000_001)).toBe('0.000000000000000001000001');
-    expect(NEAR.toAmount(BigInt(1_000_001))).toBe('0.000000000000000001000001');
+    expect(NEAR.toDecimal('1000001')).toBe('0.000000000000000001000001');
+    expect(NEAR.toDecimal(1_000_001)).toBe('0.000000000000000001000001');
+    expect(NEAR.toDecimal(BigInt(1_000_001))).toBe('0.000000000000000001000001');
 
-    expect(NEAR.toAmount('1234567')).toBe('0.000000000000000001234567');
-    expect(NEAR.toAmount(1_234_567)).toBe('0.000000000000000001234567');
-    expect(NEAR.toAmount(BigInt(1_234_567))).toBe('0.000000000000000001234567');
+    expect(NEAR.toDecimal('1234567')).toBe('0.000000000000000001234567');
+    expect(NEAR.toDecimal(1_234_567)).toBe('0.000000000000000001234567');
+    expect(NEAR.toDecimal(BigInt(1_234_567))).toBe('0.000000000000000001234567');
 
-    expect(NEAR.toAmount('12345678')).toBe('0.000000000000000012345678');
-    expect(NEAR.toAmount(12_345_678)).toBe('0.000000000000000012345678');
-    expect(NEAR.toAmount(BigInt(12_345_678))).toBe(
+    expect(NEAR.toDecimal('12345678')).toBe('0.000000000000000012345678');
+    expect(NEAR.toDecimal(12_345_678)).toBe('0.000000000000000012345678');
+    expect(NEAR.toDecimal(BigInt(12_345_678))).toBe(
         '0.000000000000000012345678'
     );
 
-    expect(NEAR.toAmount('710')).toBe('0.00000000000000000000071');
-    expect(NEAR.toAmount(710)).toBe('0.00000000000000000000071');
-    expect(NEAR.toAmount(BigInt(710))).toBe('0.00000000000000000000071');
+    expect(NEAR.toDecimal('710')).toBe('0.00000000000000000000071');
+    expect(NEAR.toDecimal(710)).toBe('0.00000000000000000000071');
+    expect(NEAR.toDecimal(BigInt(710))).toBe('0.00000000000000000000071');
 
-    expect(NEAR.toAmount('1')).toBe('0.000000000000000000000001');
-    expect(NEAR.toAmount(1)).toBe('0.000000000000000000000001');
-    expect(NEAR.toAmount(BigInt(1))).toBe('0.000000000000000000000001');
+    expect(NEAR.toDecimal('1')).toBe('0.000000000000000000000001');
+    expect(NEAR.toDecimal(1)).toBe('0.000000000000000000000001');
+    expect(NEAR.toDecimal(BigInt(1))).toBe('0.000000000000000000000001');
 
-    expect(NEAR.toAmount('0')).toBe('0');
-    expect(NEAR.toAmount(0)).toBe('0');
-    expect(NEAR.toAmount(BigInt(0))).toBe('0');
+    expect(NEAR.toDecimal('0')).toBe('0');
+    expect(NEAR.toDecimal(0)).toBe('0');
+    expect(NEAR.toDecimal(BigInt(0))).toBe('0');
 });
 
-test('test toAmount fails on non-integer units', () => {
-    expect(() => NEAR.toAmount('0.1')).toThrow();
-    expect(() => NEAR.toAmount(0.1)).toThrow();
+test('test toDecimal fails on non-integer units', () => {
+    expect(() => NEAR.toDecimal('0.1')).toThrow();
+    expect(() => NEAR.toDecimal(0.1)).toThrow();
 });
 
-test('test toAmount fails on non-numeric symbols', () => {
-    expect(() => NEAR.toAmount('1.24n')).toThrow();
+test('test toDecimal fails on non-numeric symbols', () => {
+    expect(() => NEAR.toDecimal('1.24n')).toThrow();
 
-    expect(() => NEAR.toAmount('abc192.31')).toThrow();
+    expect(() => NEAR.toDecimal('abc192.31')).toThrow();
 
-    expect(() => NEAR.toAmount('abcdefg')).toThrow();
+    expect(() => NEAR.toDecimal('abcdefg')).toThrow();
 });

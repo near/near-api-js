@@ -16,7 +16,9 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "dependencies": {},
+    "dependencies": {
+        "@near-js/utils": "workspace:*"
+    },
     "devDependencies": {
         "@jest/globals": "^29.7.0",
         "@near-js/types": "workspace:*",
@@ -37,17 +39,17 @@
             "types": "./lib/esm/index.d.ts",
             "default": "./lib/esm/index.js"
         },
-        "./ft/mainnet": {
-            "require": "./lib/commonjs/mainnet/*.cjs",
-            "import": "./lib/commonjs/mainnet/*.cjs",
-            "types": "./lib/esm/mainnet/*.d.ts",
-            "default": "./lib/esm/mainnet/*.js"
+        "./mainnet": {
+            "require": "./lib/commonjs/mainnet/index.cjs",
+            "import": "./lib/commonjs/mainnet/index.cjs",
+            "types": "./lib/esm/mainnet/index.d.ts",
+            "default": "./lib/esm/mainnet/index.js"
         },
-        "./ft/testnet*": {
-            "require": "./lib/commonjs/testnet/*.cjs",
-            "import": "./lib/commonjs/testnet/*.cjs",
-            "types": "./lib/esm/testnet/*.d.ts",
-            "default": "./lib/esm/testnet/*.js"
+        "./testnet": {
+            "require": "./lib/commonjs/testnet/index.cjs",
+            "import": "./lib/commonjs/testnet/index.cjs",
+            "types": "./lib/esm/testnet/index.d.ts",
+            "default": "./lib/esm/testnet/index.js"
         }
     }
 }

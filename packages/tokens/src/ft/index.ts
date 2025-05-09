@@ -17,16 +17,43 @@ abstract class BaseFT {
         this.metadata = metadata;
     }
 
+    /**
+     * Converts a decimal number to indivisible units
+     * 
+     * @param amount The amount in decimal format (e.g. "1.234")
+     * @returns The amount in indivisible units (e.g. "1234")
+     */
     public toUnits(amount: string | number): bigint {
         const units = parseAmount(amount.toString(), this.metadata.decimals);
         return BigInt(units);
     }
 
-    public toAmount(units: bigint | string | number): string {
-        return formatAmount(units, this.metadata.decimals);
+    /**
+     * Converts indivisible units to a decimal number (represented as a string)
+     * 
+     * @param units The amount in indivisible units (e.g. "1234")
+     * @returns The amount as a decimal string (e.g. "1.234")
+     */
+    public toDecimal(amount: bigint | string | number): string {
+        return formatAmount(amount, this.metadata.decimals);
     }
 
+    /**
+     * Get the available balance of an account in indivisible units
+     * 
+     * @param account The account to get the balance of
+     * @returns 
+     */
     abstract getBalance(account: AccountLike): Promise<bigint>;
+
+    /**
+     * Transfer tokens from one account to another
+     * 
+     * @param param
+     * @param param.from The Account that will transfer the tokens
+     * @param param.receiverId The AccountID that will receive the tokens
+     * @param param.amount The amount of tokens to transfer in the smallest unit
+     */
     abstract transfer({ from, receiverId, amount }: { from: AccountLike, receiverId: string, amount: string | number | bigint }): Promise<any>
 }
 
@@ -40,7 +67,7 @@ export class NativeToken extends BaseFT {
     public async transfer({ from, receiverId, amount }: { from: AccountLike, receiverId: string, amount: string | number | bigint }): Promise<any> {
         return from.signAndSendTransaction({
             receiverId,
-            actions: [{ enum: "Transfer", transfer: { deposit: amount.toString() } }],
+            actions: [{ transfer: { deposit: amount.toString() } }],
         });
     }
 
@@ -60,15 +87,7 @@ export class FungibleToken extends BaseFT {
         this.accountId = accountId;
     }
 
-    /**
-     * 
-     * @param param
-     * @param param.accountId The Account that will transfer the tokens
-     * @param param.receiverId The AccountID that will receive the tokens
-     * @param param.amount The amount of tokens to transfer in the smallest unit 
-     * @returns 
-     */
-    public async transfer({ from, receiverId, amount }: { from: AccountLike, receiverId: string, amount: string | number | bigint  }): Promise<any> {
+    public async transfer({ from, receiverId, amount }: { from: AccountLike, receiverId: string, amount: string | number | bigint }): Promise<any> {
         return from.callFunction({
             contractId: this.accountId,
             methodName: "ft_transfer",
@@ -81,14 +100,8 @@ export class FungibleToken extends BaseFT {
         });
     }
 
-    /**
-     * Get the balance of an account in units
-     * 
-     * @param account The account to get the balance of
-     * @returns 
-     */
     public async getBalance(account: AccountLike): Promise<bigint> {
-        const { balance } = await account.provider.callFunction(
+        const { result: balance } = await account.provider.callFunction(
             this.accountId,
             "ft_balance_of",
             {
@@ -105,7 +118,7 @@ export class FungibleToken extends BaseFT {
      * @param param
      * @param param.from The Account that will transfer the tokens
      * @param param.receiverId The AccountID that will receive the tokens
-     * @param param.amount The amount of tokens to transfer in the smallest unit
+     * @param param.units The amount of tokens to transfer in the smallest unit
      * @param param.msg The message to send to the `ft_on_transfer` method
      */
     public async transferCall({ from, receiverId, amount, msg }: { from: AccountLike, receiverId: string, amount: bigint, msg: string }): Promise<any> {
@@ -122,6 +135,13 @@ export class FungibleToken extends BaseFT {
         });
     }
 
+    /**
+     * Register an account to the fungible token contract by paying a storage deposit
+     * 
+     * @param param
+     * @param param.accountIdToRegister The AccountID to register
+     * @param param.fundingAccount The Account that will fund the registration
+     */
     public async registerAccount({ accountIdToRegister, fundingAccount }: { accountIdToRegister: AccountLike, fundingAccount: AccountLike }): Promise<any> {
 
         const { result } = await fundingAccount.provider.callFunction(
@@ -144,6 +164,13 @@ export class FungibleToken extends BaseFT {
         });
     }
 
+    /**
+     * Unregister an account from the fungible token contract by paying a storage deposit
+     * 
+     * @param param
+     * @param param.account The Account to unregister
+     * @param param.force Whether to remove the account without claiming the storage deposit
+     */
     public async unregisterAccount({ account, force = false }: { account: AccountLike, force: boolean }): Promise<any> {
         return account.callFunction({
             contractId: this.accountId,
@@ -155,6 +182,9 @@ export class FungibleToken extends BaseFT {
     }
 }
 
+/**
+ * The NEAR token is the native token of the NEAR blockchain
+ */
 export const NEAR = new NativeToken({
     name: 'NEAR',
     decimals: 24,

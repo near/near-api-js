@@ -63,45 +63,45 @@ test('test toUnits fails on non-numeric symbols', () => {
     expect(() => FT.toUnits('abcdefg')).toThrow();
 });
 
-test('test toAmount formats units', () => {
-    expect(FT.toAmount('1000000')).toBe('1');
-    expect(FT.toAmount(1_000_000)).toBe('1');
-    expect(FT.toAmount(BigInt(1_000_000))).toBe('1');
+test('test toDecimal formats units', () => {
+    expect(FT.toDecimal('1000000')).toBe('1');
+    expect(FT.toDecimal(1_000_000)).toBe('1');
+    expect(FT.toDecimal(BigInt(1_000_000))).toBe('1');
 
-    expect(FT.toAmount('1000001')).toBe('1.000001');
-    expect(FT.toAmount(1_000_001)).toBe('1.000001');
-    expect(FT.toAmount(BigInt(1_000_001))).toBe('1.000001');
+    expect(FT.toDecimal('1000001')).toBe('1.000001');
+    expect(FT.toDecimal(1_000_001)).toBe('1.000001');
+    expect(FT.toDecimal(BigInt(1_000_001))).toBe('1.000001');
 
-    expect(FT.toAmount('1234567')).toBe('1.234567');
-    expect(FT.toAmount(1_234_567)).toBe('1.234567');
-    expect(FT.toAmount(BigInt(1_234_567))).toBe('1.234567');
+    expect(FT.toDecimal('1234567')).toBe('1.234567');
+    expect(FT.toDecimal(1_234_567)).toBe('1.234567');
+    expect(FT.toDecimal(BigInt(1_234_567))).toBe('1.234567');
 
-    expect(FT.toAmount('12345678')).toBe('12.345678');
-    expect(FT.toAmount(12_345_678)).toBe('12.345678');
-    expect(FT.toAmount(BigInt(12_345_678))).toBe('12.345678');
+    expect(FT.toDecimal('12345678')).toBe('12.345678');
+    expect(FT.toDecimal(12_345_678)).toBe('12.345678');
+    expect(FT.toDecimal(BigInt(12_345_678))).toBe('12.345678');
 
-    expect(FT.toAmount('710')).toBe('0.00071');
-    expect(FT.toAmount(710)).toBe('0.00071');
-    expect(FT.toAmount(BigInt(710))).toBe('0.00071');
+    expect(FT.toDecimal('710')).toBe('0.00071');
+    expect(FT.toDecimal(710)).toBe('0.00071');
+    expect(FT.toDecimal(BigInt(710))).toBe('0.00071');
 
-    expect(FT.toAmount('1')).toBe('0.000001');
-    expect(FT.toAmount(1)).toBe('0.000001');
-    expect(FT.toAmount(BigInt(1))).toBe('0.000001');
+    expect(FT.toDecimal('1')).toBe('0.000001');
+    expect(FT.toDecimal(1)).toBe('0.000001');
+    expect(FT.toDecimal(BigInt(1))).toBe('0.000001');
 
-    expect(FT.toAmount('0')).toBe('0');
-    expect(FT.toAmount(0)).toBe('0');
-    expect(FT.toAmount(BigInt(0))).toBe('0');
+    expect(FT.toDecimal('0')).toBe('0');
+    expect(FT.toDecimal(0)).toBe('0');
+    expect(FT.toDecimal(BigInt(0))).toBe('0');
 });
 
-test('test toAmount fails on non-integer units', () => {
-    expect(() => FT.toAmount('0.1')).toThrow();
-    expect(() => FT.toAmount(0.1)).toThrow();
+test('test toDecimal fails on non-integer units', () => {
+    expect(() => FT.toDecimal('0.1')).toThrow();
+    expect(() => FT.toDecimal(0.1)).toThrow();
 });
 
-test('test toAmount fails on non-numeric symbols', () => {
-    expect(() => FT.toAmount('1.24n')).toThrow();
+test('test toDecimal fails on non-numeric symbols', () => {
+    expect(() => FT.toDecimal('1.24n')).toThrow();
 
-    expect(() => FT.toAmount('abc192.31')).toThrow();
+    expect(() => FT.toDecimal('abc192.31')).toThrow();
 
-    expect(() => FT.toAmount('abcdefg')).toThrow();
+    expect(() => FT.toDecimal('abcdefg')).toThrow();
 });

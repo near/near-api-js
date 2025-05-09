@@ -345,7 +345,7 @@ export class Account {
      *
      * @param receiverId The NEAR account ID of the transaction receiver.
      * @param actions The list of actions to be performed in the transaction.
-     * @param returnError Whether to return an error if the transaction fails.
+     * @param throwOnFailure Whether to throw an error if the transaction fails.
      * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      *
      */
@@ -353,29 +353,42 @@ export class Account {
         receiverId,
         actions,
         waitUntil = DEFAULT_WAIT_STATUS,
+        throwOnFailure = true,
     }: {
         receiverId: string;
         actions: Action[];
         waitUntil?: TxExecutionStatus;
+        throwOnFailure?: boolean;
     }): Promise<FinalExecutionOutcome> {
         const signedTx = await this.createSignedTransaction(
             receiverId,
             actions
         );
-        return await this.provider.sendTransactionUntil(signedTx, waitUntil);
+
+        const result = await this.provider.sendTransactionUntil(signedTx, waitUntil);
+
+        if (throwOnFailure && typeof result.status === 'object' && typeof result.status.Failure === 'object' && result.status.Failure !== null) {
+            throw parseResultError(result);
+        }
+
+        return result
     }
 
     async signAndSendTransactions({
-        transactions, waitUntil = DEFAULT_WAIT_STATUS
+        transactions, waitUntil = DEFAULT_WAIT_STATUS, throwOnFailure = true
     }: {
-        transactions: { receiverId: string; actions: Action[] }[], waitUntil?: TxExecutionStatus
+        transactions: { receiverId: string; actions: Action[] }[], waitUntil?: TxExecutionStatus, throwOnFailure?: boolean
     }): Promise<FinalExecutionOutcome[]> {
         if (!this.signer) throw new Error("Please set a signer");
 
         const results = await Promise.all(
             transactions.map(async ({ receiverId, actions }) => {
-                const signedTx = await this.createSignedTransaction(receiverId, actions);
-                return await this.provider.sendTransactionUntil(signedTx, waitUntil);
+                return this.signAndSendTransaction({
+                    receiverId,
+                    actions,
+                    waitUntil,
+                    throwOnFailure
+                })
             })
         );
 
@@ -387,13 +400,13 @@ export class Account {
      *
      * @param newAccountId the new account to create (e.g. ana.near)
      * @param publicKey the public part of the key that will control the account
-     * @param amountToTransfer how much NEAR to transfer to the account
+     * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR
      *
      */
     public async createTopLevelAccount(
         newAccountId: string,
         publicKey: PublicKey | string,
-        amountToTransfer: bigint | string | number
+        nearToTransfer: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         const splitted = newAccountId.split(".");
         if (splitted.length != 2) {
@@ -413,7 +426,7 @@ export class Account {
                         new_public_key: publicKey.toString(),
                     },
                     BigInt("60000000000000"),
-                    BigInt(amountToTransfer)
+                    BigInt(nearToTransfer)
                 ),
             ],
         });
@@ -425,13 +438,13 @@ export class Account {
      *
      * @param accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
      * @param publicKey the public part of the key that will control the account
-     * @param amountToTransfer how much NEAR to transfer to the account
+     * @param nearToTransfer how much NEAR to transfer to the account
      *
      */
     public async createSubAccount(
         accountOrPrefix: string,
         publicKey: PublicKey | string,
-        amountToTransfer: bigint | string | number
+        nearToTransfer: bigint | string | number
     ): Promise<FinalExecutionOutcome> {
         if (!this.signer) throw new Error("Please set a signer");
 
@@ -449,7 +462,7 @@ export class Account {
 
         const actions = [
             createAccount(),
-            transfer(BigInt(amountToTransfer)),
+            transfer(BigInt(nearToTransfer)),
             addKey(PublicKey.from(publicKey), fullAccessKey()),
         ];
 
