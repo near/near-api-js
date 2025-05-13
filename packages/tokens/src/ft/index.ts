@@ -11,7 +11,6 @@ interface FTMetadata {
 
 abstract class BaseFT {
     public readonly metadata: FTMetadata;
-    public readonly native: boolean;
 
     constructor(metadata: FTMetadata) {
         this.metadata = metadata;
@@ -58,8 +57,6 @@ abstract class BaseFT {
 }
 
 export class NativeToken extends BaseFT {
-    public readonly native: boolean = true;
-
     constructor(metadata: FTMetadata) {
         super(metadata);
     }
@@ -78,7 +75,6 @@ export class NativeToken extends BaseFT {
 }
 
 export class FungibleToken extends BaseFT {
-    public readonly native: boolean = false;
     public readonly accountId: string;
 
     constructor(accountId: string, metadata: FTMetadata) {
