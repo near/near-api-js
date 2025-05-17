@@ -75,7 +75,9 @@ export async function setUpTestConnection() {
     return {
         accountCreator: new LocalAccountCreator(new Account(config.masterAccount, connection.provider, connection.signer), BigInt('500000000000000000000000000')),
         connection,
-        keyStore
+        keyStore,
+        // return worker, so we can gracefully shut down tests
+        worker: config.worker || undefined
     };
 }
 

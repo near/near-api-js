@@ -9,6 +9,8 @@ import { Account, Contract } from '../src';
 import { createAccount, generateUniqueString, HELLO_WASM_PATH, HELLO_WASM_BALANCE, networkId, setUpTestConnection } from './test-utils';
 import { InMemoryKeyStore } from '@near-js/keystores';
 
+import { Worker } from 'near-workspaces';
+
 let nearjs;
 let workingAccount: Account;
 
@@ -21,6 +23,12 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await workingAccount.deleteAccount(workingAccount.accountId);
+
+    const worker = nearjs.worker as Worker;
+
+    if (!worker) return;
+
+    await worker.tearDown();
 });
 
 test('view pre-defined account works and returns correct name', async () => {

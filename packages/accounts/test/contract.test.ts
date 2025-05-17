@@ -1,8 +1,10 @@
-import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { PositionalArgsError } from '@near-js/types';
 
 import { Contract, Account } from '../src';
 import { deployContractGuestBook, generateUniqueString, setUpTestConnection }  from './test-utils';
+
+import { Worker } from 'near-workspaces';
 
 const account = Object.setPrototypeOf({
     getConnection() {
@@ -127,6 +129,14 @@ describe('local view execution', () => {
         contract.connection.provider.query = jest.fn(contract.connection.provider.query);
         blockQuery = { blockId: block.header.height };
     });
+
+    afterAll(async () => {
+        const worker = nearjs.worker as Worker;
+
+        if (!worker) return;
+
+        await worker.tearDown();
+    });
     
     afterEach(() => {
         jest.clearAllMocks();
@@ -196,6 +206,14 @@ describe('contract without account', () => {
             viewMethods: ['total_messages', 'get_messages'],
             changeMethods: ['add_message'],
         });
+    });
+
+    afterAll(async () => {
+        const worker = nearjs.worker as Worker;
+
+        if (!worker) return;
+
+        await worker.tearDown();
     });
 
     test('view & change methods work', async () => {

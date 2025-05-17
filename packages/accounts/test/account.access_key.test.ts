@@ -1,9 +1,11 @@
-import { beforeAll, beforeEach, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, expect, jest, test } from '@jest/globals';
 import { KeyPair } from '@near-js/crypto';
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 import { Account } from '../src';
 import { KeyPairSigner } from '@near-js/signers';
+
+import { Worker } from 'near-workspaces';
 
 let nearjs;
 let workingAccount: Account;
@@ -14,6 +16,14 @@ jest.setTimeout(50000);
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
+});
+
+afterAll(async () => {
+    const worker = nearjs.worker as Worker;
+
+    if (!worker) return;
+
+    await worker.tearDown();
 });
 
 beforeEach(async () => {
@@ -40,12 +50,14 @@ test('make function call using access key', async() => {
 });
 
 test('remove access key no longer works', async() => {
+    const near = await setUpTestConnection();
+
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.getPublicKey();
-    await nearjs.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000);
-    await nearjs.accountCreator.masterAccount.deleteKey(publicKey);
+    await near.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000n);
+    await near.accountCreator.masterAccount.deleteKey(publicKey);
     // Override account in the Contract to the masterAccount with the given access key.
-    contract.account = new Account(nearjs.accountCreator.masterAccount.accountId, nearjs.accountCreator.masterAccount.provider, new KeyPairSigner(keyPair));
+    contract.account = new Account(near.accountCreator.masterAccount.accountId, near.accountCreator.masterAccount.provider, new KeyPairSigner(keyPair));
 
     let failed = true;
     try {
@@ -60,7 +72,8 @@ test('remove access key no longer works', async() => {
         throw new Error('should throw an error');
     }
 
-    nearjs = await setUpTestConnection();
+    const worker = near.worker as Worker;
+    await worker.tearDown();
 });
 
 test('view account details after adding access keys', async() => {
