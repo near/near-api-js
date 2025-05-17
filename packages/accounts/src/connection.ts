@@ -5,6 +5,7 @@ import {
     FailoverRpcProvider,
 } from "@near-js/providers";
 import { IntoConnection } from "./interface";
+import depd from 'depd';
 
 /**
  * @param config Contains connection info details
@@ -44,6 +45,8 @@ function getSigner(config: any): Signer {
 }
 
 /**
+ * @deprecated
+ * 
  * Connects an account to a given network via a given provider
  */
 export class Connection implements IntoConnection {
@@ -56,6 +59,9 @@ export class Connection implements IntoConnection {
         provider: Provider,
         signer: Signer,
     ) {
+        const deprecate = depd('new Connection(networkId, provider, signer)');
+        deprecate('`Connection` is no longer used anywhere, please switch to constructing `Account` without it - use `new Account(accountId, provider, signer)`');
+
         this.networkId = networkId;
         this.provider = provider;
         this.signer = signer;

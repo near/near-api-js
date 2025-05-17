@@ -106,6 +106,9 @@ importers:
       '@scure/base':
         specifier: ^1.2.4
         version: 1.2.4
+      '@types/depd':
+        specifier: ^1.1.37
+        version: 1.1.37
       '@types/json-schema':
         specifier: ^7.0.15
         version: 7.0.15
@@ -1510,6 +1513,9 @@ packages:
 
   '@types/conventional-commits-parser@5.0.1':
     resolution: {integrity: sha512-7uz5EHdzz2TqoMfV7ee61Egf5y6NkcO4FB/1iCCQnbeiI1F3xzv3vK5dBCXUCLQgGYS+mUeigK1iKQzvED+QnQ==}
+
+  '@types/depd@1.1.37':
+    resolution: {integrity: sha512-PkEYFHnqDFgs+bJXJX0L8mq7sn3DWh+TP0m8BBJUJfZ2WcjRm7jd7Cq68jIJt+c31R1gX0cwSK1ZXOECvN97Rg==}
 
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
@@ -4848,6 +4854,10 @@ snapshots:
       '@types/node': 20.0.0
 
   '@types/conventional-commits-parser@5.0.1':
+    dependencies:
+      '@types/node': 20.0.0
+
+  '@types/depd@1.1.37':
     dependencies:
       '@types/node': 20.0.0
 
