@@ -2,8 +2,9 @@
   "name": "@near-js/providers",
   "version": "1.0.3",
   "description": "Library of implementations for interfacing with the NEAR blockchain",
-  "main": "lib/esm/index.js",
-  "type": "module",
+  "main": "lib/commonjs/index.cjs",
+  "module": "lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
   "scripts": {
     "build": "pnpm compile:esm && pnpm compile:cjs",
     "compile:esm": "tsc -p tsconfig.json",
@@ -19,6 +20,7 @@
     "@near-js/transactions": "workspace:*",
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
+    "@near-js/crypto": "workspace:*",
     "borsh": "1.0.0",
     "exponential-backoff": "^3.1.2"
   },
@@ -27,10 +29,16 @@
     "@types/node": "20.0.0",
     "build": "workspace:*",
     "jest": "29.7.0",
-    "near-workspaces": "4.0.0",
+    "near-workspaces": "5.0.0",
     "ts-jest": "29.2.6",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
+  },
+  "peerDependencies": {
+    "@near-js/transactions": "^2.0.0",
+    "@near-js/types": "^2.0.0",
+    "@near-js/utils": "^2.0.0",
+    "@near-js/crypto": "^2.0.0"
   },
   "optionalDependencies": {
     "node-fetch": "2.6.7"
@@ -40,6 +48,8 @@
   ],
   "exports": {
     "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/esm/index.js"
+    "import": "./lib/commonjs/index.cjs",
+    "types": "./lib/esm/index.d.ts",
+    "default": "./lib/esm/index.js"
   }
 }

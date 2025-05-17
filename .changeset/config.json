@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@2.1.1/schema.json",
   "changelog": ["@changesets/changelog-github", { "repo": "near/near-api-js" }],
   "commit": false,
-  "fixed": [],
+  "fixed": [["@near-js/*"]],
   "linked": [],
   "access": "public",
   "baseBranch": "master",

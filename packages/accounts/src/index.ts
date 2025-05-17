@@ -4,13 +4,11 @@ export {
     AccountAuthorizedApp,
     SignAndSendTransactionOptions
 } from './account';
-export { Account2FA } from './account_2fa';
 export {
     AccountCreator,
     LocalAccountCreator,
     UrlAccountCreator,
 } from './account_creator';
-export { AccountMultisig } from './account_multisig';
 export { Connection } from './connection';
 export {
     MULTISIG_STORAGE_KEY,

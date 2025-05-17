@@ -15,7 +15,6 @@ export {
     Transfer,
     SCHEMA,
     createTransaction,
-    signTransaction,
     Signature,
     SignedTransaction,
     Transaction,
@@ -33,7 +32,7 @@ export const deleteAccount = (beneficiaryId: string) => actionCreators.deleteAcc
 export const deleteKey = (publicKey: PublicKey) => actionCreators.deleteKey(publicKey);
 export const deployContract = (code: Uint8Array) => actionCreators.deployContract(code);
 export const fullAccessKey = () => actionCreators.fullAccessKey();
-export const functionCall = (methodName: string, args: object | Uint8Array, gas: bigint, deposit: bigint, stringify?: typeof stringifyJsonOrBytes, jsContract?: boolean) => actionCreators.functionCall(methodName, args, gas, deposit, stringify, jsContract);
+export const functionCall = (methodName: string, args: object | Uint8Array, gas: bigint, deposit: bigint, stringify?: typeof stringifyJsonOrBytes) => actionCreators.functionCall(methodName, args, gas, deposit, stringify);
 export const functionCallAccessKey = (receiverId: string, methodNames: string[], allowance?: bigint) => actionCreators.functionCallAccessKey(receiverId, methodNames, allowance);
 export const stake = (stake: bigint, publicKey: PublicKey) => actionCreators.stake(stake, publicKey);
 export const transfer = (deposit: bigint) => actionCreators.transfer(deposit);

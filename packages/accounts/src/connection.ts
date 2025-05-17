@@ -1,6 +1,11 @@
-import { Signer, InMemorySigner } from '@near-js/signers';
-import { Provider, JsonRpcProvider, FailoverRpcProvider } from '@near-js/providers';
-import { IntoConnection } from './interface';
+import { Signer, KeyPairSigner } from "@near-js/signers";
+import {
+    Provider,
+    JsonRpcProvider,
+    FailoverRpcProvider,
+} from "@near-js/providers";
+import { IntoConnection } from "./interface";
+import depd from 'depd';
 
 /**
  * @param config Contains connection info details
@@ -10,12 +15,16 @@ function getProvider(config: any): Provider {
     switch (config.type) {
         case undefined:
             return config;
-        case 'JsonRpcProvider': return new JsonRpcProvider({ ...config.args });
-        case 'FailoverRpcProvider': {
-            const providers = (config?.args || []).map((arg) => new JsonRpcProvider(arg));
+        case "JsonRpcProvider":
+            return new JsonRpcProvider({ ...config.args });
+        case "FailoverRpcProvider": {
+            const providers = (config?.args || []).map(
+                (arg) => new JsonRpcProvider(arg)
+            );
             return new FailoverRpcProvider(providers);
         }
-        default: throw new Error(`Unknown provider type ${config.type}`);
+        default:
+            throw new Error(`Unknown provider type ${config.type}`);
     }
 }
 
@@ -27,27 +36,35 @@ function getSigner(config: any): Signer {
     switch (config.type) {
         case undefined:
             return config;
-        case 'InMemorySigner': {
-            return new InMemorySigner(config.keyStore);
+        case "KeyPairSigner": {
+            return new KeyPairSigner(config.keyPair);
         }
-        default: throw new Error(`Unknown signer type ${config.type}`);
+        default:
+            throw new Error(`Unknown signer type ${config.type}`);
     }
 }
 
 /**
+ * @deprecated
+ * 
  * Connects an account to a given network via a given provider
  */
 export class Connection implements IntoConnection {
     readonly networkId: string;
     readonly provider: Provider;
     readonly signer: Signer;
-    readonly jsvmAccountId: string;
 
-    constructor(networkId: string, provider: Provider, signer: Signer, jsvmAccountId: string) {
+    constructor(
+        networkId: string,
+        provider: Provider,
+        signer: Signer,
+    ) {
+        const deprecate = depd('new Connection(networkId, provider, signer)');
+        deprecate('`Connection` is no longer used anywhere, please switch to constructing `Account` without it - use `new Account(accountId, provider, signer)`');
+
         this.networkId = networkId;
         this.provider = provider;
         this.signer = signer;
-        this.jsvmAccountId = jsvmAccountId; 
     }
 
     getConnection(): Connection {
@@ -60,6 +77,10 @@ export class Connection implements IntoConnection {
     static fromConfig(config: any): Connection {
         const provider = getProvider(config.provider);
         const signer = getSigner(config.signer);
-        return new Connection(config.networkId, provider, signer, config.jsvmAccountId);
+        return new Connection(
+            config.networkId,
+            provider,
+            signer,
+        );
     }
 }

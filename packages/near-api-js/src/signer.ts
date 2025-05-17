@@ -1,1 +1,1 @@
-export { InMemorySigner, Signer } from '@near-js/signers';
+export { KeyPairSigner, Signer } from "@near-js/signers";

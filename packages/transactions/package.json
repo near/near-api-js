@@ -2,8 +2,9 @@
   "name": "@near-js/transactions",
   "version": "1.3.3",
   "description": "Functions and data types for transactions on NEAR",
-  "main": "lib/esm/index.js",
-  "type": "module",
+  "main": "lib/commonjs/index.cjs",
+  "module": "lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
   "scripts": {
     "build": "pnpm compile:esm && pnpm compile:cjs",
     "compile:esm": "tsc -p tsconfig.json",
@@ -17,7 +18,6 @@
   "license": "ISC",
   "dependencies": {
     "@near-js/crypto": "workspace:*",
-    "@near-js/signers": "workspace:*",
     "@near-js/types": "workspace:*",
     "@near-js/utils": "workspace:*",
     "@noble/hashes": "1.7.1",
@@ -33,11 +33,18 @@
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
+  "peerDependencies": {
+    "@near-js/crypto": "^2.0.0",
+    "@near-js/types": "^2.0.0",
+    "@near-js/utils": "^2.0.0"
+  },
   "files": [
     "lib"
   ],
   "exports": {
     "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/esm/index.js"
+    "import": "./lib/commonjs/index.cjs",
+    "types": "./lib/esm/index.d.ts",
+    "default": "./lib/esm/index.js"
   }
 }

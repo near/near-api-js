@@ -1,15 +1,17 @@
-import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { PositionalArgsError } from '@near-js/types';
 
 import { Contract, Account } from '../src';
 import { deployContractGuestBook, generateUniqueString, setUpTestConnection }  from './test-utils';
 
+import { Worker } from 'near-workspaces';
+
 const account = Object.setPrototypeOf({
     getConnection() {
         return {};
     },
-    viewFunction({ contractId, methodName, args, parse, stringify, jsContract, blockQuery }) {
-        return { this: this, contractId, methodName, args, parse, stringify, jsContract, blockQuery };
+    viewFunction({ contractId, methodName, args, parse, stringify, blockQuery }) {
+        return { this: this, contractId, methodName, args, parse, stringify, blockQuery };
     },
     functionCall() {
         return this;
@@ -122,10 +124,18 @@ describe('local view execution', () => {
         await contract.add_message({ text: 'first message' });
         await contract.add_message({ text: 'second message' });
         
-        const block = await contract.account.connection.provider.block({ finality: 'optimistic' });
+        const block = await contract.connection.provider.block({ finality: 'optimistic' });
 
-        contract.account.connection.provider.query = jest.fn(contract.account.connection.provider.query);
+        contract.connection.provider.query = jest.fn(contract.connection.provider.query);
         blockQuery = { blockId: block.header.height };
+    });
+
+    afterAll(async () => {
+        const worker = nearjs.worker as Worker;
+
+        if (!worker) return;
+
+        await worker.tearDown();
     });
     
     afterEach(() => {
@@ -135,7 +145,7 @@ describe('local view execution', () => {
     test('calls total_messages() function using RPC provider', async () => {
         const totalMessages = await contract.total_messages({}, { blockQuery });
 
-        expect(contract.account.connection.provider.query).toHaveBeenCalledWith({
+        expect(contract.connection.provider.query).toHaveBeenCalledWith({
             request_type: 'view_code',
             account_id: contract.contractId,
             ...blockQuery,
@@ -146,14 +156,14 @@ describe('local view execution', () => {
     test('calls total_messages() function using cache data', async () => {
         const totalMessages = await contract.total_messages({}, { blockQuery });
 
-        expect(contract.account.connection.provider.query).not.toHaveBeenCalled();
+        expect(contract.connection.provider.query).not.toHaveBeenCalled();
         expect(totalMessages).toBe(2);
     });
 
     test('calls get_messages() function using cache data', async () => {
         const messages = await contract.get_messages({}, { blockQuery });
 
-        expect(contract.account.connection.provider.query).not.toHaveBeenCalled();
+        expect(contract.connection.provider.query).not.toHaveBeenCalled();
         expect(messages.length).toBe(2);
         expect(messages[0].text).toEqual('first message');
         expect(messages[1].text).toEqual('second message');
@@ -161,7 +171,7 @@ describe('local view execution', () => {
 
     test('local execution fails and fallbacks to normal RPC call', async () => {
         // @ts-expect-error test input
-        const _contract: any = new Contract(contract.account, contract.contractId, { viewMethods: ['get_msg'], useLocalViewExecution: true });
+        const _contract: any = new Contract(nearjs.accountCreator.masterAccount, contract.contractId, { viewMethods: ['get_msg'], useLocalViewExecution: true });
         _contract.account.viewFunction = jest.fn(_contract.account.viewFunction);
 
         try {
@@ -186,13 +196,24 @@ describe('contract without account', () => {
     beforeAll(async () => {
         nearjs = await setUpTestConnection();
         const contractId = generateUniqueString('guestbook');
-        await deployContractGuestBook(nearjs.accountCreator.masterAccount, contractId);
+        await deployContractGuestBook(
+            nearjs.accountCreator.masterAccount,
+            contractId
+        );
 
         // @ts-expect-error test input
         contract = new Contract(nearjs.connection, contractId, {
             viewMethods: ['total_messages', 'get_messages'],
             changeMethods: ['add_message'],
         });
+    });
+
+    afterAll(async () => {
+        const worker = nearjs.worker as Worker;
+
+        if (!worker) return;
+
+        await worker.tearDown();
     });
 
     test('view & change methods work', async () => {
@@ -203,13 +224,13 @@ describe('contract without account', () => {
             signerAccount: nearjs.accountCreator.masterAccount,
             args: {
                 text: 'first message',
-            }
+            },
         });
         await contract.add_message({
             signerAccount: nearjs.accountCreator.masterAccount,
             args: {
                 text: 'second message',
-            }
+            },
         });
 
         const totalMessagesAfter = await contract.total_messages({});
@@ -223,7 +244,11 @@ describe('contract without account', () => {
 
     test('fails to call add_message() without signerAccount', async () => {
         await expect(
-            contract.add_message({ text: 'third message' })
+            contract.add_message({
+                args: {
+                    text: 'third message',
+                },
+            })
         ).rejects.toThrow(/signerAccount must be specified/);
     });
 });

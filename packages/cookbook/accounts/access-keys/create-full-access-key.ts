@@ -20,7 +20,7 @@ export default async function createFullAccessKey(accountId: string) {
   const rpcProvider = getTestnetRpcProvider();
   // initialize the transaction signer using a pre-existing key for `accountId`
   const keystore = new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials'));
-  const signer = getSignerFromKeystore(accountId, 'testnet', keystore);
+  const signer = await getSignerFromKeystore(accountId, 'testnet', keystore);
   const previousKey = await signer.getPublicKey();
 
   // create a new key from random data

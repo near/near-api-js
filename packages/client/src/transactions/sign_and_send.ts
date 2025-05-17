@@ -1,6 +1,4 @@
-import { Signature, SignedTransaction } from '@near-js/transactions';
 import { getTransactionLastResult } from '@near-js/utils';
-import { sha256 } from '@noble/hashes/sha256';
 
 import type { SignTransactionParams, SignAndSendTransactionParams } from '../interfaces';
 import { getNonce } from '../view';
@@ -15,17 +13,10 @@ const DEFAULT_FINALITY: BlockReference = { finality: 'final' };
  * @param signer MessageSigner
  */
 export async function signTransaction({ transaction, deps: { signer } }: SignTransactionParams) {
-  const encodedTx = transaction.encode();
-  const signedTransaction = new SignedTransaction({
-    transaction,
-    signature: new Signature({
-      keyType: transaction.publicKey.keyType,
-      data: await signer.signMessage(encodedTx),
-    }),
-  });
+  const [txHash, signedTransaction] = await signer.signTransaction(transaction);
 
   return {
-    encodedTransactionHash: new Uint8Array(sha256(encodedTx)),
+    encodedTransactionHash: txHash,
     signedTransaction,
   };
 }

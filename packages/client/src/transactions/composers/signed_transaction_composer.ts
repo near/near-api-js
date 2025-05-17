@@ -1,35 +1,22 @@
-import {
-  buildDelegateAction,
-  signDelegateAction,
-} from '@near-js/transactions';
 import type { BlockReference, SerializedReturnValue } from '@near-js/types';
 import { getTransactionLastResult } from '@near-js/utils';
 
 import { DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL } from '../../constants';
 import {
-  AccessKeySigner,
-  MessageSigner,
   MetaTransactionOptions,
-  RpcQueryProvider,
   SignedTransactionOptions,
   TransactionOptions,
 } from '../../interfaces';
 import { signTransaction } from '../sign_and_send';
 import { TransactionComposer } from './transaction_composer';
-import { getAccessKeySigner } from '../../signing/signers';
+import { Account } from '@near-js/accounts';
 
 export class SignedTransactionComposer extends TransactionComposer {
-  messageSigner: MessageSigner;
-  rpcProvider: RpcQueryProvider;
-  signer: AccessKeySigner;
+  account: Account;
 
   constructor({ deps, ...baseOptions }: SignedTransactionOptions) {
     super(baseOptions);
-    this.messageSigner = deps.signer;
-    this.rpcProvider = deps.rpcProvider;
-    if (this.sender) {
-      this.signer = getAccessKeySigner({ account: this.sender, deps });
-    }
+    this.account = new Account(this.sender, deps.rpcProvider, deps.signer);
   }
 
   /**
@@ -47,26 +34,16 @@ export class SignedTransactionComposer extends TransactionComposer {
   async toSignedDelegateAction(transaction?: MetaTransactionOptions) {
     let maxBlockHeight = transaction?.maxBlockHeight;
     if (!maxBlockHeight) {
-      const { header } = await this.rpcProvider.block({ finality: 'final' });
+      const { header } = await this.account.provider.viewBlock({ finality: 'final' });
       const ttl = transaction?.blockHeightTtl || DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL;
       maxBlockHeight = BigInt(header.height) + ttl;
     }
 
-    const delegateAction = buildDelegateAction({
+    return this.account.signedDelegate({
       actions: this.actions,
-      maxBlockHeight,
-      nonce: transaction?.nonce || this.nonce || await this.signer.getNonce(),
-      publicKey: transaction?.publicKey || this.publicKey || await this.signer.getPublicKey(),
       receiverId: transaction?.receiver || this.receiver,
-      senderId: transaction?.sender || this.sender,
-    });
-
-    const { signedDelegateAction } = await signDelegateAction({
-      delegateAction,
-      signer: { sign: (m) => this.signer.signMessage(m) },
-    });
-
-    return signedDelegateAction;
+      blockHeightTtl: Number(maxBlockHeight)
+    })
   }
 
   /**
@@ -77,16 +54,8 @@ export class SignedTransactionComposer extends TransactionComposer {
    * @private
    */
   private verifySigner(signingAccount: string) {
-    if (!this.signer) {
-      this.signer = getAccessKeySigner({
-        account: signingAccount,
-        deps: { rpcProvider: this.rpcProvider, signer: this.messageSigner },
-      });
-    }
-
-    const signerAccount = this.signer.getSigningAccount();
-    if (signingAccount !== signerAccount) {
-      throw new Error(`Cannot sign transaction as ${signingAccount} with AccessKeySigner for ${signerAccount}`);
+    if (signingAccount !== this.account.accountId) {
+      throw new Error(`Cannot sign transaction as ${signingAccount} with Account for ${this.account.accountId}`);
     }
   }
 
@@ -99,7 +68,7 @@ export class SignedTransactionComposer extends TransactionComposer {
     this.verifySigner(transaction.signerId);
     return signTransaction({
       transaction,
-      deps: { signer: this.signer },
+      deps: { signer: this.account.getSigner() },
     });
   }
 
@@ -110,12 +79,11 @@ export class SignedTransactionComposer extends TransactionComposer {
   async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
     this.verifySigner(this.sender);
     const { signedTransaction } = await this.toSignedTransaction({
-      nonce: this.nonce || await this.signer.getNonce(),
-      publicKey: this.publicKey || await this.signer.getPublicKey(),
-      blockHash: this.blockHash || (await this.rpcProvider.block(blockReference))?.header?.hash,
+      publicKey: this.publicKey || await this.account.getSigner().getPublicKey(),
+      blockHash: this.blockHash || (await this.account.provider.viewBlock(blockReference))?.header?.hash,
     });
 
-    const outcome = await this.rpcProvider.sendTransaction(signedTransaction);
+    const outcome = await this.account.provider.sendTransaction(signedTransaction);
     return {
       outcome,
       result: getTransactionLastResult(outcome) as T,

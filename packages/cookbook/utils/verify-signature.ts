@@ -9,7 +9,7 @@ export default async function verifySignature(accountId: string = ACCOUNT_ID, tr
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcProvider();
 
-  const { transaction: { public_key, signature } } = await rpcProvider.getTransaction({ transactionHash, account: accountId });
+  const { transaction: { public_key, signature } } = await rpcProvider.viewTransactionStatus(transactionHash, accountId, 'FINAL');
 
   const hashBytes = baseDecode(transactionHash);
   const publicKeyBytes = baseDecode(public_key.slice('ed25519:'.length));

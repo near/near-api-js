@@ -2,8 +2,9 @@
   "name": "@near-js/utils",
   "version": "1.1.0",
   "description": "Common methods and constants for the NEAR API JavaScript client",
-  "main": "lib/esm/index.js",
-  "type": "module",
+  "main": "lib/commonjs/index.cjs",
+  "module": "lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
   "scripts": {
     "build": "pnpm compile:esm && pnpm compile:cjs",
     "compile:esm": "tsc -p tsconfig.json",
@@ -30,11 +31,16 @@
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
   },
+  "peerDependencies": {
+    "@near-js/types": "^2.0.0"
+  },
   "files": [
     "lib"
   ],
   "exports": {
     "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/esm/index.js"
+    "import": "./lib/commonjs/index.cjs",
+    "types": "./lib/esm/index.d.ts",
+    "default": "./lib/esm/index.js"
   }
 }

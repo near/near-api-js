@@ -2,15 +2,16 @@
     "name": "@near-js/accounts",
     "version": "1.4.1",
     "description": "Classes encapsulating account-specific functionality",
-    "main": "lib/esm/index.js",
-    "type": "module",
+    "main": "lib/commonjs/index.cjs",
+    "module": "lib/esm/index.js",
+    "types": "./lib/esm/index.d.ts",
     "scripts": {
         "build": "pnpm compile:esm && pnpm compile:cjs",
         "compile:esm": "tsc -p tsconfig.json",
         "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
         "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
         "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-        "test": "jest"
+        "test": "DEFAULT_FINALITY=optimistic jest"
     },
     "keywords": [],
     "author": "",
@@ -22,6 +23,7 @@
         "@near-js/transactions": "workspace:*",
         "@near-js/types": "workspace:*",
         "@near-js/utils": "workspace:*",
+        "@near-js/tokens": "workspace:*",
         "@noble/hashes": "1.7.1",
         "borsh": "1.0.0",
         "depd": "2.0.0",
@@ -33,22 +35,33 @@
         "@jest/globals": "^29.7.0",
         "@near-js/keystores": "workspace:*",
         "@scure/base": "^1.2.4",
+        "@types/depd": "^1.1.37",
         "@types/json-schema": "^7.0.15",
         "@types/node": "20.0.0",
         "build": "workspace:*",
         "jest": "29.7.0",
         "near-hello": "0.5.1",
-        "near-workspaces": "4.0.0",
+        "near-workspaces": "5.0.0",
         "semver": "7.7.1",
         "ts-jest": "29.2.6",
         "tsconfig": "workspace:*",
         "typescript": "5.4.5"
+    },
+    "peerDependencies": {
+        "@near-js/crypto": "^2.0.0",
+        "@near-js/providers": "^2.0.0",
+        "@near-js/signers": "^2.0.0",
+        "@near-js/transactions": "^2.0.0",
+        "@near-js/types": "^2.0.0",
+        "@near-js/utils": "^2.0.0"
     },
     "files": [
         "lib"
     ],
     "exports": {
         "require": "./lib/commonjs/index.cjs",
-        "import": "./lib/esm/index.js"
+        "import": "./lib/commonjs/index.cjs",
+        "types": "./lib/esm/index.d.ts",
+        "default": "./lib/esm/index.js"
     }
 }

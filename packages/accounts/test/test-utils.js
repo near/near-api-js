@@ -6,6 +6,7 @@ import path from 'path';
 
 import { Account, AccountMultisig, Contract, Connection, LocalAccountCreator } from '../src';
 import Config from './config';
+import { KeyPairSigner } from '@near-js/signers';
 
 Logger.overrideLogger(new ConsoleLogger(['error', 'fatal']))
 
@@ -68,12 +69,15 @@ export async function setUpTestConnection() {
     const connection = Connection.fromConfig({
         networkId: config.networkId,
         provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
-        signer: { type: 'InMemorySigner', keyStore: config.keyStore },
+        signer: { type: 'KeyPairSigner', keyPair: await keyStore.getKey(networkId, config.masterAccount) },
     });
 
     return {
-        accountCreator: new LocalAccountCreator(new Account(connection, config.masterAccount), BigInt('500000000000000000000000000')),
+        accountCreator: new LocalAccountCreator(new Account(config.masterAccount, connection.provider, connection.signer), BigInt('500000000000000000000000000')),
         connection,
+        keyStore,
+        // return worker, so we can gracefully shut down tests
+        worker: config.worker || undefined
     };
 }
 
@@ -85,16 +89,25 @@ export function generateUniqueString(prefix) {
     return result + '.test.near';
 }
 
-export async function createAccount({ accountCreator, connection }, keyType = KeyType.ED25519) {
+export async function createAccount({ accountCreator, connection, keyStore }, keyType = KeyType.ED25519) {
     const newAccountName = generateUniqueString('test');
-    const newPublicKey = await connection.signer.createKey(newAccountName, networkId, keyType);
+
+    const keyPair = KeyPair.fromRandom(Object.values(KeyType)[keyType]);
+    await keyStore.setKey(networkId, newAccountName, keyPair);
+
+    const newPublicKey = keyPair.getPublicKey();
     await accountCreator.createAccount(newAccountName, newPublicKey);
-    return new Account(connection, newAccountName);
+
+    return new Account(newAccountName, connection.provider, new KeyPairSigner(keyPair));
 }
 
-export async function createAccountMultisig({ accountCreator, connection }, options) {
+export async function createAccountMultisig({ accountCreator, connection, keyStore }, options) {
     const newAccountName = generateUniqueString('test');
-    const newPublicKey = await connection.signer.createKey(newAccountName, networkId);
+    
+    const keyPair = KeyPair.fromRandom('ed25519');
+    await keyStore.setKey(networkId, newAccountName, keyPair);
+    const newPublicKey = keyPair.getPublicKey();
+
     await accountCreator.createAccount(newAccountName, newPublicKey);
     // add a confirm key for multisig (contract helper sim)
 
@@ -103,7 +116,7 @@ export async function createAccountMultisig({ accountCreator, connection }, opti
         const { publicKey } = confirmKeyPair;
         const accountMultisig = new AccountMultisig(connection, newAccountName, options);
         accountMultisig.useConfirmKey = async () => {
-            await connection.signer.setKey(networkId, options.masterAccount, confirmKeyPair);
+            await keyStore.setKey(networkId, options.masterAccount, confirmKeyPair);
         };
         accountMultisig.getRecoveryMethods = () => ({ data: [] });
         accountMultisig.postSignedJson = async (path) => {
@@ -119,17 +132,21 @@ export async function createAccountMultisig({ accountCreator, connection }, opti
 }
 
 export async function deployContract(workingAccount, contractId) {
-    const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
+    const keyPair = KeyPair.fromRandom('ed25519');
+    const newPublicKey = keyPair.getPublicKey();
+
     const data = fs.readFileSync(HELLO_WASM_PATH);
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
     return new Contract(workingAccount, contractId, HELLO_WASM_METHODS);
 }
 
 export async function deployContractGuestBook(workingAccount, contractId) {
-    const newPublicKey = await workingAccount.connection.signer.createKey(contractId, networkId);
+    const keyPair = KeyPair.fromRandom('ed25519');
+    const newPublicKey = keyPair.getPublicKey();
+
     const data = fs.readFileSync(GUESTBOOK_WASM_PATH);
     const account = await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-    return new Contract(account, contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true });
+    return new Contract(new Account(contractId, account.provider, new KeyPairSigner(keyPair)), contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true });
 }
 
 export function sleep(time) {
