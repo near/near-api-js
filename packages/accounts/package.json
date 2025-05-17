@@ -11,7 +11,7 @@
         "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
         "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
         "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-        "test": "jest"
+        "test": "DEFAULT_FINALITY=optimistic jest"
     },
     "keywords": [],
     "author": "",
