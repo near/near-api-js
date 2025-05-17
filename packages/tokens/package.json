@@ -16,9 +16,6 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "dependencies": {
-        "@near-js/utils": "workspace:*"
-    },
     "devDependencies": {
         "@jest/globals": "^29.7.0",
         "@near-js/types": "workspace:*",
