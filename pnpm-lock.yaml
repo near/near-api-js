@@ -608,6 +608,9 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
+      '@near-js/types':
+        specifier: workspace:*
+        version: link:../types
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
