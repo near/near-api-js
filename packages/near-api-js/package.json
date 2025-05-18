@@ -29,6 +29,7 @@
         "node-fetch": "2.6.7"
     },
     "devDependencies": {
+        "@types/depd": "^1.1.37",
         "@types/http-errors": "1.6.1",
         "@types/node": "18.11.18",
         "concurrently": "9.1.2",
