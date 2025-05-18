@@ -93,4 +93,7 @@ export interface Provider {
     accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     contractStateChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference, keyPrefix: string): Promise<ChangeResult>;
     contractCodeChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+
+    getCurrentEpochSeatPrice(): Promise<bigint>;
+    getNextEpochSeatPrice(): Promise<bigint>;
 }

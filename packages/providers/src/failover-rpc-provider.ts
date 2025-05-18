@@ -119,6 +119,14 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.getNetworkId());
     }
 
+    public async getCurrentEpochSeatPrice(): Promise<bigint> {
+        return this.withBackoff((currentProvider) => currentProvider.getCurrentEpochSeatPrice());
+    }
+
+    public async getNextEpochSeatPrice(): Promise<bigint> {
+        return this.withBackoff((currentProvider) => currentProvider.getNextEpochSeatPrice());
+    }
+
     public async viewAccessKey(accountId: string, publicKey: PublicKey, finalityQuery?: FinalityReference): Promise<AccessKeyView> {
         return this.withBackoff((currentProvider) => currentProvider.viewAccessKey(accountId, publicKey, finalityQuery));
     }

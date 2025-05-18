@@ -172,6 +172,8 @@ export interface ChangeResult {
 
 export interface NearProtocolConfig {
     runtime_config: NearProtocolRuntimeConfig;
+    minimum_stake_ratio: [number, number];
+    protocol_version: number;
 }
 
 export interface NearProtocolRuntimeConfig {

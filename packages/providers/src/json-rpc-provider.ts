@@ -7,6 +7,7 @@
  */
 import {
     baseEncode,
+    findSeatPrice,
     formatError,
     getErrorTypeFromErrorMessage,
     parseRpcError,
@@ -118,6 +119,28 @@ export class JsonRpcProvider implements Provider {
         this.networkId = chain_id;
 
         return this.networkId;
+    }
+
+    public async getCurrentEpochSeatPrice(): Promise<bigint> {
+        const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: 'final' });
+
+        const { current_validators: currentValidators } = await this.viewValidators();
+
+        // hard-coded in the protocol
+        const maxNumberOfSeats = 300;
+
+        return findSeatPrice(currentValidators, maxNumberOfSeats, minStakeRatio, protocolVersion);
+    }
+
+    public async getNextEpochSeatPrice(): Promise<bigint> {
+        const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: 'final' });
+
+        const { next_validators: nextValidators } = await this.viewValidators();
+
+        // hard-coded in the protocol
+        const maxNumberOfSeats = 300;
+
+        return findSeatPrice(nextValidators, maxNumberOfSeats, minStakeRatio, protocolVersion);
     }
 
     public async viewAccessKey(
