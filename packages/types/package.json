@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "20.0.0",
+    "@types/node": "22.15.19",
     "build": "workspace:*",
     "jest": "29.7.0",
     "ts-jest": "29.2.6",

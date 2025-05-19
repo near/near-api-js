@@ -34,7 +34,7 @@
         "@near-js/keystores": "workspace:*",
         "@scure/base": "^1.2.4",
         "@types/json-schema": "^7.0.15",
-        "@types/node": "20.0.0",
+        "@types/node": "22.15.19",
         "build": "workspace:*",
         "jest": "29.7.0",
         "near-hello": "0.5.1",
