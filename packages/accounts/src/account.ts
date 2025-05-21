@@ -61,8 +61,8 @@ const {
 } = actionCreators;
 
 // Environment value is used in tests since near-sandbox runs old version of nearcore that doesn't work with near-final finality
-const DEFAULT_FINALITY = process.env.DEFAULT_FINALITY as Finality ||  "near-final";
-export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
+const DEFAULT_FINALITY = process.env.DEFAULT_FINALITY as Finality || "near-final";
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "INCLUDED_FINAL";
 
 export interface AccountState {
     balance: {
@@ -401,13 +401,13 @@ export class Account {
      *
      * @param newAccountId the new account to create (e.g. ana.near)
      * @param publicKey the public part of the key that will control the account
-     * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR
+     * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
      *
      */
     public async createTopLevelAccount(
         newAccountId: string,
         publicKey: PublicKey | string,
-        nearToTransfer: bigint | string | number
+        nearToTransfer: bigint | string | number = "0"
     ): Promise<FinalExecutionOutcome> {
         const splitted = newAccountId.split(".");
         if (splitted.length != 2) {
@@ -439,13 +439,13 @@ export class Account {
      *
      * @param accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
      * @param publicKey the public part of the key that will control the account
-     * @param nearToTransfer how much NEAR to transfer to the account
+     * @param nearToTransfer how much NEAR to transfer to the account (default: 0)
      *
      */
     public async createSubAccount(
         accountOrPrefix: string,
         publicKey: PublicKey | string,
-        nearToTransfer: bigint | string | number
+        nearToTransfer: bigint | string | number = "0"
     ): Promise<FinalExecutionOutcome> {
         if (!this.signer) throw new Error("Please set a signer");
 
@@ -506,19 +506,20 @@ export class Account {
 
     /**
      *
-     * @param publicKey The key to add to the account
-     * @param contractId The contract that this key can call
-     * @param methodNames The methods this key is allowed to call
-     * @param allowance The amount of NEAR this key can expend in gas
-     * @param opts
+     * @param options
+     * @param options.publicKey The key to add to the account
+     * @param options.contractId The contract that this key can call
+     * @param options.methodNames The methods this key is allowed to call
+     * @param options.allowance The amount of NEAR this key can expend in gas
      * @returns
      */
     public async addFunctionCallAccessKey(
-        publicKey: PublicKey | string,
-        contractId: string,
-        methodNames: string[],
-        allowance?: bigint | string | number
-    ): Promise<FinalExecutionOutcome> {
+        { publicKey, contractId, methodNames = [], allowance = NEAR.toUnits("0.25") }: {
+            publicKey: PublicKey | string,
+            contractId: string,
+            methodNames: string[],
+            allowance: bigint | string | number
+        }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [
@@ -538,7 +539,6 @@ export class Account {
      * Add a full access key to the account
      *
      * @param publicKey The public key to be added
-     * @param opts
      * @returns {Promise<FinalExecutionOutcome>}
      */
     public async addFullAccessKey(
@@ -605,6 +605,8 @@ export class Account {
     }
 
     /**
+     * This function simply calls the `signNep413Message` method of the Signer
+     * 
      * @param options
      * @param options.message The message to be signed (e.g. "authenticating")
      * @param options.recipient Who will receive the message (e.g. auth.app.com)
@@ -713,7 +715,7 @@ export class Account {
     }
 
     /**
-     * @deprecated
+     * @deprecated, accounts no longer use Connections
      */
     public getConnection(): Connection {
         return new Connection("", this.provider, this.signer);
@@ -1108,11 +1110,11 @@ export class Account {
     }
 
     /**
+     * @deprecated please use {@link Provider.callFunction} instead
+     * 
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
-     *
-     * @deprecated please use {@link Provider.callFunction} instead
-     *
+     * 
      * @param options Function call options.
      * @param options.contractId NEAR account where the contract is deployed
      * @param options.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
@@ -1149,10 +1151,11 @@ export class Account {
     }
 
     /**
+     * @deprecated please use {@link getAccessKeyList} instead
+     * 
      * Get all access keys for the account
      * @see [https://docs.near.org/api/rpc/access-keys#view-access-key-list](https://docs.near.org/api/rpc/access-keys#view-access-key-list)
      *
-     * @deprecated
      */
     async getAccessKeys(): Promise<AccessKeyInfoView[]> {
         const response = await this.provider.query<AccessKeyList>({
