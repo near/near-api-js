@@ -35,6 +35,7 @@ import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
 import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
 import { Near, NearConfig } from './near';
 import { Logger } from '@near-js/utils';
+import depd from 'depd';
 
 export interface ConnectConfig extends NearConfig {
     /**
@@ -44,6 +45,8 @@ export interface ConnectConfig extends NearConfig {
 }
 
 /**
+ * @deprecated
+ * 
  * Initialize connection to Near network.
  * @param config The configuration object for connecting to NEAR Protocol.
  * @returns A Promise that resolves to a `Near` object representing the connection.
@@ -67,6 +70,9 @@ export interface ConnectConfig extends NearConfig {
  * ```
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
+    const deprecate = depd('connect(config)');
+    deprecate('`connect` is no longer maintained, please switch to using `@near-js/*` packages');
+
     if (config.logger === false) {
         // disables logging
         Logger.overrideLogger(undefined);

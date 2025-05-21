@@ -7,6 +7,7 @@
  */
 import {
     baseEncode,
+    findSeatPrice,
     formatError,
     getErrorTypeFromErrorMessage,
     parseRpcError,
@@ -32,6 +33,17 @@ import {
     NodeStatusResult,
     QueryResponseKind,
     TypedError,
+    AccessKeyViewRaw,
+    AccessKeyView,
+    FinalityReference,
+    AccessKeyList,
+    AccountView,
+    AccountViewRaw,
+    ContractCodeViewRaw,
+    ContractCodeView,
+    ContractStateView,
+    CallContractViewFunctionResultRaw,
+    ExecutionOutcomeReceiptDetail,
 } from '@near-js/types';
 import {
     encodeTransaction,
@@ -41,6 +53,7 @@ import {
 import { Provider } from './provider';
 import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
 import { TxExecutionStatus } from '@near-js/types';
+import { PublicKey } from '@near-js/crypto';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
@@ -74,18 +87,20 @@ type RequestOptions = {
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
  * @see [https://github.com/near/nearcore/tree/master/chain/jsonrpc](https://github.com/near/nearcore/tree/master/chain/jsonrpc)
  */
-export class JsonRpcProvider extends Provider {
+export class JsonRpcProvider implements Provider {
     /** @hidden */
     readonly connection: ConnectionInfo;
 
     /** @hidden */
     readonly options: RequestOptions;
 
+    /** @hidden */
+    private networkId: string | undefined;
+
     /**
      * @param connectionInfo Connection info
      */
     constructor(connectionInfo: ConnectionInfo, options?: Partial<RequestOptions>) {
-        super();
         this.connection = connectionInfo || { url: '' };
         const defaultOptions: RequestOptions = {
             retries: REQUEST_RETRY_NUMBER,
@@ -93,6 +108,225 @@ export class JsonRpcProvider extends Provider {
             backoff: REQUEST_RETRY_WAIT_BACKOFF
         };
         this.options = Object.assign({}, defaultOptions, options);
+        this.networkId = undefined;
+    }
+
+    public async getNetworkId(): Promise<string> {
+        if (this.networkId) return this.networkId;
+
+        const { chain_id } = await this.viewNodeStatus();
+
+        this.networkId = chain_id;
+
+        return this.networkId;
+    }
+
+    public async getCurrentEpochSeatPrice(): Promise<bigint> {
+        const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: 'final' });
+
+        const { current_validators: currentValidators } = await this.viewValidators();
+
+        // hard-coded in the protocol
+        const maxNumberOfSeats = 300;
+
+        return findSeatPrice(currentValidators, maxNumberOfSeats, minStakeRatio, protocolVersion);
+    }
+
+    public async getNextEpochSeatPrice(): Promise<bigint> {
+        const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: 'final' });
+
+        const { next_validators: nextValidators } = await this.viewValidators();
+
+        // hard-coded in the protocol
+        const maxNumberOfSeats = 300;
+
+        return findSeatPrice(nextValidators, maxNumberOfSeats, minStakeRatio, protocolVersion);
+    }
+
+    public async viewAccessKey(
+        accountId: string,
+        publicKey: PublicKey | string,
+        finalityQuery: FinalityReference = { finality: 'final' }
+    ): Promise<AccessKeyView> {
+        const data = await (this as Provider).query<AccessKeyViewRaw>({
+            ...finalityQuery,
+            request_type: 'view_access_key',
+            account_id: accountId,
+            public_key: publicKey.toString(),
+        });
+
+        return {
+            ...data,
+            nonce: BigInt(data.nonce),
+        };
+    }
+
+    public async viewAccessKeyList(
+        accountId: string,
+        finalityQuery: FinalityReference = { finality: 'final' }
+    ): Promise<AccessKeyList> {
+        return (this as Provider).query<AccessKeyList>({
+            ...finalityQuery,
+            request_type: 'view_access_key_list',
+            account_id: accountId,
+        });
+    }
+
+    public async viewAccount(
+        accountId: string,
+        blockQuery: BlockReference = { finality: 'final' }
+    ): Promise<AccountView> {
+        const data = await (this as Provider).query<AccountViewRaw>({
+            ...blockQuery,
+            request_type: 'view_account',
+            account_id: accountId,
+        });
+
+        return {
+            ...data,
+            amount: BigInt(data.amount),
+            locked: BigInt(data.locked),
+        };
+    }
+
+    public async viewContractCode(
+        contractId: string,
+        blockQuery: BlockReference = { finality: 'final' }
+    ): Promise<ContractCodeView> {
+        const data = await (this as Provider).query<ContractCodeViewRaw>({
+            ...blockQuery,
+            request_type: 'view_code',
+            account_id: contractId,
+        });
+
+        return {
+            ...data,
+            code: new Uint8Array(Buffer.from(data.code_base64, 'base64')),
+        };
+    }
+
+    public async viewContractState(
+        contractId: string,
+        prefix?: string,
+        blockQuery: BlockReference = { finality: 'final' }
+    ): Promise<ContractStateView> {
+        const prefixBase64 = Buffer.from(prefix || '').toString('base64');
+
+        return (this as Provider).query<ContractStateView>({
+            ...blockQuery,
+            request_type: 'view_state',
+            account_id: contractId,
+            prefix_base64: prefixBase64,
+        });
+    }
+
+    public async callFunction(
+        contractId: string,
+        method: string,
+        args: Record<string, unknown>,
+        blockQuery: BlockReference = { finality: 'final' }
+    ): Promise<string | number | boolean | object | undefined> {
+        const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
+
+        const data = await (
+            this as Provider
+        ).query<CallContractViewFunctionResultRaw>({
+            ...blockQuery,
+            request_type: 'call_function',
+            account_id: contractId,
+            method_name: method,
+            args_base64: argsBase64,
+        });
+
+        if (data.result.length === 0) {
+            return undefined;
+        }
+
+        return JSON.parse(Buffer.from(data.result).toString());
+    }
+
+    public async callFunctionRaw(
+        contractId: string,
+        method: string,
+        args: Record<string, unknown>,
+        blockQuery: BlockReference = { finality: 'final' }
+    ): Promise<CallContractViewFunctionResultRaw> {
+        const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
+
+        return await (
+            this as Provider
+        ).query<CallContractViewFunctionResultRaw>({
+            ...blockQuery,
+            request_type: 'call_function',
+            account_id: contractId,
+            method_name: method,
+            args_base64: argsBase64,
+        });
+    }
+
+    public async viewBlock(blockQuery: BlockReference): Promise<BlockResult> {
+        const { finality } = blockQuery as any;
+        const { blockId } = blockQuery as any;
+        return this.sendJsonRpc('block', { block_id: blockId, finality });
+    }
+
+    public async viewChunk(chunkId: ChunkId): Promise<ChunkResult> {
+        return this.sendJsonRpc('chunk', [chunkId]);
+    }
+
+    public async viewGasPrice(blockId?: BlockId): Promise<GasPrice> {
+        return this.sendJsonRpc('gas_price', [blockId || null]);
+    }
+
+    public async viewNodeStatus(): Promise<NodeStatusResult> {
+        return this.sendJsonRpc('status', []);
+    }
+
+    public async viewValidators(
+        blockId?: BlockId
+    ): Promise<EpochValidatorInfo> {
+        return this.sendJsonRpc('validators', [blockId || null]);
+    }
+
+    public async viewTransactionStatus(
+        txHash: Uint8Array | string,
+        accountId: string,
+        waitUntil: TxExecutionStatus
+    ): Promise<FinalExecutionOutcome> {
+        const encodedTxHash =
+            typeof txHash === 'string' ? txHash : baseEncode(txHash);
+
+        return this.sendJsonRpc('tx', {
+            tx_hash: encodedTxHash,
+            sender_account_id: accountId,
+            wait_until: waitUntil,
+        });
+    }
+
+    public async viewTransactionStatusWithReceipts(
+        txHash: Uint8Array | string,
+        accountId: string,
+        waitUntil: TxExecutionStatus
+    ): Promise<
+        FinalExecutionOutcome &
+            Required<Pick<FinalExecutionOutcome, 'receipts'>>
+    > {
+        const encodedTxHash =
+            typeof txHash === 'string' ? txHash : baseEncode(txHash);
+
+        return this.sendJsonRpc('EXPERIMENTAL_tx_status', {
+            tx_hash: encodedTxHash,
+            sender_account_id: accountId,
+            wait_until: waitUntil,
+        });
+    }
+
+    public async viewTransactionReceipt(
+        receiptId: string
+    ): Promise<ExecutionOutcomeReceiptDetail> {
+        return this.sendJsonRpc('EXPERIMENTAL_receipt', {
+            receipt_id: receiptId,
+        });
     }
 
     /**

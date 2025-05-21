@@ -27,16 +27,25 @@ import {
     QueryResponseKind,
     TypedError,
     RpcQueryRequest,
+    AccessKeyView,
+    AccessKeyList,
+    AccountView,
+    ContractCodeView,
+    ContractStateView,
+    CallContractViewFunctionResultRaw,
+    ExecutionOutcomeReceiptDetail,
+    FinalityReference,
 } from '@near-js/types';
 import { SignedTransaction } from '@near-js/transactions';
 import { Provider } from './provider';
 import { TxExecutionStatus } from '@near-js/types';
+import { PublicKey } from '@near-js/crypto';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
  * @see [https://github.com/near/nearcore/tree/master/chain/jsonrpc](https://github.com/near/nearcore/tree/master/chain/jsonrpc)
  */
-export class FailoverRpcProvider extends Provider {
+export class FailoverRpcProvider implements Provider {
     /** @hidden */
     readonly providers: Provider[];
 
@@ -46,8 +55,6 @@ export class FailoverRpcProvider extends Provider {
      * @param providers list of providers
      */
     constructor(providers: Provider[]) {
-        super();
-
         if (providers.length === 0) {
             throw new Error('At least one provider must be specified');
         }
@@ -106,6 +113,78 @@ export class FailoverRpcProvider extends Provider {
      */
     async status(): Promise<NodeStatusResult> {
         return this.withBackoff((currentProvider) => currentProvider.status());
+    }
+
+    async getNetworkId(): Promise<string> {
+        return this.withBackoff((currentProvider) => currentProvider.getNetworkId());
+    }
+
+    public async getCurrentEpochSeatPrice(): Promise<bigint> {
+        return this.withBackoff((currentProvider) => currentProvider.getCurrentEpochSeatPrice());
+    }
+
+    public async getNextEpochSeatPrice(): Promise<bigint> {
+        return this.withBackoff((currentProvider) => currentProvider.getNextEpochSeatPrice());
+    }
+
+    public async viewAccessKey(accountId: string, publicKey: PublicKey, finalityQuery?: FinalityReference): Promise<AccessKeyView> {
+        return this.withBackoff((currentProvider) => currentProvider.viewAccessKey(accountId, publicKey, finalityQuery));
+    }
+
+    public async viewAccessKeyList(accountId: string, finalityQuery?: FinalityReference): Promise<AccessKeyList> {
+        return this.withBackoff((currentProvider) => currentProvider.viewAccessKeyList(accountId, finalityQuery));
+    }
+
+    public async viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView> {
+        return this.withBackoff((currentProvider) => currentProvider.viewAccount(accountId, blockQuery));
+    }
+
+    public async viewContractCode(accountId: string, blockQuery?: BlockReference): Promise<ContractCodeView> {
+        return this.withBackoff((currentProvider) => currentProvider.viewContractCode(accountId, blockQuery));
+    }
+
+    public async viewContractState(accountId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView> {
+        return this.withBackoff((currentProvider) => currentProvider.viewContractState(accountId, prefix, blockQuery));
+    }
+
+    public async callFunction(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<string | number | boolean | object | undefined> {
+        return this.withBackoff((currentProvider) => currentProvider.callFunction(accountId, method, args, blockQuery));
+    }
+
+    public async callFunctionRaw(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw> {
+        return this.withBackoff((currentProvider) => currentProvider.callFunctionRaw(accountId, method, args, blockQuery));
+    }
+
+    public async viewBlock(blockQuery: BlockReference): Promise<BlockResult> {
+        return this.withBackoff((currentProvider) => currentProvider.viewBlock(blockQuery));
+    }
+
+    public async viewChunk(chunkId: ChunkId): Promise<ChunkResult> {
+        return this.withBackoff((currentProvider) => currentProvider.viewChunk(chunkId));
+    }
+
+    public async viewGasPrice(blockId?: BlockId): Promise<GasPrice> {
+        return this.withBackoff((currentProvider) => currentProvider.viewGasPrice(blockId));
+    }
+
+    public async viewNodeStatus(): Promise<NodeStatusResult> {
+        return this.withBackoff((currentProvider) => currentProvider.viewNodeStatus());
+    }
+
+    public async viewValidators(blockId?: BlockId): Promise<EpochValidatorInfo> {
+        return this.withBackoff((currentProvider) => currentProvider.viewValidators(blockId));
+    }
+
+    public async viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
+        return this.withBackoff((currentProvider) => currentProvider.viewTransactionStatus(txHash, accountId, waitUntil));
+    }
+
+    public async viewTransactionStatusWithReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>> {
+        return this.withBackoff((currentProvider) => currentProvider.viewTransactionStatusWithReceipts(txHash, accountId, waitUntil));
+    }
+
+    public async viewTransactionReceipt(receiptId: string): Promise<ExecutionOutcomeReceiptDetail> {
+        return this.withBackoff((currentProvider) => currentProvider.viewTransactionReceipt(receiptId));
     }
 
     async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
