@@ -1,6 +1,6 @@
 {
   "name": "@near-js/signers",
-  "version": "0.2.2",
+  "version": "2.0.0",
   "description": "Modules for cryptographically signing messages",
   "main": "lib/commonjs/index.cjs",
   "module": "lib/esm/index.js",
