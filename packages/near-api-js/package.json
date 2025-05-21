@@ -21,7 +21,7 @@
         "@near-js/transactions": "workspace:*",
         "@near-js/types": "workspace:*",
         "@near-js/utils": "workspace:*",
-        "@noble/curves": "1.8.1",
+        "@noble/curves": "1.9.1",
         "borsh": "1.0.0",
         "depd": "2.0.0",
         "http-errors": "1.7.2",
