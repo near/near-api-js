@@ -1,5 +1,13 @@
 # @near-js/biometric-ed25519
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.0.0
+  - @near-js/utils@2.0.0
+
 ## 1.3.2
 
 ### Patch Changes

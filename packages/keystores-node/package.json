@@ -1,6 +1,6 @@
 {
   "name": "@near-js/keystores-node",
-  "version": "0.1.2",
+  "version": "2.0.0",
   "description": "KeyStore implementation for working with keys in the local filesystem",
   "main": "lib/commonjs/index.cjs",
   "module": "lib/esm/index.js",
