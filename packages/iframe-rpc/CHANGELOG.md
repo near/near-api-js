@@ -1,5 +1,11 @@
 # @near-js/iframe-rpc
 
+## 2.0.1
+
+### Patch Changes
+
+- [#1554](https://github.com/near/near-api-js/pull/1554) [`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f) Thanks [@denbite](https://github.com/denbite)! - Redeploy recent release as patch
+
 ## 2.0.0
 
 ## 0.1.0

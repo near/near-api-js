@@ -1,6 +1,6 @@
 {
   "name": "@near-js/keystores-node",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "KeyStore implementation for working with keys in the local filesystem",
   "main": "lib/commonjs/index.cjs",
   "module": "lib/esm/index.js",
@@ -31,8 +31,8 @@
     "typescript": "5.4.5"
   },
   "peerDependencies": {
-    "@near-js/crypto": "^2.0.0",
-    "@near-js/keystores": "^2.0.0"
+    "@near-js/crypto": "^2.0.1",
+    "@near-js/keystores": "^2.0.1"
   },
   "files": [
     "lib"

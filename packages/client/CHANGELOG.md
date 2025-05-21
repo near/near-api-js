@@ -1,5 +1,21 @@
 # @near-js/client
 
+## 2.0.1
+
+### Patch Changes
+
+- [#1554](https://github.com/near/near-api-js/pull/1554) [`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f) Thanks [@denbite](https://github.com/denbite)! - Redeploy recent release as patch
+
+- Updated dependencies [[`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f)]:
+  - @near-js/accounts@2.0.1
+  - @near-js/crypto@2.0.1
+  - @near-js/keystores@2.0.1
+  - @near-js/providers@2.0.1
+  - @near-js/signers@2.0.1
+  - @near-js/transactions@2.0.1
+  - @near-js/types@2.0.1
+  - @near-js/utils@2.0.1
+
 ## 2.0.0
 
 ### Major Changes
