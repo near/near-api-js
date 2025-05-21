@@ -47,3 +47,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # setup-node by default reads from this env var
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
