@@ -1,5 +1,11 @@
 # @near-js/tokens
 
+## 2.0.1
+
+### Patch Changes
+
+- [#1554](https://github.com/near/near-api-js/pull/1554) [`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f) Thanks [@denbite](https://github.com/denbite)! - Redeploy recent release as patch
+
 ## 2.0.0
 
 ### Major Changes
@@ -9,6 +15,7 @@ New package, allows to work with tokens on the NEAR blockchain, this includes th
 Tokens implement the `getBalance` and `transfer` methods, as well as conversion utils such as `toUnits` and `toDecimal`
 
 In this first release, the following tokens are supported:
+
 - NEAR
 - USDT
 - USDC

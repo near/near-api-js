@@ -1,5 +1,20 @@
 # @near-js/accounts
 
+## 2.0.1
+
+### Patch Changes
+
+- [#1554](https://github.com/near/near-api-js/pull/1554) [`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f) Thanks [@denbite](https://github.com/denbite)! - Redeploy recent release as patch
+
+- Updated dependencies [[`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f)]:
+  - @near-js/crypto@2.0.1
+  - @near-js/providers@2.0.1
+  - @near-js/signers@2.0.1
+  - @near-js/tokens@2.0.1
+  - @near-js/transactions@2.0.1
+  - @near-js/types@2.0.1
+  - @near-js/utils@2.0.1
+
 ## 2.0.0
 
 ### Major Changes
@@ -9,6 +24,7 @@ The `Account` class has been reworked so now it is mostly a wrapper around `Prov
 A major change on the interface took place, from now `Accounts` do no longer require a `Connection` object to be constructed. Instead, accounts now take a `signer` and a `provider` as parameters, with the `signer` being optional.
 
 ### Very Important
+
 `signAndSendTransaction` used to try to automatically handle `nonce` collisions by having an exponential backoff strategy.
 
 From now own, the user is responsible for handling this.

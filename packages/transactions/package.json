@@ -1,6 +1,6 @@
 {
   "name": "@near-js/transactions",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Functions and data types for transactions on NEAR",
   "main": "lib/commonjs/index.cjs",
   "module": "lib/esm/index.js",
@@ -34,9 +34,9 @@
     "typescript": "5.4.5"
   },
   "peerDependencies": {
-    "@near-js/crypto": "^2.0.0",
-    "@near-js/types": "^2.0.0",
-    "@near-js/utils": "^2.0.0"
+    "@near-js/crypto": "^2.0.1",
+    "@near-js/types": "^2.0.1",
+    "@near-js/utils": "^2.0.1"
   },
   "files": [
     "lib"

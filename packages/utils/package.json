@@ -1,6 +1,6 @@
 {
   "name": "@near-js/utils",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Common methods and constants for the NEAR API JavaScript client",
   "main": "lib/commonjs/index.cjs",
   "module": "lib/esm/index.js",
@@ -32,7 +32,7 @@
     "typescript": "5.4.5"
   },
   "peerDependencies": {
-    "@near-js/types": "^2.0.0"
+    "@near-js/types": "^2.0.1"
   },
   "files": [
     "lib"
