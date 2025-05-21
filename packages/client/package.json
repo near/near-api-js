@@ -27,7 +27,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "20.0.0",
+    "@types/node": "22.15.21",
     "build": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "5.4.5"
