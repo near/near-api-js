@@ -4,6 +4,14 @@
 
 ### Major Changes
 
+The `Signers` have been completely rewritten. Before, signers used to be something closer to "Key Management" APIs, now their only concern is to:
+
+- `signTransaction` - sign a transaction
+- `signNep413Message` - sign a NEP413 message
+- `signDelegateAction` - sign a meta transaction
+
+All Key Management should now be handled by the user.
+
 - [#1513](https://github.com/near/near-api-js/pull/1513) [`a8e1046`](https://github.com/near/near-api-js/commit/a8e1046d4c184700bed93229f81e7875fca11b27) Thanks [@denbite](https://github.com/denbite)! - Major update for Signer and Account APIs to streamline development
 
 ### Patch Changes

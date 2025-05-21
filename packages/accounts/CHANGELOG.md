@@ -4,6 +4,31 @@
 
 ### Major Changes
 
+The `Account` class has been reworked so now it is mostly a wrapper around `Provider` and `Signer` classes.
+
+A major change on the interface took place, from now `Accounts` do no longer require a `Connection` object to be constructed. Instead, accounts now take a `signer` and a `provider` as parameters, with the `signer` being optional.
+
+### Very Important
+`signAndSendTransaction` used to try to automatically handle `nonce` collisions by having an exponential backoff strategy.
+
+From now own, the user is responsible for handling this.
+
+> The `signAndSendTransactionLegacy` method is still available for backwards compatibility.
+
+### Other changes
+
+- `viewFunction` has been deprecated in favor of simply using `provider.callFunction`
+
+- `transfer` allows to transfer any token as defined in `@near-js/tokens` package
+
+- `getBalance()` now accepts a token (`@near-js/tokens`) as an argument, by default it will return the **available** NEAR balance
+
+- Added methods to `createTransaction` and `createMetaTransaction`
+
+- Split `addAccessKey` into `addFullAccessKey` and `addFunctionCallAccessKey`
+
+- Deprecated multiple functions, all of them explain which function to use instead
+
 - [#1513](https://github.com/near/near-api-js/pull/1513) [`a8e1046`](https://github.com/near/near-api-js/commit/a8e1046d4c184700bed93229f81e7875fca11b27) Thanks [@denbite](https://github.com/denbite)! - Major update for Signer and Account APIs to streamline development
 
 ### Patch Changes
