@@ -715,7 +715,7 @@ export class Account {
     }
 
     /**
-     * @deprecated, accounts no longer use Connections
+     * @deprecated, accounts no longer use Connections since it's deprecated too
      */
     public getConnection(): Connection {
         return new Connection("", this.provider, this.signer);
