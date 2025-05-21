@@ -1,5 +1,4 @@
 ---
-"@near-js/wallet-account": major
 "@near-js/transactions": major
 "near-api-js": major
 "@near-js/providers": major
