@@ -27,7 +27,7 @@ export class LocalAccountCreator extends AccountCreator {
      * @returns {Promise<void>}
      */
     async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
-        await this.masterAccount.createAccount(newAccountId, publicKey, this.initialBalance);
+        await this.masterAccount.createAccountLegacy(newAccountId, publicKey, this.initialBalance);
     }
 }
 

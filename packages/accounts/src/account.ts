@@ -404,7 +404,7 @@ export class Account {
      * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
      *
      */
-    public async createTopLevelAccount(
+    public async createAccount(
         newAccountId: string,
         publicKey: PublicKey | string,
         nearToTransfer: bigint | string | number = "0"
@@ -884,12 +884,12 @@ export class Account {
     }
 
     /**
-     * @deprecated please instead use {@link createTopLevelAccount}
+     * @deprecated please instead use {@link Account.createAccount}
      *
      * @param newAccountId NEAR account name to be created
      * @param publicKey A public key created from the masterAccount
      */
-    async createAccount(
+    async createAccountLegacy(
         newAccountId: string,
         publicKey: string | PublicKey,
         amount: bigint
