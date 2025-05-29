@@ -8,8 +8,8 @@
 	"scripts": {
 		"build": "pnpm clean && pnpm build:esm && pnpm build:cjs",
 		"clean": "rimraf lib/",
-		"build:esm": "swc src --out-dir lib/esm --out-file-extension js --strip-leading-paths --config-file ../../swc.esm.json",
-		"build:cjs": "swc src --out-dir lib/commonjs --out-file-extension cjs --strip-leading-paths --config-file ../../swc.cjs.json",
+		"build:esm": "swc src --copy-files --out-dir lib/esm --out-file-extension js --strip-leading-paths --config-file ../../swc.esm.json",
+		"build:cjs": "swc src --copy-files --out-dir lib/commonjs --out-file-extension cjs --strip-leading-paths --config-file ../../swc.cjs.json",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
 		"test": "DEFAULT_FINALITY=optimistic jest"
@@ -56,9 +56,7 @@
 		"@near-js/types": "^2.0.1",
 		"@near-js/utils": "^2.0.1"
 	},
-	"files": [
-		"lib"
-	],
+	"files": ["lib"],
 	"exports": {
 		".": {
 			"types": "./lib/esm/index.d.ts",
