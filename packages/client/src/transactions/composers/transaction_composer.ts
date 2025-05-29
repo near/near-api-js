@@ -1,14 +1,16 @@
 import { PublicKey } from '@near-js/crypto';
 import {
-  Action,
+  type Action,
   actionCreators,
-  DelegateAction,
-  Signature,
+  type DelegateAction,
+  type Signature,
   Transaction,
+  type GlobalContractDeployMode,
+  type GlobalContractIdentifier,
 } from '@near-js/transactions';
 import { baseDecode, DEFAULT_FUNCTION_CALL_GAS } from '@near-js/utils';
-import { BlockHash } from '@near-js/types';
-import { TransactionOptions } from '../../interfaces';
+import type { BlockHash } from '@near-js/types';
+import type { TransactionOptions } from '../../interfaces';
 
 export class TransactionComposer {
   protected actions: Action[] = [];
@@ -119,6 +121,30 @@ export class TransactionComposer {
    */
   deployContract(code: Uint8Array): this {
     this.actions.push(actionCreators.deployContract(code));
+    return this;
+  }
+
+  /**
+ * Add an action to deploy a global contract.
+ * The transaction's `receiverId` for this action is typically the `senderId` (the account deploying globally).
+ * @param code Compiled smart contract binary (WASM).
+ * @param deployMode The deployment mode, determining if the contract is identified by its code hash or by the deployer's account ID.
+ *                   Use `new GlobalContractDeployMode({ CodeHash: null })` or `new GlobalContractDeployMode({ AccountId: null })`.
+ */
+  deployGlobalContract(code: Uint8Array, deployMode: GlobalContractDeployMode): this {
+    this.actions.push(actionCreators.deployGlobalContract(code, deployMode));
+    return this;
+  }
+
+  /**
+   * Add an action for the current account (`senderId` of the transaction) to start using a previously deployed global contract.
+   * The transaction's `receiverId` for this action should be the `senderId` (the account that will use the global contract).
+   * @param identifier The identifier for the global contract.
+   *                   Use `new GlobalContractIdentifier({ CodeHash: yourCryptoHashUint8Array })`
+   *                   or `new GlobalContractIdentifier({ AccountId: 'your.near' })`.
+   */
+  useGlobalContract(identifier: GlobalContractIdentifier): this {
+    this.actions.push(actionCreators.useGlobalContract(identifier));
     return this;
   }
 

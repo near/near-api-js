@@ -1,7 +1,7 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 
 import { actionCreators } from './action_creators';
-import { Action } from './actions';
+import { GlobalContractDeployMode, GlobalContractIdentifier, type Action } from './actions';
 
 const {
     addKey,
@@ -12,6 +12,8 @@ const {
     functionCall,
     stake,
     transfer,
+    deployGlobalContract,
+    useGlobalContract,
 } = actionCreators;
 
 export class DelegateAction {
@@ -23,14 +25,14 @@ export class DelegateAction {
     publicKey: PublicKey;
 
     constructor({ senderId, receiverId, actions, nonce, maxBlockHeight, publicKey }:
-      {
-          senderId: string,
-          receiverId: string,
-          actions: Action[],
-          nonce: bigint,
-          maxBlockHeight: bigint,
-          publicKey: PublicKey,
-      }
+        {
+            senderId: string,
+            receiverId: string,
+            actions: Action[],
+            nonce: bigint,
+            maxBlockHeight: bigint,
+            publicKey: PublicKey,
+        }
     ) {
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -61,7 +63,7 @@ export function buildDelegateAction({
     return new DelegateAction({
         senderId,
         receiverId,
-        actions: actions.map((a) => {
+        actions: actions.map((a: Action) => {
             // @ts-expect-error type workaround
             if (!a.type && !a.params) {
                 return a;
@@ -103,6 +105,24 @@ export function buildDelegateAction({
                     // @ts-expect-error type workaround
                     const { deposit } = a.params;
                     return transfer(deposit);
+                }
+                case 'DeployGlobalContract': {
+                    // @ts-expect-error type workaround
+                    const { code, deployMode } = a.params;
+                    // Ensure deployMode is an instance if passed as a plain object
+                    const modeInstance = deployMode instanceof GlobalContractDeployMode
+                        ? deployMode
+                        : new GlobalContractDeployMode(deployMode);
+                    return deployGlobalContract(code, modeInstance);
+                }
+                case 'UseGlobalContract': {
+                    // @ts-expect-error type workaround
+                    const { identifier } = a.params;
+                    // Ensure identifier is an instance if passed as a plain object
+                    const idInstance = identifier instanceof GlobalContractIdentifier
+                        ? identifier
+                        : new GlobalContractIdentifier(identifier);
+                    return useGlobalContract(idInstance);
                 }
             }
 
