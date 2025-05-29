@@ -41,7 +41,7 @@ test('create account and then view account returns the created account', async (
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
     const { balance: { total } } = await workingAccount.getState();
     const newAmount = total / 10n;
-    await nearjs.accountCreator.masterAccount.createAccountLegacy(newAccountName, newAccountPublicKey, newAmount);
+    await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
     const state = await newAccount.getState();
     expect(state.balance.total.toString()).toEqual(newAmount.toString());
@@ -52,7 +52,7 @@ test('create account with a secp256k1 key and then view account returns the crea
     const newAccountPublicKey = 'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28';
     const { balance: { total } } = await workingAccount.getState();
     const newAmount = total / 10n;
-    await nearjs.accountCreator.masterAccount.createAccountLegacy(newAccountName, newAccountPublicKey, newAmount);
+    await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
     const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
     const state = await newAccount.getState();
     expect(state.balance.total.toString()).toEqual(newAmount.toString());
@@ -141,7 +141,7 @@ describe('errors', () => {
     });
 
     test('create existing account', async () => {
-        await expect(workingAccount.createAccountLegacy(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100n))
+        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100n))
             .rejects.toThrow(/Can't create a new account .+, because it already exists/);
     });
 });
