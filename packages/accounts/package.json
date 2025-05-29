@@ -4,15 +4,14 @@
 	"description": "Classes encapsulating account-specific functionality",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
-	"types": "./lib/esm/index.d.ts",
+	"type": "module",
 	"scripts": {
-		"build": "pnpm clean && pnpm build:esm && pnpm build:cjs",
+		"build": "tsup",
 		"clean": "rimraf lib/",
-		"build:esm": "swc src --copy-files --out-dir lib/esm --out-file-extension js --strip-leading-paths --config-file ../../swc.esm.json",
-		"build:cjs": "swc src --copy-files --out-dir lib/commonjs --out-file-extension cjs --strip-leading-paths --config-file ../../swc.cjs.json",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-		"test": "DEFAULT_FINALITY=optimistic jest"
+		"test": "DEFAULT_FINALITY=optimistic jest",
+		"check-exports": "attw --pack ."
 	},
 	"keywords": [],
 	"author": "",
@@ -59,7 +58,6 @@
 	"files": ["lib"],
 	"exports": {
 		".": {
-			"types": "./lib/esm/index.d.ts",
 			"import": "./lib/esm/index.js",
 			"require": "./lib/commonjs/index.cjs"
 		}

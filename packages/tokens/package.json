@@ -4,15 +4,14 @@
 	"description": "Modules with tokens",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
-	"types": "./lib/esm/index.d.ts",
+	"type": "module",
 	"scripts": {
-		"build": "pnpm clean && pnpm build:esm && pnpm build:cjs",
+		"build": "tsup",
 		"clean": "rimraf lib/",
-		"build:esm": "swc src --copy-files --out-dir lib/esm --out-file-extension js --strip-leading-paths --config-file ../../swc.esm.json",
-		"build:cjs": "swc src --copy-files --out-dir lib/commonjs --out-file-extension cjs --strip-leading-paths --config-file ../../swc.cjs.json",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-		"test": "jest"
+		"test": "jest",
+		"check-exports": "attw --pack ."
 	},
 	"keywords": [],
 	"author": "",
@@ -31,21 +30,15 @@
 	"exports": {
 		".": {
 			"require": "./lib/commonjs/index.cjs",
-			"import": "./lib/esm/index.js",
-			"types": "./lib/esm/index.d.ts",
-			"default": "./lib/esm/index.js"
+			"import": "./lib/esm/index.js"
 		},
 		"./mainnet": {
 			"require": "./lib/commonjs/mainnet/index.cjs",
-			"import": "./lib/esm/mainnet/index.js",
-			"types": "./lib/esm/mainnet/index.d.ts",
-			"default": "./lib/esm/mainnet/index.js"
+			"import": "./lib/esm/mainnet/index.js"
 		},
 		"./testnet": {
 			"require": "./lib/commonjs/testnet/index.cjs",
-			"import": "./lib/esm/testnet/index.js",
-			"types": "./lib/esm/testnet/index.d.ts",
-			"default": "./lib/esm/testnet/index.js"
+			"import": "./lib/esm/testnet/index.js"
 		}
 	}
 }
