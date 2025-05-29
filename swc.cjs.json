@@ -1,18 +1,19 @@
 {
-  "$schema": "https://swc.rs/schema.json",
-  "sourceMaps": true,
-  "jsc": {
-    "parser": {
-      "syntax": "typescript",
-      "decorators": true,
-      "decoratorsBeforeExport": true
-    },
-    "baseUrl": "./"
-  },
-  "module": {
-    "type": "commonjs",
-    "resolveFully": true,
-    "outFileExtension": "cjs"
-  },
-  "minify": false
+	"$schema": "https://swc.rs/schema.json",
+	"sourceMaps": true,
+	"jsc": {
+		"parser": {
+			"syntax": "typescript",
+			"decorators": true,
+			"decoratorsBeforeExport": true
+		},
+		"baseUrl": "./",
+		"target": "es2022"
+	},
+	"module": {
+		"type": "commonjs",
+		"resolveFully": true,
+		"outFileExtension": "cjs"
+	},
+	"minify": false
 }
