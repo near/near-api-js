@@ -412,11 +412,15 @@ export class Account {
     }
 
     /**
-     * Tries to create a new NEAR account. Assuming the instantiated account is ana.near, then
-     * this function can create two types of accounts:
+     * Creates a new NEAR account with a given ID and public key.
      * 
-     * - Accounts of the form <name>.<tla>, e.g. bob.near
-     * - Sub-accounts of the form <prefix>.ana.near, e.g. sub.ana.near
+     * This method can create two types of accounts:
+     * 
+     * 1. Top-level accounts of the form `name.tla` (e.g., `bob.near`):
+     * 
+     * 2. Sub-accounts of the current account (e.g., `sub.ana.near`):
+     *    - The new account ID must end with the current account ID
+     *    - Example: If your account is `ana.near`, you can create `sub.ana.near`
      *
      * @param newAccountId the new account to create (e.g. bob.near or sub.ana.near)
      * @param publicKey the public part of the key that will control the account
