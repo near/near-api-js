@@ -235,7 +235,6 @@ describe('Global Contract Actions Serialization', () => {
         const deserializedAction = deserializedTx.actions[0].useGlobalContract;
         expect(deserializedAction).toBeDefined();
         if (deserializedAction) { // Type guard
-            console.log(deserializedAction)
             expect(deserializedAction.contractIdentifier).toEqual({ CodeHash: Array.from(sampleCodeHash) });
         }
     });
@@ -253,7 +252,6 @@ describe('Global Contract Actions Serialization', () => {
         const deserializedAction = deserializedTx.actions[0].useGlobalContract;
         expect(deserializedAction).toBeDefined();
         if (deserializedAction) { // Type guard
-            console.log(deserializedAction.contractIdentifier);
             expect(deserializedAction.contractIdentifier.AccountId).toBe(contractOwnerAccountId);
         }
     });
