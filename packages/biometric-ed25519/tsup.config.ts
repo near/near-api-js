@@ -2,7 +2,7 @@ import { defineConfig } from "tsup";
 import { fixFolderImportsPlugin, fixExtensionsPlugin } from 'esbuild-fix-imports-plugin';
 
 export default defineConfig([{
-    splitting: true,
+    splitting: false,
     bundle: false,
     entryPoints: ["src/**/*.ts"],
     format: ["cjs"],
@@ -12,7 +12,7 @@ export default defineConfig([{
     target: "es2022",
     esbuildPlugins: [fixFolderImportsPlugin(), fixExtensionsPlugin()],
 }, {
-    splitting: true,
+    splitting: false,
     bundle: false,
     entryPoints: ["src/**/*.ts"],
     format: ["esm"],

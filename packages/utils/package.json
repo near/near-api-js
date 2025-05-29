@@ -26,6 +26,7 @@
 		"@jest/globals": "^29.7.0",
 		"@types/node": "20.0.0",
 		"build": "workspace:*",
+		"glob": "^11.0.2",
 		"jest": "29.7.0",
 		"ts-jest": "29.2.6",
 		"tsconfig": "workspace:*",
@@ -34,7 +35,9 @@
 	"peerDependencies": {
 		"@near-js/types": "^2.0.1"
 	},
-	"files": ["lib"],
+	"files": [
+		"lib"
+	],
 	"exports": {
 		".": {
 			"import": "./lib/esm/index.js",
