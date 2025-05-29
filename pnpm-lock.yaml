@@ -24,6 +24,12 @@ importers:
       '@commitlint/config-conventional':
         specifier: 19.7.1
         version: 19.7.1
+      '@swc/cli':
+        specifier: ^0.7.7
+        version: 0.7.7(@swc/core@1.11.29)
+      '@swc/core':
+        specifier: ^1.11.29
+        version: 1.11.29
       '@typescript-eslint/eslint-plugin':
         specifier: 6.21.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.20.0)(typescript@5.4.5))(eslint@8.20.0)(typescript@5.4.5)
@@ -106,12 +112,6 @@ importers:
       '@scure/base':
         specifier: ^1.2.4
         version: 1.2.4
-      '@swc/cli':
-        specifier: ^0.7.7
-        version: 0.7.7(@swc/core@1.11.29)
-      '@swc/core':
-        specifier: ^1.11.29
-        version: 1.11.29
       '@types/depd':
         specifier: ^1.1.37
         version: 1.1.37
@@ -133,9 +133,6 @@ importers:
       near-workspaces:
         specifier: 5.0.0
         version: 5.0.0
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
       semver:
         specifier: 7.7.1
         version: 7.7.1
