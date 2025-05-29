@@ -1,55 +1,53 @@
 {
-  "name": "@near-js/providers",
-  "version": "2.0.1",
-  "description": "Library of implementations for interfacing with the NEAR blockchain",
-  "main": "lib/commonjs/index.cjs",
-  "module": "lib/esm/index.js",
-  "types": "./lib/esm/index.d.ts",
-  "scripts": {
-    "build": "pnpm compile:esm && pnpm compile:cjs",
-    "compile:esm": "tsc -p tsconfig.json",
-    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
-    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
-    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-    "test": "jest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@near-js/transactions": "workspace:*",
-    "@near-js/types": "workspace:*",
-    "@near-js/utils": "workspace:*",
-    "@near-js/crypto": "workspace:*",
-    "borsh": "1.0.0",
-    "exponential-backoff": "^3.1.2"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/node": "20.0.0",
-    "build": "workspace:*",
-    "jest": "29.7.0",
-    "near-workspaces": "5.0.0",
-    "ts-jest": "29.2.6",
-    "tsconfig": "workspace:*",
-    "typescript": "5.4.5"
-  },
-  "peerDependencies": {
-    "@near-js/transactions": "^2.0.1",
-    "@near-js/types": "^2.0.1",
-    "@near-js/utils": "^2.0.1",
-    "@near-js/crypto": "^2.0.1"
-  },
-  "optionalDependencies": {
-    "node-fetch": "2.6.7"
-  },
-  "files": [
-    "lib"
-  ],
-  "exports": {
-    "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/commonjs/index.cjs",
-    "types": "./lib/esm/index.d.ts",
-    "default": "./lib/esm/index.js"
-  }
+	"name": "@near-js/providers",
+	"version": "2.0.1",
+	"description": "Library of implementations for interfacing with the NEAR blockchain",
+	"main": "lib/commonjs/index.cjs",
+	"module": "lib/esm/index.js",
+	"types": "./lib/esm/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsup",
+		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
+		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
+		"test": "jest",
+		"check-exports": "attw --pack ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@near-js/transactions": "workspace:*",
+		"@near-js/types": "workspace:*",
+		"@near-js/utils": "workspace:*",
+		"@near-js/crypto": "workspace:*",
+		"borsh": "1.0.0",
+		"exponential-backoff": "^3.1.2"
+	},
+	"devDependencies": {
+		"@jest/globals": "^29.7.0",
+		"@types/node": "20.0.0",
+		"build": "workspace:*",
+		"jest": "29.7.0",
+		"near-workspaces": "5.0.0",
+		"ts-jest": "29.2.6",
+		"tsconfig": "workspace:*",
+		"typescript": "5.4.5"
+	},
+	"peerDependencies": {
+		"@near-js/transactions": "^2.0.1",
+		"@near-js/types": "^2.0.1",
+		"@near-js/utils": "^2.0.1",
+		"@near-js/crypto": "^2.0.1"
+	},
+	"optionalDependencies": {
+		"node-fetch": "2.6.7"
+	},
+	"files": ["lib"],
+	"exports": {
+		".": {
+			"import": "./lib/esm/index.js",
+			"require": "./lib/commonjs/index.cjs"
+		}
+	}
 }
