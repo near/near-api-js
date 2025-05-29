@@ -6,9 +6,10 @@
 	"module": "lib/esm/index.js",
 	"types": "./lib/esm/index.d.ts",
 	"scripts": {
-		"build": "pnpm compile:esm && pnpm compile:cjs",
-		"compile:esm": "tsc -p tsconfig.json",
-		"compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
+		"build": "pnpm clean && pnpm build:esm && pnpm build:cjs",
+		"clean": "rimraf lib/",
+		"build:esm": "swc src --copy-files --out-dir lib/esm --out-file-extension js --strip-leading-paths --config-file ../../swc.esm.json",
+		"build:cjs": "swc src --copy-files --out-dir lib/commonjs --out-file-extension cjs --strip-leading-paths --config-file ../../swc.cjs.json",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
 		"test": "jest"
@@ -40,9 +41,10 @@
 	},
 	"files": ["lib"],
 	"exports": {
-		"require": "./lib/commonjs/index.cjs",
-		"import": "./lib/esm/index.js",
-		"types": "./lib/esm/index.d.ts",
-		"default": "./lib/esm/index.js"
+		".": {
+			"types": "./lib/esm/index.d.ts",
+			"import": "./lib/esm/index.js",
+			"require": "./lib/commonjs/index.cjs"
+		}
 	}
 }
