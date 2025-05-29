@@ -412,9 +412,13 @@ export class Account {
     }
 
     /**
-     * Creates an account of the form <name>.<tla>, e.g. ana.testnet or ana.near
+     * Tries to create a new NEAR account. Assuming the instantiated account is ana.near, then
+     * this function can create two types of accounts:
+     * 
+     * - Accounts of the form <name>.<tla>, e.g. bob.near
+     * - Sub-accounts of the form <prefix>.ana.near, e.g. sub.ana.near
      *
-     * @param newAccountId the new account to create (e.g. ana.near)
+     * @param newAccountId the new account to create (e.g. bob.near or sub.ana.near)
      * @param publicKey the public part of the key that will control the account
      * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
      *
@@ -430,30 +434,30 @@ export class Account {
                 publicKey,
                 nearToTransfer
             );
-        } else {
-            const splitted = newAccountId.split(".");
-            if (splitted.length != 2) {
-                throw new Error(
-                    "newAccountId needs to be of the form <string>.<tla>"
-                );
-            }
-
-            const TLA = splitted[1];
-            return this.signAndSendTransaction({
-                receiverId: TLA,
-                actions: [
-                    functionCall(
-                        "create_account",
-                        {
-                            new_account_id: newAccountId,
-                            new_public_key: publicKey.toString(),
-                        },
-                        BigInt("60000000000000"),
-                        BigInt(nearToTransfer)
-                    ),
-                ],
-            });
         }
+
+        const splitted = newAccountId.split(".");
+        if (splitted.length != 2) {
+            throw new Error(
+                "newAccountId needs to be of the form <string>.<tla>"
+            );
+        }
+
+        const TLA = splitted[1];
+        return this.signAndSendTransaction({
+            receiverId: TLA,
+            actions: [
+                functionCall(
+                    "create_account",
+                    {
+                        new_account_id: newAccountId,
+                        new_public_key: publicKey.toString(),
+                    },
+                    BigInt("60000000000000"),
+                    BigInt(nearToTransfer)
+                ),
+            ],
+        });
     }
 
     /**
