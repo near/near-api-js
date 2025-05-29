@@ -650,37 +650,25 @@ importers:
       borsh:
         specifier: 1.0.0
         version: 1.0.0
-      vitest:
-        specifier: ^3.1.4
-        version: 3.1.4(@types/node@20.0.0)(@vitest/ui@3.1.4)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
     devDependencies:
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
       '@near-js/keystores':
         specifier: workspace:*
         version: link:../keystores
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      '@vitest/ui':
-        specifier: 3.1.4
-        version: 3.1.4(vitest@3.1.4)
       build:
         specifier: workspace:*
         version: link:../build
-      jest:
-        specifier: 29.7.0
-        version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5))
-      ts-jest:
-        specifier: 29.2.6
-        version: 29.2.6(@babel/core@7.24.7)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.7))(jest@29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@types/node@20.0.0)(typescript@5.4.5)))(typescript@5.4.5)
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
       typescript:
         specifier: 5.4.5
         version: 5.4.5
+      vitest:
+        specifier: ^3.1.4
+        version: 3.1.4(@types/node@20.0.0)(@vitest/ui@3.1.4)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
 
   packages/tsconfig: {}
 
@@ -5379,7 +5367,8 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@polka/url@1.0.0-next.29': {}
+  '@polka/url@1.0.0-next.29':
+    optional: true
 
   '@rollup/rollup-android-arm-eabi@4.41.1':
     optional: true
@@ -5705,6 +5694,7 @@ snapshots:
       tinyglobby: 0.2.14
       tinyrainbow: 2.0.0
       vitest: 3.1.4(@types/node@20.0.0)(@vitest/ui@3.1.4)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
+    optional: true
 
   '@vitest/utils@3.1.4':
     dependencies:
@@ -6451,7 +6441,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.2
 
-  fflate@0.8.2: {}
+  fflate@0.8.2:
+    optional: true
 
   fido2-lib@3.4.1:
     dependencies:
@@ -6494,7 +6485,8 @@ snapshots:
 
   flatted@3.3.1: {}
 
-  flatted@3.3.3: {}
+  flatted@3.3.3:
+    optional: true
 
   foreground-child@3.3.0:
     dependencies:
@@ -7539,7 +7531,8 @@ snapshots:
 
   mri@1.2.0: {}
 
-  mrmime@2.0.1: {}
+  mrmime@2.0.1:
+    optional: true
 
   ms@2.1.2: {}
 
@@ -7922,6 +7915,7 @@ snapshots:
       '@polka/url': 1.0.0-next.29
       mrmime: 2.0.1
       totalist: 3.0.1
+    optional: true
 
   sisteransi@1.0.5: {}
 
@@ -8064,7 +8058,8 @@ snapshots:
 
   toidentifier@1.0.0: {}
 
-  totalist@3.0.1: {}
+  totalist@3.0.1:
+    optional: true
 
   tr46@0.0.3: {}
 
