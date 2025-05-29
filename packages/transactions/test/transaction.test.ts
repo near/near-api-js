@@ -1,12 +1,12 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { actionCreators } from '../src';
 
 const { functionCall } = actionCreators;
 
 test('functionCall with already serialized args', () => {
     const serializedArgs = Buffer.from('{key: value}');
-    const action = functionCall('methodName', serializedArgs, 1n, 2n);    
-    expect(action).toMatchObject({ 
+    const action = functionCall('methodName', serializedArgs, 1n, 2n);
+    expect(action).toMatchObject({
         functionCall: {
             methodName: 'methodName',
             args: serializedArgs,
@@ -19,7 +19,7 @@ test('functionCall with already serialized args', () => {
 test('functionCall with non-serialized args', () => {
     const serializedArgs = Buffer.from(JSON.stringify({ key: 'value' }));
     const action = functionCall('methodName', { key: 'value' }, 1n, 2n);
-    expect(action).toMatchObject({ 
+    expect(action).toMatchObject({
         functionCall: {
             methodName: 'methodName',
             args: serializedArgs,
