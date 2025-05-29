@@ -178,7 +178,10 @@ export class Account {
 
         return {
             balance: {
-                total, usedOnStorage, locked, available
+                total,
+                usedOnStorage,
+                locked,
+                available,
             },
             storageUsage: state.storage_usage,
             codeHash: state.code_hash,
@@ -366,19 +369,31 @@ export class Account {
             actions
         );
 
-        const result = await this.provider.sendTransactionUntil(signedTx, waitUntil);
+        const result = await this.provider.sendTransactionUntil(
+            signedTx,
+            waitUntil
+        );
 
-        if (throwOnFailure && typeof result.status === 'object' && typeof result.status.Failure === 'object' && result.status.Failure !== null) {
+        if (
+            throwOnFailure &&
+            typeof result.status === "object" &&
+            typeof result.status.Failure === "object" &&
+            result.status.Failure !== null
+        ) {
             throw parseResultError(result);
         }
 
-        return result
+        return result;
     }
 
     async signAndSendTransactions({
-        transactions, waitUntil = DEFAULT_WAIT_STATUS, throwOnFailure = true
+        transactions,
+        waitUntil = DEFAULT_WAIT_STATUS,
+        throwOnFailure = true,
     }: {
-        transactions: { receiverId: string; actions: Action[] }[], waitUntil?: TxExecutionStatus, throwOnFailure?: boolean
+        transactions: { receiverId: string; actions: Action[] }[];
+        waitUntil?: TxExecutionStatus;
+        throwOnFailure?: boolean;
     }): Promise<FinalExecutionOutcome[]> {
         if (!this.signer) throw new Error("Please set a signer");
 
@@ -388,27 +403,43 @@ export class Account {
                     receiverId,
                     actions,
                     waitUntil,
-                    throwOnFailure
-                })
+                    throwOnFailure,
+                });
             })
         );
 
-        return results
+        return results;
     }
 
     /**
-     * Creates an account of the form <name>.<tla>, e.g. ana.testnet or ana.near
+     * Creates a new NEAR account with a given ID and public key.
+     * 
+     * This method can create two types of accounts:
+     * 
+     * 1. Top-level accounts of the form `name.tla` (e.g., `bob.near`):
+     * 
+     * 2. Sub-accounts of the current account (e.g., `sub.ana.near`):
+     *    - The new account ID must end with the current account ID
+     *    - Example: If your account is `ana.near`, you can create `sub.ana.near`
      *
-     * @param newAccountId the new account to create (e.g. ana.near)
+     * @param newAccountId the new account to create (e.g. bob.near or sub.ana.near)
      * @param publicKey the public part of the key that will control the account
      * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
      *
      */
-    public async createTopLevelAccount(
+    public async createAccount(
         newAccountId: string,
         publicKey: PublicKey | string,
         nearToTransfer: bigint | string | number = "0"
     ): Promise<FinalExecutionOutcome> {
+        if (newAccountId.endsWith(this.accountId)) {
+            return this.createSubAccount(
+                newAccountId,
+                publicKey,
+                nearToTransfer
+            );
+        }
+
         const splitted = newAccountId.split(".");
         if (splitted.length != 2) {
             throw new Error(
@@ -513,13 +544,17 @@ export class Account {
      * @param options.allowance The amount of NEAR this key can expend in gas
      * @returns
      */
-    public async addFunctionCallAccessKey(
-        { publicKey, contractId, methodNames = [], allowance = NEAR.toUnits("0.25") }: {
-            publicKey: PublicKey | string,
-            contractId: string,
-            methodNames: string[],
-            allowance: bigint | string | number
-        }): Promise<FinalExecutionOutcome> {
+    public async addFunctionCallAccessKey({
+        publicKey,
+        contractId,
+        methodNames = [],
+        allowance = NEAR.toUnits("0.25"),
+    }: {
+        publicKey: PublicKey | string;
+        contractId: string;
+        methodNames: string[];
+        allowance: bigint | string | number;
+    }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [
@@ -531,7 +566,7 @@ export class Account {
                         BigInt(allowance)
                     )
                 ),
-            ]
+            ],
         });
     }
 
@@ -544,17 +579,10 @@ export class Account {
     public async addFullAccessKey(
         publicKey: PublicKey | string
     ): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransaction(
-            {
-                receiverId: this.accountId,
-                actions: [
-                    addKey(
-                        PublicKey.from(publicKey),
-                        fullAccessKey()
-                    ),
-                ],
-            }
-        );
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [addKey(PublicKey.from(publicKey), fullAccessKey())],
+        });
     }
 
     /**
@@ -606,7 +634,7 @@ export class Account {
 
     /**
      * This function simply calls the `signNep413Message` method of the Signer
-     * 
+     *
      * @param options
      * @param options.message The message to be signed (e.g. "authenticating")
      * @param options.recipient Who will receive the message (e.g. auth.app.com)
@@ -636,7 +664,7 @@ export class Account {
     }
 
     /**
-     * 
+     *
      * @param token The token to check the balance of. Defaults to Native NEAR.
      * @returns The available balance of the account in units (e.g. yoctoNEAR).
      */
@@ -654,22 +682,19 @@ export class Account {
      * @param amount - The amount of tokens to transfer in units (e.g. yoctoNEAR).
      * @param receiverId - The NEAR account ID of the receiver.
      * @param token - The token to transfer. Defaults to Native NEAR.
-     * 
+     *
      */
-    public async transfer(
-        {
-            receiverId,
-            amount,
-            token = NEAR
-        }: {
-            receiverId: string;
-            amount: bigint | string | number;
-            token?: NativeToken | FungibleToken;
-        }
-    ): Promise<FinalExecutionOutcome> {
+    public async transfer({
+        receiverId,
+        amount,
+        token = NEAR,
+    }: {
+        receiverId: string;
+        amount: bigint | string | number;
+        token?: NativeToken | FungibleToken;
+    }): Promise<FinalExecutionOutcome> {
         return token.transfer({ from: this, receiverId, amount });
     }
-
 
     // DEPRECATED FUNCTIONS BELLOW - Please remove in next release
 
@@ -884,27 +909,6 @@ export class Account {
     }
 
     /**
-     * @deprecated please instead use {@link createTopLevelAccount}
-     *
-     * @param newAccountId NEAR account name to be created
-     * @param publicKey A public key created from the masterAccount
-     */
-    async createAccount(
-        newAccountId: string,
-        publicKey: string | PublicKey,
-        amount: bigint
-    ): Promise<FinalExecutionOutcome> {
-        return this.signAndSendTransactionLegacy({
-            receiverId: newAccountId,
-            actions: [
-                createAccount(),
-                transfer(amount),
-                addKey(PublicKey.from(publicKey), fullAccessKey()),
-            ],
-        });
-    }
-
-    /**
      * @deprecated please instead use {@link signAndSendTransaction}
      *
      * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
@@ -1111,10 +1115,10 @@ export class Account {
 
     /**
      * @deprecated please use {@link Provider.callFunction} instead
-     * 
+     *
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
-     * 
+     *
      * @param options Function call options.
      * @param options.contractId NEAR account where the contract is deployed
      * @param options.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
@@ -1152,7 +1156,7 @@ export class Account {
 
     /**
      * @deprecated please use {@link getAccessKeyList} instead
-     * 
+     *
      * Get all access keys for the account
      * @see [https://docs.near.org/api/rpc/access-keys#view-access-key-list](https://docs.near.org/api/rpc/access-keys#view-access-key-list)
      *
@@ -1175,7 +1179,7 @@ export class Account {
 
     /**
      * @deprecated
-     * 
+     *
      * Returns a list of authorized apps
      * @todo update the response value to return all the different keys, not just app keys.
      *
@@ -1203,21 +1207,21 @@ export class Account {
 
     /**
      * @deprecated please use {@link getState} instead
-     * 
+     *
      * Returns basic NEAR account information via the `view_account` RPC query method
      * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
      */
     async state(): Promise<AccountView> {
         return this.provider.query<AccountView>({
-            request_type: 'view_account',
+            request_type: "view_account",
             account_id: this.accountId,
-            finality: 'optimistic'
+            finality: "optimistic",
         });
     }
 
     /**
      * @deprecated please use {@link getState} instead
-     * 
+     *
      */
     async getAccountBalance(): Promise<AccountBalance> {
         const protocolConfig = await this.provider.experimental_protocolConfig({
