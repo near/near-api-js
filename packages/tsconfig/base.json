@@ -1,25 +1,28 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Default",
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "module": "es2022",
-    "target": "es2022",
-    "lib": ["es2022", "DOM"],
-    "moduleResolution": "node",
-    "alwaysStrict": true,
-    "declaration": true,
-    "declarationMap": true,
-    "preserveSymlinks": true,
-    "preserveWatchOutput": true,
-    "pretty": false,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true
-  },
-  "exclude": ["node_modules"]
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Default",
+	"paths": {
+		"@near-js/*": ["../near-api-js/packages/*"]
+	},
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"module": "es2022",
+		"target": "es2022",
+		"lib": ["es2022", "DOM"],
+		"moduleResolution": "node",
+		"alwaysStrict": true,
+		"declaration": true,
+		"declarationMap": true,
+		"preserveSymlinks": true,
+		"preserveWatchOutput": true,
+		"pretty": false,
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": false,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"experimentalDecorators": true,
+		"resolveJsonModule": true
+	},
+	"exclude": ["node_modules"]
 }

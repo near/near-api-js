@@ -3,10 +3,12 @@ import type { Transaction } from '@near-js/transactions';
 import type { TransactionComposer } from '../transactions';
 import type { SignAndSendTransactionDependency, SignerDependency } from './dependencies';
 import type { RpcProviderQueryParams } from './view';
-import { BlockHash } from '@near-js/types';
-import { PublicKey } from '@near-js/crypto';
+import type { GlobalContractDeployMode, GlobalContractIdentifier } from '@near-js/transactions';
 
-export interface SignAndSendParams extends SignAndSendTransactionDependency, RpcProviderQueryParams {}
+import type { BlockHash } from '@near-js/types';
+import type { PublicKey } from '@near-js/crypto';
+
+export interface SignAndSendParams extends SignAndSendTransactionDependency, RpcProviderQueryParams { }
 
 export interface ExternalActionTransaction extends SignAndSendParams {
   receiver: string;
@@ -53,7 +55,7 @@ interface AddAccessKeyParams extends ReflexiveActionTransaction {
   publicKey: string;
 }
 
-export interface ModifyAccessKeyParams extends AddAccessKeyParams {}
+export interface ModifyAccessKeyParams extends AddAccessKeyParams { }
 
 export interface AddFunctionCallAccessKeyParams extends AddAccessKeyParams {
   contract: string;
@@ -95,3 +97,11 @@ export interface MetaTransactionOptions extends TransactionOptions {
 export interface SignedTransactionOptions extends TransactionOptions, SignAndSendTransactionDependency {
 }
 
+export interface DeployGlobalContractClientParams extends ReflexiveActionTransaction {
+  code: Uint8Array;
+  deployMode: GlobalContractDeployMode;
+}
+
+export interface UseGlobalContractClientParams extends ReflexiveActionTransaction {
+  identifier: GlobalContractIdentifier;
+}

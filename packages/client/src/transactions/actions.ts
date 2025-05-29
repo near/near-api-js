@@ -2,6 +2,8 @@ import type {
   AddFunctionCallAccessKeyParams,
   DeleteAccountParams,
   DeployContractParams,
+  DeployGlobalContractClientParams,
+  UseGlobalContractClientParams,
   FunctionCallParams,
   ModifyAccessKeyParams,
   StakeParams,
@@ -119,5 +121,38 @@ export function deleteAccount({ account, beneficiaryId, blockReference, deps }: 
 export function deployContract({ account, code, blockReference, deps }: DeployContractParams) {
   return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
     .deployContract(code)
+    .signAndSend(blockReference);
+}
+
+
+/**
+ * Deploy a global contract.
+ * The transaction is typically sent by the account that will pay for the global storage.
+ * The receiver of the transaction is the account itself.
+ * @param account Account initiating the global deployment and paying for storage.
+ * @param code WASM code as a byte array.
+ * @param deployMode Deployment mode: `new GlobalContractDeployMode({ CodeHash: null })` or `new GlobalContractDeployMode({ AccountId: null })`.
+ * @param blockReference Optional block ID/finality for the transaction.
+ * @param deps Sign-and-send dependencies (RPC provider and signer for the `account`).
+ */
+export function deployGlobalContractClient({ account, code, deployMode, blockReference, deps }: DeployGlobalContractClientParams) {
+  return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
+    .deployGlobalContract(code, deployMode)
+    .signAndSend(blockReference);
+}
+
+/**
+ * Instruct an account to use a previously deployed global contract.
+ * The transaction is sent by and received by the account that will start using the global contract.
+ * @param account Account that will start using the global contract.
+ * @param identifier Identifier of the global contract:
+ *                   `new GlobalContractIdentifier({ CodeHash: yourCryptoHashUint8Array })` or
+ *                   `new GlobalContractIdentifier({ AccountId: 'contract_owner.near' })`.
+ * @param blockReference Optional block ID/finality for the transaction.
+ * @param deps Sign-and-send dependencies (RPC provider and signer for the `account`).
+ */
+export function useGlobalContractClient({ account, identifier, blockReference, deps }: UseGlobalContractClientParams) {
+  return SignedTransactionComposer.init({ sender: account, receiver: account, deps })
+    .useGlobalContract(identifier)
     .signAndSend(blockReference);
 }

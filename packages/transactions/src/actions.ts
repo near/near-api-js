@@ -1,8 +1,8 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 import { Enum } from '@near-js/types';
 
-import { DelegateAction } from './delegate';
-import { Signature } from './signature';
+import type { DelegateAction } from './delegate';
+import type { Signature } from './signature';
 
 export class FunctionCallPermission {
     allowance?: bigint;
@@ -16,7 +16,7 @@ export class FunctionCallPermission {
     }
 }
 
-export class FullAccessPermission {}
+export class FullAccessPermission { }
 
 export class AccessKeyPermission extends Enum {
     enum: string;
@@ -43,7 +43,7 @@ export class AccessKey {
 }
 
 
-export class CreateAccount {}
+export class CreateAccount { }
 export class DeployContract {
     code: Uint8Array;
 
@@ -52,6 +52,7 @@ export class DeployContract {
     }
 
 }
+
 export class FunctionCall {
     methodName: string;
     args: Uint8Array;
@@ -115,6 +116,53 @@ export class SignedDelegate {
     }
 }
 
+// Add global contract support classes
+export class GlobalContractDeployMode extends Enum {
+    enum: string;
+    CodeHash?: null;
+    AccountId?: null;
+
+    constructor(props: { CodeHash?: null; AccountId?: null }) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
+}
+
+export class GlobalContractIdentifier extends Enum {
+    enum: string;
+    CodeHash?: Uint8Array;
+    AccountId?: string;
+
+    constructor(props: { CodeHash?: Uint8Array; AccountId?: string }) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
+}
+
+export class DeployGlobalContract {
+    code: Uint8Array;
+    deployMode: GlobalContractDeployMode;
+
+    constructor({ code, deployMode }: { code: Uint8Array; deployMode: GlobalContractDeployMode }) {
+        this.code = code;
+        this.deployMode = deployMode;
+    }
+}
+
+export class UseGlobalContract {
+    contractIdentifier: GlobalContractIdentifier;
+
+    constructor({ contractIdentifier }: { contractIdentifier: GlobalContractIdentifier }) {
+        this.contractIdentifier = contractIdentifier;
+    }
+}
+
 /**
  * Contains a list of the valid transaction Actions available with this API
  * @see {@link https://nomicon.io/RuntimeSpec/Actions.html | Actions Spec}
@@ -130,6 +178,8 @@ export class Action extends Enum {
     deleteKey?: DeleteKey;
     deleteAccount?: DeleteAccount;
     signedDelegate?: SignedDelegate;
+    deployGlobalContract?: DeployGlobalContract;
+    useGlobalContract?: UseGlobalContract;
 
     constructor(props: any) {
         super(props);
