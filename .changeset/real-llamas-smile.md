@@ -12,7 +12,6 @@
 "@near-js/signers": patch
 "@near-js/tokens": patch
 "@near-js/transactions": patch
-"tsconfig": patch
 "@near-js/types": patch
 ---
 
