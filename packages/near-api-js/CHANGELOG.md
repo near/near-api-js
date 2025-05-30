@@ -1,5 +1,25 @@
 # near-api-js
 
+## 6.0.2
+
+### Patch Changes
+
+- [#1556](https://github.com/near/near-api-js/pull/1556) [`4971e77`](https://github.com/near/near-api-js/commit/4971e77818d4239ed45552efef0dbc3adb4541c2) Thanks [@denbite](https://github.com/denbite)! - Rename `createTopLevelAccount` back to `createAccount` for the sake of better naming
+
+- [#1560](https://github.com/near/near-api-js/pull/1560) [`3349d4b`](https://github.com/near/near-api-js/commit/3349d4b542bab2a2150326918bdc0b40e3b7fdbe) Thanks [@denbite](https://github.com/denbite)! - Fix the bug with `ft_balance_of` always returning `undefined` for FungibleToken
+
+- Updated dependencies [[`4971e77`](https://github.com/near/near-api-js/commit/4971e77818d4239ed45552efef0dbc3adb4541c2), [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b)]:
+  - @near-js/accounts@2.0.2
+  - @near-js/crypto@2.0.2
+  - @near-js/keystores-browser@2.0.2
+  - @near-js/keystores-node@2.0.2
+  - @near-js/keystores@2.0.2
+  - @near-js/providers@2.0.2
+  - @near-js/signers@2.0.2
+  - @near-js/transactions@2.0.2
+  - @near-js/types@2.0.2
+  - @near-js/utils@2.0.2
+
 ## 6.0.1
 
 ### Patch Changes

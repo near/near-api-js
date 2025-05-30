@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/tokens",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"description": "Modules with tokens",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
@@ -26,7 +26,9 @@
 		"tsconfig": "workspace:*",
 		"typescript": "5.4.5"
 	},
-	"files": ["lib"],
+	"files": [
+		"lib"
+	],
 	"exports": {
 		".": {
 			"require": "./lib/commonjs/index.cjs",

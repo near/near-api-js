@@ -1,5 +1,11 @@
 # @near-js/cookbook
 
+## 2.0.2
+
+### Patch Changes
+
+- [#1559](https://github.com/near/near-api-js/pull/1559) [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b) Thanks [@r-near](https://github.com/r-near)! - fix: ESM Module Resolution
+
 ## 2.0.1
 
 ### Patch Changes
