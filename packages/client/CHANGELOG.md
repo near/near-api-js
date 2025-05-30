@@ -1,5 +1,21 @@
 # @near-js/client
 
+## 2.0.2
+
+### Patch Changes
+
+- [#1559](https://github.com/near/near-api-js/pull/1559) [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b) Thanks [@r-near](https://github.com/r-near)! - fix: ESM Module Resolution
+
+- Updated dependencies [[`4971e77`](https://github.com/near/near-api-js/commit/4971e77818d4239ed45552efef0dbc3adb4541c2), [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b)]:
+  - @near-js/accounts@2.0.2
+  - @near-js/crypto@2.0.2
+  - @near-js/keystores@2.0.2
+  - @near-js/providers@2.0.2
+  - @near-js/signers@2.0.2
+  - @near-js/transactions@2.0.2
+  - @near-js/types@2.0.2
+  - @near-js/utils@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes
