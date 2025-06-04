@@ -5,6 +5,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "lib/**"]
     },
+    "check-exports": {
+      "dependsOn": ["^check-exports"]
+    },
     "test": {
       "dependsOn": ["^transit"],
       "outputs": []
