@@ -24,7 +24,7 @@ export default async function sendMetaTransactionViaRelayer(signerAccountId: str
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcProvider();
   // initialize the transaction signer using a pre-existing key for `accountId`
-  const signer = getSignerFromKeystore(signerAccountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
+  const signer = await getSignerFromKeystore(signerAccountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
 
   const signedDelegate = await SignedTransactionComposer.init({
     sender: signerAccountId,

@@ -1,0 +1,46 @@
+{
+	"name": "@near-js/tokens",
+	"version": "2.0.2",
+	"description": "Modules with tokens",
+	"main": "lib/commonjs/index.cjs",
+	"module": "lib/esm/index.js",
+	"type": "module",
+	"scripts": {
+		"build": "tsup",
+		"clean": "rimraf lib/",
+		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
+		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
+		"test": "jest",
+		"check-exports": "attw --pack ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@jest/globals": "^29.7.0",
+		"@near-js/types": "workspace:*",
+		"@types/node": "20.0.0",
+		"build": "workspace:*",
+		"jest": "29.7.0",
+		"ts-jest": "29.2.6",
+		"tsconfig": "workspace:*",
+		"typescript": "5.4.5"
+	},
+	"files": [
+		"lib"
+	],
+	"exports": {
+		".": {
+			"require": "./lib/commonjs/index.cjs",
+			"import": "./lib/esm/index.js"
+		},
+		"./mainnet": {
+			"require": "./lib/commonjs/mainnet/index.cjs",
+			"import": "./lib/esm/mainnet/index.js"
+		},
+		"./testnet": {
+			"require": "./lib/commonjs/testnet/index.cjs",
+			"import": "./lib/esm/testnet/index.js"
+		}
+	}
+}

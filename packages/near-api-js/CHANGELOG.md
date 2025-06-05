@@ -1,5 +1,73 @@
 # near-api-js
 
+## 6.0.2
+
+### Patch Changes
+
+- [#1556](https://github.com/near/near-api-js/pull/1556) [`4971e77`](https://github.com/near/near-api-js/commit/4971e77818d4239ed45552efef0dbc3adb4541c2) Thanks [@denbite](https://github.com/denbite)! - Rename `createTopLevelAccount` back to `createAccount` for the sake of better naming
+
+- [#1560](https://github.com/near/near-api-js/pull/1560) [`3349d4b`](https://github.com/near/near-api-js/commit/3349d4b542bab2a2150326918bdc0b40e3b7fdbe) Thanks [@denbite](https://github.com/denbite)! - Fix the bug with `ft_balance_of` always returning `undefined` for FungibleToken
+
+- Updated dependencies [[`4971e77`](https://github.com/near/near-api-js/commit/4971e77818d4239ed45552efef0dbc3adb4541c2), [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b)]:
+  - @near-js/accounts@2.0.2
+  - @near-js/crypto@2.0.2
+  - @near-js/keystores-browser@2.0.2
+  - @near-js/keystores-node@2.0.2
+  - @near-js/keystores@2.0.2
+  - @near-js/providers@2.0.2
+  - @near-js/signers@2.0.2
+  - @near-js/transactions@2.0.2
+  - @near-js/types@2.0.2
+  - @near-js/utils@2.0.2
+
+## 6.0.1
+
+### Patch Changes
+
+- [#1554](https://github.com/near/near-api-js/pull/1554) [`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f) Thanks [@denbite](https://github.com/denbite)! - Redeploy recent release as patch
+
+- Updated dependencies [[`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f)]:
+  - @near-js/accounts@2.0.1
+  - @near-js/crypto@2.0.1
+  - @near-js/keystores@2.0.1
+  - @near-js/keystores-browser@2.0.1
+  - @near-js/keystores-node@2.0.1
+  - @near-js/providers@2.0.1
+  - @near-js/signers@2.0.1
+  - @near-js/transactions@2.0.1
+  - @near-js/types@2.0.1
+  - @near-js/utils@2.0.1
+
+## 6.0.0
+
+### Major Changes
+
+Packages are now truly independent and can be imported separately. We strongly encourage users to use the modularized packages instead of the monolithic `near-api-js` package.
+
+- `Account` has received major changes to its interface, we recommend reading the `CHANGELOG` for the `@near-js/accounts` package
+
+- `Signer` class has received major changes to its interface, we recommend reading the `CHANGELOG` for the `@near-js/signers` package
+
+- `Connection` has been deprecated, as it is no longer used by the `Account` class
+
+- A new package `@near-js/tokens` has been added, which allows to work with tokens on the NEAR blockchain. This includes the Native NEAR, Fungible Tokens and Non-Fungible Tokens.
+
+- [#1513](https://github.com/near/near-api-js/pull/1513) [`a8e1046`](https://github.com/near/near-api-js/commit/a8e1046d4c184700bed93229f81e7875fca11b27) Thanks [@denbite](https://github.com/denbite)! - Major update for Signer and Account APIs to streamline development
+
+### Patch Changes
+
+- Updated dependencies [[`a8e1046`](https://github.com/near/near-api-js/commit/a8e1046d4c184700bed93229f81e7875fca11b27)]:
+  - @near-js/transactions@2.0.0
+  - @near-js/providers@2.0.0
+  - @near-js/accounts@2.0.0
+  - @near-js/signers@2.0.0
+  - @near-js/types@2.0.0
+  - @near-js/crypto@2.0.0
+  - @near-js/keystores@2.0.0
+  - @near-js/keystores-browser@2.0.0
+  - @near-js/keystores-node@2.0.0
+  - @near-js/utils@2.0.0
+
 ## 5.1.1
 
 ### Patch Changes

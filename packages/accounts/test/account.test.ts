@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { KeyType } from '@near-js/crypto';
+import { KeyPair, KeyType } from '@near-js/crypto';
 import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { actionCreators } from '@near-js/transactions';
 import { BlockResult, TypedError } from '@near-js/types';
@@ -7,9 +7,12 @@ import * as fs from 'fs';
 
 import { Account, Contract } from '../src';
 import { createAccount, generateUniqueString, HELLO_WASM_PATH, HELLO_WASM_BALANCE, networkId, setUpTestConnection } from './test-utils';
+import { InMemoryKeyStore } from '@near-js/keystores';
+
+import { Worker } from 'near-workspaces';
 
 let nearjs;
-let workingAccount;
+let workingAccount: Account;
 
 jest.setTimeout(50000);
 
@@ -20,86 +23,92 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await workingAccount.deleteAccount(workingAccount.accountId);
+
+    const worker = nearjs.worker as Worker;
+
+    if (!worker) return;
+
+    await worker.tearDown();
 });
 
 test('view pre-defined account works and returns correct name', async () => {
-    const status = await workingAccount.state();
-    expect(status.code_hash).toEqual('11111111111111111111111111111111');
+    const status = await workingAccount.getState();
+    expect(status.codeHash).toEqual('11111111111111111111111111111111');
 });
 
 test('create account and then view account returns the created account', async () => {
     const newAccountName = generateUniqueString('test');
     const newAccountPublicKey = '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE';
-    const { amount } = await workingAccount.state();
-    const newAmount = BigInt(amount) / 10n;
+    const { balance: { total } } = await workingAccount.getState();
+    const newAmount = total / 10n;
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
-    const newAccount = new Account(nearjs.connection, newAccountName);
-    const state = await newAccount.state();
-    expect(state.amount).toEqual(newAmount.toString());
+    const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
+    const state = await newAccount.getState();
+    expect(state.balance.total.toString()).toEqual(newAmount.toString());
 });
 
 test('create account with a secp256k1 key and then view account returns the created account', async () => {
     const newAccountName = generateUniqueString('test');
     const newAccountPublicKey = 'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28';
-    const { amount } = await workingAccount.state();
-    const newAmount = BigInt(amount) / 10n;
+    const { balance: { total } } = await workingAccount.getState();
+    const newAmount = total / 10n;
     await nearjs.accountCreator.masterAccount.createAccount(newAccountName, newAccountPublicKey, newAmount);
-    const newAccount = new Account(nearjs.connection, newAccountName);
-    const state = await newAccount.state();
-    expect(state.amount).toEqual(newAmount.toString());
+    const newAccount = new Account(newAccountName, nearjs.connection.provider, nearjs.connection.signer);
+    const state = await newAccount.getState();
+    expect(state.balance.total.toString()).toEqual(newAmount.toString());
 });
 
-test('Secp256k1 send money', async() => {
+test('Secp256k1 send money', async () => {
     const sender = await createAccount(nearjs, KeyType.SECP256K1);
     const receiver = await createAccount(nearjs, KeyType.SECP256K1);
-    const { amount: receiverAmount } = await receiver.state();
+    const { balance: { total } } = await receiver.getState();
     await sender.sendMoney(receiver.accountId, 10000n);
-    const state = await receiver.state();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    const state = await receiver.getState();
+    expect(state.balance.total).toEqual(total + 10000n);
 });
 
-test('send money', async() => {
+test('send money', async () => {
     const sender = await createAccount(nearjs);
     const receiver = await createAccount(nearjs);
-    const { amount: receiverAmount } = await receiver.state();
+    const { balance: { total } } = await receiver.getState();
     await sender.sendMoney(receiver.accountId, 10000n);
-    const state = await receiver.state();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    const state = await receiver.getState();
+    expect(state.balance.total).toEqual(total + 10000n);
 });
 
-test('send money through signAndSendTransaction', async() => {
+test('send money through signAndSendTransaction', async () => {
     const sender = await createAccount(nearjs);
     const receiver = await createAccount(nearjs);
-    const { amount: receiverAmount } = await receiver.state();
+    const { balance: { total } } = await receiver.getState();
     await sender.signAndSendTransaction({
         receiverId: receiver.accountId,
         actions: [actionCreators.transfer(10000n)],
     });
-    const state = await receiver.state();
-    expect(state.amount).toEqual((BigInt(receiverAmount) + 10000n).toString());
+    const state = await receiver.getState();
+    expect(state.balance.total).toEqual(total + 10000n);
 });
 
-test('delete account', async() => {
+test('delete account', async () => {
     const sender = await createAccount(nearjs);
     const receiver = await createAccount(nearjs);
     await sender.deleteAccount(receiver.accountId);
     // @ts-expect-error test input
     const reloaded = new Account(sender.connection, sender);
-    await expect(reloaded.state()).rejects.toThrow();
+    await expect(reloaded.getState()).rejects.toThrow();
 });
 
 test('multiple parallel transactions', async () => {
     const PARALLEL_NUMBER = 5;
     // @ts-expect-error test input
     await Promise.all(new Array(PARALLEL_NUMBER).fill().map(async (_, i) => {
-        const account = new Account(workingAccount.connection, workingAccount.accountId);
+        const account = new Account(workingAccount.accountId, workingAccount.provider, workingAccount.getSigner());
         // NOTE: Need to have different transactions outside of nonce, or they all succeed by being identical
         // TODO: Check if randomization of exponential back off helps to do more transactions without exceeding retries
         await account.sendMoney(account.accountId, BigInt(i));
     }));
 });
 
-test('findAccessKey returns the same access key when fetched simultaneously', async() => {
+test('findAccessKey returns the same access key when fetched simultaneously', async () => {
     const account = await createAccount(nearjs);
 
     const [key1, key2] = await Promise.all([
@@ -120,8 +129,8 @@ describe('errors', () => {
             log: (...args) => {
                 logs.push(args.join(' '));
             },
-            warn: () => {},
-            error: () => {},
+            warn: () => { },
+            error: () => { },
         };
 
         Logger.overrideLogger(custom);
@@ -129,11 +138,10 @@ describe('errors', () => {
 
     beforeEach(async () => {
         logs = [];
-
     });
 
-    test('create existing account', async() => {
-        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100))
+    test('create existing account', async () => {
+        await expect(workingAccount.createAccount(workingAccount.accountId, '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE', 100n))
             .rejects.toThrow(/Can't create a new account .+, because it already exists/);
     });
 });
@@ -144,7 +152,9 @@ describe('with deploy contract', () => {
     let contract;
 
     beforeAll(async () => {
-        const newPublicKey = await nearjs.connection.signer.createKey(contractId, networkId);
+        const keyPair = KeyPair.fromRandom('ed25519');
+        await (nearjs.keyStore as InMemoryKeyStore).setKey(networkId, contractId, keyPair);
+        const newPublicKey = keyPair.getPublicKey();
         const data = fs.readFileSync(HELLO_WASM_PATH);
         await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
         // @ts-expect-error test input
@@ -157,8 +167,8 @@ describe('with deploy contract', () => {
             log: (...args) => {
                 logs.push(args.join(' '));
             },
-            warn: () => {},
-            error: () => {},
+            warn: () => { },
+            error: () => { },
         };
 
         Logger.overrideLogger(custom);
@@ -185,7 +195,7 @@ describe('with deploy contract', () => {
         expect(logs[6]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
-    test('make function calls via account', async() => {
+    test('make function calls via account', async () => {
         const result = await workingAccount.viewFunction({
             contractId,
             methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
@@ -206,7 +216,7 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue);
     });
 
-    test('view contract state', async() => {
+    test('view contract state', async () => {
         const setCallValue = generateUniqueString('setCallPrefix');
         await workingAccount.functionCall({
             contractId,
@@ -214,22 +224,22 @@ describe('with deploy contract', () => {
             args: { value: setCallValue }
         });
 
-        const contractAccount = new Account(nearjs.connection, contractId);
+        const contractAccount = new Account(contractId, nearjs.connection.provider, nearjs.connection.signer);
         const state = (await contractAccount.viewState('')).map(({ key, value }) => [key.toString('utf-8'), value.toString('utf-8')]);
         expect(state).toEqual([['name', setCallValue]]);
     });
 
-    test('make function calls via account with custom parser', async() => {
+    test('make function calls via account with custom parser', async () => {
         const result = await workingAccount.viewFunction({
             contractId,
-            methodName:'hello', // this is the function defined in hello.wasm file that we are calling
+            methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
             args: { name: 'trex' },
             parse: x => JSON.parse(x.toString()).replace('trex', 'friend')
         });
         expect(result).toEqual('hello friend');
     });
 
-    test('make function calls via contract', async() => {
+    test('make function calls via contract', async () => {
         const result = await contract.hello({ name: 'trex' });
         expect(result).toEqual('hello trex');
 
@@ -239,7 +249,7 @@ describe('with deploy contract', () => {
         expect(await contract.getValue()).toEqual(setCallValue);
     });
 
-    test('view function calls by block Id and finality', async() => {
+    test('view function calls by block Id and finality', async () => {
         const setCallValue1 = generateUniqueString('setCallPrefix');
         const result1 = await contract.setValue({ args: { value: setCallValue1 } });
         expect(result1).toEqual(setCallValue1);
@@ -256,7 +266,7 @@ describe('with deploy contract', () => {
             methodName: 'getValue'
         })).toEqual(setCallValue1);
 
-        const block1 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
+        const block1 = await workingAccount.provider.block({ finality: 'optimistic' });
         const blockHash1 = block1.header.hash;
         const blockIndex1 = block1.header.height;
 
@@ -301,7 +311,7 @@ describe('with deploy contract', () => {
             blockQuery: { blockId: blockIndex1 },
         })).toEqual(setCallValue1);
 
-        const block2 = await workingAccount.connection.provider.block({ finality: 'optimistic' });
+        const block2 = await workingAccount.provider.block({ finality: 'optimistic' });
         const blockHash2 = block2.header.hash;
         const blockIndex2 = block2.header.height;
 
@@ -318,7 +328,7 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue2);
     });
 
-    test('make function calls via contract with gas', async() => {
+    test('make function calls via contract with gas', async () => {
         const setCallValue = generateUniqueString('setCallPrefix');
         const result2 = await contract.setValue({
             args: { value: setCallValue },
@@ -371,7 +381,7 @@ describe('with deploy contract', () => {
         })).toEqual('hello world');
     });
 
-    test('make viewFunction call with object format', async() => {
+    test('make viewFunction call with object format', async () => {
         const result = await workingAccount.viewFunction({
             contractId,
             methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
@@ -380,7 +390,7 @@ describe('with deploy contract', () => {
         expect(result).toEqual('hello trex');
     });
 
-    test('get total stake balance and validator responses', async() => {
+    test('get total stake balance and validator responses', async () => {
         const CUSTOM_ERROR = new TypedError('Querying failed: wasm execution failed with error: FunctionCallError(CompilationError(CodeDoesNotExist { account_id: AccountId("invalid_account_id") })).', 'UntypedError');
         const mockConnection = {
             ...nearjs.connection,
@@ -396,7 +406,7 @@ describe('with deploy contract', () => {
                             num_produced_blocks: 7,
                             num_produced_chunks: 18,
                             public_key: 'ed25519:5QzHuNZ4stznMwf3xbDfYGUbjVt8w48q8hinDRmVx41z',
-                            shards: [ 1 ],
+                            shards: [1],
                             stake: '73527610191458905577047103204'
                         },
                         {
@@ -407,7 +417,7 @@ describe('with deploy contract', () => {
                             num_produced_blocks: 4,
                             num_produced_chunks: 20,
                             public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
-                            shards: [ 2 ],
+                            shards: [2],
                             stake: '74531922534760985104659653178'
                         },
                         {
@@ -418,7 +428,7 @@ describe('with deploy contract', () => {
                             num_produced_blocks: 4,
                             num_produced_chunks: 20,
                             public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
-                            shards: [ 2 ],
+                            shards: [2],
                             stake: '0'
                         },
                     ],
@@ -428,7 +438,7 @@ describe('with deploy contract', () => {
             },
         };
 
-        const account = new Account(mockConnection, 'test.near');
+        const account = new Account('test.near', mockConnection.provider, mockConnection.signer);
         // mock internal functions that are being used on getActiveDelegatedStakeBalance
         account.viewFunction = async ({ methodName, ...args }) => {
             if (methodName === 'get_account_total_balance') {
@@ -441,7 +451,7 @@ describe('with deploy contract', () => {
                 return await account.viewFunction({ methodName, ...args });
             }
         };
-        account.connection.provider.block = async () => {
+        account.provider.block = async () => {
             return Promise.resolve({ header: { hash: 'dontcare' } } as BlockResult);
         };
         const result = await account.getActiveDelegatedStakeBalance();
@@ -468,7 +478,7 @@ describe('with deploy contract', () => {
                             num_produced_blocks: 4,
                             num_produced_chunks: 20,
                             public_key: 'ed25519:9SYKubUbsGVfxrMGaJ9tLMEfPdjD55FLqGoqy3cTnRm6',
-                            shards: [ 2 ],
+                            shards: [2],
                             stake: '0'
                         },
                     ],
@@ -478,7 +488,7 @@ describe('with deploy contract', () => {
             },
         };
 
-        const account = new Account(mockConnection, 'test.near');
+        const account = new Account('test.near', mockConnection.provider, mockConnection.signer);
         // mock internal functions that are being used on getActiveDelegatedStakeBalance
         account.viewFunction = async ({ methodName, ...args }) => {
             if (methodName === 'get_account_total_balance') {
@@ -491,13 +501,13 @@ describe('with deploy contract', () => {
                 return await account.viewFunction({ methodName, ...args });
             }
         };
-        account.connection.provider.block = async () => {
+        account.provider.block = async () => {
             return Promise.resolve({ header: { hash: 'dontcare' } } as BlockResult);
         };
 
         try {
             await account.getActiveDelegatedStakeBalance();
-        } catch(e) {
+        } catch (e) {
             expect(e).toEqual(new Error(ERROR_MESSAGE));
         }
     });

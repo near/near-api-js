@@ -1,5 +1,33 @@
 # @near-js/biometric-ed25519
 
+## 2.0.2
+
+### Patch Changes
+
+- [#1559](https://github.com/near/near-api-js/pull/1559) [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b) Thanks [@r-near](https://github.com/r-near)! - fix: ESM Module Resolution
+
+- Updated dependencies [[`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b)]:
+  - @near-js/crypto@2.0.2
+  - @near-js/utils@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [#1554](https://github.com/near/near-api-js/pull/1554) [`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f) Thanks [@denbite](https://github.com/denbite)! - Redeploy recent release as patch
+
+- Updated dependencies [[`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f)]:
+  - @near-js/crypto@2.0.1
+  - @near-js/utils@2.0.1
+
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.0.0
+  - @near-js/utils@2.0.0
+
 ## 1.3.2
 
 ### Patch Changes

@@ -1,27 +1,28 @@
 {
-  "name": "@near-js/iframe-rpc",
-  "version": "0.1.0",
-  "description": "IFrame RPC client/server implementation",
-  "main": "lib/esm/index.js",
-  "types": "lib/esm/index.d.ts",
-  "type": "module",
-  "scripts": {
-    "build": "pnpm compile:esm && pnpm compile:cjs",
-    "compile:esm": "tsc -p tsconfig.json",
-    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs"
-  },
-  "keywords": [],
-  "author": "Pagoda",
-  "license": "ISC",
-  "dependencies": {
-    "events": "3.3.0"
-  },
-  "devDependencies": {
-    "@types/node": "18.11.18",
-    "build": "workspace:*"
-  },
-  "exports": {
-    "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/esm/index.js"
-  }
+	"name": "@near-js/iframe-rpc",
+	"version": "2.0.2",
+	"description": "IFrame RPC client/server implementation",
+	"main": "lib/esm/index.js",
+	"types": "lib/esm/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsup",
+		"check-exports": "attw --pack ."
+	},
+	"keywords": [],
+	"author": "Pagoda",
+	"license": "ISC",
+	"dependencies": {
+		"events": "3.3.0"
+	},
+	"devDependencies": {
+		"@types/node": "18.11.18",
+		"build": "workspace:*"
+	},
+	"exports": {
+		".": {
+			"import": "./lib/esm/index.js",
+			"require": "./lib/commonjs/index.cjs"
+		}
+	}
 }

@@ -1,5 +1,33 @@
 # @near-js/keystores
 
+## 2.0.2
+
+### Patch Changes
+
+- [#1559](https://github.com/near/near-api-js/pull/1559) [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b) Thanks [@r-near](https://github.com/r-near)! - fix: ESM Module Resolution
+
+- Updated dependencies [[`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b)]:
+  - @near-js/crypto@2.0.2
+  - @near-js/types@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [#1554](https://github.com/near/near-api-js/pull/1554) [`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f) Thanks [@denbite](https://github.com/denbite)! - Redeploy recent release as patch
+
+- Updated dependencies [[`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f)]:
+  - @near-js/crypto@2.0.1
+  - @near-js/types@2.0.1
+
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`a8e1046`](https://github.com/near/near-api-js/commit/a8e1046d4c184700bed93229f81e7875fca11b27)]:
+  - @near-js/types@2.0.0
+  - @near-js/crypto@2.0.0
+
 ## 0.2.2
 
 ### Patch Changes

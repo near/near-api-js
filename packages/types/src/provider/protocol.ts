@@ -11,17 +11,27 @@ export interface SyncInfo {
     syncing: boolean;
 }
 
+interface ValidatorInfo {
+    account_id: string;
+    is_slashed: boolean;
+}
+
 interface Version {
     version: string;
     build: string;
+    rustc_version: string;
 }
 
 export interface NodeStatusResult {
     chain_id: string;
     rpc_addr: string;
     sync_info: SyncInfo;
-    validators: string[];
+    validators: ValidatorInfo[];
     version: Version;
+    protocol_version: number;
+    latest_protocol_version: number;
+    uptime_sec: number;
+    genesis_hash: string;
 }
 
 export type BlockHash = string;
@@ -32,7 +42,12 @@ export type Finality = 'optimistic' | 'near-final' | 'final'
 
 export type TxExecutionStatus = 'NONE' | 'INCLUDED' | 'INCLUDED_FINAL' | 'EXECUTED' | 'FINAL' | 'EXECUTED_OPTIMISTIC';
 
-export type BlockReference = { blockId: BlockId } | { finality: Finality } | { sync_checkpoint: 'genesis' | 'earliest_available' }
+export type FinalityReference = { finality: Finality };
+
+export type BlockReference = { blockId: BlockId } | FinalityReference | { 
+    /** @deprecated */
+    sync_checkpoint: 'genesis' | 'earliest_available' 
+}
 
 export interface TotalWeight {
     num: number;
@@ -157,6 +172,8 @@ export interface ChangeResult {
 
 export interface NearProtocolConfig {
     runtime_config: NearProtocolRuntimeConfig;
+    minimum_stake_ratio: [number, number];
+    protocol_version: number;
 }
 
 export interface NearProtocolRuntimeConfig {

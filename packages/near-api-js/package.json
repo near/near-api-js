@@ -1,7 +1,7 @@
 {
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
-    "version": "5.1.1",
+    "version": "6.0.2",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
@@ -21,7 +21,6 @@
         "@near-js/transactions": "workspace:*",
         "@near-js/types": "workspace:*",
         "@near-js/utils": "workspace:*",
-        "@near-js/wallet-account": "workspace:*",
         "@noble/curves": "1.8.1",
         "borsh": "1.0.0",
         "depd": "2.0.0",
@@ -30,16 +29,29 @@
         "node-fetch": "2.6.7"
     },
     "devDependencies": {
+        "@types/depd": "^1.1.37",
         "@types/http-errors": "1.6.1",
         "@types/node": "18.11.18",
         "concurrently": "9.1.2",
         "in-publish": "2.0.0",
         "jest": "29.7.0",
         "near-hello": "0.5.1",
-        "near-workspaces": "4.0.0",
+        "near-workspaces": "5.0.0",
         "rimraf": "^6.0.1",
         "semver": "7.7.1",
         "ts-jest": "29.2.6"
+    },
+    "peerDependencies": {
+        "@near-js/accounts": "^2.0.1",
+        "@near-js/crypto": "^2.0.1",
+        "@near-js/keystores": "^2.0.1",
+        "@near-js/keystores-browser": "^2.0.1",
+        "@near-js/keystores-node": "^2.0.1",
+        "@near-js/providers": "^2.0.1",
+        "@near-js/signers": "^2.0.1",
+        "@near-js/transactions": "^2.0.1",
+        "@near-js/types": "^2.0.1",
+        "@near-js/utils": "^2.0.1"
     },
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",

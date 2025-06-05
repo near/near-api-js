@@ -3,8 +3,9 @@ import type {
   AccessKeyView,
   AccountView,
   CodeResult,
-  ContractCodeView,
+  ContractCodeViewRaw,
   QueryResponseKind,
+  RpcQueryRequest,
   SerializedReturnValue,
   StakedAccount,
   ViewStateResult,
@@ -36,7 +37,7 @@ enum RequestType {
 
 interface QueryParams extends RpcProviderDependency, RpcProviderQueryParams {
   account: string;
-  request: string;
+  request: `${RequestType}`;
   args?: object;
 }
 
@@ -48,6 +49,8 @@ interface QueryParams extends RpcProviderDependency, RpcProviderQueryParams {
  * @param blockReference block ID/finality
  * @param rpcProvider RPC provider instance
  */
+
+
 export function query<T extends QueryResponseKind>({
   account,
   request,
@@ -55,12 +58,14 @@ export function query<T extends QueryResponseKind>({
   blockReference,
   deps: { rpcProvider },
 }: QueryParams): Promise<T> {
-  return rpcProvider.query<T>({
-    request_type: request,
-    account_id: account,
-    ...(blockReference ? blockReference : DEFAULT_VIEW_BLOCK_REFERENCE),
-    ...args,
-  });
+  return rpcProvider.query<T>(
+    {
+      request_type: request,
+      account_id: account,
+      ...(blockReference ? blockReference : DEFAULT_VIEW_BLOCK_REFERENCE),
+      ...args,
+    } as RpcQueryRequest
+  );
 }
 
 /**
@@ -207,7 +212,7 @@ export async function getAccessKeys({ account, blockReference, deps }: ViewAccou
  * @param deps readonly RPC dependencies
  */
 export async function getContractCode({ account, blockReference, deps }: ViewAccountParams) {
-  const { code_base64, hash } = await query<ContractCodeView>({
+  const { code_base64, hash } = await query<ContractCodeViewRaw>({
     request: RequestType.ViewCode,
     account,
     blockReference,

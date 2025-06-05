@@ -1,39 +1,46 @@
 {
-  "name": "@near-js/keystores-node",
-  "version": "0.1.2",
-  "description": "KeyStore implementation for working with keys in the local filesystem",
-  "main": "lib/esm/index.js",
-  "type": "module",
-  "scripts": {
-    "build": "pnpm compile:esm && pnpm compile:cjs",
-    "compile:esm": "tsc -p tsconfig.json",
-    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
-    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
-    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-    "test": "jest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@near-js/crypto": "workspace:*",
-    "@near-js/keystores": "workspace:*"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/node": "20.0.0",
-    "build": "workspace:*",
-    "jest": "29.7.0",
-    "rimraf": "^6.0.1",
-    "ts-jest": "29.2.6",
-    "tsconfig": "workspace:*",
-    "typescript": "5.4.5"
-  },
-  "files": [
-    "lib"
-  ],
-  "exports": {
-    "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/esm/index.js"
-  }
+	"name": "@near-js/keystores-node",
+	"version": "2.0.2",
+	"description": "KeyStore implementation for working with keys in the local filesystem",
+	"main": "lib/commonjs/index.cjs",
+	"module": "lib/esm/index.js",
+	"types": "./lib/esm/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsup",
+		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
+		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
+		"test": "jest",
+		"check-exports": "attw --pack ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@near-js/crypto": "workspace:*",
+		"@near-js/keystores": "workspace:*"
+	},
+	"devDependencies": {
+		"@jest/globals": "^29.7.0",
+		"@types/node": "20.0.0",
+		"build": "workspace:*",
+		"jest": "29.7.0",
+		"rimraf": "^6.0.1",
+		"ts-jest": "29.2.6",
+		"tsconfig": "workspace:*",
+		"typescript": "5.4.5"
+	},
+	"peerDependencies": {
+		"@near-js/crypto": "^2.0.1",
+		"@near-js/keystores": "^2.0.1"
+	},
+	"files": [
+		"lib"
+	],
+	"exports": {
+		".": {
+			"import": "./lib/esm/index.js",
+			"require": "./lib/commonjs/index.cjs"
+		}
+	}
 }

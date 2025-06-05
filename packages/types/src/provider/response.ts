@@ -90,12 +90,27 @@ export interface QueryResponseKind {
     block_hash: BlockHash;
 }
 
-export interface AccountView extends QueryResponseKind {
+export interface AccountViewRaw extends QueryResponseKind {
     amount: string;
     locked: string;
     code_hash: string;
     storage_usage: number;
     storage_paid_at: BlockHeight;
+}
+
+export interface AccountView extends QueryResponseKind {
+    amount: bigint;
+    locked: bigint;
+    code_hash: string;
+    storage_usage: number;
+    storage_paid_at: BlockHeight;
+}
+
+export interface AccountBalanceInfo {
+    total: bigint;
+    usedOnStorage: bigint;
+    locked: bigint;
+    available: bigint;
 }
 
 interface StateItem {
@@ -114,8 +129,33 @@ export interface CodeResult extends QueryResponseKind {
     logs: string[];
 }
 
-export interface ContractCodeView extends QueryResponseKind {
+export interface CallContractViewFunctionResultRaw extends QueryResponseKind {
+    result: number[];
+    logs: string[];
+}
+
+export interface CallContractViewFunctionResult extends QueryResponseKind {
+    result?: string | number | any;
+    logs: string[];
+}
+
+interface StateItemView  {
+    key: string;
+    value: string;
+    proof: string[];
+}
+
+export interface ContractStateView extends QueryResponseKind {
+    values: StateItemView[];
+}
+
+export interface ContractCodeViewRaw extends QueryResponseKind {
     code_base64: string;
+    hash: string;
+}
+
+export interface ContractCodeView extends QueryResponseKind {
+    code: Uint8Array;
     hash: string;
 }
 

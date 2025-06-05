@@ -21,7 +21,7 @@ export default async function createFunctionCallAccessKey(accountId: string, con
   // initialize testnet RPC provider
   const rpcProvider = getTestnetRpcProvider();
   // initialize the transaction signer using a pre-existing key for ACCOUNT_ID
-  const signer = getSignerFromKeystore(accountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
+  const signer = await getSignerFromKeystore(accountId, 'testnet', new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials')));
 
   // create a new key from random data
   const keyPair = generateRandomKeyPair('ed25519');

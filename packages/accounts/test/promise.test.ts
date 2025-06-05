@@ -1,5 +1,6 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
+import { Worker } from 'near-workspaces';
 
 let nearjs;
 
@@ -9,6 +10,14 @@ jest.setTimeout(120000);
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
+});
+
+afterAll(async () => {
+    const worker = nearjs.worker as Worker;
+
+    if (!worker) return;
+
+    await worker.tearDown();
 });
 
 describe('with promises', () => {

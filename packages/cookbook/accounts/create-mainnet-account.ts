@@ -19,7 +19,7 @@ export default async function createMainnetAccountCookbook(accountId: string, ne
   const rpcProvider = getMainnetRpcProvider();
   // initialize the transaction signer using a pre-existing key for `accountId`
   const keystore = new UnencryptedFileSystemKeyStore(join(homedir(), '.near-credentials'));
-  const signer = getSignerFromKeystore(accountId, 'mainnet', keystore);
+  const signer = await getSignerFromKeystore(accountId, 'mainnet', keystore);
 
   // create a new key from random data
   const keyPair = generateRandomKeyPair('ed25519');

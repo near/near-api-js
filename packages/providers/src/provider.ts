@@ -5,14 +5,15 @@
 
 import { SignedTransaction } from '@near-js/transactions';
 import {
+    AccessKeyView,
+    AccessKeyList,
     AccessKeyWithPublicKey,
+    AccountView,
     BlockChangeResult,
     BlockId,
     BlockReference,
     BlockResult,
     ChangeResult,
-    ChunkId,
-    ChunkResult,
     FinalExecutionOutcome,
     GasPrice,
     LightClientProof,
@@ -24,33 +25,75 @@ import {
     QueryResponseKind,
     RpcQueryRequest,
     EpochValidatorInfo,
+    ExecutionOutcomeReceiptDetail,
+    TxExecutionStatus,
+    ContractCodeView,
+    ContractStateView,
+    ChunkId,
+    ChunkResult,
+    FinalityReference,
+    CallContractViewFunctionResultRaw,
 } from '@near-js/types';
-import { TxExecutionStatus } from '@near-js/types';
+import { PublicKey } from '@near-js/crypto';
 
 /** @hidden */
-export abstract class Provider {
-    abstract status(): Promise<NodeStatusResult>;
+export interface Provider {
+    /** @deprecated use {@link viewNodeStatus} */
+    status(): Promise<NodeStatusResult>;
 
-    abstract sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
-    abstract sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
-    abstract sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
-    abstract txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
-    abstract txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
-    abstract query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
-    abstract query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
-    // TODO: BlockQuery type?
-    abstract block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
-    abstract blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult>;
-    abstract chunk(chunkId: ChunkId): Promise<ChunkResult>;
-    // TODO: Use BlockQuery?
-    abstract validators(blockId: BlockId | null): Promise<EpochValidatorInfo>;
-    abstract experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
-    abstract lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
-    abstract nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse>;
-    abstract gasPrice(blockId: BlockId): Promise<GasPrice>;
-    abstract accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
-    abstract singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
-    abstract accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
-    abstract contractStateChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference, keyPrefix: string): Promise<ChangeResult>;
-    abstract contractCodeChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    getNetworkId(): Promise<string>;
+
+    viewAccessKey(accountId: string, publicKey: PublicKey | string, finalityQuery?: FinalityReference): Promise<AccessKeyView>;
+    viewAccessKeyList(accountId: string, finalityQuery?: FinalityReference): Promise<AccessKeyList>;
+
+    viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView>;
+    viewContractCode(contractId: string, blockQuery?: BlockReference): Promise<ContractCodeView>;
+    viewContractState(contractId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView>;
+    callFunction(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<string | number | boolean | object | undefined>;
+    callFunctionRaw(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw>;
+
+    viewBlock(blockQuery: BlockReference): Promise<BlockResult>;
+    viewChunk(chunkId: ChunkId): Promise<ChunkResult>;
+    
+    viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
+
+    viewNodeStatus(): Promise<NodeStatusResult>;
+    viewValidators(blockId?: BlockId): Promise<EpochValidatorInfo>;
+
+    viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
+    viewTransactionStatusWithReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>>;
+    viewTransactionReceipt(receiptId:  string): Promise<ExecutionOutcomeReceiptDetail>;
+
+    sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
+    sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+
+    /** @deprecated use {@link viewTransactionStatus} */
+    txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
+    /** @deprecated use {@link viewTransactionStatusWithReceipts} */
+    txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
+
+    query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
+    query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
+
+    /** @deprecated use {@link viewBlock} */
+    block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
+    blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult>;
+    /** @deprecated use {@link viewChunk} */
+    chunk(chunkId: ChunkId): Promise<ChunkResult>;
+    /** @deprecated use {@link viewValidators} */
+    validators(blockId: BlockId | null): Promise<EpochValidatorInfo>;
+    experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
+    lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
+    nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse>;
+    /** @deprecated use {@link viewGasPrice} */
+    gasPrice(blockId: BlockId): Promise<GasPrice>;
+    accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    contractStateChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference, keyPrefix: string): Promise<ChangeResult>;
+    contractCodeChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+
+    getCurrentEpochSeatPrice(): Promise<bigint>;
+    getNextEpochSeatPrice(): Promise<bigint>;
 }

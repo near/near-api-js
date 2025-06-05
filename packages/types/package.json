@@ -1,32 +1,35 @@
 {
-  "name": "@near-js/types",
-  "version": "0.3.1",
-  "description": "TypeScript types for working with the Near JS API",
-  "main": "lib/esm/index.js",
-  "type": "module",
-  "scripts": {
-    "build": "pnpm compile:esm && pnpm compile:cjs",
-    "compile:esm": "tsc -p tsconfig.json",
-    "compile:cjs": "tsc -p tsconfig.cjs.json && cjsify ./lib/commonjs",
-    "lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
-    "lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --fix"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "20.0.0",
-    "build": "workspace:*",
-    "jest": "29.7.0",
-    "ts-jest": "29.2.6",
-    "tsconfig": "workspace:*",
-    "typescript": "5.4.5"
-  },
-  "files": [
-    "lib"
-  ],
-  "exports": {
-    "require": "./lib/commonjs/index.cjs",
-    "import": "./lib/esm/index.js"
-  }
+	"name": "@near-js/types",
+	"version": "2.0.2",
+	"description": "TypeScript types for working with the Near JS API",
+	"main": "lib/commonjs/index.cjs",
+	"module": "lib/esm/index.js",
+	"types": "./lib/esm/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsup",
+		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
+		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --fix",
+		"check-exports": "attw --pack ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "20.0.0",
+		"build": "workspace:*",
+		"jest": "29.7.0",
+		"ts-jest": "29.2.6",
+		"tsconfig": "workspace:*",
+		"typescript": "5.4.5"
+	},
+	"files": [
+		"lib"
+	],
+	"exports": {
+		".": {
+			"import": "./lib/esm/index.js",
+			"require": "./lib/commonjs/index.cjs"
+		}
+	}
 }

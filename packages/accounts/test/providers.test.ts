@@ -1,9 +1,11 @@
-import { beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { KeyPair } from '@near-js/crypto';
 import { ErrorMessages } from '@near-js/utils';
 import { base58 } from '@scure/base';
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
+
+import { Worker } from 'near-workspaces';
 
 jest.setTimeout(60000);
 
@@ -14,6 +16,14 @@ let near;
 beforeAll(async () => {
     near = await setUpTestConnection();
     provider = near.connection.provider;
+});
+
+afterAll(async () => {
+    const worker = near.worker as Worker;
+
+    if (!worker) return;
+
+    await worker.tearDown();
 });
 
 describe('providers', () => {

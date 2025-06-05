@@ -1,7 +1,7 @@
 {
   "name": "@near-js/cookbook",
   "private": true,
-  "version": "1.0.23",
+  "version": "2.0.2",
   "description": "",
   "main": "index.ts",
   "type": "module",
@@ -26,7 +26,8 @@
     "traverseBlocks": "tsx -e \"import f from './transactions/traverse-blocks.ts'; f(...process.argv.slice(1));\"",
     "unwrapNear": "tsx -e \"import f from './utils/unwrap-near.ts'; f(...process.argv.slice(1));\"",
     "verifySignature": "tsx -e \"import f from './utils/verify-signature.ts'; f(...process.argv.slice(1));\"",
-    "wrapNear": "tsx -e \"import f from './utils/wrap-near.ts'; f(...process.argv.slice(1));\""
+    "wrapNear": "tsx -e \"import f from './utils/wrap-near.ts'; f(...process.argv.slice(1));\"",
+    "v2": "tsx account_v2.ts"
   },
   "devDependencies": {
     "@near-js/client": "workspace:*",
@@ -34,6 +35,7 @@
     "@near-js/keystores-node": "workspace:*",
     "@near-js/transactions": "workspace:*",
     "@near-js/utils": "workspace:*",
+    "@types/node": "^22.15.24",
     "build": "workspace:*",
     "chalk": "5.4.1",
     "homedir": "0.6.0",
@@ -41,6 +43,7 @@
     "ts-node": "^10.9.2",
     "tsconfig": "workspace:*",
     "tsx": "^4.19.2",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "undici-types": "^7.10.0"
   }
 }

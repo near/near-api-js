@@ -1,5 +1,80 @@
 # @near-js/accounts
 
+## 2.0.2
+
+### Patch Changes
+
+- [#1556](https://github.com/near/near-api-js/pull/1556) [`4971e77`](https://github.com/near/near-api-js/commit/4971e77818d4239ed45552efef0dbc3adb4541c2) Thanks [@denbite](https://github.com/denbite)! - Rename `createTopLevelAccount` back to `createAccount` for the sake of better naming
+
+- [#1559](https://github.com/near/near-api-js/pull/1559) [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b) Thanks [@r-near](https://github.com/r-near)! - fix: ESM Module Resolution
+
+- Updated dependencies [[`3349d4b`](https://github.com/near/near-api-js/commit/3349d4b542bab2a2150326918bdc0b40e3b7fdbe), [`59d3dc9`](https://github.com/near/near-api-js/commit/59d3dc9580be05662cb9a587e82359faccd69d1b)]:
+  - @near-js/tokens@2.0.2
+  - @near-js/crypto@2.0.2
+  - @near-js/providers@2.0.2
+  - @near-js/signers@2.0.2
+  - @near-js/transactions@2.0.2
+  - @near-js/types@2.0.2
+  - @near-js/utils@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [#1554](https://github.com/near/near-api-js/pull/1554) [`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f) Thanks [@denbite](https://github.com/denbite)! - Redeploy recent release as patch
+
+- Updated dependencies [[`13f93eb`](https://github.com/near/near-api-js/commit/13f93ebdac497bb473364da66a493344d955b27f)]:
+  - @near-js/crypto@2.0.1
+  - @near-js/providers@2.0.1
+  - @near-js/signers@2.0.1
+  - @near-js/tokens@2.0.1
+  - @near-js/transactions@2.0.1
+  - @near-js/types@2.0.1
+  - @near-js/utils@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+The `Account` class has been reworked so now it is mostly a wrapper around `Provider` and `Signer` classes.
+
+A major change on the interface took place, from now `Accounts` do no longer require a `Connection` object to be constructed. Instead, accounts now take a `signer` and a `provider` as parameters, with the `signer` being optional.
+
+### Very Important
+
+`signAndSendTransaction` used to try to automatically handle `nonce` collisions by having an exponential backoff strategy.
+
+From now own, the user is responsible for handling this.
+
+> The `signAndSendTransactionLegacy` method is still available for backwards compatibility.
+
+### Other changes
+
+- `viewFunction` has been deprecated in favor of simply using `provider.callFunction`
+
+- `transfer` allows to transfer any token as defined in `@near-js/tokens` package
+
+- `getBalance()` now accepts a token (`@near-js/tokens`) as an argument, by default it will return the **available** NEAR balance
+
+- Added methods to `createTransaction` and `createMetaTransaction`
+
+- Split `addAccessKey` into `addFullAccessKey` and `addFunctionCallAccessKey`
+
+- Deprecated multiple functions, all of them explain which function to use instead
+
+- [#1513](https://github.com/near/near-api-js/pull/1513) [`a8e1046`](https://github.com/near/near-api-js/commit/a8e1046d4c184700bed93229f81e7875fca11b27) Thanks [@denbite](https://github.com/denbite)! - Major update for Signer and Account APIs to streamline development
+
+### Patch Changes
+
+- Updated dependencies [[`a8e1046`](https://github.com/near/near-api-js/commit/a8e1046d4c184700bed93229f81e7875fca11b27)]:
+  - @near-js/transactions@2.0.0
+  - @near-js/providers@2.0.0
+  - @near-js/signers@2.0.0
+  - @near-js/types@2.0.0
+  - @near-js/tokens@2.0.0
+  - @near-js/crypto@2.0.0
+  - @near-js/utils@2.0.0
+
 ## 1.4.1
 
 ### Patch Changes
