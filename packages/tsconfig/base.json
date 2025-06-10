@@ -23,7 +23,7 @@
 		"noUnusedLocals": true,
 		"experimentalDecorators": true,
 		"resolveJsonModule": true,
-		"isolatedModules": true,
+		"isolatedModules": true
 	},
 	"exclude": ["node_modules"]
 }
