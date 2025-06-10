@@ -1,5 +1,7 @@
 export {
-    Account,
+    Account
+} from './account';
+export type {
     AccountBalance,
     AccountAuthorizedApp,
     SignAndSendTransactionOptions
@@ -19,9 +21,9 @@ export {
     MULTISIG_CONFIRM_METHODS,
 } from './constants';
 export {
-    Contract,
-    ContractMethods,
+    Contract
 } from './contract';
+export type { ContractMethods } from './contract';
 export {
     ArgumentSchemaError,
     ConflictingOptions,
@@ -32,7 +34,7 @@ export {
     MultisigDeleteRequestRejectionError,
     MultisigStateStatus,
 } from './types';
-export {    
+export type {    
     FunctionCallOptions,
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,

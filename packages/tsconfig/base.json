@@ -3,12 +3,17 @@
 	"display": "Default",
 	"compilerOptions": {
 		"paths": {
-			"@near-js/*": ["../packages/*"]
+			"@near-js/*": [
+				"../packages/*"
+			]
 		},
 		"esModuleInterop": true,
 		"module": "es2022",
 		"target": "es2022",
-		"lib": ["es2022", "DOM"],
+		"lib": [
+			"es2022",
+			"DOM"
+		],
 		"moduleResolution": "node",
 		"alwaysStrict": true,
 		"declaration": true,
@@ -22,7 +27,10 @@
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
 		"experimentalDecorators": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"isolatedModules": true,
 	},
-	"exclude": ["node_modules"]
+	"exclude": [
+		"node_modules"
+	]
 }

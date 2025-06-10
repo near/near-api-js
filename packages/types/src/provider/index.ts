@@ -1,13 +1,15 @@
 
 export {
-    IdType,
+    IdType
+} from './light_client';
+export type {
     LightClientBlockLiteView,
     LightClientProof,
     LightClientProofRequest,
     NextLightClientBlockRequest,
-    NextLightClientBlockResponse,
+    NextLightClientBlockResponse
 } from './light_client';
-export {
+export type {
     AccessKeyWithPublicKey,
     BlockHash,
     BlockChange,
@@ -39,7 +41,7 @@ export {
     Transaction as ProviderTransaction,
     TxExecutionStatus,
 } from './protocol';
-export {
+export type {
     CallFunctionRequest,
     RpcQueryRequest,
     ViewAccessKeyListRequest,
@@ -49,6 +51,9 @@ export {
     ViewStateRequest,
 } from './request';
 export {
+    ExecutionStatusBasic, FinalExecutionStatusBasic
+} from './response';
+export type {
     AccessKeyInfoView,
     AccessKeyList,
     AccessKeyView,
@@ -63,20 +68,16 @@ export {
     ExecutionOutcome,
     ExecutionOutcomeWithId,
     ExecutionOutcomeWithIdView,
-    ExecutionStatus,
-    ExecutionStatusBasic,
-    FinalExecutionOutcome,
-    FinalExecutionStatus,
-    FinalExecutionStatusBasic,
-    FunctionCallPermissionView,
+    ExecutionStatus, FinalExecutionOutcome,
+    FinalExecutionStatus, FunctionCallPermissionView,
     QueryResponseKind,
     SerializedReturnValue,
     ViewStateResult,
     ExecutionOutcomeReceiptDetail,
     ContractStateView,
-    CallContractViewFunctionResultRaw,
+    CallContractViewFunctionResultRaw
 } from './response';
-export {
+export type {
     CurrentEpochValidatorInfo,
     EpochValidatorInfo,
     NextEpochValidatorInfo,
