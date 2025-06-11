@@ -1,5 +1,17 @@
 # @near-js/providers
 
+## 2.0.3
+
+### Patch Changes
+
+- [#1573](https://github.com/near/near-api-js/pull/1573) [`7ee6e1d`](https://github.com/near/near-api-js/commit/7ee6e1dceb49fd841e54524ae2b129f390580068) Thanks [@r-near](https://github.com/r-near)! - fix: separate runtime and type exports for esbuild compatibility
+
+- Updated dependencies [[`7ee6e1d`](https://github.com/near/near-api-js/commit/7ee6e1dceb49fd841e54524ae2b129f390580068)]:
+  - @near-js/crypto@2.0.3
+  - @near-js/types@2.0.3
+  - @near-js/transactions@2.0.3
+  - @near-js/utils@2.0.3
+
 ## 2.0.2
 
 ### Patch Changes
