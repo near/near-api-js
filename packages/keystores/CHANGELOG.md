@@ -1,5 +1,13 @@
 # @near-js/keystores
 
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`7ee6e1d`](https://github.com/near/near-api-js/commit/7ee6e1dceb49fd841e54524ae2b129f390580068)]:
+  - @near-js/crypto@2.0.3
+  - @near-js/types@2.0.3
+
 ## 2.0.2
 
 ### Patch Changes
