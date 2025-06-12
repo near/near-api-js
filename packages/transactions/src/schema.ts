@@ -1,13 +1,13 @@
-import { PublicKey } from '@near-js/crypto';
-import { deserialize, serialize, Schema } from 'borsh';
+import type { PublicKey } from '@near-js/crypto';
+import { type Schema, deserialize, serialize } from 'borsh';
 
-import {
+import type {
     Action,
     SignedDelegate,
 } from './actions';
-import { DelegateAction } from './delegate';
+import type { DelegateAction } from './delegate';
 import { DelegateActionPrefix } from './prefix';
-import { Signature } from './signature';
+import type { Signature } from './signature';
 
 /**
  * Borsh-encode a delegate action for inclusion as an action within a meta transaction
@@ -240,6 +240,29 @@ export const SCHEMA = new class BorshSchema {
             signature: this.Signature,
         }
     };
+    GlobalContractDeployMode: Schema = {
+        enum: [
+            { struct: { CodeHash: { struct: {} } } },
+            { struct: { AccountId: { struct: {} } } },
+        ],
+    };
+    GlobalContractIdentifier: Schema = {
+        enum: [
+            { struct: { CodeHash: { array: { type: 'u8', len: 32 } } } },
+            { struct: { AccountId: 'string' } },
+        ],
+    };
+    DeployGlobalContract: Schema = {
+        struct: {
+            code: { array: { type: 'u8' } },
+            deployMode: this.GlobalContractDeployMode,
+        },
+    };
+    UseGlobalContract: Schema = {
+        struct: {
+            contractIdentifier: this.GlobalContractIdentifier,
+        },
+    };
     Action: Schema = {
         enum: [
             { struct: { createAccount: this.CreateAccount } },
@@ -251,6 +274,8 @@ export const SCHEMA = new class BorshSchema {
             { struct: { deleteKey: this.DeleteKey } },
             { struct: { deleteAccount: this.DeleteAccount } },
             { struct: { signedDelegate: this.SignedDelegate } },
+            { struct: { deployGlobalContract: this.DeployGlobalContract } },
+            { struct: { useGlobalContract: this.UseGlobalContract } },
         ]
     };
     Transaction: Schema = {

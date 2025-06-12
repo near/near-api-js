@@ -1,8 +1,8 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 import { Enum } from '@near-js/types';
 
-import { DelegateAction } from './delegate';
-import { Signature } from './signature';
+import type { DelegateAction } from './delegate';
+import type { Signature } from './signature';
 
 export class FunctionCallPermission {
     allowance?: bigint;
@@ -63,6 +63,52 @@ export class FunctionCall {
         this.args = args;
         this.gas = gas;
         this.deposit = deposit;
+    }
+}
+
+export class GlobalContractDeployMode extends Enum {
+    enum: string;
+    CodeHash?: null;
+    AccountId?: null;
+
+    constructor(props: { CodeHash?: null; AccountId?: null }) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
+}
+
+export class GlobalContractIdentifier extends Enum {
+    enum: string;
+    CodeHash?: Uint8Array;
+    AccountId?: string;
+
+    constructor(props: { CodeHash?: Uint8Array; AccountId?: string }) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
+}
+
+export class DeployGlobalContract {
+    code: Uint8Array;
+    deployMode: GlobalContractDeployMode;
+
+    constructor({ code, deployMode }: { code: Uint8Array; deployMode: GlobalContractDeployMode }) {
+        this.code = code;
+        this.deployMode = deployMode;
+    }
+}
+
+export class UseGlobalContract {
+    contractIdentifier: GlobalContractIdentifier;
+
+    constructor({ contractIdentifier }: { contractIdentifier: GlobalContractIdentifier }) {
+        this.contractIdentifier = contractIdentifier;
     }
 }
 export class Transfer {
@@ -130,6 +176,8 @@ export class Action extends Enum {
     deleteKey?: DeleteKey;
     deleteAccount?: DeleteAccount;
     signedDelegate?: SignedDelegate;
+    deployGlobalContract?: DeployGlobalContract;
+    useGlobalContract?: UseGlobalContract;
 
     constructor(props: any) {
         super(props);
