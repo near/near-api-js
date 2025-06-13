@@ -1,9 +1,0 @@
-{
-  "name": "build",
-  "version": "0.0.0",
-  "type": "module",
-  "private": true,
-  "bin": {
-    "cjsify": "./cjsify.js"
-  }
-}

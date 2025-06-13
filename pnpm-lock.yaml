@@ -124,9 +124,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
@@ -195,8 +192,6 @@ importers:
         specifier: 29.2.6
         version: 29.2.6(@babel/core@7.24.7)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.24.7))(esbuild@0.25.5)(jest@29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.6.1-rc)))(typescript@5.6.1-rc)
 
-  packages/build: {}
-
   packages/client:
     dependencies:
       '@near-js/accounts':
@@ -230,9 +225,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -260,9 +252,6 @@ importers:
       '@types/node':
         specifier: ^22.15.24
         version: 22.15.24
-      build:
-        specifier: workspace:*
-        version: link:../build
       chalk:
         specifier: 5.4.1
         version: 5.4.1
@@ -318,9 +307,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
@@ -343,9 +329,6 @@ importers:
       '@types/node':
         specifier: 18.11.18
         version: 18.11.18
-      build:
-        specifier: workspace:*
-        version: link:../build
 
   packages/keystores:
     dependencies:
@@ -362,9 +345,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
@@ -390,9 +370,6 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@22.15.24)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@22.15.24)(typescript@5.4.5))
@@ -424,9 +401,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
@@ -555,9 +529,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
@@ -602,9 +573,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
@@ -672,9 +640,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
@@ -695,9 +660,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
@@ -732,9 +694,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       glob:
         specifier: ^11.0.2
         version: 11.0.2
