@@ -1,16 +1,19 @@
 import { describe, expect, test } from '@jest/globals';
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { baseDecode } from '@near-js/utils';
+import { sha256 } from '@noble/hashes/sha256';
 import { deserialize, serialize } from 'borsh';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 
 
 import {
+    GlobalContractDeployMode,
+    GlobalContractIdentifier,
+    SCHEMA,
     actionCreators,
     createTransaction,
     decodeTransaction,
-    encodeTransaction,
-    SCHEMA,
+    encodeTransaction
 } from '../src';
 
 const {
@@ -23,6 +26,8 @@ const {
     functionCallAccessKey,
     stake,
     transfer,
+    deployGlobalContract,
+    useGlobalContract
 } = actionCreators;
 
 class Test {
@@ -169,5 +174,84 @@ describe('serialize and deserialize on different types of nonce', () => {
         const deserialized = decodeTransaction(serialized);
         expect(encodeTransaction(deserialized)).toEqual(serialized);
         expect(deserialized.nonce.toString()).toEqual(targetNonce.toString());
+    });
+});
+describe('Global Contract Actions Serialization', () => {
+    const signerId = 'test.near';
+    const publicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+    const receiverId = 'test.near'; // For these actions, receiver is often the signer
+    const nonce = 1n;
+    const blockHash = baseDecode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
+    const sampleWasmCode = new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]); // Minimal valid WASM
+    const sampleCodeHash = sha256(sampleWasmCode);
+
+    test('serialize and deserialize DeployGlobalContract action (CodeHash mode)', () => {
+        const action = deployGlobalContract(
+            sampleWasmCode,
+            new GlobalContractDeployMode({ CodeHash: null })
+        );
+        const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
+        const serializedTx = encodeTransaction(transaction);
+        const deserializedTx = decodeTransaction(serializedTx);
+
+        expect(deserializedTx.actions.length).toBe(1);
+        const deserializedAction = deserializedTx.actions[0].deployGlobalContract;
+        expect(deserializedAction).toBeDefined();
+        if (deserializedAction) { // Type guard
+            expect(Uint8Array.from(deserializedAction.code)).toEqual(sampleWasmCode);
+            expect(deserializedAction.deployMode).toStrictEqual({ CodeHash: {} });
+            expect(deserializedAction.deployMode.CodeHash).toStrictEqual({});
+        }
+    });
+
+    test('serialize and deserialize DeployGlobalContract action (AccountId mode)', () => {
+        const action = deployGlobalContract(
+            sampleWasmCode,
+            new GlobalContractDeployMode({ AccountId: null })
+        );
+        const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
+        const serializedTx = encodeTransaction(transaction);
+        const deserializedTx = decodeTransaction(serializedTx);
+
+        expect(deserializedTx.actions.length).toBe(1);
+        const deserializedAction = deserializedTx.actions[0].deployGlobalContract;
+        expect(deserializedAction).toBeDefined();
+        if (deserializedAction) { // Type guard
+            expect(Uint8Array.from(deserializedAction.code)).toEqual(sampleWasmCode);
+            expect(deserializedAction.deployMode).toStrictEqual({ AccountId: {} });
+        }
+    });
+
+    test('serialize and deserialize UseGlobalContract action (CodeHash identifier)', () => {
+        const action = useGlobalContract(
+            new GlobalContractIdentifier({ CodeHash: sampleCodeHash })
+        );
+        const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
+        const serializedTx = encodeTransaction(transaction);
+        const deserializedTx = decodeTransaction(serializedTx);
+
+        expect(deserializedTx.actions.length).toBe(1);
+        const deserializedAction = deserializedTx.actions[0].useGlobalContract;
+        expect(deserializedAction).toBeDefined();
+        if (deserializedAction) { // Type guard
+            expect(deserializedAction.contractIdentifier).toEqual({ CodeHash: Array.from(sampleCodeHash) });
+        }
+    });
+
+    test('serialize and deserialize UseGlobalContract action (AccountId identifier)', () => {
+        const contractOwnerAccountId = 'contract_owner.near';
+        const action = useGlobalContract(
+            new GlobalContractIdentifier({ AccountId: contractOwnerAccountId })
+        );
+        const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
+        const serializedTx = encodeTransaction(transaction);
+        const deserializedTx = decodeTransaction(serializedTx);
+
+        expect(deserializedTx.actions.length).toBe(1);
+        const deserializedAction = deserializedTx.actions[0].useGlobalContract;
+        expect(deserializedAction).toBeDefined();
+        if (deserializedAction) { // Type guard
+            expect(deserializedAction.contractIdentifier.AccountId).toBe(contractOwnerAccountId);
+        }
     });
 });
