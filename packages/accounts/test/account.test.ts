@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { KeyPair, KeyType } from '@near-js/crypto';
 import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { actionCreators } from '@near-js/transactions';
@@ -510,5 +510,116 @@ describe('with deploy contract', () => {
         } catch (e) {
             expect(e).toEqual(new Error(ERROR_MESSAGE));
         }
+    });
+});
+
+describe('global contracts', () => {
+    let account: Account;
+    let mockSignAndSendTransaction: any;
+
+    beforeEach(() => {
+        account = new Account('test.near', nearjs.connection.provider, nearjs.connection.signer);
+        mockSignAndSendTransaction = jest.spyOn(account, 'signAndSendTransaction');
+        mockSignAndSendTransaction.mockResolvedValue({ status: 'success' } as any);
+    });
+
+    afterEach(() => {
+        mockSignAndSendTransaction.mockRestore();
+    });
+
+    describe('deployGlobalContract', () => {
+        const contractCode = new Uint8Array([0x00, 0x61, 0x73, 0x6d]);
+
+        test('deploys global contract with "codeHash" mode', async () => {
+            await account.deployGlobalContract(contractCode, 'codeHash');
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        deployGlobalContract: expect.objectContaining({
+                            code: contractCode,
+                            deployMode: expect.objectContaining({
+                                enum: 'CodeHash',
+                                CodeHash: null
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('deploys global contract with "accountId" mode', async () => {
+            await account.deployGlobalContract(contractCode, 'accountId');
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        deployGlobalContract: expect.objectContaining({
+                            code: contractCode,
+                            deployMode: expect.objectContaining({
+                                enum: 'AccountId',
+                                AccountId: null
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('handles valid deploy modes correctly', async () => {
+            // Test that both valid modes work without errors
+            await account.deployGlobalContract(contractCode, 'codeHash');
+            await account.deployGlobalContract(contractCode, 'accountId');
+            expect(mockSignAndSendTransaction).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('useGlobalContract', () => {
+        test('uses global contract with account ID string', async () => {
+            await account.useGlobalContract('contract-owner.near');
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        useGlobalContract: expect.objectContaining({
+                            contractIdentifier: expect.objectContaining({
+                                enum: 'AccountId',
+                                AccountId: 'contract-owner.near'
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('uses global contract with code hash Uint8Array', async () => {
+            const codeHash = new Uint8Array(32);
+            await account.useGlobalContract(codeHash);
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        useGlobalContract: expect.objectContaining({
+                            contractIdentifier: expect.objectContaining({
+                                enum: 'CodeHash',
+                                CodeHash: codeHash
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('handles both string and Uint8Array identifiers correctly', async () => {
+            // Test that both valid identifier types work without errors
+            await account.useGlobalContract('owner.near');
+            const codeHash = new Uint8Array(32);
+            await account.useGlobalContract(codeHash);
+            expect(mockSignAndSendTransaction).toHaveBeenCalledTimes(2);
+        });
     });
 });
