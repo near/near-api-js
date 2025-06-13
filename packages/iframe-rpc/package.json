@@ -24,5 +24,6 @@
 			"import": "./lib/esm/index.js",
 			"require": "./lib/commonjs/index.cjs"
 		}
-	}
+	},
+    "sideEffects": false
 }

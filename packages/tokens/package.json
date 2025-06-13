@@ -42,5 +42,6 @@
 			"require": "./lib/commonjs/testnet/index.cjs",
 			"import": "./lib/esm/testnet/index.js"
 		}
-	}
+	},
+    "sideEffects": false
 }
