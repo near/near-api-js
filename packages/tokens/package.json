@@ -52,18 +52,6 @@
 			"require": "./lib/commonjs/index.cjs",
 			"import": "./lib/esm/index.js"
 		},
-		"./ft": {
-			"require": "./lib/commonjs/ft/index.cjs",
-			"import": "./lib/esm/ft/index.js"
-		},
-		"./ft/format": {
-			"require": "./lib/commonjs/ft/format.cjs",
-			"import": "./lib/esm/ft/format.js"
-		},
-		"./nft": {
-			"require": "./lib/commonjs/nft/index.cjs",
-			"import": "./lib/esm/nft/index.js"
-		},
 		"./mainnet": {
 			"require": "./lib/commonjs/mainnet/index.cjs",
 			"import": "./lib/esm/mainnet/index.js"

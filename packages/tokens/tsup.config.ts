@@ -25,7 +25,7 @@ export default defineConfig([
     target: "es2022",
     esbuildPlugins: [fixFolderImportsPlugin(), fixExtensionsPlugin()],
   },
-  // Node 10 compatibility - extensionless strategy
+  // Node 10 compatibility - extensionless strategy (from https://github.com/andrewbranch/example-subpath-exports-ts-compat)
   {
     splitting: false,
     bundle: false,
