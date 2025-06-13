@@ -3,7 +3,7 @@ import { fixFolderImportsPlugin, fixExtensionsPlugin } from 'esbuild-fix-imports
 
 export default defineConfig([{
     splitting: false,
-    bundle: false,
+    bundle: true,
     entryPoints: ["src/**/*"],
     format: ["cjs"],
     outDir: "lib/commonjs",
@@ -12,11 +12,11 @@ export default defineConfig([{
     target: "es2022",
     esbuildPlugins: [fixFolderImportsPlugin(), fixExtensionsPlugin()],
     loader: {
-        ".json": "copy",
+        ".json": "file",
     }
 }, {
     splitting: false,
-    bundle: false,
+    bundle: true,
     entryPoints: ["src/**/*"],
     format: ["esm"],
     outDir: "lib/esm",
@@ -25,6 +25,6 @@ export default defineConfig([{
     target: "es2022",
     esbuildPlugins: [fixFolderImportsPlugin(), fixExtensionsPlugin()],
     loader: {
-        ".json": "copy",
+        ".json": "file",
     }
 }]);
