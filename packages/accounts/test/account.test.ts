@@ -577,8 +577,8 @@ describe('global contracts', () => {
     });
 
     describe('useGlobalContract', () => {
-        test('uses global contract with account ID string', async () => {
-            await account.useGlobalContract('contract-owner.near');
+        test('uses global contract with account ID', async () => {
+            await account.useGlobalContract({ accountId: 'contract-owner.near' });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
                 receiverId: 'test.near',
@@ -597,7 +597,7 @@ describe('global contracts', () => {
 
         test('uses global contract with code hash Uint8Array', async () => {
             const codeHash = new Uint8Array(32);
-            await account.useGlobalContract(codeHash);
+            await account.useGlobalContract({ codeHash });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
                 receiverId: 'test.near',
@@ -614,12 +614,33 @@ describe('global contracts', () => {
             });
         });
 
-        test('handles both string and Uint8Array identifiers correctly', async () => {
-            // Test that both valid identifier types work without errors
-            await account.useGlobalContract('owner.near');
+        test('uses global contract with code hash hex string', async () => {
+            const codeHashHex = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
+            const expectedBytes = Buffer.from(codeHashHex, 'hex');
+            await account.useGlobalContract({ codeHash: codeHashHex });
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        useGlobalContract: expect.objectContaining({
+                            contractIdentifier: expect.objectContaining({
+                                enum: 'CodeHash',
+                                CodeHash: expectedBytes
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('handles all identifier formats correctly', async () => {
+            // Test that all valid identifier formats work without errors
+            await account.useGlobalContract({ accountId: 'owner.near' });
             const codeHash = new Uint8Array(32);
-            await account.useGlobalContract(codeHash);
-            expect(mockSignAndSendTransaction).toHaveBeenCalledTimes(2);
+            await account.useGlobalContract({ codeHash });
+            await account.useGlobalContract({ codeHash: 'deadbeef' });
+            expect(mockSignAndSendTransaction).toHaveBeenCalledTimes(3);
         });
     });
 });

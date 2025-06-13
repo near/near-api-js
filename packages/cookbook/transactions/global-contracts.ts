@@ -24,12 +24,17 @@ export default async function globalContracts() {
     const deployResultImmutable = await account.deployGlobalContract(contractCode, "codeHash");
     console.log("Immutable global contract deployed:", deployResultImmutable);
 
-    // Use a global contract by account ID (string)
-    const useResult = await account.useGlobalContract("contract-owner.testnet");
+    // Use a global contract by account ID
+    const useResult = await account.useGlobalContract({ accountId: "contract-owner.testnet" });
     console.log("Using global contract by account ID:", useResult);
 
     // Use a global contract by code hash (Uint8Array)
     const codeHash = new Uint8Array(32); // 32-byte hash placeholder
-    const useResultByHash = await account.useGlobalContract(codeHash);
+    const useResultByHash = await account.useGlobalContract({ codeHash });
     console.log("Using global contract by hash:", useResultByHash);
+
+    // Use a global contract by code hash (hex string)
+    const codeHashHex = "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
+    const useResultByHexHash = await account.useGlobalContract({ codeHash: codeHashHex });
+    console.log("Using global contract by hex hash:", useResultByHexHash);
 }

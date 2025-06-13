@@ -562,14 +562,18 @@ export class Account {
     /**
      * Use a previously deployed global contract on this account
      *
-     * @param contractIdentifier The global contract identifier - either account ID string or code hash bytes
+     * @param contractIdentifier The global contract identifier - either { accountId: string } or { codeHash: string | Uint8Array }
      */
     public async useGlobalContract(
-        contractIdentifier: string | Uint8Array
+        contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }
     ): Promise<FinalExecutionOutcome> {
-        const identifier = typeof contractIdentifier === "string"
-            ? new GlobalContractIdentifier({ AccountId: contractIdentifier })
-            : new GlobalContractIdentifier({ CodeHash: contractIdentifier });
+        const identifier = "accountId" in contractIdentifier
+            ? new GlobalContractIdentifier({ AccountId: contractIdentifier.accountId })
+            : new GlobalContractIdentifier({ 
+                CodeHash: typeof contractIdentifier.codeHash === "string" 
+                    ? Buffer.from(contractIdentifier.codeHash, "hex")
+                    : contractIdentifier.codeHash 
+            });
             
         return this.signAndSendTransaction({
             receiverId: this.accountId,
