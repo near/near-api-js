@@ -11,7 +11,7 @@
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
 		"test": "jest",
-		"check-exports": "attw --pack ."
+		"check-exports": "attw --pack . --profile node16"
 	},
 	"keywords": [],
 	"author": "",
