@@ -175,9 +175,6 @@ importers:
       buffer:
         specifier: 6.0.3
         version: 6.0.3
-      build:
-        specifier: workspace:*
-        version: link:../build
       cbor-js:
         specifier: ^0.1.0
         version: 0.1.0
