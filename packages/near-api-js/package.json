@@ -73,5 +73,6 @@
         "lib",
         "dist"
     ],
-    "author": "NEAR Inc"
+    "author": "NEAR Inc",
+    "sideEffects": false
 }
