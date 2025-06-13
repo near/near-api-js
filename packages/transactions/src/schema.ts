@@ -36,7 +36,7 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
  * @returns A serialized representation of the input transaction.
  */
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
-    const schema: Schema = transaction instanceof SignedTransaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
+    const schema: Schema = 'signature' in transaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
     return serialize(schema, transaction);
 }
 
