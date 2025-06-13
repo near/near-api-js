@@ -1,4 +1,4 @@
-import { PublicKey } from '@near-js/crypto';
+import type { PublicKey } from '@near-js/crypto';
 
 import {
     AccessKey,
@@ -9,15 +9,19 @@ import {
     DeleteAccount,
     DeleteKey,
     DeployContract,
+    DeployGlobalContract,
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
+    type GlobalContractDeployMode,
+    type GlobalContractIdentifier,
     SignedDelegate,
     Stake,
     Transfer,
+    UseGlobalContract,
 } from './actions';
-import { DelegateAction } from './delegate';
-import { Signature } from './signature';
+import type { DelegateAction } from './delegate';
+import type { Signature } from './signature';
 
 /**
  * Creates a full access key with full access permissions.
@@ -176,6 +180,30 @@ function signedDelegate({
     });
 }
 
+/**
+ * Creates a new action for deploying a global contract with provided code and mode.
+ * @param code The Uint8Array representing the contract code.
+ * @param deployMode The mode to deploy global contract (CodeHash or AccountId).
+ * @returns A new action for deploying a global contract.
+ */
+function deployGlobalContract(
+    code: Uint8Array,
+    deployMode: GlobalContractDeployMode,
+): Action {
+    return new Action({ deployGlobalContract: new DeployGlobalContract({ code, deployMode }) });
+}
+
+/**
+ * Creates a new action for using a previously deployed global contract.
+ * @param contractIdentifier The global contract identifier (hash or account id).
+ * @returns A new action for using a global contract.
+ */
+function useGlobalContract(
+    contractIdentifier: GlobalContractIdentifier,
+): Action {
+    return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier }) });
+}
+
 export const actionCreators = {
     addKey,
     createAccount,
@@ -188,4 +216,6 @@ export const actionCreators = {
     signedDelegate,
     stake,
     transfer,
+    deployGlobalContract,
+    useGlobalContract
 };
