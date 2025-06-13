@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/tokens",
-	"version": "2.0.3",
+	"version": "2.1.0",
 	"description": "Modules with tokens",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
@@ -43,5 +43,5 @@
 			"import": "./lib/esm/testnet/index.js"
 		}
 	},
-    "sideEffects": false
+	"sideEffects": false
 }

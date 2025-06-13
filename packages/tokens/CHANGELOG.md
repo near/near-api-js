@@ -1,5 +1,11 @@
 # @near-js/tokens
 
+## 2.1.0
+
+### Minor Changes
+
+- [#1586](https://github.com/near/near-api-js/pull/1586) [`fec4678`](https://github.com/near/near-api-js/commit/fec467887b4fc0895522ca37a77c1322244e6082) Thanks [@denbite](https://github.com/denbite)! - Mark `@near-js/*` packages as side-effect free for tree-shaking
+
 ## 2.0.3
 
 ## 2.0.2
