@@ -1,52 +1,54 @@
 import { PublicKey } from "@near-js/crypto";
-import { exponentialBackoff, Provider } from "@near-js/providers";
+import { type Provider, exponentialBackoff } from "@near-js/providers";
 import {
+    type Action,
+    type DelegateAction,
+    GlobalContractDeployMode,
+    GlobalContractIdentifier,
+    type SignedDelegate,
+    type SignedTransaction,
     actionCreators,
-    Action,
     buildDelegateAction,
-    SignedDelegate,
-    SignedTransaction,
     createTransaction,
     stringifyJsonOrBytes,
-    DelegateAction,
 } from "@near-js/transactions";
 import {
-    PositionalArgsError,
-    FinalExecutionOutcome,
-    TypedError,
-    AccessKeyView,
-    AccessKeyViewRaw,
-    AccessKeyList,
-    AccessKeyInfoView,
-    FunctionCallPermissionView,
-    BlockReference,
-    ContractCodeView,
-    ContractStateView,
+    type AccessKeyInfoView,
+    type AccessKeyList,
+    type AccessKeyView,
+    type AccessKeyViewRaw,
+    type AccountView,
+    type BlockReference,
+    type ContractCodeView,
+    type ContractStateView,
     ErrorContext,
-    TxExecutionStatus,
-    AccountView,
-    Finality,
+    type FinalExecutionOutcome,
+    type Finality,
+    type FunctionCallPermissionView,
+    PositionalArgsError,
+    type TxExecutionStatus,
+    TypedError,
 } from "@near-js/types";
 import {
-    baseDecode,
-    Logger,
     DEFAULT_FUNCTION_CALL_GAS,
+    Logger,
+    baseDecode,
     baseEncode,
+    getTransactionLastResult,
     parseResultError,
     printTxOutcomeLogsAndFailures,
-    getTransactionLastResult,
 } from "@near-js/utils";
 
-import { SignedMessage, Signer } from "@near-js/signers";
+import type { SignedMessage, Signer } from "@near-js/signers";
 import { Connection } from "./connection";
-import { viewFunction, viewState } from "./utils";
-import {
+import type {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
 } from "./interface";
+import { viewFunction, viewState } from "./utils";
 
+import type { FungibleToken, NativeToken } from "@near-js/tokens";
 import { NEAR } from "@near-js/tokens";
-import type { NativeToken, FungibleToken } from "@near-js/tokens";
 
 const {
     addKey,
@@ -54,10 +56,12 @@ const {
     deleteAccount,
     deleteKey,
     deployContract,
+    deployGlobalContract,
     fullAccessKey,
     functionCall,
     functionCallAccessKey,
     transfer,
+    useGlobalContract,
 } = actionCreators;
 
 // Environment value is used in tests since near-sandbox runs old version of nearcore that doesn't work with near-final finality
@@ -532,6 +536,44 @@ export class Account {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deployContract(code)],
+        });
+    }
+
+    /**
+     * Deploy a global contract that can be reused by multiple accounts
+     *
+     * @param code The compiled contract code bytes
+     * @param deployMode Deploy mode - "codeHash" for immutable contracts, "accountId" for updateable contracts
+     */
+    public async deployGlobalContract(
+        code: Uint8Array,
+        deployMode: "codeHash" | "accountId"
+    ): Promise<FinalExecutionOutcome> {
+        const mode = deployMode === "codeHash" 
+            ? new GlobalContractDeployMode({ CodeHash: null })
+            : new GlobalContractDeployMode({ AccountId: null });
+            
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [deployGlobalContract(code, mode)],
+        });
+    }
+
+    /**
+     * Use a previously deployed global contract on this account
+     *
+     * @param contractIdentifier The global contract identifier - either account ID string or code hash bytes
+     */
+    public async useGlobalContract(
+        contractIdentifier: string | Uint8Array
+    ): Promise<FinalExecutionOutcome> {
+        const identifier = typeof contractIdentifier === "string"
+            ? new GlobalContractIdentifier({ AccountId: contractIdentifier })
+            : new GlobalContractIdentifier({ CodeHash: contractIdentifier });
+            
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [useGlobalContract(identifier)],
         });
     }
 

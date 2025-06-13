@@ -245,6 +245,9 @@ importers:
 
   packages/cookbook:
     devDependencies:
+      '@near-js/accounts':
+        specifier: workspace:*
+        version: link:../accounts
       '@near-js/client':
         specifier: workspace:*
         version: link:../client
@@ -254,6 +257,12 @@ importers:
       '@near-js/keystores-node':
         specifier: workspace:*
         version: link:../keystores-node
+      '@near-js/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@near-js/signers':
+        specifier: workspace:*
+        version: link:../signers
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
