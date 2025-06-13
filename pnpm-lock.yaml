@@ -606,9 +606,6 @@ importers:
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
-      build:
-        specifier: workspace:*
-        version: link:../build
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.4.5))
