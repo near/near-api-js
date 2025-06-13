@@ -16,8 +16,7 @@
 		"events": "3.3.0"
 	},
 	"devDependencies": {
-		"@types/node": "18.11.18",
-		"build": "workspace:*"
+		"@types/node": "18.11.18"
 	},
 	"exports": {
 		".": {
