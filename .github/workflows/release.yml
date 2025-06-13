@@ -49,3 +49,5 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           # setup-node by default reads from this env var
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # disables Husky so it's NOT triggered when publishing tags for a new release
+          HUSKY: 0

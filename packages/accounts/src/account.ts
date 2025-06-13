@@ -653,6 +653,7 @@ export class Account {
      * @param options.args Arguments, either as a valid JSON Object or a raw Uint8Array
      * @param options.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
      * @param options.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
+     * @param options.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
      * @returns
      */
     public async callFunction({
@@ -661,18 +662,21 @@ export class Account {
         args = {},
         deposit = "0",
         gas = DEFAULT_FUNCTION_CALL_GAS,
+        waitUntil = DEFAULT_WAIT_STATUS,
     }: {
         contractId: string;
         methodName: string;
         args: Uint8Array | Record<string, any>;
         deposit?: bigint | string | number;
         gas?: bigint | string | number;
+        waitUntil?: TxExecutionStatus;
     }): Promise<object | string | number> {
         const result = await this.signAndSendTransaction({
             receiverId: contractId,
             actions: [
                 functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
             ],
+            waitUntil,
         });
 
         return getTransactionLastResult(result);
