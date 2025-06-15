@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/utils",
-	"version": "2.0.3",
+	"version": "2.1.0",
 	"description": "Common methods and constants for the NEAR API JavaScript client",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
@@ -43,5 +43,5 @@
 			"require": "./lib/commonjs/index.cjs"
 		}
 	},
-    "sideEffects": false
+	"sideEffects": false
 }

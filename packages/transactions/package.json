@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/transactions",
-	"version": "2.0.3",
+	"version": "2.1.0",
 	"description": "Functions and data types for transactions on NEAR",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
@@ -46,5 +46,5 @@
 			"require": "./lib/commonjs/index.cjs"
 		}
 	},
-    "sideEffects": false
+	"sideEffects": false
 }
