@@ -1,4 +1,4 @@
-import { LRUMap } from 'lru_map';
+import * as LRU from 'lru_map';
 import { BlockHash, BlockReference } from '@near-js/types';
 import { ContractState } from './types';
 
@@ -14,7 +14,7 @@ export interface StorageOptions {
 }
 
 export class Storage {
-    private readonly cache: LRUMap<string | number, any>;
+    private readonly cache: LRU.LRUMap<string | number, any>;
 
     private static MAX_ELEMENTS = 100;
 
@@ -22,7 +22,7 @@ export class Storage {
     private blockHeights: Map<string, number>;
 
     constructor(options: StorageOptions = { max: Storage.MAX_ELEMENTS }) {
-        this.cache = new LRUMap(options.max);
+        this.cache = new LRU.LRUMap(options.max);
         this.blockHeights = new Map();
     }
 
