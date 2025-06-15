@@ -9,6 +9,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "turbo run build",
+    "check-exports": "turbo run check-exports",
     "clean": "turbo run clean",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",

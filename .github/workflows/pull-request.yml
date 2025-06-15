@@ -52,3 +52,6 @@ jobs:
 
     - name: Test
       run: pnpm test
+
+    - name: Check exports
+      run: pnpm check-exports
