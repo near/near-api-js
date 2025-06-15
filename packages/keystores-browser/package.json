@@ -27,6 +27,10 @@
 		"tsconfig": "workspace:*",
 		"typescript": "5.4.5"
 	},
+    "peerDependencies": {
+        "@near-js/crypto": "^2.0.1",
+		"@near-js/keystores": "^2.0.1"
+    },
 	"files": [
 		"lib"
 	],
