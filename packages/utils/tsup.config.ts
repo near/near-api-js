@@ -12,7 +12,7 @@ export default defineConfig([{
     target: "es2022",
     esbuildPlugins: [fixFolderImportsPlugin(), fixExtensionsPlugin()],
     loader: {
-        ".json": "file",
+        ".json": "json",
     }
 }, {
     splitting: false,
@@ -25,6 +25,6 @@ export default defineConfig([{
     target: "es2022",
     esbuildPlugins: [fixFolderImportsPlugin(), fixExtensionsPlugin()],
     loader: {
-        ".json": "file",
+        ".json": "json",
     }
 }]);
