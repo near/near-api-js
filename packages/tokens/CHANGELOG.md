@@ -1,5 +1,17 @@
 # @near-js/tokens
 
+## 2.1.0
+
+### Minor Changes
+
+- [#1586](https://github.com/near/near-api-js/pull/1586) [`fec4678`](https://github.com/near/near-api-js/commit/fec467887b4fc0895522ca37a77c1322244e6082) Thanks [@denbite](https://github.com/denbite)! - Mark `@near-js/*` packages as side-effect free for tree-shaking
+
+### Patch Changes
+
+- [#1583](https://github.com/near/near-api-js/pull/1583) [`23bfc92`](https://github.com/near/near-api-js/commit/23bfc92159b5c0402cb0b55d49818a0532e9f268) Thanks [@r-near](https://github.com/r-near)! - Fix package exports and remove invalid dependency
+
+  Remove invalid "build" dependency and add proper exports for ft/, nft/, and ft/format subdirectories. Updates export validation to use node16 profile since Node10 is past end-of-life.
+
 ## 2.0.3
 
 ## 2.0.2
