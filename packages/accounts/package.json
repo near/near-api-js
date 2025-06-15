@@ -52,7 +52,8 @@
 		"@near-js/signers": "^2.0.1",
 		"@near-js/transactions": "^2.0.1",
 		"@near-js/types": "^2.0.1",
-		"@near-js/utils": "^2.0.1"
+		"@near-js/utils": "^2.0.1",
+		"@near-js/tokens": "^2.0.1"
 	},
 	"files": [
 		"lib"
