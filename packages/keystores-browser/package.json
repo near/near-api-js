@@ -21,7 +21,6 @@
 	},
 	"devDependencies": {
 		"@jest/globals": "^29.7.0",
-		"build": "workspace:*",
 		"jest": "29.7.0",
 		"localstorage-memory": "1.0.3",
 		"ts-jest": "29.2.6",
@@ -36,5 +35,6 @@
 			"import": "./lib/esm/index.js",
 			"require": "./lib/commonjs/index.cjs"
 		}
-	}
+	},
+    "sideEffects": false
 }

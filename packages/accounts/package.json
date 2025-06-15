@@ -38,7 +38,6 @@
 		"@types/depd": "^1.1.37",
 		"@types/json-schema": "^7.0.15",
 		"@types/node": "20.0.0",
-		"build": "workspace:*",
 		"jest": "29.7.0",
 		"near-hello": "0.5.1",
 		"near-workspaces": "5.0.0",
@@ -63,5 +62,6 @@
 			"import": "./lib/esm/index.js",
 			"require": "./lib/commonjs/index.cjs"
 		}
-	}
+	},
+    "sideEffects": false
 }

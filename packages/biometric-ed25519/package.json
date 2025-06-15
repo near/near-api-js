@@ -24,7 +24,6 @@
 		"asn1-parser": "1.1.8",
 		"borsh": "1.0.0",
 		"buffer": "6.0.3",
-		"build": "workspace:*",
 		"cbor-js": "^0.1.0",
 		"fido2-lib": "3.4.1"
 	},
@@ -39,5 +38,6 @@
 			"import": "./lib/esm/index.js",
 			"require": "./lib/commonjs/index.cjs"
 		}
-	}
+	},
+    "sideEffects": false
 }

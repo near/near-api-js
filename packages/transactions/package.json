@@ -27,7 +27,6 @@
 		"@jest/globals": "^29.7.0",
 		"@near-js/keystores": "workspace:*",
 		"@types/node": "20.0.0",
-		"build": "workspace:*",
 		"jest": "29.7.0",
 		"ts-jest": "29.2.6",
 		"tsconfig": "workspace:*",
@@ -46,5 +45,6 @@
 			"import": "./lib/esm/index.js",
 			"require": "./lib/commonjs/index.cjs"
 		}
-	}
+	},
+    "sideEffects": false
 }
