@@ -1,5 +1,25 @@
 # near-api-js
 
+## 6.1.0
+
+### Minor Changes
+
+- [#1586](https://github.com/near/near-api-js/pull/1586) [`fec4678`](https://github.com/near/near-api-js/commit/fec467887b4fc0895522ca37a77c1322244e6082) Thanks [@denbite](https://github.com/denbite)! - Mark `@near-js/*` packages as side-effect free for tree-shaking
+
+### Patch Changes
+
+- Updated dependencies [[`46e5d4e`](https://github.com/near/near-api-js/commit/46e5d4ec74f8f11394364b4a8e568681c4399a73), [`fec4678`](https://github.com/near/near-api-js/commit/fec467887b4fc0895522ca37a77c1322244e6082), [`ff2f6ea`](https://github.com/near/near-api-js/commit/ff2f6ea2ac5cb7ba9e62626cd07bece2e57e5c63), [`c511649`](https://github.com/near/near-api-js/commit/c511649536035f3fe78b8c14907dc814dfb1a310), [`99f3486`](https://github.com/near/near-api-js/commit/99f34864317725467a097dc3c7a3cc5f7a5b43d4), [`34df601`](https://github.com/near/near-api-js/commit/34df6016b6917c3843085d65da882f4c87af6122), [`af571dc`](https://github.com/near/near-api-js/commit/af571dc8428b5c99a1df2add13630713bf9259c9)]:
+  - @near-js/accounts@2.1.0
+  - @near-js/keystores-browser@2.1.0
+  - @near-js/keystores-node@2.1.0
+  - @near-js/transactions@2.1.0
+  - @near-js/keystores@2.1.0
+  - @near-js/providers@2.1.0
+  - @near-js/signers@2.1.0
+  - @near-js/crypto@2.1.0
+  - @near-js/types@2.1.0
+  - @near-js/utils@2.1.0
+
 ## 6.0.2
 
 ### Patch Changes

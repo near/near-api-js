@@ -1,17 +1,27 @@
 {
 	"name": "@near-js/tokens",
-	"version": "2.0.3",
+	"version": "2.1.0",
 	"description": "Modules with tokens",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
 	"types": "lib/esm/index.d.ts",
 	"typesVersions": {
 		"*": {
-			"ft": ["./ft.d.cts"],
-			"ft/format": ["./ft/format.d.cts"],
-			"nft": ["./nft.d.cts"],
-			"mainnet": ["./mainnet.d.cts"],
-			"testnet": ["./testnet.d.cts"]
+			"ft": [
+				"./ft.d.cts"
+			],
+			"ft/format": [
+				"./ft/format.d.cts"
+			],
+			"nft": [
+				"./nft.d.cts"
+			],
+			"mainnet": [
+				"./mainnet.d.cts"
+			],
+			"testnet": [
+				"./testnet.d.cts"
+			]
 		}
 	},
 	"type": "module",
@@ -40,10 +50,10 @@
 		"ft.js",
 		"ft.d.cts",
 		"ft",
-		"nft.js", 
+		"nft.js",
 		"nft.d.cts",
 		"mainnet.js",
-		"mainnet.d.cts", 
+		"mainnet.d.cts",
 		"testnet.js",
 		"testnet.d.cts"
 	],
@@ -61,5 +71,5 @@
 			"import": "./lib/esm/testnet/index.js"
 		}
 	},
-    "sideEffects": false
+	"sideEffects": false
 }
