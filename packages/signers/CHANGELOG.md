@@ -1,5 +1,20 @@
 # @near-js/signers
 
+## 2.1.0
+
+### Minor Changes
+
+- [#1586](https://github.com/near/near-api-js/pull/1586) [`fec4678`](https://github.com/near/near-api-js/commit/fec467887b4fc0895522ca37a77c1322244e6082) Thanks [@denbite](https://github.com/denbite)! - Mark `@near-js/*` packages as side-effect free for tree-shaking
+
+### Patch Changes
+
+- [#1581](https://github.com/near/near-api-js/pull/1581) [`ff2f6ea`](https://github.com/near/near-api-js/commit/ff2f6ea2ac5cb7ba9e62626cd07bece2e57e5c63) Thanks [@r-near](https://github.com/r-near)! - Remove unused build package and clean up workspace dependencies. The build package contained an unused cjsify utility that was replaced by tsup for CommonJS output generation.
+
+- Updated dependencies [[`fec4678`](https://github.com/near/near-api-js/commit/fec467887b4fc0895522ca37a77c1322244e6082), [`ff2f6ea`](https://github.com/near/near-api-js/commit/ff2f6ea2ac5cb7ba9e62626cd07bece2e57e5c63), [`c511649`](https://github.com/near/near-api-js/commit/c511649536035f3fe78b8c14907dc814dfb1a310), [`99f3486`](https://github.com/near/near-api-js/commit/99f34864317725467a097dc3c7a3cc5f7a5b43d4)]:
+  - @near-js/transactions@2.1.0
+  - @near-js/keystores@2.1.0
+  - @near-js/crypto@2.1.0
+
 ## 2.0.3
 
 ### Patch Changes

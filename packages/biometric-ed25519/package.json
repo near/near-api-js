@@ -1,7 +1,7 @@
 {
 	"name": "@near-js/biometric-ed25519",
 	"description": "JavaScript library to handle webauthn and biometric keys",
-	"version": "2.0.3",
+	"version": "2.1.0",
 	"main": "lib/esm/index.js",
 	"types": "lib/esm/index.d.ts",
 	"type": "module",
@@ -33,15 +33,15 @@
 		"jest": "29.7.0",
 		"ts-jest": "29.2.6"
 	},
-    "peerDependencies": {
-        "@near-js/crypto": "^2.0.1",
+	"peerDependencies": {
+		"@near-js/crypto": "^2.0.1",
 		"@near-js/utils": "^2.0.1"
-    },
+	},
 	"exports": {
 		".": {
 			"import": "./lib/esm/index.js",
 			"require": "./lib/commonjs/index.cjs"
 		}
 	},
-    "sideEffects": false
+	"sideEffects": false
 }

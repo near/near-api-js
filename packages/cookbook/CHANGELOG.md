@@ -1,5 +1,21 @@
 # @near-js/cookbook
 
+## 2.1.0
+
+### Patch Changes
+
+- [#1581](https://github.com/near/near-api-js/pull/1581) [`ff2f6ea`](https://github.com/near/near-api-js/commit/ff2f6ea2ac5cb7ba9e62626cd07bece2e57e5c63) Thanks [@r-near](https://github.com/r-near)! - Remove unused build package and clean up workspace dependencies. The build package contained an unused cjsify utility that was replaced by tsup for CommonJS output generation.
+
+- [#1577](https://github.com/near/near-api-js/pull/1577) [`99f3486`](https://github.com/near/near-api-js/commit/99f34864317725467a097dc3c7a3cc5f7a5b43d4) Thanks [@r-near](https://github.com/r-near)! - feat: add global contracts support to Account class
+
+  Add `deployGlobalContract()` and `useGlobalContract()` methods to the Account class with simplified APIs for NEP-591 global contracts support.
+
+  - `deployGlobalContract(code, deployMode)` accepts "codeHash" or "accountId" string literals
+  - `useGlobalContract(contractIdentifier)` auto-detects string (account ID) or Uint8Array (code hash) parameters
+  - Includes cookbook example demonstrating usage patterns
+
+  This enables developers to easily deploy and use global contracts without manually creating complex type objects.
+
 ## 2.0.3
 
 ## 2.0.2
