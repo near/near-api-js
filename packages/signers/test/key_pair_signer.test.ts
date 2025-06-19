@@ -192,7 +192,7 @@ test('generate correct hash for NEP-413-compliant message', async () => {
                 'base64'
             )
         ),
-    })
+    });
 
     const expectedSerializedPayloadHash = new Uint8Array([1, 152, 236, 223, 103, 218, 230, 0,
         34, 54, 210, 18, 244, 68, 108, 252,
@@ -235,7 +235,7 @@ test('verify signature generated using NEP-413 payload hash', async () => {
     const publicKey = (await signer.getPublicKey());
 
     expect(publicKey.verify(existingSerializedPayloadHash, signature)).toBe(true);
-})
+});
 
 test('test getPublicKey returns correct public key', async () => {
     const keyPair = KeyPair.fromString(

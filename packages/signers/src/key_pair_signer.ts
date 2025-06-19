@@ -54,7 +54,7 @@ export class KeyPairSigner extends Signer {
             callbackUrl
         };
 
-        const hash = getPayloadHashForNEP413(params)
+        const hash = getPayloadHashForNEP413(params);
 
         const { signature } = this.key.sign(hash);
 
