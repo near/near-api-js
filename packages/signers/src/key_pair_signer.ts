@@ -2,11 +2,11 @@ import { KeyPair, PublicKey, KeyPairString, KeyType } from '@near-js/crypto';
 import { sha256 } from '@noble/hashes/sha256';
 
 import {
-    Nep413MessageSchema,
     SignedMessage,
     Signer,
     SignMessageParams,
 } from './signer';
+import { getPayloadHashForNEP413 } from './utils';
 import {
     Transaction,
     SignedTransaction,
@@ -16,7 +16,6 @@ import {
     SignedDelegate,
     encodeDelegateAction,
 } from '@near-js/transactions';
-import { serialize } from 'borsh';
 
 /**
  * Signs using in memory key store.
@@ -46,14 +45,7 @@ export class KeyPairSigner extends Signer {
         nonce: Uint8Array,
         callbackUrl?: string
     ): Promise<SignedMessage> {
-        if (nonce.length !== 32)
-            throw new Error('Nonce must be exactly 32 bytes long');
-
         const pk = this.key.getPublicKey();
-
-        // 2**31 + 413 == 2147484061
-        const PREFIX = 2147484061;
-        const serializedPrefix = serialize('u32', PREFIX);
 
         const params: SignMessageParams = {
             message,
@@ -61,15 +53,8 @@ export class KeyPairSigner extends Signer {
             nonce,
             callbackUrl
         };
-        const serializedParams = serialize(Nep413MessageSchema, params);
 
-        const serializedMessage = new Uint8Array(
-            serializedPrefix.length + serializedParams.length
-        );
-        serializedMessage.set(serializedPrefix);
-        serializedMessage.set(serializedParams, serializedPrefix.length);
-
-        const hash = new Uint8Array(sha256(serializedMessage));
+        const hash = getPayloadHashForNEP413(params);
 
         const { signature } = this.key.sign(hash);
 
