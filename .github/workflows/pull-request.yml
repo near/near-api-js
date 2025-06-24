@@ -50,8 +50,11 @@ jobs:
     - name: Lint
       run: pnpm lint
 
-    - name: Test
+    - name: Unit tests
       run: pnpm test
 
     - name: Check exports
       run: pnpm check-exports
+    
+    - name: E2E tests
+      run: pnpm it --ignore-workspace --dir e2e

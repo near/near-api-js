@@ -39,6 +39,19 @@ Start the node by following instructions from [nearcore](https://github.com/near
 
 Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello
 
+### E2E Test
+
+From the root directory, run the following commands:
+
+```
+cd e2e
+pnpm install --ignore-workspace
+pnpm test
+```
+
+The `--ignore-workspace` flag is required because the `e2e` project is intentionally excluded from the workspace.
+This setup ensures that packages are installed just like a real application would — as standalone builds. Workspace linking would not allow this, as it forces symlinks instead of proper package installations.
+
 ### Update error schema
 
 Follow next steps:
