@@ -67,7 +67,8 @@
         "lint:test:fix": "eslint --ext .js --fix test",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib"
+        "clean": "pnpm rimraf lib",
+        "check-exports": "attw --pack ."
     },
     "files": [
         "lib",
