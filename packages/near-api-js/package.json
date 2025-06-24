@@ -31,7 +31,7 @@
     "devDependencies": {
         "@types/depd": "^1.1.37",
         "@types/http-errors": "1.6.1",
-        "@types/node": "18.11.18",
+        "@types/node": "20.0.0",
         "concurrently": "9.1.2",
         "in-publish": "2.0.0",
         "jest": "29.7.0",
@@ -58,7 +58,7 @@
     "scripts": {
         "compile": "tsc -p ./tsconfig.json",
         "dev": "pnpm compile -w",
-        "build": "pnpm compile",
+        "build": "tsup",
         "test": "jest test --passWithNoTests",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
@@ -67,7 +67,8 @@
         "lint:test:fix": "eslint --ext .js --fix test",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib"
+        "clean": "pnpm rimraf lib",
+        "check-exports": "attw --pack ."
     },
     "files": [
         "lib",
