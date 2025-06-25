@@ -1,0 +1,30 @@
+{
+    "name": "@near-js/e2e",
+    "version": "0.0.0",
+    "description": "",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "test": "DEFAULT_FINALITY=optimistic vitest run"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@near-js/accounts": "file:../packages/accounts",
+        "@near-js/crypto": "file:../packages/crypto",
+        "@near-js/providers": "file:../packages/providers",
+        "@near-js/signers": "file:../packages/signers",
+        "@near-js/tokens": "file:../packages/tokens",
+        "@near-js/transactions": "file:../packages/transactions",
+        "@near-js/keystores": "file:../packages/keystores",
+        "@near-js/types": "file:../packages/types",
+        "@near-js/utils": "file:../packages/utils"
+    },
+    "devDependencies": {
+        "@types/node": "20.0.0",
+        "near-workspaces": "5.0.0",
+        "typescript": "5.4.5",
+        "vitest": "^3.2.4"
+    }
+}

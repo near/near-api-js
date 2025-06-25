@@ -13,7 +13,7 @@
     "clean": "turbo run clean",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
-    "autoclave": "rimraf packages/**/dist && rimraf packages/**/lib && rimraf packages/**/node_modules && rimraf packages/**/coverage && rimraf packages/**/.turbo && rm -rf node_modules && rimraf .turbo",
+    "autoclave": "rimraf packages/**/dist && rimraf packages/**/lib && rimraf packages/**/node_modules && rimraf packages/**/coverage && rimraf packages/**/.turbo && rimraf node_modules && rimraf .turbo && rimraf e2e/node_modules && rimraf e2e/coverage",
     "test": "turbo run test",
     "release": "changeset publish",
     "prepare": "husky install",
