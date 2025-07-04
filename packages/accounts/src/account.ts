@@ -66,7 +66,7 @@ const {
 
 // Environment value is used in tests since near-sandbox runs old version of nearcore that doesn't work with near-final finality
 const DEFAULT_FINALITY = process.env.DEFAULT_FINALITY as Finality || "near-final";
-export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "INCLUDED_FINAL";
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
 
 export interface AccountState {
     balance: {
