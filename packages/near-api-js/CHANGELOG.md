@@ -1,5 +1,27 @@
 # near-api-js
 
+## 6.2.0
+
+### Minor Changes
+
+- [#1595](https://github.com/near/near-api-js/pull/1595) [`55667eb`](https://github.com/near/near-api-js/commit/55667eb66a333967acd2094ff24c1f3a54529a48) Thanks [@denbite](https://github.com/denbite)! - Add `Account.callFunctionRaw` method that returns raw transaction outcome
+
+### Patch Changes
+
+- [#1591](https://github.com/near/near-api-js/pull/1591) [`bfc969a`](https://github.com/near/near-api-js/commit/bfc969acb10bf70bfc635078d42796b7d91030e6) Thanks [@denbite](https://github.com/denbite)! - Migrate to building with `tsup` for `near-api-js`
+
+- Updated dependencies [[`e368604`](https://github.com/near/near-api-js/commit/e368604891899726982d254059edbdf14f48ef45), [`55667eb`](https://github.com/near/near-api-js/commit/55667eb66a333967acd2094ff24c1f3a54529a48)]:
+  - @near-js/accounts@2.2.0
+  - @near-js/crypto@2.2.0
+  - @near-js/keystores@2.2.0
+  - @near-js/keystores-browser@2.2.0
+  - @near-js/keystores-node@2.2.0
+  - @near-js/providers@2.2.0
+  - @near-js/signers@2.2.0
+  - @near-js/transactions@2.2.0
+  - @near-js/types@2.2.0
+  - @near-js/utils@2.2.0
+
 ## 6.1.0
 
 ### Minor Changes
