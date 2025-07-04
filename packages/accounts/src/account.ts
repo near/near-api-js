@@ -66,7 +66,7 @@ const {
 
 // Environment value is used in tests since near-sandbox runs old version of nearcore that doesn't work with near-final finality
 const DEFAULT_FINALITY = process.env.DEFAULT_FINALITY as Finality || "near-final";
-export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "INCLUDED_FINAL";
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
 
 export interface AccountState {
     balance: {
@@ -645,7 +645,7 @@ export class Account {
     }
 
     /**
-     * Call a function on a smart contract
+     * Call a function on a smart contract and return parsed transaction result
      *
      * @param options
      * @param options.contractId The contract in which to call the function
@@ -656,7 +656,32 @@ export class Account {
      * @param options.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
      * @returns
      */
-    public async callFunction({
+    public async callFunction(params: {
+        contractId: string;
+        methodName: string;
+        args: Uint8Array | Record<string, any>;
+        deposit?: bigint | string | number;
+        gas?: bigint | string | number;
+        waitUntil?: TxExecutionStatus;
+    }): Promise<object | string | number> {
+        const result = await this.callFunctionRaw(params)
+
+        return getTransactionLastResult(result);
+    }
+
+    /**
+     * Call a function on a smart contract and return raw transaction outcome
+     *
+     * @param options
+     * @param options.contractId The contract in which to call the function
+     * @param options.methodName The method that will be called
+     * @param options.args Arguments, either as a valid JSON Object or a raw Uint8Array
+     * @param options.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
+     * @param options.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
+     * @param options.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
+     * @returns {FinalExecutionOutcome}
+     */
+    public async callFunctionRaw({
         contractId,
         methodName,
         args = {},
@@ -670,16 +695,14 @@ export class Account {
         deposit?: bigint | string | number;
         gas?: bigint | string | number;
         waitUntil?: TxExecutionStatus;
-    }): Promise<object | string | number> {
-        const result = await this.signAndSendTransaction({
+    }): Promise<FinalExecutionOutcome> {
+        return await this.signAndSendTransaction({
             receiverId: contractId,
             actions: [
                 functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
             ],
             waitUntil,
         });
-
-        return getTransactionLastResult(result);
     }
 
     /**
