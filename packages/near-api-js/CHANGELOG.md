@@ -1,5 +1,11 @@
 # near-api-js
 
+## 6.2.1
+
+### Patch Changes
+
+- [#1600](https://github.com/near/near-api-js/pull/1600) [`0dc60d1`](https://github.com/near/near-api-js/commit/0dc60d130be5fad05166e49a27444452fec57016) Thanks [@denbite](https://github.com/denbite)! - Bump to upgrade deps
+
 ## 6.2.0
 
 ### Minor Changes
