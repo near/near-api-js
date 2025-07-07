@@ -1,5 +1,16 @@
 # @near-js/transactions
 
+## 2.2.1
+
+### Patch Changes
+
+- [#1598](https://github.com/near/near-api-js/pull/1598) [`f65647f`](https://github.com/near/near-api-js/commit/f65647f6f3e3f5dc18a7d6f24cbeba255ee8476a) Thanks [@Elabar](https://github.com/Elabar)! - Add global contract action to classic actions
+
+- Updated dependencies []:
+  - @near-js/crypto@2.2.1
+  - @near-js/types@2.2.1
+  - @near-js/utils@2.2.1
+
 ## 2.2.0
 
 ### Patch Changes
