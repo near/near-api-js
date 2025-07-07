@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/accounts",
-	"version": "2.2.0",
+	"version": "2.2.1",
 	"description": "Classes encapsulating account-specific functionality",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
