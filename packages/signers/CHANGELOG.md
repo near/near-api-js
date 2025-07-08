@@ -1,5 +1,23 @@
 # @near-js/signers
 
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`f65647f`](https://github.com/near/near-api-js/commit/f65647f6f3e3f5dc18a7d6f24cbeba255ee8476a)]:
+  - @near-js/transactions@2.2.1
+  - @near-js/crypto@2.2.1
+  - @near-js/keystores@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.2.0
+  - @near-js/keystores@2.2.0
+  - @near-js/transactions@2.2.0
+
 ## 2.1.0
 
 ### Minor Changes
