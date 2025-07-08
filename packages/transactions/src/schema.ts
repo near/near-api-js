@@ -207,39 +207,6 @@ export const SCHEMA = new class BorshSchema {
             beneficiaryId: 'string',
         }
     };
-    DelegateActionPrefix: Schema = {
-        struct: {
-            prefix: 'u32',
-        }
-    };
-    ClassicActions: Schema = {
-        enum: [
-            { struct: { createAccount: this.CreateAccount } },
-            { struct: { deployContract: this.DeployContract } },
-            { struct: { functionCall: this.FunctionCall } },
-            { struct: { transfer: this.Transfer } },
-            { struct: { stake: this.Stake } },
-            { struct: { addKey: this.AddKey } },
-            { struct: { deleteKey: this.DeleteKey } },
-            { struct: { deleteAccount: this.DeleteAccount } },
-        ]
-    };
-    DelegateAction: Schema = {
-        struct: {
-            senderId: 'string',
-            receiverId: 'string',
-            actions: { array: { type: this.ClassicActions } },
-            nonce: 'u64',
-            maxBlockHeight: 'u64',
-            publicKey: this.PublicKey,
-        }
-    };
-    SignedDelegate: Schema = {
-        struct: {
-            delegateAction: this.DelegateAction,
-            signature: this.Signature,
-        }
-    };
     GlobalContractDeployMode: Schema = {
         enum: [
             { struct: { CodeHash: { struct: {} } } },
@@ -262,6 +229,41 @@ export const SCHEMA = new class BorshSchema {
         struct: {
             contractIdentifier: this.GlobalContractIdentifier,
         },
+    };
+    DelegateActionPrefix: Schema = {
+        struct: {
+            prefix: 'u32',
+        }
+    };
+    ClassicActions: Schema = {
+        enum: [
+            { struct: { createAccount: this.CreateAccount } },
+            { struct: { deployContract: this.DeployContract } },
+            { struct: { functionCall: this.FunctionCall } },
+            { struct: { transfer: this.Transfer } },
+            { struct: { stake: this.Stake } },
+            { struct: { addKey: this.AddKey } },
+            { struct: { deleteKey: this.DeleteKey } },
+            { struct: { deleteAccount: this.DeleteAccount } },
+            { struct: { deployGlobalContract: this.DeployGlobalContract } },
+            { struct: { useGlobalContract: this.UseGlobalContract } },
+        ]
+    };
+    DelegateAction: Schema = {
+        struct: {
+            senderId: 'string',
+            receiverId: 'string',
+            actions: { array: { type: this.ClassicActions } },
+            nonce: 'u64',
+            maxBlockHeight: 'u64',
+            publicKey: this.PublicKey,
+        }
+    };
+    SignedDelegate: Schema = {
+        struct: {
+            delegateAction: this.DelegateAction,
+            signature: this.Signature,
+        }
     };
     Action: Schema = {
         enum: [
