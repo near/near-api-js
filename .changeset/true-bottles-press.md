@@ -1,4 +1,5 @@
 ---
+"@near-js/signers": patch
 "near-api-js": patch
 ---
 
