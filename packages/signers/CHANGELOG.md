@@ -1,5 +1,16 @@
 # @near-js/signers
 
+## 2.2.2
+
+### Patch Changes
+
+- [#1602](https://github.com/near/near-api-js/pull/1602) [`3cd7545`](https://github.com/near/near-api-js/commit/3cd754583d23e07ec91336da47bd0347316c2e7a) Thanks [@Elabar](https://github.com/Elabar)! - Fix meta transaction is not signing correctly
+
+- Updated dependencies []:
+  - @near-js/crypto@2.2.2
+  - @near-js/keystores@2.2.2
+  - @near-js/transactions@2.2.2
+
 ## 2.2.1
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # near-api-js
 
+## 6.2.2
+
+### Patch Changes
+
+- [#1602](https://github.com/near/near-api-js/pull/1602) [`3cd7545`](https://github.com/near/near-api-js/commit/3cd754583d23e07ec91336da47bd0347316c2e7a) Thanks [@Elabar](https://github.com/Elabar)! - Fix meta transaction is not signing correctly
+
+- Updated dependencies [[`3cd7545`](https://github.com/near/near-api-js/commit/3cd754583d23e07ec91336da47bd0347316c2e7a)]:
+  - @near-js/signers@2.2.2
+  - @near-js/accounts@2.2.2
+  - @near-js/crypto@2.2.2
+  - @near-js/keystores@2.2.2
+  - @near-js/keystores-browser@2.2.2
+  - @near-js/keystores-node@2.2.2
+  - @near-js/providers@2.2.2
+  - @near-js/transactions@2.2.2
+  - @near-js/types@2.2.2
+  - @near-js/utils@2.2.2
+
 ## 6.2.1
 
 ### Patch Changes

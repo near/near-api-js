@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/types",
-	"version": "2.2.1",
+	"version": "2.2.2",
 	"description": "TypeScript types for working with the Near JS API",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",

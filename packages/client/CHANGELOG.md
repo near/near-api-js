@@ -1,5 +1,19 @@
 # @near-js/client
 
+## 2.2.2
+
+### Patch Changes
+
+- Updated dependencies [[`3cd7545`](https://github.com/near/near-api-js/commit/3cd754583d23e07ec91336da47bd0347316c2e7a)]:
+  - @near-js/signers@2.2.2
+  - @near-js/accounts@2.2.2
+  - @near-js/crypto@2.2.2
+  - @near-js/keystores@2.2.2
+  - @near-js/providers@2.2.2
+  - @near-js/transactions@2.2.2
+  - @near-js/types@2.2.2
+  - @near-js/utils@2.2.2
+
 ## 2.2.1
 
 ### Patch Changes
