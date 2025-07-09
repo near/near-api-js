@@ -229,7 +229,7 @@ test('test sign delegate action', async () => {
     );
 
     expect(Buffer.from(signature.signature.data).toString('hex')).toBe(
-        '77e5e92877d64ae27b1facc5ddf09205863b2af7a8264d2d01a44a9684975a17f2b8b9d706fbe3c3ffa2cd4377b49f20614245549dc061bcaccc0ad3abd81c01'
+        '6996219a3d971a256fcf7b7ad748aec7f1c84868cd59df3d756d8a022498a636e63f16809a54918c473e9a8bf4b0b35477a6b671eab65b1b28fd9fae2a668c00'
     );
 });
 

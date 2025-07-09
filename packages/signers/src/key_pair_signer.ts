@@ -116,7 +116,7 @@ export class KeyPairSigner extends Signer {
         const message = encodeDelegateAction(delegateAction);
         const hash = new Uint8Array(sha256(message));
 
-        const { signature } = this.key.sign(message);
+        const { signature } = this.key.sign(hash);
         const signedDelegate = new SignedDelegate({
             delegateAction,
             signature: new Signature({
