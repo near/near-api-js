@@ -50,7 +50,7 @@ import {
     SignedTransaction,
 } from '@near-js/transactions';
 
-import { Provider } from './provider';
+import { Provider, SerializedReturnValue } from './provider';
 import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
 import { TxExecutionStatus } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
@@ -220,29 +220,29 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async callFunction(
+    public async callFunction<SerializedResponse extends SerializedReturnValue>(
         contractId: string,
         method: string,
         args: Record<string, unknown>,
         blockQuery: BlockReference = { finality: 'final' }
-    ): Promise<string | number | boolean | object | undefined> {
-        const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
+    ): Promise<SerializedResponse | undefined> {
+        const { result } = await this.callFunctionRaw(
+            contractId,
+            method,
+            args,
+            blockQuery
+        );
 
-        const data = await (
-            this as Provider
-        ).query<CallContractViewFunctionResultRaw>({
-            ...blockQuery,
-            request_type: 'call_function',
-            account_id: contractId,
-            method_name: method,
-            args_base64: argsBase64,
-        });
+        if (result.length === 0) return undefined;
 
-        if (data.result.length === 0) {
-            return undefined;
+        const serializedResult = Buffer.from(result).toString();
+
+        try {
+            return JSON.parse(serializedResult);
+        } catch {
+            return serializedResult as SerializedResponse;
+
         }
-
-        return JSON.parse(Buffer.from(data.result).toString());
     }
 
     public async callFunctionRaw(

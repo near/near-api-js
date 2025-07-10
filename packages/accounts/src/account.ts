@@ -34,7 +34,6 @@ import {
     Logger,
     baseDecode,
     baseEncode,
-    getTransactionLastResult,
     parseResultError,
     printTxOutcomeLogsAndFailures,
 } from "@near-js/utils";
@@ -45,7 +44,7 @@ import type {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
 } from "./interface";
-import { viewFunction, viewState } from "./utils";
+import { parseTransactionExecutionOutcome, SerializedReturnValue, viewFunction, viewState } from "./utils";
 
 import type { FungibleToken, NativeToken } from "@near-js/tokens";
 import { NEAR } from "@near-js/tokens";
@@ -656,17 +655,17 @@ export class Account {
      * @param options.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
      * @returns
      */
-    public async callFunction(params: {
+    public async callFunction<SerializedResponse extends SerializedReturnValue>(params: {
         contractId: string;
         methodName: string;
         args: Uint8Array | Record<string, any>;
         deposit?: bigint | string | number;
         gas?: bigint | string | number;
         waitUntil?: TxExecutionStatus;
-    }): Promise<object | string | number> {
-        const result = await this.callFunctionRaw(params)
+    }): Promise<SerializedResponse | null> {
+        const outcome = await this.callFunctionRaw(params)
 
-        return getTransactionLastResult(result);
+        return parseTransactionExecutionOutcome<SerializedResponse>(outcome);
     }
 
     /**
