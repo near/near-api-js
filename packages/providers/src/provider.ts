@@ -36,6 +36,10 @@ import {
 } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
 
+type PlainObject = Record<string | symbol, unknown>
+
+export type SerializedReturnValue = string | number | bigint | boolean | PlainObject;
+
 /** @hidden */
 export interface Provider {
     /** @deprecated use {@link viewNodeStatus} */
@@ -49,7 +53,7 @@ export interface Provider {
     viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView>;
     viewContractCode(contractId: string, blockQuery?: BlockReference): Promise<ContractCodeView>;
     viewContractState(contractId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView>;
-    callFunction(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<string | number | boolean | object | undefined>;
+    callFunction<SerializedResponse extends SerializedReturnValue>(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<SerializedResponse>;
     callFunctionRaw(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw>;
 
     viewBlock(blockQuery: BlockReference): Promise<BlockResult>;
