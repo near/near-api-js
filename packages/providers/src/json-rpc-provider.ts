@@ -32,6 +32,7 @@ import {
     NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
+    type SerializedReturnValue,
     TypedError,
     AccessKeyViewRaw,
     AccessKeyView,
@@ -220,29 +221,28 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async callFunction(
+    public async callFunction<T extends SerializedReturnValue>(
         contractId: string,
         method: string,
         args: Record<string, unknown>,
         blockQuery: BlockReference = { finality: 'final' }
-    ): Promise<string | number | boolean | object | undefined> {
-        const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
+    ): Promise<T | undefined> {
+        const { result } = await this.callFunctionRaw(
+            contractId,
+            method,
+            args,
+            blockQuery
+        );
 
-        const data = await (
-            this as Provider
-        ).query<CallContractViewFunctionResultRaw>({
-            ...blockQuery,
-            request_type: 'call_function',
-            account_id: contractId,
-            method_name: method,
-            args_base64: argsBase64,
-        });
+        if (result.length === 0) return undefined;
 
-        if (data.result.length === 0) {
-            return undefined;
+        const serializedResult = Buffer.from(result).toString();
+
+        try {
+            return JSON.parse(serializedResult) as T;
+        } catch {
+            return serializedResult as T;
         }
-
-        return JSON.parse(Buffer.from(data.result).toString());
     }
 
     public async callFunctionRaw(
