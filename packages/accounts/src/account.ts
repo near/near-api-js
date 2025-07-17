@@ -656,17 +656,17 @@ export class Account {
      * @param options.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
      * @returns
      */
-    public async callFunction<SerializedResponse extends SerializedReturnValue>(params: {
+    public async callFunction<T extends SerializedReturnValue>(params: {
         contractId: string;
         methodName: string;
         args: Uint8Array | Record<string, any>;
         deposit?: bigint | string | number;
         gas?: bigint | string | number;
         waitUntil?: TxExecutionStatus;
-    }): Promise<SerializedResponse> {
+    }): Promise<T> {
         const outcome = await this.callFunctionRaw(params)
 
-        return parseTransactionExecutionOutcome<SerializedResponse>(outcome);
+        return parseTransactionExecutionOutcome<T>(outcome);
     }
 
     /**

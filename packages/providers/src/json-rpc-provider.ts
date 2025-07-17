@@ -221,12 +221,12 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async callFunction<SerializedResponse extends SerializedReturnValue>(
+    public async callFunction<T extends SerializedReturnValue>(
         contractId: string,
         method: string,
         args: Record<string, unknown>,
         blockQuery: BlockReference = { finality: 'final' }
-    ): Promise<SerializedResponse | undefined> {
+    ): Promise<T | undefined> {
         const { result } = await this.callFunctionRaw(
             contractId,
             method,
@@ -241,8 +241,7 @@ export class JsonRpcProvider implements Provider {
         try {
             return JSON.parse(serializedResult);
         } catch {
-            return serializedResult as SerializedResponse;
-
+            return serializedResult as T;
         }
     }
 

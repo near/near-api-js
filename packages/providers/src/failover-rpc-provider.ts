@@ -148,8 +148,8 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewContractState(accountId, prefix, blockQuery));
     }
 
-    public async callFunction<SerializedResponse extends SerializedReturnValue>(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<SerializedResponse> {
-        return this.withBackoff((currentProvider) => currentProvider.callFunction<SerializedResponse>(accountId, method, args, blockQuery));
+    public async callFunction<T extends SerializedReturnValue>(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<T> {
+        return this.withBackoff((currentProvider) => currentProvider.callFunction<T>(accountId, method, args, blockQuery));
     }
 
     public async callFunctionRaw(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw> {
