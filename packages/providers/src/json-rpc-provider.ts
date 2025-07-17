@@ -239,7 +239,7 @@ export class JsonRpcProvider implements Provider {
         const serializedResult = Buffer.from(result).toString();
 
         try {
-            return JSON.parse(serializedResult);
+            return JSON.parse(serializedResult) as T;
         } catch {
             return serializedResult as T;
         }

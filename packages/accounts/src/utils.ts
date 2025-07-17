@@ -3,26 +3,10 @@ import {
     BlockReference,
     CodeResult,
     PositionalArgsError,
-    FinalExecutionOutcome,
 } from "@near-js/types";
 import { Connection } from "./connection";
 import { printTxOutcomeLogs } from "@near-js/utils";
 import { ViewFunctionCallOptions } from "./interface";
-import { type SerializedReturnValue} from "@near-js/types";
-
-export function parseTransactionExecutionOutcome<T extends SerializedReturnValue>({ status }: FinalExecutionOutcome): T {
-    if (typeof status === 'object' && typeof status.SuccessValue === 'string') {
-        const value = Buffer.from(status.SuccessValue, 'base64').toString();
-        
-        try {
-            return JSON.parse(value);
-        } catch (e) {
-            return value as T;
-        }
-    }
-
-    return null;
-}
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());

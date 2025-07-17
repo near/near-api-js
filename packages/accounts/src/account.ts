@@ -35,6 +35,7 @@ import {
     Logger,
     baseDecode,
     baseEncode,
+    getTransactionLastResult,
     parseResultError,
     printTxOutcomeLogsAndFailures,
 } from "@near-js/utils";
@@ -45,7 +46,7 @@ import type {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
 } from "./interface";
-import { parseTransactionExecutionOutcome, viewFunction, viewState } from "./utils";
+import { viewFunction, viewState } from "./utils";
 
 import type { FungibleToken, NativeToken } from "@near-js/tokens";
 import { NEAR } from "@near-js/tokens";
@@ -665,8 +666,7 @@ export class Account {
         waitUntil?: TxExecutionStatus;
     }): Promise<T> {
         const outcome = await this.callFunctionRaw(params)
-
-        return parseTransactionExecutionOutcome<T>(outcome);
+        return getTransactionLastResult(outcome) as T;
     }
 
     /**
