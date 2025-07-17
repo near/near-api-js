@@ -25,6 +25,7 @@ import {
     NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
+    type SerializedReturnValue,
     TypedError,
     RpcQueryRequest,
     AccessKeyView,
@@ -37,7 +38,7 @@ import {
     FinalityReference,
 } from '@near-js/types';
 import { SignedTransaction } from '@near-js/transactions';
-import { Provider, SerializedReturnValue } from './provider';
+import { Provider } from './provider';
 import { TxExecutionStatus } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
 

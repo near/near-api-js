@@ -32,6 +32,7 @@ import {
     NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
+    type SerializedReturnValue,
     TypedError,
     AccessKeyViewRaw,
     AccessKeyView,
@@ -50,7 +51,7 @@ import {
     SignedTransaction,
 } from '@near-js/transactions';
 
-import { Provider, SerializedReturnValue } from './provider';
+import { Provider } from './provider';
 import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
 import { TxExecutionStatus } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';

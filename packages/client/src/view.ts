@@ -99,7 +99,7 @@ export function callViewMethod({ account, method, args = {}, blockReference, dep
  * @param blockReference block ID/finality
  * @param deps readonly RPC dependencies
  */
-export async function view<T extends SerializedReturnValue>({ account, method, args = {}, blockReference, deps }: ViewParams): Promise<T> {
+export async function view<T extends SerializedReturnValue | bigint>({ account, method, args = {}, blockReference, deps }: ViewParams): Promise<T> {
   const { result } = await callViewMethod({ account, method, args, blockReference, deps });
   const stringResult = Buffer.from(result).toString();
   try {

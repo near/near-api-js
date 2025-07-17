@@ -26,6 +26,7 @@ import {
     type Finality,
     type FunctionCallPermissionView,
     PositionalArgsError,
+    type SerializedReturnValue,
     type TxExecutionStatus,
     TypedError,
 } from "@near-js/types";
@@ -44,7 +45,7 @@ import type {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
 } from "./interface";
-import { parseTransactionExecutionOutcome, SerializedReturnValue, viewFunction, viewState } from "./utils";
+import { parseTransactionExecutionOutcome, viewFunction, viewState } from "./utils";
 
 import type { FungibleToken, NativeToken } from "@near-js/tokens";
 import { NEAR } from "@near-js/tokens";
@@ -662,7 +663,7 @@ export class Account {
         deposit?: bigint | string | number;
         gas?: bigint | string | number;
         waitUntil?: TxExecutionStatus;
-    }): Promise<SerializedResponse | null> {
+    }): Promise<SerializedResponse> {
         const outcome = await this.callFunctionRaw(params)
 
         return parseTransactionExecutionOutcome<SerializedResponse>(outcome);

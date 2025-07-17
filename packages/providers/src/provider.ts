@@ -24,6 +24,7 @@ import {
     NodeStatusResult,
     QueryResponseKind,
     RpcQueryRequest,
+    type SerializedReturnValue,
     EpochValidatorInfo,
     ExecutionOutcomeReceiptDetail,
     TxExecutionStatus,
@@ -35,10 +36,6 @@ import {
     CallContractViewFunctionResultRaw,
 } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
-
-type PlainObject = Record<string | symbol, unknown>
-
-export type SerializedReturnValue = string | number | bigint | boolean | PlainObject;
 
 /** @hidden */
 export interface Provider {
@@ -53,7 +50,7 @@ export interface Provider {
     viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView>;
     viewContractCode(contractId: string, blockQuery?: BlockReference): Promise<ContractCodeView>;
     viewContractState(contractId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView>;
-    callFunction<SerializedResponse extends SerializedReturnValue>(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<SerializedResponse>;
+    callFunction<T extends SerializedReturnValue>(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<T>;
     callFunctionRaw(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw>;
 
     viewBlock(blockQuery: BlockReference): Promise<BlockResult>;

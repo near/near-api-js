@@ -8,19 +8,16 @@ import {
 import { Connection } from "./connection";
 import { printTxOutcomeLogs } from "@near-js/utils";
 import { ViewFunctionCallOptions } from "./interface";
+import { type SerializedReturnValue} from "@near-js/types";
 
-type PlainObject = Record<string | symbol, unknown>
-
-export type SerializedReturnValue = string | number | bigint | boolean | PlainObject;
-
-export function parseTransactionExecutionOutcome<SerializedResponse extends SerializedReturnValue>({ status }: FinalExecutionOutcome): SerializedResponse | null {
+export function parseTransactionExecutionOutcome<T extends SerializedReturnValue>({ status }: FinalExecutionOutcome): T {
     if (typeof status === 'object' && typeof status.SuccessValue === 'string') {
         const value = Buffer.from(status.SuccessValue, 'base64').toString();
         
         try {
             return JSON.parse(value);
         } catch (e) {
-            return value as SerializedResponse;
+            return value as T;
         }
     }
 
