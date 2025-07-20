@@ -1,6 +1,6 @@
 # Contributing to Near JavaScript API
 
-First off, thanks for taking the time to contribute! We look forward to to your contributions. 🎉
+First off, thanks for taking the time to contribute! We look forward to your contributions. 🎉
 
 All types of contributions are encouraged and valued. See the [Table of Contents](#table-of-contents) for different ways to help and details about how this project handles them.
 
