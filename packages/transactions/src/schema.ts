@@ -246,7 +246,7 @@ export const SCHEMA = new class BorshSchema {
             { struct: { addKey: this.AddKey } },
             { struct: { deleteKey: this.DeleteKey } },
             { struct: { deleteAccount: this.DeleteAccount } },
-            { struct: { signedDelegate: 'u8' } }, // temp fix: this should never be used
+            { struct: { signedDelegate: 'string' } }, // placeholder to keep the right enum order, should not be used 
             { struct: { deployGlobalContract: this.DeployGlobalContract } },
             { struct: { useGlobalContract: this.UseGlobalContract } },
         ]
