@@ -1,5 +1,20 @@
 # @near-js/accounts
 
+## 2.2.3
+
+### Patch Changes
+
+- [#1604](https://github.com/near/near-api-js/pull/1604) [`4f89a24`](https://github.com/near/near-api-js/commit/4f89a245754c1aa14b141767d895a608f53b8980) Thanks [@denbite](https://github.com/denbite)! - Added generic type for `Account.callFunction` to allow client explicitly specify expected return type
+
+- Updated dependencies [[`edcadb6`](https://github.com/near/near-api-js/commit/edcadb6e3125ab16a85032de27feb60d0a3307f5)]:
+  - @near-js/providers@2.2.3
+  - @near-js/crypto@2.2.3
+  - @near-js/signers@2.2.3
+  - @near-js/tokens@2.2.3
+  - @near-js/transactions@2.2.3
+  - @near-js/types@2.2.3
+  - @near-js/utils@2.2.3
+
 ## 2.2.2
 
 ### Patch Changes

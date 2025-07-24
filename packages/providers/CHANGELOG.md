@@ -1,5 +1,17 @@
 # @near-js/providers
 
+## 2.2.3
+
+### Patch Changes
+
+- [#1604](https://github.com/near/near-api-js/pull/1604) [`edcadb6`](https://github.com/near/near-api-js/commit/edcadb6e3125ab16a85032de27feb60d0a3307f5) Thanks [@denbite](https://github.com/denbite)! - Added generic type for `Provider.callFunction` to allow client explicitly specify expected return type
+
+- Updated dependencies []:
+  - @near-js/crypto@2.2.3
+  - @near-js/transactions@2.2.3
+  - @near-js/types@2.2.3
+  - @near-js/utils@2.2.3
+
 ## 2.2.2
 
 ### Patch Changes
