@@ -10,6 +10,7 @@ import {
     decodeSignedTransaction,
     buildDelegateAction,
 } from '@near-js/transactions';
+import { getPayloadHashForNEP413 } from '../src/utils';
 
 global.TextEncoder = TextEncoder;
 
@@ -179,6 +180,61 @@ test('test sign NEP-413 message throws error on invalid nonce', async () => {
             new Uint8Array(new Array(28))
         )
     ).rejects.toThrow();
+});
+
+test('generate correct hash for NEP-413-compliant message', async () => {
+    const existingSerializedPayloadHash = getPayloadHashForNEP413({
+        message: 'Hello NEAR!',
+        recipient: 'round-toad.testnet',
+        nonce: new Uint8Array(
+            Buffer.from(
+                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                'base64'
+            )
+        ),
+    });
+
+    const expectedSerializedPayloadHash = new Uint8Array([1, 152, 236, 223, 103, 218, 230, 0,
+        34, 54, 210, 18, 244, 68, 108, 252,
+        140, 166, 102, 57, 242, 4, 202, 234,
+        205, 94, 246, 245, 198, 141, 23, 250]);
+
+    expect(existingSerializedPayloadHash).toEqual(expectedSerializedPayloadHash);
+});
+
+test('verify signature generated using NEP-413 payload hash', async () => {
+    const signer = new KeyPairSigner(
+        KeyPair.fromString(
+            'ed25519:3FyRtUUMxiNT1g2ST6mbj7W1CN7KfQBbomawC7YG4A1zwHmw2TRsn1Wc8NaFcBCoJDu3zt3znJDSwKQ31oRaKXH7'
+        )
+    );
+
+    const { signature } = await signer.signNep413Message(
+        'Hello NEAR!',
+        'example.near',
+        'round-toad.testnet',
+        new Uint8Array(
+            Buffer.from(
+                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                'base64'
+            )
+        )
+    );
+
+    const existingSerializedPayloadHash = getPayloadHashForNEP413({
+        message: 'Hello NEAR!',
+        recipient: 'round-toad.testnet',
+        nonce: new Uint8Array(
+            Buffer.from(
+                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                'base64'
+            )
+        ),
+    });
+
+    const publicKey = (await signer.getPublicKey());
+
+    expect(publicKey.verify(existingSerializedPayloadHash, signature)).toBe(true);
 });
 
 test('test getPublicKey returns correct public key', async () => {
