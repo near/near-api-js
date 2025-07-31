@@ -1,5 +1,47 @@
 # @near-js/client
 
+## 2.2.4
+
+### Patch Changes
+
+- Updated dependencies [[`30403a7`](https://github.com/near/near-api-js/commit/30403a7840a119f08cd6372f7bdc18017572d810)]:
+  - @near-js/transactions@2.2.4
+  - @near-js/accounts@2.2.4
+  - @near-js/crypto@2.2.4
+  - @near-js/keystores@2.2.4
+  - @near-js/providers@2.2.4
+  - @near-js/signers@2.2.4
+  - @near-js/types@2.2.4
+  - @near-js/utils@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- Updated dependencies [[`edcadb6`](https://github.com/near/near-api-js/commit/edcadb6e3125ab16a85032de27feb60d0a3307f5), [`4f89a24`](https://github.com/near/near-api-js/commit/4f89a245754c1aa14b141767d895a608f53b8980)]:
+  - @near-js/providers@2.2.3
+  - @near-js/accounts@2.2.3
+  - @near-js/crypto@2.2.3
+  - @near-js/keystores@2.2.3
+  - @near-js/signers@2.2.3
+  - @near-js/transactions@2.2.3
+  - @near-js/types@2.2.3
+  - @near-js/utils@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- Updated dependencies [[`3cd7545`](https://github.com/near/near-api-js/commit/3cd754583d23e07ec91336da47bd0347316c2e7a)]:
+  - @near-js/signers@2.2.2
+  - @near-js/accounts@2.2.2
+  - @near-js/crypto@2.2.2
+  - @near-js/keystores@2.2.2
+  - @near-js/providers@2.2.2
+  - @near-js/transactions@2.2.2
+  - @near-js/types@2.2.2
+  - @near-js/utils@2.2.2
+
 ## 2.2.1
 
 ### Patch Changes

@@ -26,6 +26,7 @@ import {
     type Finality,
     type FunctionCallPermissionView,
     PositionalArgsError,
+    type SerializedReturnValue,
     type TxExecutionStatus,
     TypedError,
 } from "@near-js/types";
@@ -656,17 +657,16 @@ export class Account {
      * @param options.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
      * @returns
      */
-    public async callFunction(params: {
+    public async callFunction<T extends SerializedReturnValue>(params: {
         contractId: string;
         methodName: string;
         args: Uint8Array | Record<string, any>;
         deposit?: bigint | string | number;
         gas?: bigint | string | number;
         waitUntil?: TxExecutionStatus;
-    }): Promise<object | string | number> {
-        const result = await this.callFunctionRaw(params)
-
-        return getTransactionLastResult(result);
+    }): Promise<T> {
+        const outcome = await this.callFunctionRaw(params)
+        return getTransactionLastResult(outcome) as T;
     }
 
     /**

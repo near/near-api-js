@@ -25,6 +25,7 @@ import {
     NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
+    type SerializedReturnValue,
     TypedError,
     RpcQueryRequest,
     AccessKeyView,
@@ -147,8 +148,8 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewContractState(accountId, prefix, blockQuery));
     }
 
-    public async callFunction(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<string | number | boolean | object | undefined> {
-        return this.withBackoff((currentProvider) => currentProvider.callFunction(accountId, method, args, blockQuery));
+    public async callFunction<T extends SerializedReturnValue>(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<T> {
+        return this.withBackoff((currentProvider) => currentProvider.callFunction<T>(accountId, method, args, blockQuery));
     }
 
     public async callFunctionRaw(accountId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw> {

@@ -235,6 +235,7 @@ export const SCHEMA = new class BorshSchema {
             prefix: 'u32',
         }
     };
+    /** @todo: get rid of "ClassicActions" and keep only "Action" schema to be consistent with "nearcore" */
     ClassicActions: Schema = {
         enum: [
             { struct: { createAccount: this.CreateAccount } },
@@ -245,6 +246,7 @@ export const SCHEMA = new class BorshSchema {
             { struct: { addKey: this.AddKey } },
             { struct: { deleteKey: this.DeleteKey } },
             { struct: { deleteAccount: this.DeleteAccount } },
+            { struct: { signedDelegate: 'string' } }, // placeholder to keep the right enum order, should not be used 
             { struct: { deployGlobalContract: this.DeployGlobalContract } },
             { struct: { useGlobalContract: this.UseGlobalContract } },
         ]

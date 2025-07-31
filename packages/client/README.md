@@ -77,7 +77,7 @@ import { BrowserLocalStorageKeyStore } from '@near-js/keystores-browser';
 const keystore = new BrowserLocalStorageKeyStore();
 const signer = getSignerFromKeystore('account.near', 'mainnet', keystore);
 const accessKeySigner = getAccessKeySigner({
-  accout: 'account.near',
+  account: 'account.near',
   deps: {
     signer,
     rpcProvider: getMainnetRpcProvider(),

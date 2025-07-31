@@ -106,7 +106,7 @@ export class Near {
         });
         
         if (config.masterAccount) {
-            // TODO: figure out better way of specifiying initial balance.
+            // TODO: figure out better way of specifying initial balance.
             // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times
             const initialBalance = config.initialBalance ? BigInt(config.initialBalance) : 500000000000000000000000000n;
             this.accountCreator = new LocalAccountCreator(new Account(config.masterAccount, this.connection.provider, this.connection.signer), initialBalance);
