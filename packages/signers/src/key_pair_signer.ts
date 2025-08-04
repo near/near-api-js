@@ -1,12 +1,7 @@
 import { KeyPair, PublicKey, KeyPairString, KeyType } from '@near-js/crypto';
 import { sha256 } from '@noble/hashes/sha256';
 
-import {
-    SignedMessage,
-    Signer,
-    SignMessageParams,
-} from './signer';
-import { getPayloadHashForNEP413 } from './utils';
+import { Signer } from './signer';
 import {
     Transaction,
     SignedTransaction,
@@ -38,31 +33,9 @@ export class KeyPairSigner extends Signer {
         return this.key.getPublicKey();
     }
 
-    public async signNep413Message(
-        message: string,
-        accountId: string,
-        recipient: string,
-        nonce: Uint8Array,
-        callbackUrl?: string
-    ): Promise<SignedMessage> {
-        const pk = this.key.getPublicKey();
-
-        const params: SignMessageParams = {
-            message,
-            recipient,
-            nonce,
-            callbackUrl
-        };
-
-        const hash = getPayloadHashForNEP413(params);
-
-        const { signature } = this.key.sign(hash);
-
-        return {
-            accountId: accountId,
-            publicKey: pk,
-            signature: signature,
-        };
+    protected async signMessagePayload(bytes: Uint8Array): Promise<Uint8Array> {
+        const { signature } = this.key.sign(bytes);
+        return new Uint8Array(signature);
     }
 
     public async signTransaction(

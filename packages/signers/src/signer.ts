@@ -6,6 +6,7 @@ import {
     Transaction,
 } from '@near-js/transactions';
 import { Schema } from 'borsh';
+import { getPayloadHashForNEP413 } from './utils';
 
 export interface SignMessageParams {
     message: string; // The message that wants to be transmitted.
@@ -46,13 +47,31 @@ export abstract class Signer {
      * @param params
      * @param accountId
      */
-    public abstract signNep413Message(
+    public async signNep413Message(
         message: string,
         accountId: string,
         recipient: string,
         nonce: Uint8Array,
         callbackUrl?: string
-    ): Promise<SignedMessage>;
+    ): Promise<SignedMessage> {
+        const params: SignMessageParams = {
+            message,
+            recipient,
+            nonce,
+            callbackUrl
+        };
+        const hash = getPayloadHashForNEP413(params);
+
+        const signature = await this.signMessagePayload(hash);
+        return {
+            accountId: accountId,
+            publicKey: await this.getPublicKey(),
+            signature: signature,
+        };
+    }
+
+    protected abstract signMessagePayload(bytes: Uint8Array): Promise<Uint8Array>;
+
 
     public abstract signTransaction(
         transaction: Transaction
