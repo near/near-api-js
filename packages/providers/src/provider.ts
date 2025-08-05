@@ -88,7 +88,7 @@ export interface Provider {
     lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse>;
     /** @deprecated use {@link viewGasPrice} */
-    gasPrice(blockId: BlockId): Promise<GasPrice>;
+    gasPrice(blockId: BlockId | null): Promise<GasPrice>;
     accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
