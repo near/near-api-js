@@ -114,16 +114,18 @@ test('test sign NEP-413 message with callback url', async () => {
     );
 
     const { signature } = await signer.signNep413Message(
-        'Hello NEAR!',
         'round-toad.testnet',
-        'example.near',
-        new Uint8Array(
-            Buffer.from(
-                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
-                'base64'
-            )
-        ),
-        'http://localhost:3000'
+        {
+            message: 'Hello NEAR!',
+            recipient: 'example.near',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
+            ),
+            callbackUrl: 'http://localhost:3000'
+        }
     );
 
     const expectedSignature = new Uint8Array(
@@ -144,15 +146,17 @@ test('test sign NEP-413 message without callback url', async () => {
     );
 
     const { signature } = await signer.signNep413Message(
-        'Hello NEAR!',
         'round-toad.testnet',
-        'example.near',
-        new Uint8Array(
-            Buffer.from(
-                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
-                'base64'
+        {
+            message: 'Hello NEAR!',
+            recipient: 'example.near',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
             )
-        )
+        }
     );
 
     const expectedSignature = new Uint8Array(
@@ -174,10 +178,12 @@ test('test sign NEP-413 message throws error on invalid nonce', async () => {
 
     await expect(() =>
         signer.signNep413Message(
-            'Hello NEAR!',
-            'round-toad.testnet',
             'example.near',
-            new Uint8Array(new Array(28))
+            {
+                message: 'Hello NEAR!',
+                recipient: 'round-toad.testnet',
+                nonce: new Uint8Array(new Array(28))
+            }
         )
     ).rejects.toThrow();
 });
@@ -210,15 +216,17 @@ test('verify signature generated using NEP-413 payload hash', async () => {
     );
 
     const { signature } = await signer.signNep413Message(
-        'Hello NEAR!',
         'example.near',
-        'round-toad.testnet',
-        new Uint8Array(
-            Buffer.from(
-                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
-                'base64'
+        {
+            message: 'Hello NEAR!',
+            recipient: 'round-toad.testnet',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
             )
-        )
+        },
     );
 
     const existingSerializedPayloadHash = getPayloadHashForNEP413({
