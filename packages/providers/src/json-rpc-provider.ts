@@ -616,7 +616,7 @@ export class JsonRpcProvider implements Provider {
             id: (_nextId++),
             jsonrpc: '2.0'
         };
-        const response = await fetchJsonRpc(this.connection.url, request, this.connection.headers, retryConfig(this.options.retries, this.options.backoff, this.options.wait));
+        const response = await fetchJsonRpc(this.connection.url, request, this.connection.headers || {}, retryConfig(this.options.retries, this.options.backoff, this.options.wait));
         if (response.error) {
             if (typeof response.error.data === 'object') {
                 if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {
