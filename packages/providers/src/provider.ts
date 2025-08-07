@@ -50,7 +50,7 @@ export interface Provider {
     viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView>;
     viewContractCode(contractId: string, blockQuery?: BlockReference): Promise<ContractCodeView>;
     viewContractState(contractId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView>;
-    callFunction<T extends SerializedReturnValue>(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<T>;
+    callFunction<T extends SerializedReturnValue>(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<T | undefined>;
     callFunctionRaw(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw>;
 
     viewBlock(blockQuery: BlockReference): Promise<BlockResult>;
@@ -88,7 +88,7 @@ export interface Provider {
     lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse>;
     /** @deprecated use {@link viewGasPrice} */
-    gasPrice(blockId: BlockId): Promise<GasPrice>;
+    gasPrice(blockId: BlockId | null): Promise<GasPrice>;
     accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
