@@ -37,6 +37,7 @@ export class TransactionComposer {
   /**
    * Validate and return the object used for Transaction instantiation
    * @param transaction transaction values to override composed transaction fields
+   * @throws an error if any required fields are missing
    * @private
    */
   private buildTransactionObject(transaction?: TransactionOptions) {
@@ -49,8 +50,24 @@ export class TransactionComposer {
       signerId: transaction?.sender || this.sender,
     };
 
-    if (!tx.actions.length || !tx.blockHash || !tx.nonce || !tx.publicKey || !tx.receiverId || !tx.signerId) {
-      throw new Error(`invalid transaction: ${JSON.stringify(tx)}`);
+    const missingFields = [];
+    if (!tx.actions.length) missingFields.push('actions');
+    if (!tx.blockHash) missingFields.push('blockHash');
+    if (!tx.nonce) missingFields.push('nonce');
+    if (!tx.publicKey) missingFields.push('publicKey');
+    if (!tx.receiverId) missingFields.push('receiverId');
+    if (!tx.signerId) missingFields.push('signerId');
+
+    if (missingFields.length > 0) {
+      const safeTxPreview = {
+        signerId: tx.signerId,
+        receiverId: tx.receiverId,
+        publicKey: tx.publicKey.toString(),
+        blockHash: tx.blockHash.toString(),
+        nonce: tx.nonce?.toString?.(),
+        actions: tx.actions?.map((a) => Object.keys(a)[0]),
+      };
+      throw new Error(`invalid transaction: missing ${missingFields.join(', ')}\nPreciew: ${JSON.stringify(safeTxPreview, null, 2)}`);
     }
 
     return tx;
