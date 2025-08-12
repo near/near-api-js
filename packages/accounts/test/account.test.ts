@@ -1,13 +1,11 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { KeyPair, KeyType } from '@near-js/crypto';
+import { KeyType } from '@near-js/crypto';
 import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { actionCreators } from '@near-js/transactions';
 import { BlockResult, TypedError } from '@near-js/types';
-import * as fs from 'fs';
 
-import { Account, Contract } from '../src';
-import { createAccount, generateUniqueString, HELLO_WASM_PATH, HELLO_WASM_BALANCE, networkId, setUpTestConnection } from './test-utils';
-import { InMemoryKeyStore } from '@near-js/keystores';
+import { Account } from '../src';
+import { createAccount, generateUniqueString, setUpTestConnection, deployContract } from './test-utils';
 
 import { Worker } from 'near-workspaces';
 
@@ -152,16 +150,23 @@ describe('with deploy contract', () => {
     let contract;
 
     beforeAll(async () => {
-        const keyPair = KeyPair.fromRandom('ed25519');
-        await (nearjs.keyStore as InMemoryKeyStore).setKey(networkId, contractId, keyPair);
-        const newPublicKey = keyPair.getPublicKey();
-        const data = fs.readFileSync(HELLO_WASM_PATH);
-        await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-        // @ts-expect-error test input
-        contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
-            viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
-            changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
-        });
+        // const keyPair = KeyPair.fromRandom('ed25519');
+        // await (nearjs.keyStore as InMemoryKeyStore).setKey(networkId, contractId, keyPair);
+        // const newPublicKey = keyPair.getPublicKey();
+        // const data = fs.readFileSync(HELLO_WASM_PATH);
+        // await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
+        // // @ts-expect-error test input
+        // contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
+        //     viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
+        //     changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
+        // });
+        // await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
+        // // @ts-expect-error test input
+        // contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
+        //     viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
+        //     changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
+        // });
+        contract = await deployContract(nearjs.accountCreator.masterAccount, contractId);
 
         const custom = {
             log: (...args) => {
@@ -179,9 +184,10 @@ describe('with deploy contract', () => {
     });
 
     test('cross-contact assertion and panic', async () => {
-        await expect(contract.crossContract({
+        await expect(contract.call.crossContract({
             args: {},
-            gas: 300000000000000
+            gas: 300000000000000n,
+            waitUntil: 'FINAL'
         })).rejects.toThrow(/Smart contract panicked: expected to fail./);
         expect(logs.length).toEqual(7);
         expect(logs[0]).toMatch(new RegExp('^Receipts: \\w+, \\w+, \\w+$'));
@@ -240,20 +246,20 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via contract', async () => {
-        const result = await contract.hello({ name: 'trex' });
+        const result = await contract.view.hello({ args: { name: 'trex' } });
         expect(result).toEqual('hello trex');
 
         const setCallValue = generateUniqueString('setCallPrefix');
-        const result2 = await contract.setValue({ args: { value: setCallValue } });
+        const result2 = await contract.call.setValue({ args: { value: setCallValue }, waitUntil: 'FINAL' });
         expect(result2).toEqual(setCallValue);
-        expect(await contract.getValue()).toEqual(setCallValue);
+        expect(await contract.view.getValue()).toEqual(setCallValue);
     });
 
     test('view function calls by block Id and finality', async () => {
         const setCallValue1 = generateUniqueString('setCallPrefix');
-        const result1 = await contract.setValue({ args: { value: setCallValue1 } });
+        const result1 = await contract.call.setValue({ args: { value: setCallValue1 }, waitUntil: 'FINAL' });
         expect(result1).toEqual(setCallValue1);
-        expect(await contract.getValue()).toEqual(setCallValue1);
+        expect(await contract.view.getValue()).toEqual(setCallValue1);
 
         expect(await workingAccount.viewFunction({
             contractId,
@@ -283,9 +289,9 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue1);
 
         const setCallValue2 = generateUniqueString('setCallPrefix');
-        const result2 = await contract.setValue({ args: { value: setCallValue2 } });
+        const result2 = await contract.call.setValue({ args: { value: setCallValue2 }, waitUntil: 'FINAL' });
         expect(result2).toEqual(setCallValue2);
-        expect(await contract.getValue()).toEqual(setCallValue2);
+        expect(await contract.view.getValue()).toEqual(setCallValue2);
 
         expect(await workingAccount.viewFunction({
             contractId,
@@ -330,55 +336,32 @@ describe('with deploy contract', () => {
 
     test('make function calls via contract with gas', async () => {
         const setCallValue = generateUniqueString('setCallPrefix');
-        const result2 = await contract.setValue({
+        const result2 = await contract.call.setValue({
             args: { value: setCallValue },
-            gas: 1000000 * 1000000
+            gas: 1000000n * 1000000n,
+            waitUntil: 'FINAL'
         });
         expect(result2).toEqual(setCallValue);
-        expect(await contract.getValue()).toEqual(setCallValue);
+        expect(await contract.view.getValue()).toEqual(setCallValue);
     });
 
     test('can get logs from method result', async () => {
-        await contract.generateLogs();
+        await contract.call.generateLogs({ waitUntil: 'FINAL' });
         expect(logs.length).toEqual(3);
         expect(logs[0].substr(0, 8)).toEqual('Receipt:');
         expect(logs.slice(1)).toEqual([`\tLog [${contractId}]: log1`, `\tLog [${contractId}]: log2`]);
     });
 
-    test('can get logs from view call', async () => {
-        const result = await contract.returnHiWithLogs();
-        expect(result).toEqual('Hi');
-        expect(logs).toEqual([`Log [${contractId}]: loooog1`, `Log [${contractId}]: loooog2`]);
-    });
-
     test('can get assert message from method result', async () => {
-        await expect(contract.triggerAssert()).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
+        await expect(contract.call.triggerAssert()).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
         expect(logs[1]).toEqual(`\tLog [${contractId}]: log before assert`);
         expect(logs[2]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
     test('test set/remove', async () => {
-        await contract.testSetRemove({
+        await contract.call.testSetRemove({
             args: { value: '123' }
         });
-    });
-
-    test('can have view methods only', async () => {
-        // @ts-expect-error test input
-        const contract: any = new Contract(workingAccount, contractId, {
-            viewMethods: ['hello'],
-        });
-        expect(await contract.hello({ name: 'world' })).toEqual('hello world');
-    });
-
-    test('can have change methods only', async () => {
-        // @ts-expect-error test input
-        const contract: any = new Contract(workingAccount, contractId, {
-            changeMethods: ['hello'],
-        });
-        expect(await contract.hello({
-            args: { name: 'world' }
-        })).toEqual('hello world');
     });
 
     test('make viewFunction call with object format', async () => {

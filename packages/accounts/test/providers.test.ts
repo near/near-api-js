@@ -67,8 +67,7 @@ describe('providers', () => {
     
     test('json rpc query view_state', async () => {
         const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
-        // @ts-expect-error test input
-        await contract.setValue({ args: { value: 'hello' } });
+        await contract.call.setValue({ args: { value: 'hello' } });
     
         return waitFor(async () => {
             const response = await provider.query({
@@ -109,8 +108,7 @@ describe('providers', () => {
     test('json rpc query call_function', async () => {
         const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
 
-        // @ts-expect-error test input
-        await contract.setValue({ args: { value: 'hello' } });
+        await contract.call.setValue({ args: { value: 'hello' } });
     
         return waitFor(async () => {
             const response = await provider.query({
@@ -207,9 +205,6 @@ describe('providers errors', () => {
             near.accountCreator.masterAccount,
             generateUniqueString('test')
         );
-
-        // @ts-expect-error test input
-        await contract.setValue({ args: { value: 'hello' } });
 
         try {
             const response = await provider.query({

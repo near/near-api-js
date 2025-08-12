@@ -1,1 +1,1 @@
-export { Contract, ContractMethods } from '@near-js/accounts';
+export { Contract, AbiRoot } from '@near-js/accounts';

@@ -137,16 +137,28 @@ export async function deployContract(workingAccount, contractId) {
 
     const data = fs.readFileSync(HELLO_WASM_PATH);
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-    return new Contract(workingAccount, contractId, HELLO_WASM_METHODS);
-}
-
-export async function deployContractGuestBook(workingAccount, contractId) {
-    const keyPair = KeyPair.fromRandom('ed25519');
-    const newPublicKey = keyPair.getPublicKey();
-
-    const data = fs.readFileSync(GUESTBOOK_WASM_PATH);
-    const account = await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-    return new Contract(new Account(contractId, account.provider, new KeyPairSigner(keyPair)), contractId, { viewMethods: ['total_messages', 'get_messages'],  changeMethods: ['add_message'], useLocalViewExecution: true });
+    return new Contract({
+        contractId: contractId,
+        sender: workingAccount,
+        abi: {
+            schema_version: '0.4.0',
+            metadata: {},
+            body: {
+                functions: [
+                    {name: 'callPromise', kind: 'call'},
+                    {name: 'getLastResult', kind: 'view'},
+                    {name: 'setValue', kind: 'call'},
+                    {name: 'getValue', kind: 'view'},
+                    {name: 'hello', kind: 'view'},
+                    {name: 'returnHiWithLogs', kind: 'view'},
+                    {name: 'generateLogs', kind: 'call'},
+                    {name: 'triggerAssert', kind: 'call'},
+                    {name: 'testSetRemove', kind: 'call'},
+                    {name: 'crossContract', kind: 'call'},
+                ]
+            }
+        }
+    });
 }
 
 export function sleep(time) {

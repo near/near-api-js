@@ -379,6 +379,11 @@ export class Account {
             waitUntil
         );
 
+        printTxOutcomeLogsAndFailures({
+            contractId: signedTx.transaction.receiverId,
+            outcome: result,
+        });
+
         if (
             throwOnFailure &&
             typeof result.status === "object" &&

@@ -41,12 +41,13 @@ test('make function call using access key', async() => {
     await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 2000000000000000000000000n);
 
     const setCallValue = generateUniqueString('setCallPrefix');
-    await contract.setValue({
+    await contract.call.setValue({
         // Override signer in the workingAccount to the given access key.
-        signerAccount: new Account(workingAccount.accountId, workingAccount.provider, new KeyPairSigner(keyPair)),
+        account: new Account(workingAccount.accountId, workingAccount.provider, new KeyPairSigner(keyPair)),
         args: { value: setCallValue },
+        waitUntil: 'FINAL'
     });
-    expect(await contract.getValue()).toEqual(setCallValue);
+    expect(await contract.view.getValue()).toEqual(setCallValue);
 });
 
 test('remove access key no longer works', async() => {
@@ -56,15 +57,25 @@ test('remove access key no longer works', async() => {
     const publicKey = keyPair.getPublicKey();
     await near.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000n);
     await near.accountCreator.masterAccount.deleteKey(publicKey);
-    // Override account in the Contract to the masterAccount with the given access key.
-    contract.account = new Account(near.accountCreator.masterAccount.accountId, near.accountCreator.masterAccount.provider, new KeyPairSigner(keyPair));
-
+    
     let failed = true;
     try {
-        await contract.setValue({ args: { value: 'test' } });
+        // Override account in the Contract to the masterAccount with the given access key.
+        await contract.call.setValue({
+            args: { value: 'test' },
+            account: new Account(
+                near.accountCreator.masterAccount.accountId,
+                near.accountCreator.masterAccount.provider,
+                new KeyPairSigner(keyPair)
+            ),
+        });
         failed = false;
     } catch (e) {
-        expect(e.message).toEqual(`Can't complete the action because access key ${keyPair.getPublicKey().toString()} doesn't exist`);
+        expect(e.message).toEqual(
+            `Can't complete the action because access key ${keyPair
+                .getPublicKey()
+                .toString()} doesn't exist`
+        );
         expect(e.type).toEqual('AccessKeyDoesNotExist');
     }
 

@@ -1,350 +1,414 @@
-import { getTransactionLastResult, Logger } from "@near-js/utils";
-import { ArgumentTypeError, PositionalArgsError } from "@near-js/types";
-import { LocalViewExecution } from "./local-view-execution";
-import validator from "is-my-json-valid";
-import depd from "depd";
-import {
+import type {
     AbiFunction,
     AbiFunctionKind,
+    AbiParameters,
     AbiRoot,
-    AbiSerializationType,
-} from "near-abi";
-
+    Schema,
+    AbiType,
+} from "./abi_types";
+import { Provider } from "@near-js/providers";
 import { Account } from "./account";
-import {
-    UnsupportedSerializationError,
-    UnknownArgumentError,
-    ArgumentSchemaError,
-    ConflictingOptions,
-} from "./errors";
-import { IntoConnection } from "./interface";
-import { Connection } from "./connection";
-import { viewFunction } from "./utils";
 
-// Makes `function.name` return given name
-function nameFunction(name: string, body: (args?: any[]) => any) {
-    return {
-        [name](...args: any[]) {
-            return body(...args);
-        },
-    }[name];
+import { BlockReference, TxExecutionStatus } from "@near-js/types";
+
+type IsNullable<T> = [null] extends [T] ? true : false;
+
+type IsNever<T> = [T] extends [never] ? true : false;
+
+export type IsNarrowable<T, U> = IsNever<
+    (T extends U ? true : false) & (U extends T ? false : true)
+> extends true
+    ? false
+    : true;
+
+type IsFullyOptional<T> = IsNever<keyof T> extends true
+    ? true
+    : {
+          [K in keyof T]-?: {} extends Pick<T, K> ? true : false;
+      }[keyof T] extends true
+    ? true
+    : false;
+
+type Prettify<T> = {
+    [K in keyof T]: T[K];
+} & {};
+
+type ExtractAbiFunctions<
+    abi extends AbiRoot,
+    abiFunctionKind extends AbiFunctionKind = AbiFunctionKind,
+    _functions extends AbiFunction[] = abi["body"]["functions"]
+> = Extract<_functions[number], { kind: abiFunctionKind }>;
+
+type ExtractAbiFunction<
+    abi extends AbiRoot,
+    functionName extends ExtractAbiFunctionNames<abi>,
+    abiFunctionKind extends AbiFunctionKind = AbiFunctionKind
+> = Extract<ExtractAbiFunctions<abi, abiFunctionKind>, { name: functionName }>;
+
+type ExtractAbiFunctionNames<
+    abi extends AbiRoot,
+    abiFunctionKind extends AbiFunctionKind = AbiFunctionKind,
+    _functions extends AbiFunction[] = abi["body"]["functions"]
+> = ExtractAbiFunctions<abi, abiFunctionKind>["name"];
+
+type GetViewFunction<
+    abi extends AbiRoot,
+    functionName extends ExtractAbiFunctionNames<abi, "view">,
+    abiFunction extends AbiFunction = ExtractAbiFunction<abi, functionName>,
+    _args extends Record<string, unknown> = ContractFunctionArgs<
+        abi,
+        abiFunction
+    >,
+    _return extends unknown = ContractFunctionReturnType<abi, abiFunction>
+> = IsNarrowable<abi, AbiRoot> extends true
+    ? IsNever<_args> extends true
+        ? (params?: {
+              blockQuery?: BlockReference;
+          }) => Promise<Prettify<_return>>
+        : IsFullyOptional<_args> extends true
+        ? (params?: {
+              blockQuery?: BlockReference;
+              args?: _args;
+          }) => Promise<Prettify<_return>>
+        : (params: {
+              blockQuery?: BlockReference;
+              args: _args;
+          }) => Promise<Prettify<_return>>
+    : <Response extends unknown = unknown>(params: {
+          blockQuery?: BlockReference;
+          args: Record<string, unknown>;
+      }) => Promise<Response>;
+
+type GetCallFunction<
+    abi extends AbiRoot,
+    functionName extends ExtractAbiFunctionNames<abi, "call">,
+    abiFunction extends AbiFunction = ExtractAbiFunction<abi, functionName>,
+    _args extends Record<string, unknown> = ContractFunctionArgs<
+        abi,
+        abiFunction
+    >,
+    _return extends unknown = ContractFunctionReturnType<abi, abiFunction>
+> = IsNarrowable<abi, AbiRoot> extends true
+    ? IsNever<_args> extends true
+        ? (params: {
+              deposit?: bigint;
+              gas?: bigint;
+              waitUntil?: TxExecutionStatus;
+              account: Account;
+          }) => Promise<Prettify<_return>>
+        : (params: {
+              deposit?: bigint;
+              gas?: bigint;
+              args: _args;
+              waitUntil?: TxExecutionStatus;
+              account: Account;
+          }) => Promise<Prettify<_return>>
+    : <Response extends unknown = unknown>(params: {
+          deposit?: bigint;
+          gas?: bigint;
+          args: Record<string, unknown>;
+          waitUntil?: TxExecutionStatus;
+          account: Account;
+      }) => Promise<Response>;
+
+type ContractFunctionReturnType<
+    abi extends AbiRoot,
+    abiFunction extends AbiFunction
+> = abiFunction extends { result: infer Result }
+    ? Result extends AbiType
+        ? Result["type_schema"] extends Schema
+            ? ResolveSchemaType<abi, Result["type_schema"]>
+            : unknown
+        : unknown
+    : void;
+
+type ContractFunctionArgs<
+    abi extends AbiRoot,
+    abiFunction extends AbiFunction
+> = abiFunction extends { params: infer Params }
+    ? Params extends AbiParameters
+        ? Params["args"] extends { name: infer N; type_schema: infer S }[]
+            ? Prettify<
+                  {
+                      [Arg in Params["args"][number] as IsNullable<
+                          ResolveSchemaType<abi, Arg["type_schema"]>
+                      > extends false
+                          ? Arg["name"] & string
+                          : never]: ResolveSchemaType<abi, Arg["type_schema"]>;
+                  } & {
+                      [Arg in Params["args"][number] as IsNullable<
+                          ResolveSchemaType<abi, Arg["type_schema"]>
+                      > extends true
+                          ? Arg["name"] & string
+                          : never]?: ResolveSchemaType<abi, Arg["type_schema"]>;
+                  }
+              >
+            : never
+        : never
+    : never;
+
+type ToArray<T> = T extends any[] ? T : [T];
+
+type JSONSchemaTypeMap = {
+    string: string;
+    integer: number;
+    number: number;
+    boolean: boolean;
+    null: null;
+};
+
+type ResolveType<
+    abi extends AbiRoot,
+    schema extends Schema,
+    type extends any | any[]
+> = ToArray<type> extends (infer T)[]
+    ? T extends "array"
+        ? ResolveArrayType<abi, schema>
+        : T extends "object"
+        ? ResolveObjectType<abi, schema>
+        : T extends keyof JSONSchemaTypeMap
+        ? JSONSchemaTypeMap[T]
+        : never
+    : never;
+
+type ResolveArrayType<
+    abi extends AbiRoot,
+    schema extends Schema
+> = schema extends {
+    items: infer Items;
 }
+    ? Items extends Schema
+        ? ResolveSchemaType<abi, Items>[]
+        : unknown[]
+    : unknown[];
 
-function validateArguments(
-    args: object,
-    abiFunction: AbiFunction,
-    abiRoot: AbiRoot
-) {
-    if (!isObject(args)) return;
-
-    if (
-        abiFunction.params &&
-        abiFunction.params.serialization_type !== AbiSerializationType.Json
-    ) {
-        throw new UnsupportedSerializationError(
-            abiFunction.name,
-            abiFunction.params.serialization_type
-        );
-    }
-
-    if (
-        abiFunction.result &&
-        abiFunction.result.serialization_type !== AbiSerializationType.Json
-    ) {
-        throw new UnsupportedSerializationError(
-            abiFunction.name,
-            abiFunction.result.serialization_type
-        );
-    }
-
-    const params = abiFunction.params?.args || [];
-    for (const p of params) {
-        const arg = args[p.name];
-        const typeSchema = p.type_schema;
-        typeSchema.definitions = abiRoot.body.root_schema.definitions;
-        const validate = validator(typeSchema);
-        const valid = validate(arg);
-        if (!valid) {
-            throw new ArgumentSchemaError(p.name, validate.errors);
-        }
-    }
-    // Check there are no extra unknown arguments passed
-    for (const argName of Object.keys(args)) {
-        const param = params.find((p) => p.name === argName);
-        if (!param) {
-            throw new UnknownArgumentError(
-                argName,
-                params.map((p) => p.name)
-            );
-        }
-    }
+type ResolveObjectType<
+    abi extends AbiRoot,
+    schema extends Schema
+> = schema extends {
+    properties: Record<string, any>;
 }
+    ? schema extends {
+          required: string[];
+      }
+        ? Prettify<
+              {
+                  -readonly [Key in keyof schema["properties"] as Key extends schema["required"][number]
+                      ? Key
+                      : never]: ResolveSchemaType<
+                      abi,
+                      schema["properties"][Key]
+                  >;
+              } & {
+                  -readonly [Key in keyof schema["properties"] as Key extends schema["required"][number]
+                      ? never
+                      : Key]?: ResolveSchemaType<
+                      abi,
+                      schema["properties"][Key]
+                  >;
+              }
+          >
+        : {
+              -readonly [Key in keyof schema["properties"]]?: ResolveSchemaType<
+                  abi,
+                  schema["properties"][Key]
+              >;
+          }
+    : Record<string, unknown>;
 
-const isUint8Array = (x: any) =>
-    x && x.byteLength !== undefined && x.byteLength === x.length;
+type ResolveRef<
+    abi extends AbiRoot,
+    ref extends string,
+    _definitions = abi["body"]["root_schema"]["definitions"]
+> = ref extends keyof _definitions
+    ? _definitions[ref] extends Schema
+        ? ResolveSchemaType<abi, _definitions[ref]>
+        : never
+    : never;
 
-const isObject = (x: any) =>
-    Object.prototype.toString.call(x) === "[object Object]";
+type ResolveOneOf<
+    abi extends AbiRoot,
+    schema extends { oneOf: Schema[] }
+> = schema["oneOf"] extends (infer S)[]
+    ? S extends Schema
+        ? ResolveSchemaType<abi, S>
+        : never
+    : never;
 
-interface ChangeMethodOptions {
-    signerAccount?: Account;
-    args: object;
-    methodName: string;
-    gas?: bigint;
-    amount?: bigint;
-    meta?: string;
-    callbackUrl?: string;
-}
+type ResolveAnyOf<
+    abi extends AbiRoot,
+    schema extends { anyOf: Schema[] }
+> = schema["anyOf"] extends (infer S)[]
+    ? S extends Schema
+        ? ResolveSchemaType<abi, S>
+        : never
+    : never;
 
-export interface ContractMethods {
-    /**
-     * Methods that change state. These methods cost gas and require a signed transaction.
-     *
-     * @see {@link Account#functionCall}
-     */
-    changeMethods: string[];
+type ResolveSchemaType<
+    abi extends AbiRoot,
+    schema extends Schema | boolean
+> = schema extends boolean
+    ? schema
+    : schema extends { type: infer Type }
+    ? ResolveType<abi, schema, Type>
+    : schema extends { $ref: `#/definitions/${infer Ref}` }
+    ? ResolveRef<abi, Ref>
+    : schema extends { oneOf: Schema[] }
+    ? ResolveOneOf<abi, schema>
+    : schema extends { anyOf: Schema[] }
+    ? ResolveAnyOf<abi, schema>
+    : never;
 
-    /**
-     * View methods do not require a signed transaction.
-     *
-     * @see {@link Account#viewFunction}
-     */
-    viewMethods: string[];
+type ContractParameters<abi extends AbiRoot, contractId extends string> = {
+    contractId: contractId;
+    provider: Provider;
+    abi: abi;
+};
 
-    /**
-     * ABI defining this contract's interface.
-     */
-    abi?: AbiRoot;
+export type ContractReturnType<
+    abi extends AbiRoot,
+    contractId extends string,
+    //
+    _viewFunctionNames extends string = abi extends AbiRoot
+        ? AbiRoot extends abi
+            ? string
+            : ExtractAbiFunctionNames<abi, "view">
+        : string,
+    _callFunctionNames extends string = abi extends AbiRoot
+        ? AbiRoot extends abi
+            ? string
+            : ExtractAbiFunctionNames<abi, "call">
+        : string
+> = Prettify<
+    (IsNever<_viewFunctionNames> extends false
+        ? {
+              view: {
+                  [functionName in _viewFunctionNames]: GetViewFunction<
+                      abi,
+                      functionName
+                  >;
+              };
+          }
+        : {}) &
+        (IsNever<_callFunctionNames> extends false
+            ? {
+                  call: {
+                      [functionName in _callFunctionNames]: GetCallFunction<
+                          abi,
+                          functionName
+                      >;
+                  };
+              }
+            : {}) & { abi: abi; contractId: contractId }
+>;
 
-    /**
-     * Executes view methods locally. This flag is useful when multiple view calls will be made for the same blockId
-     */
-    useLocalViewExecution: boolean;
-}
+export type ContractConstructor = {
+    new <const abi extends AbiRoot, contractId extends string>(
+        params: ContractParameters<abi, contractId>
+    ): ContractReturnType<abi, contractId>;
 
-/**
- * Defines a smart contract on NEAR including the change (mutable) and view (non-mutable) methods
- *
- * @see [https://docs.near.org/tools/near-api-js/quick-reference#contract](https://docs.near.org/tools/near-api-js/quick-reference#contract)
- * @example
- * ```js
- * import { Contract } from 'near-api-js';
- *
- * async function contractExample() {
- *   const methodOptions = {
- *     viewMethods: ['getMessageByAccountId'],
- *     changeMethods: ['addMessage']
- *   };
- *   const contract = new Contract(
- *     wallet.account(),
- *     'contract-id.testnet',
- *     methodOptions
- *   );
- *
- *   // use a contract view method
- *   const messages = await contract.getMessages({
- *     accountId: 'example-account.testnet'
- *   });
- *
- *   // use a contract change method
- *   await contract.addMessage({
- *      meta: 'some info',
- *      callbackUrl: 'https://example.com/callback',
- *      args: { text: 'my message' },
- *      amount: 1
- *   })
- * }
- * ```
- */
-export class Contract {
-    /** @deprecated */
-    readonly account?: Account;
-    readonly connection: Connection;
-    readonly contractId: string;
-    readonly lve: LocalViewExecution;
+    new <const abi extends AbiRoot, contractId extends string>(
+        params: Prettify<Omit<ContractParameters<abi, contractId>, "abi">>
+    ): Prettify<Omit<ContractReturnType<abi, contractId>, "abi">>;
+};
 
-    /**
-     * @param account NEAR account to sign change method transactions
-     * @param contractId NEAR account id where the contract is deployed
-     * @param options NEAR smart contract methods that your application will use. These will be available as `contract.methodName`
-     */
-    constructor(
-        connection: IntoConnection,
-        contractId: string,
-        options: ContractMethods
-    ) {
-        this.connection = connection.getConnection();
-        if (connection instanceof Account) {
-            const deprecate = depd(
-                "new Contract(account, contractId, options)"
-            );
-            deprecate(
-                "use `new Contract(connection, contractId, options)` instead"
-            );
-            this.account = connection;
-        }
+class TypedContract<const abi extends AbiRoot, contractId extends string> {
+    abi?: abi;
+    contractId: contractId;
+
+    view: ContractReturnType<abi, contractId> extends {
+        view: infer ViewMethods;
+    }
+        ? ViewMethods
+        : never;
+
+    call: ContractReturnType<abi, contractId> extends {
+        call: infer CallMethods;
+    }
+        ? CallMethods
+        : never;
+
+    constructor({
+        abi,
+        provider,
+        contractId,
+    }: ContractParameters<abi, contractId>) {
         this.contractId = contractId;
-        this.lve = new LocalViewExecution(connection);
-        const {
-            viewMethods = [],
-            changeMethods = [],
-            abi: abiRoot,
-            useLocalViewExecution,
-        } = options;
+        this.abi = abi;
 
-        let viewMethodsWithAbi = viewMethods.map((name) => ({
-            name,
-            abi: null as AbiFunction,
-        }));
-        let changeMethodsWithAbi = changeMethods.map((name) => ({
-            name,
-            abi: null as AbiFunction,
-        }));
-        if (abiRoot) {
-            if (
-                viewMethodsWithAbi.length > 0 ||
-                changeMethodsWithAbi.length > 0
-            ) {
-                throw new ConflictingOptions();
+        let hasViewFunction = false;
+        let hasCallFunction = false;
+
+        const abiFunctions = abi?.body.functions || [];
+
+        for (const func of abiFunctions) {
+            if (func.kind === "view") {
+                hasViewFunction = true;
+            } else if (func.kind === "call") {
+                hasCallFunction = true;
             }
-            viewMethodsWithAbi = abiRoot.body.functions
-                .filter((m) => m.kind === AbiFunctionKind.View)
-                .map((m) => ({ name: m.name, abi: m }));
-            changeMethodsWithAbi = abiRoot.body.functions
-                .filter((methodAbi) => methodAbi.kind === AbiFunctionKind.Call)
-                .map((methodAbi) => ({ name: methodAbi.name, abi: methodAbi }));
+
+            // exit early if all flags are `true`
+            if (hasViewFunction && hasCallFunction) break;
         }
 
-        viewMethodsWithAbi.forEach(({ name, abi }) => {
-            Object.defineProperty(this, name, {
-                writable: false,
-                enumerable: true,
-                value: nameFunction(
-                    name,
-                    async (args: object = {}, options = {}, ...ignored) => {
-                        if (
-                            ignored.length ||
-                            !(isObject(args) || isUint8Array(args)) ||
-                            !isObject(options)
-                        ) {
-                            throw new PositionalArgsError();
-                        }
+        if (hasViewFunction || !abi) {
+            this.view = new Proxy(
+                {},
+                {
+                    get: (_, functionName: string) => {
+                        return (
+                            params: {
+                                args?: object;
+                                blockQuery?: BlockReference;
+                            } = {}
+                        ) => {
+                            const args = params.args ?? {};
 
-                        if (abi) {
-                            validateArguments(args, abi, abiRoot);
-                        }
-
-                        if (useLocalViewExecution) {
-                            try {
-                                return await this.lve.viewFunction({
-                                    contractId: this.contractId,
-                                    methodName: name,
-                                    args,
-                                    ...options,
-                                });
-                            } catch (error) {
-                                Logger.warn(
-                                    `Local view execution failed with: "${error.message}"`
-                                );
-                                Logger.warn(`Fallback to normal RPC call`);
-                            }
-                        }
-
-                        if (this.account) {
-                            return this.account.viewFunction({
-                                contractId: this.contractId,
-                                methodName: name,
-                                args,
-                                ...options,
-                            });
-                        }
-
-                        return viewFunction(this.connection, {
-                            contractId: this.contractId,
-                            methodName: name,
-                            args,
-                            ...options,
-                        });
-                    }
-                ),
-            });
-        });
-        changeMethodsWithAbi.forEach(({ name, abi }) => {
-            Object.defineProperty(this, name, {
-                writable: false,
-                enumerable: true,
-                value: nameFunction(name, async (...args: any[]) => {
-                    if (
-                        args.length &&
-                        (args.length > 3 ||
-                            !(isObject(args[0]) || isUint8Array(args[0])))
-                    ) {
-                        throw new PositionalArgsError();
-                    }
-
-                    if (args.length > 1 || !(args[0] && args[0].args)) {
-                        const deprecate = depd(
-                            "contract.methodName(args, gas, amount)"
-                        );
-                        deprecate(
-                            "use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead"
-                        );
-                        args[0] = {
-                            args: args[0],
-                            gas: args[1],
-                            amount: args[2],
+                            return provider.callFunction(
+                                contractId,
+                                functionName,
+                                args as Record<string, unknown>,
+                                params.blockQuery
+                            );
                         };
-                    }
+                    },
+                }
+            ) as any;
+        }
 
-                    if (abi) {
-                        validateArguments(args[0].args, abi, abiRoot);
-                    }
+        if (hasCallFunction || !abi) {
+            this.call = new Proxy(
+                {},
+                {
+                    get: (_, functionName: string) => {
+                        return (params: {
+                            deposit?: bigint;
+                            gas?: bigint;
+                            args?: object;
+                            waitUntil?: TxExecutionStatus;
+                            account: Account;
+                        }) => {
+                            const args = params.args ?? {};
 
-                    return this._changeMethod({ methodName: name, ...args[0] });
-                }),
-            });
-        });
-    }
+                            return params.account.callFunction({
+                                contractId,
+                                methodName: functionName,
+                                args,
+                                deposit: params.deposit,
+                                gas: params.gas,
+                                waitUntil: params.waitUntil,
+                            });
+                        };
+                    },
+                }
+            ) as any;
+        }
 
-    private async _changeMethod({
-        signerAccount,
-        args,
-        methodName,
-        gas,
-        amount,
-        meta,
-        callbackUrl,
-    }: ChangeMethodOptions) {
-        validateBNLike({ gas, amount });
-
-        const account = this.account || signerAccount;
-
-        if (!account) throw new Error(`signerAccount must be specified`);
-
-        const rawResult = await account.functionCall({
-            contractId: this.contractId,
-            methodName,
-            args,
-            gas,
-            attachedDeposit: amount,
-            walletMeta: meta,
-            walletCallbackUrl: callbackUrl,
-        });
-
-        return getTransactionLastResult(rawResult);
-    }
-}
-
-/**
- * Throws if an argument is not in BigInt format or otherwise invalid
- * @param argMap
- */
-function validateBNLike(argMap: { [name: string]: any }) {
-    const bnLike = "number, decimal string or BigInt";
-    for (const argName of Object.keys(argMap)) {
-        const argValue = argMap[argName];
-        if (argValue && typeof argValue !== "bigint" && isNaN(argValue)) {
-            throw new ArgumentTypeError(argName, bnLike, argValue);
+        if (!abi) {
+            delete this.abi;
         }
     }
 }
+
+export const Contract = TypedContract as ContractConstructor;
