@@ -139,25 +139,7 @@ export async function deployContract(workingAccount, contractId) {
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
     return new Contract({
         contractId: contractId,
-        sender: workingAccount,
-        abi: {
-            schema_version: '0.4.0',
-            metadata: {},
-            body: {
-                functions: [
-                    {name: 'callPromise', kind: 'call'},
-                    {name: 'getLastResult', kind: 'view'},
-                    {name: 'setValue', kind: 'call'},
-                    {name: 'getValue', kind: 'view'},
-                    {name: 'hello', kind: 'view'},
-                    {name: 'returnHiWithLogs', kind: 'view'},
-                    {name: 'generateLogs', kind: 'call'},
-                    {name: 'triggerAssert', kind: 'call'},
-                    {name: 'testSetRemove', kind: 'call'},
-                    {name: 'crossContract', kind: 'call'},
-                ]
-            }
-        }
+        provider: workingAccount.provider,
     });
 }
 

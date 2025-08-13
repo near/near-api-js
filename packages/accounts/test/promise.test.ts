@@ -1,6 +1,8 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 import { Worker } from 'near-workspaces';
+import { ContractReturnType } from '../src/contract';
+import { AbiRoot } from '../src';
 
 let nearjs;
 
@@ -21,7 +23,9 @@ afterAll(async () => {
 });
 
 describe('with promises', () => {
-    let contract, contract1, contract2;
+    let contract: Omit<ContractReturnType<AbiRoot, string>, 'abi'>,
+        contract1: Omit<ContractReturnType<AbiRoot, string>, 'abi'>,
+        contract2: Omit<ContractReturnType<AbiRoot, string>, 'abi'>;
     let oldLog;
     let logs;
     const contractName = generateUniqueString('cnt');
@@ -65,7 +69,8 @@ describe('with promises', () => {
                 }
             },
             gas: CONTRACT_CALL_GAS,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         });
         const lastResult = await contract1.view.getLastResult();
         expect(lastResult).toEqual({
@@ -91,7 +96,8 @@ describe('with promises', () => {
                 }
             },
             gas: CONTRACT_CALL_GAS,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         });
         const lastResult1 = await contract1.view.getLastResult();
         expect(lastResult1).toEqual({
@@ -135,7 +141,8 @@ describe('with promises', () => {
                 }
             },
             gas: CONTRACT_CALL_GAS,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         });
         const lastResult2 = await contract2.view.getLastResult();
         expect(lastResult2).toEqual({
@@ -171,7 +178,8 @@ describe('with promises', () => {
                 }
             },
             gas: CONTRACT_CALL_GAS,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         });
         const lastResult2 = await contract2.view.getLastResult();
         expect(lastResult2).toEqual({
@@ -223,7 +231,8 @@ describe('with promises', () => {
                 }
             },
             gas: CONTRACT_CALL_GAS,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         });
         const lastResult1 = await contract1.view.getLastResult();
         expect(lastResult1).toEqual({
@@ -273,7 +282,8 @@ describe('with promises', () => {
                 }
             },
             gas: CONTRACT_CALL_GAS,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         });
         const lastResult2 = await contract2.view.getLastResult();
         expect(lastResult2).toEqual({
@@ -317,7 +327,8 @@ describe('with promises', () => {
                 }
             },
             gas: CONTRACT_CALL_GAS,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         });
         const lastResult2 = await contract2.view.getLastResult();
         expect(lastResult2).toEqual({

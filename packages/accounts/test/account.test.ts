@@ -4,10 +4,11 @@ import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { actionCreators } from '@near-js/transactions';
 import { BlockResult, TypedError } from '@near-js/types';
 
-import { Account } from '../src';
+import { AbiRoot, Account } from '../src';
 import { createAccount, generateUniqueString, setUpTestConnection, deployContract } from './test-utils';
 
 import { Worker } from 'near-workspaces';
+import { ContractReturnType } from '../src/contract';
 
 let nearjs;
 let workingAccount: Account;
@@ -147,25 +148,9 @@ describe('errors', () => {
 describe('with deploy contract', () => {
     let logs;
     const contractId = generateUniqueString('test_contract');
-    let contract;
+    let contract: Omit<ContractReturnType<AbiRoot, string>, 'abi'>;
 
     beforeAll(async () => {
-        // const keyPair = KeyPair.fromRandom('ed25519');
-        // await (nearjs.keyStore as InMemoryKeyStore).setKey(networkId, contractId, keyPair);
-        // const newPublicKey = keyPair.getPublicKey();
-        // const data = fs.readFileSync(HELLO_WASM_PATH);
-        // await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-        // // @ts-expect-error test input
-        // contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
-        //     viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
-        //     changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
-        // });
-        // await nearjs.accountCreator.masterAccount.createAndDeployContract(contractId, newPublicKey, data, HELLO_WASM_BALANCE);
-        // // @ts-expect-error test input
-        // contract = new Contract(nearjs.accountCreator.masterAccount, contractId, {
-        //     viewMethods: ['hello', 'getValue', 'returnHiWithLogs'],
-        //     changeMethods: ['setValue', 'generateLogs', 'triggerAssert', 'testSetRemove', 'crossContract']
-        // });
         contract = await deployContract(nearjs.accountCreator.masterAccount, contractId);
 
         const custom = {
@@ -187,7 +172,8 @@ describe('with deploy contract', () => {
         await expect(contract.call.crossContract({
             args: {},
             gas: 300000000000000n,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         })).rejects.toThrow(/Smart contract panicked: expected to fail./);
         expect(logs.length).toEqual(7);
         expect(logs[0]).toMatch(new RegExp('^Receipts: \\w+, \\w+, \\w+$'));
@@ -250,14 +236,22 @@ describe('with deploy contract', () => {
         expect(result).toEqual('hello trex');
 
         const setCallValue = generateUniqueString('setCallPrefix');
-        const result2 = await contract.call.setValue({ args: { value: setCallValue }, waitUntil: 'FINAL' });
+        const result2 = await contract.call.setValue({
+            args: { value: setCallValue },
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount,
+        });
         expect(result2).toEqual(setCallValue);
-        expect(await contract.view.getValue()).toEqual(setCallValue);
+        expect(await contract.view.getValue({ args: {} })).toEqual(setCallValue);
     });
 
     test('view function calls by block Id and finality', async () => {
         const setCallValue1 = generateUniqueString('setCallPrefix');
-        const result1 = await contract.call.setValue({ args: { value: setCallValue1 }, waitUntil: 'FINAL' });
+        const result1 = await contract.call.setValue({
+            args: { value: setCallValue1 },
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount,
+        });
         expect(result1).toEqual(setCallValue1);
         expect(await contract.view.getValue()).toEqual(setCallValue1);
 
@@ -289,7 +283,11 @@ describe('with deploy contract', () => {
         })).toEqual(setCallValue1);
 
         const setCallValue2 = generateUniqueString('setCallPrefix');
-        const result2 = await contract.call.setValue({ args: { value: setCallValue2 }, waitUntil: 'FINAL' });
+        const result2 = await contract.call.setValue({
+            args: { value: setCallValue2 },
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount,
+        });
         expect(result2).toEqual(setCallValue2);
         expect(await contract.view.getValue()).toEqual(setCallValue2);
 
@@ -339,28 +337,37 @@ describe('with deploy contract', () => {
         const result2 = await contract.call.setValue({
             args: { value: setCallValue },
             gas: 1000000n * 1000000n,
-            waitUntil: 'FINAL'
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount
         });
         expect(result2).toEqual(setCallValue);
         expect(await contract.view.getValue()).toEqual(setCallValue);
     });
 
     test('can get logs from method result', async () => {
-        await contract.call.generateLogs({ waitUntil: 'FINAL' });
+        await contract.call.generateLogs({
+            waitUntil: 'FINAL',
+            account: nearjs.accountCreator.masterAccount,
+        });
         expect(logs.length).toEqual(3);
         expect(logs[0].substr(0, 8)).toEqual('Receipt:');
         expect(logs.slice(1)).toEqual([`\tLog [${contractId}]: log1`, `\tLog [${contractId}]: log2`]);
     });
 
     test('can get assert message from method result', async () => {
-        await expect(contract.call.triggerAssert()).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
+        await expect(
+            contract.call.triggerAssert({
+                account: nearjs.accountCreator.masterAccount,
+            })
+        ).rejects.toThrow(/Smart contract panicked: expected to fail.+/);
         expect(logs[1]).toEqual(`\tLog [${contractId}]: log before assert`);
         expect(logs[2]).toMatch(new RegExp(`^\\s+Log \\[${contractId}\\]: ABORT: expected to fail, filename: \\"assembly/index.ts" line: \\d+ col: \\d+$`));
     });
 
     test('test set/remove', async () => {
         await contract.call.testSetRemove({
-            args: { value: '123' }
+            args: { value: '123' },
+            account: nearjs.accountCreator.masterAccount
         });
     });
 
