@@ -74,9 +74,9 @@ type GetViewFunction<
               blockQuery?: BlockReference;
               args: _args;
           }) => Promise<Prettify<_return>>
-    : <Response extends unknown = unknown>(params: {
+    : <Response extends unknown = unknown>(params?: {
           blockQuery?: BlockReference;
-          args: Record<string, unknown>;
+          args?: Record<string, unknown>;
       }) => Promise<Response>;
 
 type GetCallFunction<
@@ -106,7 +106,7 @@ type GetCallFunction<
     : <Response extends unknown = unknown>(params: {
           deposit?: bigint;
           gas?: bigint;
-          args: Record<string, unknown>;
+          args?: Record<string, unknown>;
           waitUntil?: TxExecutionStatus;
           account: Account;
       }) => Promise<Response>;

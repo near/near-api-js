@@ -81,9 +81,9 @@ describe("Contract can infer general interface without ABI", () => {
     });
 
     test("any view function", () => {
-        type ExpectedViewFunction = <Response>(params: {
+        type ExpectedViewFunction = <Response>(params?: {
             blockQuery?: BlockReference;
-            args: Record<string, unknown>;
+            args?: Record<string, unknown>;
         }) => Promise<Response>;
 
         expectTypeOf(contract.view).toEqualTypeOf<{
@@ -100,7 +100,7 @@ describe("Contract can infer general interface without ABI", () => {
             gas?: bigint;
             account: Account;
             waitUntil?: TxExecutionStatus;
-            args: Record<string, unknown>;
+            args?: Record<string, unknown>;
         }) => Promise<Response>;
 
         expectTypeOf(contract.call).toEqualTypeOf<{
