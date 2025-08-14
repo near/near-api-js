@@ -5,7 +5,9 @@
         "lib": ["es2022", "DOM"],
         "moduleResolution": "node",
         "types": ["vitest"],
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "strictNullChecks": true,
+        "skipLibCheck": true
     },
     "exclude": ["node_modules"],
     "include": ["tests"]

@@ -23,7 +23,7 @@ export {
 export {
     Contract
 } from './contract';
-export type { ContractMethods } from './contract';
+export type { AbiRoot } from './abi_types';
 export {
     ArgumentSchemaError,
     ConflictingOptions,
