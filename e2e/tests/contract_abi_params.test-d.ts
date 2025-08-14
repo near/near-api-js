@@ -11,7 +11,6 @@ import { KeyPair } from "@near-js/crypto";
 const provider = new JsonRpcProvider({ url: "" });
 const keypair = KeyPair.fromRandom("ed25519");
 const signer = new KeyPairSigner(keypair);
-// @ts-expect-error it's fixed
 const account = new Account("", provider, signer);
 
 describe("Contract infers function arguments from ABI correctly", () => {

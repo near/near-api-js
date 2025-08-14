@@ -23,7 +23,6 @@ beforeAll(async () => {
         getSecretKey(worker) as KeyPairString
     );
 
-    // @ts-expect-error it's fixed
     rootAccount = new Account(worker.rootAccount.accountId, provider, signer);
 
     await rootAccount.createAccount(
@@ -33,7 +32,6 @@ beforeAll(async () => {
     );
     guestbookAccount = new Account(
         `guestbook.${rootAccount.accountId}`,
-        // @ts-expect-error it's fixed
         provider,
         signer
     );
