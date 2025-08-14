@@ -51,7 +51,7 @@ afterAll(async () => {
     await worker.tearDown();
 });
 
-test("contract has abi", async () => {
+test("Contract has abi", async () => {
     const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
@@ -61,7 +61,7 @@ test("contract has abi", async () => {
     expect(contract.abi).toBe(abi);
 });
 
-test("contract has contractId", async () => {
+test("Contract has contractId", async () => {
     const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
@@ -71,7 +71,7 @@ test("contract has contractId", async () => {
     expect(contract.contractId).toBe(guestbookAccount.accountId);
 });
 
-test("contract has view & call properties even if ABI isn't provided", async () => {
+test("Contract has view & call properties even if ABI isn't provided", async () => {
     const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
@@ -81,7 +81,7 @@ test("contract has view & call properties even if ABI isn't provided", async () 
     expect(contract).toHaveProperty('call');
 });
 
-test("contract doesn't have abi if ABI isn't provided", async () => {
+test("Contract doesn't have abi if ABI isn't provided", async () => {
     const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
@@ -90,7 +90,7 @@ test("contract doesn't have abi if ABI isn't provided", async () => {
     expect(contract).not.toHaveProperty('abi');
 });
 
-test("contract doesn't have view & call properties if ABI is empty", async () => {
+test("Contract doesn't have view & call properties if ABI is empty", async () => {
     const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
@@ -108,7 +108,7 @@ test("contract doesn't have view & call properties if ABI is empty", async () =>
     expect(contract.contractId).not.toHaveProperty('call');
 });
 
-test("contract can invoke a view function", async () => {
+test("Contract can invoke a view function", async () => {
     // TODO: use fixtures for account creation and contract deploy
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
@@ -143,7 +143,7 @@ test("contract can invoke a view function", async () => {
     expect(totalMessages).toBe(0);
 });
 
-test("contract can invoke a call function", async () => {
+test("Contract can invoke a call function", async () => {
     // TODO: use fixtures for account creation and contract deploy
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
