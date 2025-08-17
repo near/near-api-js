@@ -1,5 +1,45 @@
 # near-api-js
 
+## 6.2.5
+
+### Patch Changes
+
+- [#1613](https://github.com/near/near-api-js/pull/1613) [`b78f334`](https://github.com/near/near-api-js/commit/b78f3343a2d338c01b81c232a67e80dd6ccef6c0) Thanks [@denbite](https://github.com/denbite)! - Provide default value `{}` for headers as `connection.headers` could be `undefined` in some cases
+
+- [#1613](https://github.com/near/near-api-js/pull/1613) [`e8a01e9`](https://github.com/near/near-api-js/commit/e8a01e998c465df1bb1bda4b3967a6e597f85cad) Thanks [@denbite](https://github.com/denbite)! - Update interfaces of `JsonRpcProvider` and `FailoverRpcProvider` to be aligned with `Provider`
+
+- [#1613](https://github.com/near/near-api-js/pull/1613) [`d399fe5`](https://github.com/near/near-api-js/commit/d399fe561cbeabe09c9877f23b47b57a16896f41) Thanks [@denbite](https://github.com/denbite)! - Make parameter type of function `Provider.gasPrice` nullable (to be aligned with actual implemention in `JsonRpcProvider`)
+
+- Updated dependencies [[`b78f334`](https://github.com/near/near-api-js/commit/b78f3343a2d338c01b81c232a67e80dd6ccef6c0), [`e8a01e9`](https://github.com/near/near-api-js/commit/e8a01e998c465df1bb1bda4b3967a6e597f85cad), [`d399fe5`](https://github.com/near/near-api-js/commit/d399fe561cbeabe09c9877f23b47b57a16896f41)]:
+  - @near-js/providers@2.2.5
+  - @near-js/accounts@2.2.5
+  - @near-js/crypto@2.2.5
+  - @near-js/keystores@2.2.5
+  - @near-js/keystores-browser@2.2.5
+  - @near-js/keystores-node@2.2.5
+  - @near-js/signers@2.2.5
+  - @near-js/transactions@2.2.5
+  - @near-js/types@2.2.5
+  - @near-js/utils@2.2.5
+
+## 6.2.4
+
+### Patch Changes
+
+- [#1611](https://github.com/near/near-api-js/pull/1611) [`30403a7`](https://github.com/near/near-api-js/commit/30403a7840a119f08cd6372f7bdc18017572d810) Thanks [@denbite](https://github.com/denbite)! - Add `signedDelegate` to `ClassicActions` schema to align the indices of `deployGlobalContract` and `useGlobalContract` actions
+
+- Updated dependencies [[`30403a7`](https://github.com/near/near-api-js/commit/30403a7840a119f08cd6372f7bdc18017572d810)]:
+  - @near-js/transactions@2.2.4
+  - @near-js/accounts@2.2.4
+  - @near-js/crypto@2.2.4
+  - @near-js/keystores@2.2.4
+  - @near-js/keystores-browser@2.2.4
+  - @near-js/keystores-node@2.2.4
+  - @near-js/providers@2.2.4
+  - @near-js/signers@2.2.4
+  - @near-js/types@2.2.4
+  - @near-js/utils@2.2.4
+
 ## 6.2.3
 
 ### Patch Changes
