@@ -5,11 +5,14 @@ import type {
     AbiRoot,
     Schema,
     AbiType,
+    RootSchema,
 } from "./abi_types";
 import { Provider } from "@near-js/providers";
 import { Account } from "./account";
 
 import { BlockReference, TxExecutionStatus } from "@near-js/types";
+import { ArgumentSchemaError, UnknownArgumentError } from "./errors";
+import validator from "is-my-json-valid";
 
 type IsNullable<T> = [null] extends [T] ? true : false;
 
@@ -357,13 +360,21 @@ class TypedContract<const abi extends AbiRoot, contractId extends string> {
                 {},
                 {
                     get: (_, functionName: string) => {
-                        return (
+                        const abiFunction = (abi?.body.functions || []).find(
+                            ({ name }) => name === functionName
+                        );
+
+                        return async (
                             params: {
                                 args?: object;
                                 blockQuery?: BlockReference;
                             } = {}
                         ) => {
                             const args = params.args ?? {};
+
+                            if (abiFunction && abi) {
+                                validateArguments(args, abiFunction, abi);
+                            }
 
                             return provider.callFunction(
                                 contractId,
@@ -382,7 +393,11 @@ class TypedContract<const abi extends AbiRoot, contractId extends string> {
                 {},
                 {
                     get: (_, functionName: string) => {
-                        return (params: {
+                        const abiFunction = (abi?.body.functions || []).find(
+                            ({ name }) => name === functionName
+                        );
+
+                        return async (params: {
                             deposit?: bigint;
                             gas?: bigint;
                             args?: object;
@@ -390,6 +405,10 @@ class TypedContract<const abi extends AbiRoot, contractId extends string> {
                             account: Account;
                         }) => {
                             const args = params.args ?? {};
+
+                            if (abiFunction && abi) {
+                                validateArguments(args, abiFunction, abi);
+                            }
 
                             return params.account.callFunction({
                                 contractId,
@@ -412,3 +431,37 @@ class TypedContract<const abi extends AbiRoot, contractId extends string> {
 }
 
 export const Contract = TypedContract as ContractConstructor;
+
+function validateArguments(
+    args: object,
+    abiFunction: AbiFunction,
+    abiRoot: AbiRoot
+) {
+    if (typeof args !== "object" || typeof abiFunction.params !== "object")
+        return;
+
+    if (abiFunction.params.serialization_type === "json") {
+        const params = abiFunction.params.args;
+        for (const p of params) {
+            const arg = args[p.name];
+            const typeSchema = p.type_schema;
+            (typeSchema as RootSchema).definitions =
+                abiRoot.body.root_schema.definitions;
+            const validate = validator(typeSchema as any);
+            const valid = validate(arg);
+            if (!valid) {
+                throw new ArgumentSchemaError(p.name, validate.errors);
+            }
+        }
+        // Check there are no extra unknown arguments passed
+        for (const argName of Object.keys(args)) {
+            const param = params.find((p) => p.name === argName);
+            if (!param) {
+                throw new UnknownArgumentError(
+                    argName,
+                    params.map((p) => p.name)
+                );
+            }
+        }
+    }
+}
