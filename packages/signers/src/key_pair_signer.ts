@@ -3,7 +3,7 @@ import { KeyPair, PublicKey, KeyPairString } from '@near-js/crypto';
 import { Signer } from './signer';
 
 /**
- * Signs using in memory key store.
+ * Signs using in KeyPair.
  */
 export class KeyPairSigner extends Signer {
     private readonly key: KeyPair;
