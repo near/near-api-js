@@ -92,9 +92,10 @@ test('test toDecimal formats units', () => {
     expect(FT.toDecimal(710, 0)).toBe('0');
     expect(FT.toDecimal(BigInt(710), 2)).toBe('0');
 
-    expect(FT.toDecimal('0', 2)).toBe('0');
-    expect(FT.toDecimal(0, 2)).toBe('0');
-    expect(FT.toDecimal(BigInt(0), 2)).toBe('0');
+    expect(FT.toDecimal(123_456, '2')).toBe('0.12');
+    expect(FT.toDecimal(123_456, '4')).toBe('0.1234');
+    expect(FT.toDecimal(1999, '4')).toBe('0.0019');
+    expect(FT.toDecimal(1234, '6')).toBe('0.001234');
 
     expect(FT.toDecimal('710')).toBe('0.00071');
     expect(FT.toDecimal(710)).toBe('0.00071');
@@ -107,6 +108,8 @@ test('test toDecimal formats units', () => {
     expect(FT.toDecimal('0')).toBe('0');
     expect(FT.toDecimal(0)).toBe('0');
     expect(FT.toDecimal(BigInt(0))).toBe('0');
+    expect(FT.toDecimal(0, 2)).toBe('0');
+
 });
 
 test('test toDecimal fails on non-integer units', () => {
