@@ -8,8 +8,7 @@ import {
     encodeTransaction,
     encodeDelegateAction,
 } from '@near-js/transactions';
-import { Schema } from 'borsh';
-import { getPayloadHashForNEP413 } from './utils';
+import { Schema, serialize } from 'borsh';
 import { sha256 } from '@noble/hashes/sha256';
 
 export interface SignMessageParams {
@@ -67,7 +66,21 @@ export abstract class Signer {
         accountId: string,
         params: SignMessageParams
     ): Promise<SignedMessage> {
-        const hash = getPayloadHashForNEP413(params);
+        if (params.nonce.length !== 32)
+            throw new Error('Nonce must be exactly 32 bytes long');
+
+        // 2**31 + 413 == 2147484061
+        const PREFIX = 2147484061;
+        const serializedPrefix = serialize('u32', PREFIX);
+        const serializedParams = serialize(Nep413MessageSchema, params);
+
+        const serializedPayload = new Uint8Array(
+            serializedPrefix.length + serializedParams.length
+        );
+        serializedPayload.set(serializedPrefix);
+        serializedPayload.set(serializedParams, serializedPrefix.length);
+
+        const hash = new Uint8Array(sha256(serializedPayload));
 
         const signature = await this.signBytes(hash);
         return {

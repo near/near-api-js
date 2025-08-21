@@ -10,7 +10,9 @@ import {
     decodeSignedTransaction,
     buildDelegateAction,
 } from '@near-js/transactions';
-import { getPayloadHashForNEP413 } from '../src/utils';
+import { Nep413MessageSchema } from '../src/signer';
+import { serialize } from 'borsh';
+import { sha256 } from '@noble/hashes/sha256';
 
 global.TextEncoder = TextEncoder;
 
@@ -189,7 +191,7 @@ test('test sign NEP-413 message throws error on invalid nonce', async () => {
 });
 
 test('generate correct hash for NEP-413-compliant message', async () => {
-    const existingSerializedPayloadHash = getPayloadHashForNEP413({
+    const signMessageParams = {
         message: 'Hello NEAR!',
         recipient: 'round-toad.testnet',
         nonce: new Uint8Array(
@@ -198,7 +200,19 @@ test('generate correct hash for NEP-413-compliant message', async () => {
                 'base64'
             )
         ),
-    });
+    };
+
+    const serializedPrefix = serialize('u32', 2147484061);
+    const serializedParams = serialize(Nep413MessageSchema, signMessageParams);
+
+    const serializedPayload = new Uint8Array(
+        serializedPrefix.length + serializedParams.length
+    );
+    serializedPayload.set(serializedPrefix);
+    serializedPayload.set(serializedParams, serializedPrefix.length);
+
+    const existingSerializedPayloadHash = new Uint8Array(sha256(serializedPayload));
+
 
     const expectedSerializedPayloadHash = new Uint8Array([1, 152, 236, 223, 103, 218, 230, 0,
         34, 54, 210, 18, 244, 68, 108, 252,
@@ -229,7 +243,7 @@ test('verify signature generated using NEP-413 payload hash', async () => {
         },
     );
 
-    const existingSerializedPayloadHash = getPayloadHashForNEP413({
+    const signMessageParams = {
         message: 'Hello NEAR!',
         recipient: 'round-toad.testnet',
         nonce: new Uint8Array(
@@ -238,7 +252,17 @@ test('verify signature generated using NEP-413 payload hash', async () => {
                 'base64'
             )
         ),
-    });
+    };
+    const serializedPrefix = serialize('u32', 2147484061);
+    const serializedParams = serialize(Nep413MessageSchema, signMessageParams);
+
+    const serializedPayload = new Uint8Array(
+        serializedPrefix.length + serializedParams.length
+    );
+    serializedPayload.set(serializedPrefix);
+    serializedPayload.set(serializedParams, serializedPrefix.length);
+
+    const existingSerializedPayloadHash = new Uint8Array(sha256(serializedPayload));
 
     const publicKey = (await signer.getPublicKey());
 
