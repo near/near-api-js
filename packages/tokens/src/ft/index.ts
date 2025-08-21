@@ -31,7 +31,7 @@ abstract class BaseFT {
      * Converts indivisible units to a decimal number (represented as a string)
      * 
      * @param units The amount in indivisible units (e.g. "1234")
-     * @param precision Optional number of digits shown to the right of the decimal point
+     * @param precision (optional) number of digits shown to the right of the decimal point - rounded down
      * @returns The amount as a decimal string (e.g. "1.234")
      */
     public toDecimal(amount: bigint | string | number, precision?: bigint | string | number): string {
