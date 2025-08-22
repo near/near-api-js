@@ -34,7 +34,7 @@ abstract class BaseFT {
      * @param precision (optional) number of digits shown to the right of the decimal point - rounded down
      * @returns The amount as a decimal string (e.g. "1.234")
      */
-    public toDecimal(amount: bigint | string | number, precision?: bigint | string | number): string {
+    public toDecimal(amount: bigint | string | number, precision?: number): string {
         return formatAmount(amount, this.metadata.decimals, precision);
     }
 

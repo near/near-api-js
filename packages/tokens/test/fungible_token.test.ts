@@ -67,12 +67,12 @@ test('test toDecimal formats units', () => {
     expect(FT.toDecimal('1000000')).toBe('1');
     expect(FT.toDecimal(1_000_000)).toBe('1');
     expect(FT.toDecimal(BigInt(1_000_000))).toBe('1');
-    expect(FT.toDecimal('1000000', '2')).toBe('1');
+    expect(FT.toDecimal('1000000', 2)).toBe('1');
 
     expect(FT.toDecimal('1000001')).toBe('1.000001');
     expect(FT.toDecimal(1_000_001)).toBe('1.000001');
     expect(FT.toDecimal(BigInt(1_000_001))).toBe('1.000001');
-    expect(FT.toDecimal('1000001', '2')).toBe('1');
+    expect(FT.toDecimal('1000001', 2)).toBe('1');
 
     expect(FT.toDecimal('1234567')).toBe('1.234567');
     expect(FT.toDecimal(1_234_567)).toBe('1.234567');
@@ -88,14 +88,14 @@ test('test toDecimal formats units', () => {
     expect(FT.toDecimal(12_345_678, 2)).toBe('12.34');
     expect(FT.toDecimal(BigInt(12_345_678), 2)).toBe('12.34');
 
-    expect(FT.toDecimal('710', '2')).toBe('0');
+    expect(FT.toDecimal('710', 2)).toBe('0');
     expect(FT.toDecimal(710, 0)).toBe('0');
     expect(FT.toDecimal(BigInt(710), 2)).toBe('0');
 
-    expect(FT.toDecimal(123_456, '2')).toBe('0.12');
-    expect(FT.toDecimal(123_456, '4')).toBe('0.1234');
-    expect(FT.toDecimal(1999, '4')).toBe('0.0019');
-    expect(FT.toDecimal(1234, '6')).toBe('0.001234');
+    expect(FT.toDecimal(123_456, 2)).toBe('0.12');
+    expect(FT.toDecimal(123_456, 4)).toBe('0.1234');
+    expect(FT.toDecimal(1999, 4)).toBe('0.0019');
+    expect(FT.toDecimal(1234, 6)).toBe('0.001234');
 
     expect(FT.toDecimal('710')).toBe('0.00071');
     expect(FT.toDecimal(710)).toBe('0.00071');
