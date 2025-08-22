@@ -6,7 +6,7 @@ export const MAX_NOMINATION_EXP = 24;
 export function formatAmount(
     units: string | number | bigint,
     fracDigits: number,
-    precision: bigint | string | number = fracDigits
+    precision: number = fracDigits
 ): string {
     units = cleanupUnits(units);
 
