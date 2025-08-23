@@ -16,7 +16,7 @@ export function formatAmount(
         .substring(0, fracDigits)
         .padStart(fracDigits, '0');
 
-    fractionStr = fractionStr.substring(0, Number(precision));
+    fractionStr = fractionStr.substring(0, precision);
 
     return trimTrailingZeroes(`${wholeStr}.${fractionStr}`);
 }
