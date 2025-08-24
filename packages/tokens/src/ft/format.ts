@@ -5,15 +5,18 @@ export const MAX_NOMINATION_EXP = 24;
  */
 export function formatAmount(
     units: string | number | bigint,
-    fracDigits: number
+    fracDigits: number,
+    precision: number = fracDigits
 ): string {
     units = cleanupUnits(units);
 
     const wholeStr = units.substring(0, units.length - fracDigits) || '0';
-    const fractionStr = units
+    let fractionStr = units
         .substring(units.length - fracDigits)
         .substring(0, fracDigits)
         .padStart(fracDigits, '0');
+
+    fractionStr = fractionStr.substring(0, precision);
 
     return trimTrailingZeroes(`${wholeStr}.${fractionStr}`);
 }
