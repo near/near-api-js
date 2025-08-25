@@ -65,9 +65,8 @@ const {
     useGlobalContract,
 } = actionCreators;
 
-// Environment value is used in tests since near-sandbox runs old version of nearcore that doesn't work with near-final finality
-const DEFAULT_FINALITY = process.env.DEFAULT_FINALITY as Finality || "near-final";
-export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
+const DEFAULT_FINALITY: Finality =  "optimistic";
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "FINAL";
 
 export interface AccountState {
     balance: {
