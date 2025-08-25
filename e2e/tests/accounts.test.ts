@@ -214,3 +214,35 @@ test("account can send meta transaction with UseGlobalContract(CodeHash)", async
     // @ts-expect-error we checked the existance previously
     expect(outcome.status.SuccessValue).toBe("");
 });
+
+test(
+    "account can send multiple consecutive transfers without nonce collisions",
+    { repeats: 2 }, // run 3 times in total no matter what, to prevent flaky passes
+    async () => {
+        const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
+        const keypair = KeyPair.fromRandom("ed25519");
+        await rootAccount.createAccount(
+            newAccountId,
+            keypair.getPublicKey(),
+            NEAR.toUnits("1")
+        );
+
+        const account = new Account(
+            newAccountId,
+            rootAccount.provider,
+            new KeyPairSigner(keypair)
+        );
+
+        // First transfer
+        await account.transfer({
+            receiverId: account.accountId,
+            amount: NEAR.toUnits("0.001"),
+        });
+
+        // Second transfer
+        await account.transfer({
+            receiverId: account.accountId,
+            amount: NEAR.toUnits("0.001"),
+        });
+    }
+);

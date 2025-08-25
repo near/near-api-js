@@ -10,7 +10,7 @@
 		"clean": "rimraf lib/",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-		"test": "DEFAULT_FINALITY=optimistic jest",
+		"test": "jest",
 		"check-exports": "attw --pack ."
 	},
 	"keywords": [],
