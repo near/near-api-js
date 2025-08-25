@@ -7,7 +7,7 @@ import {
   SignedTransactionOptions,
   TransactionOptions,
 } from '../../interfaces';
-import { signTransaction } from '../sign_and_send';
+import { getSignerNonce, signTransaction } from '../sign_and_send';
 import { TransactionComposer } from './transaction_composer';
 import { Account } from '@near-js/accounts';
 
@@ -74,6 +74,7 @@ export class SignedTransactionComposer extends TransactionComposer {
 
   /**
    * Sign and send the composed transaction
+   * Fetch the block hash and nonce from the provider if not already set.
    * @param blockReference block to use for determining hash
    */
   async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
@@ -81,9 +82,15 @@ export class SignedTransactionComposer extends TransactionComposer {
     const { signedTransaction } = await this.toSignedTransaction({
       publicKey: this.publicKey || await this.account.getSigner().getPublicKey(),
       blockHash: this.blockHash || (await this.account.provider.viewBlock(blockReference))?.header?.hash,
+      nonce: this.nonce || (await getSignerNonce({ account: this.sender, deps: { rpcProvider: this.account.provider, signer: this.account.getSigner() } })) + 1n
     });
 
     const outcome = await this.account.provider.sendTransaction(signedTransaction);
+    if (outcome.final_execution_status !== 'NONE') {
+      this.nonce = signedTransaction.transaction.nonce + 1n;
+    } else if (!this.nonce) {
+      this.nonce = signedTransaction.transaction.nonce;
+    }
     return {
       outcome,
       result: getTransactionLastResult(outcome) as T,
