@@ -1,5 +1,11 @@
 # @near-js/tokens
 
+## 2.2.6
+
+### Patch Changes
+
+- [#1618](https://github.com/near/near-api-js/pull/1618) [`e278044`](https://github.com/near/near-api-js/commit/e2780447308b840b17c599a00057e54f94902047) Thanks [@AlexKushnir1](https://github.com/AlexKushnir1)! - Add optional 'precision' param in 'toDecimal' method to limit digits after the decimal point (rounded down), and add unit tests for it
+
 ## 2.2.5
 
 ## 2.2.4
