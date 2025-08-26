@@ -1,5 +1,23 @@
 # near-api-js
 
+## 6.2.6
+
+### Patch Changes
+
+- [#1620](https://github.com/near/near-api-js/pull/1620) [`0ce235d`](https://github.com/near/near-api-js/commit/0ce235db970fcca172ca31aa5272c16248957be4) Thanks [@denbite](https://github.com/denbite)! - Use `optimistic` finality as default one for RPC queries made from `Account`
+
+- Updated dependencies [[`0ce235d`](https://github.com/near/near-api-js/commit/0ce235db970fcca172ca31aa5272c16248957be4)]:
+  - @near-js/accounts@2.2.6
+  - @near-js/crypto@2.2.6
+  - @near-js/keystores@2.2.6
+  - @near-js/keystores-browser@2.2.6
+  - @near-js/keystores-node@2.2.6
+  - @near-js/providers@2.2.6
+  - @near-js/signers@2.2.6
+  - @near-js/transactions@2.2.6
+  - @near-js/types@2.2.6
+  - @near-js/utils@2.2.6
+
 ## 6.2.5
 
 ### Patch Changes
