@@ -50,6 +50,7 @@ import { viewFunction, viewState } from "./utils";
 
 import type { FungibleToken, NativeToken } from "@near-js/tokens";
 import { NEAR } from "@near-js/tokens";
+import depd from "depd";
 
 const {
     addKey,
@@ -772,7 +773,7 @@ export class Account {
     // DEPRECATED FUNCTIONS BELLOW - Please remove in next release
 
     /**
-     * @deprecated please use {@link Account.createSignedMetaTransaction} instead
+     * @deprecated Will be removed in the next major release, please use {@link Account.createSignedMetaTransaction} instead
      *
      * Compose and sign a SignedDelegate action to be executed in a transaction on behalf of this Account instance
      *
@@ -786,6 +787,9 @@ export class Account {
         blockHeightTtl,
         receiverId,
     }: SignedDelegateOptions): Promise<SignedDelegate> {
+        const deprecate = depd('Account.signedDelegate()');
+        deprecate('It will be removed in the next major release, please switch to Account.createSignedMetaTransaction()');
+
         const { header } = await this.provider.viewBlock({
             finality: DEFAULT_FINALITY,
         });
@@ -813,7 +817,7 @@ export class Account {
     }
 
     /**
-     * @deprecated, accounts no longer use Connections since it's deprecated too
+     * @deprecated Will be removed in the next major release, accounts no longer use Connections since it's deprecated too
      */
     public getConnection(): Connection {
         return new Connection("", this.provider, this.signer);
@@ -833,7 +837,7 @@ export class Account {
     }
 
     /**
-     * @deprecated please use {@link callFunction} instead
+     * @deprecated Will be removed in the next major release, please use {@link Account.callFunction} instead
      *
      * Execute a function call.
      * @param options The options for the function call.
@@ -857,6 +861,9 @@ export class Account {
         walletCallbackUrl,
         stringify,
     }: ChangeFunctionCallOptions): Promise<FinalExecutionOutcome> {
+        const deprecate = depd('Account.functionCall()');
+        deprecate('It will be removed in the next major release, please switch to Account.callFunction()');
+
         this.validateArgs(args);
 
         const stringifyArg =
@@ -880,11 +887,14 @@ export class Account {
     }
 
     /**
-     * @deprecated use instead {@link Provider.viewTransactionStatus}
+     * @deprecated Will be removed in the next major release, use instead {@link Provider.viewTransactionStatus}
      */
     public async getTransactionStatus(
         txHash: string | Uint8Array
     ): Promise<FinalExecutionOutcome> {
+        const deprecate = depd('Account.getTransactionStatus()');
+        deprecate('It will be removed in the next major release, please switch to Provider.viewTransactionStatus()');
+
         return this.provider.viewTransactionStatus(
             txHash,
             this.accountId, // accountId is used to determine on which shard to look for a tx
@@ -893,7 +903,7 @@ export class Account {
     }
 
     /**
-     * @deprecated use ${@link createSignedTransaction}
+     * @deprecated Will be removed in the next major release, use ${@link Account.createSignedTransaction}
      * Create a signed transaction which can be broadcast to the network
      * @param receiverId NEAR account receiving the transaction
      * @param actions list of actions to perform as part of the transaction
@@ -904,6 +914,9 @@ export class Account {
         actions: Action[],
         opts?: { signer: Signer }
     ): Promise<[Uint8Array, SignedTransaction]> {
+        const deprecate = depd('Account.signTransaction()');
+        deprecate('It will be removed in the next major release, please switch to Account.createSignedTransaction()');
+
         const signer = opts?.signer || this.signer;
 
         if (!signer) throw new Error(`Please set a signer`);
@@ -932,7 +945,8 @@ export class Account {
     }
 
     /**
-     * @deprecated instead please create a transaction with
+     * @deprecated Will be removed in the next major release, 
+     * instead please create a transaction with
      * the actions bellow and broadcast it to the network
      * 1. createAccount
      * 2. transfer some tokens
@@ -952,6 +966,9 @@ export class Account {
         data: Uint8Array,
         amount: bigint
     ): Promise<Account> {
+        const deprecate = depd('Account.createAndDeployContract()');
+        deprecate('It will be removed in the next major release');
+
         const accessKey = fullAccessKey();
         await this.signAndSendTransactionLegacy({
             receiverId: contractId,
@@ -966,7 +983,7 @@ export class Account {
     }
 
     /**
-     * @deprecated please instead use {@link transfer}
+     * @deprecated Will be removed in the next major release, please instead use {@link Account.transfer}
      *
      * @param receiverId NEAR account receiving Ⓝ
      * @param amount Amount to send in yoctoⓃ
@@ -975,6 +992,9 @@ export class Account {
         receiverId: string,
         amount: bigint
     ): Promise<FinalExecutionOutcome> {
+        const deprecate = depd('Account.sendMoney()');
+        deprecate('It will be removed in the next major release, please switch to Account.transfer()');
+
         return this.signAndSendTransactionLegacy({
             receiverId,
             actions: [transfer(amount)],
@@ -982,7 +1002,7 @@ export class Account {
     }
 
     /**
-     * @deprecated please instead use {@link signAndSendTransaction}
+     * @deprecated Will be removed in the next major release, please instead use {@link Account.signAndSendTransaction}
      *
      * Sign a transaction to perform a list of actions and broadcast it using the RPC API.
      * @see {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider }
@@ -998,6 +1018,9 @@ export class Account {
         { receiverId, actions, returnError }: SignAndSendTransactionOptions,
         opts?: { signer: Signer }
     ): Promise<FinalExecutionOutcome> {
+        const deprecate = depd('Account.signAndSendTransactionLegacy()');
+        deprecate('It will be removed in the next major release, please switch to Account.signAndSendTransaction()');
+
         let txHash, signedTx;
 
         // Default number of retries with different nonce before giving up on a transaction.
@@ -1087,7 +1110,7 @@ export class Account {
     accessKeyByPublicKeyCache: { [key: string]: AccessKeyView } = {};
 
     /**
-     * @deprecated, accounts will no longer handle keystores
+     * @deprecated Will be removed in the next major release, accounts will no longer handle keystores
      *
      * Finds the {@link AccessKeyView} associated with the accounts {@link PublicKey} stored in the {@link "@near-js/keystores".keystore.KeyStore | Keystore}.
      *
@@ -1100,6 +1123,9 @@ export class Account {
         receiverId: string,
         actions: Action[]
     ): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
+        const deprecate = depd('Account.findAccessKey()');
+        deprecate('It will be removed in the next major release');
+
         if (!this.signer) throw new Error(`Please set a signer`);
 
         const publicKey = await this.signer.getPublicKey();
@@ -1153,7 +1179,7 @@ export class Account {
     }
 
     /**
-     * @deprecated please use {@link addFullAccessKey} or {@link addFunctionAccessKey}
+     * @deprecated Will be removed in the next major release, please use {@link Account.addFullAccessKey} or {@link Account.addFunctionAccessKey}
      *
      * @see [https://docs.near.org/concepts/basics/accounts/access-keys](https://docs.near.org/concepts/basics/accounts/access-keys)
      * @todo expand this API to support more options.
@@ -1168,6 +1194,9 @@ export class Account {
         methodNames?: string | string[],
         amount?: bigint
     ): Promise<FinalExecutionOutcome> {
+        const deprecate = depd('Account.addKey()');
+        deprecate('It will be removed in the next major release, please switch to either Account.addFullAccessKey(), or Account.addFunctionAccessKey()');
+
         if (!methodNames) {
             methodNames = [];
         }
@@ -1187,7 +1216,7 @@ export class Account {
     }
 
     /**
-     * @deprecated please use {@link Provider.callFunction} instead
+     * @deprecated Will be removed in the next major release, please use {@link Provider.callFunction} instead
      *
      * Invoke a contract view function using the RPC API.
      * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
@@ -1202,11 +1231,13 @@ export class Account {
      * @returns {Promise<any>}
      */
     async viewFunction(options: ViewFunctionCallOptions): Promise<any> {
+        const deprecate = depd('Account.viewFunction()');
+        deprecate('It will be removed in the next major release, please switch to either Provider.callFunction()');
         return await viewFunction(this.getConnection(), options);
     }
 
     /**
-     * @deprecated please use {@link getContractState} instead
+     * @deprecated Will be removed in the next major release, please use {@link Account.getContractState} instead
      *
      * Returns the state (key value pairs) of this account's contract based on the key prefix.
      * Pass an empty string for prefix if you would like to return the entire state.
@@ -1219,6 +1250,9 @@ export class Account {
         prefix: string | Uint8Array,
         blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<Array<{ key: Buffer; value: Buffer }>> {
+        const deprecate = depd('Account.viewState()');
+        deprecate('It will be removed in the next major release, please switch to either Account.getContractState()');
+
         return await viewState(
             this.getConnection(),
             this.accountId,
@@ -1228,13 +1262,16 @@ export class Account {
     }
 
     /**
-     * @deprecated please use {@link getAccessKeyList} instead
+     * @deprecated Will be removed in the next major release, please use {@link Account.getAccessKeyList} instead
      *
      * Get all access keys for the account
      * @see [https://docs.near.org/api/rpc/access-keys#view-access-key-list](https://docs.near.org/api/rpc/access-keys#view-access-key-list)
      *
      */
     async getAccessKeys(): Promise<AccessKeyInfoView[]> {
+        const deprecate = depd('Account.getAccessKeys()');
+        deprecate('It will be removed in the next major release, please switch to either Account.getAccessKeyList()');
+
         const response = await this.provider.query<AccessKeyList>({
             request_type: "view_access_key_list",
             account_id: this.accountId,
@@ -1279,12 +1316,15 @@ export class Account {
     }
 
     /**
-     * @deprecated please use {@link getState} instead
+     * @deprecated Will be removed in the next major release, please use {@link Account.getState} instead
      *
      * Returns basic NEAR account information via the `view_account` RPC query method
      * @see [https://docs.near.org/api/rpc/contracts#view-account](https://docs.near.org/api/rpc/contracts#view-account)
      */
     async state(): Promise<AccountView> {
+        const deprecate = depd('Account.state()');
+        deprecate('It will be removed in the next major release, please switch to either Account.getState()');
+
         return this.provider.query<AccountView>({
             request_type: "view_account",
             account_id: this.accountId,
@@ -1293,10 +1333,13 @@ export class Account {
     }
 
     /**
-     * @deprecated please use {@link getState} instead
+     * @deprecated Will be removed in the next major release, please use {@link Account.getState} instead
      *
      */
     async getAccountBalance(): Promise<AccountBalance> {
+        const deprecate = depd('Account.getAccountBalance()');
+        deprecate('It will be removed in the next major release, please switch to either Account.getState()');
+
         const protocolConfig = await this.provider.experimental_protocolConfig({
             finality: DEFAULT_FINALITY,
         });
@@ -1322,12 +1365,15 @@ export class Account {
     /**
      * Returns the NEAR tokens balance and validators of a given account that is delegated to the staking pools that are part of the validators set in the current epoch.
      *
-     * @deprecated
+     * @deprecated Will be removed in the next major release
      *
      * NOTE: If the tokens are delegated to a staking pool that is currently on pause or does not have enough tokens to participate in validation, they won't be accounted for.
      * @returns {Promise<ActiveDelegatedStakeBalance>}
      */
     async getActiveDelegatedStakeBalance(): Promise<ActiveDelegatedStakeBalance> {
+        const deprecate = depd('Account.getActiveDelegatedStakeBalance()');
+        deprecate('It will be removed in the next major release');
+
         const block = await this.provider.block({
             finality: DEFAULT_FINALITY,
         });

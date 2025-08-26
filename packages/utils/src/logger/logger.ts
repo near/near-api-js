@@ -13,11 +13,14 @@ const DEFAULT_LOG_LEVELS: LogLevel[] = [
 const DEFAULT_LOGGER = new ConsoleLogger(DEFAULT_LOG_LEVELS);
 
 /**
+ * @deprecated Will be removed in the next major release
+ * 
  * Used to log the library messages
  */
 export class Logger {
     protected static instanceRef?: LoggerService = DEFAULT_LOGGER;
 
+    /** @deprecated Will be removed in the next major release */
     public static overrideLogger = (logger?: LoggerService): void => {
         this.instanceRef = logger;
     };

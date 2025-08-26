@@ -2,14 +2,23 @@ import { PublicKey } from '@near-js/crypto';
 
 import { Connection } from './connection';
 import { Account } from './account';
+import depd from 'depd';
 
 /**
+ * @deprecated Will be removed in the next major release
+ * 
  * Account creator provides an interface for implementations to actually create accounts
  */
 export abstract class AccountCreator {
+    constructor() {
+        const deprecate = depd('AccountCreator');
+        deprecate(`${this.constructor.name} is deprecated and will be removed in the next major release`);
+    }
+
     abstract createAccount(newAccountId: string, publicKey: PublicKey): Promise<void>;
 }
 
+/** @deprecated Will be removed in the next major release */
 export class LocalAccountCreator extends AccountCreator {
     readonly masterAccount: Account;
     readonly initialBalance: bigint;
@@ -31,6 +40,7 @@ export class LocalAccountCreator extends AccountCreator {
     }
 }
 
+/** @deprecated Will be removed in the next major release */
 export class UrlAccountCreator extends AccountCreator {
     readonly connection: Connection;
     readonly helperUrl: string;

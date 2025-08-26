@@ -1,5 +1,8 @@
 import type { LoggerService, LogLevel } from './interface';
 
+/**
+ * @deprecated Will be removed in the next major release
+ */
 export class ConsoleLogger implements LoggerService {
     public constructor(protected readonly logLevels: LogLevel[]) {}
 
