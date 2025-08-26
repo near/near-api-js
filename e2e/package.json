@@ -5,7 +5,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "test": "DEFAULT_FINALITY=optimistic vitest run"
+        "test": "vitest run"
     },
     "keywords": [],
     "author": "",
