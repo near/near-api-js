@@ -66,7 +66,7 @@ const {
 } = actionCreators;
 
 const DEFAULT_FINALITY: Finality =  "optimistic";
-export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "FINAL";
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
 
 export interface AccountState {
     balance: {
