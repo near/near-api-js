@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/providers",
-	"version": "2.2.5",
+	"version": "2.2.6",
 	"description": "Library of implementations for interfacing with the NEAR blockchain",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
