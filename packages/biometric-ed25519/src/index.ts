@@ -87,7 +87,7 @@ export const createKey = async (username: string): Promise<KeyPair> => {
             const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
             const secretKey = sha256.create().update(Buffer.from(publicKeyBytes)).digest();
             const pubKey = ed25519.getPublicKey(secretKey);
-            return KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]))) as KeyPairString);
+            return KeyPair.fromString(makeEd25519KeyString(secretKey, pubKey));
         });
 };
 
@@ -130,8 +130,8 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
             const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
             const secondEDSecret = sha256.create().update(Buffer.from(correctPKs[1])).digest();
             const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
-            const firstKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)]))) as KeyPairString);
-            const secondKeyPair = KeyPair.fromString(baseEncode(new Uint8Array(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)]))) as KeyPairString);
+            const firstKeyPair = KeyPair.fromString(makeEd25519KeyString(firstEDSecret, firstEDPublic));
+            const secondKeyPair = KeyPair.fromString(makeEd25519KeyString(secondEDSecret, secondEDPublic));
             return [firstKeyPair, secondKeyPair];
         });
 };
@@ -150,3 +150,18 @@ export const isDeviceSupported = async (): Promise<boolean> => {
         return false;
     }
 };
+
+/**
+ * Combines a secret key and public key into a single string
+ * prefixed with "ed25519:", compatible with `KeyPair.fromString`.
+ *
+ * This is used for passkey-derived keys to ensure they can be
+ * correctly parsed and reconstructed as a `KeyPairEd25519`.
+ *
+ * @param secretKey - The 32-byte secret key.
+ * @param publicKey - The 32-byte public key.
+ * @returns A KeyPairString with the "ed25519:" prefix.
+ */
+export function makeEd25519KeyString(secretKey: Uint8Array, publicKey: Uint8Array): KeyPairString {
+    return ('ed25519:' + baseEncode(Buffer.concat([Buffer.from(secretKey), Buffer.from(publicKey)]))) as KeyPairString;
+}
