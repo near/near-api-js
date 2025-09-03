@@ -1,5 +1,27 @@
 # near-api-js
 
+## 6.3.0
+
+### Minor Changes
+
+- [#1624](https://github.com/near/near-api-js/pull/1624) [`0bef0bd`](https://github.com/near/near-api-js/commit/0bef0bdc455eef0fdb690bb7026ec8c5f53d5d93) Thanks [@denbite](https://github.com/denbite)! - Introduce `TypedContract` with type-safe ABI support
+
+### Patch Changes
+
+- [#1621](https://github.com/near/near-api-js/pull/1621) [`0a99da4`](https://github.com/near/near-api-js/commit/0a99da4d40cb2308833d8372f153562b64aa6ceb) Thanks [@denbite](https://github.com/denbite)! - Add deprecation annotations and warnings to functions/classes that will be removed in the next major release
+
+- Updated dependencies [[`0bef0bd`](https://github.com/near/near-api-js/commit/0bef0bdc455eef0fdb690bb7026ec8c5f53d5d93), [`0a99da4`](https://github.com/near/near-api-js/commit/0a99da4d40cb2308833d8372f153562b64aa6ceb)]:
+  - @near-js/accounts@2.3.0
+  - @near-js/types@2.3.0
+  - @near-js/utils@2.3.0
+  - @near-js/crypto@2.3.0
+  - @near-js/keystores@2.3.0
+  - @near-js/keystores-browser@2.3.0
+  - @near-js/keystores-node@2.3.0
+  - @near-js/providers@2.3.0
+  - @near-js/signers@2.3.0
+  - @near-js/transactions@2.3.0
+
 ## 6.2.6
 
 ### Patch Changes
