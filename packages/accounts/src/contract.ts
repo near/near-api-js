@@ -21,6 +21,8 @@ import { IntoConnection } from "./interface";
 import { Connection } from "./connection";
 import { viewFunction } from "./utils";
 
+import type { TypedContract } from "./typed_contract";
+
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
     return {
