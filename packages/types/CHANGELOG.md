@@ -1,5 +1,11 @@
 # @near-js/types
 
+## 2.3.0
+
+### Patch Changes
+
+- [#1621](https://github.com/near/near-api-js/pull/1621) [`0a99da4`](https://github.com/near/near-api-js/commit/0a99da4d40cb2308833d8372f153562b64aa6ceb) Thanks [@denbite](https://github.com/denbite)! - Add deprecation annotations and warnings to functions/classes that will be removed in the next major release
+
 ## 2.2.6
 
 ## 2.2.5
