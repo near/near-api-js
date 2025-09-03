@@ -123,6 +123,8 @@ export interface ContractMethods {
 }
 
 /**
+ * @deprecated It will be removed in the next major release, please switch to {@link TypedContract} with type-safe ABI support
+ *
  * Defines a smart contract on NEAR including the change (mutable) and view (non-mutable) methods
  *
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#contract](https://docs.near.org/tools/near-api-js/quick-reference#contract)
@@ -173,6 +175,11 @@ export class Contract {
         contractId: string,
         options: ContractMethods
     ) {
+        const deprecate = depd("new Contract()");
+        deprecate(
+            'It will be removed in the next major release, please switch to "TypedContract" with type-safe ABI support'
+        );
+
         this.connection = connection.getConnection();
         if (connection instanceof Account) {
             const deprecate = depd(
