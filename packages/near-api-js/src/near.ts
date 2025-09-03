@@ -19,7 +19,9 @@ import { KeyStore } from '@near-js/keystores';
 import { Signer } from '@near-js/signers';
 import { LoggerService } from '@near-js/utils';
 import { Provider } from '@near-js/providers';
+import depd from 'depd';
 
+/** @deprecated Will be removed in the next major release */
 export interface NearConfig {
     /** Holds {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} for signing transactions */
     keyStore?: KeyStore;
@@ -86,6 +88,8 @@ export interface NearConfig {
 }
 
 /**
+ * @deprecated Will be removed in the next major release
+ *
  * This is the main class developers should use to interact with NEAR.
  * @example
  * ```js
@@ -98,6 +102,9 @@ export class Near {
     readonly accountCreator: AccountCreator;
 
     constructor(config: NearConfig) {
+        const deprecate = depd('new Near(config)');
+        deprecate(`It will be removed in the next major release, please switch to using Account directly`);
+
         this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,

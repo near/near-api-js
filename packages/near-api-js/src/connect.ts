@@ -37,6 +37,7 @@ import { Near, NearConfig } from './near';
 import { Logger } from '@near-js/utils';
 import depd from 'depd';
 
+/** @deprecated Will be removed in the next major release */
 export interface ConnectConfig extends NearConfig {
     /**
      * Initialize an {@link InMemoryKeyStore} by reading the file at keyPath.
@@ -45,7 +46,7 @@ export interface ConnectConfig extends NearConfig {
 }
 
 /**
- * @deprecated
+ * @deprecated Will be removed in the next major release
  * 
  * Initialize connection to Near network.
  * @param config The configuration object for connecting to NEAR Protocol.
@@ -71,7 +72,7 @@ export interface ConnectConfig extends NearConfig {
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
     const deprecate = depd('connect(config)');
-    deprecate('`connect` is no longer maintained, please switch to using `@near-js/*` packages');
+    deprecate(`It will be removed in the next major release, please switch to using Account directly`);
 
     if (config.logger === false) {
         // disables logging
