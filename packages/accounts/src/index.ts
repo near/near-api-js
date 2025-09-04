@@ -24,6 +24,8 @@ export {
     Contract
 } from './contract';
 export type { ContractMethods } from './contract';
+export type { AbiRoot } from './abi_types';
+export { TypedContract } from './typed_contract';
 export {
     ArgumentSchemaError,
     ConflictingOptions,
