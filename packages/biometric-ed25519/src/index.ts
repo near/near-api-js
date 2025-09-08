@@ -17,7 +17,7 @@ import {
     sanitizeGetKeyResponse
 } from './utils';
 import { Fido2 } from './fido2';
-import { AssertionResponse } from './index.d';
+import type { AssertionResponse } from './type';
 import { KeyPairString } from '@near-js/crypto';
 
 const CHALLENGE_TIMEOUT_MS = 90 * 1000;
