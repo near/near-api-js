@@ -1,4 +1,4 @@
-import base64 from '@hexagon/base64';
+import { base64 } from '@hexagon/base64';
 import { Fido2Lib } from 'fido2-lib';
 import cbor from 'cbor-js';
 
