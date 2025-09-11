@@ -1,5 +1,19 @@
 # @near-js/client
 
+## 2.3.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/accounts@2.3.2
+  - @near-js/crypto@2.3.2
+  - @near-js/keystores@2.3.2
+  - @near-js/providers@2.3.2
+  - @near-js/signers@2.3.2
+  - @near-js/transactions@2.3.2
+  - @near-js/types@2.3.2
+  - @near-js/utils@2.3.2
+
 ## 2.3.1
 
 ### Patch Changes

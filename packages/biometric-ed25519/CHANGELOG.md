@@ -1,5 +1,15 @@
 # @near-js/biometric-ed25519
 
+## 2.3.2
+
+### Patch Changes
+
+- [#1625](https://github.com/near/near-api-js/pull/1625) [`91ca38c`](https://github.com/near/near-api-js/commit/91ca38cfbb275613376f29343e74487bc0f896c3) Thanks [@SmolinPavel](https://github.com/SmolinPavel)! - Ensure passkey-derived keys are prefixed with ed25519
+
+- Updated dependencies []:
+  - @near-js/crypto@2.3.2
+  - @near-js/utils@2.3.2
+
 ## 2.3.1
 
 ### Patch Changes
