@@ -3,7 +3,7 @@ import { ed25519 } from '@noble/curves/ed25519';
 import { sha256 } from '@noble/hashes/sha256';
 import { Buffer } from 'buffer';
 import asn1 from 'asn1-parser';
-import { KeyPair } from '@near-js/crypto';
+import { KeyPair, KeyPairEd25519 } from '@near-js/crypto';
 import { baseEncode } from '@near-js/utils';
 import {
     validateUsername,
@@ -18,7 +18,6 @@ import {
 } from './utils';
 import { Fido2 } from './fido2';
 import { AssertionResponse } from './index.d';
-import { KeyPairString } from '@near-js/crypto';
 
 const CHALLENGE_TIMEOUT_MS = 90 * 1000;
 const RP_NAME = 'NEAR_API_JS_WEBAUTHN';
@@ -87,7 +86,7 @@ export const createKey = async (username: string): Promise<KeyPair> => {
             const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
             const secretKey = sha256.create().update(Buffer.from(publicKeyBytes)).digest();
             const pubKey = ed25519.getPublicKey(secretKey);
-            return KeyPair.fromString(makeEd25519KeyString(secretKey, pubKey));
+            return new KeyPairEd25519(baseEncode(Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)])));
         });
 };
 
@@ -130,8 +129,8 @@ export const getKeys = async (username: string): Promise<[KeyPair, KeyPair]> => 
             const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
             const secondEDSecret = sha256.create().update(Buffer.from(correctPKs[1])).digest();
             const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
-            const firstKeyPair = KeyPair.fromString(makeEd25519KeyString(firstEDSecret, firstEDPublic));
-            const secondKeyPair = KeyPair.fromString(makeEd25519KeyString(secondEDSecret, secondEDPublic));
+            const firstKeyPair = new KeyPairEd25519(baseEncode(Buffer.concat([Buffer.from(firstEDSecret), Buffer.from(firstEDPublic)])));
+            const secondKeyPair = new KeyPairEd25519(baseEncode(Buffer.concat([Buffer.from(secondEDSecret), Buffer.from(secondEDPublic)])));
             return [firstKeyPair, secondKeyPair];
         });
 };
@@ -150,18 +149,3 @@ export const isDeviceSupported = async (): Promise<boolean> => {
         return false;
     }
 };
-
-/**
- * Combines a secret key and public key into a single string
- * prefixed with "ed25519:", compatible with `KeyPair.fromString`.
- *
- * This is used for passkey-derived keys to ensure they can be
- * correctly parsed and reconstructed as a `KeyPairEd25519`.
- *
- * @param secretKey - The 32-byte secret key.
- * @param publicKey - The 32-byte public key.
- * @returns A KeyPairString with the "ed25519:" prefix.
- */
-export function makeEd25519KeyString(secretKey: Uint8Array, publicKey: Uint8Array): KeyPairString {
-    return ('ed25519:' + baseEncode(Buffer.concat([Buffer.from(secretKey), Buffer.from(publicKey)]))) as KeyPairString;
-}
