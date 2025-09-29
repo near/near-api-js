@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { MultiToken } from '../src';
+import { MultiTokenContract } from '../src';
 
 function createMockAccount(accountId: string) {
     const calls: any[] = [];
@@ -30,7 +30,7 @@ function createMockAccount(accountId: string) {
     };
 }
 
-const MT = new MultiToken('mt.contract.testnet');
+const MT = new MultiTokenContract('mt.contract.testnet');
 
 test('getBalance calls view and returns bigint', async () => {
     const mock = createMockAccount('alice.testnet');

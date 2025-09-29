@@ -1,6 +1,6 @@
 import type { AccountLike } from '@near-js/types';
 
-export class MultiToken {
+export class MultiTokenContract {
     public readonly accountId: string;
 
     constructor(accountId: string) {
