@@ -1,7 +1,7 @@
 {
   "name": "@near-js/cookbook",
   "private": true,
-  "version": "2.3.0",
+  "version": "2.3.2",
   "description": "",
   "main": "index.ts",
   "type": "module",

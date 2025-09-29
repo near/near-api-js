@@ -1,5 +1,23 @@
 # @near-js/transactions
 
+## 2.3.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.3.2
+  - @near-js/types@2.3.2
+  - @near-js/utils@2.3.2
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.3.1
+  - @near-js/types@2.3.1
+  - @near-js/utils@2.3.1
+
 ## 2.3.0
 
 ### Patch Changes
