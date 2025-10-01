@@ -84,6 +84,8 @@ type RequestOptions = {
     backoff: number;
 }
 
+const DEFAULT_FINALITY = 'optimistic';
+
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
  * @see [https://github.com/near/nearcore/tree/master/chain/jsonrpc](https://github.com/near/nearcore/tree/master/chain/jsonrpc)
@@ -123,7 +125,7 @@ export class JsonRpcProvider implements Provider {
     }
 
     public async getCurrentEpochSeatPrice(): Promise<bigint> {
-        const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: 'final' });
+        const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
         const { current_validators: currentValidators } = await this.viewValidators();
 
@@ -134,7 +136,7 @@ export class JsonRpcProvider implements Provider {
     }
 
     public async getNextEpochSeatPrice(): Promise<bigint> {
-        const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: 'final' });
+        const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
         const { next_validators: nextValidators } = await this.viewValidators();
 
@@ -147,7 +149,7 @@ export class JsonRpcProvider implements Provider {
     public async viewAccessKey(
         accountId: string,
         publicKey: PublicKey | string,
-        finalityQuery: FinalityReference = { finality: 'final' }
+        finalityQuery: FinalityReference = { finality: DEFAULT_FINALITY }
     ): Promise<AccessKeyView> {
         const data = await (this as Provider).query<AccessKeyViewRaw>({
             ...finalityQuery,
@@ -164,7 +166,7 @@ export class JsonRpcProvider implements Provider {
 
     public async viewAccessKeyList(
         accountId: string,
-        finalityQuery: FinalityReference = { finality: 'final' }
+        finalityQuery: FinalityReference = { finality: DEFAULT_FINALITY }
     ): Promise<AccessKeyList> {
         return (this as Provider).query<AccessKeyList>({
             ...finalityQuery,
@@ -175,7 +177,7 @@ export class JsonRpcProvider implements Provider {
 
     public async viewAccount(
         accountId: string,
-        blockQuery: BlockReference = { finality: 'final' }
+        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<AccountView> {
         const data = await (this as Provider).query<AccountViewRaw>({
             ...blockQuery,
@@ -192,7 +194,7 @@ export class JsonRpcProvider implements Provider {
 
     public async viewContractCode(
         contractId: string,
-        blockQuery: BlockReference = { finality: 'final' }
+        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<ContractCodeView> {
         const data = await (this as Provider).query<ContractCodeViewRaw>({
             ...blockQuery,
@@ -209,7 +211,7 @@ export class JsonRpcProvider implements Provider {
     public async viewContractState(
         contractId: string,
         prefix?: string,
-        blockQuery: BlockReference = { finality: 'final' }
+        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<ContractStateView> {
         const prefixBase64 = Buffer.from(prefix || '').toString('base64');
 
@@ -225,7 +227,7 @@ export class JsonRpcProvider implements Provider {
         contractId: string,
         method: string,
         args: Record<string, unknown>,
-        blockQuery: BlockReference = { finality: 'final' }
+        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<T | undefined> {
         const { result } = await this.callFunctionRaw(
             contractId,
@@ -249,7 +251,7 @@ export class JsonRpcProvider implements Provider {
         contractId: string,
         method: string,
         args: Record<string, unknown>,
-        blockQuery: BlockReference = { finality: 'final' }
+        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<CallContractViewFunctionResultRaw> {
         const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
 
