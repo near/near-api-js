@@ -1,5 +1,27 @@
 # @near-js/biometric-ed25519
 
+## 2.3.2
+
+### Patch Changes
+
+- [#1625](https://github.com/near/near-api-js/pull/1625) [`91ca38c`](https://github.com/near/near-api-js/commit/91ca38cfbb275613376f29343e74487bc0f896c3) Thanks [@SmolinPavel](https://github.com/SmolinPavel)! - Ensure passkey-derived keys are prefixed with ed25519
+
+- Updated dependencies []:
+  - @near-js/crypto@2.3.2
+  - @near-js/utils@2.3.2
+
+## 2.3.1
+
+### Patch Changes
+
+- [#1629](https://github.com/near/near-api-js/pull/1629) [`2967af5`](https://github.com/near/near-api-js/commit/2967af50d2d940b9ff22f43cd2dccf9c09fc4f77) Thanks [@denbite](https://github.com/denbite)! - Fix missing type definitions in editors caused by broken `index.d.ts`
+
+- [#1629](https://github.com/near/near-api-js/pull/1629) [`9114407`](https://github.com/near/near-api-js/commit/9114407b629b398f564742edc9ecf0972cdf5f84) Thanks [@denbite](https://github.com/denbite)! - Fix error on package import by correcting `@hexagon/base64` import
+
+- Updated dependencies []:
+  - @near-js/crypto@2.3.1
+  - @near-js/utils@2.3.1
+
 ## 2.3.0
 
 ### Patch Changes

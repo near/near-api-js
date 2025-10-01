@@ -5,7 +5,7 @@ import { getNonce } from '../view';
 import { BlockReference } from '@near-js/types';
 import { SerializedReturnValue } from '@near-js/types/lib/esm/provider/response';
 
-const DEFAULT_FINALITY: BlockReference = { finality: 'final' };
+const DEFAULT_FINALITY: BlockReference = { finality: 'optimistic' };
 
 /**
  * Sign a transaction, returning the signed transaction and encoded hash
