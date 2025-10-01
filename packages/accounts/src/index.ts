@@ -41,3 +41,5 @@ export type {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
 } from './interface';
+export { LocalViewExecution } from './local-view-execution/index';
+export { Runtime } from './local-view-execution/runtime';
