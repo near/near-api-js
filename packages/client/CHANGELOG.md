@@ -1,5 +1,21 @@
 # @near-js/client
 
+## 2.3.3
+
+### Patch Changes
+
+- [#1637](https://github.com/near/near-api-js/pull/1637) [`1a89d12`](https://github.com/near/near-api-js/commit/1a89d12dd74c9100058f6a7d6238a14a3bea4be4) Thanks [@gagdiez](https://github.com/gagdiez)! - Using optimistic finality by default in providers
+
+- Updated dependencies [[`1a89d12`](https://github.com/near/near-api-js/commit/1a89d12dd74c9100058f6a7d6238a14a3bea4be4)]:
+  - @near-js/providers@2.3.3
+  - @near-js/accounts@2.3.3
+  - @near-js/crypto@2.3.3
+  - @near-js/keystores@2.3.3
+  - @near-js/signers@2.3.3
+  - @near-js/transactions@2.3.3
+  - @near-js/types@2.3.3
+  - @near-js/utils@2.3.3
+
 ## 2.3.2
 
 ### Patch Changes
