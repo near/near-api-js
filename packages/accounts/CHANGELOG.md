@@ -1,5 +1,78 @@
 # @near-js/accounts
 
+## 2.3.3
+
+### Patch Changes
+
+- Updated dependencies [[`1a89d12`](https://github.com/near/near-api-js/commit/1a89d12dd74c9100058f6a7d6238a14a3bea4be4)]:
+  - @near-js/providers@2.3.3
+  - @near-js/crypto@2.3.3
+  - @near-js/signers@2.3.3
+  - @near-js/tokens@2.3.3
+  - @near-js/transactions@2.3.3
+  - @near-js/types@2.3.3
+  - @near-js/utils@2.3.3
+
+## 2.3.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.3.2
+  - @near-js/providers@2.3.2
+  - @near-js/signers@2.3.2
+  - @near-js/tokens@2.3.2
+  - @near-js/transactions@2.3.2
+  - @near-js/types@2.3.2
+  - @near-js/utils@2.3.2
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.3.1
+  - @near-js/providers@2.3.1
+  - @near-js/signers@2.3.1
+  - @near-js/tokens@2.3.1
+  - @near-js/transactions@2.3.1
+  - @near-js/types@2.3.1
+  - @near-js/utils@2.3.1
+
+## 2.3.0
+
+### Minor Changes
+
+- [#1624](https://github.com/near/near-api-js/pull/1624) [`0bef0bd`](https://github.com/near/near-api-js/commit/0bef0bdc455eef0fdb690bb7026ec8c5f53d5d93) Thanks [@denbite](https://github.com/denbite)! - Introduce `TypedContract` with type-safe ABI support
+
+### Patch Changes
+
+- [#1621](https://github.com/near/near-api-js/pull/1621) [`0a99da4`](https://github.com/near/near-api-js/commit/0a99da4d40cb2308833d8372f153562b64aa6ceb) Thanks [@denbite](https://github.com/denbite)! - Add deprecation annotations and warnings to functions/classes that will be removed in the next major release
+
+- Updated dependencies [[`0a99da4`](https://github.com/near/near-api-js/commit/0a99da4d40cb2308833d8372f153562b64aa6ceb)]:
+  - @near-js/types@2.3.0
+  - @near-js/utils@2.3.0
+  - @near-js/tokens@2.3.0
+  - @near-js/crypto@2.3.0
+  - @near-js/providers@2.3.0
+  - @near-js/signers@2.3.0
+  - @near-js/transactions@2.3.0
+
+## 2.2.6
+
+### Patch Changes
+
+- [#1620](https://github.com/near/near-api-js/pull/1620) [`0ce235d`](https://github.com/near/near-api-js/commit/0ce235db970fcca172ca31aa5272c16248957be4) Thanks [@denbite](https://github.com/denbite)! - Use `optimistic` finality as default one for RPC queries made from `Account`
+
+- Updated dependencies [[`e278044`](https://github.com/near/near-api-js/commit/e2780447308b840b17c599a00057e54f94902047)]:
+  - @near-js/tokens@2.2.6
+  - @near-js/crypto@2.2.6
+  - @near-js/providers@2.2.6
+  - @near-js/signers@2.2.6
+  - @near-js/transactions@2.2.6
+  - @near-js/types@2.2.6
+  - @near-js/utils@2.2.6
+
 ## 2.2.5
 
 ### Patch Changes

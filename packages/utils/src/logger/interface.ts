@@ -1,5 +1,6 @@
 export type LogLevel = 'log' | 'error' | 'warn' | 'debug' | 'verbose' | 'fatal';
 
+/** @deprecated Will be removed in the next major release */
 export interface LoggerService {
     /**
      * Write a 'log' level log.

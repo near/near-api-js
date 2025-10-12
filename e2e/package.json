@@ -5,13 +5,14 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "test": "DEFAULT_FINALITY=optimistic vitest run"
+        "test": "vitest run"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
         "@near-js/accounts": "file:../packages/accounts",
+        "@near-js/biometric-ed25519": "file:../packages/biometric-ed25519",
         "@near-js/crypto": "file:../packages/crypto",
         "@near-js/providers": "file:../packages/providers",
         "@near-js/signers": "file:../packages/signers",

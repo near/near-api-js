@@ -45,7 +45,7 @@ function getSigner(config: any): Signer {
 }
 
 /**
- * @deprecated
+ * @deprecated Will be removed in the next major release
  * 
  * Connects an account to a given network via a given provider
  */

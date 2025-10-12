@@ -1,3 +1,4 @@
+/** @deprecated Will be removed in the next major release */
 export enum MultisigDeleteRequestRejectionError {
     CANNOT_DESERIALIZE_STATE = 'Cannot deserialize the contract state',
     MULTISIG_NOT_INITIALIZED = 'Smart contract panicked: Multisig contract should be initialized before usage',
@@ -6,6 +7,7 @@ export enum MultisigDeleteRequestRejectionError {
     METHOD_NOT_FOUND = 'Contract method is not found'
 }
 
+/** @deprecated Will be removed in the next major release */
 export enum MultisigStateStatus {
     INVALID_STATE,
     STATE_NOT_INITIALIZED,

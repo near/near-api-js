@@ -34,7 +34,7 @@ export class SignedTransactionComposer extends TransactionComposer {
   async toSignedDelegateAction(transaction?: MetaTransactionOptions) {
     let maxBlockHeight = transaction?.maxBlockHeight;
     if (!maxBlockHeight) {
-      const { header } = await this.account.provider.viewBlock({ finality: 'final' });
+      const { header } = await this.account.provider.viewBlock({ finality: 'optimistic' });
       const ttl = transaction?.blockHeightTtl || DEFAULT_META_TRANSACTION_BLOCK_HEIGHT_TTL;
       maxBlockHeight = BigInt(header.height) + ttl;
     }
@@ -76,7 +76,7 @@ export class SignedTransactionComposer extends TransactionComposer {
    * Sign and send the composed transaction
    * @param blockReference block to use for determining hash
    */
-  async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'final' }) {
+  async signAndSend<T extends SerializedReturnValue>(blockReference: BlockReference = { finality: 'optimistic' }) {
     this.verifySigner(this.sender);
     const { signedTransaction } = await this.toSignedTransaction({
       publicKey: this.publicKey || await this.account.getSigner().getPublicKey(),

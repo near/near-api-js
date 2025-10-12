@@ -4,6 +4,8 @@ import { parseRpcError } from './errors';
 import { Logger } from './logger';
 
 /**
+ * @deprecated Will be removed in the next major release
+ * 
  * Parse and print details from a query execution response
  * @param params
  * @param params.contractId ID of the account/contract which made the query
@@ -44,6 +46,8 @@ export function printTxOutcomeLogsAndFailures({
 }
 
 /**
+ * @deprecated Will be removed in the next major release
+ * 
  * Format and print log output from a query execution response
  * @param params
  * @param params.contractId ID of the account/contract which made the query

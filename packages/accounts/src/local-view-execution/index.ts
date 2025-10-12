@@ -7,11 +7,15 @@ import { ContractState } from './types';
 import { viewState } from '../utils';
 import { Connection } from '../connection';
 import { IntoConnection } from '../interface';
+import depd from 'depd';
 
 interface ViewFunctionCallOptions extends FunctionCallOptions {
     blockQuery?: BlockReference
 }
 
+/**
+ * @deprecated Will be removed in the next major release
+ */
 export class LocalViewExecution {
     private readonly connection: Connection;
     private readonly storage: Storage;
@@ -19,6 +23,9 @@ export class LocalViewExecution {
     constructor(connection: IntoConnection) {
         this.connection = connection.getConnection();
         this.storage = new Storage();
+
+        const deprecate = depd('LocalViewExecution');
+        deprecate('It will be removed in the next major release');
     }
 
     private async fetchContractCode(contractId: string, blockQuery: BlockReference) {

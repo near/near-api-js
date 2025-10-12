@@ -20,6 +20,7 @@ interface RuntimeConstructorArgs extends RuntimeCtx {
     // base64 encoded contract code
     contractCode: string,
 }
+/** @deprecated Will be removed in the next major release */
 export class Runtime {
     context: RuntimeCtx;
     wasm: Buffer;

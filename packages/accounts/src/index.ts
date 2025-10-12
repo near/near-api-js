@@ -24,6 +24,8 @@ export {
     Contract
 } from './contract';
 export type { ContractMethods } from './contract';
+export type { AbiRoot } from './abi_types';
+export { TypedContract } from './typed_contract';
 export {
     ArgumentSchemaError,
     ConflictingOptions,
@@ -39,3 +41,5 @@ export type {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
 } from './interface';
+export { LocalViewExecution } from './local-view-execution/index';
+export { Runtime } from './local-view-execution/runtime';

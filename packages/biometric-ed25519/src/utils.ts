@@ -1,4 +1,4 @@
-import base64 from '@hexagon/base64';
+import { base64 } from '@hexagon/base64';
 import { p256 } from '@noble/curves/p256';
 import { sha256 } from '@noble/hashes/sha256';
 import { PublicKey } from '@near-js/crypto';

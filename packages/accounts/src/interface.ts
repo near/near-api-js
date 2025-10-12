@@ -6,6 +6,8 @@ export interface IntoConnection {
 }
 
 /**
+ * @deprecated Will be removed in the next major release
+ * 
  * Options used to initiate a function call (especially a change function call)
  * @see {@link Account#viewFunction | viewFunction} to initiate a view function call
  */
@@ -28,6 +30,7 @@ export interface FunctionCallOptions {
     stringify?: (input: any) => Buffer;
 }
 
+/** @deprecated Will be removed in the next major release */
 export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
@@ -40,6 +43,8 @@ export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     */
     walletCallbackUrl?: string;
 }
+
+/** @deprecated Will be removed in the next major release */
 export interface ViewFunctionCallOptions extends FunctionCallOptions {
     parse?: (response: Uint8Array) => any;
     blockQuery?: BlockReference;
