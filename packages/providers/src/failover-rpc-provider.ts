@@ -95,7 +95,9 @@ export class FailoverRpcProvider implements Provider {
                 // each provider implements own retry logic
                 const result = await getResult(this.currentProvider);
 
-                if (result) return result;
+                if (typeof result === 'undefined') continue;
+
+                return result;
             } catch (e) {
                 console.error(e);
                 this.switchToNextProvider();
