@@ -1,5 +1,18 @@
 # @near-js/accounts
 
+## 2.3.4
+
+### Patch Changes
+
+- Updated dependencies [[`706a5dd`](https://github.com/near/near-api-js/commit/706a5dd4df579d8f65ff17fc522b99d0f5a1608a)]:
+  - @near-js/providers@2.3.4
+  - @near-js/crypto@2.3.4
+  - @near-js/signers@2.3.4
+  - @near-js/tokens@2.3.4
+  - @near-js/transactions@2.3.4
+  - @near-js/types@2.3.4
+  - @near-js/utils@2.3.4
+
 ## 2.3.3
 
 ### Patch Changes

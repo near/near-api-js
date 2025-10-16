@@ -1,5 +1,23 @@
 # near-api-js
 
+## 6.3.1
+
+### Patch Changes
+
+- [#1640](https://github.com/near/near-api-js/pull/1640) [`706a5dd`](https://github.com/near/near-api-js/commit/706a5dd4df579d8f65ff17fc522b99d0f5a1608a) Thanks [@denbite](https://github.com/denbite)! - Respect `null` as a valid result of method of `FailoverRpcProvider`
+
+- Updated dependencies [[`706a5dd`](https://github.com/near/near-api-js/commit/706a5dd4df579d8f65ff17fc522b99d0f5a1608a)]:
+  - @near-js/providers@2.3.4
+  - @near-js/accounts@2.3.4
+  - @near-js/crypto@2.3.4
+  - @near-js/keystores@2.3.4
+  - @near-js/keystores-browser@2.3.4
+  - @near-js/keystores-node@2.3.4
+  - @near-js/signers@2.3.4
+  - @near-js/transactions@2.3.4
+  - @near-js/types@2.3.4
+  - @near-js/utils@2.3.4
+
 ## 6.3.0
 
 ### Minor Changes

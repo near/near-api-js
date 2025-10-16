@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/iframe-rpc",
-	"version": "2.3.3",
+	"version": "2.3.4",
 	"description": "IFrame RPC client/server implementation",
 	"main": "lib/esm/index.js",
 	"types": "lib/esm/index.d.ts",
