@@ -30,9 +30,12 @@ function getProvider(config: any): Provider {
 
 /**
  * @param config Contains connection info details
- * @returns {Signer}
+ * @returns {Signer | null}
  */
-function getSigner(config: any): Signer {
+function getSigner(config: any): Signer | null {
+    if (config === null || config === undefined) {
+        return null;
+    }
     switch (config.type) {
         case undefined:
             return config;
@@ -40,7 +43,11 @@ function getSigner(config: any): Signer {
             return new KeyPairSigner(config.keyPair);
         }
         default:
-            throw new Error(`Unknown signer type ${config.type}`);
+            throw new Error(
+                `Unknown signer type ${config.type}. ` +
+                `For read-only operations, pass signer: null to connect(). ` +
+                `Valid signer types: KeyPairSigner, or a Signer instance.`
+            );
     }
 }
 
@@ -52,12 +59,12 @@ function getSigner(config: any): Signer {
 export class Connection implements IntoConnection {
     readonly networkId: string;
     readonly provider: Provider;
-    readonly signer: Signer;
+    readonly signer: Signer | null;
 
     constructor(
         networkId: string,
         provider: Provider,
-        signer: Signer,
+        signer: Signer | null,
     ) {
         const deprecate = depd('new Connection(networkId, provider, signer)');
         deprecate('`Connection` is no longer used anywhere, please switch to constructing `Account` without it - use `new Account(accountId, provider, signer)`');
