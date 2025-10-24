@@ -428,12 +428,24 @@ importers:
 
   packages/near-api-js:
     dependencies:
+      '@hexagon/base64':
+        specifier: 2.0.4
+        version: 2.0.4
       '@near-js/accounts':
         specifier: workspace:*
         version: link:../accounts
+      '@near-js/biometric-ed25519':
+        specifier: workspace:*
+        version: link:../biometric-ed25519
+      '@near-js/client':
+        specifier: workspace:*
+        version: link:../client
       '@near-js/crypto':
         specifier: workspace:*
         version: link:../crypto
+      '@near-js/iframe-rpc':
+        specifier: workspace:*
+        version: link:../iframe-rpc
       '@near-js/keystores':
         specifier: workspace:*
         version: link:../keystores
@@ -449,6 +461,9 @@ importers:
       '@near-js/signers':
         specifier: workspace:*
         version: link:../signers
+      '@near-js/tokens':
+        specifier: workspace:*
+        version: link:../tokens
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
@@ -461,21 +476,51 @@ importers:
       '@noble/curves':
         specifier: 1.8.1
         version: 1.8.1
+      '@noble/hashes':
+        specifier: 1.7.1
+        version: 1.7.1
+      asn1-parser:
+        specifier: 1.1.8
+        version: 1.1.8
       borsh:
         specifier: 1.0.0
         version: 1.0.0
+      buffer:
+        specifier: 6.0.3
+        version: 6.0.3
+      cbor-js:
+        specifier: ^0.1.0
+        version: 0.1.0
       depd:
         specifier: 2.0.0
         version: 2.0.0
+      events:
+        specifier: 3.3.0
+        version: 3.3.0
+      fido2-lib:
+        specifier: 3.4.1
+        version: 3.4.1
       http-errors:
         specifier: 1.7.2
         version: 1.7.2
+      is-my-json-valid:
+        specifier: ^2.20.6
+        version: 2.20.6
+      lru_map:
+        specifier: 0.4.1
+        version: 0.4.1
       near-abi:
         specifier: 0.2.0
         version: 0.2.0
       node-fetch:
         specifier: 2.6.7
         version: 2.6.7(encoding@0.1.13)
+      randombytes:
+        specifier: 2.1.0
+        version: 2.1.0
+      secp256k1:
+        specifier: 5.0.1
+        version: 5.0.1
     devDependencies:
       '@types/depd':
         specifier: ^1.1.37
@@ -4118,9 +4163,6 @@ packages:
       '@swc/wasm':
         optional: true
 
-  tslib@2.6.3:
-    resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
-
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
@@ -5513,18 +5555,18 @@ snapshots:
     dependencies:
       asn1js: 3.0.5
       pvtsutils: 1.3.5
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   '@peculiar/json-schema@1.1.12':
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   '@peculiar/webcrypto@1.4.6':
     dependencies:
       '@peculiar/asn1-schema': 2.3.8
       '@peculiar/json-schema': 1.1.12
       pvtsutils: 1.3.5
-      tslib: 2.6.3
+      tslib: 2.8.1
       webcrypto-core: 1.8.0
 
   '@pkgjs/parseargs@0.11.0':
@@ -5956,7 +5998,7 @@ snapshots:
     dependencies:
       pvtsutils: 1.3.5
       pvutils: 1.1.3
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   async@3.2.6: {}
 
@@ -8009,7 +8051,7 @@ snapshots:
       bytestreamjs: 2.0.1
       pvtsutils: 1.3.5
       pvutils: 1.1.3
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   postcss-load-config@6.0.1(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0):
     dependencies:
@@ -8057,7 +8099,7 @@ snapshots:
 
   pvtsutils@1.3.5:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   pvutils@1.1.3: {}
 
@@ -8486,8 +8528,6 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.11.29
 
-  tslib@2.6.3: {}
-
   tslib@2.8.1: {}
 
   tsup@8.5.0(@swc/core@1.11.29)(jiti@2.4.2)(tsx@4.19.2)(typescript@5.4.5)(yaml@2.7.0):
@@ -8626,7 +8666,7 @@ snapshots:
       '@peculiar/json-schema': 1.1.12
       asn1js: 3.0.5
       pvtsutils: 1.3.5
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   webidl-conversions@3.0.1: {}
 
