@@ -226,7 +226,7 @@ export class JsonRpcProvider implements Provider {
     public async callFunction<T extends SerializedReturnValue>(
         contractId: string,
         method: string,
-        args: Record<string, unknown>,
+        args: Record<string, unknown> | Uint8Array,
         blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<T | undefined> {
         const { result } = await this.callFunctionRaw(
@@ -250,10 +250,11 @@ export class JsonRpcProvider implements Provider {
     public async callFunctionRaw(
         contractId: string,
         method: string,
-        args: Record<string, unknown>,
+        args: Record<string, unknown> | Uint8Array,
         blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<CallContractViewFunctionResultRaw> {
-        const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
+        const argsBuffer = ArrayBuffer.isView(args) ? Buffer.from(args) : Buffer.from(JSON.stringify(args));
+        const argsBase64 = argsBuffer.toString('base64');
 
         return await (
             this as Provider
