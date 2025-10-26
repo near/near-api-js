@@ -1,5 +1,19 @@
 # @near-js/providers
 
+## 2.4.0
+
+### Minor Changes
+
+- [#1648](https://github.com/near/near-api-js/pull/1648) [`dc7f602`](https://github.com/near/near-api-js/commit/dc7f6020e1756aa5227597592dd782fcadb35e23) Thanks [@denbite](https://github.com/denbite)! - Allow `Uint8Array` as args input for `callFunctionRaw` and `callFunction`
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.4.0
+  - @near-js/transactions@2.4.0
+  - @near-js/types@2.4.0
+  - @near-js/utils@2.4.0
+
 ## 2.3.4
 
 ### Patch Changes
