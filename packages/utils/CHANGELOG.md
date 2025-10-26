@@ -1,5 +1,12 @@
 # @near-js/utils
 
+## 2.4.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/types@2.4.0
+
 ## 2.3.4
 
 ### Patch Changes
