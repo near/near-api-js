@@ -26,8 +26,12 @@ export interface NearConfig {
     /** Holds {@link "@near-js/crypto".key_pair.KeyPair | KeyPair} for signing transactions */
     keyStore?: KeyStore;
 
-    /** @hidden */
-    signer?: Signer;
+    /**
+     * Signer instance for transaction signing.
+     * Pass null for read-only connections that don't require signing.
+     * @hidden
+     */
+    signer?: Signer | null;
 
     /**
      * [NEAR Contract Helper](https://github.com/near/near-contract-helper) url used to create accounts if no master account is provided
@@ -109,7 +113,11 @@ export class Near {
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
             provider: config.provider || { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
-            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps?.keyStore },
+            signer: config.signer !== undefined
+                ? config.signer
+                : (config.keyStore || config.deps?.keyStore
+                    ? { type: 'KeyPairSigner', keyStore: config.keyStore || config.deps?.keyStore }
+                    : null),
         });
         
         if (config.masterAccount) {

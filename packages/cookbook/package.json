@@ -23,6 +23,7 @@
     "getTransactionStatus": "tsx -e \"import f from './transactions/get-tx-status.ts'; f(...process.argv.slice(1));\"",
     "metaTransaction": "tsx -e \"import f from './transactions/meta-transaction.ts'; f(...process.argv.slice(1));\"",
     "metaTransactionRelayer": "tsx -e \"import f from './transactions/meta-transaction-relayer.ts'; f(...process.argv.slice(1));\"",
+    "readOnlyConnection": "tsx api-keys/read-only-connection.ts",
     "traverseBlocks": "tsx -e \"import f from './transactions/traverse-blocks.ts'; f(...process.argv.slice(1));\"",
     "unwrapNear": "tsx -e \"import f from './utils/unwrap-near.ts'; f(...process.argv.slice(1));\"",
     "verifySignature": "tsx -e \"import f from './utils/verify-signature.ts'; f(...process.argv.slice(1));\"",
