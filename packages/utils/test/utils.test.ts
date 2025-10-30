@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { publicKeyToImplicit } from '../src/utils';
+import { keyToImplicitAddress } from '../src/utils';
 
 test.each`
     publicKey                                                          | expected
@@ -8,30 +8,30 @@ test.each`
     ${'ed25519:6E8sCci9badyRkXb3JoRpBj5p8C6Tw41ELDZoiihKEtp'}         | ${'4da7e0f4096aaf2ce55e371657cd3089ba1e9f59f4d6e27bd02e472a16a61dc1'}
     ${'6E8sCci9badyRkXb3JoRpBj5p8C6Tw41ELDZoiihKEtp'}                 | ${'4da7e0f4096aaf2ce55e371657cd3089ba1e9f59f4d6e27bd02e472a16a61dc1'}
     ${'ed25519:5TdhJVkBRc9YWQdRZJXjYkfNNb8FYhPnJbGJk4zE5kDN'}         | ${'424156f9ae27087a5de6b42f44d7f96db75d73ff6f3b9aa45f4cbe1259234829'}
-`('publicKeyToImplicit($publicKey) returns $expected', ({ publicKey, expected }) => {
-    expect(publicKeyToImplicit(publicKey)).toEqual(expected);
+`('keyToImplicitAddress($publicKey) returns $expected', ({ publicKey, expected }) => {
+    expect(keyToImplicitAddress(publicKey)).toEqual(expected);
 });
 
-test('publicKeyToImplicit accepts object with toString method', () => {
+test('keyToImplicitAddress accepts object with toString method', () => {
     const publicKeyObject = {
         toString: () => 'ed25519:DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847'
     };
     
-    const result = publicKeyToImplicit(publicKeyObject);
+    const result = keyToImplicitAddress(publicKeyObject);
     expect(result).toEqual('bb4dc639b212e075a751685b26bdcea5920a504181ff2910e8549742127092a0');
 });
 
-test('publicKeyToImplicit handles object with toString returning key without prefix', () => {
+test('keyToImplicitAddress handles object with toString returning key without prefix', () => {
     const publicKeyObject = {
         toString: () => 'DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847'
     };
     
-    const result = publicKeyToImplicit(publicKeyObject);
+    const result = keyToImplicitAddress(publicKeyObject);
     expect(result).toEqual('bb4dc639b212e075a751685b26bdcea5920a504181ff2910e8549742127092a0');
 });
 
-test('publicKeyToImplicit returns hex string with proper padding', () => {
-    const result = publicKeyToImplicit('ed25519:DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847');
+test('keyToImplicitAddress returns hex string with proper padding', () => {
+    const result = keyToImplicitAddress('ed25519:DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847');
     
     expect(result.length).toEqual(64);
     expect(result).toMatch(/^[0-9a-f]+$/);
