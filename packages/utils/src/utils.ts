@@ -1,5 +1,6 @@
 import { baseDecode } from './format';
-import { type PublicKey } from "@near-js/crypto";
+import { type PublicKey } from "../../crypto/lib/esm/public_key";
+
 
 export function sortBigIntAsc(a: bigint, b: bigint) {
     return (a < b ? -1 : a > b ? 1 : 0)
