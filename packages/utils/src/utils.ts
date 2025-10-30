@@ -1,11 +1,12 @@
 import { baseDecode } from './format';
+import { type PublicKey } from "@near-js/crypto";
 
 export function sortBigIntAsc(a: bigint, b: bigint) {
     return (a < b ? -1 : a > b ? 1 : 0)
 }
 
 
-export function keyToImplicitAddress(publicKey: string | { toString(): string }): string {
+export function keyToImplicitAddress(publicKey: string | PublicKey): string {
     const publicKeyStr = typeof publicKey === 'string' ? publicKey : publicKey.toString();
 
     const publicKeyWithoutPrefix = publicKeyStr.replace(/^ed25519:/, '');
@@ -18,3 +19,4 @@ export function keyToImplicitAddress(publicKey: string | { toString(): string })
     }
     return result;
 }
+
