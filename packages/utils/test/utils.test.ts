@@ -1,5 +1,6 @@
 import { expect, test } from '@jest/globals';
 import { keyToImplicitAddress } from '../src/utils';
+import { PublicKey } from '@near-js/crypto';
 
 test.each`
     publicKey                                                          | expected
@@ -13,18 +14,14 @@ test.each`
 });
 
 test('keyToImplicitAddress accepts object with toString method', () => {
-    const publicKeyObject = {
-        toString: () => 'ed25519:DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847'
-    };
+    const publicKeyObject = PublicKey.fromString('ed25519:DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847');
     
     const result = keyToImplicitAddress(publicKeyObject);
     expect(result).toEqual('bb4dc639b212e075a751685b26bdcea5920a504181ff2910e8549742127092a0');
 });
 
 test('keyToImplicitAddress handles object with toString returning key without prefix', () => {
-    const publicKeyObject = {
-        toString: () => 'DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847'
-    };
+    const publicKeyObject =  PublicKey.fromString('DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847');
     
     const result = keyToImplicitAddress(publicKeyObject);
     expect(result).toEqual('bb4dc639b212e075a751685b26bdcea5920a504181ff2910e8549742127092a0');
