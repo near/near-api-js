@@ -21,4 +21,4 @@ export {
     Logger
 };
 
-export { publicKeyToImplicit } from '@near-js/utils';
+export { keyToImplicitAddress } from '@near-js/utils';

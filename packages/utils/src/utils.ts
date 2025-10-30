@@ -5,7 +5,7 @@ export function sortBigIntAsc(a: bigint, b: bigint) {
 }
 
 
-export function publicKeyToImplicit(publicKey: string | { toString(): string }): string {
+export function keyToImplicitAddress(publicKey: string | { toString(): string }): string {
     const publicKeyStr = typeof publicKey === 'string' ? publicKey : publicKey.toString();
 
     const publicKeyWithoutPrefix = publicKeyStr.replace(/^ed25519:/, '');
