@@ -19,4 +19,3 @@ export function keyToImplicitAddress(publicKey: string | PublicKey): string {
     }
     return result;
 }
-
