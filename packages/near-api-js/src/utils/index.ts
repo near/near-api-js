@@ -20,3 +20,5 @@ export {
     rpc_errors,
     Logger
 };
+
+export { publicKeyToImplicit } from '@near-js/utils';
