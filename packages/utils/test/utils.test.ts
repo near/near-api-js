@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
 import { keyToImplicitAddress } from '../src/utils';
-import { PublicKey } from '../../crypto/lib/esm/public_key';
+import { PublicKey } from '@near-js/crypto';
 
 test.each`
     publicKey                                                          | expected
