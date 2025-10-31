@@ -20,3 +20,5 @@ export {
     rpc_errors,
     Logger
 };
+
+export { keyToImplicitAddress } from '@near-js/utils';
