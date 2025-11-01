@@ -30,7 +30,7 @@ for (
  * @returns Value in Ⓝ
  */
 export function formatNearAmount(
-    balance: string,
+    balance: string | number | bigint,
     fracDigits: number = NEAR_NOMINATION_EXP
 ): string {
     let balanceBN = BigInt(balance);
