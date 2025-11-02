@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - pre-release/*
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -43,7 +44,8 @@ jobs:
           publish: pnpm release
           commit: "chore(release): publish packages"
           title: "Publish packages"
-          createGithubReleases: true
+          createGithubReleases: ${{ github.ref_name == 'master' }}
+          branch: ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
