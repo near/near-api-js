@@ -1,0 +1,24 @@
+{
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "@near-js/accounts": "2.5.0",
+    "@near-js/biometric-ed25519": "2.5.0",
+    "@near-js/client": "2.5.0",
+    "@near-js/cookbook": "2.5.0",
+    "@near-js/crypto": "2.5.0",
+    "@near-js/iframe-rpc": "2.5.0",
+    "@near-js/keystores": "2.5.0",
+    "@near-js/keystores-browser": "2.5.0",
+    "@near-js/keystores-node": "2.5.0",
+    "near-api-js": "6.5.0",
+    "@near-js/providers": "2.5.0",
+    "@near-js/signers": "2.5.0",
+    "@near-js/tokens": "2.5.0",
+    "@near-js/transactions": "2.5.0",
+    "tsconfig": "0.0.1",
+    "@near-js/types": "2.5.0",
+    "@near-js/utils": "2.5.0"
+  },
+  "changesets": []
+}
