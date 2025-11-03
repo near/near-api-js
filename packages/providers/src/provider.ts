@@ -59,6 +59,7 @@ export interface Provider {
     viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
 
     viewNodeStatus(): Promise<NodeStatusResult>;
+    /** @deprecated use {@link viewValidatorsV2} */
     viewValidators(blockId?: BlockId): Promise<EpochValidatorInfo>;
     viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo>
 
