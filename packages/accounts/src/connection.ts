@@ -1,4 +1,4 @@
-import { Signer, KeyPairSigner } from "@near-js/signers";
+import { InMemorySigner } from "@near-js/signers";
 import {
     Provider,
     JsonRpcProvider,
@@ -30,14 +30,13 @@ function getProvider(config: any): Provider {
 
 /**
  * @param config Contains connection info details
- * @returns {Signer}
  */
-function getSigner(config: any): Signer {
+function getSigner(config: any) {
     switch (config.type) {
         case undefined:
             return config;
-        case "KeyPairSigner": {
-            return new KeyPairSigner(config.keyPair);
+        case "InMemorySigner": {
+            return new InMemorySigner(config.keyStore);
         }
         default:
             throw new Error(`Unknown signer type ${config.type}`);
@@ -52,12 +51,12 @@ function getSigner(config: any): Signer {
 export class Connection implements IntoConnection {
     readonly networkId: string;
     readonly provider: Provider;
-    readonly signer: Signer;
+    readonly signer: InMemorySigner;
 
     constructor(
         networkId: string,
         provider: Provider,
-        signer: Signer,
+        signer: InMemorySigner,
     ) {
         const deprecate = depd('new Connection(networkId, provider, signer)');
         deprecate('`Connection` is no longer used anywhere, please switch to constructing `Account` without it - use `new Account(accountId, provider, signer)`');
