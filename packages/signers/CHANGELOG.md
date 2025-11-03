@@ -1,5 +1,16 @@
 # @near-js/signers
 
+## 2.4.1
+
+### Patch Changes
+
+- [#1654](https://github.com/near/near-api-js/pull/1654) [`e10be3d`](https://github.com/near/near-api-js/commit/e10be3d2034a103d7b5e6a4c1fb636990c7b54c1) Thanks [@denbite](https://github.com/denbite)! - Bring back `InMemorySigner` to maintain backward compatibility for legacy projects
+
+- Updated dependencies [[`fdb29a2`](https://github.com/near/near-api-js/commit/fdb29a27e914ac19cacd453bee0b41bbedf7d3ba)]:
+  - @near-js/crypto@2.4.1
+  - @near-js/keystores@2.4.1
+  - @near-js/transactions@2.4.1
+
 ## 2.4.0
 
 ### Patch Changes

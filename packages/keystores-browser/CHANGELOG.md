@@ -1,5 +1,13 @@
 # @near-js/keystores-browser
 
+## 2.4.1
+
+### Patch Changes
+
+- Updated dependencies [[`fdb29a2`](https://github.com/near/near-api-js/commit/fdb29a27e914ac19cacd453bee0b41bbedf7d3ba)]:
+  - @near-js/crypto@2.4.1
+  - @near-js/keystores@2.4.1
+
 ## 2.4.0
 
 ### Patch Changes
