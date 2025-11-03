@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  code-checks:
+  checks:
     runs-on: ubuntu-latest
 
     steps:
