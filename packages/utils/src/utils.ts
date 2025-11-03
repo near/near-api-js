@@ -1,5 +1,5 @@
 import { baseDecode } from './format';
-import { type PublicKey } from "../../crypto/lib/esm/public_key";
+import type { PublicKey } from "../../crypto/src/public_key";
 
 
 export function sortBigIntAsc(a: bigint, b: bigint) {
