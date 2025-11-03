@@ -59,7 +59,9 @@ export interface Provider {
     viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
 
     viewNodeStatus(): Promise<NodeStatusResult>;
+    /** @deprecated use {@link viewValidatorsV2} */
     viewValidators(blockId?: BlockId): Promise<EpochValidatorInfo>;
+    viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo>
 
     viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
     viewTransactionStatusWithReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>>;

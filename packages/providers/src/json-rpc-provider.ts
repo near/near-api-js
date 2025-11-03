@@ -55,6 +55,7 @@ import { Provider } from './provider';
 import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
 import { TxExecutionStatus } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
+import assert from 'assert';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
@@ -289,6 +290,27 @@ export class JsonRpcProvider implements Provider {
         blockId?: BlockId
     ): Promise<EpochValidatorInfo> {
         return this.sendJsonRpc('validators', [blockId || null]);
+    }
+
+    /**
+     * Query validators of an epoch.
+     * @see [https://docs.near.org/api/rpc/network#validation-status](https://docs.near.org/api/rpc/network#validation-status)
+     *
+     * @param params Object specifying either a block or epoch to query.
+     * - `{ blockId }`: Block hash or height.
+     * - `{ epochId }`: Epoch hash.
+     * - `null`: Current epoch.
+     */
+    public async viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo> {
+        assert(typeof params === 'object');
+
+        if (params === null) return this.sendJsonRpc('validators', [null]);
+
+        if ('blockId' in params) return this.sendJsonRpc('validators', { block_id: params.blockId });
+
+        if ('epochId' in params) return this.sendJsonRpc('validators', { epoch_id: params.epochId });
+
+        throw new Error('Invalid parameters for validatorsV2');
     }
 
     public async viewTransactionStatus(

@@ -178,6 +178,10 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewValidators(blockId));
     }
 
+    public async viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo> {
+        return this.withBackoff((currentProvider) => currentProvider.viewValidatorsV2(params));
+    }
+
     public async viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
         return this.withBackoff((currentProvider) => currentProvider.viewTransactionStatus(txHash, accountId, waitUntil));
     }
