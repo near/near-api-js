@@ -1,5 +1,13 @@
 # @near-js/crypto
 
+## 2.5.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/types@2.5.0
+  - @near-js/utils@2.5.0
+
 ## 2.4.1
 
 ### Patch Changes

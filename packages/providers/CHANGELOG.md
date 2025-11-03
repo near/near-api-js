@@ -1,5 +1,19 @@
 # @near-js/providers
 
+## 2.5.0
+
+### Minor Changes
+
+- [#1659](https://github.com/near/near-api-js/pull/1659) [`d4d33b9`](https://github.com/near/near-api-js/commit/d4d33b902aab93d447d7ad913a58cdab6851b6c3) Thanks [@denbite](https://github.com/denbite)! - Add `viewValidatorsV2` method to `Provider` that allows to query data using either `epoch_id`, or `block_id`
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @near-js/crypto@2.5.0
+  - @near-js/transactions@2.5.0
+  - @near-js/types@2.5.0
+  - @near-js/utils@2.5.0
+
 ## 2.4.1
 
 ### Patch Changes
