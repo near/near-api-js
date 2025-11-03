@@ -16,7 +16,7 @@ import {
 } from '@near-js/accounts';
 import { PublicKey } from '@near-js/crypto';
 import { KeyStore } from '@near-js/keystores';
-import { Signer } from '@near-js/signers';
+import { InMemorySigner, KeyPairSigner } from '@near-js/signers';
 import { LoggerService } from '@near-js/utils';
 import { Provider } from '@near-js/providers';
 import depd from 'depd';
@@ -27,7 +27,7 @@ export interface NearConfig {
     keyStore?: KeyStore;
 
     /** @hidden */
-    signer?: Signer;
+    signer?: InMemorySigner;
 
     /**
      * [NEAR Contract Helper](https://github.com/near/near-contract-helper) url used to create accounts if no master account is provided
@@ -116,7 +116,10 @@ export class Near {
             // TODO: figure out better way of specifying initial balance.
             // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times
             const initialBalance = config.initialBalance ? BigInt(config.initialBalance) : 500000000000000000000000000n;
-            this.accountCreator = new LocalAccountCreator(new Account(config.masterAccount, this.connection.provider, this.connection.signer), initialBalance);
+            const account = new Account(config.masterAccount, this.connection.provider);
+            // it may lead to rare race condition, but it's the only way to enable backward compatibility for InMemorySigner
+            this.resolveKeyPairSigner(config.masterAccount).then((signer) => account.setSigner(signer));
+            this.accountCreator = new LocalAccountCreator(account, initialBalance);
         } else if (config.helperUrl) {
             this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);
         } else {
@@ -124,11 +127,16 @@ export class Near {
         }
     }
 
+    private async resolveKeyPairSigner(accountId: string): Promise<KeyPairSigner | undefined> {
+        const keyPair = await this.connection.signer.keyStore.getKey(this.connection.networkId, accountId);
+        return keyPair ? new KeyPairSigner(keyPair) : undefined;
+    }
+
     /**
      * @param accountId near accountId used to interact with the network.
      */
     async account(accountId: string): Promise<Account> {
-        const account = new Account(accountId, this.connection.provider, this.connection.signer);
+        const account = new Account(accountId, this.connection.provider, await this.resolveKeyPairSigner(accountId));
         return account;
     }
 
@@ -146,6 +154,6 @@ export class Near {
             throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
         }
         await this.accountCreator.createAccount(accountId, publicKey);
-        return new Account(accountId, this.connection.provider, this.connection.signer);
+        return new Account(accountId, this.connection.provider, await this.resolveKeyPairSigner(accountId));
     }
 }
