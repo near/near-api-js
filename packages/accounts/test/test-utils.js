@@ -69,11 +69,13 @@ export async function setUpTestConnection() {
     const connection = Connection.fromConfig({
         networkId: config.networkId,
         provider: { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
-        signer: { type: 'KeyPairSigner', keyPair: await keyStore.getKey(networkId, config.masterAccount) },
+        signer: { type: 'InMemorySigner', keyStore: keyStore },
     });
 
+    const account = new Account(config.masterAccount, connection.provider, new KeyPairSigner(await keyStore.getKey(networkId, config.masterAccount)));
+
     return {
-        accountCreator: new LocalAccountCreator(new Account(config.masterAccount, connection.provider, connection.signer), BigInt('500000000000000000000000000')),
+        accountCreator: new LocalAccountCreator(account, BigInt('500000000000000000000000000')),
         connection,
         keyStore,
         // return worker, so we can gracefully shut down tests
