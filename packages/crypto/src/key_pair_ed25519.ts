@@ -1,6 +1,6 @@
 import { baseEncode, baseDecode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
-import randombytes from 'randombytes';
+import { randomBytes } from '@noble/hashes/utils';
 
 import { KeyPairString, KeySize, KeyType } from './constants';
 import { KeyPairBase, Signature } from './key_pair_base';
@@ -41,7 +41,7 @@ export class KeyPairEd25519 extends KeyPairBase {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        const secretKey = randombytes(KeySize.SECRET_KEY);
+        const secretKey = randomBytes(KeySize.SECRET_KEY);
         const publicKey = ed25519.getPublicKey(new Uint8Array(secretKey));
         const extendedSecretKey = new Uint8Array([...secretKey, ...publicKey]);
         return new KeyPairEd25519(baseEncode(extendedSecretKey));

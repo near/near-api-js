@@ -297,12 +297,12 @@ importers:
       '@noble/curves':
         specifier: 1.8.1
         version: 1.8.1
+      '@noble/hashes':
+        specifier: ^1.7.1
+        version: 1.7.1
       borsh:
         specifier: 1.0.0
         version: 1.0.0
-      randombytes:
-        specifier: 2.1.0
-        version: 2.1.0
       secp256k1:
         specifier: 5.0.1
         version: 5.0.1
@@ -310,9 +310,6 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
-      '@noble/hashes':
-        specifier: ^1.7.1
-        version: 1.7.1
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
@@ -3759,9 +3756,6 @@ packages:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
 
-  randombytes@2.1.0:
-    resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
-
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
@@ -3845,9 +3839,6 @@ packages:
 
   rxjs@7.8.2:
     resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
-
-  safe-buffer@5.2.1:
-    resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
@@ -8067,10 +8058,6 @@ snapshots:
 
   quick-lru@5.1.1: {}
 
-  randombytes@2.1.0:
-    dependencies:
-      safe-buffer: 5.2.1
-
   react-is@18.3.1: {}
 
   read-yaml-file@1.1.0:
@@ -8160,8 +8147,6 @@ snapshots:
   rxjs@7.8.2:
     dependencies:
       tslib: 2.8.1
-
-  safe-buffer@5.2.1: {}
 
   safer-buffer@2.1.2: {}
 

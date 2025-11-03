@@ -1,5 +1,5 @@
 import { baseDecode, baseEncode } from '@near-js/utils';
-import randombytes from 'randombytes';
+import { randomBytes } from '@noble/hashes/utils';
 import secp256k1 from 'secp256k1';
 
 import { KeyPairString, KeySize, KeyType } from './constants';
@@ -52,7 +52,7 @@ export class KeyPairSecp256k1 extends KeyPairBase {
      */
     static fromRandom() {
         // TODO: find better way to generate PK
-        const secretKey = randombytes(KeySize.SECRET_KEY);
+        const secretKey = randomBytes(KeySize.SECRET_KEY);
         const withHeader = secp256k1.publicKeyCreate(new Uint8Array(secretKey), false);
         const publicKey = withHeader.subarray(1, withHeader.length);
         const extendedSecretKey = new Uint8Array([...secretKey, ...publicKey]);
