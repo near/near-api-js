@@ -1,5 +1,14 @@
 # @near-js/utils
 
+## 2.4.1
+
+### Patch Changes
+
+- [#1652](https://github.com/near/near-api-js/pull/1652) [`18a696b`](https://github.com/near/near-api-js/commit/18a696bcfe5187005b722c87fab55e2b33fbe2e0) Thanks [@denbite](https://github.com/denbite)! - Extend input type for `formatNearAmount` function
+
+- Updated dependencies []:
+  - @near-js/types@2.4.1
+
 ## 2.4.0
 
 ### Patch Changes
