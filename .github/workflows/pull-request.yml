@@ -61,7 +61,7 @@ jobs:
 
   changeset-checks:
     runs-on: ubuntu-latest
-
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     steps:
     - name: Query Pull Request changed files
       id: files
