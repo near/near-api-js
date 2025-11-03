@@ -39,8 +39,8 @@ import {
     parseResultError,
     printTxOutcomeLogsAndFailures,
 } from "@near-js/utils";
-
-import type { SignedMessage, Signer } from "@near-js/signers";
+import { InMemoryKeyStore } from "@near-js/keystores";
+import { InMemorySigner, type SignedMessage, type Signer } from "@near-js/signers";
 import { Connection } from "./connection";
 import type {
     ChangeFunctionCallOptions,
@@ -819,7 +819,7 @@ export class Account {
      * @deprecated Will be removed in the next major release, accounts no longer use Connections since it's deprecated too
      */
     public getConnection(): Connection {
-        return new Connection("", this.provider, this.signer);
+        return new Connection("", this.provider, new InMemorySigner(new InMemoryKeyStore()));
     }
 
     /** @hidden */
