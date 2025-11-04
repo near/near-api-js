@@ -30,34 +30,33 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-turbo-
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
       with:
-        version: 10.4.1
+        bun-version: 1.1.38
 
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
         node-version: 20.18.3
-        cache: pnpm
 
     - name: Install dependencies
-      run: pnpm install
+      run: bun install
 
     - name: Build
-      run: pnpm build
+      run: bun run build
 
     - name: Lint
-      run: pnpm lint
+      run: bun run lint
 
     - name: Unit tests
-      run: pnpm test
+      run: bun run test
 
     - name: Check exports
-      run: pnpm check-exports
-    
+      run: bun run check-exports
+
     - name: E2E tests
-      run: pnpm it --ignore-workspace --dir e2e
+      run: cd e2e && bun install && bun run test
 
   changeset-checks:
     runs-on: ubuntu-latest
@@ -96,7 +95,7 @@ jobs:
       if: steps.source-files.outputs.has_changed == 'true' && steps.changesets.outputs.has_added == 'false'
       run: |
           echo "❌ Source files changed, but no new changset file was added."
-          echo "Please run 'pnpm changeset' and commit the generated file."
+          echo "Please run 'bun run changeset' and commit the generated file."
           exit 1
     
     - name: Fail if changeset was added, but no source files were changed

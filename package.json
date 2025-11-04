@@ -1,13 +1,14 @@
 {
   "name": "@near-js/monorepo",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "engines": {
-    "node": ">=20.18.3",
-    "pnpm": ">=10.4.1"
+    "node": ">=20.18.3"
   },
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "bun@1.1.38",
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "build": "turbo run build",
     "check-exports": "turbo run check-exports",
     "clean": "turbo run clean",
