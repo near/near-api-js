@@ -1,6 +1,5 @@
 import { expect, test } from '@jest/globals';
 import { keyToImplicitAddress } from '../src/utils';
-import { PublicKey } from '../../crypto/src/public_key';
 
 test.each`
     publicKey                                                          | expected
@@ -13,17 +12,13 @@ test.each`
     expect(keyToImplicitAddress(publicKey)).toEqual(expected);
 });
 
-test('keyToImplicitAddress accepts object with toString method', () => {
-    const publicKeyObject = PublicKey.fromString('ed25519:DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847');
-    
-    const result = keyToImplicitAddress(publicKeyObject);
+test('keyToImplicitAddress accepts object with toString method', () => {   
+    const result = keyToImplicitAddress('ed25519:DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847');
     expect(result).toEqual('bb4dc639b212e075a751685b26bdcea5920a504181ff2910e8549742127092a0');
 });
 
 test('keyToImplicitAddress handles object with toString returning key without prefix', () => {
-    const publicKeyObject =  PublicKey.fromString('DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847');
-    
-    const result = keyToImplicitAddress(publicKeyObject);
+    const result = keyToImplicitAddress('DcA2MzgpJbrUATQLLceocVckhhAqrkingax4oJ9kZ847');
     expect(result).toEqual('bb4dc639b212e075a751685b26bdcea5920a504181ff2910e8549742127092a0');
 });
 
