@@ -55,7 +55,6 @@ import { Provider } from './provider';
 import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
 import { TxExecutionStatus } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
-import assert from 'assert';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
@@ -302,13 +301,11 @@ export class JsonRpcProvider implements Provider {
      * - `null`: Current epoch.
      */
     public async viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo> {
-        assert(typeof params === 'object');
-
         if (params === null) return this.sendJsonRpc('validators', [null]);
 
-        if ('blockId' in params) return this.sendJsonRpc('validators', { block_id: params.blockId });
+        if (typeof params === 'object' && 'blockId' in params) return this.sendJsonRpc('validators', { block_id: params.blockId });
 
-        if ('epochId' in params) return this.sendJsonRpc('validators', { epoch_id: params.epochId });
+        if (typeof params === 'object' && 'epochId' in params) return this.sendJsonRpc('validators', { epoch_id: params.epochId });
 
         throw new Error('Invalid parameters for validatorsV2');
     }
