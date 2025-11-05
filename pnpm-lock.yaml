@@ -69,6 +69,9 @@ importers:
       '@near-js/crypto':
         specifier: workspace:*
         version: link:../crypto
+      '@near-js/keystores':
+        specifier: workspace:*
+        version: link:../keystores
       '@near-js/providers':
         specifier: workspace:*
         version: link:../providers
@@ -109,9 +112,6 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
-      '@near-js/keystores':
-        specifier: workspace:*
-        version: link:../keystores
       '@scure/base':
         specifier: ^1.2.4
         version: 1.2.4
