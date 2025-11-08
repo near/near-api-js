@@ -35,19 +35,6 @@ export * from '@near-js/types';
 // ============================================================================
 export * from '@near-js/utils';
 
-// Backward compatibility: Export utils namespace for packages like near-workspaces
-// that expect the old structure (utils.format.parseNearAmount, utils.KeyPairEd25519, etc.)
-import * as formatModule from '@near-js/utils';
-import { KeyPairEd25519 as KeyPairEd25519Class } from '@near-js/crypto';
-
-export const utils = {
-    format: {
-        parseNearAmount: formatModule.parseNearAmount,
-        formatNearAmount: formatModule.formatNearAmount,
-    },
-    KeyPairEd25519: KeyPairEd25519Class,
-};
-
 // ============================================================================
 // Cryptography
 // ============================================================================
