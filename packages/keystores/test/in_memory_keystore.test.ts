@@ -1,4 +1,4 @@
-import { beforeAll, describe } from '@jest/globals';
+import { beforeAll, describe } from 'bun:test';
 import { shouldStoreAndRetrieveKeys } from './keystore_common';
 import { InMemoryKeyStore } from '../src';
 

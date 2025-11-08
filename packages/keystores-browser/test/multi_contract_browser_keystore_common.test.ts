@@ -1,4 +1,4 @@
-import { beforeEach, expect, test } from '@jest/globals';
+import { beforeEach, expect, test } from 'bun:test';
 import { KeyPairEd25519 } from '@near-js/crypto';
 import LocalStorageMemory from 'localstorage-memory';
 

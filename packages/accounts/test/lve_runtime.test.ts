@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from '@jest/globals';
+import { beforeAll, describe, expect, test } from 'bun:test';
 import {
     GUESTBOOK_CONTRACT_ID,
     GUESTBOOK_CONTRACT_STATE,

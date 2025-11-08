@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from '@jest/globals';
+import { beforeAll, describe, expect, test } from 'bun:test';
 import { sha256 } from '@noble/hashes/sha256';
 import { Storage } from '../src/local-view-execution/storage';
 import {

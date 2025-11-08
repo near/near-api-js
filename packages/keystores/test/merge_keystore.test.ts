@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { beforeAll, describe, expect, it } from 'bun:test';
 import { KeyPairEd25519 } from '@near-js/crypto';
 
 import { InMemoryKeyStore, MergeKeyStore } from '../src';

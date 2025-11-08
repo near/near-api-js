@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'bun:test';
 import { NEAR } from '../src';
 
 test('test toUnits parses formatted amount', () => {

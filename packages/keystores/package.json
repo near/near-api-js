@@ -10,7 +10,7 @@
 		"clean": "rm -rf lib",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-		"test": "jest",
+		"test": "bun test",
 		"check-exports": "attw --pack ."
 	},
 	"keywords": [],
@@ -21,10 +21,7 @@
 		"@near-js/types": "workspace:*"
 	},
 	"devDependencies": {
-		"@jest/globals": "^29.7.0",
 		"@types/node": "20.0.0",
-		"jest": "29.7.0",
-		"ts-jest": "29.2.6",
 		"tsconfig": "workspace:*",
 		"typescript": "5.4.5"
 	},

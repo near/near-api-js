@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'bun:test';
 import { TextEncoder } from 'util';
 
 import { KeyPairSigner } from '../src';

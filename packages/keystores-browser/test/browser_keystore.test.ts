@@ -1,4 +1,4 @@
-import { beforeAll, describe } from '@jest/globals';
+import { beforeAll, describe } from 'bun:test';
 import LocalStorageMemory from 'localstorage-memory';
 
 import { BrowserLocalStorageKeyStore, MultiContractBrowserLocalStorageKeyStore } from '../src';

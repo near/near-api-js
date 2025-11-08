@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'bun:test';
 import { formatNearAmount, NEAR_NOMINATION, parseNearAmount } from '../src';
 
 

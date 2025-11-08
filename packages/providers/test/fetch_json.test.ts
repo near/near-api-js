@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'bun:test';
 import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
 
 describe('fetchJson', () => {

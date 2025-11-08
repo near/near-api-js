@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'bun:test';
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { baseDecode } from '@near-js/utils';
 import { sha256 } from '@noble/hashes/sha256';

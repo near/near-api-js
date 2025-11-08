@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it, jest } from 'bun:test';
 import { sanitizeCreateKeyResponse, sanitizeGetKeyResponse } from '../src/utils';
 
 // Define a mock PublicKeyCredential

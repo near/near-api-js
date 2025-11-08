@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, jest, test } from 'bun:test';
 import { getTransactionLastResult } from '@near-js/utils';
 import { Worker } from 'near-workspaces';
 import { TextEncoder } from 'util';

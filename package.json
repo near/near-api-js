@@ -14,7 +14,7 @@
     "clean": "bun run --filter '*' clean",
     "lint": "bun run --filter '*' lint",
     "lint:fix": "bun run --filter '*' lint:fix",
-    "test": "bun run --filter '*' test",
+    "test": "bun test",
     "release": "changeset publish",
     "prepare": "husky install",
     "docs:generate": "typedoc"

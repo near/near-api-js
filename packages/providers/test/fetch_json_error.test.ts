@@ -5,7 +5,7 @@ import {
     jest,
     beforeEach,
     afterAll,
-} from '@jest/globals';
+} from 'bun:test';
 import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
 import { ProviderError } from '../src/fetch_json';
 

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, jest, test } from 'bun:test';
 import { KeyPair } from '@near-js/crypto';
 import { ErrorMessages } from '@near-js/utils';
 import { base58 } from '@scure/base';

@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { beforeAll, describe, expect, it } from 'bun:test';
 import { KeyPairEd25519 } from '@near-js/crypto';
 import * as fs from 'fs';
 import * as path from 'path';

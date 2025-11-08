@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, expect, jest, test } from 'bun:test';
 import { KeyPair } from '@near-js/crypto';
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';

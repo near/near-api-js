@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from 'bun:test';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 import { Worker } from 'near-workspaces';
 

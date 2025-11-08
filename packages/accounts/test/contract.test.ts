@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, describe, expect, jest, test } from 'bun:test';
 import { PositionalArgsError } from '@near-js/types';
 
 import { Contract, Account } from '../src';
