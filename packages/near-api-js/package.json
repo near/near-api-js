@@ -15,6 +15,34 @@
         ".": {
             "import": "./lib/esm/index.js",
             "require": "./lib/commonjs/index.cjs"
+        },
+        "./lib/utils/rpc_errors": {
+            "import": "./lib/esm/index.js",
+            "require": "./lib/commonjs/index.cjs"
+        },
+        "./lib/utils": {
+            "import": "./lib/esm/index.js",
+            "require": "./lib/commonjs/index.cjs"
+        },
+        "./lib/transaction": {
+            "import": "./lib/esm/index.js",
+            "require": "./lib/commonjs/index.cjs"
+        },
+        "./lib/providers/json-rpc-provider": {
+            "import": "./lib/esm/index.js",
+            "require": "./lib/commonjs/index.cjs"
+        },
+        "./lib/providers/provider": {
+            "import": "./lib/esm/index.js",
+            "require": "./lib/commonjs/index.cjs"
+        },
+        "./lib/key_stores": {
+            "import": "./lib/esm/index.js",
+            "require": "./lib/commonjs/index.cjs"
+        },
+        "./lib/constants": {
+            "import": "./lib/esm/index.js",
+            "require": "./lib/commonjs/index.cjs"
         }
     },
     "dependencies": {
