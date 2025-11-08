@@ -3,7 +3,7 @@
 	"display": "Default",
 	"compilerOptions": {
 		"paths": {
-			"@near-js/*": ["../packages/*"]
+			"@near-js/*": ["../packages/*/src"]
 		},
 		"esModuleInterop": true,
 		"module": "es2022",

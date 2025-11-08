@@ -2,8 +2,7 @@ import { getTransactionLastResult } from '@near-js/utils';
 
 import type { SignTransactionParams, SignAndSendTransactionParams } from '../interfaces';
 import { getNonce } from '../view';
-import { BlockReference } from '@near-js/types';
-import { SerializedReturnValue } from '@near-js/types/lib/esm/provider/response';
+import { BlockReference, SerializedReturnValue } from '@near-js/types';
 
 const DEFAULT_FINALITY: BlockReference = { finality: 'optimistic' };
 
