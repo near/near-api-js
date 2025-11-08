@@ -2,16 +2,16 @@
 	"name": "@near-js/keystores-node",
 	"version": "2.5.1",
 	"description": "KeyStore implementation for working with keys in the local filesystem",
-	"main": "lib/commonjs/index.cjs",
-	"module": "lib/esm/index.js",
-	"types": "./lib/esm/index.d.ts",
+	"module": "./lib/index.js",
+	"types": "./lib/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsup",
+		"build": "tsc",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
 		"test": "jest",
-		"check-exports": "attw --pack ."
+		"check-exports": "attw --pack .",
+		"clean": "rm -rf lib"
 	},
 	"keywords": [],
 	"author": "",
@@ -38,8 +38,8 @@
 	],
 	"exports": {
 		".": {
-			"import": "./lib/esm/index.js",
-			"require": "./lib/commonjs/index.cjs"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
 	"sideEffects": false

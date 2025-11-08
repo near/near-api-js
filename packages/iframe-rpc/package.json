@@ -2,12 +2,12 @@
 	"name": "@near-js/iframe-rpc",
 	"version": "2.5.1",
 	"description": "IFrame RPC client/server implementation",
-	"main": "lib/esm/index.js",
-	"types": "lib/esm/index.d.ts",
+	"types": "./lib/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsup",
-		"check-exports": "attw --pack ."
+		"build": "tsc",
+		"check-exports": "attw --pack .",
+		"clean": "rm -rf lib"
 	},
 	"keywords": [],
 	"author": "Pagoda",
@@ -20,9 +20,13 @@
 	},
 	"exports": {
 		".": {
-			"import": "./lib/esm/index.js",
-			"require": "./lib/commonjs/index.cjs"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
-	"sideEffects": false
+	"sideEffects": false,
+	"module": "./lib/index.js",
+	"files": [
+		"lib"
+	]
 }

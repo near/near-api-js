@@ -1,10 +1,12 @@
 {
-    "extends": "tsconfig/browser.json",
-    "compilerOptions": {
-        "outDir": "./lib/esm",
-        "types": ["node"]
-    },
-    "files": [
-        "src/index.ts"
-    ]
+	"extends": "tsconfig/browser.json",
+	"compilerOptions": {
+		"outDir": "./lib",
+		"types": [
+			"node"
+		]
+	},
+	"include": [
+		"src/**/*.ts"
+	]
 }

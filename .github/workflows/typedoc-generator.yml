@@ -9,9 +9,8 @@ env:
   NODE_VERSION: 20.18.3
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
-  USES_PNPM: 'true'
   DESTINATION_FOLDER: "docs"
-  
+
 jobs:
   deploy:
     concurrency: ci-${{ github.ref }}
@@ -21,24 +20,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10.4.1
+          bun-version: latest
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: bun install
 
       - name: Build project
-        run:  pnpm build
+        run: bun run build
 
       - name: Build documentation
-        run:  pnpm docs:generate
+        run: bun run docs:generate
 
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4

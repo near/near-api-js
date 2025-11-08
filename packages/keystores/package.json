@@ -2,13 +2,12 @@
 	"name": "@near-js/keystores",
 	"version": "2.5.1",
 	"description": "Key storage and management implementations",
-	"main": "lib/commonjs/index.cjs",
-	"module": "lib/esm/index.js",
-	"types": "./lib/esm/index.d.ts",
+	"module": "./lib/index.js",
+	"types": "./lib/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsup",
-		"clean": "rimraf lib/",
+		"build": "tsc",
+		"clean": "rm -rf lib",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
 		"test": "jest",
@@ -38,8 +37,8 @@
 	],
 	"exports": {
 		".": {
-			"import": "./lib/esm/index.js",
-			"require": "./lib/commonjs/index.cjs"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
 	"sideEffects": false

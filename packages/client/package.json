@@ -2,15 +2,15 @@
 	"name": "@near-js/client",
 	"version": "2.5.1",
 	"description": "",
-	"main": "lib/commonjs/index.cjs",
-	"module": "lib/esm/index.js",
-	"types": "./lib/esm/index.d.ts",
+	"module": "./lib/index.js",
+	"types": "./lib/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsup",
+		"build": "tsc",
 		"lint": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern",
 		"lint:fix": "eslint -c .eslintrc.yml src/**/*.ts --no-eslintrc --no-error-on-unmatched-pattern --fix",
-		"check-exports": "attw --pack ."
+		"check-exports": "attw --pack .",
+		"clean": "rm -rf lib"
 	},
 	"dependencies": {
 		"@near-js/crypto": "workspace:*",
@@ -46,8 +46,8 @@
 	],
 	"exports": {
 		".": {
-			"import": "./lib/esm/index.js",
-			"require": "./lib/commonjs/index.cjs"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
 	"sideEffects": false

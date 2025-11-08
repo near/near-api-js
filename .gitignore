@@ -13,7 +13,6 @@ neardev/
 coverage/
 .nyc_output
 src\.ts/protos\.d\.ts
-package\-lock\.json
 lib/
 
 # OS X
@@ -21,7 +20,5 @@ lib/
 
 # Generated test files
 test-keys/
-
-.turbo
 
 typedoc-docs/

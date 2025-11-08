@@ -1,20 +1,20 @@
 {
   "name": "@near-js/monorepo",
   "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "engines": {
-    "node": ">=20.18.3",
-    "pnpm": ">=10.4.1"
+    "node": ">=20.18.3"
   },
-  "packageManager": "pnpm@10.4.1",
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "build": "turbo run build",
-    "check-exports": "turbo run check-exports",
-    "clean": "turbo run clean",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
-    "autoclave": "rimraf packages/**/dist && rimraf packages/**/lib && rimraf packages/**/node_modules && rimraf packages/**/coverage && rimraf packages/**/.turbo && rimraf node_modules && rimraf .turbo && rimraf e2e/node_modules && rimraf e2e/coverage",
-    "test": "turbo run test",
+    "build": "bun run --filter '*' build",
+    "check-exports": "bun run --filter '*' check-exports",
+    "clean": "bun run --filter '*' clean",
+    "lint": "bun run --filter '*' lint",
+    "lint:fix": "bun run --filter '*' lint:fix",
+    "test": "bun run --filter '*' test",
     "release": "changeset publish",
     "prepare": "husky install",
     "docs:generate": "typedoc"
@@ -28,13 +28,8 @@
     "@typescript-eslint/eslint-plugin": "6.21.0",
     "@typescript-eslint/parser": "6.21.0",
     "commitlint": "19.7.1",
-    "esbuild-fix-imports-plugin": "^1.0.21",
     "eslint": "8.20.0",
     "husky": "9.1.7",
-    "rimraf": "6.0.1",
-    "tsconfig": "workspace:*",
-    "tsup": "^8.5.0",
-    "turbo": "2.4.4",
     "typedoc": "0.27.9",
     "typescript": "5.4.5"
   },

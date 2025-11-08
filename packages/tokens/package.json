@@ -2,9 +2,8 @@
 	"name": "@near-js/tokens",
 	"version": "2.5.1",
 	"description": "Modules with tokens",
-	"main": "lib/commonjs/index.cjs",
-	"module": "lib/esm/index.js",
-	"types": "lib/esm/index.d.ts",
+	"module": "./lib/index.js",
+	"types": "./lib/index.d.ts",
 	"typesVersions": {
 		"*": {
 			"ft": [
@@ -26,8 +25,8 @@
 	},
 	"type": "module",
 	"scripts": {
-		"build": "tsup",
-		"clean": "rimraf lib/ ft.js ft.d.cts nft.js nft.d.cts mainnet.js mainnet.d.cts testnet.js testnet.d.cts ft/",
+		"build": "tsc",
+		"clean": "rm -rf lib",
 		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
 		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
 		"test": "jest",
@@ -46,29 +45,12 @@
 		"typescript": "5.4.5"
 	},
 	"files": [
-		"lib",
-		"ft.js",
-		"ft.d.cts",
-		"ft",
-		"nft.js",
-		"nft.d.cts",
-		"mainnet.js",
-		"mainnet.d.cts",
-		"testnet.js",
-		"testnet.d.cts"
+		"lib"
 	],
 	"exports": {
 		".": {
-			"require": "./lib/commonjs/index.cjs",
-			"import": "./lib/esm/index.js"
-		},
-		"./mainnet": {
-			"require": "./lib/commonjs/mainnet/index.cjs",
-			"import": "./lib/esm/mainnet/index.js"
-		},
-		"./testnet": {
-			"require": "./lib/commonjs/testnet/index.cjs",
-			"import": "./lib/esm/testnet/index.js"
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
 		}
 	},
 	"sideEffects": false
