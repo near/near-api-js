@@ -44,7 +44,6 @@ export {
     KeyPairEd25519,
     KeyPairSecp256k1,
     PublicKey,
-    keyToImplicitAddress,
 } from '@near-js/crypto';
 export type {
     CurveType,
