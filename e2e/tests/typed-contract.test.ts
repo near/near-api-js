@@ -7,8 +7,8 @@ import { JsonRpcProvider } from "@near-js/providers";
 import { Worker } from "near-workspaces";
 import { KeyPair, KeyPairString } from "@near-js/crypto";
 import { KeyPairSigner } from "@near-js/signers";
-import { getRpcUrl, getSecretKey } from "./worker";
-import { abi } from "../contracts/guestbook/abi";
+import { getRpcUrl, getSecretKey } from "./worker.js";
+import { abi } from "../contracts/guestbook/abi.js";
 import { readFile } from "fs/promises";
 
 let worker: Worker;

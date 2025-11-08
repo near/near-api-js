@@ -1,25 +1,31 @@
 {
-	"compilerOptions": {
-		"esModuleInterop": true,
-		"lib": ["es2022", "dom"],
-		"module": "es2022",
-		"target": "es2022",
-		"moduleResolution": "bundler",
-		"alwaysStrict": true,
-		"outDir": "./lib",
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
-		"preserveSymlinks": false,
-		"preserveWatchOutput": true,
-		"pretty": false,
-		"forceConsistentCasingInFileNames": true,
-		"noFallthroughCasesInSwitch": true,
-		"noImplicitAny": false,
-		"noImplicitReturns": true,
-		"noUnusedLocals": true,
-		"experimentalDecorators": true,
-		"resolveJsonModule": true
-	},
-	"include": ["src/**/*.ts"]
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "lib": [
+            "es2022",
+            "dom"
+        ],
+        "module": "es2022",
+        "target": "es2022",
+        "moduleResolution": "bundler",
+        "alwaysStrict": true,
+        "outDir": "./lib",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "preserveSymlinks": false,
+        "preserveWatchOutput": true,
+        "pretty": false,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "experimentalDecorators": true,
+        "resolveJsonModule": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "extends": "../../tsconfig.base.json"
 }

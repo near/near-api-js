@@ -1,84 +1,101 @@
 {
-	"name": "near-api-js",
-	"description": "JavaScript library to interact with NEAR Protocol via RPC API",
-	"version": "6.5.1",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/near/near-api-js.git"
-	},
-	"homepage": "https://github.com/near/near-api-js",
-	"main": "./lib/index.js",
-	"browser": "./lib/browser-index.js",
-	"types": "./lib/index.d.ts",
-	"dependencies": {
-		"@near-js/accounts": "workspace:*",
-		"@near-js/crypto": "workspace:*",
-		"@near-js/keystores": "workspace:*",
-		"@near-js/keystores-browser": "workspace:*",
-		"@near-js/keystores-node": "workspace:*",
-		"@near-js/providers": "workspace:*",
-		"@near-js/signers": "workspace:*",
-		"@near-js/transactions": "workspace:*",
-		"@near-js/types": "workspace:*",
-		"@near-js/utils": "workspace:*",
-		"@noble/curves": "1.8.1",
-		"borsh": "1.0.0",
-		"depd": "2.0.0",
-		"http-errors": "1.7.2",
-		"near-abi": "0.2.0",
-		"node-fetch": "2.6.7"
-	},
-	"devDependencies": {
-		"@types/depd": "^1.1.37",
-		"@types/http-errors": "1.6.1",
-		"@types/node": "20.0.0",
-		"concurrently": "9.1.2",
-		"in-publish": "2.0.0",
-		"near-hello": "0.5.1",
-		"near-workspaces": "5.0.0",
-		"rimraf": "^6.0.1",
-		"semver": "7.7.1"
-	},
-	"peerDependencies": {
-		"@near-js/accounts": "^2.0.1",
-		"@near-js/crypto": "^2.0.1",
-		"@near-js/keystores": "^2.0.1",
-		"@near-js/keystores-browser": "^2.0.1",
-		"@near-js/keystores-node": "^2.0.1",
-		"@near-js/providers": "^2.0.1",
-		"@near-js/signers": "^2.0.1",
-		"@near-js/transactions": "^2.0.1",
-		"@near-js/types": "^2.0.1",
-		"@near-js/utils": "^2.0.1"
-	},
-	"keywords": [],
-	"license": "(MIT AND Apache-2.0)",
-	"scripts": {
-		"build": "tsc",
-		"test": "jest test --passWithNoTests",
-		"lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
-		"lint:src": "eslint --ext .ts src",
-		"lint:fix": "pnpm lint:src:fix && pnpm lint:test:fix",
-		"lint:src:fix": "eslint --ext .ts --fix src",
-		"lint:test:fix": "eslint --ext .js --fix test",
-		"prefuzz": "pnpm build",
-		"fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-		"clean": "rm -rf lib dist",
-		"check-exports": "attw --pack ."
-	},
-	"files": [
-		"lib"
-	],
-	"author": "NEAR Inc",
-	"sideEffects": false,
-	"type": "module",
-	"module": "./lib/index.js",
-	"exports": {
-		".": {
-			"node": "./lib/index.js",
-			"browser": "./lib/browser-index.js",
-			"default": "./lib/index.js",
-			"types": "./lib/index.d.ts"
-		}
-	}
+    "name": "near-api-js",
+    "description": "JavaScript library to interact with NEAR Protocol via RPC API",
+    "version": "6.5.1",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/near/near-api-js.git"
+    },
+    "homepage": "https://github.com/near/near-api-js",
+    "main": "./lib/index.js",
+    "browser": "./lib/browser-index.js",
+    "types": "./lib/index.d.ts",
+    "dependencies": {
+        "@near-js/accounts": "workspace:*",
+        "@near-js/crypto": "workspace:*",
+        "@near-js/keystores": "workspace:*",
+        "@near-js/keystores-browser": "workspace:*",
+        "@near-js/keystores-node": "workspace:*",
+        "@near-js/providers": "workspace:*",
+        "@near-js/signers": "workspace:*",
+        "@near-js/transactions": "workspace:*",
+        "@near-js/types": "workspace:*",
+        "@near-js/utils": "workspace:*",
+        "@noble/curves": "1.8.1",
+        "borsh": "1.0.0",
+        "depd": "2.0.0",
+        "http-errors": "1.7.2",
+        "near-abi": "0.2.0",
+        "node-fetch": "2.6.7"
+    },
+    "devDependencies": {
+        "@types/depd": "^1.1.37",
+        "@types/http-errors": "1.6.1",
+        "concurrently": "9.1.2",
+        "in-publish": "2.0.0",
+        "near-hello": "0.5.1",
+        "near-workspaces": "5.0.0",
+        "rimraf": "^6.0.1",
+        "semver": "7.7.1"
+    },
+    "peerDependencies": {
+        "@near-js/accounts": "^2.0.1",
+        "@near-js/crypto": "^2.0.1",
+        "@near-js/keystores": "^2.0.1",
+        "@near-js/keystores-browser": "^2.0.1",
+        "@near-js/keystores-node": "^2.0.1",
+        "@near-js/providers": "^2.0.1",
+        "@near-js/signers": "^2.0.1",
+        "@near-js/transactions": "^2.0.1",
+        "@near-js/types": "^2.0.1",
+        "@near-js/utils": "^2.0.1"
+    },
+    "keywords": [],
+    "license": "(MIT AND Apache-2.0)",
+    "scripts": {
+        "build": "tsc",
+        "test": "bun test",
+        "lint": "eslint \"src/**/*.ts\"",
+        "lint:fix": "eslint --fix \"src/**/*.ts\"",
+        "prefuzz": "bun run build",
+        "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
+        "clean": "rm -rf lib dist",
+        "check-exports": "attw --ignore-rules cjs-resolves-to-esm internal-resolution-error --pack ."
+    },
+    "files": [
+        "lib"
+    ],
+    "author": "NEAR Inc",
+    "sideEffects": false,
+    "type": "module",
+    "module": "./lib/index.js",
+    "exports": {
+        ".": {
+            "node": "./lib/index.js",
+            "browser": "./lib/browser-index.js",
+            "default": "./lib/index.js",
+            "types": "./lib/index.d.ts"
+        },
+        "./lib/utils": {
+            "types": "./lib/utils/index.d.ts",
+            "import": "./lib/utils/index.js",
+            "default": "./lib/utils/index.js"
+        },
+        "./lib/utils/*": {
+            "types": "./lib/utils/*.d.ts",
+            "import": "./lib/utils/*.js",
+            "default": "./lib/utils/*.js"
+        },
+        "./lib/key_stores": {
+            "types": "./lib/key_stores/index.d.ts",
+            "import": "./lib/key_stores/index.js",
+            "default": "./lib/key_stores/index.js"
+        },
+        "./lib/*": {
+            "types": "./lib/*.d.ts",
+            "import": "./lib/*.js",
+            "default": "./lib/*.js"
+        },
+        "./package.json": "./package.json"
+    }
 }

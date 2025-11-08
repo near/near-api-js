@@ -1,6 +1,6 @@
-import { beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, describe, expect, test } from 'vitest';
 import { sha256 } from '@noble/hashes/sha256';
-import { Storage } from '../src/local-view-execution/storage';
+import { Storage } from '../src/local-view-execution/storage.js';
 import {
     GUESTBOOK_CONTRACT_STATE,
     loadGuestBookContractCode,

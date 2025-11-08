@@ -103,7 +103,7 @@ export class Near {
 
     constructor(config: NearConfig) {
         const deprecate = depd('new Near(config)');
-        deprecate(`It will be removed in the next major release, please switch to using Account directly`);
+        deprecate('It will be removed in the next major release, please switch to using Account directly');
 
         this.config = config;
         this.connection = Connection.fromConfig({

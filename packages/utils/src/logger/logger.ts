@@ -1,5 +1,5 @@
-import { ConsoleLogger } from './console.logger';
-import type { LogLevel, LoggerService } from './interface';
+import { ConsoleLogger } from './console.logger.js';
+import type { LogLevel, LoggerService } from './interface.js';
 
 const DEFAULT_LOG_LEVELS: LogLevel[] = [
     'verbose',

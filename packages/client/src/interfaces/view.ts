@@ -1,6 +1,6 @@
 import type { BlockReference } from '@near-js/types';
 
-import { RpcProviderDependency } from './dependencies';
+import { RpcProviderDependency } from './dependencies.js';
 
 export interface RpcProviderQueryParams {
   blockReference?: BlockReference;

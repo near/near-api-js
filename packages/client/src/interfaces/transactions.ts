@@ -1,8 +1,8 @@
 import type { Transaction } from '@near-js/transactions';
 
-import type { TransactionComposer } from '../transactions';
-import type { SignAndSendTransactionDependency, SignerDependency } from './dependencies';
-import type { RpcProviderQueryParams } from './view';
+import type { TransactionComposer } from '../transactions/index.js';
+import type { SignAndSendTransactionDependency, SignerDependency } from './dependencies.js';
+import type { RpcProviderQueryParams } from './view.js';
 import { BlockHash } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
 

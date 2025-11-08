@@ -7,13 +7,13 @@ import type {
     AbiType,
     RootSchema,
     SchemaObject,
-} from "./abi_types";
-import { Provider } from "@near-js/providers";
-import { Account } from "./account";
+} from './abi_types';
+import { Provider } from '@near-js/providers';
+import { Account } from './account';
 
-import { BlockReference, TxExecutionStatus } from "@near-js/types";
-import { ArgumentSchemaError, UnknownArgumentError } from "./errors";
-import validator from "is-my-json-valid";
+import { BlockReference, TxExecutionStatus } from '@near-js/types';
+import { ArgumentSchemaError, UnknownArgumentError } from './errors';
+import validator from 'is-my-json-valid';
 
 type IsNullable<T> = [null] extends [T] ? true : false;
 
@@ -39,9 +39,11 @@ type Prettify<T> = {
 
 type ExtractAbiFunctions<
     abi extends AbiRoot,
-    abiFunctionKind extends AbiFunctionKind = AbiFunctionKind,
-    _functions extends AbiFunction[] = abi["body"]["functions"]
-> = Extract<_functions[number], { kind: abiFunctionKind }>;
+    abiFunctionKind extends AbiFunctionKind = AbiFunctionKind
+> = Extract<
+    abi['body']['functions'][number],
+    { kind: abiFunctionKind }
+>;
 
 type ExtractAbiFunction<
     abi extends AbiRoot,
@@ -51,63 +53,62 @@ type ExtractAbiFunction<
 
 type ExtractAbiFunctionNames<
     abi extends AbiRoot,
-    abiFunctionKind extends AbiFunctionKind = AbiFunctionKind,
-    _functions extends AbiFunction[] = abi["body"]["functions"]
-> = ExtractAbiFunctions<abi, abiFunctionKind>["name"];
+    abiFunctionKind extends AbiFunctionKind = AbiFunctionKind
+> = ExtractAbiFunctions<abi, abiFunctionKind>['name'];
 
 type GetViewFunction<
     abi extends AbiRoot,
-    functionName extends ExtractAbiFunctionNames<abi, "view">,
+    functionName extends ExtractAbiFunctionNames<abi, 'view'>,
     abiFunction extends AbiFunction = ExtractAbiFunction<abi, functionName>,
-    _args extends Record<string, unknown> = ContractFunctionArgs<
+    ViewArgs extends Record<string, unknown> = ContractFunctionArgs<
         abi,
         abiFunction
     >,
-    _return extends unknown = ContractFunctionReturnType<abi, abiFunction>
+    ViewReturn = ContractFunctionReturnType<abi, abiFunction>
 > = IsNarrowable<abi, AbiRoot> extends true
-    ? IsNever<_args> extends true
+    ? IsNever<ViewArgs> extends true
         ? (params?: {
               blockQuery?: BlockReference;
-          }) => Promise<Prettify<_return>>
-        : IsFullyOptional<_args> extends true
+          }) => Promise<Prettify<ViewReturn>>
+        : IsFullyOptional<ViewArgs> extends true
         ? (params?: {
               blockQuery?: BlockReference;
-              args?: _args;
-          }) => Promise<Prettify<_return>>
+              args?: ViewArgs;
+          }) => Promise<Prettify<ViewReturn>>
         : (params: {
               blockQuery?: BlockReference;
-              args: _args;
-          }) => Promise<Prettify<_return>>
-    : <Response extends unknown = unknown>(params?: {
+              args: ViewArgs;
+          }) => Promise<Prettify<ViewReturn>>
+    : <Response = unknown>(params?: {
           blockQuery?: BlockReference;
           args?: Record<string, unknown>;
       }) => Promise<Response>;
 
 type GetCallFunction<
     abi extends AbiRoot,
-    functionName extends ExtractAbiFunctionNames<abi, "call">,
+    functionName extends ExtractAbiFunctionNames<abi, 'call'>,
     abiFunction extends AbiFunction = ExtractAbiFunction<abi, functionName>,
-    _args extends Record<string, unknown> = ContractFunctionArgs<
+    CallArgs extends Record<string, unknown> = ContractFunctionArgs<
         abi,
         abiFunction
     >,
-    _return extends unknown = ContractFunctionReturnType<abi, abiFunction>
+    CallReturn = ContractFunctionReturnType<abi, abiFunction>
 > = IsNarrowable<abi, AbiRoot> extends true
-    ? IsNever<_args> extends true
+    ? IsNever<CallArgs> extends true
         ? (params: {
               deposit?: bigint;
               gas?: bigint;
               waitUntil?: TxExecutionStatus;
               account: Account;
-          }) => Promise<Prettify<_return>>
+          }) => Promise<Prettify<CallReturn>>
         : (params: {
               deposit?: bigint;
               gas?: bigint;
-              args: _args;
+              args: CallArgs;
               waitUntil?: TxExecutionStatus;
               account: Account;
-          }) => Promise<Prettify<_return>>
-    : <Response extends unknown = unknown>(params: {
+          }) => Promise<Prettify<CallReturn>>
+    : <Response = unknown>(params: {
           deposit?: bigint;
           gas?: bigint;
           args?: Record<string, unknown>;
@@ -120,8 +121,8 @@ type ContractFunctionReturnType<
     abiFunction extends AbiFunction
 > = abiFunction extends { result: infer Result }
     ? Result extends AbiType
-        ? Result["type_schema"] extends Schema
-            ? ResolveSchemaType<abi, Result["type_schema"]>
+        ? Result['type_schema'] extends Schema
+            ? ResolveSchemaType<abi, Result['type_schema']>
             : unknown
         : unknown
     : void;
@@ -131,20 +132,20 @@ type ContractFunctionArgs<
     abiFunction extends AbiFunction
 > = abiFunction extends { params: infer Params }
     ? Params extends AbiParameters
-        ? Params["args"] extends { name: infer N; type_schema: infer S }[]
+        ? Params['args'] extends { name: string; type_schema: Schema }[]
             ? Prettify<
                   {
-                      [Arg in Params["args"][number] as IsNullable<
-                          ResolveSchemaType<abi, Arg["type_schema"]>
+                      [Arg in Params['args'][number] as IsNullable<
+                          ResolveSchemaType<abi, Arg['type_schema']>
                       > extends false
-                          ? Arg["name"] & string
-                          : never]: ResolveSchemaType<abi, Arg["type_schema"]>;
+                          ? Arg['name'] & string
+                          : never]: ResolveSchemaType<abi, Arg['type_schema']>;
                   } & {
-                      [Arg in Params["args"][number] as IsNullable<
-                          ResolveSchemaType<abi, Arg["type_schema"]>
+                      [Arg in Params['args'][number] as IsNullable<
+                          ResolveSchemaType<abi, Arg['type_schema']>
                       > extends true
-                          ? Arg["name"] & string
-                          : never]?: ResolveSchemaType<abi, Arg["type_schema"]>;
+                          ? Arg['name'] & string
+                          : never]?: ResolveSchemaType<abi, Arg['type_schema']>;
                   }
               >
             : never
@@ -161,19 +162,19 @@ type JSONSchemaTypeMap = {
     null: null;
 };
 
-type EnumValue = NonNullable<SchemaObject["enum"]>;
+type EnumValue = NonNullable<SchemaObject['enum']>;
 
 type ResolveEnum<schema extends { enum: EnumValue }> =
-    schema["enum"] extends (infer S)[] ? S : never;
+    schema['enum'] extends (infer S)[] ? S : never;
 
 type ResolveType<
     abi extends AbiRoot,
     schema extends Schema,
     type extends any | any[]
 > = ToArray<type> extends (infer T)[]
-    ? T extends "array"
+    ? T extends 'array'
         ? ResolveArrayType<abi, schema>
-        : T extends "object"
+        : T extends 'object'
         ? ResolveObjectType<abi, schema>
         : T extends keyof JSONSchemaTypeMap
         ? JSONSchemaTypeMap[T]
@@ -206,37 +207,37 @@ type ResolveObjectType<
       }
         ? Prettify<
               {
-                  -readonly [Key in keyof schema["properties"] as Key extends schema["required"][number]
+                  -readonly [Key in keyof schema['properties'] as Key extends schema['required'][number]
                       ? Key
                       : never]: ResolveSchemaType<
                       abi,
-                      schema["properties"][Key]
+                      schema['properties'][Key]
                   >;
               } & {
-                  -readonly [Key in keyof schema["properties"] as Key extends schema["required"][number]
+                  -readonly [Key in keyof schema['properties'] as Key extends schema['required'][number]
                       ? never
                       : Key]?: ResolveSchemaType<
                       abi,
-                      schema["properties"][Key]
+                      schema['properties'][Key]
                   >;
               }
           >
         : {
-              -readonly [Key in keyof schema["properties"]]?: ResolveSchemaType<
+              -readonly [Key in keyof schema['properties']]?: ResolveSchemaType<
                   abi,
-                  schema["properties"][Key]
+                  schema['properties'][Key]
               >;
           }
     : schema extends {
           additionalProperties: Schema;
       }
-    ? Record<string, ResolveSchemaType<abi, schema["additionalProperties"]>>
+    ? Record<string, ResolveSchemaType<abi, schema['additionalProperties']>>
     : Record<string, unknown>;
 
 type ResolveRef<
     abi extends AbiRoot,
     ref extends string,
-    _definitions = abi["body"]["root_schema"]["definitions"]
+    _definitions = abi['body']['root_schema']['definitions']
 > = ref extends keyof _definitions
     ? _definitions[ref] extends Schema
         ? ResolveSchemaType<abi, _definitions[ref]>
@@ -247,7 +248,7 @@ type ResolveRef<
 type ResolveOneOf<
     abi extends AbiRoot,
     schema extends { oneOf: Schema[] }
-> = schema["oneOf"] extends (infer S)[]
+> = schema['oneOf'] extends (infer S)[]
     ? S extends Schema
         ? ResolveSchemaType<abi, S>
         : never
@@ -256,7 +257,7 @@ type ResolveOneOf<
 type ResolveAnyOf<
     abi extends AbiRoot,
     schema extends { anyOf: Schema[] }
-> = schema["anyOf"] extends (infer S)[]
+> = schema['anyOf'] extends (infer S)[]
     ? S extends Schema
         ? ResolveSchemaType<abi, S>
         : never
@@ -292,12 +293,12 @@ export type ContractReturnType<
     _viewFunctionNames extends string = abi extends AbiRoot
         ? AbiRoot extends abi
             ? string
-            : ExtractAbiFunctionNames<abi, "view">
+            : ExtractAbiFunctionNames<abi, 'view'>
         : string,
     _callFunctionNames extends string = abi extends AbiRoot
         ? AbiRoot extends abi
             ? string
-            : ExtractAbiFunctionNames<abi, "call">
+            : ExtractAbiFunctionNames<abi, 'call'>
         : string
 > = Prettify<
     (IsNever<_viewFunctionNames> extends false
@@ -328,8 +329,8 @@ export type ContractConstructor = {
     ): ContractReturnType<abi, contractId>;
 
     new <const abi extends AbiRoot, contractId extends string>(
-        params: Prettify<Omit<ContractParameters<abi, contractId>, "abi">>
-    ): Prettify<Omit<ContractReturnType<abi, contractId>, "abi">>;
+        params: Prettify<Omit<ContractParameters<abi, contractId>, 'abi'>>
+    ): Prettify<Omit<ContractReturnType<abi, contractId>, 'abi'>>;
 };
 
 class Contract<const abi extends AbiRoot, contractId extends string> {
@@ -362,9 +363,9 @@ class Contract<const abi extends AbiRoot, contractId extends string> {
         const abiFunctions = abi?.body.functions || [];
 
         for (const func of abiFunctions) {
-            if (func.kind === "view") {
+            if (func.kind === 'view') {
                 hasViewFunction = true;
-            } else if (func.kind === "call") {
+            } else if (func.kind === 'call') {
                 hasCallFunction = true;
             }
 
@@ -454,10 +455,10 @@ function validateArguments(
     abiFunction: AbiFunction,
     abiRoot: AbiRoot
 ) {
-    if (typeof args !== "object" || typeof abiFunction.params !== "object")
+    if (typeof args !== 'object' || typeof abiFunction.params !== 'object')
         return;
 
-    if (abiFunction.params.serialization_type === "json") {
+    if (abiFunction.params.serialization_type === 'json') {
         const params = abiFunction.params.args;
         for (const p of params) {
             const arg = args[p.name];

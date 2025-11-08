@@ -1,14 +1,15 @@
 {
+    "extends": "../tsconfig.base.json",
     "compilerOptions": {
-        "module": "es2022",
-        "target": "es2022",
-        "lib": ["es2022", "DOM"],
-        "moduleResolution": "node",
-        "types": ["vitest"],
-        "esModuleInterop": true,
-        "strictNullChecks": true,
-        "skipLibCheck": true
+        "types": [
+            "bun-types",
+            "vitest"
+        ]
     },
-    "exclude": ["node_modules"],
-    "include": ["tests"]
+    "include": [
+        "tests"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
 }

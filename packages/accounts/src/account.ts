@@ -1,5 +1,5 @@
-import { PublicKey } from "@near-js/crypto";
-import { type Provider, exponentialBackoff } from "@near-js/providers";
+import { PublicKey } from '@near-js/crypto';
+import { type Provider, exponentialBackoff } from '@near-js/providers';
 import {
     type Action,
     type DelegateAction,
@@ -11,7 +11,7 @@ import {
     buildDelegateAction,
     createTransaction,
     stringifyJsonOrBytes,
-} from "@near-js/transactions";
+} from '@near-js/transactions';
 import {
     type AccessKeyInfoView,
     type AccessKeyList,
@@ -29,7 +29,7 @@ import {
     type SerializedReturnValue,
     type TxExecutionStatus,
     TypedError,
-} from "@near-js/types";
+} from '@near-js/types';
 import {
     DEFAULT_FUNCTION_CALL_GAS,
     Logger,
@@ -38,19 +38,19 @@ import {
     getTransactionLastResult,
     parseResultError,
     printTxOutcomeLogsAndFailures,
-} from "@near-js/utils";
-import { InMemoryKeyStore } from "@near-js/keystores";
-import { InMemorySigner, type SignedMessage, type Signer } from "@near-js/signers";
-import { Connection } from "./connection";
+} from '@near-js/utils';
+import { InMemoryKeyStore } from '@near-js/keystores';
+import { InMemorySigner, type SignedMessage, type Signer } from '@near-js/signers';
+import { Connection } from './connection';
 import type {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
-} from "./interface";
-import { viewFunction, viewState } from "./utils";
+} from './interface';
+import { viewFunction, viewState } from './utils';
 
-import type { FungibleToken, NativeToken } from "@near-js/tokens";
-import { NEAR } from "@near-js/tokens";
-import depd from "depd";
+import type { FungibleToken, NativeToken } from '@near-js/tokens';
+import { NEAR } from '@near-js/tokens';
+import depd from 'depd';
 
 const {
     addKey,
@@ -66,8 +66,8 @@ const {
     useGlobalContract,
 } = actionCreators;
 
-const DEFAULT_FINALITY: Finality =  "optimistic";
-export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
+const DEFAULT_FINALITY: Finality =  'optimistic';
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = 'EXECUTED_OPTIMISTIC';
 
 export interface AccountState {
     balance: {
@@ -246,7 +246,7 @@ export class Account {
         actions: Action[],
         publicKey: PublicKey | string
     ) {
-        if (!publicKey) throw new Error("Please provide a public key");
+        if (!publicKey) throw new Error('Please provide a public key');
 
         const pk = PublicKey.from(publicKey);
 
@@ -276,7 +276,7 @@ export class Account {
         receiverId: string,
         actions: Action[]
     ): Promise<SignedTransaction> {
-        if (!this.signer) throw new Error("Please set a signer");
+        if (!this.signer) throw new Error('Please set a signer');
 
         const tx = await this.createTransaction(
             receiverId,
@@ -302,7 +302,7 @@ export class Account {
         blockHeightTtl: number = 200,
         publicKey: PublicKey | string
     ): Promise<DelegateAction> {
-        if (!publicKey) throw new Error(`Please provide a public key`);
+        if (!publicKey) throw new Error('Please provide a public key');
 
         const pk = PublicKey.from(publicKey);
 
@@ -337,7 +337,7 @@ export class Account {
         actions: Action[],
         blockHeightTtl: number = 200
     ): Promise<[Uint8Array, SignedDelegate]> {
-        if (!this.signer) throw new Error(`Please set a signer`);
+        if (!this.signer) throw new Error('Please set a signer');
 
         const delegateAction = await this.createMetaTransaction(
             receiverId,
@@ -381,8 +381,8 @@ export class Account {
 
         if (
             throwOnFailure &&
-            typeof result.status === "object" &&
-            typeof result.status.Failure === "object" &&
+            typeof result.status === 'object' &&
+            typeof result.status.Failure === 'object' &&
             result.status.Failure !== null
         ) {
             throw parseResultError(result);
@@ -400,7 +400,7 @@ export class Account {
         waitUntil?: TxExecutionStatus;
         throwOnFailure?: boolean;
     }): Promise<FinalExecutionOutcome[]> {
-        if (!this.signer) throw new Error("Please set a signer");
+        if (!this.signer) throw new Error('Please set a signer');
 
         const results = await Promise.all(
             transactions.map(async ({ receiverId, actions }) => {
@@ -435,7 +435,7 @@ export class Account {
     public async createAccount(
         newAccountId: string,
         publicKey: PublicKey | string,
-        nearToTransfer: bigint | string | number = "0"
+        nearToTransfer: bigint | string | number = '0'
     ): Promise<FinalExecutionOutcome> {
         if (newAccountId.endsWith(this.accountId)) {
             return this.createSubAccount(
@@ -445,10 +445,10 @@ export class Account {
             );
         }
 
-        const splitted = newAccountId.split(".");
+        const splitted = newAccountId.split('.');
         if (splitted.length != 2) {
             throw new Error(
-                "newAccountId needs to be of the form <string>.<tla>"
+                'newAccountId needs to be of the form <string>.<tla>'
             );
         }
 
@@ -457,12 +457,12 @@ export class Account {
             receiverId: TLA,
             actions: [
                 functionCall(
-                    "create_account",
+                    'create_account',
                     {
                         new_account_id: newAccountId,
                         new_public_key: publicKey.toString(),
                     },
-                    BigInt("60000000000000"),
+                    BigInt('60000000000000'),
                     BigInt(nearToTransfer)
                 ),
             ],
@@ -481,16 +481,16 @@ export class Account {
     public async createSubAccount(
         accountOrPrefix: string,
         publicKey: PublicKey | string,
-        nearToTransfer: bigint | string | number = "0"
+        nearToTransfer: bigint | string | number = '0'
     ): Promise<FinalExecutionOutcome> {
-        if (!this.signer) throw new Error("Please set a signer");
+        if (!this.signer) throw new Error('Please set a signer');
 
-        const newAccountId = accountOrPrefix.includes(".")
+        const newAccountId = accountOrPrefix.includes('.')
             ? accountOrPrefix
             : `${accountOrPrefix}.${this.accountId}`;
 
         if (newAccountId.length > 64) {
-            throw new Error(`Accounts cannot exceed 64 characters`);
+            throw new Error('Accounts cannot exceed 64 characters');
         }
 
         if (!newAccountId.endsWith(this.accountId)) {
@@ -548,9 +548,9 @@ export class Account {
      */
     public async deployGlobalContract(
         code: Uint8Array,
-        deployMode: "codeHash" | "accountId"
+        deployMode: 'codeHash' | 'accountId'
     ): Promise<FinalExecutionOutcome> {
-        const mode = deployMode === "codeHash" 
+        const mode = deployMode === 'codeHash' 
             ? new GlobalContractDeployMode({ CodeHash: null })
             : new GlobalContractDeployMode({ AccountId: null });
             
@@ -568,11 +568,11 @@ export class Account {
     public async useGlobalContract(
         contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }
     ): Promise<FinalExecutionOutcome> {
-        const identifier = "accountId" in contractIdentifier
+        const identifier = 'accountId' in contractIdentifier
             ? new GlobalContractIdentifier({ AccountId: contractIdentifier.accountId })
             : new GlobalContractIdentifier({ 
-                CodeHash: typeof contractIdentifier.codeHash === "string" 
-                    ? Buffer.from(contractIdentifier.codeHash, "hex")
+                CodeHash: typeof contractIdentifier.codeHash === 'string' 
+                    ? Buffer.from(contractIdentifier.codeHash, 'hex')
                     : contractIdentifier.codeHash 
             });
             
@@ -595,7 +595,7 @@ export class Account {
         publicKey,
         contractId,
         methodNames = [],
-        allowance = NEAR.toUnits("0.25"),
+        allowance = NEAR.toUnits('0.25'),
     }: {
         publicKey: PublicKey | string;
         contractId: string;
@@ -665,7 +665,7 @@ export class Account {
         gas?: bigint | string | number;
         waitUntil?: TxExecutionStatus;
     }): Promise<T> {
-        const outcome = await this.callFunctionRaw(params)
+        const outcome = await this.callFunctionRaw(params);
         return getTransactionLastResult(outcome) as T;
     }
 
@@ -685,7 +685,7 @@ export class Account {
         contractId,
         methodName,
         args = {},
-        deposit = "0",
+        deposit = '0',
         gas = DEFAULT_FUNCTION_CALL_GAS,
         waitUntil = DEFAULT_WAIT_STATUS,
     }: {
@@ -726,7 +726,7 @@ export class Account {
         nonce: Uint8Array;
         callbackUrl?: string;
     }): Promise<SignedMessage> {
-        if (!this.signer) throw new Error("Please set a signer");
+        if (!this.signer) throw new Error('Please set a signer');
         return this.signer.signNep413Message(
             message,
             this.accountId,
@@ -793,7 +793,7 @@ export class Account {
             finality: DEFAULT_FINALITY,
         });
 
-        if (!this.signer) throw new Error(`Please set a signer`);
+        if (!this.signer) throw new Error('Please set a signer');
 
         const pk = await this.signer.getPublicKey();
 
@@ -819,7 +819,7 @@ export class Account {
      * @deprecated Will be removed in the next major release, accounts no longer use Connections since it's deprecated too
      */
     public getConnection(): Connection {
-        return new Connection("", this.provider, new InMemorySigner(new InMemoryKeyStore()));
+        return new Connection('', this.provider, new InMemorySigner(new InMemoryKeyStore()));
     }
 
     /** @hidden */
@@ -830,7 +830,7 @@ export class Account {
             return;
         }
 
-        if (Array.isArray(args) || typeof args !== "object") {
+        if (Array.isArray(args) || typeof args !== 'object') {
             throw new PositionalArgsError();
         }
     }
@@ -878,7 +878,7 @@ export class Account {
 
         return this.signAndSendTransactionLegacy({
             receiverId: contractId,
-            // eslint-disable-next-line prefer-spread
+             
             actions: [functionCall.apply(void 0, functionCallArgs)],
             walletMeta,
             walletCallbackUrl,
@@ -897,7 +897,7 @@ export class Account {
         return this.provider.viewTransactionStatus(
             txHash,
             this.accountId, // accountId is used to determine on which shard to look for a tx
-            "EXECUTED_OPTIMISTIC"
+            'EXECUTED_OPTIMISTIC'
         );
     }
 
@@ -918,7 +918,7 @@ export class Account {
 
         const signer = opts?.signer || this.signer;
 
-        if (!signer) throw new Error(`Please set a signer`);
+        if (!signer) throw new Error('Please set a signer');
 
         const pk = await signer.getPublicKey();
 
@@ -1046,7 +1046,7 @@ export class Account {
                 try {
                     return await this.provider.sendTransaction(signedTx);
                 } catch (error) {
-                    if (error.type === "InvalidNonce") {
+                    if (error.type === 'InvalidNonce') {
                         Logger.warn(
                             `Retrying transaction ${receiverId}:${baseEncode(
                                 txHash
@@ -1054,7 +1054,7 @@ export class Account {
                         );
                         return null;
                     }
-                    if (error.type === "Expired") {
+                    if (error.type === 'Expired') {
                         Logger.warn(
                             `Retrying transaction ${receiverId}:${baseEncode(
                                 txHash
@@ -1071,8 +1071,8 @@ export class Account {
         if (!result) {
             // TODO: This should have different code actually, as means "transaction not submitted for sure"
             throw new TypedError(
-                "nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.",
-                "RetriesExceeded"
+                'nonce retries exceeded for transaction. This usually means there are too many parallel requests with the same access key.',
+                'RetriesExceeded'
             );
         }
 
@@ -1084,8 +1084,8 @@ export class Account {
         // Should be falsy if result.status.Failure is null
         if (
             !returnError &&
-            typeof result.status === "object" &&
-            typeof result.status.Failure === "object" &&
+            typeof result.status === 'object' &&
+            typeof result.status.Failure === 'object' &&
             result.status.Failure !== null
         ) {
             // if error data has error_message and error_type properties, we consider that node returned an error in the old format
@@ -1117,21 +1117,23 @@ export class Account {
      * @param actions currently unused
      * @returns `{ publicKey PublicKey; accessKey: AccessKeyView }`
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     async findAccessKey(
-        receiverId: string,
-        actions: Action[]
+        _receiverId: string,
+        _actions: Action[]
     ): Promise<{ publicKey: PublicKey; accessKey: AccessKeyView }> {
         const deprecate = depd('Account.findAccessKey()');
+        void _receiverId;
+        void _actions;
         deprecate('It will be removed in the next major release');
 
-        if (!this.signer) throw new Error(`Please set a signer`);
+        if (!this.signer) throw new Error('Please set a signer');
 
         const publicKey = await this.signer.getPublicKey();
         if (!publicKey) {
             throw new TypedError(
                 `no matching key pair found in ${this.signer.constructor.name}`,
-                "PublicKeyNotFound"
+                'PublicKeyNotFound'
             );
         }
 
@@ -1143,7 +1145,7 @@ export class Account {
 
         try {
             const rawAccessKey = await this.provider.query<AccessKeyViewRaw>({
-                request_type: "view_access_key",
+                request_type: 'view_access_key',
                 account_id: this.accountId,
                 public_key: publicKey.toString(),
                 finality: DEFAULT_FINALITY,
@@ -1169,7 +1171,7 @@ export class Account {
             this.accessKeyByPublicKeyCache[publicKey.toString()] = accessKey;
             return { publicKey, accessKey };
         } catch (e) {
-            if (e.type == "AccessKeyDoesNotExist") {
+            if (e.type == 'AccessKeyDoesNotExist') {
                 return null;
             }
 
@@ -1272,7 +1274,7 @@ export class Account {
         deprecate('It will be removed in the next major release, please switch to either Account.getAccessKeyList()');
 
         const response = await this.provider.query<AccessKeyList>({
-            request_type: "view_access_key_list",
+            request_type: 'view_access_key_list',
             account_id: this.accountId,
             finality: DEFAULT_FINALITY,
         });
@@ -1300,7 +1302,7 @@ export class Account {
         // Also if we need this function, or getAccessKeys is good enough.
         const accessKeys = await this.getAccessKeys();
         const authorizedApps = accessKeys
-            .filter((item) => item.access_key.permission !== "FullAccess")
+            .filter((item) => item.access_key.permission !== 'FullAccess')
             .map((item) => {
                 const perm = item.access_key
                     .permission as FunctionCallPermissionView;
@@ -1325,9 +1327,9 @@ export class Account {
         deprecate('It will be removed in the next major release, please switch to either Account.getState()');
 
         return this.provider.query<AccountView>({
-            request_type: "view_account",
+            request_type: 'view_account',
             account_id: this.accountId,
-            finality: "optimistic",
+            finality: 'optimistic',
         });
     }
 
@@ -1391,7 +1393,7 @@ export class Account {
         const promises = uniquePools.map((validator) =>
             this.viewFunction({
                 contractId: validator,
-                methodName: "get_account_total_balance",
+                methodName: 'get_account_total_balance',
                 args: { account_id: this.accountId },
                 blockQuery: { blockId: blockHash },
             })
@@ -1401,8 +1403,8 @@ export class Account {
 
         const hasTimeoutError = results.some((result) => {
             if (
-                result.status === "rejected" &&
-                result.reason.type === "TimeoutError"
+                result.status === 'rejected' &&
+                result.reason.type === 'TimeoutError'
             ) {
                 return true;
             }
@@ -1411,12 +1413,12 @@ export class Account {
 
         // When RPC is down and return timeout error, throw error
         if (hasTimeoutError) {
-            throw new Error("Failed to get delegated stake balance");
+            throw new Error('Failed to get delegated stake balance');
         }
         const summary = results.reduce(
             (result, state, index) => {
                 const validatorId = uniquePools[index];
-                if (state.status === "fulfilled") {
+                if (state.status === 'fulfilled') {
                     const currentBN = BigInt(state.value);
                     if (currentBN !== 0n) {
                         return {
@@ -1429,7 +1431,7 @@ export class Account {
                         };
                     }
                 }
-                if (state.status === "rejected") {
+                if (state.status === 'rejected') {
                     return {
                         ...result,
                         failedValidators: [

@@ -19,23 +19,23 @@ NEAR JavaScript API is a complete library to interact with the NEAR blockchain. 
 
 1. Install dependencies
 
-       pnpm install
+       bun install
 
-2. Run continuous build with:
+2. Build all packages:
 
-       pnpm -r compile -w
+       bun run build
 
 ### Publish
 
 Prepare `dist` version by running:
 
-    pnpm dist
+    bun run build
 
 ### Integration Test
 
 Start the node by following instructions from [nearcore](https://github.com/nearprotocol/nearcore), then
 
-    pnpm test
+    bun run test
 
 Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello
 
@@ -44,13 +44,8 @@ Tests use sample contract from `near-hello` npm package, see https://github.com/
 From the root directory, run the following commands:
 
 ```
-cd e2e
-pnpm install --ignore-workspace
-pnpm test
+bun run --cwd e2e test
 ```
-
-The `--ignore-workspace` flag is required because the `e2e` project is intentionally excluded from the workspace.
-This setup ensures that packages are installed just like a real application would — as standalone builds. Workspace linking would not allow this, as it forces symlinks instead of proper package installations.
 
 ### Update error schema
 
@@ -58,8 +53,8 @@ Follow next steps:
 
 1. [Optionally, set a specific hash for the commit with errors in the nearcore](https://github.com/near/near-api-js/blob/master/packages/utils/fetch_error_schema.js#L4-L5)
 2. Fetch new schema: `node fetch_error_schema.js`
-3. `pnpm build` and `pnpm test` to check tests still work
-4. `pnpm changeset` to generate a changeset with a minor bump for the @near-js/utils package
+3. `bun run build` and `bun run test` to check tests still work
+4. `bunx changeset` to generate a changeset with a minor bump for the @near-js/utils package
 5. commit all changes and submit a PR on GitHub
 
 ## Packages

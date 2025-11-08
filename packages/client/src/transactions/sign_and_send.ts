@@ -1,7 +1,7 @@
 import { getTransactionLastResult } from '@near-js/utils';
 
-import type { SignTransactionParams, SignAndSendTransactionParams } from '../interfaces';
-import { getNonce } from '../view';
+import type { SignTransactionParams, SignAndSendTransactionParams } from '../interfaces/index.js';
+import { getNonce } from '../view.js';
 import { BlockReference, SerializedReturnValue } from '@near-js/types';
 
 const DEFAULT_FINALITY: BlockReference = { finality: 'optimistic' };
@@ -12,12 +12,12 @@ const DEFAULT_FINALITY: BlockReference = { finality: 'optimistic' };
  * @param signer MessageSigner
  */
 export async function signTransaction({ transaction, deps: { signer } }: SignTransactionParams) {
-  const [txHash, signedTransaction] = await signer.signTransaction(transaction);
+    const [txHash, signedTransaction] = await signer.signTransaction(transaction);
 
-  return {
-    encodedTransactionHash: txHash,
-    signedTransaction,
-  };
+    return {
+        encodedTransactionHash: txHash,
+        signedTransaction,
+    };
 }
 
 /**
@@ -26,12 +26,12 @@ export async function signTransaction({ transaction, deps: { signer } }: SignTra
  * @param deps sign-and-send dependencies
  */
 export async function signAndSendTransaction<T extends SerializedReturnValue>({ transaction, deps: { rpcProvider, signer } }: SignAndSendTransactionParams) {
-  const { signedTransaction } = await signTransaction({ transaction, deps: { signer } });
-  const outcome = await rpcProvider.sendTransaction(signedTransaction);
-  return {
-    outcome,
-    result: getTransactionLastResult(outcome) as T,
-  };
+    const { signedTransaction } = await signTransaction({ transaction, deps: { signer } });
+    const outcome = await rpcProvider.sendTransaction(signedTransaction);
+    return {
+        outcome,
+        result: getTransactionLastResult(outcome) as T,
+    };
 }
 
 /**
@@ -42,10 +42,10 @@ export async function signAndSendTransaction<T extends SerializedReturnValue>({ 
  * @param deps sign-and-send dependencies
  */
 export async function getSignerNonce({ account, blockReference = DEFAULT_FINALITY, deps: { rpcProvider, signer } }) {
-  return getNonce({
-    account,
-    publicKey: (await signer.getPublicKey()).toString(),
-    blockReference,
-    deps: { rpcProvider },
-  });
+    return getNonce({
+        account,
+        publicKey: (await signer.getPublicKey()).toString(),
+        blockReference,
+        deps: { rpcProvider },
+    });
 }

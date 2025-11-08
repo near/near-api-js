@@ -17,7 +17,7 @@ import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
  */
 export default async function sendMetaTransactionViaRelayer(signerAccountId: string, receiverAccountId: string, relayerUrl: string) {
   if (!signerAccountId || !receiverAccountId) {
-    console.log(chalk`{red pnpm metaTransaction -- SENDER_ACCOUNT_ID RECEIVER_ACCOUNT_ID RELAYER_URL}`);
+    console.log(chalk`{red bun run metaTransaction -- SENDER_ACCOUNT_ID RECEIVER_ACCOUNT_ID RELAYER_URL}`);
     return;
   }
 

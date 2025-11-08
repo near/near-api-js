@@ -1,10 +1,10 @@
-import { InMemorySigner } from "@near-js/signers";
+import { InMemorySigner } from '@near-js/signers';
 import {
     Provider,
     JsonRpcProvider,
     FailoverRpcProvider,
-} from "@near-js/providers";
-import { IntoConnection } from "./interface";
+} from '@near-js/providers';
+import { IntoConnection } from './interface';
 import depd from 'depd';
 
 /**
@@ -15,9 +15,9 @@ function getProvider(config: any): Provider {
     switch (config.type) {
         case undefined:
             return config;
-        case "JsonRpcProvider":
+        case 'JsonRpcProvider':
             return new JsonRpcProvider({ ...config.args });
-        case "FailoverRpcProvider": {
+        case 'FailoverRpcProvider': {
             const providers = (config?.args || []).map(
                 (arg) => new JsonRpcProvider(arg)
             );
@@ -35,7 +35,7 @@ function getSigner(config: any) {
     switch (config.type) {
         case undefined:
             return config;
-        case "InMemorySigner": {
+        case 'InMemorySigner': {
             return new InMemorySigner(config.keyStore);
         }
         default:

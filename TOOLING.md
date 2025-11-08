@@ -2,11 +2,11 @@
 
 This document describes at a high level some the key tools used across `near-js`.
 
-## Package Manager - [PNPM](https://pnpm.io/)
-PNPM is a package manager focused on fast installations while still being disk efficient. It manages dependency installations across the monorepo as well as linking interdependent packages. Unlike other package managers, PNPM creates a non-flat `node_modules` structure which ensures packages only have access to dependencies defined in their `package.json`.
+## Package Manager - [Bun](https://bun.sh/)
+Bun powers dependency installation and workspace orchestration for the monorepo. Its built-in workspaces keep packages linked together without the extra configuration that pnpm required, and installs complete in just a few seconds.
 
-## Build System - [Turborepo](https://turborepo.org/)
-Turborepo provides tooling for orchestrating commands across the monorepo. Similar to Yarn Workspaces, Turborepo can run tasks within each project via a single command, but rather than executing serially, Turborepo has various performance enhancing features such as task parallelization and local/remote caching.
+## Build System - TypeScript (`tsc`)
+Each package compiles directly with the TypeScript compiler via `bun run build`. There is no longer a Turborepo layer or bundler; Bun runs the scripts across the workspace and `tsc` emits the ESM output.
 
 ## Package Publishing - [Changesets](https://github.com/changesets/changesets)
 Changesets manages package versioning, changelog generation, and publishing to the package registry. Changesets provides a CLI to simplify bumping packages and adding changelog entries, it then automates versioning and publishing via GitHub Actions.

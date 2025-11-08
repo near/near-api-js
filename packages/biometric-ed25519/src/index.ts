@@ -15,9 +15,9 @@ import {
     uint8ArrayToBigInt,
     sanitizeCreateKeyResponse,
     sanitizeGetKeyResponse
-} from './utils';
-import { Fido2 } from './fido2';
-import type { AssertionResponse } from './type';
+} from './utils.js';
+import { Fido2 } from './fido2.js';
+import type { AssertionResponse } from './type.js';
 
 const CHALLENGE_TIMEOUT_MS = 90 * 1000;
 const RP_NAME = 'NEAR_API_JS_WEBAUTHN';
@@ -145,7 +145,7 @@ export const isDeviceSupported = async (): Promise<boolean> => {
     try {
         await createKey('test-device');
         return true;
-    } catch (e) {
+    } catch {
         return false;
     }
 };

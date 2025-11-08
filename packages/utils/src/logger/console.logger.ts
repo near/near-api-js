@@ -1,4 +1,4 @@
-import type { LoggerService, LogLevel } from './interface';
+import type { LoggerService, LogLevel } from './interface.js';
 
 /**
  * @deprecated Will be removed in the next major release

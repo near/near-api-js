@@ -21,7 +21,7 @@ const SIGNER_ACCOUNT_ID = 'signer.testnet';     // the account executing the met
  */
 export default async function metaTransaction(signerAccountId: string = SIGNER_ACCOUNT_ID, receiverAccountId: string = RECEIVER_ACCOUNT_ID, senderAccountId: string = SENDER_ACCOUNT_ID): Promise<any> {
     if (!signerAccountId || !receiverAccountId || !senderAccountId) {
-        console.log(chalk`{red pnpm metaTransaction -- [SIGNER_ACCOUNT_ID] [RECEIVER_ACCOUNT_ID] [SENDER_ACCOUNT_ID]}`);
+        console.log(chalk`{red bun run metaTransaction -- [SIGNER_ACCOUNT_ID] [RECEIVER_ACCOUNT_ID] [SENDER_ACCOUNT_ID]}`);
         return;
     }
 

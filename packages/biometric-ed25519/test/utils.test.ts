@@ -1,5 +1,5 @@
-import { describe, expect, it, jest } from 'bun:test';
-import { sanitizeCreateKeyResponse, sanitizeGetKeyResponse } from '../src/utils';
+import { describe, expect, it } from 'bun:test';
+import { sanitizeCreateKeyResponse, sanitizeGetKeyResponse } from '../src/utils.js';
 
 // Define a mock PublicKeyCredential
 class PublicKeyCredentialMock {
@@ -28,14 +28,6 @@ class PublicKeyCredentialMock {
 // Define global PublicKeyCredential to make it available during tests
 // @ts-expect-error test input
 global.PublicKeyCredential = PublicKeyCredentialMock;
-
-jest.mock('../src/utils', () => {
-    const originalModule = jest.requireActual('../src/utils');
-    return {
-        ...originalModule,
-        convertUint8ArrayToArrayBuffer: jest.fn().mockImplementation(input => input.buffer),
-    };
-});
 
 describe('sanitizeCreateKeyResponse', () => {
     it('should convert Uint8Array properties to ArrayBuffer for PublicKeyCredential', () => {

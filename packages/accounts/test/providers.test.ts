@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, jest, test } from 'bun:test';
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import { KeyPair } from '@near-js/crypto';
 import { ErrorMessages } from '@near-js/utils';
 import { base58 } from '@scure/base';
@@ -7,7 +7,7 @@ import { createAccount, deployContract, generateUniqueString, setUpTestConnectio
 
 import { Worker } from 'near-workspaces';
 
-jest.setTimeout(60000);
+vi.setConfig({ testTimeout: 60000 });
 
 let provider;
 let near;
@@ -290,4 +290,3 @@ describe('providers errors', () => {
         }
     });
 });
-

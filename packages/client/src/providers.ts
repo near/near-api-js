@@ -1,24 +1,24 @@
 import { FailoverRpcProvider, JsonRpcProvider, Provider } from '@near-js/providers';
 
 import {
-  PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET,
-  PAGODA_RPC_ENDPOINTS_MAINNET,
-  PAGODA_RPC_ENDPOINTS_TESTNET,
-} from './constants';
+    PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET,
+    PAGODA_RPC_ENDPOINTS_MAINNET,
+    PAGODA_RPC_ENDPOINTS_TESTNET,
+} from './constants.js';
 
 /**
  * Get the set of public endpoints for the provided network
  * @param network target blockchain network (e.g. `mainnet`)
  */
 export function getEndpointsByNetwork(network: string) {
-  switch (network) {
-    case 'testnet':
-      return PAGODA_RPC_ENDPOINTS_TESTNET;
-    case 'mainnet':
-      return PAGODA_RPC_ENDPOINTS_MAINNET;
-    default:
-      return null;
-  }
+    switch (network) {
+        case 'testnet':
+            return PAGODA_RPC_ENDPOINTS_TESTNET;
+        case 'mainnet':
+            return PAGODA_RPC_ENDPOINTS_MAINNET;
+        default:
+            return null;
+    }
 }
 
 /**
@@ -26,11 +26,11 @@ export function getEndpointsByNetwork(network: string) {
  * @param urls RPC endpoint URLs
  */
 export function createRpcClientWrapper(urls: string[]): Provider {
-  if (!urls) {
-    throw new Error('at least one RPC endpoint URL required');
-  }
+    if (!urls) {
+        throw new Error('at least one RPC endpoint URL required');
+    }
 
-  return new FailoverRpcProvider(urls.map((url) => new JsonRpcProvider({ url })));
+    return new FailoverRpcProvider(urls.map((url) => new JsonRpcProvider({ url })));
 }
 
 /**
@@ -38,7 +38,7 @@ export function createRpcClientWrapper(urls: string[]): Provider {
  * @param network target blockchain network (e.g. `mainnet`)
  */
 export function getProviderByNetwork(network: string) {
-  return createRpcClientWrapper(getEndpointsByNetwork(network));
+    return createRpcClientWrapper(getEndpointsByNetwork(network));
 }
 
 /**
@@ -46,26 +46,26 @@ export function getProviderByNetwork(network: string) {
  * @param urls RPC endpoint URLs
  */
 export function getProviderByEndpoints(...urls: string[]) {
-  return createRpcClientWrapper(urls);
+    return createRpcClientWrapper(urls);
 }
 
 /**
  * Initialize a testnet RPC provider
  */
 export function getTestnetRpcProvider() {
-  return getProviderByNetwork('testnet');
+    return getProviderByNetwork('testnet');
 }
 
 /**
  * Initialize a testnet archival RPC provider
  */
 export function getTestnetRpcArchivalProvider() {
-  return createRpcClientWrapper(PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET);
+    return createRpcClientWrapper(PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET);
 }
 
 /**
  * Initialize a mainnet RPC provider
  */
 export function getMainnetRpcProvider() {
-  return getProviderByNetwork('mainnet');
+    return getProviderByNetwork('mainnet');
 }

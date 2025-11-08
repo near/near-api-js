@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 import { KeyPairEd25519 } from '@near-js/crypto';
 
-import { InMemoryKeyStore, MergeKeyStore } from '../src';
-import { shouldStoreAndRetrieveKeys } from './keystore_common';
+import { InMemoryKeyStore, MergeKeyStore } from '../src/index.js';
+import { shouldStoreAndRetrieveKeys } from './keystore_common.js';
 
 describe('Merge keystore', () => {
     const ctx: any = {};

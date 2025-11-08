@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'bun:test';
-import { Logger } from '../src';
+import { Logger } from '../src/index.js';
 
 
 describe('logger', () => {

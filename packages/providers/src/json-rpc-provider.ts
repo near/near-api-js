@@ -51,8 +51,8 @@ import {
     SignedTransaction,
 } from '@near-js/transactions';
 
-import { Provider } from './provider';
-import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
+import { Provider } from './provider.js';
+import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
 import { TxExecutionStatus } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
 

@@ -12,7 +12,7 @@ import {
 import { Worker } from "near-workspaces";
 import { KeyPair, KeyPairString } from "@near-js/crypto";
 import { KeyPairSigner } from "@near-js/signers";
-import { getRpcUrl, getSecretKey } from "./worker";
+import { getRpcUrl, getSecretKey } from "./worker.js";
 
 let worker: Worker;
 let rootAccount: Account;

@@ -15,7 +15,7 @@ const METHOD_NAME = "addMessage";
 
 export default async function calculateGas(accountId: string, method = METHOD_NAME, contract = CONTRACT_ID) {
   if (!accountId) {
-    console.log(chalk`{red pnpm calculateGas -- ACCOUNT_ID}`);
+    console.log(chalk`{red bun run calculateGas -- ACCOUNT_ID}`);
     return;
   }
 

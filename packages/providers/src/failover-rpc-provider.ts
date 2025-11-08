@@ -38,7 +38,7 @@ import {
     FinalityReference,
 } from '@near-js/types';
 import { SignedTransaction } from '@near-js/transactions';
-import { Provider } from './provider';
+import { Provider } from './provider.js';
 import { TxExecutionStatus } from '@near-js/types';
 import { PublicKey } from '@near-js/crypto';
 

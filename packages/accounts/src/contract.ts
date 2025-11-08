@@ -1,27 +1,25 @@
-import { getTransactionLastResult, Logger } from "@near-js/utils";
-import { ArgumentTypeError, PositionalArgsError } from "@near-js/types";
-import { LocalViewExecution } from "./local-view-execution";
-import validator from "is-my-json-valid";
-import depd from "depd";
+import { getTransactionLastResult, Logger } from '@near-js/utils';
+import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
+import { LocalViewExecution } from './local-view-execution';
+import validator from 'is-my-json-valid';
+import depd from 'depd';
 import {
     AbiFunction,
     AbiFunctionKind,
     AbiRoot,
     AbiSerializationType,
-} from "near-abi";
+} from 'near-abi';
 
-import { Account } from "./account";
+import { Account } from './account';
 import {
     UnsupportedSerializationError,
     UnknownArgumentError,
     ArgumentSchemaError,
     ConflictingOptions,
-} from "./errors";
-import { IntoConnection } from "./interface";
-import { Connection } from "./connection";
-import { viewFunction } from "./utils";
-
-import type { TypedContract } from "./typed_contract";
+} from './errors';
+import { IntoConnection } from './interface';
+import { Connection } from './connection';
+import { viewFunction } from './utils';
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
@@ -86,7 +84,7 @@ const isUint8Array = (x: any) =>
     x && x.byteLength !== undefined && x.byteLength === x.length;
 
 const isObject = (x: any) =>
-    Object.prototype.toString.call(x) === "[object Object]";
+    Object.prototype.toString.call(x) === '[object Object]';
 
 interface ChangeMethodOptions {
     signerAccount?: Account;
@@ -125,7 +123,7 @@ export interface ContractMethods {
 }
 
 /**
- * @deprecated It will be removed in the next major release, please switch to {@link TypedContract} with type-safe ABI support
+ * @deprecated It will be removed in the next major release, please switch to {@link import('./typed_contract').TypedContract} with type-safe ABI support
  *
  * Defines a smart contract on NEAR including the change (mutable) and view (non-mutable) methods
  *
@@ -177,7 +175,7 @@ export class Contract {
         contractId: string,
         options: ContractMethods
     ) {
-        const deprecate = depd("new Contract()");
+        const deprecate = depd('new Contract()');
         deprecate(
             'It will be removed in the next major release, please switch to "TypedContract" with type-safe ABI support'
         );
@@ -185,10 +183,10 @@ export class Contract {
         this.connection = connection.getConnection();
         if (connection instanceof Account) {
             const deprecate = depd(
-                "new Contract(account, contractId, options)"
+                'new Contract(account, contractId, options)'
             );
             deprecate(
-                "use `new Contract(connection, contractId, options)` instead"
+                'use `new Contract(connection, contractId, options)` instead'
             );
             this.account = connection;
         }
@@ -255,7 +253,7 @@ export class Contract {
                                 Logger.warn(
                                     `Local view execution failed with: "${error.message}"`
                                 );
-                                Logger.warn(`Fallback to normal RPC call`);
+                                Logger.warn('Fallback to normal RPC call');
                             }
                         }
 
@@ -293,10 +291,10 @@ export class Contract {
 
                     if (args.length > 1 || !(args[0] && args[0].args)) {
                         const deprecate = depd(
-                            "contract.methodName(args, gas, amount)"
+                            'contract.methodName(args, gas, amount)'
                         );
                         deprecate(
-                            "use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead"
+                            'use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead'
                         );
                         args[0] = {
                             args: args[0],
@@ -328,7 +326,7 @@ export class Contract {
 
         const account = this.account || signerAccount;
 
-        if (!account) throw new Error(`signerAccount must be specified`);
+        if (!account) throw new Error('signerAccount must be specified');
 
         const rawResult = await account.functionCall({
             contractId: this.contractId,
@@ -349,10 +347,10 @@ export class Contract {
  * @param argMap
  */
 function validateBNLike(argMap: { [name: string]: any }) {
-    const bnLike = "number, decimal string or BigInt";
+    const bnLike = 'number, decimal string or BigInt';
     for (const argName of Object.keys(argMap)) {
         const argValue = argMap[argName];
-        if (argValue && typeof argValue !== "bigint" && isNaN(argValue)) {
+        if (argValue && typeof argValue !== 'bigint' && isNaN(argValue)) {
             throw new ArgumentTypeError(argName, bnLike, argValue);
         }
     }

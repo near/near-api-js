@@ -14,7 +14,7 @@ import {
     createTransaction,
     decodeTransaction,
     encodeTransaction
-} from '../src';
+} from '../src/index.js';
 
 const {
     addKey,

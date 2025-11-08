@@ -1,5 +1,5 @@
-import { describe, expect, test } from 'bun:test';
-import { Account, Contract, ArgumentSchemaError, UnknownArgumentError, UnsupportedSerializationError } from '../src';
+import { describe, expect, test } from 'vitest';
+import { Account, Contract, ArgumentSchemaError, UnknownArgumentError, UnsupportedSerializationError } from '../src/index.js';
 
 const rawAbi = `{
   "schema_version": "0.3.0",

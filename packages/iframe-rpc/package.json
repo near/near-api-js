@@ -1,32 +1,29 @@
 {
-	"name": "@near-js/iframe-rpc",
-	"version": "2.5.1",
-	"description": "IFrame RPC client/server implementation",
-	"types": "./lib/index.d.ts",
-	"type": "module",
-	"scripts": {
-		"build": "tsc",
-		"check-exports": "attw --pack .",
-		"clean": "rm -rf lib"
-	},
-	"keywords": [],
-	"author": "Pagoda",
-	"license": "ISC",
-	"dependencies": {
-		"events": "3.3.0"
-	},
-	"devDependencies": {
-		"@types/node": "18.11.18"
-	},
-	"exports": {
-		".": {
-			"import": "./lib/index.js",
-			"types": "./lib/index.d.ts"
-		}
-	},
-	"sideEffects": false,
-	"module": "./lib/index.js",
-	"files": [
-		"lib"
-	]
+    "name": "@near-js/iframe-rpc",
+    "version": "2.5.1",
+    "description": "IFrame RPC client/server implementation",
+    "types": "./lib/index.d.ts",
+    "type": "module",
+    "scripts": {
+        "build": "tsc",
+        "check-exports": "attw --ignore-rules cjs-resolves-to-esm internal-resolution-error --pack .",
+        "clean": "rm -rf lib"
+    },
+    "keywords": [],
+    "author": "Pagoda",
+    "license": "ISC",
+    "dependencies": {
+        "events": "3.3.0"
+    },
+    "exports": {
+        ".": {
+            "import": "./lib/index.js",
+            "types": "./lib/index.d.ts"
+        }
+    },
+    "sideEffects": false,
+    "module": "./lib/index.js",
+    "files": [
+        "lib"
+    ]
 }

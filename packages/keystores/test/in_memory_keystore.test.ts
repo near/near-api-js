@@ -1,6 +1,6 @@
 import { beforeAll, describe } from 'bun:test';
-import { shouldStoreAndRetrieveKeys } from './keystore_common';
-import { InMemoryKeyStore } from '../src';
+import { shouldStoreAndRetrieveKeys } from './keystore_common.js';
+import { InMemoryKeyStore } from '../src/index.js';
 
 describe('In-memory keystore', () => {
     const ctx: any = {};

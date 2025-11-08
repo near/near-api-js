@@ -66,7 +66,7 @@ Due to npm registry authentication issues in the test environment, the following
    ```bash
    bun install
    ```
-   - Should create `bun.lockb`
+   - Should create `bun.lock`
    - Should install all dependencies without errors
 
 2. **Build All Packages**
@@ -88,10 +88,10 @@ Due to npm registry authentication issues in the test environment, the following
 
 4. **Run Unit Tests**
    ```bash
-   bun run test
+   bun run --filter '*' test
    ```
-   - All Jest tests should pass
-   - Check that Jest works with ESM configuration
+   - Packages now execute their suites via Bun's native test runner
+   - `@near-js/accounts` still relies on `near-workspaces` (CommonJS) and cannot run under Bun's loader (see status notes)
 
 5. **Check Exports**
    ```bash
@@ -105,7 +105,7 @@ Due to npm registry authentication issues in the test environment, the following
    bun run --cwd e2e test
    ```
    - Vitest e2e tests should pass
-   - Verify workspace dependencies resolve correctly
+   - The sandbox currently rejects the new `GlobalContract` meta-transaction actions (`Unexpected variant tag`), so those cases are still failing
 
 ### Additional Validation
 
@@ -166,6 +166,16 @@ packages/types/
 - `bun install`: ~5-10 seconds (vs 20-30 seconds with pnpm)
 - `bun run build`: ~10-15 seconds for all packages
 - Overall CI time: Should be 30-40% faster than before
+
+## Current Status (2025-11-08)
+
+- ✅ `bun install` produces `bun.lock` and succeeds on a clean checkout.
+- ✅ `bun run build` recompiles every workspace to the single `lib/` ESM target (no `lib/commonjs` output remains).
+- ✅ `bun run lint` passes; only the pre-existing `@typescript-eslint/no-explicit-any` warnings remain across the types/keystores packages.
+- ✅ `bun run --filter '*' test` succeeds for every workspace except `@near-js/accounts`. Those tests instantiate `near-workspaces`, which is still published as CommonJS and `require`s `near-api-js/lib/*`. Bun's test runner cannot interop with a CommonJS consumer that expects a CommonJS build, so the suites under `packages/accounts/test/*.ts` still fail with `TypeError: Expected CommonJS module to have a function wrapper`.
+- ✅ Individual package suites (`@near-js/providers`, `@near-js/crypto`, `@near-js/signers`, `@near-js/tokens`, `@near-js/utils`, `@near-js/keystores*`, `@near-js/transactions`, `near-api-js`, etc.) all pass with Bun's runner after replacing the remaining Jest-only `.rejects` usages and adding a tiny smoke test for `near-api-js`.
+- ⚠️ `bun run --cwd e2e test` now executes against the sandbox, but the four `GlobalContract` meta-transaction cases in `e2e/tests/accounts.test.ts` still fail with `[-32700] Parse error: Unexpected variant tag`. The sandbox runtime does not yet accept the new `Deploy/UseGlobalContract` action variants.
+- ⚠️ Until `near-workspaces` publishes an ESM build (or a shim is added), the `@near-js/accounts` unit tests cannot use Bun's runner. Running them under Vitest/Jest or skipping them in CI remains necessary.
 
 ## Troubleshooting Guide
 

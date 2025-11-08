@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { MultiTokenContract } from '../src';
+import { MultiTokenContract } from '../src/index.js';
 
 function createMockAccount(accountId: string) {
     const calls: any[] = [];

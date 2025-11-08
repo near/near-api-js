@@ -1,5 +1,5 @@
 import { KeyPair } from '@near-js/crypto';
-import { KeyStore } from './keystore';
+import { KeyStore } from './keystore.js';
 import { KeyPairString } from '@near-js/crypto';
 
 /**

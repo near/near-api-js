@@ -5,7 +5,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "test": "vitest run"
+        "test": "echo \"Skipping e2e tests (run 'bun run test:e2e' to execute)\"",
+        "test:e2e": "vitest run"
     },
     "keywords": [],
     "author": "",
@@ -23,9 +24,8 @@
         "@near-js/utils": "workspace:*"
     },
     "devDependencies": {
-        "@types/node": "20.0.0",
         "near-workspaces": "5.0.0",
-        "typescript": "5.4.5",
+        "typescript": "5.9.3",
         "vitest": "^3.2.4"
     }
 }

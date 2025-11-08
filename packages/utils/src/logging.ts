@@ -1,7 +1,7 @@
 import { FinalExecutionOutcome } from '@near-js/types';
 
-import { parseRpcError } from './errors';
-import { Logger } from './logger';
+import { parseRpcError } from './errors/index.js';
+import { Logger } from './logger/index.js';
 
 /**
  * @deprecated Will be removed in the next major release

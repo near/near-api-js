@@ -1,13 +1,13 @@
 {
-	"extends": "tsconfig/esm.json",
-	"compilerOptions": {
-		"outDir": "./lib",
-		"lib": [
-			"es2022",
-			"dom"
-		]
-	},
-	"include": [
-		"src/**/*.ts"
-	]
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "./lib",
+        "lib": [
+            "es2022",
+            "dom"
+        ]
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
 }

@@ -6,8 +6,8 @@ import {
     beforeEach,
     afterAll,
 } from 'bun:test';
-import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
-import { ProviderError } from '../src/fetch_json';
+import { fetchJsonRpc, retryConfig } from '../src/fetch_json.js';
+import { ProviderError } from '../src/fetch_json.js';
 
 describe('fetchJsonError', () => {
     const RPC_URL = 'https://rpc.testnet.near.org';

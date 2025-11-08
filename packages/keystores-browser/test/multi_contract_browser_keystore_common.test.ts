@@ -2,7 +2,7 @@ import { beforeEach, expect, test } from 'bun:test';
 import { KeyPairEd25519 } from '@near-js/crypto';
 import LocalStorageMemory from 'localstorage-memory';
 
-import { MultiContractBrowserLocalStorageKeyStore } from '../src';
+import { MultiContractBrowserLocalStorageKeyStore } from '../src/index.js';
 
 const NETWORK_ID = 'networkid';
 const ACCOUNT_ID = 'accountid';

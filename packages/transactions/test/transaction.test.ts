@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { actionCreators } from '../src';
+import { actionCreators } from '../src/index.js';
 
 const { functionCall } = actionCreators;
 

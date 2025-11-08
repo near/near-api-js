@@ -1,5 +1,5 @@
 import { KeyPair } from '@near-js/crypto';
-import { KeyStore } from './keystore';
+import { KeyStore } from './keystore.js';
 
 /**
  * Keystore which can be used to merge multiple key stores into one virtual key store.

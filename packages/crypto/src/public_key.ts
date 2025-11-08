@@ -2,7 +2,7 @@ import { baseEncode, baseDecode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import secp256k1 from 'secp256k1';
 
-import { KeySize, KeyType } from './constants';
+import { KeySize, KeyType } from './constants.js';
 
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {

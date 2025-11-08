@@ -5,7 +5,7 @@ import { JsonRpcProvider } from "@near-js/providers";
 
 import { KeyPair } from "@near-js/crypto";
 import { KeyPairSigner } from "@near-js/signers";
-import { abi as guestbookAbi } from "../contracts/guestbook/abi";
+import { abi as guestbookAbi } from "../contracts/guestbook/abi.js";
 import { BlockReference, TxExecutionStatus } from "@near-js/types";
 
 type AbiFunctionKind = AbiRoot["body"]["functions"][number]["kind"];

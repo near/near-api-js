@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { diffEpochValidators, findSeatPrice } from '../src';
+import { diffEpochValidators, findSeatPrice } from '../src/index.js';
 
 test('find seat price', async () => {
     expect(findSeatPrice(

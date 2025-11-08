@@ -2,7 +2,7 @@
  * NEAR RPC API request types and responses
  * @module
  */
-import { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol';
+import { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol.js';
 
 export type SerializedReturnValue = string | number | boolean | object;
 
@@ -183,9 +183,4 @@ export interface AccessKeyInfoView {
 
 export interface AccessKeyList extends QueryResponseKind {
     keys: AccessKeyInfoView[];
-}
-
-export interface AccessKeyInfoView {
-    public_key: string;
-    access_key: AccessKeyView;
 }

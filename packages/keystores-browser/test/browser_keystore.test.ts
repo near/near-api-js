@@ -1,8 +1,8 @@
 import { beforeAll, describe } from 'bun:test';
 import LocalStorageMemory from 'localstorage-memory';
 
-import { BrowserLocalStorageKeyStore, MultiContractBrowserLocalStorageKeyStore } from '../src';
-import { shouldStoreAndRetrieveKeys } from './keystore_common';
+import { BrowserLocalStorageKeyStore, MultiContractBrowserLocalStorageKeyStore } from '../src/index.js';
+import { shouldStoreAndRetrieveKeys } from './keystore_common.js';
 
 describe('Browser keystore', () => {
     const ctx: any = {};

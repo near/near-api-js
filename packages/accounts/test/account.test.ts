@@ -1,11 +1,11 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from 'bun:test';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import { KeyPair, KeyType } from '@near-js/crypto';
 import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { actionCreators } from '@near-js/transactions';
 import { BlockResult, TypedError } from '@near-js/types';
 import * as fs from 'fs';
 
-import { Account, Contract } from '../src';
+import { Account, Contract } from '../src/index.js';
 import { createAccount, generateUniqueString, HELLO_WASM_PATH, HELLO_WASM_BALANCE, networkId, setUpTestConnection } from './test-utils';
 import { InMemoryKeyStore } from '@near-js/keystores';
 
@@ -14,7 +14,7 @@ import { Worker } from 'near-workspaces';
 let nearjs;
 let workingAccount: Account;
 
-jest.setTimeout(50000);
+vi.setConfig({ testTimeout: 50000 });
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
@@ -519,7 +519,7 @@ describe('global contracts', () => {
 
     beforeEach(() => {
         account = new Account('test.near', nearjs.connection.provider, nearjs.connection.signer);
-        mockSignAndSendTransaction = jest.spyOn(account, 'signAndSendTransaction');
+        mockSignAndSendTransaction = vi.spyOn(account, 'signAndSendTransaction');
         mockSignAndSendTransaction.mockResolvedValue({ status: 'success' } as any);
     });
 

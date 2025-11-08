@@ -31,9 +31,9 @@
  * }
  * @module connect
  */
-import { readKeyFile } from './key_stores/unencrypted_file_system_keystore';
-import { InMemoryKeyStore, MergeKeyStore } from './key_stores';
-import { Near, NearConfig } from './near';
+import { readKeyFile } from './key_stores/unencrypted_file_system_keystore.js';
+import { InMemoryKeyStore, MergeKeyStore } from './key_stores/index.js';
+import { Near, NearConfig } from './near.js';
 import { Logger } from '@near-js/utils';
 import depd from 'depd';
 
@@ -72,7 +72,7 @@ export interface ConnectConfig extends NearConfig {
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
     const deprecate = depd('connect(config)');
-    deprecate(`It will be removed in the next major release, please switch to using Account directly`);
+    deprecate('It will be removed in the next major release, please switch to using Account directly');
 
     if (config.logger === false) {
         // disables logging

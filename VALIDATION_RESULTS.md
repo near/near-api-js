@@ -4,8 +4,8 @@
 
 ### 1. Bun Installation
 - **Status**: ✅ **PASS**
-- **Time**: 2.35 seconds
-- **Details**: All dependencies installed successfully, `bun.lockb` created
+- **Time**: 2.1 seconds
+- **Details**: All dependencies installed successfully, `bun.lock` created
 
 ### 2. Build System
 - **Status**: ✅ **PASS** 
@@ -51,95 +51,33 @@ export * from './provider';
 
 ## ⚠️ Needs Attention
 
-### Jest Test Configuration
+### Bun Test Coverage
 
-**Status**: ⚠️ **Needs Jest ESM Configuration**
+- **Status**: ⚠️ `@near-js/accounts` is still blocked  
+- **Details**: After migrating every workspace to Bun's native runner, only `@near-js/accounts` fails. Those suites (`packages/accounts/test/*.ts`) spin up `near-workspaces`, which is published as CommonJS and tries to `require('near-api-js/lib/*')`. Bun cannot wrap a CommonJS consumer that expects a CommonJS build, so it throws `TypeError: Expected CommonJS module to have a function wrapper`. Until `near-workspaces` ships an ESM build (or we add CommonJS shims), these tests must be run via Vitest/Jest or skipped.
 
-**Issues:**
-1. Jest config files (`jest.config.js`) need ESM support
-2. Jest's module resolver doesn't understand TypeScript path mappings
-3. Jest needs explicit configuration for workspace packages
+### E2E Global-Contract Tests
 
-**Test Results:**
-- biometric-ed25519: ✅ 6/6 tests passed
-- All others: ❌ Module resolution failures
-
-**Error Pattern:**
-```
-Cannot find module '@near-js/crypto' from 'src/file.ts'
-Cannot find module '@near-js/types' from 'src/file.ts'
-```
-
-### Solutions
-
-#### Option 1: Configure Jest for ESM (Recommended)
-Each package needs updated `jest.config.js`:
-
-```javascript
-export default {
-  preset: 'ts-jest/presets/default-esm',
-  extensionsToTreatAsEsm: ['.ts'],
-  moduleNameMapper: {
-    '^@near-js/(.*)$': '<rootDir>/../$1/src',
-    '^(\\.{1,2}/.*)\\.js$': '$1'
-  },
-  transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        useESM: true,
-      },
-    ],
-  },
-  testEnvironment: 'node',
-  coverageProvider: 'v8',
-};
-```
-
-#### Option 2: Use Bun's Test Runner
-Replace Jest with `bun test`:
-- Native ESM support
-- Faster execution
-- Built-in workspace resolution
-- No configuration needed
-
-```json
-{
-  "scripts": {
-    "test": "bun test"
-  }
-}
-```
-
-#### Option 3: Use Vitest (e2e already uses this)
-- Better ESM support than Jest
-- Similar API to Jest
-- Faster than Jest
-- Better TypeScript support
+- **Status**: ⚠️ `bun run --cwd e2e test` passes except for 4 cases  
+- **Details**: The new `DeployGlobalContract`/`UseGlobalContract` meta-transaction cases return `[-32700] Parse error: Unexpected variant tag` from the sandbox RPC (see `e2e/tests/accounts.test.ts:110-209`). The sandbox runtime does not yet accept the new action variants, so the tests cannot succeed until that feature lands upstream.
 
 ## Summary
 
 ### What's Working ✅
-- ✅ Bun package manager (2.35s install!)
-- ✅ ESM-only build output
-- ✅ All 16 packages compile successfully
-- ✅ Source maps for debugging
-- ✅ TypeScript declarations
-- ✅ Declaration maps
-- ✅ Workspace dependencies resolve
-- ✅ CI/CD workflows updated
-- ✅ Modern ESM config files
+- ✅ Bun package manager (fast installs, workspace linking) with `bun.lock`
+- ✅ ESM-only build output (single `lib/` per package)
+- ✅ Build + lint succeed via `bun run build` / `bun run lint`
+- ✅ Bun's test runner passing for crypto, signers, tokens, utils, providers, keystores*, transactions, near-api-js, etc.
+- ✅ Vitest-based e2e harness executes (see failures noted above)
 
 ### What Needs Work ⚠️
-- ⚠️ Jest configuration for ESM + workspaces
+- ⚠️ `@near-js/accounts` tests need an ESM-compatible `near-workspaces`
+- ⚠️ E2E `GlobalContract` meta-transaction tests require the sandbox to accept the new action variants
 
 ### Recommendations
 
-**For this PR:**
-Keep Jest as-is and note in migration docs that tests need to be run locally with proper configuration. The build works perfectly which is the main goal.
-
-**Post-merge:**
-Consider migrating to `bun test` or Vitest for better ESM support and faster execution.
+1. Coordinate with the `near-workspaces` maintainers on an ESM build (or temporary CommonJS shims) so `@near-js/accounts` can run under Bun.
+2. Track the `GlobalContract` feature rollout on sandbox/networks and re-enable the e2e coverage once the runtime accepts those variants.
 
 ## Performance Improvements
 
@@ -160,5 +98,5 @@ Consider migrating to `bun test` or Vitest for better ESM support and faster exe
 ---
 
 **Date**: 2025-11-08
-**Validated by**: Claude (AI Assistant)
+**Validated by**: Codex (Bun migration pass)
 **Branch**: claude/migrate-to-bun-remove-turborepo-011CUw3XXdU5KEhsTAWsKrbk

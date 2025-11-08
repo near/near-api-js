@@ -1,6 +1,6 @@
 import { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from '@near-js/types';
 import depd from 'depd';
-import { sortBigIntAsc } from './utils';
+import { sortBigIntAsc } from './utils.js';
 
 /** Finds seat price given validators stakes and number of seats.
  *  Calculation follow the spec: https://nomicon.io/Economics/README.html#validator-selection

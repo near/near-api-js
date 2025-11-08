@@ -1,8 +1,8 @@
 import type { PublicKey } from '@near-js/crypto';
 import { Enum } from '@near-js/types';
 
-import type { DelegateAction } from './delegate';
-import type { Signature } from './signature';
+import type { DelegateAction } from './delegate.js';
+import type { Signature } from './signature.js';
 
 export class FunctionCallPermission {
     allowance?: bigint;

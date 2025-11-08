@@ -1,16 +1,16 @@
 /** @hidden @module */
-import * as providers from './providers';
-import * as utils from './utils';
-import * as transactions from './transaction';
-import * as validators from './validators';
+import * as providers from './providers/index.js';
+import * as utils from './utils/index.js';
+import * as transactions from './transaction.js';
+import * as validators from './validators.js';
 
-import { Account } from './account';
-import * as accountCreator from './account_creator';
-import { Connection } from './connection';
-import { Signer, KeyPairSigner } from './signer';
-import { Contract } from './contract';
-import { KeyPair } from './utils/key_pair';
-import { Near } from './near';
+import { Account } from './account.js';
+import * as accountCreator from './account_creator.js';
+import { Connection } from './connection.js';
+import { Signer, KeyPairSigner } from './signer.js';
+import { Contract } from './contract.js';
+import { KeyPair } from './utils/key_pair.js';
+import { Near } from './near.js';
 
 export {
     accountCreator,

@@ -82,7 +82,7 @@ curl -fsSL https://bun.sh/install | bash
 bun install
 ```
 
-This will generate a new `bun.lockb` file.
+This will generate a new `bun.lock` file.
 
 ### 3. Build All Packages
 ```bash

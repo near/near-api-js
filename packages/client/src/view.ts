@@ -1,28 +1,28 @@
 import type {
-  AccessKeyList,
-  AccessKeyView,
-  AccountView,
-  CodeResult,
-  ContractCodeViewRaw,
-  QueryResponseKind,
-  RpcQueryRequest,
-  SerializedReturnValue,
-  StakedAccount,
-  ViewStateResult,
+    AccessKeyList,
+    AccessKeyView,
+    AccountView,
+    CodeResult,
+    ContractCodeViewRaw,
+    QueryResponseKind,
+    RpcQueryRequest,
+    SerializedReturnValue,
+    StakedAccount,
+    ViewStateResult,
 } from '@near-js/types';
 
 import type {
-  AccountState,
-  FunctionCallAccessKey,
-  FullAccessKey,
-  RpcProviderDependency,
-  RpcProviderQueryParams,
-  ViewAccessKeyParams,
-  ViewAccountParams,
-  ViewContractStateParams,
-  ViewParams,
-  ViewValidatorStakeParams,
-} from './interfaces';
+    AccountState,
+    FunctionCallAccessKey,
+    FullAccessKey,
+    RpcProviderDependency,
+    RpcProviderQueryParams,
+    ViewAccessKeyParams,
+    ViewAccountParams,
+    ViewContractStateParams,
+    ViewParams,
+    ViewValidatorStakeParams,
+} from './interfaces/index.js';
 
 const DEFAULT_VIEW_BLOCK_REFERENCE = { finality: 'optimistic' };
 
@@ -52,20 +52,20 @@ interface QueryParams extends RpcProviderDependency, RpcProviderQueryParams {
 
 
 export function query<T extends QueryResponseKind>({
-  account,
-  request,
-  args = {},
-  blockReference,
-  deps: { rpcProvider },
+    account,
+    request,
+    args = {},
+    blockReference,
+    deps: { rpcProvider },
 }: QueryParams): Promise<T> {
-  return rpcProvider.query<T>(
+    return rpcProvider.query<T>(
     {
-      request_type: request,
-      account_id: account,
-      ...(blockReference ? blockReference : DEFAULT_VIEW_BLOCK_REFERENCE),
-      ...args,
+        request_type: request,
+        account_id: account,
+        ...(blockReference ? blockReference : DEFAULT_VIEW_BLOCK_REFERENCE),
+        ...args,
     } as RpcQueryRequest
-  );
+    );
 }
 
 /**
@@ -77,16 +77,16 @@ export function query<T extends QueryResponseKind>({
  * @param deps readonly RPC dependencies
  */
 export function callViewMethod({ account, method, args = {}, blockReference, deps }: ViewParams) {
-  return query<CodeResult>({
-    request: RequestType.CallFunction,
-    account,
-    args: {
-      args_base64: Buffer.isBuffer(args) ? args : Buffer.from(JSON.stringify(args)).toString('base64'),
-      method_name: method,
-    },
-    blockReference,
-    deps,
-  });
+    return query<CodeResult>({
+        request: RequestType.CallFunction,
+        account,
+        args: {
+            args_base64: Buffer.isBuffer(args) ? args : Buffer.from(JSON.stringify(args)).toString('base64'),
+            method_name: method,
+        },
+        blockReference,
+        deps,
+    });
 }
 
 /**
@@ -100,18 +100,18 @@ export function callViewMethod({ account, method, args = {}, blockReference, dep
  * @param deps readonly RPC dependencies
  */
 export async function view<T extends SerializedReturnValue | bigint>({ account, method, args = {}, blockReference, deps }: ViewParams): Promise<T> {
-  const { result } = await callViewMethod({ account, method, args, blockReference, deps });
-  const stringResult = Buffer.from(result).toString();
-  try {
-    return JSON.parse(stringResult);
-  } catch {
-    const numeric = +stringResult;
-    if (isNaN(numeric)) {
-      return stringResult as T;
-    }
+    const { result } = await callViewMethod({ account, method, args, blockReference, deps });
+    const stringResult = Buffer.from(result).toString();
+    try {
+        return JSON.parse(stringResult);
+    } catch {
+        const numeric = +stringResult;
+        if (isNaN(numeric)) {
+            return stringResult as T;
+        }
 
-    return (Number.isSafeInteger(numeric) ? numeric : BigInt(numeric)) as T;
-  }
+        return (Number.isSafeInteger(numeric) ? numeric : BigInt(numeric)) as T;
+    }
 }
 
 /**
@@ -122,30 +122,30 @@ export async function view<T extends SerializedReturnValue | bigint>({ account, 
  * @param deps readonly RPC dependencies
  */
 export async function getAccessKey({ account, publicKey, blockReference, deps }: ViewAccessKeyParams) {
-  const { nonce, permission } = await query<AccessKeyView>({
-    request: RequestType.ViewAccessKey,
-    account,
-    args: {
-      public_key: publicKey,
-    },
-    blockReference,
-    deps,
-  });
+    const { nonce, permission } = await query<AccessKeyView>({
+        request: RequestType.ViewAccessKey,
+        account,
+        args: {
+            public_key: publicKey,
+        },
+        blockReference,
+        deps,
+    });
 
-  if (permission === 'FullAccess') {
+    if (permission === 'FullAccess') {
+        return {
+            nonce: BigInt(nonce),
+            publicKey,
+        } as FullAccessKey;
+    }
+    const { FunctionCall: { allowance, receiver_id, method_names } } = permission;
     return {
-      nonce: BigInt(nonce),
-      publicKey,
-    } as FullAccessKey;
-  }
-  const { FunctionCall: { allowance, receiver_id, method_names } } = permission;
-  return {
-    allowance: BigInt(allowance),
-    contract: receiver_id,
-    methods: method_names,
-    nonce: BigInt(nonce),
-    publicKey,
-  } as FunctionCallAccessKey;
+        allowance: BigInt(allowance),
+        contract: receiver_id,
+        methods: method_names,
+        nonce: BigInt(nonce),
+        publicKey,
+    } as FunctionCallAccessKey;
 }
 
 /**
@@ -155,19 +155,19 @@ export async function getAccessKey({ account, publicKey, blockReference, deps }:
  * @param deps readonly RPC dependencies
  */
 export async function getAccountState({ account, blockReference, deps }: ViewAccountParams) {
-  const accountState = await query<AccountView>({
-    request: RequestType.ViewAccount,
-    account,
-    blockReference,
-    deps,
-  });
+    const accountState = await query<AccountView>({
+        request: RequestType.ViewAccount,
+        account,
+        blockReference,
+        deps,
+    });
 
-  return {
-    availableBalance: BigInt(accountState.amount),
-    codeHash: accountState.code_hash,
-    locked: BigInt(accountState.locked),
-    storageUsed: BigInt(accountState.storage_usage),
-  } as AccountState;
+    return {
+        availableBalance: BigInt(accountState.amount),
+        codeHash: accountState.code_hash,
+        locked: BigInt(accountState.locked),
+        storageUsed: BigInt(accountState.storage_usage),
+    } as AccountState;
 }
 
 /**
@@ -177,32 +177,32 @@ export async function getAccountState({ account, blockReference, deps }: ViewAcc
  * @param deps readonly RPC dependencies
  */
 export async function getAccessKeys({ account, blockReference, deps }: ViewAccountParams) {
-  const { keys } = await query<AccessKeyList>({
-    request: RequestType.ViewAccessKeyList,
-    account,
-    blockReference,
-    deps,
-  });
+    const { keys } = await query<AccessKeyList>({
+        request: RequestType.ViewAccessKeyList,
+        account,
+        blockReference,
+        deps,
+    });
 
-  return keys.reduce((accessKeys, { access_key: { nonce, permission }, public_key: publicKey }) => {
-    if (permission === 'FullAccess') {
-      accessKeys.fullAccessKeys.push({
-        nonce,
-        publicKey,
-      });
-    } else {
-      const { FunctionCall: { allowance, receiver_id, method_names } } = permission;
-      accessKeys.functionCallAccessKeys.push({
-        allowance: BigInt(allowance),
-        contract: receiver_id,
-        methods: method_names,
-        nonce,
-        publicKey,
-      });
-    }
+    return keys.reduce((accessKeys, { access_key: { nonce, permission }, public_key: publicKey }) => {
+        if (permission === 'FullAccess') {
+            accessKeys.fullAccessKeys.push({
+                nonce,
+                publicKey,
+            });
+        } else {
+            const { FunctionCall: { allowance, receiver_id, method_names } } = permission;
+            accessKeys.functionCallAccessKeys.push({
+                allowance: BigInt(allowance),
+                contract: receiver_id,
+                methods: method_names,
+                nonce,
+                publicKey,
+            });
+        }
 
-    return accessKeys;
-  }, { fullAccessKeys: [] as FullAccessKey[], functionCallAccessKeys: [] as FunctionCallAccessKey[] });
+        return accessKeys;
+    }, { fullAccessKeys: [] as FullAccessKey[], functionCallAccessKeys: [] as FunctionCallAccessKey[] });
 }
 
 /**
@@ -212,14 +212,14 @@ export async function getAccessKeys({ account, blockReference, deps }: ViewAccou
  * @param deps readonly RPC dependencies
  */
 export async function getContractCode({ account, blockReference, deps }: ViewAccountParams) {
-  const { code_base64, hash } = await query<ContractCodeViewRaw>({
-    request: RequestType.ViewCode,
-    account,
-    blockReference,
-    deps,
-  });
+    const { code_base64, hash } = await query<ContractCodeViewRaw>({
+        request: RequestType.ViewCode,
+        account,
+        blockReference,
+        deps,
+    });
 
-  return { code: Buffer.from(code_base64, 'base64').toString(), code_base64, hash };
+    return { code: Buffer.from(code_base64, 'base64').toString(), code_base64, hash };
 }
 
 /**
@@ -231,20 +231,20 @@ export async function getContractCode({ account, blockReference, deps }: ViewAcc
  * @returns object key-value pairs
  */
 export async function getContractState({ account, prefix, blockReference, deps }: ViewContractStateParams) {
-  const { values } = await query<ViewStateResult>({
-    request: RequestType.ViewState,
-    account,
-    args: {
-      prefix_base64: Buffer.from(prefix).toString('base64'),
-    },
-    blockReference,
-    deps,
-  });
+    const { values } = await query<ViewStateResult>({
+        request: RequestType.ViewState,
+        account,
+        args: {
+            prefix_base64: Buffer.from(prefix).toString('base64'),
+        },
+        blockReference,
+        deps,
+    });
 
-  return values.reduce((state, { key, value }) => ({
-    ...state,
-    [key]: value,
-  }), {});
+    return values.reduce((state, { key, value }) => ({
+        ...state,
+        [key]: value,
+    }), {});
 }
 
 /**
@@ -255,14 +255,14 @@ export async function getContractState({ account, prefix, blockReference, deps }
  * @param deps readonly RPC dependencies
  */
 export async function getNonce({ account, publicKey, blockReference, deps }: ViewAccessKeyParams) {
-  const { nonce } = await getAccessKey({
-    account,
-    publicKey,
-    blockReference,
-    deps,
-  });
+    const { nonce } = await getAccessKey({
+        account,
+        publicKey,
+        blockReference,
+        deps,
+    });
 
-  return BigInt(nonce);
+    return BigInt(nonce);
 }
 
 /**
@@ -273,17 +273,17 @@ export async function getNonce({ account, publicKey, blockReference, deps }: Vie
  * @param deps readonly RPC dependencies
  */
 export async function getStakedBalance({ account, validator, blockReference, deps }: ViewValidatorStakeParams) {
-  const staked = await view<StakedAccount>({
-    account: validator,
-    blockReference,
-    method: 'get_account',
-    args: { account_id: account },
-    deps,
-  });
+    const staked = await view<StakedAccount>({
+        account: validator,
+        blockReference,
+        method: 'get_account',
+        args: { account_id: account },
+        deps,
+    });
 
-  return {
-    canWithdraw: staked.can_withdraw,
-    stakedBalance: BigInt(staked.staked_balance),
-    unstakedBalance: BigInt(staked.unstaked_balance),
-  };
+    return {
+        canWithdraw: staked.can_withdraw,
+        stakedBalance: BigInt(staked.staked_balance),
+        unstakedBalance: BigInt(staked.unstaked_balance),
+    };
 }

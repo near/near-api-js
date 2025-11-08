@@ -1,8 +1,8 @@
-import { afterAll, beforeAll, beforeEach, expect, jest, test } from 'bun:test';
+import { afterAll, beforeAll, beforeEach, expect, test, vi } from 'vitest';
 import { KeyPair } from '@near-js/crypto';
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
-import { Account } from '../src';
+import { Account } from '../src/index.js';
 import { KeyPairSigner } from '@near-js/signers';
 
 import { Worker } from 'near-workspaces';
@@ -12,7 +12,7 @@ let workingAccount: Account;
 let contractId;
 let contract;
 
-jest.setTimeout(50000);
+vi.setConfig({ testTimeout: 50000 });
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();

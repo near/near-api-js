@@ -1,33 +1,31 @@
 {
-	"name": "@near-js/types",
-	"version": "2.5.1",
-	"description": "TypeScript types for working with the Near JS API",
-	"module": "./lib/index.js",
-	"types": "./lib/index.d.ts",
-	"type": "module",
-	"scripts": {
-		"build": "tsc",
-		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
-		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --fix",
-		"check-exports": "attw --pack .",
-		"clean": "rm -rf lib"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"@types/node": "20.0.0",
-		"tsconfig": "workspace:*",
-		"typescript": "5.4.5"
-	},
-	"files": [
-		"lib"
-	],
-	"exports": {
-		".": {
-			"import": "./lib/index.js",
-			"types": "./lib/index.d.ts"
-		}
-	},
-	"sideEffects": false
+    "name": "@near-js/types",
+    "version": "2.5.1",
+    "description": "TypeScript types for working with the Near JS API",
+    "module": "./lib/index.js",
+    "types": "./lib/index.d.ts",
+    "type": "module",
+    "scripts": {
+        "build": "tsc",
+        "lint": "eslint \"src/**/*.ts\"",
+        "lint:fix": "eslint --fix \"src/**/*.ts\"",
+        "check-exports": "attw --ignore-rules cjs-resolves-to-esm internal-resolution-error --pack .",
+        "clean": "rm -rf lib"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "typescript": "5.9.3"
+    },
+    "files": [
+        "lib"
+    ],
+    "exports": {
+        ".": {
+            "import": "./lib/index.js",
+            "types": "./lib/index.d.ts"
+        }
+    },
+    "sideEffects": false
 }

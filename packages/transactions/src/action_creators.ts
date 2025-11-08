@@ -19,9 +19,9 @@ import {
     Stake,
     Transfer,
     UseGlobalContract,
-} from './actions';
-import type { DelegateAction } from './delegate';
-import type { Signature } from './signature';
+} from './actions.js';
+import type { DelegateAction } from './delegate.js';
+import type { Signature } from './signature.js';
 
 /**
  * Creates a full access key with full access permissions.

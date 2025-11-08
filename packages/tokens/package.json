@@ -1,54 +1,52 @@
 {
-	"name": "@near-js/tokens",
-	"version": "2.5.1",
-	"description": "Modules with tokens",
-	"module": "./lib/index.js",
-	"types": "./lib/index.d.ts",
-	"typesVersions": {
-		"*": {
-			"ft": [
-				"./ft.d.cts"
-			],
-			"ft/format": [
-				"./ft/format.d.cts"
-			],
-			"nft": [
-				"./nft.d.cts"
-			],
-			"mainnet": [
-				"./mainnet.d.cts"
-			],
-			"testnet": [
-				"./testnet.d.cts"
-			]
-		}
-	},
-	"type": "module",
-	"scripts": {
-		"build": "tsc",
-		"clean": "rm -rf lib",
-		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
-		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
-		"test": "bun test",
-		"check-exports": "attw --pack ."
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"@near-js/types": "workspace:*",
-		"@types/node": "20.0.0",
-		"tsconfig": "workspace:*",
-		"typescript": "5.4.5"
-	},
-	"files": [
-		"lib"
-	],
-	"exports": {
-		".": {
-			"import": "./lib/index.js",
-			"types": "./lib/index.d.ts"
-		}
-	},
-	"sideEffects": false
+    "name": "@near-js/tokens",
+    "version": "2.5.1",
+    "description": "Modules with tokens",
+    "module": "./lib/index.js",
+    "types": "./lib/index.d.ts",
+    "typesVersions": {
+        "*": {
+            "ft": [
+                "./ft.d.cts"
+            ],
+            "ft/format": [
+                "./ft/format.d.cts"
+            ],
+            "nft": [
+                "./nft.d.cts"
+            ],
+            "mainnet": [
+                "./mainnet.d.cts"
+            ],
+            "testnet": [
+                "./testnet.d.cts"
+            ]
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "build": "tsc",
+        "clean": "rm -rf lib",
+        "lint": "eslint \"src/**/*.ts\"",
+        "lint:fix": "eslint --fix \"src/**/*.ts\"",
+        "test": "bun test",
+        "check-exports": "attw --ignore-rules cjs-resolves-to-esm internal-resolution-error --pack ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@near-js/types": "workspace:*",
+        "typescript": "5.9.3"
+    },
+    "files": [
+        "lib"
+    ],
+    "exports": {
+        ".": {
+            "import": "./lib/index.js",
+            "types": "./lib/index.d.ts"
+        }
+    },
+    "sideEffects": false
 }

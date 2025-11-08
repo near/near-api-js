@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test';
 import { TextEncoder } from 'util';
 
-import { KeyPairSigner } from '../src';
+import { KeyPairSigner } from '../src/index.js';
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import {
     createTransaction,
@@ -32,7 +32,7 @@ test('test sign transaction with different public key', async () => {
         new Uint8Array(new Array(32))
     );
 
-    await expect(() => signer.signTransaction(transaction)).rejects.toThrow(
+    await expect(signer.signTransaction(transaction)).rejects.toThrow(
         /The public key doesn't match the signer's key/
     );
 });
@@ -171,7 +171,7 @@ test('test sign NEP-413 message throws error on invalid nonce', async () => {
         )
     );
 
-    await expect(() =>
+    await expect(
         signer.signNep413Message(
             'Hello NEAR!',
             'round-toad.testnet',
@@ -251,7 +251,5 @@ test('test sign delegate action with wrong public key', async () => {
         ).getPublicKey(),
     });
 
-    await expect(() =>
-        signer.signDelegateAction(delegateAction)
-    ).rejects.toThrow();
+    await expect(signer.signDelegateAction(delegateAction)).rejects.toThrow();
 });

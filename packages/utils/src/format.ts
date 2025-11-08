@@ -1,4 +1,4 @@
-import { base58 } from "@scure/base";
+import { base58 } from '@scure/base';
 
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
@@ -44,10 +44,10 @@ export function formatNearAmount(
 
     balance = balanceBN.toString();
     const wholeStr =
-        balance.substring(0, balance.length - NEAR_NOMINATION_EXP) || "0";
+        balance.substring(0, balance.length - NEAR_NOMINATION_EXP) || '0';
     const fractionStr = balance
         .substring(balance.length - NEAR_NOMINATION_EXP)
-        .padStart(NEAR_NOMINATION_EXP, "0")
+        .padStart(NEAR_NOMINATION_EXP, '0')
         .substring(0, fracDigits);
 
     return trimTrailingZeroes(`${formatWithCommas(wholeStr)}.${fractionStr}`);
@@ -65,14 +65,14 @@ export function parseNearAmount(amt?: string): string | null {
         return null;
     }
     amt = cleanupAmount(amt);
-    const split = amt.split(".");
+    const split = amt.split('.');
     const wholePart = split[0];
-    const fracPart = split[1] || "";
+    const fracPart = split[1] || '';
     if (split.length > 2 || fracPart.length > NEAR_NOMINATION_EXP) {
         throw new Error(`Cannot parse '${amt}' as NEAR amount`);
     }
     return trimLeadingZeroes(
-        wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, "0")
+        wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, '0')
     );
 }
 
@@ -82,7 +82,7 @@ export function parseNearAmount(amt?: string): string | null {
  * @returns string The cleaned value
  */
 function cleanupAmount(amount: string): string {
-    return amount.replace(/,/g, "").trim();
+    return amount.replace(/,/g, '').trim();
 }
 
 /**
@@ -91,7 +91,7 @@ function cleanupAmount(amount: string): string {
  * @returns string The value without the trailing zeros
  */
 function trimTrailingZeroes(value: string): string {
-    return value.replace(/\.?0*$/, "");
+    return value.replace(/\.?0*$/, '');
 }
 
 /**
@@ -100,9 +100,9 @@ function trimTrailingZeroes(value: string): string {
  * @returns string The value without the leading zeroes
  */
 function trimLeadingZeroes(value: string): string {
-    value = value.replace(/^0+/, "");
-    if (value === "") {
-        return "0";
+    value = value.replace(/^0+/, '');
+    if (value === '') {
+        return '0';
     }
     return value;
 }
@@ -115,7 +115,7 @@ function trimLeadingZeroes(value: string): string {
 function formatWithCommas(value: string): string {
     const pattern = /(-?\d+)(\d{3})/;
     while (pattern.test(value)) {
-        value = value.replace(pattern, "$1,$2");
+        value = value.replace(pattern, '$1,$2');
     }
     return value;
 }
@@ -126,7 +126,7 @@ function formatWithCommas(value: string): string {
  * @returns string base58 encoding of the value
  */
 export function baseEncode(value: Uint8Array | string): string {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
         const bytes = [];
         for (let c = 0; c < value.length; c++) {
             bytes.push(value.charCodeAt(c));

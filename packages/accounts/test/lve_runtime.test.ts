@@ -1,10 +1,10 @@
-import { beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, describe, expect, test } from 'vitest';
 import {
     GUESTBOOK_CONTRACT_ID,
     GUESTBOOK_CONTRACT_STATE,
     loadGuestBookContractCode,
 } from './test-utils';
-import { Runtime } from '../src/local-view-execution/runtime';
+import { Runtime } from '../src/local-view-execution/runtime.js';
 
 let contractCode;
 const blockHeight = 1;

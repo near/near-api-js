@@ -1,7 +1,7 @@
-import { afterAll, afterEach, beforeAll, describe, expect, jest, test } from 'bun:test';
+import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
 import { PositionalArgsError } from '@near-js/types';
 
-import { Contract, Account } from '../src';
+import { Contract, Account } from '../src/index.js';
 import { deployContractGuestBook, generateUniqueString, setUpTestConnection }  from './test-utils';
 
 import { Worker } from 'near-workspaces';
@@ -23,6 +23,8 @@ const contract: any = new Contract(account, 'contractId', {
     viewMethods: ['viewMethod'],
     changeMethods: ['changeMethod'],
 });
+
+vi.setConfig({ testTimeout: 60000 });
 
 ['viewMethod', 'changeMethod'].forEach(method => {
     describe(method, () => {
@@ -92,7 +94,7 @@ describe('changeMethod', () => {
     });
 
     test('makes a functionCall and passes along walletCallbackUrl and walletMeta', async() => {
-        account.functionCall = jest.fn(() => Promise.resolve(account));
+        account.functionCall = vi.fn(() => Promise.resolve(account));
         await contract.changeMethod({
             args: {},
             meta: 'someMeta',
@@ -115,8 +117,6 @@ describe('local view execution', () => {
     let contract;
     let blockQuery;
 
-    jest.setTimeout(60000);
-
     beforeAll(async () => {
         nearjs = await setUpTestConnection();
         contract = await deployContractGuestBook(nearjs.accountCreator.masterAccount, generateUniqueString('guestbook'));
@@ -126,7 +126,7 @@ describe('local view execution', () => {
         
         const block = await contract.connection.provider.block({ finality: 'optimistic' });
 
-        contract.connection.provider.query = jest.fn(contract.connection.provider.query);
+        contract.connection.provider.query = vi.fn(contract.connection.provider.query);
         blockQuery = { blockId: block.header.height };
     });
 
@@ -139,7 +139,7 @@ describe('local view execution', () => {
     });
     
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test('calls total_messages() function using RPC provider', async () => {
@@ -172,7 +172,7 @@ describe('local view execution', () => {
     test('local execution fails and fallbacks to normal RPC call', async () => {
         // @ts-expect-error test input
         const _contract: any = new Contract(nearjs.accountCreator.masterAccount, contract.contractId, { viewMethods: ['get_msg'], useLocalViewExecution: true });
-        _contract.account.viewFunction = jest.fn(_contract.account.viewFunction);
+        _contract.account.viewFunction = vi.fn(_contract.account.viewFunction);
 
         try {
             await _contract.get_msg({}, { blockQuery });
@@ -190,8 +190,6 @@ describe('local view execution', () => {
 describe('contract without account', () => {
     let nearjs;
     let contract;
-
-    jest.setTimeout(60000);
 
     beforeAll(async () => {
         nearjs = await setUpTestConnection();

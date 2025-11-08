@@ -1,4 +1,4 @@
-import { formatAmount, parseAmount } from './format';
+import { formatAmount, parseAmount } from './format.js';
 import type { AccountLike } from '@near-js/types';
 
 interface FTMetadata {

@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { NEAR } from '../src';
+import { NEAR } from '../src/index.js';
 
 test('test toUnits parses formatted amount', () => {
     expect(NEAR.toUnits('1.234')).toBe(BigInt('1234000000000000000000000'));

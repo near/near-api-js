@@ -12,7 +12,7 @@ import { homedir } from 'node:os';
 
 export default async function deleteAccessKeyCookbook(accountId: string, publicKey: string) {
   if (!accountId) {
-    console.log(chalk`{red pnpm deleteAccessKey -- ACCOUNT_ID [PUBLIC_KEY]}`);
+    console.log(chalk`{red bun run deleteAccessKey -- ACCOUNT_ID [PUBLIC_KEY]}`);
     return;
   }
 

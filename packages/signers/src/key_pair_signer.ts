@@ -6,7 +6,7 @@ import {
     SignedMessage,
     Signer,
     SignMessageParams,
-} from './signer';
+} from './signer.js';
 import {
     Transaction,
     SignedTransaction,

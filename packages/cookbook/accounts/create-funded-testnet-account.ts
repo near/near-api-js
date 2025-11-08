@@ -9,7 +9,7 @@ import { UnencryptedFileSystemKeyStore } from '@near-js/keystores-node';
 
 export default async function createFundedTestnetAccountCookbook(accountId: string) {
   if (!accountId) {
-    console.log(chalk`{red pnpm createFundedTestnetAccount -- ACCOUNT_ID}`);
+    console.log(chalk`{red bun run createFundedTestnetAccount -- ACCOUNT_ID}`);
     return;
   }
 

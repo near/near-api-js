@@ -13,7 +13,7 @@ const WASM_PATH = join(__dirname, '/wasm-files/status_message.wasm');
 
 export default async function deployContractCookbook(accountId: string, wasmPath: string = WASM_PATH) {
   if (!accountId) {
-    console.log(chalk`{red pnpm deployContract -- ACCOUNT_ID [WASM_PATH]}`);
+    console.log(chalk`{red bun run deployContract -- ACCOUNT_ID [WASM_PATH]}`);
     return;
   }
 

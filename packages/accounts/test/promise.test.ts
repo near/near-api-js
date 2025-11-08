@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from 'bun:test';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 import { Worker } from 'near-workspaces';
 
@@ -6,7 +6,7 @@ let nearjs;
 
 const CONTRACT_CALL_GAS = 300000000000000n;
 
-jest.setTimeout(120000);
+vi.setConfig({ testTimeout: 120000 });
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();

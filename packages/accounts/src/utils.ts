@@ -3,11 +3,11 @@ import {
     BlockReference,
     CodeResult,
     PositionalArgsError,
-} from "@near-js/types";
-import { Connection } from "./connection";
-import { printTxOutcomeLogs } from "@near-js/utils";
-import { ViewFunctionCallOptions } from "./interface";
-import depd from "depd";
+} from '@near-js/types';
+import { Connection } from './connection';
+import { printTxOutcomeLogs } from '@near-js/utils';
+import { ViewFunctionCallOptions } from './interface';
+import depd from 'depd';
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());
@@ -25,7 +25,7 @@ export function validateArgs(args: any) {
         return;
     }
 
-    if (Array.isArray(args) || typeof args !== "object") {
+    if (Array.isArray(args) || typeof args !== 'object') {
         throw new PositionalArgsError();
     }
 }
@@ -46,21 +46,21 @@ export async function viewState(
     connection: Connection,
     accountId: string,
     prefix: string | Uint8Array,
-    blockQuery: BlockReference = { finality: "optimistic" }
+    blockQuery: BlockReference = { finality: 'optimistic' }
 ): Promise<Array<{ key: Buffer; value: Buffer }>> {
     const deprecate = depd('viewState()');
     deprecate('It will be removed in the next major release');
 
     const { values } = await connection.provider.query<ViewStateResult>({
-        request_type: "view_state",
+        request_type: 'view_state',
         ...blockQuery,
         account_id: accountId,
-        prefix_base64: Buffer.from(prefix).toString("base64"),
+        prefix_base64: Buffer.from(prefix).toString('base64'),
     });
 
     return values.map(({ key, value }) => ({
-        key: Buffer.from(key, "base64"),
-        value: Buffer.from(value, "base64"),
+        key: Buffer.from(key, 'base64'),
+        value: Buffer.from(value, 'base64'),
     }));
 }
 
@@ -87,7 +87,7 @@ export async function viewFunction(
         args = {},
         parse = parseJsonFromRawResponse,
         stringify = bytesJsonStringify,
-        blockQuery = { finality: "optimistic" },
+        blockQuery = { finality: 'optimistic' },
     }: ViewFunctionCallOptions
 ): Promise<any> {
     const deprecate = depd('viewFunction()');
@@ -98,11 +98,11 @@ export async function viewFunction(
     const encodedArgs = stringify(args);
 
     const result = await connection.provider.query<CodeResult>({
-        request_type: "call_function",
+        request_type: 'call_function',
         ...blockQuery,
         account_id: contractId,
         method_name: methodName,
-        args_base64: encodedArgs.toString("base64"),
+        args_base64: encodedArgs.toString('base64'),
     });
 
     if (result.logs) {

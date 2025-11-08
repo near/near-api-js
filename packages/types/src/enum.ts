@@ -5,11 +5,11 @@ export abstract class Enum {
   abstract enum: string;
 
   constructor(properties: any) {
-    if (Object.keys(properties).length !== 1) {
-      throw new Error('Enum can only take single value');
-    }
-    Object.keys(properties).map((key: string) => {
-      (this as any)[key] = properties[key];
-    });
+      if (Object.keys(properties).length !== 1) {
+          throw new Error('Enum can only take single value');
+      }
+      Object.keys(properties).map((key: string) => {
+          (this as any)[key] = properties[key];
+      });
   }
 }

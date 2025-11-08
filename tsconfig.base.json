@@ -1,19 +1,18 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
-	"display": "Default",
 	"compilerOptions": {
-		"paths": {
-			"@near-js/*": ["../packages/*/src"]
-		},
-		"esModuleInterop": true,
-		"module": "es2022",
-		"target": "es2022",
-		"lib": ["es2022", "DOM"],
+		"target": "ESNext",
+		"module": "ESNext",
 		"moduleResolution": "bundler",
-		"alwaysStrict": true,
+		"lib": [
+			"ESNext",
+			"DOM"
+		],
+		"esModuleInterop": true,
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
+		"skipLibCheck": true,
 		"preserveSymlinks": true,
 		"preserveWatchOutput": true,
 		"pretty": false,
@@ -23,8 +22,14 @@
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
 		"experimentalDecorators": true,
-		"resolveJsonModule": true,
-		"isolatedModules": true
+		"baseUrl": ".",
+		"paths": {
+			"@near-js/*": [
+				"packages/*/src"
+			]
+		}
 	},
-	"exclude": ["node_modules"]
+	"exclude": [
+		"node_modules"
+	]
 }
