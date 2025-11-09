@@ -174,7 +174,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         files.forEach((item) => {
             result.push(item);
         });
-        return result;
+        return result.sort();
     }
 
     /**
@@ -188,7 +188,8 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
         const files: string[] = await readdir(`${this.keyDir}/${networkId}`);
         return files
             .filter((file) => file.endsWith('.json'))
-            .map((file) => file.replace(/.json$/, ''));
+            .map((file) => file.replace(/.json$/, ''))
+            .sort();
     }
 
     /** @hidden */

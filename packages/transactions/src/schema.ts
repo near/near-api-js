@@ -1,7 +1,14 @@
 import type { PublicKey } from '@near-js/crypto';
 import { deserialize, type Schema, serialize } from 'borsh';
 
-import type { Action, SignedDelegate } from './actions.js';
+import {
+    type Action,
+    DeployGlobalContract,
+    GlobalContractDeployMode,
+    GlobalContractIdentifier,
+    type SignedDelegate,
+    UseGlobalContract,
+} from './actions.js';
 import type { DelegateAction } from './delegate.js';
 import { DelegateActionPrefix } from './prefix.js';
 import type { Signature } from './signature.js';
@@ -40,6 +47,80 @@ export function encodeTransaction(
             ? SCHEMA.SignedTransaction
             : SCHEMA.Transaction;
     return serialize(schema, transaction);
+}
+
+/**
+ * Helper function to reconstruct Action objects with proper class instances
+ * after Borsh deserialization (which creates plain objects)
+ */
+function reconstructActions(actions: Action[]): Action[] {
+    return actions.map((action: any) => {
+        // If action.deployGlobalContract exists and its deployMode is a plain object, reconstruct it
+        if (
+            action.deployGlobalContract &&
+            action.deployGlobalContract.deployMode &&
+            !(
+                action.deployGlobalContract.deployMode instanceof
+                GlobalContractDeployMode
+            )
+        ) {
+            const dgc = action.deployGlobalContract;
+            // Convert empty struct {} to null for enum variants
+            const deployModeData: any = {};
+            if (dgc.deployMode.CodeHash !== undefined) {
+                deployModeData.CodeHash =
+                    Object.keys(dgc.deployMode.CodeHash).length === 0
+                        ? null
+                        : dgc.deployMode.CodeHash;
+            }
+            if (dgc.deployMode.AccountId !== undefined) {
+                deployModeData.AccountId =
+                    Object.keys(dgc.deployMode.AccountId).length === 0
+                        ? null
+                        : dgc.deployMode.AccountId;
+            }
+            return {
+                ...action,
+                deployGlobalContract: new DeployGlobalContract({
+                    code: dgc.code,
+                    deployMode: new GlobalContractDeployMode(deployModeData),
+                }),
+            };
+        }
+        // If action.useGlobalContract exists and its contractIdentifier is a plain object, reconstruct it
+        if (
+            action.useGlobalContract &&
+            action.useGlobalContract.contractIdentifier &&
+            !(
+                action.useGlobalContract.contractIdentifier instanceof
+                GlobalContractIdentifier
+            )
+        ) {
+            const ugc = action.useGlobalContract;
+            // Convert plain array to Uint8Array for CodeHash
+            const identifierData: any = {};
+            if (ugc.contractIdentifier.CodeHash !== undefined) {
+                identifierData.CodeHash = Array.isArray(
+                    ugc.contractIdentifier.CodeHash,
+                )
+                    ? new Uint8Array(ugc.contractIdentifier.CodeHash)
+                    : ugc.contractIdentifier.CodeHash;
+            }
+            if (ugc.contractIdentifier.AccountId !== undefined) {
+                identifierData.AccountId = ugc.contractIdentifier.AccountId;
+            }
+            return {
+                ...action,
+                useGlobalContract: new UseGlobalContract({
+                    contractIdentifier: new GlobalContractIdentifier(
+                        identifierData,
+                    ),
+                }),
+            };
+        }
+        // For other actions, return as-is
+        return action;
+    });
 }
 
 /**
@@ -89,7 +170,7 @@ export class Transaction {
         this.publicKey = publicKey;
         this.nonce = nonce;
         this.receiverId = receiverId;
-        this.actions = actions;
+        this.actions = reconstructActions(actions);
         this.blockHash = blockHash;
     }
 

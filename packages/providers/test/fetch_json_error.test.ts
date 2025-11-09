@@ -23,7 +23,10 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 500 Internal Server Error', async () => {
-        fetchSpy.mockResolvedValue(new Response('', { status: 500 }));
+        // Return a new Response each time to avoid "Body already used" error during retries
+        fetchSpy.mockImplementation(() =>
+            Promise.resolve(new Response('', { status: 500 })),
+        );
 
         await expect(
             fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
@@ -33,7 +36,10 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 408 Timeout Error', async () => {
-        fetchSpy.mockResolvedValue(new Response('', { status: 408 }));
+        // Return a new Response each time to avoid "Body already used" error during retries
+        fetchSpy.mockImplementation(() =>
+            Promise.resolve(new Response('', { status: 408 })),
+        );
 
         await expect(
             fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
@@ -53,7 +59,10 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 503 Service Unavailable', async () => {
-        fetchSpy.mockResolvedValue(new Response('', { status: 503 }));
+        // Return a new Response each time to avoid "Body already used" error during retries
+        fetchSpy.mockImplementation(() =>
+            Promise.resolve(new Response('', { status: 503 })),
+        );
 
         await expect(
             fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),

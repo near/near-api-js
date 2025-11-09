@@ -81,8 +81,9 @@ export async function fetchJsonRpc(
             try {
                 errorData = JSON.parse(responseText);
             } catch (_parseError) {
-                // If JSON parsing fails, use the raw text
-                throw new ProviderError(responseText, { cause: status });
+                // If JSON parsing fails, use the raw text or default message
+                const errorMessage = responseText || 'Internal server error';
+                throw new ProviderError(errorMessage, { cause: status });
             }
             // Check if it's a JSON-RPC error response
             if (errorData.error?.data) {
@@ -94,7 +95,8 @@ export async function fetchJsonRpc(
                     cause: status,
                 });
             }
-            throw new ProviderError(responseText, { cause: status });
+            const errorMessage = responseText || 'Internal server error';
+            throw new ProviderError(errorMessage, { cause: status });
         } else if (status === 408) {
             throw new ProviderError('Timeout error', { cause: status });
         } else if (status === 400) {
