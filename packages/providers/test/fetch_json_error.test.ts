@@ -1,73 +1,76 @@
-import { afterEach, beforeEach, describe, expect, jest, test } from 'bun:test';
-import { fetchJsonRpc, ProviderError, retryConfig } from '../src/fetch_json.js';
+import { afterEach, beforeEach, describe, expect, jest, test } from "bun:test";
+import { fetchJsonRpc, ProviderError, retryConfig } from "../src/fetch_json.js";
 
-describe('fetchJsonError', () => {
-    const RPC_URL = 'https://rpc.testnet.near.org';
+describe("fetchJsonError", () => {
+    const RPC_URL = "https://rpc.testnet.near.org";
     const statusRequest = {
-        jsonrpc: '2.0',
+        jsonrpc: "2.0",
         id: 1,
-        method: 'status',
+        method: "status",
         params: [],
     };
-    let fetchSpy: ReturnType<typeof jest.spyOn<typeof globalThis, 'fetch'>>;
+    let originalFetch: typeof globalThis.fetch;
+    let mockFetch: jest.Mock;
 
     beforeEach(() => {
-        // Reset fetch for each test with proper typing
-        fetchSpy = jest
-            .spyOn(global, 'fetch')
-            .mockResolvedValue(new Response());
+        // Store original fetch
+        originalFetch = globalThis.fetch;
+        // Mock fetch with default resolved value
+        mockFetch = jest.fn().mockResolvedValue(new Response());
+        globalThis.fetch = mockFetch as unknown as typeof globalThis.fetch;
     });
 
     afterEach(() => {
-        fetchSpy.mockRestore();
+        // Restore original fetch
+        globalThis.fetch = originalFetch;
     });
 
-    test('handles 500 Internal Server Error', async () => {
+    test("handles 500 Internal Server Error", async () => {
         // Return a new Response each time to avoid "Body already used" error during retries
-        fetchSpy.mockImplementation(() =>
-            Promise.resolve(new Response('', { status: 500 })),
+        mockFetch.mockImplementation(() =>
+            Promise.resolve(new Response("", { status: 500 }))
         );
 
         await expect(
-            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
+            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())
         ).rejects.toThrowError(
-            new ProviderError('Internal server error', { cause: 500 }),
+            new ProviderError("Internal server error", { cause: 500 })
         );
     });
 
-    test('handles 408 Timeout Error', async () => {
+    test("handles 408 Timeout Error", async () => {
         // Return a new Response each time to avoid "Body already used" error during retries
-        fetchSpy.mockImplementation(() =>
-            Promise.resolve(new Response('', { status: 408 })),
+        mockFetch.mockImplementation(() =>
+            Promise.resolve(new Response("", { status: 408 }))
         );
 
         await expect(
-            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
+            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())
         ).rejects.toThrowError(
-            new ProviderError('Timeout error', { cause: 408 }),
+            new ProviderError("Timeout error", { cause: 408 })
         );
     });
 
-    test('handles 400 Request Validation Error', async () => {
-        fetchSpy.mockResolvedValue(new Response('', { status: 400 }));
+    test("handles 400 Request Validation Error", async () => {
+        mockFetch.mockResolvedValue(new Response("", { status: 400 }));
 
         await expect(
-            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
+            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())
         ).rejects.toThrowError(
-            new ProviderError('Request validation error', { cause: 400 }),
+            new ProviderError("Request validation error", { cause: 400 })
         );
     });
 
-    test('handles 503 Service Unavailable', async () => {
+    test("handles 503 Service Unavailable", async () => {
         // Return a new Response each time to avoid "Body already used" error during retries
-        fetchSpy.mockImplementation(() =>
-            Promise.resolve(new Response('', { status: 503 })),
+        mockFetch.mockImplementation(() =>
+            Promise.resolve(new Response("", { status: 503 }))
         );
 
         await expect(
-            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
+            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())
         ).rejects.toThrowError(
-            new ProviderError(`${RPC_URL} unavailable`, { cause: 503 }),
+            new ProviderError(`${RPC_URL} unavailable`, { cause: 503 })
         );
     });
 });
