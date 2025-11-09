@@ -26,14 +26,17 @@ afterAll(async () => {
     await worker.tearDown();
 });
 
-beforeEach(async () => {
-    contractId = generateUniqueString('test');
-    workingAccount = await createAccount(nearjs);
-    contract = await deployContract(
-        nearjs.accountCreator.masterAccount,
-        contractId,
-    );
-});
+beforeEach(
+    async () => {
+        contractId = generateUniqueString('test');
+        workingAccount = await createAccount(nearjs);
+        contract = await deployContract(
+            nearjs.accountCreator.masterAccount,
+            contractId,
+        );
+    },
+    { timeout: 60000 },
+);
 
 test('make function call using access key', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
@@ -92,7 +95,7 @@ test('remove access key no longer works', async () => {
     if (!failed) {
         throw new Error('should throw an error');
     }
-});
+}, 60000);
 
 test('view account details after adding access keys', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
@@ -137,7 +140,7 @@ test('view account details after adding access keys', async () => {
         expect.arrayContaining(details.authorizedApps),
     );
     expect(details.authorizedApps).toHaveLength(authorizedApps.length);
-});
+}, 60000);
 
 test('loading account after adding a full key', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
@@ -151,5 +154,5 @@ test('loading account after adding a full key', async () => {
         (item) => item.public_key === keyPair.getPublicKey().toString(),
     );
     expect(addedKey).toBeTruthy();
-    expect(addedKey!.access_key.permission).toEqual('FullAccess');
-});
+    expect(addedKey?.access_key.permission).toEqual('FullAccess');
+}, 60000);

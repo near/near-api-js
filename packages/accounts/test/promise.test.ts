@@ -6,12 +6,12 @@ import {
     describe,
     expect,
     test,
-} from "bun:test";
+} from 'bun:test';
 import {
     deployContract,
     generateUniqueString,
     setUpTestConnection,
-} from "./test-utils.js";
+} from './test-utils.js';
 
 let nearjs: any;
 
@@ -29,37 +29,37 @@ afterAll(async () => {
     await worker.tearDown();
 });
 
-describe("with promises", () => {
+describe('with promises', () => {
     let contract: any, contract1: any, contract2: any;
     let oldLog: any;
     let logs: any;
-    const contractName = generateUniqueString("cnt");
-    const contractName1 = generateUniqueString("cnt");
-    const contractName2 = generateUniqueString("cnt");
+    const contractName = generateUniqueString('cnt');
+    const contractName1 = generateUniqueString('cnt');
+    const contractName2 = generateUniqueString('cnt');
 
     beforeAll(
         async () => {
             contract = await deployContract(
                 nearjs.accountCreator.masterAccount,
-                contractName
+                contractName,
             );
             contract1 = await deployContract(
                 nearjs.accountCreator.masterAccount,
-                contractName1
+                contractName1,
             );
             contract2 = await deployContract(
                 nearjs.accountCreator.masterAccount,
-                contractName2
+                contractName2,
             );
         },
-        { timeout: 120000 }
+        { timeout: 120000 },
     );
 
     beforeEach(async () => {
         oldLog = console.log;
         logs = [];
         console.log = (...args: any[]) => {
-            logs.push(Array.from(args).join(" "));
+            logs.push(Array.from(args).join(' '));
         };
     });
 
@@ -70,19 +70,19 @@ describe("with promises", () => {
     // -> means async call
     // => means callback
 
-    test("single promise, no callback (A->B)", async () => {
+    test('single promise, no callback (A->B)', async () => {
         const realResult = await contract.callPromise({
             args: {
                 args: {
                     receiver: contractName1,
-                    methodName: "callbackWithName",
+                    methodName: 'callbackWithName',
                     args: null,
-                    gas: "3000000000000",
-                    balance: "0",
+                    gas: '3000000000000',
+                    balance: '0',
                     callback: null,
                     callbackArgs: null,
-                    callbackBalance: "0",
-                    callbackGas: "0",
+                    callbackBalance: '0',
+                    callbackGas: '0',
                 },
             },
             gas: CONTRACT_CALL_GAS,
@@ -95,19 +95,19 @@ describe("with promises", () => {
         expect(realResult).toEqual(lastResult);
     }, 120000);
 
-    test("single promise with callback (A->B=>A)", async () => {
+    test('single promise with callback (A->B=>A)', async () => {
         const realResult = await contract.callPromise({
             args: {
                 args: {
                     receiver: contractName1,
-                    methodName: "callbackWithName",
+                    methodName: 'callbackWithName',
                     args: null,
-                    gas: "3000000000000",
-                    balance: "0",
-                    callback: "callbackWithName",
+                    gas: '3000000000000',
+                    balance: '0',
+                    callback: 'callbackWithName',
                     callbackArgs: null,
-                    callbackBalance: "0",
-                    callbackGas: "2000000000000",
+                    callbackBalance: '0',
+                    callbackGas: '2000000000000',
                 },
             },
             gas: CONTRACT_CALL_GAS,
@@ -130,29 +130,29 @@ describe("with promises", () => {
         expect(realResult).toEqual(lastResult);
     }, 120000);
 
-    test("two promises, no callbacks (A->B->C)", async () => {
+    test('two promises, no callbacks (A->B->C)', async () => {
         const realResult = await contract.callPromise({
             args: {
                 args: {
                     receiver: contractName1,
-                    methodName: "callPromise",
+                    methodName: 'callPromise',
                     args: {
                         receiver: contractName2,
-                        methodName: "callbackWithName",
+                        methodName: 'callbackWithName',
                         args: null,
-                        gas: "40000000000000",
-                        balance: "0",
+                        gas: '40000000000000',
+                        balance: '0',
                         callback: null,
                         callbackArgs: null,
-                        callbackBalance: "0",
-                        callbackGas: "20000000000000",
+                        callbackBalance: '0',
+                        callbackGas: '20000000000000',
                     },
-                    gas: "60000000000000",
-                    balance: "0",
+                    gas: '60000000000000',
+                    balance: '0',
                     callback: null,
                     callbackArgs: null,
-                    callbackBalance: "0",
-                    callbackGas: "60000000000000",
+                    callbackBalance: '0',
+                    callbackGas: '60000000000000',
                 },
             },
             gas: CONTRACT_CALL_GAS,
@@ -165,29 +165,29 @@ describe("with promises", () => {
         expect(realResult).toEqual(lastResult2);
     }, 120000);
 
-    test("two promises, with two callbacks (A->B->C=>B=>A)", async () => {
+    test('two promises, with two callbacks (A->B->C=>B=>A)', async () => {
         const realResult = await contract.callPromise({
             args: {
                 args: {
                     receiver: contractName1,
-                    methodName: "callPromise",
+                    methodName: 'callPromise',
                     args: {
                         receiver: contractName2,
-                        methodName: "callbackWithName",
+                        methodName: 'callbackWithName',
                         args: null,
-                        gas: "40000000000000",
-                        balance: "0",
-                        callback: "callbackWithName",
+                        gas: '40000000000000',
+                        balance: '0',
+                        callback: 'callbackWithName',
                         callbackArgs: null,
-                        callbackBalance: "0",
-                        callbackGas: "20000000000000",
+                        callbackBalance: '0',
+                        callbackGas: '20000000000000',
                     },
-                    gas: "100000000000000",
-                    balance: "0",
-                    callback: "callbackWithName",
+                    gas: '100000000000000',
+                    balance: '0',
+                    callback: 'callbackWithName',
                     callbackArgs: null,
-                    callbackBalance: "0",
-                    callbackGas: "30000000000000",
+                    callbackBalance: '0',
+                    callbackGas: '30000000000000',
                 },
             },
             gas: CONTRACT_CALL_GAS,
@@ -220,29 +220,29 @@ describe("with promises", () => {
         expect(realResult).toEqual(lastResult);
     }, 120000);
 
-    test("cross contract call with callbacks (A->B->A=>B=>A)", async () => {
+    test('cross contract call with callbacks (A->B->A=>B=>A)', async () => {
         const realResult = await contract.callPromise({
             args: {
                 args: {
                     receiver: contractName1,
-                    methodName: "callPromise",
+                    methodName: 'callPromise',
                     args: {
                         receiver: contractName,
-                        methodName: "callbackWithName",
+                        methodName: 'callbackWithName',
                         args: null,
-                        gas: "40000000000000",
-                        balance: "0",
-                        callback: "callbackWithName",
+                        gas: '40000000000000',
+                        balance: '0',
+                        callback: 'callbackWithName',
                         callbackArgs: null,
-                        callbackBalance: "0",
-                        callbackGas: "40000000000000",
+                        callbackBalance: '0',
+                        callbackGas: '40000000000000',
                     },
-                    gas: "100000000000000",
-                    balance: "0",
-                    callback: "callbackWithName",
+                    gas: '100000000000000',
+                    balance: '0',
+                    callback: 'callbackWithName',
                     callbackArgs: null,
-                    callbackBalance: "0",
-                    callbackGas: "30000000000000",
+                    callbackBalance: '0',
+                    callbackGas: '30000000000000',
                 },
             },
             gas: CONTRACT_CALL_GAS,
@@ -273,29 +273,29 @@ describe("with promises", () => {
         expect(realResult).toEqual(lastResult);
     }, 120000);
 
-    test("2 promises with 1 skipped callbacks (A->B->C=>A)", async () => {
+    test('2 promises with 1 skipped callbacks (A->B->C=>A)', async () => {
         const realResult = await contract.callPromise({
             args: {
                 args: {
                     receiver: contractName1,
-                    methodName: "callPromise",
+                    methodName: 'callPromise',
                     args: {
                         receiver: contractName2,
-                        methodName: "callbackWithName",
+                        methodName: 'callbackWithName',
                         args: null,
-                        gas: "20000000000000",
-                        balance: "0",
+                        gas: '20000000000000',
+                        balance: '0',
                         callback: null,
                         callbackArgs: null,
-                        callbackBalance: "0",
-                        callbackGas: "20000000000000",
+                        callbackBalance: '0',
+                        callbackGas: '20000000000000',
                     },
-                    gas: "50000000000000",
-                    balance: "0",
-                    callback: "callbackWithName",
+                    gas: '50000000000000',
+                    balance: '0',
+                    callback: 'callbackWithName',
                     callbackArgs: null,
-                    callbackBalance: "0",
-                    callbackGas: "30000000000000",
+                    callbackBalance: '0',
+                    callbackGas: '30000000000000',
                 },
             },
             gas: CONTRACT_CALL_GAS,
@@ -318,29 +318,29 @@ describe("with promises", () => {
         expect(realResult).toEqual(lastResult);
     }, 120000);
 
-    test("two promises, with one callbacks to B only (A->B->C=>B)", async () => {
+    test('two promises, with one callbacks to B only (A->B->C=>B)', async () => {
         const realResult = await contract.callPromise({
             args: {
                 args: {
                     receiver: contractName1,
-                    methodName: "callPromise",
+                    methodName: 'callPromise',
                     args: {
                         receiver: contractName2,
-                        methodName: "callbackWithName",
+                        methodName: 'callbackWithName',
                         args: null,
-                        gas: "40000000000000",
-                        balance: "0",
-                        callback: "callbackWithName",
+                        gas: '40000000000000',
+                        balance: '0',
+                        callback: 'callbackWithName',
                         callbackArgs: null,
-                        callbackBalance: "0",
-                        callbackGas: "40000000000000",
+                        callbackBalance: '0',
+                        callbackGas: '40000000000000',
                     },
-                    gas: "100000000000000",
-                    balance: "0",
+                    gas: '100000000000000',
+                    balance: '0',
                     callback: null,
                     callbackArgs: null,
-                    callbackBalance: "0",
-                    callbackGas: "0",
+                    callbackBalance: '0',
+                    callbackGas: '0',
                 },
             },
             gas: CONTRACT_CALL_GAS,

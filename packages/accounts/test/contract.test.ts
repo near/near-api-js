@@ -165,25 +165,28 @@ describe('local view execution', () => {
     let contract: any;
     let blockQuery: any;
 
-    beforeAll(async () => {
-        nearjs = await setUpTestConnection();
-        contract = await deployContractGuestBook(
-            nearjs.accountCreator.masterAccount,
-            generateUniqueString('guestbook'),
-        );
+    beforeAll(
+        async () => {
+            nearjs = await setUpTestConnection();
+            contract = await deployContractGuestBook(
+                nearjs.accountCreator.masterAccount,
+                generateUniqueString('guestbook'),
+            );
 
-        await contract.add_message({ text: 'first message' });
-        await contract.add_message({ text: 'second message' });
+            await contract.add_message({ text: 'first message' });
+            await contract.add_message({ text: 'second message' });
 
-        const block = await contract.connection.provider.block({
-            finality: 'optimistic',
-        });
+            const block = await contract.connection.provider.block({
+                finality: 'optimistic',
+            });
 
-        contract.connection.provider.query = vi.fn(
-            contract.connection.provider.query,
-        );
-        blockQuery = { blockId: block.header.height };
-    });
+            contract.connection.provider.query = vi.fn(
+                contract.connection.provider.query,
+            );
+            blockQuery = { blockId: block.header.height };
+        },
+        { timeout: 60000 },
+    );
 
     afterAll(async () => {
         const worker = nearjs.worker;
@@ -237,7 +240,7 @@ describe('local view execution', () => {
 
         try {
             await _contract.get_msg({}, { blockQuery });
-        } catch (error) {
+        } catch (_error) {
             expect(_contract.account.viewFunction).toHaveBeenCalledWith({
                 contractId: _contract.contractId,
                 methodName: 'get_msg',
