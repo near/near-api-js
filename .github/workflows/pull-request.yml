@@ -33,7 +33,7 @@ jobs:
       run: bun run build
 
     - name: Lint & Format (Biome)
-      run: bunx --bun biome ci
+      run: bunx --bun biome ci --diagnostic-level error
 
     - name: Unit tests
       run: bun run test
