@@ -7,7 +7,9 @@ import { fileURLToPath } from 'url';
 import { UnencryptedFileSystemKeyStore } from '../src/index.js';
 import { shouldStoreAndRetriveKeys } from './keystore_common.js';
 
-const KEYSTORE_PATH = fileURLToPath(new URL('../../test-keys', import.meta.url));
+const KEYSTORE_PATH = fileURLToPath(
+    new URL('../../test-keys', import.meta.url),
+);
 
 describe('Unencrypted file system keystore', () => {
     const ctx: { keyStore?: any } = {};

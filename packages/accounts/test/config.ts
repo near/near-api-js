@@ -1,7 +1,6 @@
-import { Worker } from 'near-workspaces';
-import fs from 'fs';
+import { createSandboxInfo } from '@near-js/sandbox';
 
-module.exports = async function getConfig(env) {
+export default async function getConfig(env: string) {
     switch (env) {
         case 'production':
         case 'mainnet':
@@ -36,18 +35,22 @@ module.exports = async function getConfig(env) {
             };
         case 'test':
         case 'ci': {
-            const worker = await Worker.init();
-            const keyFile = fs.readFileSync(`${worker.rootAccount.manager.config.homeDir}/validator_key.json`);
-            const keyPair = JSON.parse(keyFile.toString());
+            const { server, keyPair } = await createSandboxInfo();
             return {
-                networkId: worker.config.network,
-                nodeUrl: worker.manager.config.rpcAddr,
-                masterAccount: worker.rootAccount._accountId,
-                secretKey: keyPair.secret_key || keyPair.private_key,
-                worker: worker
+                networkId: 'sandbox',
+                nodeUrl: server.endpoint,
+                masterAccount: keyPair.account_id,
+                secretKey: keyPair.secret_key,
+                worker: {
+                    tearDown: async () => {
+                        await server.stop();
+                    },
+                },
             };
         }
         default:
-            throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
+            throw Error(
+                `Unconfigured environment '${env}'. Can be configured in src/config.js.`,
+            );
     }
-};
+}

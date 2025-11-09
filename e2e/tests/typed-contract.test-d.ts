@@ -1,12 +1,12 @@
-import { test, expectTypeOf, describe } from "vitest";
+import { describe, expectTypeOf, test } from "bun:test";
 
 import { AbiRoot, Account, TypedContract } from "@near-js/accounts";
 import { JsonRpcProvider } from "@near-js/providers";
 
 import { KeyPair } from "@near-js/crypto";
 import { KeyPairSigner } from "@near-js/signers";
-import { abi as guestbookAbi } from "../contracts/guestbook/abi.js";
 import { BlockReference, TxExecutionStatus } from "@near-js/types";
+import { abi as guestbookAbi } from "../contracts/guestbook/abi.js";
 
 type AbiFunctionKind = AbiRoot["body"]["functions"][number]["kind"];
 

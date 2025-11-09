@@ -1,37 +1,34 @@
-import { expect, beforeAll, afterAll, test } from "vitest";
+import { afterAll, beforeAll, expect, test } from "bun:test";
 
 import { Account } from "@near-js/accounts";
-import { NEAR } from "@near-js/tokens";
 import { JsonRpcProvider } from "@near-js/providers";
+import { NEAR } from "@near-js/tokens";
 import {
     actionCreators,
     GlobalContractDeployMode,
     GlobalContractIdentifier,
 } from "@near-js/transactions";
 
-import { Worker } from "near-workspaces";
 import { KeyPair, KeyPairString } from "@near-js/crypto";
 import { KeyPairSigner } from "@near-js/signers";
-import { getRpcUrl, getSecretKey } from "./worker.js";
+import { initSandbox, shutdownSandbox } from "./sandbox.js";
 
-let worker: Worker;
+let workerInfo;
 let rootAccount: Account;
 
 beforeAll(async () => {
-    worker = await Worker.init();
+    workerInfo = await initSandbox();
 
-    const provider = new JsonRpcProvider({ url: getRpcUrl(worker) });
+    const provider = new JsonRpcProvider({ url: workerInfo.rpcUrl });
     const signer = KeyPairSigner.fromSecretKey(
-        getSecretKey(worker) as KeyPairString
+        workerInfo.secretKey as KeyPairString
     );
 
-    rootAccount = new Account(worker.rootAccount.accountId, provider, signer);
-});
+    rootAccount = new Account(workerInfo.rootAccountId, provider, signer);
+}, 60000);
 
 afterAll(async () => {
-    if (!worker) return;
-
-    await worker.tearDown();
+    await shutdownSandbox();
 });
 
 test("root account balance is zero", async () => {
@@ -73,9 +70,7 @@ test("account can send meta transaction with Transfer", async () => {
 
     const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
         childAccount.accountId,
-        [
-            actionCreators.transfer(1_000_000n),
-        ]
+        [actionCreators.transfer(1_000_000n)]
     );
 
     const outcome = await rootAccount.signAndSendTransaction({

@@ -7,10 +7,12 @@ import { MultiContractBrowserLocalStorageKeyStore } from '../src/index.js';
 const NETWORK_ID = 'networkid';
 const ACCOUNT_ID = 'accountid';
 const CONTRACT_ID = 'contractid';
-const KEYPAIR = new KeyPairEd25519('2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw');
+const KEYPAIR = new KeyPairEd25519(
+    '2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw',
+);
 
 const ctx = {
-    keyStore: new MultiContractBrowserLocalStorageKeyStore(LocalStorageMemory)
+    keyStore: new MultiContractBrowserLocalStorageKeyStore(LocalStorageMemory),
 };
 
 beforeEach(async () => {
@@ -19,7 +21,9 @@ beforeEach(async () => {
 });
 
 test('Get not-existing account', async () => {
-    expect(await ctx.keyStore.getKey('somenetwork', 'someaccount', 'somecontract')).toBeNull();
+    expect(
+        await ctx.keyStore.getKey('somenetwork', 'someaccount', 'somecontract'),
+    ).toBeNull();
 });
 
 test('Get account id from a network with single key', async () => {

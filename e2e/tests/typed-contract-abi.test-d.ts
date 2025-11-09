@@ -1,8 +1,8 @@
 import { Account, TypedContract } from "@near-js/accounts";
-import { describe, expectTypeOf, test } from "vitest";
+import { KeyPair } from "@near-js/crypto";
 import { JsonRpcProvider } from "@near-js/providers";
 import { KeyPairSigner } from "@near-js/signers";
-import { KeyPair } from "@near-js/crypto";
+import { describe, expectTypeOf, test } from "bun:test";
 
 /// These tests have to be in "packages/accounts",
 /// but since Jest doesn't support type checking,

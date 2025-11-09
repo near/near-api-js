@@ -174,11 +174,21 @@ async function findAvailablePort(
     start = MIN_PORT,
     end = MAX_PORT,
 ): Promise<number> {
+    const range = end - start + 1;
+    const tries = 16;
+    for (let i = 0; i < tries; i++) {
+        const port = start + Math.floor(Math.random() * range);
+        if (await isPortAvailable(port)) {
+            return port;
+        }
+    }
+
     for (let port = start; port <= end; port++) {
         if (await isPortAvailable(port)) {
             return port;
         }
     }
+
     throw new Error(`No available ports found in range ${start}-${end}`);
 }
 
@@ -469,5 +479,30 @@ export async function getSandboxInfo(): Promise<SandboxInfo | null> {
         rpcUrl: currentInstance.endpoint,
         rootAccountId: currentInstance.rootAccountId ?? 'test.near',
         secretKey: currentInstance.secretKey ?? '',
+    };
+}
+
+/**
+ * Create a fresh sandbox manager (does not affect the singleton).
+ */
+export async function createSandboxInstance(
+    options?: SandboxOptions,
+): Promise<SandboxManager> {
+    const manager = new SandboxManager(options);
+    await manager.start();
+    return manager;
+}
+
+/**
+ * Convenience helper: start a fresh sandbox and return the manager plus its root credentials.
+ */
+export async function createSandboxInfo(options?: SandboxOptions) {
+    const manager = await createSandboxInstance(options);
+    return {
+        server: manager,
+        keyPair: {
+            account_id: manager.rootAccountId ?? 'test.near',
+            secret_key: manager.secretKey ?? '',
+        },
     };
 }

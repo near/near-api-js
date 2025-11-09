@@ -7,14 +7,17 @@
     },
     "files": {
         "ignoreUnknown": false,
-        "includes": ["**/src/**"]
+        "includes": ["**/src/**", "**/test/**"]
     },
     "formatter": {
         "enabled": true,
         "indentStyle": "space",
         "indentWidth": 4,
         "lineEnding": "lf",
-        "includes": ["**/src/**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx}"]
+        "includes": [
+            "**/src/**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx}",
+            "**/test/**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx}"
+        ]
     },
     "javascript": {
         "formatter": {

@@ -1,19 +1,20 @@
-import { beforeAll, describe, expect, test } from 'vitest';
+import { beforeAll, describe, expect, test } from 'bun:test';
 import { sha256 } from '@noble/hashes/sha256';
 import { Storage } from '../src/local-view-execution/storage.js';
 import {
     GUESTBOOK_CONTRACT_STATE,
     loadGuestBookContractCode,
-} from './test-utils';
+} from './test-utils.js';
 
-let contractCode;
+let contractCode: any;
 const contractState = GUESTBOOK_CONTRACT_STATE;
 const blockHash = 'G2DF9Pe4KegQK7PkcxDu5cxakvcy99zgrFZEadRCxrwF';
 
 const blockHeight = 1;
 const blockTimestamp = Math.floor(Date.now() * 1000000);
 
-const createBlockHash = (data) => Buffer.from(sha256(JSON.stringify(data))).toString('base64');
+const createBlockHash = (data) =>
+    Buffer.from(sha256(JSON.stringify(data))).toString('base64');
 
 describe('Local View Execution - Storage', () => {
     beforeAll(async () => {

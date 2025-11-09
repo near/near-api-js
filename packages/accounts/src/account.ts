@@ -118,7 +118,7 @@ export interface SignAndSendTransactionOptions {
 interface StakedBalance {
     validatorId: string;
     amount?: string;
-    error?: string;
+    error?: string | Error;
 }
 
 interface ActiveDelegatedStakeBalance {

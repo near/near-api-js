@@ -16,17 +16,41 @@ function createMockAccount(accountId: string) {
             },
             getState: async () => ({ balance: { available: 0n } }),
             signAndSendTransaction: async ({ receiverId, actions }) => {
-                calls.push({ type: 'signAndSendTransaction', receiverId, actions });
+                calls.push({
+                    type: 'signAndSendTransaction',
+                    receiverId,
+                    actions,
+                });
                 return {};
             },
-            callFunction: async ({ contractId, methodName, args, gas, deposit }) => {
-                calls.push({ type: 'callFunction', contractId, methodName, args, gas, deposit });
+            callFunction: async ({
+                contractId,
+                methodName,
+                args,
+                gas,
+                deposit,
+            }) => {
+                calls.push({
+                    type: 'callFunction',
+                    contractId,
+                    methodName,
+                    args,
+                    gas,
+                    deposit,
+                });
                 return {};
             },
         },
-        get calls() { return calls; },
-        get providerCalls() { return providerCalls; },
-        clear() { calls.length = 0; providerCalls.length = 0; }
+        get calls() {
+            return calls;
+        },
+        get providerCalls() {
+            return providerCalls;
+        },
+        clear() {
+            calls.length = 0;
+            providerCalls.length = 0;
+        },
     };
 }
 
@@ -35,7 +59,11 @@ const MT = new MultiTokenContract('mt.contract.testnet');
 test('getBalance calls view and returns bigint', async () => {
     const mock = createMockAccount('alice.testnet');
 
-    mock.account.provider.callFunction = async (contractId, methodName, args) => {
+    mock.account.provider.callFunction = async (
+        contractId,
+        methodName,
+        args,
+    ) => {
         mock.providerCalls.push({ contractId, methodName, args });
         return '123';
     };
@@ -47,25 +75,33 @@ test('getBalance calls view and returns bigint', async () => {
     expect(mock.providerCalls[0]).toEqual({
         contractId: 'mt.contract.testnet',
         methodName: 'mt_balance_of',
-        args: { account_id: 'alice.testnet', token_id: 'token-1' }
+        args: { account_id: 'alice.testnet', token_id: 'token-1' },
     });
 });
 
 test('getBatchedBalance calls view and returns bigint[]', async () => {
     const mock = createMockAccount('bob.testnet');
-    mock.account.provider.callFunction = async (contractId, methodName, args) => {
+    mock.account.provider.callFunction = async (
+        contractId,
+        methodName,
+        args,
+    ) => {
         mock.providerCalls.push({ contractId, methodName, args });
         return ['1', '2', '3'];
     };
 
-    const balances = await MT.getBatchedBalance(mock.account, ['t1', 't2', 't3']);
+    const balances = await MT.getBatchedBalance(mock.account, [
+        't1',
+        't2',
+        't3',
+    ]);
     expect(balances).toEqual([1n, 2n, 3n]);
 
     expect(mock.providerCalls.length).toBe(1);
     expect(mock.providerCalls[0]).toEqual({
         contractId: 'mt.contract.testnet',
         methodName: 'mt_batch_balance_of',
-        args: { account_id: 'bob.testnet', token_ids: ['t1', 't2', 't3'] }
+        args: { account_id: 'bob.testnet', token_ids: ['t1', 't2', 't3'] },
     });
 });
 

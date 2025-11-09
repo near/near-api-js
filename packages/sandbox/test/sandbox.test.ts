@@ -1,12 +1,17 @@
-import { describe, it, expect, afterAll } from 'vitest';
-import { ensureSandbox, stopSandbox, getSandboxInfo, SandboxManager } from '../src/index.js';
+import { afterAll, describe, expect, it } from "bun:test";
+import {
+    ensureSandbox,
+    getSandboxInfo,
+    SandboxManager,
+    stopSandbox,
+} from "../src/index.js";
 
-describe('Sandbox', () => {
+describe("Sandbox", () => {
     afterAll(async () => {
         await stopSandbox();
     });
 
-    it('should start sandbox and return connection info', async () => {
+    it("should start sandbox and return connection info", async () => {
         const { server, keyPair } = await ensureSandbox();
 
         expect(server).toBeDefined();
@@ -16,7 +21,7 @@ describe('Sandbox', () => {
         expect(keyPair.secret_key).toMatch(/^ed25519:/);
     });
 
-    it('should return the same instance on multiple calls (singleton)', async () => {
+    it("should return the same instance on multiple calls (singleton)", async () => {
         const first = await ensureSandbox();
         const second = await ensureSandbox();
 
@@ -24,7 +29,7 @@ describe('Sandbox', () => {
         expect(first.keyPair.account_id).toBe(second.keyPair.account_id);
     });
 
-    it('should provide sandbox info', async () => {
+    it("should provide sandbox info", async () => {
         await ensureSandbox();
         const info = await getSandboxInfo();
 
@@ -34,25 +39,25 @@ describe('Sandbox', () => {
         expect(info?.secretKey).toBeDefined();
     });
 
-    it('should have running process', async () => {
+    it("should have running process", async () => {
         const { server } = await ensureSandbox();
 
         expect(server.process).toBeDefined();
         expect(server.process?.pid).toBeDefined();
     });
 
-    it('should respond to RPC calls', async () => {
+    it("should respond to RPC calls", async () => {
         const { server } = await ensureSandbox();
 
         const response = await fetch(server.endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                jsonrpc: '2.0',
-                id: 'test',
-                method: 'status',
-                params: []
-            })
+                jsonrpc: "2.0",
+                id: "test",
+                method: "status",
+                params: [],
+            }),
         });
 
         expect(response.ok).toBe(true);
@@ -60,7 +65,7 @@ describe('Sandbox', () => {
         expect(data.result).toBeDefined();
     });
 
-    it('should cleanup after stop', async () => {
+    it("should cleanup after stop", async () => {
         await ensureSandbox();
         await stopSandbox();
 
@@ -73,24 +78,24 @@ describe('Sandbox', () => {
     });
 });
 
-describe('SandboxManager', () => {
-    it('should create instance with custom options', () => {
+describe("SandboxManager", () => {
+    it("should create instance with custom options", () => {
         const manager = new SandboxManager({
             port: 9000,
-            version: '2.9.0',
-            rm: false
+            version: "2.9.0",
+            rm: false,
         });
 
         expect(manager.port).toBe(9000);
-        expect(manager.version).toBe('2.9.0');
+        expect(manager.version).toBe("2.9.0");
         expect(manager.rm).toBe(false);
     });
 
-    it('should use defaults when no options provided', () => {
+    it("should use defaults when no options provided", () => {
         const manager = new SandboxManager();
 
         expect(manager.port).toBe(3030);
-        expect(manager.version).toBe('2.9.0');
+        expect(manager.version).toBe("2.9.0");
         expect(manager.rm).toBe(true);
         expect(manager.homeDir).toMatch(/near-sandbox-/);
     });

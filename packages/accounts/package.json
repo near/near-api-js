@@ -10,7 +10,7 @@
         "typecheck": "tsc --noEmit",
         "lint": "bunx --bun biome check",
         "lint:fix": "bunx --bun biome check --write",
-        "test": "vitest run",
+        "test": "bun test",
         "check-exports": "attw --pack . --profile esm-only --no-summary"
     },
     "keywords": [],

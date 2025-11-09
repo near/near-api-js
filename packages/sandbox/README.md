@@ -49,7 +49,7 @@ await stopSandbox();
 Because the sandbox is just an RPC endpoint with a funded root account, you can reuse your existing helpers:
 
 ```ts
-import { beforeAll, afterAll } from "vitest";
+import { beforeAll, afterAll } from "bun:test";
 import { ensureSandbox, stopSandbox } from "@near-js/sandbox";
 
 let sandboxInfo;

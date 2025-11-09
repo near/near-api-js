@@ -6,7 +6,8 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Skipping e2e tests (run 'bun run test:e2e' to execute)\"",
-        "test:e2e": "vitest run"
+        "test:e2e": "bun test",
+        "typecheck": "tsc --noEmit"
     },
     "keywords": [],
     "author": "",
@@ -21,11 +22,10 @@
         "@near-js/transactions": "workspace:*",
         "@near-js/keystores": "workspace:*",
         "@near-js/types": "workspace:*",
-        "@near-js/utils": "workspace:*"
+        "@near-js/utils": "workspace:*",
+        "@near-js/sandbox": "workspace:*"
     },
     "devDependencies": {
-        "near-workspaces": "5.0.0",
-        "typescript": "5.9.3",
-        "vitest": "^3.2.4"
+        "typescript": "5.9.3"
     }
 }

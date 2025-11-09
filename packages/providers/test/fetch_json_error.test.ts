@@ -1,13 +1,5 @@
-import {
-    describe,
-    expect,
-    test,
-    jest,
-    beforeEach,
-    afterAll,
-} from 'bun:test';
-import { fetchJsonRpc, retryConfig } from '../src/fetch_json.js';
-import { ProviderError } from '../src/fetch_json.js';
+import { afterEach, beforeEach, describe, expect, jest, test } from 'bun:test';
+import { fetchJsonRpc, ProviderError, retryConfig } from '../src/fetch_json.js';
 
 describe('fetchJsonError', () => {
     const RPC_URL = 'https://rpc.testnet.near.org';
@@ -17,28 +9,21 @@ describe('fetchJsonError', () => {
         method: 'status',
         params: [],
     };
-
-    // Store original fetch
-    const originalFetch = global.fetch;
+    let fetchSpy: ReturnType<typeof jest.spyOn<typeof globalThis, 'fetch'>>;
 
     beforeEach(() => {
         // Reset fetch for each test with proper typing
-        jest
+        fetchSpy = jest
             .spyOn(global, 'fetch')
-            .mockImplementation(() => Promise.resolve(new Response()));
+            .mockResolvedValue(new Response());
     });
 
-    afterAll(() => {
-        // Restore original fetch
-        global.fetch = originalFetch;
+    afterEach(() => {
+        fetchSpy.mockRestore();
     });
 
     test('handles 500 Internal Server Error', async () => {
-        jest
-            .spyOn(global, 'fetch')
-            .mockImplementation(() =>
-                Promise.resolve(new Response('', { status: 500 })),
-            );
+        fetchSpy.mockResolvedValue(new Response('', { status: 500 }));
 
         await expect(
             fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
@@ -48,23 +33,17 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 408 Timeout Error', async () => {
-        jest
-            .spyOn(global, 'fetch')
-            .mockImplementation(() =>
-                Promise.resolve(new Response('', { status: 408 })),
-            );
+        fetchSpy.mockResolvedValue(new Response('', { status: 408 }));
 
         await expect(
             fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
-        ).rejects.toThrowError(new ProviderError('Timeout error', { cause: 408 }));
+        ).rejects.toThrowError(
+            new ProviderError('Timeout error', { cause: 408 }),
+        );
     });
 
     test('handles 400 Request Validation Error', async () => {
-        jest
-            .spyOn(global, 'fetch')
-            .mockImplementation(() =>
-                Promise.resolve(new Response('', { status: 400 })),
-            );
+        fetchSpy.mockResolvedValue(new Response('', { status: 400 }));
 
         await expect(
             fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
@@ -74,11 +53,7 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 503 Service Unavailable', async () => {
-        jest
-            .spyOn(global, 'fetch')
-            .mockImplementation(() =>
-                Promise.resolve(new Response('', { status: 503 })),
-            );
+        fetchSpy.mockResolvedValue(new Response('', { status: 503 }));
 
         await expect(
             fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),

@@ -1,9 +1,8 @@
 import { beforeEach, describe, expect, test } from 'bun:test';
 import { Logger } from '../src/index.js';
 
-
 describe('logger', () => {
-    let logs;
+    let logs: string[];
 
     beforeEach(async () => {
         logs = [];
