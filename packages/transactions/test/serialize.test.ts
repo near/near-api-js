@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { KeyPair, PublicKey } from '@near-js/crypto';
 import { baseDecode } from '@near-js/utils';
 import { sha256 } from '@noble/hashes/sha256';
@@ -144,7 +146,8 @@ test('serialize transfer tx', async () => {
 });
 
 describe('roundtrip test', () => {
-    const dataDir = './test/data';
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const dataDir = path.join(__dirname, 'data');
     const testFiles = fs.readdirSync(dataDir);
     for (const testFile of testFiles) {
         if (/.+\.json$/.test(testFile)) {
