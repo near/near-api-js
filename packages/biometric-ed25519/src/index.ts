@@ -5,6 +5,7 @@ import { ed25519 } from '@noble/curves/ed25519';
 import { sha256 } from '@noble/hashes/sha256';
 import asn1 from 'asn1-parser';
 import { Buffer } from 'buffer';
+import type { AttestationResult } from 'fido2-lib';
 import { Fido2 } from './fido2.js';
 import type { AssertionResponse } from './type.js';
 import {
@@ -32,13 +33,24 @@ const init: () => Promise<void> = async () => {
 };
 
 function setBufferIfUndefined() {
-    if (window && !window.Buffer) {
+    if (typeof window !== 'undefined' && !window.Buffer) {
         window.Buffer = Buffer;
     }
 }
 
+const concatUint8Arrays = (...arrays: Uint8Array[]): Uint8Array => {
+    const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
+    const result = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const arr of arrays) {
+        result.set(arr, offset);
+        offset += arr.length;
+    }
+    return result;
+};
+
 export class PasskeyProcessCanceled extends Error {
-    constructor(message) {
+    constructor(message: string) {
         super(message);
         this.name = 'PasskeyProcessCanceled';
     }
@@ -66,7 +78,9 @@ export const createKey = async (username: string): Promise<KeyPair> => {
             );
         }
 
-        const sanitizedResponse = sanitizeCreateKeyResponse(res);
+        const sanitizedResponse = sanitizeCreateKeyResponse(
+            res,
+        ) as unknown as AttestationResult;
 
         const alg = await f2l.checkAlg(sanitizedResponse, {
             challenge: challengeMakeCred.challenge,
@@ -85,15 +99,10 @@ export const createKey = async (username: string): Promise<KeyPair> => {
         });
         const publicKey = result.authnrData.get('credentialPublicKeyPem');
         const publicKeyBytes = get64BytePublicKeyFromPEM(publicKey);
-        const secretKey = sha256
-            .create()
-            .update(Buffer.from(publicKeyBytes))
-            .digest();
+        const secretKey = sha256.create().update(publicKeyBytes).digest();
         const pubKey = ed25519.getPublicKey(secretKey);
         return new KeyPairEd25519(
-            baseEncode(
-                Buffer.concat([Buffer.from(secretKey), Buffer.from(pubKey)]),
-            ),
+            baseEncode(concatUint8Arrays(secretKey, pubKey)),
         );
     });
 };
@@ -119,40 +128,34 @@ export const getKeys = async (
         const sanitizedResponse = sanitizeGetKeyResponse(response);
         const getAssertionResponse: AssertionResponse =
             publicKeyCredentialToJSON(sanitizedResponse);
-        const signature = base64.toArrayBuffer(
-            getAssertionResponse.response.signature,
-            true,
+        const signature = new Uint8Array(
+            base64.toArrayBuffer(getAssertionResponse.response.signature, true),
         );
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-expect-error
         const parser = asn1?.ASN1?.parse || window?.ASN1?.parse;
         const rAndS = parser(new Uint8Array(signature));
-        const clientDataJSONHash = sha256
-            .create()
-            .update(
-                Buffer.from(
-                    new Uint8Array(
-                        base64.toArrayBuffer(
-                            getAssertionResponse.response.clientDataJSON,
-                            true,
-                        ),
-                    ),
-                ),
-            )
-            .digest();
-        const authenticatorDataJSONHash = Buffer.from(
-            new Uint8Array(
-                base64.toArrayBuffer(
-                    getAssertionResponse.response.authenticatorData,
-                    true,
-                ),
+        const clientDataJSON = new Uint8Array(
+            base64.toArrayBuffer(
+                getAssertionResponse.response.clientDataJSON,
+                true,
             ),
         );
-        const authenticatorAndClientDataJSONHash = Buffer.concat([
-            Buffer.from(authenticatorDataJSONHash),
-            Buffer.from(clientDataJSONHash),
-        ]);
+        const clientDataJSONHash = sha256
+            .create()
+            .update(clientDataJSON)
+            .digest();
+        const authenticatorDataJSON = new Uint8Array(
+            base64.toArrayBuffer(
+                getAssertionResponse.response.authenticatorData,
+                true,
+            ),
+        );
+        const authenticatorAndClientDataJSONHash = concatUint8Arrays(
+            authenticatorDataJSON,
+            clientDataJSONHash,
+        );
 
         const r = rAndS.children[0].value;
         const s = rAndS.children[1].value;
@@ -163,31 +166,15 @@ export const getKeys = async (
             0,
         );
 
-        const firstEDSecret = sha256
-            .create()
-            .update(Buffer.from(correctPKs[0]))
-            .digest();
+        const firstEDSecret = sha256.create().update(correctPKs[0]).digest();
         const firstEDPublic = ed25519.getPublicKey(firstEDSecret);
-        const secondEDSecret = sha256
-            .create()
-            .update(Buffer.from(correctPKs[1]))
-            .digest();
+        const secondEDSecret = sha256.create().update(correctPKs[1]).digest();
         const secondEDPublic = ed25519.getPublicKey(secondEDSecret);
         const firstKeyPair = new KeyPairEd25519(
-            baseEncode(
-                Buffer.concat([
-                    Buffer.from(firstEDSecret),
-                    Buffer.from(firstEDPublic),
-                ]),
-            ),
+            baseEncode(concatUint8Arrays(firstEDSecret, firstEDPublic)),
         );
         const secondKeyPair = new KeyPairEd25519(
-            baseEncode(
-                Buffer.concat([
-                    Buffer.from(secondEDSecret),
-                    Buffer.from(secondEDPublic),
-                ]),
-            ),
+            baseEncode(concatUint8Arrays(secondEDSecret, secondEDPublic)),
         );
         return [firstKeyPair, secondKeyPair];
     });

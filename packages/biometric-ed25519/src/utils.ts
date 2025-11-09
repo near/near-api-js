@@ -29,12 +29,13 @@ export const preformatMakeCredReq = (makeCredReq) => {
     };
 };
 
-export const get64BytePublicKeyFromPEM = (publicKey: PublicKey) => {
+export const get64BytePublicKeyFromPEM = (publicKey: PublicKey): Uint8Array => {
     const prefix = '\n';
     const publicKeyBase64 = publicKey.toString().split(prefix);
-    return base64
-        .toArrayBuffer(`${publicKeyBase64[1]}${publicKeyBase64[2]}`)
-        .slice(27, 59);
+    const bytes = base64.toArrayBuffer(
+        `${publicKeyBase64[1]}${publicKeyBase64[2]}`,
+    );
+    return new Uint8Array(bytes).slice(27, 59);
 };
 
 export const validateUsername = (name: string): string => {
@@ -112,7 +113,7 @@ const convertUint8ArrayToArrayBuffer = (obj: any) => {
 };
 
 // This function is used to sanitize the response from navigator.credentials.create(), seeking for any Uint8Array and converting them to ArrayBuffer
-// This function has multiple @ts-expect-error because types are not up to date with standard type below:
+// This function has multiple type assertions because types are not up to date with standard type below:
 // https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAttestationResponse
 // an AuthenticatorAttestationResponse (when the PublicKeyCredential is created via CredentialsContainer.create())
 export const sanitizeCreateKeyResponse = (res: Credential) => {
@@ -120,9 +121,7 @@ export const sanitizeCreateKeyResponse = (res: Credential) => {
         res instanceof PublicKeyCredential &&
         (res.rawId instanceof Uint8Array ||
             res.response.clientDataJSON instanceof Uint8Array ||
-            //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //  @ts-expect-error - attestationObject is not defined in Credential
-            res.response.attestationObject instanceof Uint8Array)
+            (res.response as any).attestationObject instanceof Uint8Array)
     ) {
         return {
             ...res,
@@ -132,10 +131,8 @@ export const sanitizeCreateKeyResponse = (res: Credential) => {
                 clientDataJSON: convertUint8ArrayToArrayBuffer(
                     res.response.clientDataJSON,
                 ),
-                //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //  @ts-expect-error - attestationObject is not defined in Credential
                 attestationObject: convertUint8ArrayToArrayBuffer(
-                    res.response.attestationObject,
+                    (res.response as any).attestationObject,
                 ),
             },
         };
@@ -144,46 +141,34 @@ export const sanitizeCreateKeyResponse = (res: Credential) => {
 };
 
 // This function is used to sanitize the response from navigator.credentials.get(), seeking for any Uint8Array and converting them to ArrayBuffer
-// This function has multiple @ts-expect-error because types are not up to date with standard type below:
+// This function has multiple type assertions because types are not up to date with standard type below:
 // https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAssertionResponse
 // an AuthenticatorAssertionResponse (when the PublicKeyCredential is obtained via CredentialsContainer.get()).
 export const sanitizeGetKeyResponse = (res: Credential) => {
     if (
         res instanceof PublicKeyCredential &&
         (res.rawId instanceof Uint8Array ||
-            //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //   @ts-expect-error - authenticatorData is not defined in Credential
-            res.response.authenticatorData instanceof Uint8Array ||
+            (res.response as any).authenticatorData instanceof Uint8Array ||
             res.response.clientDataJSON instanceof Uint8Array ||
-            //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //   @ts-expect-error - signature is not defined in Credential
-            res.response.signature instanceof Uint8Array ||
-            //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //   @ts-expect-error - userHandle is not defined in Credential
-            res.response.userHandle instanceof Uint8Array)
+            (res.response as any).signature instanceof Uint8Array ||
+            (res.response as any).userHandle instanceof Uint8Array)
     ) {
         return {
             ...res,
             rawId: convertUint8ArrayToArrayBuffer(res.rawId),
             response: {
                 ...res.response,
-                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //   @ts-expect-error - authenticatorData is not defined in Credential
                 authenticatorData: convertUint8ArrayToArrayBuffer(
-                    res.response.authenticatorData,
+                    (res.response as any).authenticatorData,
                 ),
                 clientDataJSON: convertUint8ArrayToArrayBuffer(
                     res.response.clientDataJSON,
                 ),
-                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //   @ts-expect-error - signature is not defined in Credential
                 signature: convertUint8ArrayToArrayBuffer(
-                    res.response.signature,
+                    (res.response as any).signature,
                 ),
-                //   eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //   @ts-expect-error - userHandle is not defined in Credential
                 userHandle: convertUint8ArrayToArrayBuffer(
-                    res.response.userHandle,
+                    (res.response as any).userHandle,
                 ),
             },
         };

@@ -123,6 +123,6 @@ export class LocalViewExecution {
             printTxOutcomeLogs({ contractId, logs });
         }
 
-        return JSON.parse(Buffer.from(result).toString());
+        return JSON.parse(new Uint8Array(result).toString());
     }
 }

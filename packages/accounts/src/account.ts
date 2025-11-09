@@ -582,7 +582,12 @@ export class Account {
                 : new GlobalContractIdentifier({
                       CodeHash:
                           typeof contractIdentifier.codeHash === 'string'
-                              ? Buffer.from(contractIdentifier.codeHash, 'hex')
+                              ? new Uint8Array(
+                                    Buffer.from(
+                                        contractIdentifier.codeHash,
+                                        'hex',
+                                    ),
+                                )
                               : contractIdentifier.codeHash,
                   });
 

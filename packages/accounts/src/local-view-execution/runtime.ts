@@ -23,7 +23,7 @@ interface RuntimeConstructorArgs extends RuntimeCtx {
 /** @deprecated Will be removed in the next major release */
 export class Runtime {
     context: RuntimeCtx;
-    wasm: Buffer;
+    wasm: Uint8Array;
     memory: WebAssembly.Memory;
     registers: Record<string, any>;
     logs: any[];
@@ -61,12 +61,17 @@ export class Runtime {
     }
 
     private storageRead(keyLen: bigint, keyPtr: bigint) {
-        const storageKey = Buffer.from(
-            new Uint8Array(this.memory.buffer, Number(keyPtr), Number(keyLen)),
+        const storageKey = new Uint8Array(
+            this.memory.buffer,
+            Number(keyPtr),
+            Number(keyLen),
         );
 
         const stateVal = this.context.contractState
-            .filter((obj) => Buffer.compare(obj.key, storageKey) === 0)
+            .filter(
+                (obj) =>
+                    Buffer.compare(new Uint8Array(obj.key), storageKey) === 0,
+            )
             .map((obj) => obj.value);
 
         if (stateVal.length === 0) return null;
@@ -74,8 +79,8 @@ export class Runtime {
         return stateVal.length > 1 ? stateVal : stateVal[0];
     }
 
-    private prepareWASM(input: Buffer) {
-        const parts = [] as Buffer[];
+    private prepareWASM(input: Buffer): Uint8Array {
+        const parts: Buffer[] = [];
 
         const magic = input.subarray(0, 4);
 
@@ -89,7 +94,7 @@ export class Runtime {
         }
 
         let offset = 8;
-        parts.push(input.subarray(0, offset));
+        parts.push(input.subarray(0, offset) as Buffer);
 
         function decodeLEB128() {
             let result = 0;
@@ -131,9 +136,10 @@ export class Runtime {
             return Buffer.from(result);
         }
 
-        function encodeString(value: string) {
+        function encodeString(value: string): Buffer {
             const result = Buffer.from(value, 'utf8');
-            return Buffer.concat([encodeLEB128(result.length), result]);
+            // Type assertion needed due to TypeScript strictness with ArrayBuffer vs ArrayBufferLike
+            return Buffer.concat([encodeLEB128(result.length), result] as any);
         }
 
         do {
@@ -185,31 +191,35 @@ export class Runtime {
                     }
 
                     if (!skipImport) {
-                        sectionParts.push(input.subarray(importStart, offset));
+                        sectionParts.push(
+                            input.subarray(importStart, offset) as Buffer,
+                        );
                     }
                 }
 
+                // Type assertion needed due to TypeScript strictness with ArrayBuffer vs ArrayBufferLike
                 const importMemory = Buffer.concat([
                     encodeString('env'),
                     encodeString('memory'),
                     Buffer.from([2]), // Memory import
                     Buffer.from([0]),
                     encodeLEB128(1),
-                ]);
+                ] as any);
 
                 sectionParts.push(importMemory);
 
+                // Type assertion needed due to TypeScript strictness with ArrayBuffer vs ArrayBufferLike
                 const sectionData = Buffer.concat([
                     encodeLEB128(sectionParts.length),
                     ...sectionParts,
-                ]);
+                ] as any);
 
                 parts.push(
                     Buffer.concat([
                         Buffer.from([2]), // Import section
                         encodeLEB128(sectionData.length),
                         sectionData,
-                    ]),
+                    ] as any),
                 );
             } else if (sectionId === 7) {
                 // Export section
@@ -224,30 +234,34 @@ export class Runtime {
 
                     if (kind !== 2) {
                         // Pass through all exports except memory
-                        sectionParts.push(input.subarray(exportStart, offset));
+                        sectionParts.push(
+                            input.subarray(exportStart, offset) as Buffer,
+                        );
                     }
                 }
 
+                // Type assertion needed due to TypeScript strictness with ArrayBuffer vs ArrayBufferLike
                 const sectionData = Buffer.concat([
                     encodeLEB128(sectionParts.length),
                     ...sectionParts,
-                ]);
+                ] as any);
 
                 parts.push(
                     Buffer.concat([
                         Buffer.from([7]), // Export section
                         encodeLEB128(sectionData.length),
                         sectionData,
-                    ]),
+                    ] as any),
                 );
             } else {
-                parts.push(input.subarray(sectionStart, sectionEnd));
+                parts.push(input.subarray(sectionStart, sectionEnd) as Buffer);
             }
 
             offset = sectionEnd;
         } while (offset < input.length);
 
-        return Buffer.concat(parts);
+        // Type assertion needed due to TypeScript strictness with ArrayBuffer vs ArrayBufferLike
+        return new Uint8Array(Buffer.concat(parts as any));
     }
 
     // Host functions
@@ -439,9 +453,16 @@ export class Runtime {
 
     async execute(methodName: string) {
         const module = await WebAssembly.compile(this.wasm);
-        const instance = await WebAssembly.instantiate(module, {
+        const instantiated = await WebAssembly.instantiate(module, {
             env: { ...this.getHostImports(), memory: this.memory },
         });
+
+        // When instantiate is called with a Module, it returns an Instance directly,
+        // but TypeScript types don't reflect this correctly
+        const instance =
+            'instance' in instantiated
+                ? instantiated.instance
+                : (instantiated as unknown as WebAssembly.Instance);
 
         const callMethod = instance.exports[methodName] as
             | CallableFunction

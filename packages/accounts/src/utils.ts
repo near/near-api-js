@@ -112,6 +112,6 @@ export async function viewFunction(
     return (
         result.result &&
         result.result.length > 0 &&
-        parse(Buffer.from(result.result))
+        parse(new Uint8Array(result.result))
     );
 }
