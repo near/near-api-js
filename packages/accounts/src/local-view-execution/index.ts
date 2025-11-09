@@ -1,16 +1,15 @@
-import { BlockReference, ContractCodeViewRaw } from '@near-js/types';
+import type { BlockReference, ContractCodeViewRaw } from '@near-js/types';
 import { printTxOutcomeLogs } from '@near-js/utils';
-import { FunctionCallOptions } from '../interface';
-import { Storage } from './storage';
-import { Runtime } from './runtime';
-import { ContractState } from './types';
-import { viewState } from '../utils';
-import { Connection } from '../connection';
-import { IntoConnection } from '../interface';
 import depd from 'depd';
+import type { Connection } from '../connection';
+import type { FunctionCallOptions, IntoConnection } from '../interface';
+import { viewState } from '../utils';
+import { Runtime } from './runtime';
+import { Storage } from './storage';
+import type { ContractState } from './types';
 
 interface ViewFunctionCallOptions extends FunctionCallOptions {
-    blockQuery?: BlockReference
+    blockQuery?: BlockReference;
 }
 
 /**
@@ -28,17 +27,24 @@ export class LocalViewExecution {
         deprecate('It will be removed in the next major release');
     }
 
-    private async fetchContractCode(contractId: string, blockQuery: BlockReference) {
-        const result = await this.connection.provider.query<ContractCodeViewRaw>({
-            request_type: 'view_code',
-            account_id: contractId,
-            ...blockQuery,
-        });
+    private async fetchContractCode(
+        contractId: string,
+        blockQuery: BlockReference,
+    ) {
+        const result =
+            await this.connection.provider.query<ContractCodeViewRaw>({
+                request_type: 'view_code',
+                account_id: contractId,
+                ...blockQuery,
+            });
 
         return result.code_base64;
     }
 
-    private async fetchContractState(contractId: string, blockQuery: BlockReference): Promise<ContractState> {
+    private async fetchContractState(
+        contractId: string,
+        blockQuery: BlockReference,
+    ): Promise<ContractState> {
         return viewState(this.connection, contractId, '', blockQuery);
     }
 
@@ -48,8 +54,14 @@ export class LocalViewExecution {
         const blockHeight = block.header.height;
         const blockTimestamp = block.header.timestamp;
 
-        const contractCode = await this.fetchContractCode(contractId, blockQuery);
-        const contractState = await this.fetchContractState(contractId, blockQuery);
+        const contractCode = await this.fetchContractCode(
+            contractId,
+            blockQuery,
+        );
+        const contractState = await this.fetchContractState(
+            contractId,
+            blockQuery,
+        );
 
         return {
             blockHash,
@@ -67,7 +79,10 @@ export class LocalViewExecution {
             return stored;
         }
 
-        const { blockHash, ...fetched } = await this.fetch(contractId, blockQuery);
+        const { blockHash, ...fetched } = await this.fetch(
+            contractId,
+            blockQuery,
+        );
 
         this.storage.save(blockHash, fetched);
 
@@ -83,14 +98,24 @@ export class LocalViewExecution {
      * @param options.blockQuery The block query options.
      * @returns {Promise<any>} - A promise that resolves to the result of the view function.
      */
-    public async viewFunction({ contractId, methodName, args = {}, blockQuery = { finality: 'optimistic' } }: ViewFunctionCallOptions) {
+    public async viewFunction({
+        contractId,
+        methodName,
+        args = {},
+        blockQuery = { finality: 'optimistic' },
+    }: ViewFunctionCallOptions) {
         const methodArgs = JSON.stringify(args);
 
-        const { contractCode, contractState, blockHeight, blockTimestamp } = await this.loadOrFetch(
+        const { contractCode, contractState, blockHeight, blockTimestamp } =
+            await this.loadOrFetch(contractId, blockQuery);
+        const runtime = new Runtime({
             contractId,
-            blockQuery
-        );
-        const runtime = new Runtime({ contractId, contractCode, contractState, blockHeight, blockTimestamp, methodArgs });
+            contractCode,
+            contractState,
+            blockHeight,
+            blockTimestamp,
+            methodArgs,
+        });
 
         const { result, logs } = await runtime.execute(methodName);
 

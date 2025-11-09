@@ -1,6 +1,6 @@
+import { createRequire } from 'node:module';
 import { TypedError } from '@near-js/types';
 import Mustache from 'mustache';
-import { createRequire } from 'node:module';
 
 import { formatNearAmount } from '../format.js';
 import { ErrorMessages } from './errors.js';
@@ -9,11 +9,10 @@ const require = createRequire(import.meta.url);
 const schema = require('./rpc_error_schema.json');
 
 const mustacheHelpers = {
-    formatNear: () => (n, render) => formatNearAmount(render(n))
+    formatNear: () => (n, render) => formatNearAmount(render(n)),
 };
 
-export class ServerError extends TypedError {
-}
+export class ServerError extends TypedError {}
 
 class ServerTransactionError extends ServerError {
     public transaction_outcome: any;
@@ -23,7 +22,10 @@ export function parseRpcError(errorObj: Record<string, any>): ServerError {
     const result = {};
     const errorClassName = walkSubtype(errorObj, schema.schema, result, '');
     // NOTE: This assumes that all errors extend TypedError
-    const error = new ServerError(formatError(errorClassName, result), errorClassName);
+    const error = new ServerError(
+        formatError(errorClassName, result),
+        errorClassName,
+    );
     Object.assign(error, result);
     return error;
 }
@@ -42,7 +44,7 @@ export function formatError(errorClassName: string, errorData): string {
     if (typeof ErrorMessages[errorClassName] === 'string') {
         return Mustache.render(ErrorMessages[errorClassName], {
             ...errorData,
-            ...mustacheHelpers
+            ...mustacheHelpers,
         });
     }
     return JSON.stringify(errorData);
@@ -55,37 +57,47 @@ export function formatError(errorClassName: string, errorData): string {
  * @param result An object used in recursion or called directly
  * @param typeName The human-readable error type name as defined in the JSON mapping
  */
-function walkSubtype(errorObj, schema, result, typeName) {
-    let error;
-    let type;
-    let errorTypeName;
-    for (const errorName in schema) {
+function walkSubtype(
+    errorObj: Record<string, any>,
+    schemaDefinition: Record<string, any>,
+    result: Record<string, any>,
+    typeName: string,
+): string {
+    let error: Record<string, any> | undefined;
+    let type: any;
+    let errorTypeName: string | undefined;
+    for (const errorName in schemaDefinition) {
         if (isString(errorObj[errorName])) {
             // Return early if error type is in a schema
             return errorObj[errorName];
         }
         if (isObject(errorObj[errorName])) {
             error = errorObj[errorName];
-            type = schema[errorName];
+            type = schemaDefinition[errorName];
             errorTypeName = errorName;
-        } else if (isObject(errorObj.kind) && isObject(errorObj.kind[errorName])) {
+        } else if (
+            isObject(errorObj.kind) &&
+            isObject(errorObj.kind[errorName])
+        ) {
             error = errorObj.kind[errorName];
-            type = schema[errorName];
+            type = schemaDefinition[errorName];
             errorTypeName = errorName;
-        } else {
-            continue;
         }
     }
     if (error && type) {
         for (const prop of Object.keys(type.props)) {
             result[prop] = error[prop];
         }
-        return walkSubtype(error, schema, result, errorTypeName);
-    } else {
-        // TODO: is this the right thing to do?
-        result.kind = errorObj;
-        return typeName;
+        return walkSubtype(
+            error,
+            schemaDefinition,
+            result,
+            errorTypeName ?? typeName,
+        );
     }
+    // TODO: is this the right thing to do?
+    result.kind = errorObj;
+    return typeName;
 }
 
 export function getErrorTypeFromErrorMessage(errorMessage, errorType) {
@@ -97,15 +109,25 @@ export function getErrorTypeFromErrorMessage(errorMessage, errorType) {
             return 'AccountDoesNotExist';
         case /^access key .*? does not exist while viewing$/.test(errorMessage):
             return 'AccessKeyDoesNotExist';
-        case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(errorMessage):
+        case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(
+            errorMessage,
+        ):
             return 'CodeDoesNotExist';
-        case /wasm execution failed with error: CompilationError\(CodeDoesNotExist/.test(errorMessage):
+        case /wasm execution failed with error: CompilationError\(CodeDoesNotExist/.test(
+            errorMessage,
+        ):
             return 'CodeDoesNotExist';
-        case /wasm execution failed with error: FunctionCallError\(MethodResolveError\(MethodNotFound/.test(errorMessage):
+        case /wasm execution failed with error: FunctionCallError\(MethodResolveError\(MethodNotFound/.test(
+            errorMessage,
+        ):
             return 'MethodNotFound';
-        case /wasm execution failed with error: MethodResolveError\(MethodNotFound/.test(errorMessage):
+        case /wasm execution failed with error: MethodResolveError\(MethodNotFound/.test(
+            errorMessage,
+        ):
             return 'MethodNotFound';
-        case /Transaction nonce \d+ must be larger than nonce of the used access key \d+/.test(errorMessage):
+        case /Transaction nonce \d+ must be larger than nonce of the used access key \d+/.test(
+            errorMessage,
+        ):
             return 'InvalidNonce';
         default:
             return errorType;

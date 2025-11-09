@@ -2,8 +2,8 @@ import type {
     CreateAccountParams,
     CreateTopLevelAccountParams,
 } from '../interfaces/index.js';
-import { SignedTransactionComposer } from './composers/index.js';
 import { functionCall } from './actions.js';
+import { SignedTransactionComposer } from './composers/index.js';
 
 /**
  * Create a new top-level account using an existing account
@@ -16,7 +16,15 @@ import { functionCall } from './actions.js';
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function createTopLevelAccount({ account, contract, newAccount, newPublicKey, initialBalance, blockReference, deps }: CreateTopLevelAccountParams) {
+export async function createTopLevelAccount({
+    account,
+    contract,
+    newAccount,
+    newPublicKey,
+    initialBalance,
+    blockReference,
+    deps,
+}: CreateTopLevelAccountParams) {
     return functionCall({
         sender: account,
         receiver: contract,
@@ -42,11 +50,21 @@ export async function createTopLevelAccount({ account, contract, newAccount, new
  * @param blockReference block ID/finality
  * @param deps sign-and-send dependencies
  */
-export async function createSubAccount({ account, newAccount, newPublicKey, initialBalance, blockReference, deps }: CreateAccountParams) {
-    return SignedTransactionComposer.init({ sender: account, receiver: newAccount, deps })
+export async function createSubAccount({
+    account,
+    newAccount,
+    newPublicKey,
+    initialBalance,
+    blockReference,
+    deps,
+}: CreateAccountParams) {
+    return SignedTransactionComposer.init({
+        sender: account,
+        receiver: newAccount,
+        deps,
+    })
         .createAccount()
         .transfer(initialBalance)
         .addFullAccessKey(newPublicKey)
         .signAndSend(blockReference);
 }
-

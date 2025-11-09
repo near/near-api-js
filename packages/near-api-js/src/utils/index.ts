@@ -1,12 +1,15 @@
-
-import * as key_pair from './key_pair.js';
-import * as serialize from './serialize.js';
 import * as enums from './enums.js';
 import * as format from './format.js';
-import * as rpc_errors from './rpc_errors.js';
-
-import { PublicKey, KeyPair, KeyPairString, KeyPairEd25519 } from './key_pair.js';
+import * as key_pair from './key_pair.js';
+import {
+    KeyPair,
+    KeyPairEd25519,
+    KeyPairString,
+    PublicKey,
+} from './key_pair.js';
 import { Logger } from './logger.js';
+import * as rpc_errors from './rpc_errors.js';
+import * as serialize from './serialize.js';
 
 export {
     key_pair,
@@ -18,5 +21,5 @@ export {
     KeyPairString,
     KeyPairEd25519,
     rpc_errors,
-    Logger
+    Logger,
 };

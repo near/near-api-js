@@ -1,13 +1,13 @@
 import {
-    ViewStateResult,
-    BlockReference,
-    CodeResult,
+    type BlockReference,
+    type CodeResult,
     PositionalArgsError,
+    type ViewStateResult,
 } from '@near-js/types';
-import { Connection } from './connection';
 import { printTxOutcomeLogs } from '@near-js/utils';
-import { ViewFunctionCallOptions } from './interface';
 import depd from 'depd';
+import type { Connection } from './connection';
+import type { ViewFunctionCallOptions } from './interface';
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());
@@ -32,7 +32,7 @@ export function validateArgs(args: any) {
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Returns the state (key value pairs) of account's contract based on the key prefix.
  * Pass an empty string for prefix if you would like to return the entire state.
  * @see [https://docs.near.org/api/rpc/contracts#view-contract-state](https://docs.near.org/api/rpc/contracts#view-contract-state)
@@ -46,7 +46,7 @@ export async function viewState(
     connection: Connection,
     accountId: string,
     prefix: string | Uint8Array,
-    blockQuery: BlockReference = { finality: 'optimistic' }
+    blockQuery: BlockReference = { finality: 'optimistic' },
 ): Promise<Array<{ key: Buffer; value: Buffer }>> {
     const deprecate = depd('viewState()');
     deprecate('It will be removed in the next major release');
@@ -66,7 +66,7 @@ export async function viewState(
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Invoke a contract view function using the RPC API.
  * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
  *
@@ -88,7 +88,7 @@ export async function viewFunction(
         parse = parseJsonFromRawResponse,
         stringify = bytesJsonStringify,
         blockQuery = { finality: 'optimistic' },
-    }: ViewFunctionCallOptions
+    }: ViewFunctionCallOptions,
 ): Promise<any> {
     const deprecate = depd('viewFunction()');
     deprecate('It will be removed in the next major release');

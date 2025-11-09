@@ -1,11 +1,11 @@
-import { FinalExecutionOutcome } from '@near-js/types';
+import type { FinalExecutionOutcome } from '@near-js/types';
 
 import { parseRpcError } from './errors/index.js';
 import { Logger } from './logger/index.js';
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Parse and print details from a query execution response
  * @param params
  * @param params.contractId ID of the account/contract which made the query
@@ -14,25 +14,36 @@ import { Logger } from './logger/index.js';
 export function printTxOutcomeLogsAndFailures({
     contractId,
     outcome,
-}: { contractId: string, outcome: FinalExecutionOutcome }) {
-    const flatLogs = [outcome.transaction_outcome, ...outcome.receipts_outcome]
-        .reduce((acc, it) => {
-            const isFailure = typeof it.outcome.status === 'object' && typeof it.outcome.status.Failure === 'object';
-            if (it.outcome.logs.length || isFailure) {
-                return acc.concat({
-                    receiptIds: it.outcome.receipt_ids,
-                    logs: it.outcome.logs,
-                    failure: typeof it.outcome.status === 'object' && it.outcome.status.Failure !== undefined
+}: {
+    contractId: string;
+    outcome: FinalExecutionOutcome;
+}) {
+    const flatLogs = [
+        outcome.transaction_outcome,
+        ...outcome.receipts_outcome,
+    ].reduce((acc, it) => {
+        const isFailure =
+            typeof it.outcome.status === 'object' &&
+            typeof it.outcome.status.Failure === 'object';
+        if (it.outcome.logs.length || isFailure) {
+            return acc.concat({
+                receiptIds: it.outcome.receipt_ids,
+                logs: it.outcome.logs,
+                failure:
+                    typeof it.outcome.status === 'object' &&
+                    it.outcome.status.Failure !== undefined
                         ? parseRpcError(it.outcome.status.Failure)
-                        : null
-                });
-            } else {
-                return acc;
-            }
-        }, []);
+                        : null,
+            });
+        } else {
+            return acc;
+        }
+    }, []);
 
     for (const result of flatLogs) {
-        Logger.log(`Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`);
+        Logger.log(
+            `Receipt${result.receiptIds.length > 1 ? 's' : ''}: ${result.receiptIds.join(', ')}`,
+        );
         printTxOutcomeLogs({
             contractId,
             logs: result.logs,
@@ -47,7 +58,7 @@ export function printTxOutcomeLogsAndFailures({
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Format and print log output from a query execution response
  * @param params
  * @param params.contractId ID of the account/contract which made the query
@@ -58,7 +69,11 @@ export function printTxOutcomeLogs({
     contractId,
     logs,
     prefix = '',
-}: { contractId: string, logs: string[], prefix?: string }) {
+}: {
+    contractId: string;
+    logs: string[];
+    prefix?: string;
+}) {
     for (const log of logs) {
         Logger.log(`${prefix}Log [${contractId}]: ${log}`);
     }

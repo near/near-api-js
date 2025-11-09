@@ -1,21 +1,25 @@
-import { PublicKey } from '@near-js/crypto';
-
-import { Connection } from './connection';
-import { Account } from './account';
+import type { PublicKey } from '@near-js/crypto';
 import depd from 'depd';
+import type { Account } from './account';
+import type { Connection } from './connection';
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Account creator provides an interface for implementations to actually create accounts
  */
 export abstract class AccountCreator {
     constructor() {
         const deprecate = depd('AccountCreator');
-        deprecate(`${this.constructor.name} is deprecated and will be removed in the next major release`);
+        deprecate(
+            `${this.constructor.name} is deprecated and will be removed in the next major release`,
+        );
     }
 
-    abstract createAccount(newAccountId: string, publicKey: PublicKey): Promise<void>;
+    abstract createAccount(
+        newAccountId: string,
+        publicKey: PublicKey,
+    ): Promise<void>;
 }
 
 /** @deprecated Will be removed in the next major release */
@@ -35,8 +39,15 @@ export class LocalAccountCreator extends AccountCreator {
      * @param publicKey The public key from the masterAccount used to create this account
      * @returns {Promise<void>}
      */
-    async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
-        await this.masterAccount.createAccount(newAccountId, publicKey, this.initialBalance);
+    async createAccount(
+        newAccountId: string,
+        publicKey: PublicKey,
+    ): Promise<void> {
+        await this.masterAccount.createAccount(
+            newAccountId,
+            publicKey,
+            this.initialBalance,
+        );
     }
 }
 
@@ -58,9 +69,15 @@ export class UrlAccountCreator extends AccountCreator {
      * @param publicKey The public key from the masterAccount used to create this account
      * @returns {Promise<void>}
      */
-    async createAccount(newAccountId: string, publicKey: PublicKey): Promise<void> {
+    async createAccount(
+        newAccountId: string,
+        publicKey: PublicKey,
+    ): Promise<void> {
         await fetch(`${this.helperUrl}/account`, {
-            body: JSON.stringify({ newAccountId, newAccountPublicKey: publicKey.toString() }),
+            body: JSON.stringify({
+                newAccountId,
+                newAccountPublicKey: publicKey.toString(),
+            }),
             method: 'POST',
         });
     }

@@ -171,7 +171,7 @@ packages/types/
 
 - ✅ `bun install` produces `bun.lock` and succeeds on a clean checkout.
 - ✅ `bun run build` recompiles every workspace to the single `lib/` ESM target (no `lib/commonjs` output remains).
-- ✅ `bun run lint` passes; only the pre-existing `@typescript-eslint/no-explicit-any` warnings remain across the types/keystores packages.
+- ✅ `bun run lint` (Biome) passes; only the pre-existing `noExplicitAny` warnings remain across the types/keystores packages.
 - ✅ `bun run --filter '*' test` succeeds for every workspace except `@near-js/accounts`. Those tests instantiate `near-workspaces`, which is still published as CommonJS and `require`s `near-api-js/lib/*`. Bun's test runner cannot interop with a CommonJS consumer that expects a CommonJS build, so the suites under `packages/accounts/test/*.ts` still fail with `TypeError: Expected CommonJS module to have a function wrapper`.
 - ✅ Individual package suites (`@near-js/providers`, `@near-js/crypto`, `@near-js/signers`, `@near-js/tokens`, `@near-js/utils`, `@near-js/keystores*`, `@near-js/transactions`, `near-api-js`, etc.) all pass with Bun's runner after replacing the remaining Jest-only `.rejects` usages and adding a tiny smoke test for `near-api-js`.
 - ⚠️ `bun run --cwd e2e test` now executes against the sandbox, but the four `GlobalContract` meta-transaction cases in `e2e/tests/accounts.test.ts` still fail with `[-32700] Parse error: Unexpected variant tag`. The sandbox runtime does not yet accept the new `Deploy/UseGlobalContract` action variants.

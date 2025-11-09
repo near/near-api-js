@@ -1,4 +1,4 @@
-import { baseEncode, baseDecode } from '@near-js/utils';
+import { baseDecode, baseEncode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import secp256k1 from 'secp256k1';
 
@@ -6,22 +6,34 @@ import { KeySize, KeyType } from './constants.js';
 
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
-        case KeyType.ED25519: return 'ed25519';
-        case KeyType.SECP256K1: return 'secp256k1';
-        default: throw new Error(`Unknown key type ${keyType}`);
+        case KeyType.ED25519:
+            return 'ed25519';
+        case KeyType.SECP256K1:
+            return 'secp256k1';
+        default:
+            throw new Error(`Unknown key type ${keyType}`);
     }
 }
 
 function str_to_key_type(keyType: string): KeyType {
     switch (keyType.toLowerCase()) {
-        case 'ed25519': return KeyType.ED25519;
-        case 'secp256k1': return KeyType.SECP256K1;
-        default: throw new Error(`Unknown key type ${keyType}`);
+        case 'ed25519':
+            return KeyType.ED25519;
+        case 'secp256k1':
+            return KeyType.SECP256K1;
+        default:
+            throw new Error(`Unknown key type ${keyType}`);
     }
 }
 
-class ED25519PublicKey { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
-class SECP256K1PublicKey { keyType: KeyType = KeyType.SECP256K1; data: Uint8Array; }
+class ED25519PublicKey {
+    keyType: KeyType = KeyType.ED25519;
+    data: Uint8Array;
+}
+class SECP256K1PublicKey {
+    keyType: KeyType = KeyType.SECP256K1;
+    data: Uint8Array;
+}
 
 function resolveEnumKeyName(keyType: KeyType) {
     switch (keyType) {
@@ -49,7 +61,7 @@ abstract class Enum {
         if (Object.keys(properties).length !== 1) {
             throw new Error('Enum can only take single value');
         }
-        Object.keys(properties).map((key: string) => {
+        Object.keys(properties).forEach((key: string) => {
             (this as any)[key] = properties[key];
         });
     }
@@ -64,7 +76,7 @@ export class PublicKey extends Enum {
     ed25519Key?: ED25519PublicKey;
     secp256k1Key?: SECP256K1PublicKey;
 
-    constructor(publicKey: { keyType: KeyType, data: Uint8Array }) {
+    constructor(publicKey: { keyType: KeyType; data: Uint8Array }) {
         const keyName = resolveEnumKeyName(publicKey.keyType);
         super({ [keyName]: publicKey });
         this[keyName] = publicKey;
@@ -91,22 +103,32 @@ export class PublicKey extends Enum {
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
         let publicKey: string;
-        let keyType;
+        let keyType: KeyType | undefined;
         if (parts.length === 1) {
             publicKey = parts[0];
         } else if (parts.length === 2) {
             publicKey = parts[1];
             keyType = str_to_key_type(parts[0]);
         } else {
-            throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
+            throw new Error(
+                'Invalid encoded key format, must be <curve>:<encoded key>',
+            );
         }
         const decodedPublicKey = baseDecode(publicKey);
         if (!keyType) {
-            keyType = decodedPublicKey.length === KeySize.SECP256k1_PUBLIC_KEY ? KeyType.SECP256K1 : KeyType.ED25519;
+            keyType =
+                decodedPublicKey.length === KeySize.SECP256k1_PUBLIC_KEY
+                    ? KeyType.SECP256K1
+                    : KeyType.ED25519;
         }
-        const keySize = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY;
+        const keySize =
+            keyType === KeyType.ED25519
+                ? KeySize.ED25519_PUBLIC_KEY
+                : KeySize.SECP256k1_PUBLIC_KEY;
         if (decodedPublicKey.length !== keySize) {
-            throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${keySize}`);
+            throw new Error(
+                `Invalid public key size (${decodedPublicKey.length}), must be ${keySize}`,
+            );
         }
         return new PublicKey({ keyType, data: decodedPublicKey });
     }
@@ -133,7 +155,11 @@ export class PublicKey extends Enum {
             case KeyType.ED25519:
                 return ed25519.verify(signature, message, data);
             case KeyType.SECP256K1:
-                return secp256k1.ecdsaVerify(signature.subarray(0, 64), message, new Uint8Array([0x04, ...data]));
+                return secp256k1.ecdsaVerify(
+                    signature.subarray(0, 64),
+                    message,
+                    new Uint8Array([0x04, ...data]),
+                );
             default:
                 throw new Error(`Unknown key type: ${keyType}`);
         }
@@ -156,9 +182,9 @@ export function keyToImplicitAddress(publicKey: string | PublicKey): string {
     const pk = PublicKey.from(publicKey);
 
     const publicKeyWithoutPrefix = pk.toString().replace(/^ed25519:/, '');
-  
+
     const decoded = baseDecode(publicKeyWithoutPrefix);
-    // Converting to hex string is implemented manually 
+    // Converting to hex string is implemented manually
     // to avoid issues with environments that do not support Buffer
     let result = '';
     for (let i = 0; i < decoded.length; i++) {

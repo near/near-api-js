@@ -1,24 +1,23 @@
-import { getTransactionLastResult, Logger } from '@near-js/utils';
 import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
-import { LocalViewExecution } from './local-view-execution';
-import validator from 'is-my-json-valid';
+import { getTransactionLastResult, Logger } from '@near-js/utils';
 import depd from 'depd';
+import validator from 'is-my-json-valid';
 import {
-    AbiFunction,
+    type AbiFunction,
     AbiFunctionKind,
-    AbiRoot,
+    type AbiRoot,
     AbiSerializationType,
 } from 'near-abi';
-
 import { Account } from './account';
+import type { Connection } from './connection';
 import {
-    UnsupportedSerializationError,
-    UnknownArgumentError,
     ArgumentSchemaError,
     ConflictingOptions,
+    UnknownArgumentError,
+    UnsupportedSerializationError,
 } from './errors';
-import { IntoConnection } from './interface';
-import { Connection } from './connection';
+import type { IntoConnection } from './interface';
+import { LocalViewExecution } from './local-view-execution';
 import { viewFunction } from './utils';
 
 // Makes `function.name` return given name
@@ -33,7 +32,7 @@ function nameFunction(name: string, body: (args?: any[]) => any) {
 function validateArguments(
     args: object,
     abiFunction: AbiFunction,
-    abiRoot: AbiRoot
+    abiRoot: AbiRoot,
 ) {
     if (!isObject(args)) return;
 
@@ -43,7 +42,7 @@ function validateArguments(
     ) {
         throw new UnsupportedSerializationError(
             abiFunction.name,
-            abiFunction.params.serialization_type
+            abiFunction.params.serialization_type,
         );
     }
 
@@ -53,7 +52,7 @@ function validateArguments(
     ) {
         throw new UnsupportedSerializationError(
             abiFunction.name,
-            abiFunction.result.serialization_type
+            abiFunction.result.serialization_type,
         );
     }
 
@@ -74,7 +73,7 @@ function validateArguments(
         if (!param) {
             throw new UnknownArgumentError(
                 argName,
-                params.map((p) => p.name)
+                params.map((p) => p.name),
             );
         }
     }
@@ -173,20 +172,20 @@ export class Contract {
     constructor(
         connection: IntoConnection,
         contractId: string,
-        options: ContractMethods
+        options: ContractMethods,
     ) {
         const deprecate = depd('new Contract()');
         deprecate(
-            'It will be removed in the next major release, please switch to "TypedContract" with type-safe ABI support'
+            'It will be removed in the next major release, please switch to "TypedContract" with type-safe ABI support',
         );
 
         this.connection = connection.getConnection();
         if (connection instanceof Account) {
             const deprecate = depd(
-                'new Contract(account, contractId, options)'
+                'new Contract(account, contractId, options)',
             );
             deprecate(
-                'use `new Contract(connection, contractId, options)` instead'
+                'use `new Contract(connection, contractId, options)` instead',
             );
             this.account = connection;
         }
@@ -251,7 +250,7 @@ export class Contract {
                                 });
                             } catch (error) {
                                 Logger.warn(
-                                    `Local view execution failed with: "${error.message}"`
+                                    `Local view execution failed with: "${error.message}"`,
                                 );
                                 Logger.warn('Fallback to normal RPC call');
                             }
@@ -272,7 +271,7 @@ export class Contract {
                             args,
                             ...options,
                         });
-                    }
+                    },
                 ),
             });
         });
@@ -291,10 +290,10 @@ export class Contract {
 
                     if (args.length > 1 || !(args[0] && args[0].args)) {
                         const deprecate = depd(
-                            'contract.methodName(args, gas, amount)'
+                            'contract.methodName(args, gas, amount)',
                         );
                         deprecate(
-                            'use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead'
+                            'use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead',
                         );
                         args[0] = {
                             args: args[0],

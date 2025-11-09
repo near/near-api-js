@@ -1,9 +1,9 @@
 export {
     Account,
-    AccountBalance,
     AccountAuthorizedApp,
-    SignAndSendTransactionOptions,
-    FunctionCallOptions,
+    AccountBalance,
     ChangeFunctionCallOptions,
+    FunctionCallOptions,
+    SignAndSendTransactionOptions,
     ViewFunctionCallOptions,
 } from '@near-js/accounts';

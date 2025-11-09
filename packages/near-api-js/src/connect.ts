@@ -31,11 +31,12 @@
  * }
  * @module connect
  */
-import { readKeyFile } from './key_stores/unencrypted_file_system_keystore.js';
-import { InMemoryKeyStore, MergeKeyStore } from './key_stores/index.js';
-import { Near, NearConfig } from './near.js';
+
 import { Logger } from '@near-js/utils';
 import depd from 'depd';
+import { InMemoryKeyStore, MergeKeyStore } from './key_stores/index.js';
+import { readKeyFile } from './key_stores/unencrypted_file_system_keystore.js';
+import { Near, type NearConfig } from './near.js';
 
 /** @deprecated Will be removed in the next major release */
 export interface ConnectConfig extends NearConfig {
@@ -47,7 +48,7 @@ export interface ConnectConfig extends NearConfig {
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Initialize connection to Near network.
  * @param config The configuration object for connecting to NEAR Protocol.
  * @returns A Promise that resolves to a `Near` object representing the connection.
@@ -72,7 +73,9 @@ export interface ConnectConfig extends NearConfig {
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
     const deprecate = depd('connect(config)');
-    deprecate('It will be removed in the next major release, please switch to using Account directly');
+    deprecate(
+        'It will be removed in the next major release, please switch to using Account directly',
+    );
 
     if (config.logger === false) {
         // disables logging
@@ -82,25 +85,33 @@ export async function connect(config: ConnectConfig): Promise<Near> {
     }
 
     // Try to find extra key in `KeyPath` if provided.
-    if (config.keyPath && (config.keyStore ||  config.deps?.keyStore)) {
+    if (config.keyPath && (config.keyStore || config.deps?.keyStore)) {
         try {
             const accountKeyFile = await readKeyFile(config.keyPath);
             if (accountKeyFile[0]) {
                 // TODO: Only load key if network ID matches
                 const keyPair = accountKeyFile[1];
                 const keyPathStore = new InMemoryKeyStore();
-                await keyPathStore.setKey(config.networkId, accountKeyFile[0], keyPair);
+                await keyPathStore.setKey(
+                    config.networkId,
+                    accountKeyFile[0],
+                    keyPair,
+                );
                 if (!config.masterAccount) {
                     config.masterAccount = accountKeyFile[0];
                 }
-                config.keyStore = new MergeKeyStore([
-                    keyPathStore,
-                    config.keyStore || config.deps?.keyStore
-                ], { writeKeyStoreIndex: 1 });
-                Logger.log(`Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`);
+                config.keyStore = new MergeKeyStore(
+                    [keyPathStore, config.keyStore || config.deps?.keyStore],
+                    { writeKeyStoreIndex: 1 },
+                );
+                Logger.log(
+                    `Loaded master account ${accountKeyFile[0]} key from ${config.keyPath} with public key = ${keyPair.getPublicKey()}`,
+                );
             }
         } catch (error) {
-            Logger.warn(`Failed to load master account key from ${config.keyPath}: ${error}`);
+            Logger.warn(
+                `Failed to load master account key from ${config.keyPath}: ${error}`,
+            );
         }
     }
     return new Near(config);

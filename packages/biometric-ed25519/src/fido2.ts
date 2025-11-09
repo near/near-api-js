@@ -1,6 +1,6 @@
 import { base64 } from '@hexagon/base64';
-import { Fido2Lib } from 'fido2-lib';
 import cbor from 'cbor-js';
+import { Fido2Lib } from 'fido2-lib';
 
 export class Fido2 {
     f2l: Fido2Lib;
@@ -15,7 +15,7 @@ export class Fido2 {
             cryptoParams: [-8, -7, -257],
             authenticatorAttachment: 'platform',
             authenticatorRequireResidentKey: true,
-            authenticatorUserVerification: 'preferred'
+            authenticatorUserVerification: 'preferred',
         });
     }
 
@@ -24,15 +24,18 @@ export class Fido2 {
         const user = {
             id: id,
             name: username,
-            displayName: displayName
+            displayName: displayName,
         };
-        const challenge = base64.fromArrayBuffer(registrationOptions.challenge, true);
+        const challenge = base64.fromArrayBuffer(
+            registrationOptions.challenge,
+            true,
+        );
 
         return {
             ...registrationOptions,
             user,
             status: 'ok',
-            challenge
+            challenge,
         };
     }
 
@@ -40,17 +43,23 @@ export class Fido2 {
         const attestationExpectations = {
             challenge: challenge,
             origin: origin,
-            factor: 'either'
+            factor: 'either',
         };
 
         // @ts-expect-error `factor` is defined as a union of strings for which "either" is valid...
-        const regResult = await this.f2l.attestationResult(clientAttestationResponse, attestationExpectations);
+        const regResult = await this.f2l.attestationResult(
+            clientAttestationResponse,
+            attestationExpectations,
+        );
         return regResult;
     }
 
     async login() {
         const assertionOptions = await this.f2l.assertionOptions();
-        const challenge = base64.fromArrayBuffer(assertionOptions.challenge, true);
+        const challenge = base64.fromArrayBuffer(
+            assertionOptions.challenge,
+            true,
+        );
 
         return {
             ...assertionOptions,

@@ -3,7 +3,7 @@
  * @module
  */
 
-import { BlockReference } from './protocol.js';
+import type { BlockReference } from './protocol.js';
 
 export interface ViewAccountRequest {
     request_type: 'view_account';
@@ -39,10 +39,13 @@ export interface CallFunctionRequest {
     args_base64: string;
 }
 
-export type RpcQueryRequest = (ViewAccountRequest |
-    ViewCodeRequest |
-    ViewStateRequest |
-    ViewAccountRequest |
-    ViewAccessKeyRequest |
-    ViewAccessKeyListRequest |
-    CallFunctionRequest) & BlockReference
+export type RpcQueryRequest = (
+    | ViewAccountRequest
+    | ViewCodeRequest
+    | ViewStateRequest
+    | ViewAccountRequest
+    | ViewAccessKeyRequest
+    | ViewAccessKeyListRequest
+    | CallFunctionRequest
+) &
+    BlockReference;

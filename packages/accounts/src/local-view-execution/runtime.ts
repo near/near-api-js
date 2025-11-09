@@ -1,24 +1,24 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { ContractState } from './types';
+import type { ContractState } from './types';
 
-const notImplemented =
-    (name: string) =>
-        () => {
-            throw new Error('method not implemented: ' + name);
-        };
+const notImplemented = (name: string) => () => {
+    throw new Error('method not implemented: ' + name);
+};
 
-const prohibitedInView =
-    (name: string) =>
-        () => {
-            throw new Error('method not available for view calls: ' + name);
-        };
+const prohibitedInView = (name: string) => () => {
+    throw new Error('method not available for view calls: ' + name);
+};
 
 interface RuntimeCtx {
-    contractId: string, contractState: ContractState, blockHeight: number, blockTimestamp: number, methodArgs: string
+    contractId: string;
+    contractState: ContractState;
+    blockHeight: number;
+    blockTimestamp: number;
+    methodArgs: string;
 }
 interface RuntimeConstructorArgs extends RuntimeCtx {
     // base64 encoded contract code
-    contractCode: string,
+    contractCode: string;
 }
 /** @deprecated Will be removed in the next major release */
 export class Runtime {
@@ -42,7 +42,7 @@ export class Runtime {
         const arr: number[] = [];
         const mem = new Uint16Array(this.memory.buffer);
         let key = Number(ptr) / 2;
-        while (mem[key] != 0) {
+        while (mem[key] !== 0) {
             arr.push(mem[key]);
             key++;
         }
@@ -53,7 +53,7 @@ export class Runtime {
         const arr: number[] = [];
         const mem = new Uint8Array(this.memory.buffer);
         let key = Number(ptr);
-        for (let i = 0; i < len && mem[key] != 0; i++) {
+        for (let i = 0; i < len && mem[key] !== 0; i++) {
             arr.push(mem[key]);
             key++;
         }
@@ -61,10 +61,14 @@ export class Runtime {
     }
 
     private storageRead(keyLen: bigint, keyPtr: bigint) {
-        const storageKey = Buffer.from(new Uint8Array(this.memory.buffer, Number(keyPtr), Number(keyLen)));
+        const storageKey = Buffer.from(
+            new Uint8Array(this.memory.buffer, Number(keyPtr), Number(keyLen)),
+        );
 
-        const stateVal = this.context.contractState.filter((obj) => Buffer.compare(obj.key, storageKey) === 0).map((obj) => obj.value);
-        
+        const stateVal = this.context.contractState
+            .filter((obj) => Buffer.compare(obj.key, storageKey) === 0)
+            .map((obj) => obj.value);
+
         if (stateVal.length === 0) return null;
 
         return stateVal.length > 1 ? stateVal : stateVal[0];
@@ -80,7 +84,7 @@ export class Runtime {
         }
 
         const version = input.readUInt32LE(4);
-        if (version != 1) {
+        if (version !== 1) {
             throw new Error('Invalid version: ' + version);
         }
 
@@ -139,11 +143,11 @@ export class Runtime {
             const sectionSize = decodeLEB128();
             const sectionEnd = offset + sectionSize;
 
-            if (sectionId == 5) {
+            if (sectionId === 5) {
                 // Memory section
                 // Make sure it's empty and only imported memory is used
                 parts.push(Buffer.from([5, 1, 0]));
-            } else if (sectionId == 2) {
+            } else if (sectionId === 2) {
                 // Import section
                 const sectionParts: Buffer[] = [];
                 const numImports = decodeLEB128();
@@ -200,12 +204,14 @@ export class Runtime {
                     ...sectionParts,
                 ]);
 
-                parts.push(Buffer.concat([
-                    Buffer.from([2]), // Import section
-                    encodeLEB128(sectionData.length),
-                    sectionData
-                ]));
-            } else if (sectionId == 7) {
+                parts.push(
+                    Buffer.concat([
+                        Buffer.from([2]), // Import section
+                        encodeLEB128(sectionData.length),
+                        sectionData,
+                    ]),
+                );
+            } else if (sectionId === 7) {
                 // Export section
                 const sectionParts: Buffer[] = [];
                 const numExports = decodeLEB128();
@@ -227,11 +233,13 @@ export class Runtime {
                     ...sectionParts,
                 ]);
 
-                parts.push(Buffer.concat([
-                    Buffer.from([7]), // Export section
-                    encodeLEB128(sectionData.length),
-                    sectionData
-                ]));
+                parts.push(
+                    Buffer.concat([
+                        Buffer.from([7]), // Export section
+                        encodeLEB128(sectionData.length),
+                        sectionData,
+                    ]),
+                );
             } else {
                 parts.push(input.subarray(sectionStart, sectionEnd));
             }
@@ -243,59 +251,91 @@ export class Runtime {
     }
 
     // Host functions
-    private getRegisterLength (registerId: bigint) {
-        return BigInt(this.registers[registerId.toString()] ? this.registers[registerId.toString()].length : Number.MAX_SAFE_INTEGER);
+    private getRegisterLength(registerId: bigint) {
+        return BigInt(
+            this.registers[registerId.toString()]
+                ? this.registers[registerId.toString()].length
+                : Number.MAX_SAFE_INTEGER,
+        );
     }
 
-    private readFromRegister (registerId: bigint, ptr: bigint) {
+    private readFromRegister(registerId: bigint, ptr: bigint) {
         const mem = new Uint8Array(this.memory.buffer);
-        mem.set(this.registers[registerId.toString()] || Buffer.from([]), Number(ptr));
+        mem.set(
+            this.registers[registerId.toString()] || Buffer.from([]),
+            Number(ptr),
+        );
     }
 
-    private getCurrentAccountId (registerId: bigint) {
-        this.registers[registerId.toString()] = Buffer.from(this.context.contractId);
+    private getCurrentAccountId(registerId: bigint) {
+        this.registers[registerId.toString()] = Buffer.from(
+            this.context.contractId,
+        );
     }
 
-    private inputMethodArgs (registerId: bigint) {
-        this.registers[registerId.toString()] = Buffer.from(this.context.methodArgs);
+    private inputMethodArgs(registerId: bigint) {
+        this.registers[registerId.toString()] = Buffer.from(
+            this.context.methodArgs,
+        );
     }
 
-    private getBlockHeight () {
+    private getBlockHeight() {
         return BigInt(this.context.blockHeight);
     }
 
-    private getBlockTimestamp () {
+    private getBlockTimestamp() {
         return BigInt(this.context.blockTimestamp);
     }
 
-    private sha256 (valueLen: bigint, valuePtr: bigint, registerId: bigint) {
-        const value = new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen));
+    private sha256(valueLen: bigint, valuePtr: bigint, registerId: bigint) {
+        const value = new Uint8Array(
+            this.memory.buffer,
+            Number(valuePtr),
+            Number(valueLen),
+        );
         this.registers[registerId.toString()] = sha256(value);
     }
 
-    private returnValue (valueLen: bigint, valuePtr: bigint) {
-        this.result = Buffer.from(new Uint8Array(this.memory.buffer, Number(valuePtr), Number(valueLen)));
+    private returnValue(valueLen: bigint, valuePtr: bigint) {
+        this.result = Buffer.from(
+            new Uint8Array(
+                this.memory.buffer,
+                Number(valuePtr),
+                Number(valueLen),
+            ),
+        );
     }
 
-    private panic (message: string) {
+    private panic(message: string) {
         throw new Error('panic: ' + message);
-    } 
+    }
 
-    private abort (msg_ptr: bigint, filename_ptr: bigint, line: number, col: number) {
+    private abort(
+        msg_ptr: bigint,
+        filename_ptr: bigint,
+        line: number,
+        col: number,
+    ) {
         const msg = this.readUTF16CStr(msg_ptr);
         const filename = this.readUTF16CStr(filename_ptr);
         const message = `${msg} ${filename}:${line}:${col}`;
         if (!msg || !filename) {
-            throw new Error('abort: ' + 'String encoding is bad UTF-16 sequence.');
+            throw new Error(
+                'abort: ' + 'String encoding is bad UTF-16 sequence.',
+            );
         }
         throw new Error('abort: ' + message);
     }
 
-    private appendToLog (len: bigint, ptr: bigint) {
+    private appendToLog(len: bigint, ptr: bigint) {
         this.logs.push(this.readUTF8CStr(len, ptr));
     }
 
-    private readStorage (key_len: bigint, key_ptr: bigint, register_id: number): bigint {
+    private readStorage(
+        key_len: bigint,
+        key_ptr: bigint,
+        register_id: number,
+    ): bigint {
         const result = this.storageRead(key_len, key_ptr);
 
         if (result == null) {
@@ -306,7 +346,7 @@ export class Runtime {
         return 1n;
     }
 
-    private hasStorageKey (key_len: bigint, key_ptr: bigint): bigint {
+    private hasStorageKey(key_len: bigint, key_ptr: bigint): bigint {
         const result = this.storageRead(key_len, key_ptr);
 
         if (result == null) {
@@ -332,7 +372,8 @@ export class Runtime {
             storage_read: this.readStorage.bind(this),
             storage_has_key: this.hasStorageKey.bind(this),
             panic: () => this.panic('explicit guest panic'),
-            panic_utf8: (len: bigint, ptr: bigint) => this.panic(this.readUTF8CStr(len, ptr)),
+            panic_utf8: (len: bigint, ptr: bigint) =>
+                this.panic(this.readUTF8CStr(len, ptr)),
             // Not implemented
             epoch_height: notImplemented('epoch_height'),
             storage_usage: notImplemented('storage_usage'),
@@ -358,16 +399,36 @@ export class Runtime {
             promise_and: prohibitedInView('promise_and'),
             promise_batch_create: prohibitedInView('promise_batch_create'),
             promise_batch_then: prohibitedInView('promise_batch_then'),
-            promise_batch_action_create_account: prohibitedInView('promise_batch_action_create_account'),
-            promise_batch_action_deploy_contract: prohibitedInView('promise_batch_action_deploy_contract'),
-            promise_batch_action_function_call: prohibitedInView('promise_batch_action_function_call'),
-            promise_batch_action_function_call_weight: prohibitedInView('promise_batch_action_function_call_weight'),
-            promise_batch_action_transfer: prohibitedInView('promise_batch_action_transfer'),
-            promise_batch_action_stake: prohibitedInView('promise_batch_action_stake'),
-            promise_batch_action_add_key_with_full_access: prohibitedInView('promise_batch_action_add_key_with_full_access'),
-            promise_batch_action_add_key_with_function_call: prohibitedInView('promise_batch_action_add_key_with_function_call'),
-            promise_batch_action_delete_key: prohibitedInView('promise_batch_action_delete_key'),
-            promise_batch_action_delete_account: prohibitedInView('promise_batch_action_delete_account'),
+            promise_batch_action_create_account: prohibitedInView(
+                'promise_batch_action_create_account',
+            ),
+            promise_batch_action_deploy_contract: prohibitedInView(
+                'promise_batch_action_deploy_contract',
+            ),
+            promise_batch_action_function_call: prohibitedInView(
+                'promise_batch_action_function_call',
+            ),
+            promise_batch_action_function_call_weight: prohibitedInView(
+                'promise_batch_action_function_call_weight',
+            ),
+            promise_batch_action_transfer: prohibitedInView(
+                'promise_batch_action_transfer',
+            ),
+            promise_batch_action_stake: prohibitedInView(
+                'promise_batch_action_stake',
+            ),
+            promise_batch_action_add_key_with_full_access: prohibitedInView(
+                'promise_batch_action_add_key_with_full_access',
+            ),
+            promise_batch_action_add_key_with_function_call: prohibitedInView(
+                'promise_batch_action_add_key_with_function_call',
+            ),
+            promise_batch_action_delete_key: prohibitedInView(
+                'promise_batch_action_delete_key',
+            ),
+            promise_batch_action_delete_account: prohibitedInView(
+                'promise_batch_action_delete_account',
+            ),
             promise_results_count: prohibitedInView('promise_results_count'),
             promise_result: prohibitedInView('promise_result'),
             promise_return: prohibitedInView('promise_return'),
@@ -378,19 +439,25 @@ export class Runtime {
 
     async execute(methodName: string) {
         const module = await WebAssembly.compile(this.wasm);
-        const instance = await WebAssembly.instantiate(module, { env: { ...this.getHostImports(), memory: this.memory } });
+        const instance = await WebAssembly.instantiate(module, {
+            env: { ...this.getHostImports(), memory: this.memory },
+        });
 
-        const callMethod = instance.exports[methodName] as CallableFunction | undefined;
+        const callMethod = instance.exports[methodName] as
+            | CallableFunction
+            | undefined;
 
-        if (callMethod == undefined) {
-            throw new Error(`Contract method '${methodName}' does not exists in contract ${this.context.contractId} for block id ${this.context.blockHeight}`);
+        if (callMethod === undefined) {
+            throw new Error(
+                `Contract method '${methodName}' does not exists in contract ${this.context.contractId} for block id ${this.context.blockHeight}`,
+            );
         }
 
         callMethod();
 
         return {
             result: this.result,
-            logs: this.logs
+            logs: this.logs,
         };
     }
 }

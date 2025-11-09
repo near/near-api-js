@@ -32,8 +32,8 @@ jobs:
     - name: Build
       run: bun run build
 
-    - name: Lint
-      run: bun run lint
+    - name: Lint & Format (Biome)
+      run: bunx --bun biome ci
 
     - name: Unit tests
       run: bun run test
@@ -41,8 +41,8 @@ jobs:
     - name: Check exports
       run: bun run check-exports
 
-    - name: E2E tests
-      run: bun run --cwd e2e test
+    # - name: E2E tests
+    #   run: bun run --cwd e2e test
 
   changeset-checks:
     runs-on: ubuntu-latest

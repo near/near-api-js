@@ -6,7 +6,7 @@ export const MAX_NOMINATION_EXP = 24;
 export function formatAmount(
     units: string | number | bigint,
     fracDigits: number,
-    precision: number = fracDigits
+    precision: number = fracDigits,
 ): string {
     units = cleanupUnits(units);
 
@@ -30,7 +30,7 @@ export function parseAmount(amount: string, fracDigits: number): string {
 
     if (split.length > 2) {
         throw new Error(
-            `Cannot parse amount '${amount}' as it contains more than a single dot`
+            `Cannot parse amount '${amount}' as it contains more than a single dot`,
         );
     }
 
@@ -39,12 +39,12 @@ export function parseAmount(amount: string, fracDigits: number): string {
 
     if (fracPart.length > MAX_NOMINATION_EXP) {
         throw new Error(
-            `Cannot parse amount '${amount}' as it exceeds maximum decimal precision of ${MAX_NOMINATION_EXP}`
+            `Cannot parse amount '${amount}' as it exceeds maximum decimal precision of ${MAX_NOMINATION_EXP}`,
         );
     }
 
     return trimLeadingZeroes(
-        wholePart + fracPart.substring(0, fracDigits).padEnd(fracDigits, '0')
+        wholePart + fracPart.substring(0, fracDigits).padEnd(fracDigits, '0'),
     );
 }
 

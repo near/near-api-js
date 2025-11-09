@@ -1,27 +1,27 @@
-import { KeyPair } from '@near-js/crypto';
+import type { KeyPair } from '@near-js/crypto';
 import { KeyStore } from './keystore.js';
 
 /**
  * Keystore which can be used to merge multiple key stores into one virtual key store.
- * 
+ *
  * @example
  * ```js
  * const { homedir } = require('os');
  * import { connect, keyStores, utils } from 'near-api-js';
- * 
+ *
  * const privateKey = '.......';
  * const keyPair = utils.KeyPair.fromString(privateKey);
- * 
+ *
  * const inMemoryKeyStore = new keyStores.InMemoryKeyStore();
  * inMemoryKeyStore.setKey('testnet', 'example-account.testnet', keyPair);
- * 
+ *
  * const fileSystemKeyStore = new keyStores.UnencryptedFileSystemKeyStore(`${homedir()}/.near-credentials`);
- * 
+ *
  * const keyStore = new MergeKeyStore([
  *   inMemoryKeyStore,
  *   fileSystemKeyStore
  * ]);
- * const config = { 
+ * const config = {
  *   keyStore, // instance of MergeKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
@@ -29,7 +29,7 @@ import { KeyStore } from './keystore.js';
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };
- * 
+ *
  * // inside an async function
  * const near = await connect(config)
  * ```
@@ -48,7 +48,10 @@ export class MergeKeyStore extends KeyStore {
      * @param options KeyStore options
      * @param options.writeKeyStoreIndex the keystore index that will receive all write calls
      */
-    constructor(keyStores: KeyStore[], options: MergeKeyStoreOptions = { writeKeyStoreIndex: 0 }) {
+    constructor(
+        keyStores: KeyStore[],
+        options: MergeKeyStoreOptions = { writeKeyStoreIndex: 0 },
+    ) {
         super();
         this.options = options;
         this.keyStores = keyStores;
@@ -60,8 +63,16 @@ export class MergeKeyStore extends KeyStore {
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
      */
-    async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        await this.keyStores[this.options.writeKeyStoreIndex].setKey(networkId, accountId, keyPair);
+    async setKey(
+        networkId: string,
+        accountId: string,
+        keyPair: KeyPair,
+    ): Promise<void> {
+        await this.keyStores[this.options.writeKeyStoreIndex].setKey(
+            networkId,
+            accountId,
+            keyPair,
+        );
     }
 
     /**
@@ -79,7 +90,7 @@ export class MergeKeyStore extends KeyStore {
         }
         return null;
     }
-    
+
     /**
      * Removes a {@link KeyPair} from the array of key stores
      * @param networkId The targeted network. (ex. default, betanet, etc…)
@@ -90,7 +101,7 @@ export class MergeKeyStore extends KeyStore {
             await keyStore.removeKey(networkId, accountId);
         }
     }
-    
+
     /**
      * Removes all items from each key store
      */
@@ -99,11 +110,11 @@ export class MergeKeyStore extends KeyStore {
             await keyStore.clear();
         }
     }
-    
+
     /**
      * Get the network(s) from the array of key stores
      * @returns {Promise<string[]>}
-     */    
+     */
     async getNetworks(): Promise<string[]> {
         const result = new Set<string>();
         for (const keyStore of this.keyStores) {
@@ -113,11 +124,11 @@ export class MergeKeyStore extends KeyStore {
         }
         return Array.from(result);
     }
-    
+
     /**
      * Gets the account(s) from the array of key stores
      * @param networkId The targeted network. (ex. default, betanet, etc…)
-     */    
+     */
     async getAccounts(networkId: string): Promise<string[]> {
         const result = new Set<string>();
         for (const keyStore of this.keyStores) {

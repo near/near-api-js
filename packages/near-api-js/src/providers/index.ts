@@ -1,8 +1,19 @@
 /** @hidden @module */
 
-import { Provider, FinalExecutionOutcome, ExecutionOutcomeWithId, getTransactionLastResult, FinalExecutionStatus, FinalExecutionStatusBasic } from './provider.js';
-import { JsonRpcProvider, TypedError, ErrorContext } from './json-rpc-provider.js';
 import { FailoverRpcProvider } from './failover-rpc-provider.js';
+import {
+    ErrorContext,
+    JsonRpcProvider,
+    TypedError,
+} from './json-rpc-provider.js';
+import {
+    ExecutionOutcomeWithId,
+    FinalExecutionOutcome,
+    FinalExecutionStatus,
+    FinalExecutionStatusBasic,
+    getTransactionLastResult,
+    Provider,
+} from './provider.js';
 
 export {
     Provider,
@@ -14,5 +25,5 @@ export {
     FinalExecutionStatusBasic,
     getTransactionLastResult,
     TypedError,
-    ErrorContext
+    ErrorContext,
 };

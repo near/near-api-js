@@ -1,10 +1,10 @@
 import type { FinalExecutionOutcome } from '@near-js/types';
 
 import { KITWALLET_FUNDED_TESTNET_ACCOUNT_ENDPOINT } from './constants.js';
-import { NewAccountParams } from './interfaces/index.js';
+import type { NewAccountParams } from './interfaces/index.js';
 
 interface CreateFundedTestnetAccountParams extends NewAccountParams {
-  endpointUrl?: string;
+    endpointUrl?: string;
 }
 
 /**
@@ -30,8 +30,10 @@ export async function createFundedTestnetAccount({
 
     const { ok, status } = res;
     if (!ok) {
-        throw new Error(`Failed to create account on ${endpointUrl}: ${status}`);
+        throw new Error(
+            `Failed to create account on ${endpointUrl}: ${status}`,
+        );
     }
 
-    return await res.json() as FinalExecutionOutcome;
+    return (await res.json()) as FinalExecutionOutcome;
 }

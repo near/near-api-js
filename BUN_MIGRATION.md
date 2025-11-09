@@ -177,7 +177,7 @@ Update your `tsconfig.json`:
 ### What Still Works
 - ✅ Jest for testing (kept as-is)
 - ✅ Vitest for e2e tests (kept as-is)
-- ✅ ESLint for linting
+- ✅ Biome for linting
 - ✅ Changesets for versioning
 - ✅ Husky for git hooks
 - ✅ TypeDoc for documentation

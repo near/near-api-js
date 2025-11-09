@@ -7,8 +7,8 @@
     "scripts": {
         "build": "tsc",
         "clean": "rm -rf lib",
-        "lint": "eslint \"src/**/*.ts\"",
-        "lint:fix": "eslint --fix \"src/**/*.ts\"",
+        "lint": "bunx --bun biome check",
+        "lint:fix": "bunx --bun biome check --write",
         "test": "vitest run",
         "check-exports": "attw --ignore-rules cjs-resolves-to-esm internal-resolution-error --pack ."
     },

@@ -1,22 +1,21 @@
-import { KeyPair } from '@near-js/crypto';
+import { KeyPair, type KeyPairString } from '@near-js/crypto';
 import { KeyStore } from './keystore.js';
-import { KeyPairString } from '@near-js/crypto';
 
 /**
  * Simple in-memory keystore for mainly for testing purposes.
- * 
+ *
  * @see [https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store](https://docs.near.org/docs/develop/front-end/naj-quick-reference#key-store)
  * @example
  * ```js
  * import { connect, keyStores, utils } from 'near-api-js';
- * 
+ *
  * const privateKey = '.......';
  * const keyPair = utils.KeyPair.fromString(privateKey);
- * 
+ *
  * const keyStore = new keyStores.InMemoryKeyStore();
  * keyStore.setKey('testnet', 'example-account.testnet', keyPair);
- * 
- * const config = { 
+ *
+ * const config = {
  *   keyStore, // instance of InMemoryKeyStore
  *   networkId: 'testnet',
  *   nodeUrl: 'https://rpc.testnet.near.org',
@@ -24,7 +23,7 @@ import { KeyPairString } from '@near-js/crypto';
  *   helperUrl: 'https://helper.testnet.near.org',
  *   explorerUrl: 'https://explorer.testnet.near.org'
  * };
- * 
+ *
  * // inside an async function
  * const near = await connect(config)
  * ```
@@ -43,9 +42,14 @@ export class InMemoryKeyStore extends KeyStore {
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      * @param accountId The NEAR account tied to the key pair
      * @param keyPair The key pair to store in local storage
-     */    
-    async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
-        this.keys[`${accountId}:${networkId}`] = keyPair.toString() as KeyPairString;
+     */
+    async setKey(
+        networkId: string,
+        accountId: string,
+        keyPair: KeyPair,
+    ): Promise<void> {
+        this.keys[`${accountId}:${networkId}`] =
+            keyPair.toString() as KeyPairString;
     }
 
     /**
@@ -96,7 +100,7 @@ export class InMemoryKeyStore extends KeyStore {
      * @param networkId The targeted network. (ex. default, betanet, etc…)
      */
     async getAccounts(networkId: string): Promise<string[]> {
-        const result = new Array<string>();
+        const result: string[] = [];
         Object.keys(this.keys).forEach((key) => {
             const parts = key.split(':');
             if (parts[parts.length - 1] === networkId) {

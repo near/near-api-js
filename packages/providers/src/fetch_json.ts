@@ -5,7 +5,11 @@ const BACKOFF_MULTIPLIER = 1.5;
 const RETRY_NUMBER = 10;
 const RETRY_DELAY = 0;
 
-export function retryConfig(numOfAttempts=RETRY_NUMBER, timeMultiple=BACKOFF_MULTIPLIER, startingDelay=RETRY_DELAY) {
+export function retryConfig(
+    numOfAttempts = RETRY_NUMBER,
+    timeMultiple = BACKOFF_MULTIPLIER,
+    startingDelay = RETRY_DELAY,
+) {
     return {
         numOfAttempts: numOfAttempts,
         timeMultiple: timeMultiple,
@@ -15,12 +19,15 @@ export function retryConfig(numOfAttempts=RETRY_NUMBER, timeMultiple=BACKOFF_MUL
                 return true;
             }
 
-            if (e.toString().includes('FetchError') || e.toString().includes('Failed to fetch')) {
+            if (
+                e.toString().includes('FetchError') ||
+                e.toString().includes('Failed to fetch')
+            ) {
                 return true;
             }
 
             return false;
-        }
+        },
     };
 }
 
@@ -53,12 +60,17 @@ interface JsonRpcRequest {
  * @param headers HTTP headers to include with the request
  * @returns Promise<any> }arsed JSON response from the HTTP request.
  */
-export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: object, retryConfig: object): Promise<any> {
+export async function fetchJsonRpc(
+    url: string,
+    json: JsonRpcRequest,
+    headers: object,
+    retryConfig: object,
+): Promise<any> {
     const response = await backOff(async () => {
         const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(json),
-            headers: { ...headers, 'Content-Type': 'application/json' }
+            headers: { ...headers, 'Content-Type': 'application/json' },
         });
 
         const { ok, status } = res;
@@ -68,7 +80,9 @@ export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: o
         } else if (status === 408) {
             throw new ProviderError('Timeout error', { cause: status });
         } else if (status === 400) {
-            throw new ProviderError('Request validation error', { cause: status });
+            throw new ProviderError('Request validation error', {
+                cause: status,
+            });
         } else if (status === 503) {
             throw new ProviderError(`${url} unavailable`, { cause: status });
         }
@@ -81,7 +95,10 @@ export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: o
     }, retryConfig);
 
     if (!response) {
-        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${url}.`, 'RetriesExceeded');
+        throw new TypedError(
+            `Exceeded ${RETRY_NUMBER} attempts for ${url}.`,
+            'RetriesExceeded',
+        );
     }
 
     return await response.json();

@@ -19,4 +19,5 @@ export const PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET = [
     'https://archival-rpc.testnet.near.org',
 ];
 
-export const KITWALLET_FUNDED_TESTNET_ACCOUNT_ENDPOINT = 'https://testnet-api.kitwallet.app/account';
+export const KITWALLET_FUNDED_TESTNET_ACCOUNT_ENDPOINT =
+    'https://testnet-api.kitwallet.app/account';

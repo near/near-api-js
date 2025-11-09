@@ -1,16 +1,16 @@
+import type { BlockHash, BlockReference } from '@near-js/types';
 import * as LRU from 'lru_map';
-import { BlockHash, BlockReference } from '@near-js/types';
-import { ContractState } from './types';
+import type { ContractState } from './types';
 
 export interface StorageData {
-    blockHeight: number,
-    blockTimestamp: number,
-    contractCode: string,
-    contractState: ContractState
+    blockHeight: number;
+    blockTimestamp: number;
+    contractCode: string;
+    contractState: ContractState;
 }
 
 export interface StorageOptions {
-    max: number
+    max: number;
 }
 
 export class Storage {
@@ -34,15 +34,28 @@ export class Storage {
         let blockId = blockRef.blockId;
 
         // block hash is passed, so get its corresponding block height
-        if (blockId.toString().length == 44) {
+        if (blockId.toString().length === 44) {
             blockId = this.blockHeights.get(blockId.toString());
         }
         // get cached values for the given block height
         return this.cache.get(blockId);
     }
 
-    public save(blockHash: BlockHash, { blockHeight, blockTimestamp, contractCode, contractState }: StorageData) {
+    public save(
+        blockHash: BlockHash,
+        {
+            blockHeight,
+            blockTimestamp,
+            contractCode,
+            contractState,
+        }: StorageData,
+    ) {
         this.blockHeights.set(blockHash, blockHeight);
-        this.cache.set(blockHeight, { blockHeight, blockTimestamp, contractCode, contractState });
+        this.cache.set(blockHeight, {
+            blockHeight,
+            blockTimestamp,
+            contractCode,
+            contractState,
+        });
     }
 }

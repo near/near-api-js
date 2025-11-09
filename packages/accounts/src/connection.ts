@@ -1,11 +1,11 @@
-import { InMemorySigner } from '@near-js/signers';
 import {
-    Provider,
-    JsonRpcProvider,
     FailoverRpcProvider,
+    JsonRpcProvider,
+    type Provider,
 } from '@near-js/providers';
-import { IntoConnection } from './interface';
+import { InMemorySigner } from '@near-js/signers';
 import depd from 'depd';
+import type { IntoConnection } from './interface';
 
 /**
  * @param config Contains connection info details
@@ -19,7 +19,7 @@ function getProvider(config: any): Provider {
             return new JsonRpcProvider({ ...config.args });
         case 'FailoverRpcProvider': {
             const providers = (config?.args || []).map(
-                (arg) => new JsonRpcProvider(arg)
+                (arg) => new JsonRpcProvider(arg),
             );
             return new FailoverRpcProvider(providers);
         }
@@ -45,7 +45,7 @@ function getSigner(config: any) {
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Connects an account to a given network via a given provider
  */
 export class Connection implements IntoConnection {
@@ -53,13 +53,11 @@ export class Connection implements IntoConnection {
     readonly provider: Provider;
     readonly signer: InMemorySigner;
 
-    constructor(
-        networkId: string,
-        provider: Provider,
-        signer: InMemorySigner,
-    ) {
+    constructor(networkId: string, provider: Provider, signer: InMemorySigner) {
         const deprecate = depd('new Connection(networkId, provider, signer)');
-        deprecate('`Connection` is no longer used anywhere, please switch to constructing `Account` without it - use `new Account(accountId, provider, signer)`');
+        deprecate(
+            '`Connection` is no longer used anywhere, please switch to constructing `Account` without it - use `new Account(accountId, provider, signer)`',
+        );
 
         this.networkId = networkId;
         this.provider = provider;
@@ -76,10 +74,6 @@ export class Connection implements IntoConnection {
     static fromConfig(config: any): Connection {
         const provider = getProvider(config.provider);
         const signer = getSigner(config.signer);
-        return new Connection(
-            config.networkId,
-            provider,
-            signer,
-        );
+        return new Connection(config.networkId, provider, signer);
     }
 }

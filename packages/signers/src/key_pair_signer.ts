@@ -1,22 +1,26 @@
-import { KeyPair, PublicKey, KeyPairString, KeyType } from '@near-js/crypto';
-import { sha256 } from '@noble/hashes/sha256';
-
 import {
-    Nep413MessageSchema,
-    SignedMessage,
-    Signer,
-    SignMessageParams,
-} from './signer.js';
+    KeyPair,
+    type KeyPairString,
+    KeyType,
+    type PublicKey,
+} from '@near-js/crypto';
 import {
-    Transaction,
-    SignedTransaction,
+    type DelegateAction,
+    encodeDelegateAction,
     encodeTransaction,
     Signature,
-    DelegateAction,
     SignedDelegate,
-    encodeDelegateAction,
+    SignedTransaction,
+    type Transaction,
 } from '@near-js/transactions';
+import { sha256 } from '@noble/hashes/sha256';
 import { serialize } from 'borsh';
+import {
+    Nep413MessageSchema,
+    type SignedMessage,
+    Signer,
+    type SignMessageParams,
+} from './signer.js';
 
 /**
  * Signs using in memory key store.
@@ -44,7 +48,7 @@ export class KeyPairSigner extends Signer {
         accountId: string,
         recipient: string,
         nonce: Uint8Array,
-        callbackUrl?: string
+        callbackUrl?: string,
     ): Promise<SignedMessage> {
         if (nonce.length !== 32)
             throw new Error('Nonce must be exactly 32 bytes long');
@@ -59,12 +63,12 @@ export class KeyPairSigner extends Signer {
             message,
             recipient,
             nonce,
-            callbackUrl
+            callbackUrl,
         };
         const serializedParams = serialize(Nep413MessageSchema, params);
 
         const serializedMessage = new Uint8Array(
-            serializedPrefix.length + serializedParams.length
+            serializedPrefix.length + serializedParams.length,
         );
         serializedMessage.set(serializedPrefix);
         serializedMessage.set(serializedParams, serializedPrefix.length);
@@ -81,12 +85,12 @@ export class KeyPairSigner extends Signer {
     }
 
     public async signTransaction(
-        transaction: Transaction
+        transaction: Transaction,
     ): Promise<[Uint8Array, SignedTransaction]> {
         const pk = this.key.getPublicKey();
 
         if (transaction.publicKey.toString() !== pk.toString())
-            throw new Error('The public key doesn\'t match the signer\'s key');
+            throw new Error("The public key doesn't match the signer's key");
 
         const message = encodeTransaction(transaction);
         const hash = new Uint8Array(sha256(message));
@@ -106,12 +110,12 @@ export class KeyPairSigner extends Signer {
     }
 
     public async signDelegateAction(
-        delegateAction: DelegateAction
+        delegateAction: DelegateAction,
     ): Promise<[Uint8Array, SignedDelegate]> {
         const pk = this.key.getPublicKey();
 
         if (delegateAction.publicKey.toString() !== pk.toString())
-            throw new Error('The public key doesn\'t match the signer\'s key');
+            throw new Error("The public key doesn't match the signer's key");
 
         const message = encodeDelegateAction(delegateAction);
         const hash = new Uint8Array(sha256(message));

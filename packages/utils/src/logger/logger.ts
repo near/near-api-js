@@ -1,5 +1,5 @@
 import { ConsoleLogger } from './console.logger.js';
-import type { LogLevel, LoggerService } from './interface.js';
+import type { LoggerService, LogLevel } from './interface.js';
 
 const DEFAULT_LOG_LEVELS: LogLevel[] = [
     'verbose',
@@ -14,7 +14,7 @@ const DEFAULT_LOGGER = new ConsoleLogger(DEFAULT_LOG_LEVELS);
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Used to log the library messages
  */
 export class Logger {
@@ -29,45 +29,51 @@ export class Logger {
      * Write an 'error' level log.
      */
     public static error(message: any, stack?: string): void;
-    public static error(message: any, ...optionalParams: [string, ...any[]]): void;
+    public static error(
+        message: any,
+        ...optionalParams: [string, ...any[]]
+    ): void;
     public static error(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.error(message, ...optionalParams);
+        Logger.instanceRef?.error(message, ...optionalParams);
     }
 
     /**
      * Write a 'log' level log.
      */
     public static log(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.log(message, ...optionalParams);
+        Logger.instanceRef?.log(message, ...optionalParams);
     }
 
     /**
      * Write a 'warn' level log.
      */
     public static warn(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.warn(message, ...optionalParams);
+        Logger.instanceRef?.warn(message, ...optionalParams);
     }
 
     /**
      * Write a 'debug' level log.
      */
     public static debug(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.debug?.(message, ...optionalParams);
+        Logger.instanceRef?.debug?.(message, ...optionalParams);
     }
 
     /**
      * Write a 'verbose' level log.
      */
     public static verbose(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.verbose?.(message, ...optionalParams);
+        Logger.instanceRef?.verbose?.(message, ...optionalParams);
     }
 
     /**
      * Write a 'fatal' level log.
      */
     public static fatal(message: any, stack?: string): void;
-    public static fatal(message: any, ...optionalParams: [string, ...any[]]): void;
+    public static fatal(
+        message: any,
+        ...optionalParams: [string, ...any[]]
+    ): void;
     public static fatal(message: any, ...optionalParams: any[]) {
-        this.instanceRef?.fatal?.(message, ...optionalParams);
+        Logger.instanceRef?.fatal?.(message, ...optionalParams);
     }
 }

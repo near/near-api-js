@@ -1,7 +1,7 @@
 export {
-    parseRpcError,
-    parseResultError,
     formatError,
     getErrorTypeFromErrorMessage,
+    parseResultError,
+    parseRpcError,
     ServerError,
 } from '@near-js/utils';

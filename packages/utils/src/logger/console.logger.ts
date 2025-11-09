@@ -18,14 +18,18 @@ export class ConsoleLogger implements LoggerService {
         switch (level) {
             case 'error':
             case 'fatal':
-                return console.error(message, ...optionalParams);
+                console.error(message, ...optionalParams);
+                break;
             case 'warn':
-                return console.warn(message, ...optionalParams);
+                console.warn(message, ...optionalParams);
+                break;
             case 'log':
-                return console.log(message, ...optionalParams);
+                console.log(message, ...optionalParams);
+                break;
             case 'debug':
             case 'verbose':
-                return console.debug(message, ...optionalParams);
+                console.debug(message, ...optionalParams);
+                break;
         }
     }
 

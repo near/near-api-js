@@ -31,7 +31,7 @@ for (
  */
 export function formatNearAmount(
     balance: string | number | bigint,
-    fracDigits: number = NEAR_NOMINATION_EXP
+    fracDigits: number = NEAR_NOMINATION_EXP,
 ): string {
     let balanceBN = BigInt(balance);
     if (fracDigits !== NEAR_NOMINATION_EXP) {
@@ -72,7 +72,7 @@ export function parseNearAmount(amt?: string): string | null {
         throw new Error(`Cannot parse '${amt}' as NEAR amount`);
     }
     return trimLeadingZeroes(
-        wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, '0')
+        wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, '0'),
     );
 }
 

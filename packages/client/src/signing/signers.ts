@@ -1,6 +1,6 @@
-import { KeyPair, type KeyPairString } from '@near-js/crypto';
-import { KeyStore } from '@near-js/keystores';
-import { KeyPairSigner, Signer } from '@near-js/signers';
+import type { KeyPair, KeyPairString } from '@near-js/crypto';
+import type { KeyStore } from '@near-js/keystores';
+import { KeyPairSigner, type Signer } from '@near-js/signers';
 
 /**
  * Initialize a message signer from a KeyPair
@@ -14,9 +14,7 @@ export function getSignerFromKeyPair(keyPair: KeyPair): Signer {
  * Initialize a message singer from a private key string
  * @param privateKey string representation of the private key used to sign transactions
  */
-export function getSignerFromPrivateKey(
-    privateKey: KeyPairString
-): Signer {
+export function getSignerFromPrivateKey(privateKey: KeyPairString): Signer {
     return KeyPairSigner.fromSecretKey(privateKey);
 }
 
@@ -26,7 +24,11 @@ export function getSignerFromPrivateKey(
  * @param network to sign transactions on
  * @param keyStore used to store the signing key
  */
-export async function getSignerFromKeystore(account: string, network: string, keyStore: KeyStore): Promise<Signer> {
+export async function getSignerFromKeystore(
+    account: string,
+    network: string,
+    keyStore: KeyStore,
+): Promise<Signer> {
     const keyPair = await keyStore.getKey(network, account);
     return new KeyPairSigner(keyPair);
 }

@@ -1,4 +1,4 @@
-import { BlockReference } from '@near-js/types';
+import type { BlockReference } from '@near-js/types';
 import type { Connection } from './connection';
 
 export interface IntoConnection {
@@ -7,7 +7,7 @@ export interface IntoConnection {
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Options used to initiate a function call (especially a change function call)
  * @see {@link Account#viewFunction | viewFunction} to initiate a view function call
  */
@@ -35,12 +35,12 @@ export interface ChangeFunctionCallOptions extends FunctionCallOptions {
     /**
      * Metadata to send the NEAR Wallet if using it to sign transactions.
      * @see RequestSignTransactionsOptions
-    */
+     */
     walletMeta?: string;
     /**
      * Callback url to send the NEAR Wallet if using it to sign transactions.
      * @see RequestSignTransactionsOptions
-    */
+     */
     walletCallbackUrl?: string;
 }
 

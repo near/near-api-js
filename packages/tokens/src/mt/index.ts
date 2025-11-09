@@ -14,7 +14,10 @@ export class MultiTokenContract {
      * @param tokenId The token to retrieve the balance from
      * @returns The balance in the smallest unit as bigint
      */
-    public async getBalance(account: AccountLike, tokenId: string): Promise<bigint> {
+    public async getBalance(
+        account: AccountLike,
+        tokenId: string,
+    ): Promise<bigint> {
         const balance = await account.provider.callFunction(
             this.accountId,
             'mt_balance_of',
@@ -33,7 +36,10 @@ export class MultiTokenContract {
      * @param tokenIds The tokens to retrieve the balances from
      * @returns The balances in the smallest unit as bigint[] matching the order of tokenIds
      */
-    public async getBatchedBalance(account: AccountLike, tokenIds: string[]): Promise<bigint[]> {
+    public async getBatchedBalance(
+        account: AccountLike,
+        tokenIds: string[],
+    ): Promise<bigint[]> {
         const balances = await account.provider.callFunction(
             this.accountId,
             'mt_batch_balance_of',
@@ -56,13 +62,20 @@ export class MultiTokenContract {
      * @param param.approval Optional approval tuple [owner_id, approval_id]
      * @param param.memo Optional memo for indexing
      */
-    public async transfer({ from, receiverId, tokenId, amount, approval = null, memo = null }: {
-        from: AccountLike,
-        receiverId: string,
-        tokenId: string,
-        amount: string | number | bigint,
-        approval?: [owner_id: string, approval_id: number] | null,
-        memo?: string | null,
+    public async transfer({
+        from,
+        receiverId,
+        tokenId,
+        amount,
+        approval = null,
+        memo = null,
+    }: {
+        from: AccountLike;
+        receiverId: string;
+        tokenId: string;
+        amount: string | number | bigint;
+        approval?: [owner_id: string, approval_id: number] | null;
+        memo?: string | null;
     }): Promise<any> {
         return from.callFunction({
             contractId: this.accountId,
@@ -92,14 +105,22 @@ export class MultiTokenContract {
      * @param param.approval Optional approval tuple [owner_id, approval_id]
      * @param param.memo Optional memo for indexing
      */
-    public async transferCall({ from, receiverId, tokenId, amount, msg, approval = null, memo = null }: {
-        from: AccountLike,
-        receiverId: string,
-        tokenId: string,
-        amount: bigint,
-        msg: string,
-        approval?: [owner_id: string, approval_id: number] | null,
-        memo?: string | null,
+    public async transferCall({
+        from,
+        receiverId,
+        tokenId,
+        amount,
+        msg,
+        approval = null,
+        memo = null,
+    }: {
+        from: AccountLike;
+        receiverId: string;
+        tokenId: string;
+        amount: bigint;
+        msg: string;
+        approval?: [owner_id: string, approval_id: number] | null;
+        memo?: string | null;
     }): Promise<any> {
         return from.callFunction({
             contractId: this.accountId,
@@ -128,13 +149,20 @@ export class MultiTokenContract {
      * @param param.approvals Optional array of approval tuples [owner_id, approval_id] or nulls per tokenId
      * @param param.memo Optional memo for indexing
      */
-    public async batchTransfer({ from, receiverId, tokenIds, amounts, approvals = null, memo = null }: {
-        from: AccountLike,
-        receiverId: string,
-        tokenIds: string[],
-        amounts: Array<string | number | bigint>,
-        approvals?: ([owner_id: string, approval_id: number] | null)[] | null,
-        memo?: string | null,
+    public async batchTransfer({
+        from,
+        receiverId,
+        tokenIds,
+        amounts,
+        approvals = null,
+        memo = null,
+    }: {
+        from: AccountLike;
+        receiverId: string;
+        tokenIds: string[];
+        amounts: Array<string | number | bigint>;
+        approvals?: ([owner_id: string, approval_id: number] | null)[] | null;
+        memo?: string | null;
     }): Promise<any> {
         return from.callFunction({
             contractId: this.accountId,

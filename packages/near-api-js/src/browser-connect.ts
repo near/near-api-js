@@ -21,7 +21,7 @@
  * @module browserConnect
  */
 import depd from 'depd';
-import { Near, NearConfig } from './near.js';
+import { Near, type NearConfig } from './near.js';
 
 /** @deprecated Will be removed in the next major release */
 export interface ConnectConfig extends NearConfig {
@@ -31,12 +31,14 @@ export interface ConnectConfig extends NearConfig {
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Initialize connection to Near network.
  */
 export async function connect(config: ConnectConfig): Promise<Near> {
     const deprecate = depd('connect(config)');
-    deprecate('It will be removed in the next major release, please switch to using Account directly');
+    deprecate(
+        'It will be removed in the next major release, please switch to using Account directly',
+    );
 
     return new Near(config);
 }

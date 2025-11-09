@@ -9,7 +9,11 @@ export class FunctionCallPermission {
     receiverId: string;
     methodNames: string[];
 
-    constructor({ allowance, receiverId, methodNames }: { allowance: bigint, receiverId: string, methodNames: string[] }) {
+    constructor({
+        allowance,
+        receiverId,
+        methodNames,
+    }: { allowance: bigint; receiverId: string; methodNames: string[] }) {
         this.allowance = allowance;
         this.receiverId = receiverId;
         this.methodNames = methodNames;
@@ -36,12 +40,14 @@ export class AccessKey {
     nonce: bigint;
     permission: AccessKeyPermission;
 
-    constructor({ nonce, permission }: { nonce: bigint, permission: AccessKeyPermission }) {
+    constructor({
+        nonce,
+        permission,
+    }: { nonce: bigint; permission: AccessKeyPermission }) {
         this.nonce = nonce;
         this.permission = permission;
     }
 }
-
 
 export class CreateAccount {}
 export class DeployContract {
@@ -50,7 +56,6 @@ export class DeployContract {
     constructor({ code }: { code: Uint8Array }) {
         this.code = code;
     }
-
 }
 export class FunctionCall {
     methodName: string;
@@ -58,7 +63,12 @@ export class FunctionCall {
     gas: bigint;
     deposit: bigint;
 
-    constructor({ methodName, args, gas, deposit }: { methodName: string, args: Uint8Array, gas: bigint, deposit: bigint }) {
+    constructor({
+        methodName,
+        args,
+        gas,
+        deposit,
+    }: { methodName: string; args: Uint8Array; gas: bigint; deposit: bigint }) {
         this.methodName = methodName;
         this.args = args;
         this.gas = gas;
@@ -98,7 +108,10 @@ export class DeployGlobalContract {
     code: Uint8Array;
     deployMode: GlobalContractDeployMode;
 
-    constructor({ code, deployMode }: { code: Uint8Array; deployMode: GlobalContractDeployMode }) {
+    constructor({
+        code,
+        deployMode,
+    }: { code: Uint8Array; deployMode: GlobalContractDeployMode }) {
         this.code = code;
         this.deployMode = deployMode;
     }
@@ -107,7 +120,9 @@ export class DeployGlobalContract {
 export class UseGlobalContract {
     contractIdentifier: GlobalContractIdentifier;
 
-    constructor({ contractIdentifier }: { contractIdentifier: GlobalContractIdentifier }) {
+    constructor({
+        contractIdentifier,
+    }: { contractIdentifier: GlobalContractIdentifier }) {
         this.contractIdentifier = contractIdentifier;
     }
 }
@@ -117,13 +132,12 @@ export class Transfer {
     constructor({ deposit }: { deposit: bigint }) {
         this.deposit = deposit;
     }
-
 }
 export class Stake {
     stake: bigint;
     publicKey: PublicKey;
 
-    constructor({ stake, publicKey }: { stake: bigint, publicKey: PublicKey }) {
+    constructor({ stake, publicKey }: { stake: bigint; publicKey: PublicKey }) {
         this.stake = stake;
         this.publicKey = publicKey;
     }
@@ -132,7 +146,10 @@ export class AddKey {
     publicKey: PublicKey;
     accessKey: AccessKey;
 
-    constructor({ publicKey, accessKey }: { publicKey: PublicKey, accessKey: AccessKey }) {
+    constructor({
+        publicKey,
+        accessKey,
+    }: { publicKey: PublicKey; accessKey: AccessKey }) {
         this.publicKey = publicKey;
         this.accessKey = accessKey;
     }
@@ -155,7 +172,10 @@ export class SignedDelegate {
     delegateAction: DelegateAction;
     signature: Signature;
 
-    constructor({ delegateAction, signature }: { delegateAction: DelegateAction, signature: Signature }) {
+    constructor({
+        delegateAction,
+        signature,
+    }: { delegateAction: DelegateAction; signature: Signature }) {
         this.delegateAction = delegateAction;
         this.signature = signature;
     }

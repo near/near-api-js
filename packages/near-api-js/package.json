@@ -55,8 +55,8 @@
     "scripts": {
         "build": "tsc",
         "test": "bun test",
-        "lint": "eslint \"src/**/*.ts\"",
-        "lint:fix": "eslint --fix \"src/**/*.ts\"",
+        "lint": "bunx --bun biome check",
+        "lint:fix": "bunx --bun biome check --write",
         "prefuzz": "bun run build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "rm -rf lib dist",

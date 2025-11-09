@@ -2,23 +2,23 @@
  * This module contains the main class developers will use to interact with NEAR.
  * The {@link Near} class is used to interact with {@link "@near-js/accounts".account.Account | Account} through the {@link "@near-js/providers".json-rpc-provider.JsonRpcProvider | JsonRpcProvider}.
  * It is configured via the {@link NearConfig}.
- * 
+ *
  * @see [https://docs.near.org/tools/near-api-js/quick-reference#account](https://docs.near.org/tools/near-api-js/quick-reference#account)
- * 
+ *
  * @module near
  */
 import {
     Account,
-    AccountCreator,
+    type AccountCreator,
     Connection,
     LocalAccountCreator,
     UrlAccountCreator,
 } from '@near-js/accounts';
-import { PublicKey } from '@near-js/crypto';
-import { KeyStore } from '@near-js/keystores';
-import { InMemorySigner, KeyPairSigner } from '@near-js/signers';
-import { LoggerService } from '@near-js/utils';
-import { Provider } from '@near-js/providers';
+import type { PublicKey } from '@near-js/crypto';
+import type { KeyStore } from '@near-js/keystores';
+import type { Provider } from '@near-js/providers';
+import { type InMemorySigner, KeyPairSigner } from '@near-js/signers';
+import type { LoggerService } from '@near-js/utils';
 import depd from 'depd';
 
 /** @deprecated Will be removed in the next major release */
@@ -103,32 +103,58 @@ export class Near {
 
     constructor(config: NearConfig) {
         const deprecate = depd('new Near(config)');
-        deprecate('It will be removed in the next major release, please switch to using Account directly');
+        deprecate(
+            'It will be removed in the next major release, please switch to using Account directly',
+        );
 
         this.config = config;
         this.connection = Connection.fromConfig({
             networkId: config.networkId,
-            provider: config.provider || { type: 'JsonRpcProvider', args: { url: config.nodeUrl, headers: config.headers } },
-            signer: config.signer || { type: 'InMemorySigner', keyStore: config.keyStore || config.deps?.keyStore },
+            provider: config.provider || {
+                type: 'JsonRpcProvider',
+                args: { url: config.nodeUrl, headers: config.headers },
+            },
+            signer: config.signer || {
+                type: 'InMemorySigner',
+                keyStore: config.keyStore || config.deps?.keyStore,
+            },
         });
-        
+
         if (config.masterAccount) {
             // TODO: figure out better way of specifying initial balance.
             // Hardcoded number below must be enough to pay the gas cost to dev-deploy with near-shell for multiple times
-            const initialBalance = config.initialBalance ? BigInt(config.initialBalance) : 500000000000000000000000000n;
-            const account = new Account(config.masterAccount, this.connection.provider);
+            const initialBalance = config.initialBalance
+                ? BigInt(config.initialBalance)
+                : 500000000000000000000000000n;
+            const account = new Account(
+                config.masterAccount,
+                this.connection.provider,
+            );
             // it may lead to rare race condition, but it's the only way to enable backward compatibility for InMemorySigner
-            this.resolveKeyPairSigner(config.masterAccount).then((signer) => account.setSigner(signer));
-            this.accountCreator = new LocalAccountCreator(account, initialBalance);
+            this.resolveKeyPairSigner(config.masterAccount).then((signer) =>
+                account.setSigner(signer),
+            );
+            this.accountCreator = new LocalAccountCreator(
+                account,
+                initialBalance,
+            );
         } else if (config.helperUrl) {
-            this.accountCreator = new UrlAccountCreator(this.connection, config.helperUrl);
+            this.accountCreator = new UrlAccountCreator(
+                this.connection,
+                config.helperUrl,
+            );
         } else {
             this.accountCreator = null;
         }
     }
 
-    private async resolveKeyPairSigner(accountId: string): Promise<KeyPairSigner | undefined> {
-        const keyPair = await this.connection.signer.keyStore.getKey(this.connection.networkId, accountId);
+    private async resolveKeyPairSigner(
+        accountId: string,
+    ): Promise<KeyPairSigner | undefined> {
+        const keyPair = await this.connection.signer.keyStore.getKey(
+            this.connection.networkId,
+            accountId,
+        );
         return keyPair ? new KeyPairSigner(keyPair) : undefined;
     }
 
@@ -136,7 +162,11 @@ export class Near {
      * @param accountId near accountId used to interact with the network.
      */
     async account(accountId: string): Promise<Account> {
-        const account = new Account(accountId, this.connection.provider, await this.resolveKeyPairSigner(accountId));
+        const account = new Account(
+            accountId,
+            this.connection.provider,
+            await this.resolveKeyPairSigner(accountId),
+        );
         return account;
     }
 
@@ -145,15 +175,24 @@ export class Near {
      * * using a masterAccount with {@link LocalAccountCreator}
      * * using the helperUrl with {@link UrlAccountCreator}
      * @see {@link NearConfig#masterAccount} and {@link NearConfig#helperUrl}
-     * 
+     *
      * @param accountId
      * @param publicKey
      */
-    async createAccount(accountId: string, publicKey: PublicKey): Promise<Account> {
+    async createAccount(
+        accountId: string,
+        publicKey: PublicKey,
+    ): Promise<Account> {
         if (!this.accountCreator) {
-            throw new Error('Must specify account creator, either via masterAccount or helperUrl configuration settings.');
+            throw new Error(
+                'Must specify account creator, either via masterAccount or helperUrl configuration settings.',
+            );
         }
         await this.accountCreator.createAccount(accountId, publicKey);
-        return new Account(accountId, this.connection.provider, await this.resolveKeyPairSigner(accountId));
+        return new Account(
+            accountId,
+            this.connection.provider,
+            await this.resolveKeyPairSigner(accountId),
+        );
     }
 }

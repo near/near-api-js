@@ -1,4 +1,8 @@
-import { FailoverRpcProvider, JsonRpcProvider, Provider } from '@near-js/providers';
+import {
+    FailoverRpcProvider,
+    JsonRpcProvider,
+    type Provider,
+} from '@near-js/providers';
 
 import {
     PAGODA_RPC_ARCHIVAL_ENDPOINTS_TESTNET,
@@ -30,7 +34,9 @@ export function createRpcClientWrapper(urls: string[]): Provider {
         throw new Error('at least one RPC endpoint URL required');
     }
 
-    return new FailoverRpcProvider(urls.map((url) => new JsonRpcProvider({ url })));
+    return new FailoverRpcProvider(
+        urls.map((url) => new JsonRpcProvider({ url })),
+    );
 }
 
 /**

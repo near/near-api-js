@@ -38,7 +38,7 @@ export class NFTContract {
     transfer({
         from,
         receiverId,
-        tokenId
+        tokenId,
     }: {
         from: AccountLike;
         receiverId: string;
@@ -49,10 +49,10 @@ export class NFTContract {
             methodName: 'nft_transfer',
             args: {
                 receiver_id: receiverId,
-                token_id: tokenId
+                token_id: tokenId,
             },
             deposit: 1,
-            gas: 30000000000000
+            gas: 30000000000000,
         });
     }
 }
@@ -67,7 +67,7 @@ export class NonFungibleToken {
         contractId: string,
         tokenId: string,
         ownerId: string,
-        metadata: NFTMetadata
+        metadata: NFTMetadata,
     ) {
         this.contractId = contractId;
         this.tokenId = tokenId;

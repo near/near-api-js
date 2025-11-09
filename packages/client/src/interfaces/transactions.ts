@@ -1,97 +1,107 @@
+import type { PublicKey } from '@near-js/crypto';
 import type { Transaction } from '@near-js/transactions';
-
+import type { BlockHash } from '@near-js/types';
 import type { TransactionComposer } from '../transactions/index.js';
-import type { SignAndSendTransactionDependency, SignerDependency } from './dependencies.js';
+import type {
+    SignAndSendTransactionDependency,
+    SignerDependency,
+} from './dependencies.js';
 import type { RpcProviderQueryParams } from './view.js';
-import { BlockHash } from '@near-js/types';
-import { PublicKey } from '@near-js/crypto';
 
-export interface SignAndSendParams extends SignAndSendTransactionDependency, RpcProviderQueryParams {}
+export interface SignAndSendParams
+    extends SignAndSendTransactionDependency,
+        RpcProviderQueryParams {}
 
 export interface ExternalActionTransaction extends SignAndSendParams {
-  receiver: string;
-  sender: string;
+    receiver: string;
+    sender: string;
 }
 
 export interface ReflexiveActionTransaction extends SignAndSendParams {
-  account: string;
+    account: string;
 }
 
-export interface SignAndSendComposerParams extends SignAndSendParams, RpcProviderQueryParams {
-  composer: TransactionComposer;
+export interface SignAndSendComposerParams
+    extends SignAndSendParams,
+        RpcProviderQueryParams {
+    composer: TransactionComposer;
 }
 
-export interface SignAndSendTransactionParams extends SignAndSendTransactionDependency {
-  transaction: Transaction;
+export interface SignAndSendTransactionParams
+    extends SignAndSendTransactionDependency {
+    transaction: Transaction;
 }
 
-export interface FunctionCallParams<T = object> extends ExternalActionTransaction {
-  method: string;
-  args?: T;
-  deposit?: bigint;
-  gas?: bigint;
+export interface FunctionCallParams<T = object>
+    extends ExternalActionTransaction {
+    method: string;
+    args?: T;
+    deposit?: bigint;
+    gas?: bigint;
 }
 
 export interface TransferParams extends ExternalActionTransaction {
-  amount: bigint;
+    amount: bigint;
 }
 
 export interface StakeParams extends ReflexiveActionTransaction {
-  amount: bigint;
-  publicKey: string;
+    amount: bigint;
+    publicKey: string;
 }
 
 export interface DeleteAccountParams extends ReflexiveActionTransaction {
-  beneficiaryId: string;
+    beneficiaryId: string;
 }
 
 export interface DeployContractParams extends ReflexiveActionTransaction {
-  code: Uint8Array
+    code: Uint8Array;
 }
 
 interface AddAccessKeyParams extends ReflexiveActionTransaction {
-  publicKey: string;
+    publicKey: string;
 }
 
 export interface ModifyAccessKeyParams extends AddAccessKeyParams {}
 
 export interface AddFunctionCallAccessKeyParams extends AddAccessKeyParams {
-  contract: string;
-  methodNames: string[];
-  allowance?: bigint;
+    contract: string;
+    methodNames: string[];
+    allowance?: bigint;
 }
 
 export interface SignTransactionParams extends SignerDependency {
-  transaction: Transaction;
+    transaction: Transaction;
 }
 
 export interface NewAccountParams {
-  newAccount: string;
-  newPublicKey: string;
+    newAccount: string;
+    newPublicKey: string;
 }
 
-export interface CreateAccountParams extends SignAndSendParams, NewAccountParams {
-  account: string;
-  initialBalance: bigint;
+export interface CreateAccountParams
+    extends SignAndSendParams,
+        NewAccountParams {
+    account: string;
+    initialBalance: bigint;
 }
 
 export interface CreateTopLevelAccountParams extends CreateAccountParams {
-  contract: string
+    contract: string;
 }
 
 export interface TransactionOptions {
-  blockHash?: BlockHash;
-  nonce?: bigint;
-  publicKey?: PublicKey;
-  receiver?: string;
-  sender?: string;
+    blockHash?: BlockHash;
+    nonce?: bigint;
+    publicKey?: PublicKey;
+    receiver?: string;
+    sender?: string;
 }
 
 export interface MetaTransactionOptions extends TransactionOptions {
-  blockHeightTtl?: bigint;
-  maxBlockHeight?: bigint;
+    blockHeightTtl?: bigint;
+    maxBlockHeight?: bigint;
 }
 
-export interface SignedTransactionOptions extends TransactionOptions, SignAndSendTransactionDependency {
-}
-
+export interface SignedTransactionOptions
+    extends TransactionOptions,
+        SignAndSendTransactionDependency {}
