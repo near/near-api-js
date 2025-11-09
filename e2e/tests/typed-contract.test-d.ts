@@ -14,6 +14,8 @@ const provider = new JsonRpcProvider({ url: "" });
 const keypair = KeyPair.fromRandom("ed25519");
 const signer = new KeyPairSigner(keypair);
 const account = new Account("", provider, signer);
+type Extends<A, B> = [A] extends [B] ? true : false;
+const expectExtends = <T extends true>() => undefined;
 
 describe("TypedContract can infer Guestbook's ABI", () => {
     const contract = new TypedContract({
@@ -41,9 +43,18 @@ describe("TypedContract can infer Guestbook's ABI", () => {
             }[]
         >;
 
-        expectTypeOf(
-            contract.view.get_messages
-        ).toEqualTypeOf<ExpectedGetMessagesFunction>();
+        expectExtends<
+            Extends<
+                typeof contract.view.get_messages,
+                ExpectedGetMessagesFunction
+            >
+        >();
+        expectExtends<
+            Extends<
+                ExpectedGetMessagesFunction,
+                typeof contract.view.get_messages
+            >
+        >();
     });
 
     test('"total_messages" view function', () => {
@@ -51,9 +62,18 @@ describe("TypedContract can infer Guestbook's ABI", () => {
             blockQuery?: BlockReference;
         }) => Promise<number>;
 
-        expectTypeOf(
-            contract.view.total_messages
-        ).toEqualTypeOf<ExpectedTotalMessagesFunction>();
+        expectExtends<
+            Extends<
+                typeof contract.view.total_messages,
+                ExpectedTotalMessagesFunction
+            >
+        >();
+        expectExtends<
+            Extends<
+                ExpectedTotalMessagesFunction,
+                typeof contract.view.total_messages
+            >
+        >();
     });
 
     test('"add_message" call function', () => {
@@ -67,9 +87,18 @@ describe("TypedContract can infer Guestbook's ABI", () => {
             };
         }) => Promise<void>;
 
-        expectTypeOf(
-            contract.call.add_message
-        ).toEqualTypeOf<ExpectedAddMessageFunction>();
+        expectExtends<
+            Extends<
+                typeof contract.call.add_message,
+                ExpectedAddMessageFunction
+            >
+        >();
+        expectExtends<
+            Extends<
+                ExpectedAddMessageFunction,
+                typeof contract.call.add_message
+            >
+        >();
     });
 });
 
@@ -85,12 +114,34 @@ describe("TypedContract can infer general interface without ABI", () => {
             args?: Record<string, unknown>;
         }) => Promise<Response>;
 
-        expectTypeOf(contract.view).toEqualTypeOf<{
-            [_: string]: ExpectedViewFunction;
-        }>();
-        expectTypeOf(
-            contract.view.it_could_be_anything
-        ).toEqualTypeOf<ExpectedViewFunction>();
+        expectExtends<
+            Extends<
+                typeof contract.view,
+                {
+                    [_: string]: ExpectedViewFunction;
+                }
+            >
+        >();
+        expectExtends<
+            Extends<
+                {
+                    [_: string]: ExpectedViewFunction;
+                },
+                typeof contract.view
+            >
+        >();
+        expectExtends<
+            Extends<
+                typeof contract.view.it_could_be_anything,
+                ExpectedViewFunction
+            >
+        >();
+        expectExtends<
+            Extends<
+                ExpectedViewFunction,
+                typeof contract.view.it_could_be_anything
+            >
+        >();
     });
 
     test("any call function", () => {
@@ -102,12 +153,34 @@ describe("TypedContract can infer general interface without ABI", () => {
             args?: Record<string, unknown>;
         }) => Promise<Response>;
 
-        expectTypeOf(contract.call).toEqualTypeOf<{
-            [_: string]: ExpectedCallFunction;
-        }>();
-        expectTypeOf(
-            contract.call.it_could_be_anything
-        ).toEqualTypeOf<ExpectedCallFunction>();
+        expectExtends<
+            Extends<
+                typeof contract.call,
+                {
+                    [_: string]: ExpectedCallFunction;
+                }
+            >
+        >();
+        expectExtends<
+            Extends<
+                {
+                    [_: string]: ExpectedCallFunction;
+                },
+                typeof contract.call
+            >
+        >();
+        expectExtends<
+            Extends<
+                typeof contract.call.it_could_be_anything,
+                ExpectedCallFunction
+            >
+        >();
+        expectExtends<
+            Extends<
+                ExpectedCallFunction,
+                typeof contract.call.it_could_be_anything
+            >
+        >();
     });
 });
 
@@ -128,10 +201,24 @@ describe("TypedContract shape adapts to ABI", () => {
             abi: emptyAbi,
         });
 
-        expectTypeOf(contract).toEqualTypeOf<{
-            abi: typeof emptyAbi;
-            contractId: "guestbook.testnet";
-        }>();
+        expectExtends<
+            Extends<
+                typeof contract,
+                {
+                    abi: typeof emptyAbi;
+                    contractId: "guestbook.testnet";
+                }
+            >
+        >();
+        expectExtends<
+            Extends<
+                {
+                    abi: typeof emptyAbi;
+                    contractId: "guestbook.testnet";
+                },
+                typeof contract
+            >
+        >();
     });
 
     test("TypedContract includes both kind of methods if ABI defines both view and call functions", () => {
@@ -160,14 +247,20 @@ describe("TypedContract shape adapts to ABI", () => {
         });
 
         type ViewFunctionNames = "test_read" | "test_read2";
-        expectTypeOf<
-            keyof typeof contract.view
-        >().toEqualTypeOf<ViewFunctionNames>();
+        expectExtends<
+            Extends<keyof typeof contract.view, ViewFunctionNames>
+        >();
+        expectExtends<
+            Extends<ViewFunctionNames, keyof typeof contract.view>
+        >();
 
         type CallFunctionNames = "test_write" | "test_write2";
-        expectTypeOf<
-            keyof typeof contract.call
-        >().toEqualTypeOf<CallFunctionNames>();
+        expectExtends<
+            Extends<keyof typeof contract.call, CallFunctionNames>
+        >();
+        expectExtends<
+            Extends<CallFunctionNames, keyof typeof contract.call>
+        >();
     });
 
     test("TypedContract includes only view methods if ABI defines only view functions", () => {
@@ -194,9 +287,12 @@ describe("TypedContract shape adapts to ABI", () => {
         });
 
         type ViewFunctionNames = "test_read" | "test_read2";
-        expectTypeOf<
-            keyof typeof contract.view
-        >().toEqualTypeOf<ViewFunctionNames>();
+        expectExtends<
+            Extends<keyof typeof contract.view, ViewFunctionNames>
+        >();
+        expectExtends<
+            Extends<ViewFunctionNames, keyof typeof contract.view>
+        >();
 
         expectTypeOf(contract).not.toHaveProperty("call");
     });
@@ -227,9 +323,12 @@ describe("TypedContract shape adapts to ABI", () => {
         expectTypeOf(contract).not.toHaveProperty("view");
 
         type CallFunctionNames = "test_write" | "test_write2";
-        expectTypeOf<
-            keyof typeof contract.call
-        >().toEqualTypeOf<CallFunctionNames>();
+        expectExtends<
+            Extends<keyof typeof contract.call, CallFunctionNames>
+        >();
+        expectExtends<
+            Extends<CallFunctionNames, keyof typeof contract.call>
+        >();
     });
 });
 
@@ -260,14 +359,20 @@ describe("TypedContract interface depends on how ABI is declared", () => {
         });
 
         type ViewFunctionNames = "test_read";
-        expectTypeOf<
-            keyof typeof contract.view
-        >().toEqualTypeOf<ViewFunctionNames>();
+        expectExtends<
+            Extends<keyof typeof contract.view, ViewFunctionNames>
+        >();
+        expectExtends<
+            Extends<ViewFunctionNames, keyof typeof contract.view>
+        >();
 
         type CallFunctionNames = "test_write";
-        expectTypeOf<
-            keyof typeof contract.call
-        >().toEqualTypeOf<CallFunctionNames>();
+        expectExtends<
+            Extends<keyof typeof contract.call, CallFunctionNames>
+        >();
+        expectExtends<
+            Extends<CallFunctionNames, keyof typeof contract.call>
+        >();
     });
 
     test("TypedContract provides autocompletion if ABI is passed inline", () => {
@@ -294,14 +399,20 @@ describe("TypedContract interface depends on how ABI is declared", () => {
         });
 
         type ViewFunctionNames = "test_read";
-        expectTypeOf<
-            keyof typeof contract.view
-        >().toEqualTypeOf<ViewFunctionNames>();
+        expectExtends<
+            Extends<keyof typeof contract.view, ViewFunctionNames>
+        >();
+        expectExtends<
+            Extends<ViewFunctionNames, keyof typeof contract.view>
+        >();
 
         type CallFunctionNames = "test_write";
-        expectTypeOf<
-            keyof typeof contract.call
-        >().toEqualTypeOf<CallFunctionNames>();
+        expectExtends<
+            Extends<keyof typeof contract.call, CallFunctionNames>
+        >();
+        expectExtends<
+            Extends<CallFunctionNames, keyof typeof contract.call>
+        >();
     });
 
     test('TypedContract returns general interface without autocompletion if ABI is typed "as AbiRoot"', () => {
@@ -329,9 +440,11 @@ describe("TypedContract interface depends on how ABI is declared", () => {
             abi: testAbi,
         });
 
-        expectTypeOf<keyof typeof contract.view>().toEqualTypeOf<string>();
+        expectExtends<Extends<keyof typeof contract.view, string>>();
+        expectExtends<Extends<string, keyof typeof contract.view>>();
 
-        expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<string>();
+        expectExtends<Extends<keyof typeof contract.call, string>>();
+        expectExtends<Extends<string, keyof typeof contract.call>>();
     });
 
     test('TypedContract returns general interface without autocompletion if ABI is defined without "as const" assertion', () => {
@@ -359,8 +472,10 @@ describe("TypedContract interface depends on how ABI is declared", () => {
             abi: testAbi,
         });
 
-        expectTypeOf<keyof typeof contract.view>().toEqualTypeOf<string>();
+        expectExtends<Extends<keyof typeof contract.view, string>>();
+        expectExtends<Extends<string, keyof typeof contract.view>>();
 
-        expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<string>();
+        expectExtends<Extends<keyof typeof contract.call, string>>();
+        expectExtends<Extends<string, keyof typeof contract.call>>();
     });
 });

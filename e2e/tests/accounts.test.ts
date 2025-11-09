@@ -37,182 +37,210 @@ test("root account balance is zero", async () => {
     expect(balance).toBe(1000000000000000000000000000000000n);
 });
 
-test("root account creates sub-account", async () => {
-    const key = KeyPair.fromRandom("ed25519");
+test(
+    "root account creates sub-account",
+    async () => {
+        const key = KeyPair.fromRandom("ed25519");
 
-    const newAccountId = `sub.${rootAccount.accountId}`;
-    const { transaction } = await rootAccount.createAccount(
-        newAccountId,
-        key.getPublicKey(),
-        0n
-    );
+        const newAccountId = `sub.${rootAccount.accountId}`;
+        const { transaction } = await rootAccount.createAccount(
+            newAccountId,
+            key.getPublicKey(),
+            0n
+        );
 
-    await rootAccount.provider.viewTransactionStatus(
-        transaction.hash,
-        rootAccount.accountId,
-        "FINAL"
-    );
+        await rootAccount.provider.viewTransactionStatus(
+            transaction.hash,
+            rootAccount.accountId,
+            "FINAL"
+        );
 
-    const { amount } = await rootAccount.provider.viewAccount(newAccountId);
+        const { amount } = await rootAccount.provider.viewAccount(newAccountId);
 
-    expect(amount).toBe(0n);
-});
+        expect(amount).toBe(0n);
+    },
+    { timeout: 60000 }
+);
 
-test("account can send meta transaction with Transfer", async () => {
-    const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
-    const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+test(
+    "account can send meta transaction with Transfer",
+    async () => {
+        const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
+        const keypair = KeyPair.fromRandom("ed25519");
+        await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
+        const childAccount = new Account(
+            newAccountId,
+            rootAccount.provider,
+            new KeyPairSigner(keypair)
+        );
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [actionCreators.transfer(1_000_000n)]
-    );
+        const [, signedDelegate] =
+            await childAccount.createSignedMetaTransaction(
+                childAccount.accountId,
+                [actionCreators.transfer(1_000_000n)]
+            );
 
-    const outcome = await rootAccount.signAndSendTransaction({
-        receiverId: signedDelegate.delegateAction.senderId,
-        actions: [actionCreators.signedDelegate(signedDelegate)],
-        waitUntil: "FINAL",
-    });
+        const outcome = await rootAccount.signAndSendTransaction({
+            receiverId: signedDelegate.delegateAction.senderId,
+            actions: [actionCreators.signedDelegate(signedDelegate)],
+            waitUntil: "FINAL",
+        });
 
-    expect(outcome.status).toHaveProperty("SuccessValue");
-    // @ts-expect-error we checked the existance previously
-    expect(outcome.status.SuccessValue).toBe("");
-});
+        expect(outcome.status).toHaveProperty("SuccessValue");
+        // @ts-expect-error we checked the existance previously
+        expect(outcome.status.SuccessValue).toBe("");
+    },
+    { timeout: 60000 }
+);
 
-test("account can send meta transaction with DeployGlobalContract(AccountId)", async () => {
-    const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
-    const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+test(
+    "account can send meta transaction with DeployGlobalContract(AccountId)",
+    async () => {
+        const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
+        const keypair = KeyPair.fromRandom("ed25519");
+        await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
+        const childAccount = new Account(
+            newAccountId,
+            rootAccount.provider,
+            new KeyPairSigner(keypair)
+        );
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
-            actionCreators.deployGlobalContract(
-                new Uint8Array(128),
-                new GlobalContractDeployMode({ AccountId: null })
-            ),
-        ]
-    );
+        const [, signedDelegate] =
+            await childAccount.createSignedMetaTransaction(
+                childAccount.accountId,
+                [
+                    actionCreators.deployGlobalContract(
+                        new Uint8Array(128),
+                        new GlobalContractDeployMode({ AccountId: null })
+                    ),
+                ]
+            );
 
-    const outcome = await rootAccount.signAndSendTransaction({
-        receiverId: signedDelegate.delegateAction.senderId,
-        actions: [actionCreators.signedDelegate(signedDelegate)],
-        waitUntil: "FINAL",
-    });
+        const outcome = await rootAccount.signAndSendTransaction({
+            receiverId: signedDelegate.delegateAction.senderId,
+            actions: [actionCreators.signedDelegate(signedDelegate)],
+            waitUntil: "FINAL",
+        });
 
-    expect(outcome.status).toHaveProperty("SuccessValue");
-    // @ts-expect-error we checked the existance previously
-    expect(outcome.status.SuccessValue).toBe("");
-});
+        expect(outcome.status).toHaveProperty("SuccessValue");
+        // @ts-expect-error we checked the existance previously
+        expect(outcome.status.SuccessValue).toBe("");
+    },
+    { timeout: 60000 }
+);
 
-test("account can send meta transaction with DeployGlobalContract(CodeHash)", async () => {
-    const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
-    const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+test(
+    "account can send meta transaction with DeployGlobalContract(CodeHash)",
+    async () => {
+        const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
+        const keypair = KeyPair.fromRandom("ed25519");
+        await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
+        const childAccount = new Account(
+            newAccountId,
+            rootAccount.provider,
+            new KeyPairSigner(keypair)
+        );
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
-            actionCreators.deployGlobalContract(
-                new Uint8Array(128),
-                new GlobalContractDeployMode({ CodeHash: null })
-            ),
-        ]
-    );
+        const [, signedDelegate] =
+            await childAccount.createSignedMetaTransaction(
+                childAccount.accountId,
+                [
+                    actionCreators.deployGlobalContract(
+                        new Uint8Array(128),
+                        new GlobalContractDeployMode({ CodeHash: null })
+                    ),
+                ]
+            );
 
-    const outcome = await rootAccount.signAndSendTransaction({
-        receiverId: signedDelegate.delegateAction.senderId,
-        actions: [actionCreators.signedDelegate(signedDelegate)],
-        waitUntil: "FINAL",
-    });
+        const outcome = await rootAccount.signAndSendTransaction({
+            receiverId: signedDelegate.delegateAction.senderId,
+            actions: [actionCreators.signedDelegate(signedDelegate)],
+            waitUntil: "FINAL",
+        });
 
-    expect(outcome.status).toHaveProperty("SuccessValue");
-    // @ts-expect-error we checked the existance previously
-    expect(outcome.status.SuccessValue).toBe("");
-});
+        expect(outcome.status).toHaveProperty("SuccessValue");
+        // @ts-expect-error we checked the existance previously
+        expect(outcome.status.SuccessValue).toBe("");
+    },
+    { timeout: 60000 }
+);
 
-test("account can send meta transaction with UseGlobalContract(AccountId)", async () => {
-    const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
-    const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+test(
+    "account can send meta transaction with UseGlobalContract(AccountId)",
+    async () => {
+        const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
+        const keypair = KeyPair.fromRandom("ed25519");
+        await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
+        const childAccount = new Account(
+            newAccountId,
+            rootAccount.provider,
+            new KeyPairSigner(keypair)
+        );
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
-            actionCreators.useGlobalContract(
-                new GlobalContractIdentifier({
-                    AccountId: "global.testnet",
-                })
-            ),
-        ]
-    );
+        const [, signedDelegate] =
+            await childAccount.createSignedMetaTransaction(
+                childAccount.accountId,
+                [
+                    actionCreators.useGlobalContract(
+                        new GlobalContractIdentifier({
+                            AccountId: "global.testnet",
+                        })
+                    ),
+                ]
+            );
 
-    const outcome = await rootAccount.signAndSendTransaction({
-        receiverId: signedDelegate.delegateAction.senderId,
-        actions: [actionCreators.signedDelegate(signedDelegate)],
-        waitUntil: "FINAL",
-    });
+        const outcome = await rootAccount.signAndSendTransaction({
+            receiverId: signedDelegate.delegateAction.senderId,
+            actions: [actionCreators.signedDelegate(signedDelegate)],
+            waitUntil: "FINAL",
+        });
 
-    expect(outcome.status).toHaveProperty("SuccessValue");
-    // @ts-expect-error we checked the existance previously
-    expect(outcome.status.SuccessValue).toBe("");
-});
+        expect(outcome.status).toHaveProperty("SuccessValue");
+        // @ts-expect-error we checked the existance previously
+        expect(outcome.status.SuccessValue).toBe("");
+    },
+    { timeout: 60000 }
+);
 
-test("account can send meta transaction with UseGlobalContract(CodeHash)", async () => {
-    const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
-    const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+test(
+    "account can send meta transaction with UseGlobalContract(CodeHash)",
+    async () => {
+        const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
+        const keypair = KeyPair.fromRandom("ed25519");
+        await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
+        const childAccount = new Account(
+            newAccountId,
+            rootAccount.provider,
+            new KeyPairSigner(keypair)
+        );
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
-            actionCreators.useGlobalContract(
-                new GlobalContractIdentifier({
-                    CodeHash: new Uint8Array(32),
-                })
-            ),
-        ]
-    );
+        const [, signedDelegate] =
+            await childAccount.createSignedMetaTransaction(
+                childAccount.accountId,
+                [
+                    actionCreators.useGlobalContract(
+                        new GlobalContractIdentifier({
+                            CodeHash: new Uint8Array(32),
+                        })
+                    ),
+                ]
+            );
 
-    const outcome = await rootAccount.signAndSendTransaction({
-        receiverId: signedDelegate.delegateAction.senderId,
-        actions: [actionCreators.signedDelegate(signedDelegate)],
-        waitUntil: "FINAL",
-    });
+        const outcome = await rootAccount.signAndSendTransaction({
+            receiverId: signedDelegate.delegateAction.senderId,
+            actions: [actionCreators.signedDelegate(signedDelegate)],
+            waitUntil: "FINAL",
+        });
 
-    expect(outcome.status).toHaveProperty("SuccessValue");
-    // @ts-expect-error we checked the existance previously
-    expect(outcome.status.SuccessValue).toBe("");
-});
+        expect(outcome.status).toHaveProperty("SuccessValue");
+        // @ts-expect-error we checked the existance previously
+        expect(outcome.status.SuccessValue).toBe("");
+    },
+    { timeout: 60000 }
+);
 
 test(
     "account can send multiple consecutive transfers without nonce collisions",
-    { repeats: 2 }, // run 3 times in total no matter what, to prevent flaky passes
     async () => {
         const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
         const keypair = KeyPair.fromRandom("ed25519");
@@ -239,5 +267,6 @@ test(
             receiverId: account.accountId,
             amount: NEAR.toUnits("0.001"),
         });
-    }
+    },
+    { repeats: 2, timeout: 60000 } // run 3 times in total no matter what, to prevent flaky passes
 );

@@ -24,7 +24,7 @@ import { viewFunction } from './utils.js';
 function nameFunction(name: string, body: (args?: any[]) => any) {
     return {
         [name](...args: any[]) {
-            return body(...args);
+            return body.apply(this, args);
         },
     }[name];
 }
@@ -222,19 +222,37 @@ export class Contract {
         }
 
         viewMethodsWithAbi.forEach(({ name, abi }) => {
+            const contractInstance = this;
             Object.defineProperty(this, name, {
                 writable: false,
                 enumerable: true,
                 value: nameFunction(
                     name,
-                    async (args: object = {}, options = {}, ...ignored) => {
+                    async (...callArgs: any[]) => {
+                        const rawArgs =
+                            callArgs.length === 0
+                                ? {}
+                                : callArgs[0] === undefined
+                                  ? {}
+                                  : callArgs[0];
+                        const optionsParam =
+                            callArgs.length > 1 ? callArgs[1] : undefined;
+                        const ignored =
+                            callArgs.length > 2 ? callArgs.slice(2) : [];
+                        const optionsProvided = callArgs.length >= 2;
+                        const options = optionsParam ?? {};
+
                         if (
                             ignored.length ||
-                            !(isObject(args) || isUint8Array(args)) ||
-                            !isObject(options)
+                            !(
+                                isObject(rawArgs) || isUint8Array(rawArgs)
+                            ) ||
+                            (optionsProvided && !isObject(optionsParam))
                         ) {
                             throw new PositionalArgsError();
                         }
+
+                        const args = rawArgs;
 
                         if (abi) {
                             validateArguments(args, abi, abiRoot);
@@ -242,8 +260,8 @@ export class Contract {
 
                         if (useLocalViewExecution) {
                             try {
-                                return await this.lve.viewFunction({
-                                    contractId: this.contractId,
+                                return await contractInstance.lve.viewFunction({
+                                    contractId: contractInstance.contractId,
                                     methodName: name,
                                     args,
                                     ...options,
@@ -256,17 +274,17 @@ export class Contract {
                             }
                         }
 
-                        if (this.account) {
-                            return this.account.viewFunction({
-                                contractId: this.contractId,
+                        if (contractInstance.account) {
+                            return contractInstance.account.viewFunction({
+                                contractId: contractInstance.contractId,
                                 methodName: name,
                                 args,
                                 ...options,
                             });
                         }
 
-                        return viewFunction(this.connection, {
-                            contractId: this.contractId,
+                        return viewFunction(contractInstance.connection, {
+                            contractId: contractInstance.contractId,
                             methodName: name,
                             args,
                             ...options,
@@ -288,7 +306,7 @@ export class Contract {
                         throw new PositionalArgsError();
                     }
 
-                    if (args.length > 1 || !(args[0] && args[0].args)) {
+                    if (args.length > 1 || !args[0]?.args) {
                         const deprecate = depd(
                             'contract.methodName(args, gas, amount)',
                         );
@@ -345,12 +363,43 @@ export class Contract {
  * Throws if an argument is not in BigInt format or otherwise invalid
  * @param argMap
  */
+const DECIMAL_PATTERN = /^-?\d+(\.\d+)?$/;
+
 function validateBNLike(argMap: { [name: string]: any }) {
     const bnLike = 'number, decimal string or BigInt';
     for (const argName of Object.keys(argMap)) {
         const argValue = argMap[argName];
-        if (argValue && typeof argValue !== 'bigint' && isNaN(argValue)) {
-            throw new ArgumentTypeError(argName, bnLike, argValue);
+        if (argValue === undefined || argValue === null) {
+            continue;
         }
+
+        if (
+            (typeof argValue === 'number' && Number.isFinite(argValue)) ||
+            typeof argValue === 'bigint'
+        ) {
+            continue;
+        }
+
+        if (
+            typeof argValue === 'string' &&
+            DECIMAL_PATTERN.test(argValue)
+        ) {
+            continue;
+        }
+
+        if (
+            typeof argValue === 'object' &&
+            typeof argValue.toString === 'function'
+        ) {
+            const stringified = argValue.toString();
+            if (
+                typeof stringified === 'string' &&
+                DECIMAL_PATTERN.test(stringified)
+            ) {
+                continue;
+            }
+        }
+
+        throw new ArgumentTypeError(argName, bnLike, argValue);
     }
 }

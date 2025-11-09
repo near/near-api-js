@@ -4,6 +4,7 @@ import validator from 'is-my-json-valid';
 import type {
     AbiFunction,
     AbiFunctionKind,
+    AbiJsonParameter,
     AbiRoot,
     RootSchema,
     Schema,
@@ -12,8 +13,6 @@ import type {
 import type { Account } from './account.js';
 import { ArgumentSchemaError, UnknownArgumentError } from './errors.js';
 
-type IsNullable<T> = [null] extends [T] ? true : false;
-
 type IsNever<T> = [T] extends [never] ? true : false;
 
 export type IsNarrowable<T, U> = IsNever<
@@ -21,14 +20,6 @@ export type IsNarrowable<T, U> = IsNever<
 > extends true
     ? false
     : true;
-
-type IsFullyOptional<T> = IsNever<keyof T> extends true
-    ? true
-    : {
-            [K in keyof T]-?: {} extends Pick<T, K> ? true : false;
-        }[keyof T] extends true
-      ? true
-      : false;
 
 type Prettify<T> = {
     [K in keyof T]: T[K];
@@ -50,6 +41,67 @@ type ExtractAbiFunctionNames<
     abiFunctionKind extends AbiFunctionKind = AbiFunctionKind,
 > = ExtractAbiFunctions<abi, abiFunctionKind>['name'];
 
+type ExtractAbiJsonArgs<abiFunction extends AbiFunction> =
+    abiFunction extends {
+        params: {
+            serialization_type: 'json';
+            args: infer Args;
+        };
+    }
+        ? Args extends ReadonlyArray<AbiJsonParameter>
+            ? Args
+            : never
+        : never;
+
+type SchemaAllowsNull<
+    abi extends AbiRoot,
+    schema extends Schema | boolean,
+> = schema extends boolean
+    ? false
+    : schema extends { type: infer Type }
+      ? ToArray<Type> extends (infer T)[]
+          ? 'null' extends T
+              ? true
+              : false
+          : false
+      : schema extends { $ref: `#/definitions/${infer Ref}` }
+        ? Ref extends keyof abi['body']['root_schema']['definitions']
+            ? abi['body']['root_schema']['definitions'][Ref] extends Schema
+                ? SchemaAllowsNull<
+                      abi,
+                      abi['body']['root_schema']['definitions'][Ref]
+                  >
+                : false
+            : false
+        : schema extends { enum: infer Enum }
+          ? Enum extends ReadonlyArray<infer Values>
+              ? null extends Values
+                  ? true
+                  : false
+              : false
+          : false;
+
+type RequiredArgKeys<
+    abi extends AbiRoot,
+    abiFunction extends AbiFunction,
+> = ExtractAbiJsonArgs<abiFunction> extends infer Args
+    ? Args extends ReadonlyArray<{ name: string; type_schema: Schema }>
+        ? keyof {
+              [Arg in Args[number] as SchemaAllowsNull<
+                  abi,
+                  Arg['type_schema']
+              > extends false
+                  ? Arg['name'] & string
+                  : never]: true;
+          }
+        : never
+    : never;
+
+type HasRequiredAbiArgs<
+    abi extends AbiRoot,
+    abiFunction extends AbiFunction,
+> = IsNever<RequiredArgKeys<abi, abiFunction>> extends true ? false : true;
+
 type GetViewFunction<
     abi extends AbiRoot,
     functionName extends ExtractAbiFunctionNames<abi, 'view'>,
@@ -64,14 +116,14 @@ type GetViewFunction<
         ? (params?: {
               blockQuery?: BlockReference;
           }) => Promise<Prettify<ViewReturn>>
-        : IsFullyOptional<ViewArgs> extends true
-          ? (params?: {
-                blockQuery?: BlockReference;
-                args?: ViewArgs;
-            }) => Promise<Prettify<ViewReturn>>
-          : (params: {
+        : HasRequiredAbiArgs<abi, abiFunction> extends true
+          ? (params: {
                 blockQuery?: BlockReference;
                 args: ViewArgs;
+            }) => Promise<Prettify<ViewReturn>>
+          : (params?: {
+                blockQuery?: BlockReference;
+                args?: ViewArgs;
             }) => Promise<Prettify<ViewReturn>>
     : <Response = unknown>(params?: {
           blockQuery?: BlockReference;
@@ -95,13 +147,21 @@ type GetCallFunction<
               waitUntil?: TxExecutionStatus;
               account: Account;
           }) => Promise<Prettify<CallReturn>>
-        : (params: {
-              deposit?: bigint;
-              gas?: bigint;
-              args: CallArgs;
-              waitUntil?: TxExecutionStatus;
-              account: Account;
-          }) => Promise<Prettify<CallReturn>>
+        : HasRequiredAbiArgs<abi, abiFunction> extends true
+          ? (params: {
+                deposit?: bigint;
+                gas?: bigint;
+                args: CallArgs;
+                waitUntil?: TxExecutionStatus;
+                account: Account;
+            }) => Promise<Prettify<CallReturn>>
+          : (params: {
+                deposit?: bigint;
+                gas?: bigint;
+                args?: CallArgs;
+                waitUntil?: TxExecutionStatus;
+                account: Account;
+            }) => Promise<Prettify<CallReturn>>
     : <Response = unknown>(params: {
           deposit?: bigint;
           gas?: bigint;
@@ -126,17 +186,19 @@ type ContractFunctionArgs<
     abiFunction extends AbiFunction,
 > = abiFunction extends { params: infer Params }
     ? Params extends { args: infer Args }
-        ? Args extends { name: string; type_schema: Schema }[]
+        ? Args extends ReadonlyArray<{ name: string; type_schema: Schema }>
             ? Prettify<
                   {
-                      [Arg in Args[number] as IsNullable<
-                          ResolveSchemaType<abi, Arg['type_schema']>
+                      [Arg in Args[number] as SchemaAllowsNull<
+                          abi,
+                          Arg['type_schema']
                       > extends false
                           ? Arg['name'] & string
                           : never]: ResolveSchemaType<abi, Arg['type_schema']>;
                   } & {
-                      [Arg in Args[number] as IsNullable<
-                          ResolveSchemaType<abi, Arg['type_schema']>
+                      [Arg in Args[number] as SchemaAllowsNull<
+                          abi,
+                          Arg['type_schema']
                       > extends true
                           ? Arg['name'] & string
                           : never]?: ResolveSchemaType<abi, Arg['type_schema']>;

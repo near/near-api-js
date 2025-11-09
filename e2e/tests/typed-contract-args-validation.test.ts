@@ -12,8 +12,10 @@ const provider = new JsonRpcProvider({ url: "" });
 
 const account = new Account("", provider);
 
-vi.spyOn(JsonRpcProvider.prototype, "callFunction").mockResolvedValue({});
-vi.spyOn(Account.prototype, "callFunction").mockResolvedValue({});
+vi.spyOn(JsonRpcProvider.prototype, "callFunction").mockResolvedValue(
+    undefined
+);
+vi.spyOn(Account.prototype, "callFunction").mockResolvedValue(undefined);
 
 describe('TypedContract validates "view" function arguments based on ABI', () => {
     const contract = new TypedContract({
@@ -123,7 +125,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: "hello",
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.view.test_string({
@@ -151,7 +153,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: 1_000,
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.view.test_number({
@@ -159,7 +161,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: 1.2345,
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.view.test_number({
@@ -196,7 +198,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: 1_000,
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.view.test_integer({
@@ -241,7 +243,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: true,
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.view.test_bool({
@@ -249,7 +251,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: false,
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.view.test_bool({
@@ -275,7 +277,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
             contract.view.test_extra_args({
                 args: {},
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.view.test_extra_args({
@@ -312,7 +314,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     },
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.view.test_definitions({
@@ -370,7 +372,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: "text",
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contractWithoutAbi.view.test_skip_validation({
@@ -378,7 +380,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: 12345,
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contractWithoutAbi.view.test_skip_validation({
@@ -386,7 +388,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: true,
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contractWithoutAbi.view.test_skip_validation({
@@ -396,7 +398,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     },
                 },
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
     });
 });
 
@@ -509,7 +511,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.call.test_string({
@@ -540,7 +542,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.call.test_number({
@@ -549,7 +551,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.call.test_number({
@@ -590,7 +592,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.call.test_integer({
@@ -640,7 +642,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.call.test_bool({
@@ -649,7 +651,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.call.test_bool({
@@ -678,7 +680,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 args: {},
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.call.test_extra_args({
@@ -719,7 +721,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contract.call.test_definitions({
@@ -779,7 +781,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contractWithoutAbi.call.test_skip_validation({
@@ -788,7 +790,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contractWithoutAbi.call.test_skip_validation({
@@ -797,7 +799,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
 
         await expect(
             contractWithoutAbi.call.test_skip_validation({
@@ -808,6 +810,6 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 },
                 account: account,
             })
-        ).resolves.toStrictEqual({});
+        ).resolves.toBeUndefined();
     });
 });

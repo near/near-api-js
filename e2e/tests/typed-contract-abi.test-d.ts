@@ -1,4 +1,4 @@
-import { Account, TypedContract } from "@near-js/accounts";
+import { AbiRoot, Account, TypedContract } from "@near-js/accounts";
 import { KeyPair } from "@near-js/crypto";
 import { JsonRpcProvider } from "@near-js/providers";
 import { KeyPairSigner } from "@near-js/signers";
@@ -12,54 +12,64 @@ const provider = new JsonRpcProvider({ url: "" });
 const keypair = KeyPair.fromRandom("ed25519");
 const signer = new KeyPairSigner(keypair);
 const account = new Account("", provider, signer);
+const defineAbi = <const T extends AbiRoot>(abi: T) => abi;
+type ExtractArgs<T extends (...args: any) => any> =
+    NonNullable<Parameters<T>[0]> extends { args?: infer A }
+        ? Exclude<A, undefined>
+        : never;
+type Extends<A, B> = [A] extends [B] ? true : false;
+const expectExtends = <T extends true>() => undefined;
 
 describe("TypedContract infers function arguments from ABI correctly", () => {
     test('"args" are required if at least one argument is required', () => {
-        const contract = new TypedContract({
+        const abi = defineAbi({
+            schema_version: "0.4.0",
+            metadata: {},
+            body: {
+                functions: [
+                    {
+                        name: "test",
+                        kind: "view",
+                        params: {
+                            serialization_type: "json",
+                            args: [
+                                {
+                                    name: "arg1",
+                                    type_schema: {
+                                        type: "string",
+                                    },
+                                },
+                                {
+                                    name: "arg2",
+                                    type_schema: {
+                                        type: ["string", "null"],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+                root_schema: {},
+            },
+        } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
             contractId: "guestbook.testnet",
             provider: account.provider,
-            abi: {
-                schema_version: "0.4.0",
-                metadata: {},
-                body: {
-                    functions: [
-                        {
-                            name: "test",
-                            kind: "view",
-                            params: {
-                                serialization_type: "json",
-                                args: [
-                                    {
-                                        name: "arg1",
-                                        type_schema: {
-                                            type: "string",
-                                        },
-                                    },
-                                    {
-                                        name: "arg2",
-                                        type_schema: {
-                                            type: ["string", "null"],
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    ],
-                    root_schema: {},
-                },
-            },
+            abi,
         });
 
-        expectTypeOf(contract.view.test).parameter(0).toExtend<{
-            args: any;
-        }>();
+        void contract.view.test({
+            args: {
+                arg1: "value",
+                arg2: null,
+            },
+        });
+        // @ts-expect-error args are required
+        void contract.view.test({});
     });
 
     test('"args" are optional if none of arguments is required', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -88,21 +98,25 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
 
-        type ExpectedArgs = { args?: any };
 
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .toExtend<ExpectedArgs | undefined>();
+        void contract.view.test();
+        void contract.view.test({
+            args: {
+                arg1: null,
+                arg2: null,
+            },
+        });
     });
 
     test('parses "string" as string', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -137,25 +151,26 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedArgs = {
             arg1: string;
             arg2: string;
             arg3?: string | null | undefined;
         };
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .map(({ args }) => args)
-            .toEqualTypeOf<ExpectedArgs>();
+        type InferredArgs = ExtractArgs<typeof contract.view.test>;
+        expectExtends<Extends<InferredArgs, ExpectedArgs>>();
+        expectExtends<Extends<ExpectedArgs, InferredArgs>>();
     });
 
     test('parses "number" or "integer" as number', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -208,8 +223,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedArgs = {
             arg1: number;
@@ -219,17 +239,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
             arg5: number;
             arg6?: number | null | undefined;
         };
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .map(({ args }) => args)
-            .toEqualTypeOf<ExpectedArgs>();
+        type InferredArgs = ExtractArgs<typeof contract.view.test>;
+        expectExtends<Extends<InferredArgs, ExpectedArgs>>();
+        expectExtends<Extends<ExpectedArgs, InferredArgs>>();
     });
 
     test('parses "boolean" as boolean', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -264,25 +280,26 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedArgs = {
             arg1: boolean;
             arg2: boolean;
             arg3?: boolean | null | undefined;
         };
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .map(({ args }) => args)
-            .toEqualTypeOf<ExpectedArgs>();
+        type InferredArgs = ExtractArgs<typeof contract.view.test>;
+        expectExtends<Extends<InferredArgs, ExpectedArgs>>();
+        expectExtends<Extends<ExpectedArgs, InferredArgs>>();
     });
 
     test('parses "array" as array', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -347,8 +364,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedArgs = {
             arg1: string[];
@@ -357,17 +379,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
             arg4: boolean[];
             arg5: string[][];
         };
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .map(({ args }) => args)
-            .toEqualTypeOf<ExpectedArgs>();
+        type InferredArgs = ExtractArgs<typeof contract.view.test>;
+        expectExtends<Extends<InferredArgs, ExpectedArgs>>();
+        expectExtends<Extends<ExpectedArgs, InferredArgs>>();
     });
 
     test('parses "object" as object', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -426,8 +444,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedArgs = {
             arg1: {
@@ -442,17 +465,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                 };
             };
         };
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .map(({ args }) => args)
-            .toEqualTypeOf<ExpectedArgs>();
+        type InferredArgs = ExtractArgs<typeof contract.view.test>;
+        expectExtends<Extends<InferredArgs, ExpectedArgs>>();
+        expectExtends<Extends<ExpectedArgs, InferredArgs>>();
     });
 
     test("parses schema definitions", () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -499,8 +518,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                         },
                     },
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedArgs = {
             arg1: string;
@@ -509,17 +533,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                 sender: string;
             };
         };
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .map(({ args }) => args)
-            .toEqualTypeOf<ExpectedArgs>();
+        type InferredArgs = ExtractArgs<typeof contract.view.test>;
+        expectExtends<Extends<InferredArgs, ExpectedArgs>>();
+        expectExtends<Extends<ExpectedArgs, InferredArgs>>();
     });
 
     test('parses "enum" string', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -586,8 +606,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedArgs = {
             arg1:
@@ -595,17 +620,13 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                 | { version: "V1"; name: string; age: number };
             arg2: "V0" | "V1" | "V2" | "3.0";
         };
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .map(({ args }) => args)
-            .toEqualTypeOf<ExpectedArgs>();
+        type InferredArgs = ExtractArgs<typeof contract.view.test>;
+        expectExtends<Extends<InferredArgs, ExpectedArgs>>();
+        expectExtends<Extends<ExpectedArgs, InferredArgs>>();
     });
 
     test('parses "additionalProperties"', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -635,25 +656,26 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedArgs = {
             arg1: Record<string, string[]>;
         };
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .map(({ args }) => args)
-            .toEqualTypeOf<ExpectedArgs>();
+        type InferredArgs = ExtractArgs<typeof contract.view.test>;
+        expectExtends<Extends<InferredArgs, ExpectedArgs>>();
+        expectExtends<Extends<ExpectedArgs, InferredArgs>>();
     });
 });
 
 describe("TypedContract infers function returns from ABI correctly", () => {
     test('returns "void" by default', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -665,17 +687,19 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         expectTypeOf(contract.view.test).returns.resolves.toBeVoid();
     });
 
     test('parses ["string", "null"] as optional string', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -693,8 +717,13 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         expectTypeOf(contract.view.test).returns.resolves.toEqualTypeOf<
             string | null
@@ -702,10 +731,7 @@ describe("TypedContract infers function returns from ABI correctly", () => {
     });
 
     test('parses "string" as string', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -723,17 +749,19 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         expectTypeOf(contract.view.test).returns.resolves.toBeString();
     });
 
     test('parses "number" as number', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -751,17 +779,19 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         expectTypeOf(contract.view.test).returns.resolves.toBeNumber();
     });
 
     test('parses "integer" as number', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -779,17 +809,19 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         expectTypeOf(contract.view.test).returns.resolves.toBeNumber();
     });
 
     test('parses "boolean" as boolean', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -807,17 +839,19 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         expectTypeOf(contract.view.test).returns.resolves.toBeBoolean();
     });
 
     test('parses "array" as array', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -838,18 +872,20 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         expectTypeOf(contract.view.test).returns.resolves.toBeArray();
         expectTypeOf(contract.view.test).returns.resolves.items.toBeString();
     });
 
     test('parses "object" as object', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -889,8 +925,13 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedReturn = {
             res1: string;
@@ -907,10 +948,7 @@ describe("TypedContract infers function returns from ABI correctly", () => {
     });
 
     test("parses schema definitions", () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -954,8 +992,13 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                         },
                     },
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedReturn = {
             res1: string;
@@ -971,10 +1014,7 @@ describe("TypedContract infers function returns from ABI correctly", () => {
     });
 
     test('parses "enum" string', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -1039,8 +1079,13 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedReturn = {
             res1:
@@ -1054,10 +1099,7 @@ describe("TypedContract infers function returns from ABI correctly", () => {
     });
 
     test('parses "additionalProperties"', () => {
-        const contract = new TypedContract({
-            contractId: "guestbook.testnet",
-            provider: account.provider,
-            abi: {
+                const abi = defineAbi({
                 schema_version: "0.4.0",
                 metadata: {},
                 body: {
@@ -1082,8 +1124,13 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     ],
                     root_schema: {},
                 },
-            },
+            } as const satisfies AbiRoot);
+        const contract = new TypedContract<typeof abi, "guestbook.testnet">({
+            contractId: "guestbook.testnet",
+            provider: account.provider,
+            abi,
         });
+
 
         type ExpectedReturn = Record<string, string[]>;
 

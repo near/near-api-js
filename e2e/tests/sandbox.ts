@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { startSandbox, stopSandbox, getSandboxInfo } from '@near-js/sandbox';
 
 let initialized = false;
