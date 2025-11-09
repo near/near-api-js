@@ -8,6 +8,12 @@ node_modules
 
 dist/
 
+# prevent accidentally committing compiled artifacts inside source directories
+packages/**/src/**/*.js
+packages/**/src/**/*.d.ts
+packages/**/src/**/*.js.map
+packages/**/src/**/*.d.ts.map
+
 # near-api-js files & coverage
 neardev/
 coverage/
