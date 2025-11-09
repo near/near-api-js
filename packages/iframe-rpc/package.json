@@ -5,7 +5,7 @@
     "types": "./lib/index.d.ts",
     "type": "module",
     "scripts": {
-        "build": "tsc -p tsconfig.build.json",
+        "build": "tsc -b tsconfig.build.json",
         "clean": "rm -rf lib",
         "typecheck": "tsc --noEmit",
         "check-exports": "attw --pack . --profile esm-only --no-summary"

@@ -1,9 +1,14 @@
 {
     "extends": "../../tsconfig.prod.json",
     "compilerOptions": {
-        "outDir": "./lib"
+        "outDir": "./lib",
+        "rootDir": "./src",
+        "composite": true
     },
     "include": [
         "src/**/*.ts"
+    ],
+    "references": [
+        { "path": "../types/tsconfig.build.json" }
     ]
 }

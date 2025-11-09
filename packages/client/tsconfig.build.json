@@ -1,9 +1,21 @@
 {
     "extends": "../../tsconfig.prod.json",
     "compilerOptions": {
-        "outDir": "./lib"
+        "outDir": "./lib",
+        "rootDir": "./src",
+        "composite": true
     },
     "include": [
         "src/**/*.ts"
+    ],
+    "references": [
+        { "path": "../accounts/tsconfig.build.json" },
+        { "path": "../crypto/tsconfig.build.json" },
+        { "path": "../keystores/tsconfig.build.json" },
+        { "path": "../providers/tsconfig.build.json" },
+        { "path": "../signers/tsconfig.build.json" },
+        { "path": "../transactions/tsconfig.build.json" },
+        { "path": "../types/tsconfig.build.json" },
+        { "path": "../utils/tsconfig.build.json" }
     ]
 }

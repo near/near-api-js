@@ -13,6 +13,7 @@ packages/**/src/**/*.js
 packages/**/src/**/*.d.ts
 packages/**/src/**/*.js.map
 packages/**/src/**/*.d.ts.map
+*.tsbuildinfo
 
 # near-api-js files & coverage
 neardev/

@@ -6,7 +6,7 @@
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
     "scripts": {
-        "build": "tsc -p tsconfig.build.json",
+        "build": "tsc -b tsconfig.build.json",
         "clean": "rm -rf lib",
         "typecheck": "tsc --noEmit",
         "lint": "bunx --bun biome check",
