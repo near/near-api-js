@@ -8,7 +8,8 @@
     "author": "",
     "license": "ISC",
     "scripts": {
-        "build": "tsc -p tsconfig.json",
+        "build": "tsc -p tsconfig.build.json",
+        "typecheck": "tsc --noEmit",
         "addFullAccessKey": "tsx -e \"import f from './accounts/access-keys/create-full-access-key.ts'; f(...process.argv.slice(1));\"",
         "addFunctionCallAccessKey": "tsx -e \"import f from './accounts/access-keys/create-function-access-key.ts'; f(...process.argv.slice(1));\"",
         "batchTransactions": "tsx -e \"import f from './transactions/batch-transactions.ts'; f(...process.argv.slice(1));\"",

@@ -5,8 +5,9 @@
     "module": "./lib/index.js",
     "type": "module",
     "scripts": {
-        "build": "tsc",
+        "build": "tsc -p tsconfig.build.json",
         "clean": "rm -rf lib",
+        "typecheck": "tsc --noEmit",
         "lint": "bunx --bun biome check",
         "lint:fix": "bunx --bun biome check --write",
         "test": "vitest run",
@@ -32,11 +33,11 @@
         "near-abi": "0.2.0"
     },
     "devDependencies": {
+        "@near-js/sandbox": "workspace:*",
         "@scure/base": "^1.2.4",
         "@types/depd": "^1.1.37",
         "@types/json-schema": "^7.0.15",
         "near-hello": "0.5.1",
-        "near-workspaces": "5.0.0",
         "semver": "7.7.1",
         "typescript": "5.9.3",
         "vitest": "^4.0.8"

@@ -25,8 +25,9 @@
     },
     "type": "module",
     "scripts": {
-        "build": "tsc",
+        "build": "tsc -p tsconfig.build.json",
         "clean": "rm -rf lib",
+        "typecheck": "tsc --noEmit",
         "lint": "bunx --bun biome check",
         "lint:fix": "bunx --bun biome check --write",
         "test": "bun test",

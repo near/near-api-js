@@ -34,7 +34,6 @@
         "concurrently": "9.1.2",
         "in-publish": "2.0.0",
         "near-hello": "0.5.1",
-        "near-workspaces": "5.0.0",
         "rimraf": "^6.0.1",
         "semver": "7.7.1"
     },
@@ -53,13 +52,14 @@
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
     "scripts": {
-        "build": "tsc",
+        "build": "tsc -p tsconfig.build.json",
+        "clean": "rm -rf lib dist",
+        "typecheck": "tsc --noEmit",
         "test": "bun test",
         "lint": "bunx --bun biome check",
         "lint:fix": "bunx --bun biome check --write",
         "prefuzz": "bun run build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "rm -rf lib dist",
         "check-exports": "attw --pack . --profile esm-only --no-summary"
     },
     "files": [

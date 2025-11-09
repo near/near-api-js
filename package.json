@@ -17,7 +17,7 @@
         "lint:fix": "bunx --bun biome check --write",
         "test": "bun run --filter '*' test",
         "test:e2e": "bun run --cwd e2e test:e2e",
-        "typecheck": "bun run --filter '*' build -- --noEmit",
+        "typecheck": "bun run --filter '*' typecheck",
         "release": "changeset publish",
         "prepare": "husky",
         "docs:generate": "typedoc"
@@ -36,7 +36,6 @@
         "typescript": "5.9.3"
     },
     "resolutions": {
-        "near-sandbox": "0.0.18",
         "near-api-js": "workspace:*"
     },
     "overrides": {
