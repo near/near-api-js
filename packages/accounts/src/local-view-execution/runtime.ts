@@ -2,11 +2,11 @@ import { sha256 } from '@noble/hashes/sha256';
 import type { ContractState } from './types.js';
 
 const notImplemented = (name: string) => () => {
-    throw new Error('method not implemented: ' + name);
+    throw new Error(`method not implemented: ${name}`);
 };
 
 const prohibitedInView = (name: string) => () => {
-    throw new Error('method not available for view calls: ' + name);
+    throw new Error(`method not available for view calls: ${name}`);
 };
 
 interface RuntimeCtx {
@@ -90,7 +90,7 @@ export class Runtime {
 
         const version = input.readUInt32LE(4);
         if (version !== 1) {
-            throw new Error('Invalid version: ' + version);
+            throw new Error(`Invalid version: ${version}`);
         }
 
         let offset = 8;
@@ -187,7 +187,7 @@ export class Runtime {
                             offset++; // mutability
                             break;
                         default:
-                            throw new Error('Invalid import kind: ' + kind);
+                            throw new Error(`Invalid import kind: ${kind}`);
                     }
 
                     if (!skipImport) {
@@ -321,7 +321,7 @@ export class Runtime {
     }
 
     private panic(message: string) {
-        throw new Error('panic: ' + message);
+        throw new Error(`panic: ${message}`);
     }
 
     private abort(
@@ -338,7 +338,7 @@ export class Runtime {
                 'abort: ' + 'String encoding is bad UTF-16 sequence.',
             );
         }
-        throw new Error('abort: ' + message);
+        throw new Error(`abort: ${message}`);
     }
 
     private appendToLog(len: bigint, ptr: bigint) {
