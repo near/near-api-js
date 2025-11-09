@@ -530,7 +530,7 @@ export class JsonRpcProvider implements Provider {
         const resultWithError = result as T & {
             error?: { name?: string };
         };
-        if (resultWithError && resultWithError.error) {
+        if (resultWithError?.error) {
             throw new TypedError(
                 `Querying failed: ${resultWithError.error}.\n${JSON.stringify(result, null, 2)}`,
                 getErrorTypeFromErrorMessage(

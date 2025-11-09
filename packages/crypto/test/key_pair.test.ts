@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
+import { TextEncoder } from 'node:util';
 import { baseEncode } from '@near-js/utils';
 import { sha256 } from '@noble/hashes/sha256';
-import { TextEncoder } from 'util';
 import {
     KeyPair,
     KeyPairEd25519,

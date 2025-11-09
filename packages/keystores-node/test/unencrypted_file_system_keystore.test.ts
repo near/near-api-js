@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
+import * as fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { KeyPairEd25519 } from '@near-js/crypto';
-import * as fs from 'fs';
 import { rimraf } from 'rimraf';
-import { fileURLToPath } from 'url';
 
 import { UnencryptedFileSystemKeyStore } from '../src/index.js';
 import { shouldStoreAndRetriveKeys } from './keystore_common.js';

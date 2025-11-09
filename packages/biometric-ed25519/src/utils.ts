@@ -57,7 +57,7 @@ export const preformatGetAssertReq = (getAssert) => {
 };
 
 export const publicKeyCredentialToJSON = (pubKeyCred) => {
-    if (pubKeyCred instanceof Array) {
+    if (Array.isArray(pubKeyCred)) {
         const arr = [];
         for (const i of pubKeyCred) arr.push(publicKeyCredentialToJSON(i));
 
@@ -98,7 +98,7 @@ export const recoverPublicKey = async (r, s, message, recovery) => {
 export const uint8ArrayToBigInt = (uint8Array: Uint8Array) => {
     const array = Array.from(uint8Array);
     return BigInt(
-        '0x' + array.map((byte) => byte.toString(16).padStart(2, '0')).join(''),
+        `0x${array.map((byte) => byte.toString(16).padStart(2, '0')).join('')}`,
     );
 };
 

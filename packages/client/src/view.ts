@@ -123,7 +123,7 @@ export async function view<T extends SerializedReturnValue | bigint>({
         return JSON.parse(stringResult);
     } catch {
         const numeric = +stringResult;
-        if (isNaN(numeric)) {
+        if (Number.isNaN(numeric)) {
             return stringResult as T;
         }
 

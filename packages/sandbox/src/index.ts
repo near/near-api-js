@@ -16,7 +16,7 @@ const DOWNLOAD_BASE =
     'https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore';
 const MIN_PORT = 5001;
 const MAX_PORT = 60000;
-const STARTUP_TIMEOUT = 30000;
+const STARTUP_TIMEOUT = 60000;
 const DOWNLOAD_TIMEOUT = 120000;
 
 export interface SandboxOptions {

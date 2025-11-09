@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import {
     type CurveType,
     KeyPair,
@@ -10,8 +12,6 @@ import type { Provider } from '@near-js/providers';
 import { KeyPairSigner } from '@near-js/signers';
 import type { RpcQueryRequest } from '@near-js/types';
 import { ConsoleLogger, Logger } from '@near-js/utils';
-import fs from 'fs';
-import path from 'path';
 import {
     Account,
     Connection,
@@ -137,7 +137,7 @@ export function generateUniqueString(prefix: string): string {
     )}`;
     const add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
     for (let i = add_symbols; i > 0; --i) result += '0';
-    return result + '.test.near';
+    return `${result}.test.near`;
 }
 
 export async function createAccount(

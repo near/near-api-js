@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, jest, test } from 'bun:test';
+import { TextEncoder } from 'node:util';
 import { getSandboxInfo, startSandbox, stopSandbox } from '@near-js/sandbox';
 import type { AccountViewRaw, BlockReference } from '@near-js/types';
 import { getTransactionLastResult } from '@near-js/utils';
-import { TextEncoder } from 'util';
 import { FailoverRpcProvider, JsonRpcProvider } from '../src/index.js';
 
 jest.setTimeout(20000);
