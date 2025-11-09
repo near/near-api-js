@@ -226,71 +226,66 @@ export class Contract {
             Object.defineProperty(this, name, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(
-                    name,
-                    async (...callArgs: any[]) => {
-                        const rawArgs =
-                            callArgs.length === 0
-                                ? {}
-                                : callArgs[0] === undefined
-                                  ? {}
-                                  : callArgs[0];
-                        const optionsParam =
-                            callArgs.length > 1 ? callArgs[1] : undefined;
-                        const ignored =
-                            callArgs.length > 2 ? callArgs.slice(2) : [];
-                        const optionsProvided = callArgs.length >= 2;
-                        const options = optionsParam ?? {};
+                value: nameFunction(name, async (...callArgs: any[]) => {
+                    const rawArgs =
+                        callArgs.length === 0
+                            ? {}
+                            : callArgs[0] === undefined
+                              ? {}
+                              : callArgs[0];
+                    const optionsParam =
+                        callArgs.length > 1 ? callArgs[1] : undefined;
+                    const ignored =
+                        callArgs.length > 2 ? callArgs.slice(2) : [];
+                    const optionsProvided = callArgs.length >= 2;
+                    const options = optionsParam ?? {};
 
-                        if (
-                            ignored.length ||
-                            !(
-                                isObject(rawArgs) || isUint8Array(rawArgs)
-                            ) ||
-                            (optionsProvided && !isObject(optionsParam))
-                        ) {
-                            throw new PositionalArgsError();
-                        }
+                    if (
+                        ignored.length ||
+                        !(isObject(rawArgs) || isUint8Array(rawArgs)) ||
+                        (optionsProvided && !isObject(optionsParam))
+                    ) {
+                        throw new PositionalArgsError();
+                    }
 
-                        const args = rawArgs;
+                    const args = rawArgs;
 
-                        if (abi) {
-                            validateArguments(args, abi, abiRoot);
-                        }
+                    if (abi) {
+                        validateArguments(args, abi, abiRoot);
+                    }
 
-                        if (useLocalViewExecution) {
-                            try {
-                                return await contractInstance.lve.viewFunction({
-                                    contractId: contractInstance.contractId,
-                                    methodName: name,
-                                    args,
-                                    ...options,
-                                });
-                            } catch (error) {
-                                Logger.warn(
-                                    `Local view execution failed with: "${error.message}"`,
-                                );
-                                Logger.warn('Fallback to normal RPC call');
-                            }
-                        }
-
-                        if (contractInstance.account) {
-                            return contractInstance.account.viewFunction({
+                    if (useLocalViewExecution) {
+                        try {
+                            return await contractInstance.lve.viewFunction({
                                 contractId: contractInstance.contractId,
                                 methodName: name,
                                 args,
                                 ...options,
                             });
+                        } catch (error) {
+                            Logger.warn(
+                                `Local view execution failed with: "${error.message}"`,
+                            );
+                            Logger.warn('Fallback to normal RPC call');
                         }
+                    }
 
-                        return viewFunction(contractInstance.connection, {
+                    if (contractInstance.account) {
+                        return contractInstance.account.viewFunction({
                             contractId: contractInstance.contractId,
                             methodName: name,
                             args,
                             ...options,
                         });
-                    },
-                ),
+                    }
+
+                    return viewFunction(contractInstance.connection, {
+                        contractId: contractInstance.contractId,
+                        methodName: name,
+                        args,
+                        ...options,
+                    });
+                }),
             });
         });
         changeMethodsWithAbi.forEach(({ name, abi }) => {
@@ -380,10 +375,7 @@ function validateBNLike(argMap: { [name: string]: any }) {
             continue;
         }
 
-        if (
-            typeof argValue === 'string' &&
-            DECIMAL_PATTERN.test(argValue)
-        ) {
+        if (typeof argValue === 'string' && DECIMAL_PATTERN.test(argValue)) {
             continue;
         }
 

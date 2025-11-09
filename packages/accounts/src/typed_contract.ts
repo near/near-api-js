@@ -41,17 +41,16 @@ type ExtractAbiFunctionNames<
     abiFunctionKind extends AbiFunctionKind = AbiFunctionKind,
 > = ExtractAbiFunctions<abi, abiFunctionKind>['name'];
 
-type ExtractAbiJsonArgs<abiFunction extends AbiFunction> =
-    abiFunction extends {
-        params: {
-            serialization_type: 'json';
-            args: infer Args;
-        };
-    }
-        ? Args extends ReadonlyArray<AbiJsonParameter>
-            ? Args
-            : never
-        : never;
+type ExtractAbiJsonArgs<abiFunction extends AbiFunction> = abiFunction extends {
+    params: {
+        serialization_type: 'json';
+        args: infer Args;
+    };
+}
+    ? Args extends ReadonlyArray<AbiJsonParameter>
+        ? Args
+        : never
+    : never;
 
 type SchemaAllowsNull<
     abi extends AbiRoot,

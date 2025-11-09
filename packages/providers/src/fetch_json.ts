@@ -77,18 +77,22 @@ export async function fetchJsonRpc(
 
         if (status === 500) {
             const responseText = await res.text();
-            let errorData;
+            let errorData: any;
             try {
                 errorData = JSON.parse(responseText);
-            } catch (parseError) {
+            } catch (_parseError) {
                 // If JSON parsing fails, use the raw text
                 throw new ProviderError(responseText, { cause: status });
             }
             // Check if it's a JSON-RPC error response
-            if (errorData.error && errorData.error.data) {
-                throw new ProviderError(errorData.error.data, { cause: status });
-            } else if (errorData.error && errorData.error.message) {
-                throw new ProviderError(errorData.error.message, { cause: status });
+            if (errorData.error?.data) {
+                throw new ProviderError(errorData.error.data, {
+                    cause: status,
+                });
+            } else if (errorData.error?.message) {
+                throw new ProviderError(errorData.error.message, {
+                    cause: status,
+                });
             }
             throw new ProviderError(responseText, { cause: status });
         } else if (status === 408) {
