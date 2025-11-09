@@ -1,9 +1,9 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		"target": "ESNext",
-		"module": "ESNext",
-		"moduleResolution": "bundler",
+		"target": "ES2024",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"lib": [
 			"ESNext",
 			"DOM"

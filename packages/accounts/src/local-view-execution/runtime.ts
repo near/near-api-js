@@ -1,5 +1,5 @@
 import { sha256 } from '@noble/hashes/sha256';
-import type { ContractState } from './types';
+import type { ContractState } from './types.js';
 
 const notImplemented = (name: string) => () => {
     throw new Error('method not implemented: ' + name);
@@ -460,13 +460,11 @@ export class Runtime {
         // When instantiate is called with a Module, it returns an Instance directly,
         // but TypeScript types don't reflect this correctly
         const instance =
-            'instance' in instantiated
-                ? instantiated.instance
-                : (instantiated as unknown as WebAssembly.Instance);
+            'instance' in instantiated ? instantiated.instance : instantiated;
 
-        const callMethod = instance.exports[methodName] as
-            | CallableFunction
-            | undefined;
+        const callMethod = (instance as WebAssembly.Instance).exports[
+            methodName
+        ] as CallableFunction | undefined;
 
         if (callMethod === undefined) {
             throw new Error(

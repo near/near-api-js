@@ -9,7 +9,7 @@
         "build": "tsc",
         "lint": "bunx --bun biome check",
         "lint:fix": "bunx --bun biome check --write",
-        "check-exports": "attw --ignore-rules cjs-resolves-to-esm internal-resolution-error --pack .",
+        "check-exports": "attw --pack . --profile esm-only --no-summary",
         "clean": "rm -rf lib"
     },
     "keywords": [],

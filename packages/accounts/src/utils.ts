@@ -6,8 +6,8 @@ import {
 } from '@near-js/types';
 import { printTxOutcomeLogs } from '@near-js/utils';
 import depd from 'depd';
-import type { Connection } from './connection';
-import type { ViewFunctionCallOptions } from './interface';
+import type { Connection } from './connection.js';
+import type { ViewFunctionCallOptions } from './interface.js';
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());

@@ -1,6 +1,6 @@
 import type { BlockHash, BlockReference } from '@near-js/types';
 import * as LRU from 'lru_map';
-import type { ContractState } from './types';
+import type { ContractState } from './types.js';
 
 export interface StorageData {
     blockHeight: number;

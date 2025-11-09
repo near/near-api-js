@@ -1,12 +1,12 @@
 import type { BlockReference, ContractCodeViewRaw } from '@near-js/types';
 import { printTxOutcomeLogs } from '@near-js/utils';
 import depd from 'depd';
-import type { Connection } from '../connection';
-import type { FunctionCallOptions, IntoConnection } from '../interface';
-import { viewState } from '../utils';
-import { Runtime } from './runtime';
-import { Storage } from './storage';
-import type { ContractState } from './types';
+import type { Connection } from '../connection.js';
+import type { FunctionCallOptions, IntoConnection } from '../interface.js';
+import { viewState } from '../utils.js';
+import { Runtime } from './runtime.js';
+import { Storage } from './storage.js';
+import type { ContractState } from './types.js';
 
 interface ViewFunctionCallOptions extends FunctionCallOptions {
     blockQuery?: BlockReference;
@@ -98,12 +98,13 @@ export class LocalViewExecution {
      * @param options.blockQuery The block query options.
      * @returns {Promise<any>} - A promise that resolves to the result of the view function.
      */
-    public async viewFunction({
-        contractId,
-        methodName,
-        args = {},
-        blockQuery = { finality: 'optimistic' },
-    }: ViewFunctionCallOptions) {
+    public async viewFunction(options: ViewFunctionCallOptions) {
+        const {
+            contractId,
+            methodName,
+            args = {},
+            blockQuery = { finality: 'optimistic' },
+        } = options;
         const methodArgs = JSON.stringify(args);
 
         const { contractCode, contractState, blockHeight, blockTimestamp } =

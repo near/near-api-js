@@ -1,7 +1,7 @@
 import type { PublicKey } from '@near-js/crypto';
 import depd from 'depd';
-import type { Account } from './account';
-import type { Connection } from './connection';
+import type { Account } from './account.js';
+import type { Connection } from './connection.js';
 
 /**
  * @deprecated Will be removed in the next major release

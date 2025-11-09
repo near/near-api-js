@@ -48,12 +48,12 @@ import {
     printTxOutcomeLogsAndFailures,
 } from '@near-js/utils';
 import depd from 'depd';
-import { Connection } from './connection';
+import { Connection } from './connection.js';
 import type {
     ChangeFunctionCallOptions,
     ViewFunctionCallOptions,
-} from './interface';
-import { viewFunction, viewState } from './utils';
+} from './interface.js';
+import { viewFunction, viewState } from './utils.js';
 
 const {
     addKey,

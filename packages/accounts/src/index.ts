@@ -1,16 +1,16 @@
-export type { AbiRoot } from './abi_types';
+export type { AbiRoot } from './abi_types.js';
 export type {
     AccountAuthorizedApp,
     AccountBalance,
     SignAndSendTransactionOptions,
-} from './account';
-export { Account } from './account';
+} from './account.js';
+export { Account } from './account.js';
 export {
     AccountCreator,
     LocalAccountCreator,
     UrlAccountCreator,
-} from './account_creator';
-export { Connection } from './connection';
+} from './account_creator.js';
+export { Connection } from './connection.js';
 export {
     MULTISIG_ALLOWANCE,
     MULTISIG_CHANGE_METHODS,
@@ -18,24 +18,24 @@ export {
     MULTISIG_DEPOSIT,
     MULTISIG_GAS,
     MULTISIG_STORAGE_KEY,
-} from './constants';
-export type { ContractMethods } from './contract';
-export { Contract } from './contract';
+} from './constants.js';
+export type { ContractMethods } from './contract.js';
+export { Contract } from './contract.js';
 export {
     ArgumentSchemaError,
     ConflictingOptions,
     UnknownArgumentError,
     UnsupportedSerializationError,
-} from './errors';
+} from './errors.js';
 export type {
     ChangeFunctionCallOptions,
     FunctionCallOptions,
     ViewFunctionCallOptions,
-} from './interface';
-export { LocalViewExecution } from './local-view-execution/index';
-export { Runtime } from './local-view-execution/runtime';
-export { TypedContract } from './typed_contract';
+} from './interface.js';
+export { LocalViewExecution } from './local-view-execution/index.js';
+export { Runtime } from './local-view-execution/runtime.js';
+export { TypedContract } from './typed_contract.js';
 export {
     MultisigDeleteRequestRejectionError,
     MultisigStateStatus,
-} from './types';
+} from './types.js';

@@ -60,7 +60,7 @@
         "prefuzz": "bun run build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "rm -rf lib dist",
-        "check-exports": "attw --ignore-rules cjs-resolves-to-esm internal-resolution-error --pack ."
+        "check-exports": "attw --pack . --profile esm-only --no-summary"
     },
     "files": [
         "lib"

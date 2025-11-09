@@ -5,7 +5,7 @@ import {
 } from '@near-js/providers';
 import { InMemorySigner } from '@near-js/signers';
 import depd from 'depd';
-import type { IntoConnection } from './interface';
+import type { IntoConnection } from './interface.js';
 
 /**
  * @param config Contains connection info details

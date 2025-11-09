@@ -4,15 +4,13 @@ import validator from 'is-my-json-valid';
 import type {
     AbiFunction,
     AbiFunctionKind,
-    AbiParameters,
     AbiRoot,
-    AbiType,
     RootSchema,
     Schema,
     SchemaObject,
-} from './abi_types';
-import type { Account } from './account';
-import { ArgumentSchemaError, UnknownArgumentError } from './errors';
+} from './abi_types.js';
+import type { Account } from './account.js';
+import { ArgumentSchemaError, UnknownArgumentError } from './errors.js';
 
 type IsNullable<T> = [null] extends [T] ? true : false;
 
@@ -116,9 +114,9 @@ type ContractFunctionReturnType<
     abi extends AbiRoot,
     abiFunction extends AbiFunction,
 > = abiFunction extends { result: infer Result }
-    ? Result extends AbiType
-        ? Result['type_schema'] extends Schema
-            ? ResolveSchemaType<abi, Result['type_schema']>
+    ? Result extends { type_schema: infer TypeSchema }
+        ? TypeSchema extends Schema
+            ? ResolveSchemaType<abi, TypeSchema>
             : unknown
         : unknown
     : void;
@@ -127,17 +125,17 @@ type ContractFunctionArgs<
     abi extends AbiRoot,
     abiFunction extends AbiFunction,
 > = abiFunction extends { params: infer Params }
-    ? Params extends AbiParameters
-        ? Params['args'] extends { name: string; type_schema: Schema }[]
+    ? Params extends { args: infer Args }
+        ? Args extends { name: string; type_schema: Schema }[]
             ? Prettify<
                   {
-                      [Arg in Params['args'][number] as IsNullable<
+                      [Arg in Args[number] as IsNullable<
                           ResolveSchemaType<abi, Arg['type_schema']>
                       > extends false
                           ? Arg['name'] & string
                           : never]: ResolveSchemaType<abi, Arg['type_schema']>;
                   } & {
-                      [Arg in Params['args'][number] as IsNullable<
+                      [Arg in Args[number] as IsNullable<
                           ResolveSchemaType<abi, Arg['type_schema']>
                       > extends true
                           ? Arg['name'] & string

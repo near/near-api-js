@@ -8,17 +8,17 @@ import {
     type AbiRoot,
     AbiSerializationType,
 } from 'near-abi';
-import { Account } from './account';
-import type { Connection } from './connection';
+import { Account } from './account.js';
+import type { Connection } from './connection.js';
 import {
     ArgumentSchemaError,
     ConflictingOptions,
     UnknownArgumentError,
     UnsupportedSerializationError,
-} from './errors';
-import type { IntoConnection } from './interface';
-import { LocalViewExecution } from './local-view-execution';
-import { viewFunction } from './utils';
+} from './errors.js';
+import type { IntoConnection } from './interface.js';
+import { LocalViewExecution } from './local-view-execution/index.js';
+import { viewFunction } from './utils.js';
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
