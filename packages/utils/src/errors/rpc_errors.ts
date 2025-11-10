@@ -35,7 +35,7 @@ export function parseResultError(result: any): ServerTransactionError {
     const server_tx_error = new ServerTransactionError(
         server_error.message,
         server_error.type,
-        server_error.context
+        server_error.context,
     );
     Object.assign(server_tx_error, server_error);
     server_tx_error.transaction_outcome = result.transaction_outcome;
