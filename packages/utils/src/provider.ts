@@ -1,6 +1,5 @@
 import type { FinalExecutionOutcome } from '@near-js/types';
 
-/** @hidden */
 export function getTransactionLastResult(
     txResult: FinalExecutionOutcome,
 ): object | string | number | null {
