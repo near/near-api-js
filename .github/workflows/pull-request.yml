@@ -59,7 +59,7 @@ jobs:
         id: changesets
         run: |
           # Check if any changeset files were added (excluding README.md)
-          if git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep -q '^\.changeset/.*\.md$' | grep -v 'README\.md'; then
+          if git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep '^\.changeset/.*\.md$' | grep -v 'README\.md' | grep -q .; then
             echo "has_added=true" >> $GITHUB_OUTPUT
           else
             echo "has_added=false" >> $GITHUB_OUTPUT
