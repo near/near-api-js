@@ -1,8 +1,14 @@
 import { KeyType } from '@near-js/crypto';
 import { Enum } from '@near-js/types';
 
-class ED25519Signature { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
-class SECP256K1Signature { keyType: KeyType = KeyType.SECP256K1; data: Uint8Array; }
+class ED25519Signature {
+    keyType: KeyType = KeyType.ED25519;
+    data: Uint8Array;
+}
+class SECP256K1Signature {
+    keyType: KeyType = KeyType.SECP256K1;
+    data: Uint8Array;
+}
 
 function resolveEnumKeyName(keyType: KeyType) {
     switch (keyType) {
@@ -23,7 +29,7 @@ export class Signature extends Enum {
     ed25519Signature?: ED25519Signature;
     secp256k1Signature?: SECP256K1Signature;
 
-    constructor(signature: { keyType: KeyType, data: Uint8Array }) {
+    constructor(signature: { keyType: KeyType; data: Uint8Array }) {
         const keyName = resolveEnumKeyName(signature.keyType);
         super({ [keyName]: signature });
         this[keyName] = signature;

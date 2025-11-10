@@ -16,7 +16,7 @@ const WASM_PATH = join(__dirname, '../utils/wasm-files/staking_pool_factory.wasm
 
 export default async function batchTransactions(accountId: string = CONTRACT_NAME, whitelistAccountId: string = WHITELIST_ACCOUNT_ID, wasmPath: string = WASM_PATH) {
   if (!accountId || !whitelistAccountId || !wasmPath) {
-    console.log(chalk`{red pnpm batchTransactions -- [ACCOUNT_ID] [WHITELIST_ACCOUNT_ID] [WASM_PATH]}`);
+    console.log(chalk`{red bun run batchTransactions -- [ACCOUNT_ID] [WHITELIST_ACCOUNT_ID] [WASM_PATH]}`);
     return;
   }
 

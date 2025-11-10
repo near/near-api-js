@@ -24,14 +24,14 @@ Collection of common use cases for [`near-api-js`](https://github.com/near/near-
 ## Requirements
 
 -   [NEAR Account](https://docs.near.org/docs/develop/basics/create-account)
--   [pnpm](https://pnpm.io/installation)
+-   [Bun](https://bun.sh/)
 
 ## Setup
 
 1. Install dependencies
 
 ```bash
-pnpm install
+bun install
 ```
 
 2. Navigate to the cookbook directory
@@ -45,5 +45,5 @@ cd packages/cookbook
 Example:
 
 ```bash
-pnpm getState
+bun run getState
 ```

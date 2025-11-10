@@ -5,7 +5,7 @@ import {
     isPassKeyAvailable,
 } from "@near-js/biometric-ed25519";
 import { KeyPair } from "@near-js/crypto";
-import { expectTypeOf, test } from "vitest";
+import { expectTypeOf, test } from "bun:test";
 
 test(`exports "createKey" function with correct type`, async () => {
     type ExpectedFunction = (username: string) => Promise<KeyPair>;

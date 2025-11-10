@@ -1,0 +1,32 @@
+{
+    "name": "@near-js/sandbox",
+    "version": "2.5.1",
+    "type": "module",
+    "description": "NEAR Sandbox management for testing - downloads, starts, and manages sandbox instances",
+    "main": "./lib/index.js",
+    "types": "./lib/index.d.ts",
+    "scripts": {
+        "build": "tsc -b tsconfig.build.json",
+        "clean": "rm -rf lib *.tsbuildinfo",
+        "typecheck": "tsc --noEmit",
+        "lint": "bunx --bun biome check",
+        "lint:fix": "bunx --bun biome check --write",
+        "check-exports": "attw --pack . --profile esm-only --no-summary"
+    },
+    "dependencies": {
+        "tar": "^7.5.2"
+    },
+    "devDependencies": {
+        "@types/tar": "^6.1.13",
+        "typescript": "5.9.3"
+    },
+    "files": [
+        "lib"
+    ],
+    "exports": {
+        ".": {
+            "import": "./lib/index.js",
+            "types": "./lib/index.d.ts"
+        }
+    }
+}

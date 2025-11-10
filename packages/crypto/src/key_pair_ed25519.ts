@@ -1,10 +1,10 @@
-import { baseEncode, baseDecode } from '@near-js/utils';
+import { baseDecode, baseEncode } from '@near-js/utils';
 import { ed25519 } from '@noble/curves/ed25519';
 import { randomBytes } from '@noble/hashes/utils';
 
-import { KeyPairString, KeySize, KeyType } from './constants';
-import { KeyPairBase, Signature } from './key_pair_base';
-import { PublicKey } from './public_key';
+import { type KeyPairString, KeySize, KeyType } from './constants.js';
+import { KeyPairBase, type Signature } from './key_pair_base.js';
+import { PublicKey } from './public_key.js';
 
 /**
  * This class provides key pair functionality for Ed25519 curve:
@@ -25,7 +25,10 @@ export class KeyPairEd25519 extends KeyPairBase {
         const decoded = baseDecode(extendedSecretKey);
         const secretKey = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
         const publicKey = ed25519.getPublicKey(new Uint8Array(secretKey));
-        this.publicKey = new PublicKey({ keyType: KeyType.ED25519, data: publicKey });
+        this.publicKey = new PublicKey({
+            keyType: KeyType.ED25519,
+            data: publicKey,
+        });
         this.secretKey = baseEncode(secretKey);
         this.extendedSecretKey = extendedSecretKey;
     }

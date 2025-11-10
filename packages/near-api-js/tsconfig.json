@@ -2,16 +2,17 @@
     "compilerOptions": {
         "esModuleInterop": true,
         "lib": [
-            "es2020",
-            "esnext",
+            "es2022",
             "dom"
         ],
-        "module": "commonjs",
-        "target": "es2020",
-        "moduleResolution": "node",
+        "module": "es2022",
+        "target": "es2022",
+        "moduleResolution": "bundler",
         "alwaysStrict": true,
         "outDir": "./lib",
         "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
         "preserveSymlinks": false,
         "preserveWatchOutput": true,
         "pretty": false,
@@ -21,10 +22,11 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "experimentalDecorators": true,
-        "resolveJsonModule": true,
+        "resolveJsonModule": true
     },
-    "files": [
-        "src/index.ts",
-        "src/browser-index.ts",
+    "include": [
+        "src/**/*.ts",
+        "test/**/*.ts"
     ],
+    "extends": "../../tsconfig.base.json"
 }

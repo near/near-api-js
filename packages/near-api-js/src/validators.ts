@@ -1,6 +1,6 @@
 export {
-    diffEpochValidators,
-    findSeatPrice,
     ChangedValidatorInfo,
+    diffEpochValidators,
     EpochValidatorsDiff,
+    findSeatPrice,
 } from '@near-js/utils';

@@ -1,13 +1,15 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { beforeAll, describe, expect, it } from 'bun:test';
+import * as fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { KeyPairEd25519 } from '@near-js/crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import { rimraf } from 'rimraf';
 
-import { UnencryptedFileSystemKeyStore } from '../src';
-import { shouldStoreAndRetriveKeys } from './keystore_common';
+import { UnencryptedFileSystemKeyStore } from '../src/index.js';
+import { shouldStoreAndRetriveKeys } from './keystore_common.js';
 
-const KEYSTORE_PATH = '../../test-keys';
+const KEYSTORE_PATH = fileURLToPath(
+    new URL('../../test-keys', import.meta.url),
+);
 
 describe('Unencrypted file system keystore', () => {
     const ctx: { keyStore?: any } = {};
@@ -24,8 +26,8 @@ describe('Unencrypted file system keystore', () => {
 
     shouldStoreAndRetriveKeys(ctx);
 
-    it('test path resolve', async() => {
-        expect(ctx.keyStore.keyDir).toEqual(path.join(process.cwd(), KEYSTORE_PATH));
+    it('test path resolve', async () => {
+        expect(ctx.keyStore.keyDir).toEqual(KEYSTORE_PATH);
     });
 
     it('test public key exists', async () => {

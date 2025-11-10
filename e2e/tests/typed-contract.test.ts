@@ -1,29 +1,37 @@
-import { expect, beforeAll, afterAll, test } from "vitest";
+import { afterAll, beforeAll, expect, test } from "bun:test";
 
 import { Account, TypedContract } from "@near-js/accounts";
-import { NEAR } from "@near-js/tokens";
 import { JsonRpcProvider } from "@near-js/providers";
+import { NEAR } from "@near-js/tokens";
 
-import { Worker } from "near-workspaces";
 import { KeyPair, KeyPairString } from "@near-js/crypto";
 import { KeyPairSigner } from "@near-js/signers";
-import { getRpcUrl, getSecretKey } from "./worker";
-import { abi } from "../contracts/guestbook/abi";
 import { readFile } from "fs/promises";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve as resolvePath } from "node:path";
+import { abi } from "../contracts/guestbook/abi.js";
+import { initSandbox, shutdownSandbox } from "./sandbox.js";
 
-let worker: Worker;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const GUESTBOOK_WASM_PATH = resolvePath(
+    __dirname,
+    "../contracts/guestbook/contract.wasm"
+);
+
+let workerInfo;
 let rootAccount: Account;
 let guestbookAccount: Account;
 
-beforeAll(async () => {
-    worker = await Worker.init();
+beforeAll(
+    async () => {
+        workerInfo = await initSandbox();
+        const provider = new JsonRpcProvider({ url: workerInfo.rpcUrl });
+        const signer = KeyPairSigner.fromSecretKey(
+            workerInfo.secretKey as KeyPairString
+        );
 
-    const provider = new JsonRpcProvider({ url: getRpcUrl(worker) });
-    const signer = KeyPairSigner.fromSecretKey(
-        getSecretKey(worker) as KeyPairString
-    );
-
-    rootAccount = new Account(worker.rootAccount.accountId, provider, signer);
+    rootAccount = new Account(workerInfo.rootAccountId, provider, signer);
 
     await rootAccount.createAccount(
         `guestbook.${rootAccount.accountId}`,
@@ -36,20 +44,20 @@ beforeAll(async () => {
         signer
     );
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile(GUESTBOOK_WASM_PATH);
     const tx = await guestbookAccount.deployContract(wasm);
     await rootAccount.provider.viewTransactionStatus(
         tx.transaction.hash,
         guestbookAccount.accountId,
         "FINAL"
     );
-});
+    },
+    { timeout: 60000 }
+);
 
 afterAll(async () => {
-    if (!worker) return;
-
-    await worker.tearDown();
-});
+    await shutdownSandbox();
+}, { timeout: 60000 });
 
 test("TypedContract has abi", async () => {
     const contract = new TypedContract({
@@ -77,8 +85,8 @@ test("TypedContract has view & call properties even if ABI isn't provided", asyn
         provider: rootAccount.provider,
     });
 
-    expect(contract).toHaveProperty('view');
-    expect(contract).toHaveProperty('call');
+    expect(contract).toHaveProperty("view");
+    expect(contract).toHaveProperty("call");
 });
 
 test("TypedContract doesn't have abi if ABI isn't provided", async () => {
@@ -87,7 +95,7 @@ test("TypedContract doesn't have abi if ABI isn't provided", async () => {
         provider: rootAccount.provider,
     });
 
-    expect(contract).not.toHaveProperty('abi');
+    expect(contract).not.toHaveProperty("abi");
 });
 
 test("TypedContract doesn't have view & call properties if ABI is empty", async () => {
@@ -95,17 +103,17 @@ test("TypedContract doesn't have view & call properties if ABI is empty", async 
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
         abi: {
-            schema_version: '0.4.0',
+            schema_version: "0.4.0",
             metadata: {},
             body: {
                 functions: [],
-                root_schema: {}
-            }
-        }
+                root_schema: {},
+            },
+        },
     });
 
-    expect(contract.contractId).not.toHaveProperty('view');
-    expect(contract.contractId).not.toHaveProperty('call');
+    expect(contract.contractId).not.toHaveProperty("view");
+    expect(contract.contractId).not.toHaveProperty("call");
 });
 
 test("TypedContract can invoke a view function", async () => {
@@ -124,7 +132,7 @@ test("TypedContract can invoke a view function", async () => {
         new KeyPairSigner(keypair)
     );
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile(GUESTBOOK_WASM_PATH);
     const tx = await guestbookAccount.deployContract(wasm);
     await rootAccount.provider.viewTransactionStatus(
         tx.transaction.hash,
@@ -141,7 +149,7 @@ test("TypedContract can invoke a view function", async () => {
     const totalMessages = await contract.view.total_messages();
 
     expect(totalMessages).toBe(0);
-});
+}, { timeout: 60000 });
 
 test("TypedContract can invoke a call function", async () => {
     // TODO: use fixtures for account creation and contract deploy
@@ -159,7 +167,7 @@ test("TypedContract can invoke a call function", async () => {
         new KeyPairSigner(keypair)
     );
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile(GUESTBOOK_WASM_PATH);
     const tx = await guestbookAccount.deployContract(wasm);
     await rootAccount.provider.viewTransactionStatus(
         tx.transaction.hash,
@@ -180,7 +188,7 @@ test("TypedContract can invoke a call function", async () => {
         deposit: 1n,
         gas: 30_000_000_000_000n,
         waitUntil: "FINAL",
-        account: rootAccount
+        account: rootAccount,
     });
 
     const messages = await contract.view.get_messages({ args: {} });
@@ -190,4 +198,4 @@ test("TypedContract can invoke a call function", async () => {
         text: "Hello, world!",
         premium: false,
     });
-});
+}, { timeout: 60000 });

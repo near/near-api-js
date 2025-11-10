@@ -19,9 +19,9 @@ import {
     Stake,
     Transfer,
     UseGlobalContract,
-} from './actions';
-import type { DelegateAction } from './delegate';
-import type { Signature } from './signature';
+} from './actions.js';
+import type { DelegateAction } from './delegate.js';
+import type { Signature } from './signature.js';
 
 /**
  * Creates a full access key with full access permissions.
@@ -46,7 +46,7 @@ function fullAccessKey(): AccessKey {
 function functionCallAccessKey(
     receiverId: string,
     methodNames: string[],
-    allowance?: bigint
+    allowance?: bigint,
 ): AccessKey {
     return new AccessKey({
         nonce: 0n,
@@ -190,7 +190,9 @@ function deployGlobalContract(
     code: Uint8Array,
     deployMode: GlobalContractDeployMode,
 ): Action {
-    return new Action({ deployGlobalContract: new DeployGlobalContract({ code, deployMode }) });
+    return new Action({
+        deployGlobalContract: new DeployGlobalContract({ code, deployMode }),
+    });
 }
 
 /**
@@ -201,7 +203,9 @@ function deployGlobalContract(
 function useGlobalContract(
     contractIdentifier: GlobalContractIdentifier,
 ): Action {
-    return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier }) });
+    return new Action({
+        useGlobalContract: new UseGlobalContract({ contractIdentifier }),
+    });
 }
 
 export const actionCreators = {
@@ -217,5 +221,5 @@ export const actionCreators = {
     stake,
     transfer,
     deployGlobalContract,
-    useGlobalContract
+    useGlobalContract,
 };

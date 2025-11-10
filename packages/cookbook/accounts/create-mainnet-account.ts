@@ -11,7 +11,7 @@ import { homedir } from 'node:os';
 
 export default async function createMainnetAccountCookbook(accountId: string, newAccountId?: string) {
   if (!accountId) {
-    console.log(chalk`{red pnpm createMainnetAccount -- CREATOR_ACCOUNT_ID [NEW_ACCOUNT_ID]}`);
+    console.log(chalk`{red bun run createMainnetAccount -- CREATOR_ACCOUNT_ID [NEW_ACCOUNT_ID]}`);
     return;
   }
 

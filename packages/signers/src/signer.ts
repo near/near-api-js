@@ -1,11 +1,11 @@
-import { PublicKey } from '@near-js/crypto';
-import {
+import type { PublicKey } from '@near-js/crypto';
+import type {
     DelegateAction,
     SignedDelegate,
     SignedTransaction,
     Transaction,
 } from '@near-js/transactions';
-import { Schema } from 'borsh';
+import type { Schema } from 'borsh';
 
 export interface SignMessageParams {
     message: string; // The message that wants to be transmitted.
@@ -51,14 +51,14 @@ export abstract class Signer {
         accountId: string,
         recipient: string,
         nonce: Uint8Array,
-        callbackUrl?: string
+        callbackUrl?: string,
     ): Promise<SignedMessage>;
 
     public abstract signTransaction(
-        transaction: Transaction
+        transaction: Transaction,
     ): Promise<[Uint8Array, SignedTransaction]>;
 
     public abstract signDelegateAction(
-        delegateAction: DelegateAction
+        delegateAction: DelegateAction,
     ): Promise<[Uint8Array, SignedDelegate]>;
 }

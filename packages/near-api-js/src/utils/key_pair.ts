@@ -1,7 +1,7 @@
 export {
     KeyPair,
-    type KeyPairString,
     KeyPairEd25519,
+    type KeyPairString,
     KeyType,
     PublicKey,
     Signature,

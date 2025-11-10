@@ -4,7 +4,7 @@ import {
     isDeviceSupported,
     isPassKeyAvailable,
 } from "@near-js/biometric-ed25519";
-import { expect, test } from "vitest";
+import { expect, test } from "bun:test";
 
 test(`exports "createKey" function`, () => {
     expect(createKey).toBeDefined();

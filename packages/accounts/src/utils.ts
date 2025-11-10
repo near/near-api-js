@@ -1,13 +1,13 @@
 import {
-    ViewStateResult,
-    BlockReference,
-    CodeResult,
+    type BlockReference,
+    type CodeResult,
     PositionalArgsError,
-} from "@near-js/types";
-import { Connection } from "./connection";
-import { printTxOutcomeLogs } from "@near-js/utils";
-import { ViewFunctionCallOptions } from "./interface";
-import depd from "depd";
+    type ViewStateResult,
+} from '@near-js/types';
+import { printTxOutcomeLogs } from '@near-js/utils';
+import depd from 'depd';
+import type { Connection } from './connection.js';
+import type { ViewFunctionCallOptions } from './interface.js';
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
     return JSON.parse(Buffer.from(response).toString());
@@ -25,14 +25,14 @@ export function validateArgs(args: any) {
         return;
     }
 
-    if (Array.isArray(args) || typeof args !== "object") {
+    if (Array.isArray(args) || typeof args !== 'object') {
         throw new PositionalArgsError();
     }
 }
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Returns the state (key value pairs) of account's contract based on the key prefix.
  * Pass an empty string for prefix if you would like to return the entire state.
  * @see [https://docs.near.org/api/rpc/contracts#view-contract-state](https://docs.near.org/api/rpc/contracts#view-contract-state)
@@ -46,27 +46,27 @@ export async function viewState(
     connection: Connection,
     accountId: string,
     prefix: string | Uint8Array,
-    blockQuery: BlockReference = { finality: "optimistic" }
+    blockQuery: BlockReference = { finality: 'optimistic' },
 ): Promise<Array<{ key: Buffer; value: Buffer }>> {
     const deprecate = depd('viewState()');
     deprecate('It will be removed in the next major release');
 
     const { values } = await connection.provider.query<ViewStateResult>({
-        request_type: "view_state",
+        request_type: 'view_state',
         ...blockQuery,
         account_id: accountId,
-        prefix_base64: Buffer.from(prefix).toString("base64"),
+        prefix_base64: Buffer.from(prefix).toString('base64'),
     });
 
     return values.map(({ key, value }) => ({
-        key: Buffer.from(key, "base64"),
-        value: Buffer.from(value, "base64"),
+        key: Buffer.from(key, 'base64'),
+        value: Buffer.from(value, 'base64'),
     }));
 }
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Invoke a contract view function using the RPC API.
  * @see [https://docs.near.org/api/rpc/contracts#call-a-contract-function](https://docs.near.org/api/rpc/contracts#call-a-contract-function)
  *
@@ -87,8 +87,8 @@ export async function viewFunction(
         args = {},
         parse = parseJsonFromRawResponse,
         stringify = bytesJsonStringify,
-        blockQuery = { finality: "optimistic" },
-    }: ViewFunctionCallOptions
+        blockQuery = { finality: 'optimistic' },
+    }: ViewFunctionCallOptions,
 ): Promise<any> {
     const deprecate = depd('viewFunction()');
     deprecate('It will be removed in the next major release');
@@ -98,11 +98,11 @@ export async function viewFunction(
     const encodedArgs = stringify(args);
 
     const result = await connection.provider.query<CodeResult>({
-        request_type: "call_function",
+        request_type: 'call_function',
         ...blockQuery,
         account_id: contractId,
         method_name: methodName,
-        args_base64: encodedArgs.toString("base64"),
+        args_base64: encodedArgs.toString('base64'),
     });
 
     if (result.logs) {
@@ -112,6 +112,6 @@ export async function viewFunction(
     return (
         result.result &&
         result.result.length > 0 &&
-        parse(Buffer.from(result.result))
+        parse(new Uint8Array(result.result))
     );
 }

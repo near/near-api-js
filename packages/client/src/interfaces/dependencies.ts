@@ -1,20 +1,22 @@
-import { Provider } from '@near-js/providers';
-import { Signer } from '@near-js/signers';
+import type { Provider } from '@near-js/providers';
+import type { Signer } from '@near-js/signers';
 
 interface Dependent<T> {
-  deps: T;
+    deps: T;
 }
 
 interface RpcProviderDependent {
-  rpcProvider: Provider;
+    rpcProvider: Provider;
 }
 
 interface SignerDependent {
-  signer: Signer;
+    signer: Signer;
 }
 
-export interface RpcProviderDependency extends Dependent<RpcProviderDependent> {}
+export interface RpcProviderDependency
+    extends Dependent<RpcProviderDependent> {}
 
 export interface SignerDependency extends Dependent<SignerDependent> {}
 
-export interface SignAndSendTransactionDependency extends Dependent<RpcProviderDependent & SignerDependent> {}
+export interface SignAndSendTransactionDependency
+    extends Dependent<RpcProviderDependent & SignerDependent> {}

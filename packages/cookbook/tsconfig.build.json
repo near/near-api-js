@@ -1,0 +1,10 @@
+{
+    "extends": "../../tsconfig.prod.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "skipLibCheck": true
+    },
+    "files": [
+        "index.ts"
+    ]
+}

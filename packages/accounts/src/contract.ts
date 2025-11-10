@@ -1,33 +1,30 @@
-import { getTransactionLastResult, Logger } from "@near-js/utils";
-import { ArgumentTypeError, PositionalArgsError } from "@near-js/types";
-import { LocalViewExecution } from "./local-view-execution";
-import validator from "is-my-json-valid";
-import depd from "depd";
+import { ArgumentTypeError, PositionalArgsError } from '@near-js/types';
+import { getTransactionLastResult, Logger } from '@near-js/utils';
+import depd from 'depd';
+import validator from 'is-my-json-valid';
 import {
-    AbiFunction,
+    type AbiFunction,
     AbiFunctionKind,
-    AbiRoot,
+    type AbiRoot,
     AbiSerializationType,
-} from "near-abi";
-
-import { Account } from "./account";
+} from 'near-abi';
+import { Account } from './account.js';
+import type { Connection } from './connection.js';
 import {
-    UnsupportedSerializationError,
-    UnknownArgumentError,
     ArgumentSchemaError,
     ConflictingOptions,
-} from "./errors";
-import { IntoConnection } from "./interface";
-import { Connection } from "./connection";
-import { viewFunction } from "./utils";
-
-import type { TypedContract } from "./typed_contract";
+    UnknownArgumentError,
+    UnsupportedSerializationError,
+} from './errors.js';
+import type { IntoConnection } from './interface.js';
+import { LocalViewExecution } from './local-view-execution/index.js';
+import { viewFunction } from './utils.js';
 
 // Makes `function.name` return given name
 function nameFunction(name: string, body: (args?: any[]) => any) {
     return {
         [name](...args: any[]) {
-            return body(...args);
+            return body.apply(this, args);
         },
     }[name];
 }
@@ -35,7 +32,7 @@ function nameFunction(name: string, body: (args?: any[]) => any) {
 function validateArguments(
     args: object,
     abiFunction: AbiFunction,
-    abiRoot: AbiRoot
+    abiRoot: AbiRoot,
 ) {
     if (!isObject(args)) return;
 
@@ -45,7 +42,7 @@ function validateArguments(
     ) {
         throw new UnsupportedSerializationError(
             abiFunction.name,
-            abiFunction.params.serialization_type
+            abiFunction.params.serialization_type,
         );
     }
 
@@ -55,7 +52,7 @@ function validateArguments(
     ) {
         throw new UnsupportedSerializationError(
             abiFunction.name,
-            abiFunction.result.serialization_type
+            abiFunction.result.serialization_type,
         );
     }
 
@@ -76,7 +73,7 @@ function validateArguments(
         if (!param) {
             throw new UnknownArgumentError(
                 argName,
-                params.map((p) => p.name)
+                params.map((p) => p.name),
             );
         }
     }
@@ -86,7 +83,7 @@ const isUint8Array = (x: any) =>
     x && x.byteLength !== undefined && x.byteLength === x.length;
 
 const isObject = (x: any) =>
-    Object.prototype.toString.call(x) === "[object Object]";
+    Object.prototype.toString.call(x) === '[object Object]';
 
 interface ChangeMethodOptions {
     signerAccount?: Account;
@@ -125,7 +122,7 @@ export interface ContractMethods {
 }
 
 /**
- * @deprecated It will be removed in the next major release, please switch to {@link TypedContract} with type-safe ABI support
+ * @deprecated It will be removed in the next major release, please switch to {@link import('./typed_contract').TypedContract} with type-safe ABI support
  *
  * Defines a smart contract on NEAR including the change (mutable) and view (non-mutable) methods
  *
@@ -175,20 +172,20 @@ export class Contract {
     constructor(
         connection: IntoConnection,
         contractId: string,
-        options: ContractMethods
+        options: ContractMethods,
     ) {
-        const deprecate = depd("new Contract()");
+        const deprecate = depd('new Contract()');
         deprecate(
-            'It will be removed in the next major release, please switch to "TypedContract" with type-safe ABI support'
+            'It will be removed in the next major release, please switch to "TypedContract" with type-safe ABI support',
         );
 
         this.connection = connection.getConnection();
         if (connection instanceof Account) {
             const deprecate = depd(
-                "new Contract(account, contractId, options)"
+                'new Contract(account, contractId, options)',
             );
             deprecate(
-                "use `new Contract(connection, contractId, options)` instead"
+                'use `new Contract(connection, contractId, options)` instead',
             );
             this.account = connection;
         }
@@ -225,57 +222,70 @@ export class Contract {
         }
 
         viewMethodsWithAbi.forEach(({ name, abi }) => {
+            const contractInstance = this;
             Object.defineProperty(this, name, {
                 writable: false,
                 enumerable: true,
-                value: nameFunction(
-                    name,
-                    async (args: object = {}, options = {}, ...ignored) => {
-                        if (
-                            ignored.length ||
-                            !(isObject(args) || isUint8Array(args)) ||
-                            !isObject(options)
-                        ) {
-                            throw new PositionalArgsError();
-                        }
+                value: nameFunction(name, async (...callArgs: any[]) => {
+                    const rawArgs =
+                        callArgs.length === 0
+                            ? {}
+                            : callArgs[0] === undefined
+                              ? {}
+                              : callArgs[0];
+                    const optionsParam =
+                        callArgs.length > 1 ? callArgs[1] : undefined;
+                    const ignored =
+                        callArgs.length > 2 ? callArgs.slice(2) : [];
+                    const optionsProvided = callArgs.length >= 2;
+                    const options = optionsParam ?? {};
 
-                        if (abi) {
-                            validateArguments(args, abi, abiRoot);
-                        }
+                    if (
+                        ignored.length ||
+                        !(isObject(rawArgs) || isUint8Array(rawArgs)) ||
+                        (optionsProvided && !isObject(optionsParam))
+                    ) {
+                        throw new PositionalArgsError();
+                    }
 
-                        if (useLocalViewExecution) {
-                            try {
-                                return await this.lve.viewFunction({
-                                    contractId: this.contractId,
-                                    methodName: name,
-                                    args,
-                                    ...options,
-                                });
-                            } catch (error) {
-                                Logger.warn(
-                                    `Local view execution failed with: "${error.message}"`
-                                );
-                                Logger.warn(`Fallback to normal RPC call`);
-                            }
-                        }
+                    const args = rawArgs;
 
-                        if (this.account) {
-                            return this.account.viewFunction({
-                                contractId: this.contractId,
+                    if (abi) {
+                        validateArguments(args, abi, abiRoot);
+                    }
+
+                    if (useLocalViewExecution) {
+                        try {
+                            return await contractInstance.lve.viewFunction({
+                                contractId: contractInstance.contractId,
                                 methodName: name,
                                 args,
                                 ...options,
                             });
+                        } catch (error) {
+                            Logger.warn(
+                                `Local view execution failed with: "${error.message}"`,
+                            );
+                            Logger.warn('Fallback to normal RPC call');
                         }
+                    }
 
-                        return viewFunction(this.connection, {
-                            contractId: this.contractId,
+                    if (contractInstance.account) {
+                        return contractInstance.account.viewFunction({
+                            contractId: contractInstance.contractId,
                             methodName: name,
                             args,
                             ...options,
                         });
                     }
-                ),
+
+                    return viewFunction(contractInstance.connection, {
+                        contractId: contractInstance.contractId,
+                        methodName: name,
+                        args,
+                        ...options,
+                    });
+                }),
             });
         });
         changeMethodsWithAbi.forEach(({ name, abi }) => {
@@ -291,12 +301,12 @@ export class Contract {
                         throw new PositionalArgsError();
                     }
 
-                    if (args.length > 1 || !(args[0] && args[0].args)) {
+                    if (args.length > 1 || !args[0]?.args) {
                         const deprecate = depd(
-                            "contract.methodName(args, gas, amount)"
+                            'contract.methodName(args, gas, amount)',
                         );
                         deprecate(
-                            "use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead"
+                            'use `contract.methodName({ signerAccount, args, gas?, amount?, callbackUrl?, meta? })` instead',
                         );
                         args[0] = {
                             args: args[0],
@@ -328,7 +338,7 @@ export class Contract {
 
         const account = this.account || signerAccount;
 
-        if (!account) throw new Error(`signerAccount must be specified`);
+        if (!account) throw new Error('signerAccount must be specified');
 
         const rawResult = await account.functionCall({
             contractId: this.contractId,
@@ -348,12 +358,40 @@ export class Contract {
  * Throws if an argument is not in BigInt format or otherwise invalid
  * @param argMap
  */
+const DECIMAL_PATTERN = /^-?\d+(\.\d+)?$/;
+
 function validateBNLike(argMap: { [name: string]: any }) {
-    const bnLike = "number, decimal string or BigInt";
+    const bnLike = 'number, decimal string or BigInt';
     for (const argName of Object.keys(argMap)) {
         const argValue = argMap[argName];
-        if (argValue && typeof argValue !== "bigint" && isNaN(argValue)) {
-            throw new ArgumentTypeError(argName, bnLike, argValue);
+        if (argValue === undefined || argValue === null) {
+            continue;
         }
+
+        if (
+            (typeof argValue === 'number' && Number.isFinite(argValue)) ||
+            typeof argValue === 'bigint'
+        ) {
+            continue;
+        }
+
+        if (typeof argValue === 'string' && DECIMAL_PATTERN.test(argValue)) {
+            continue;
+        }
+
+        if (
+            typeof argValue === 'object' &&
+            typeof argValue.toString === 'function'
+        ) {
+            const stringified = argValue.toString();
+            if (
+                typeof stringified === 'string' &&
+                DECIMAL_PATTERN.test(stringified)
+            ) {
+                continue;
+            }
+        }
+
+        throw new ArgumentTypeError(argName, bnLike, argValue);
     }
 }

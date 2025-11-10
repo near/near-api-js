@@ -1,2 +1,2 @@
-export * from './signed_transaction_composer';
-export * from './transaction_composer';
+export * from './signed_transaction_composer.js';
+export * from './transaction_composer.js';

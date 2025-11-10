@@ -1,10 +1,15 @@
-import { KeyPair, PublicKey, Signature, KeyType } from '@near-js/crypto';
-import { InMemoryKeyStore, KeyStore } from '@near-js/keystores';
+import {
+    KeyPair,
+    KeyType,
+    type PublicKey,
+    type Signature,
+} from '@near-js/crypto';
+import { InMemoryKeyStore, type KeyStore } from '@near-js/keystores';
 import { sha256 } from '@noble/hashes/sha256';
 
 /**
  * @deprecated Will be removed in the next major release
- * 
+ *
  * Signs using in memory key store.
  */
 export class InMemorySigner {
@@ -26,7 +31,7 @@ export class InMemorySigner {
     static async fromKeyPair(
         networkId: string,
         accountId: string,
-        keyPair: KeyPair
+        keyPair: KeyPair,
     ): Promise<InMemorySigner> {
         const keyStore = new InMemoryKeyStore();
         await keyStore.setKey(networkId, accountId, keyPair);
@@ -42,7 +47,7 @@ export class InMemorySigner {
     async createKey(
         accountId: string,
         networkId: string,
-        keyType?: KeyType
+        keyType?: KeyType,
     ): Promise<PublicKey> {
         const keyPair =
             keyType === KeyType.SECP256K1
@@ -60,7 +65,7 @@ export class InMemorySigner {
      */
     async getPublicKey(
         accountId?: string,
-        networkId?: string
+        networkId?: string,
     ): Promise<PublicKey | null> {
         const keyPair = await this.keyStore.getKey(networkId, accountId);
         if (keyPair === null) {
@@ -78,7 +83,7 @@ export class InMemorySigner {
     async signMessage(
         message: Uint8Array,
         accountId?: string,
-        networkId?: string
+        networkId?: string,
     ): Promise<Signature> {
         const hash = new Uint8Array(sha256(message));
         if (!accountId) {

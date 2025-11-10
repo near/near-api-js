@@ -15,7 +15,7 @@ const WRAP_NEAR_CONTRACT_ID = "wrap.testnet";
 
 export default async function unwrapNear(accountId: string, unwrapAmount: bigint, wrapContract = WRAP_NEAR_CONTRACT_ID) {
   if (!accountId || !unwrapAmount) {
-    console.log(chalk`{red pnpm unwrapNear -- ACCOUNT_ID UNWRAP_AMOUNT [WRAP_CONTRACT]}`);
+    console.log(chalk`{red bun run unwrapNear -- ACCOUNT_ID UNWRAP_AMOUNT [WRAP_CONTRACT]}`);
     return;
   }
 

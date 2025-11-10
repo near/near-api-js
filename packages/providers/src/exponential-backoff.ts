@@ -1,4 +1,9 @@
-export async function exponentialBackoff(startWaitTime, retryNumber, waitBackoff, getResult) {
+export async function exponentialBackoff(
+    startWaitTime,
+    retryNumber,
+    waitBackoff,
+    getResult,
+) {
     // TODO: jitter?
 
     let waitTime = startWaitTime;
@@ -17,7 +22,5 @@ export async function exponentialBackoff(startWaitTime, retryNumber, waitBackoff
 
 // Sleep given number of millis.
 function sleep(millis: number): Promise<any> {
-    return new Promise(resolve => setTimeout(resolve, millis));
+    return new Promise((resolve) => setTimeout(resolve, millis));
 }
-
-

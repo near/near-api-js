@@ -1,9 +1,10 @@
 {
-    "extends": "tsconfig/browser.json",
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "outDir": "./lib/esm",
-    }, 
-    "files": [
-        "src/index.ts",
+        "outDir": "./lib"
+    },
+    "include": [
+        "src/**/*.ts",
+        "test/**/*.ts"
     ]
 }

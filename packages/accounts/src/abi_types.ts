@@ -3,11 +3,11 @@
  */
 export type AbiType =
     | {
-          serialization_type: "json";
+          serialization_type: 'json';
           type_schema: Schema;
       }
     | {
-          serialization_type: "borsh";
+          serialization_type: 'borsh';
           type_schema: unknown;
       };
 /**
@@ -32,32 +32,32 @@ export type SingleOrVecFor_InstanceType = InstanceType | InstanceType[];
  * See [JSON Schema 4.2.1. Instance Data Model](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-4.2.1).
  */
 export type InstanceType =
-    | "null"
-    | "boolean"
-    | "object"
-    | "array"
-    | "number"
-    | "string"
-    | "integer";
+    | 'null'
+    | 'boolean'
+    | 'object'
+    | 'array'
+    | 'number'
+    | 'string'
+    | 'integer';
 /**
  * Function kind regulates whether this function's invocation requires a transaction (so-called call functions) or not (view functions).
  */
-export type AbiFunctionKind = "view" | "call";
+export type AbiFunctionKind = 'view' | 'call';
 /**
  * Function can have multiple modifiers that can change its semantics.
  */
-export type AbiFunctionModifier = "init" | "private" | "payable";
+export type AbiFunctionModifier = 'init' | 'private' | 'payable';
 /**
  * A list of function parameters sharing the same serialization type.
  */
 export type AbiParameters =
     | {
           args: AbiJsonParameter[];
-          serialization_type: "json";
+          serialization_type: 'json';
       }
     | {
           args: AbiBorshParameter[];
-          serialization_type: "borsh";
+          serialization_type: 'borsh';
       };
 
 /**

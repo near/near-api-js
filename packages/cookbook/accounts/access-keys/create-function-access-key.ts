@@ -14,7 +14,7 @@ const METHOD_NAMES = ['example_method'];
 
 export default async function createFunctionCallAccessKey(accountId: string, contract = CONTRACT_NAME, methods = METHOD_NAMES) {
   if (!accountId) {
-    console.log(chalk`{red pnpm createFunctionCallAccessKey -- ACCOUNT_ID}`);
+    console.log(chalk`{red bun run createFunctionCallAccessKey -- ACCOUNT_ID}`);
     return;
   }
 

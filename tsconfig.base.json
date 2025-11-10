@@ -1,0 +1,35 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"target": "ES2024",
+		"module": "ES2022",
+		"moduleResolution": "bundler",
+		"lib": [
+			"ESNext",
+			"DOM"
+		],
+		"esModuleInterop": true,
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"skipLibCheck": true,
+		"preserveSymlinks": true,
+		"preserveWatchOutput": true,
+		"pretty": false,
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": false,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"experimentalDecorators": true,
+		"baseUrl": ".",
+		"paths": {
+			"@near-js/*": [
+				"packages/*/src"
+			]
+		}
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

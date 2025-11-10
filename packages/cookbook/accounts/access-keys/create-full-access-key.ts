@@ -12,7 +12,7 @@ import { homedir } from 'node:os';
 
 export default async function createFullAccessKey(accountId: string) {
   if (!accountId) {
-    console.log(chalk`{red pnpm createFullAccessKey -- ACCOUNT_ID}`);
+    console.log(chalk`{red bun run createFullAccessKey -- ACCOUNT_ID}`);
     return;
   }
 

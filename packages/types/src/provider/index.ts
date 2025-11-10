@@ -1,19 +1,16 @@
-
-export {
-    IdType
-} from './light_client';
 export type {
     LightClientBlockLiteView,
     LightClientProof,
     LightClientProofRequest,
     NextLightClientBlockRequest,
-    NextLightClientBlockResponse
-} from './light_client';
+    NextLightClientBlockResponse,
+} from './light_client.js';
+export { IdType } from './light_client.js';
 export type {
     AccessKeyWithPublicKey,
-    BlockHash,
     BlockChange,
     BlockChangeResult,
+    BlockHash,
     BlockHeader,
     BlockHeaderInnerLiteView,
     BlockHeight,
@@ -40,7 +37,7 @@ export type {
     TotalWeight,
     Transaction as ProviderTransaction,
     TxExecutionStatus,
-} from './protocol';
+} from './protocol.js';
 export type {
     CallFunctionRequest,
     RpcQueryRequest,
@@ -49,38 +46,41 @@ export type {
     ViewAccountRequest,
     ViewCodeRequest,
     ViewStateRequest,
-} from './request';
-export {
-    ExecutionStatusBasic, FinalExecutionStatusBasic
-} from './response';
+} from './request.js';
 export type {
     AccessKeyInfoView,
     AccessKeyList,
     AccessKeyView,
     AccessKeyViewRaw,
+    AccountBalanceInfo,
     AccountView,
     AccountViewRaw,
-    AccountBalanceInfo,
+    CallContractViewFunctionResultRaw,
     CodeResult,
     ContractCodeView,
     ContractCodeViewRaw,
+    ContractStateView,
     ExecutionError,
     ExecutionOutcome,
+    ExecutionOutcomeReceiptDetail,
     ExecutionOutcomeWithId,
     ExecutionOutcomeWithIdView,
-    ExecutionStatus, FinalExecutionOutcome,
-    FinalExecutionStatus, FunctionCallPermissionView,
+    ExecutionStatus,
+    FinalExecutionOutcome,
+    FinalExecutionStatus,
+    FunctionCallPermissionView,
     QueryResponseKind,
     SerializedReturnValue,
     ViewStateResult,
-    ExecutionOutcomeReceiptDetail,
-    ContractStateView,
-    CallContractViewFunctionResultRaw
-} from './response';
+} from './response.js';
+export {
+    ExecutionStatusBasic,
+    FinalExecutionStatusBasic,
+} from './response.js';
 export type {
     CurrentEpochValidatorInfo,
     EpochValidatorInfo,
     NextEpochValidatorInfo,
     StakedAccount,
-    ValidatorStakeView
-} from './validator';
+    ValidatorStakeView,
+} from './validator.js';

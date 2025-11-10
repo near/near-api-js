@@ -21,27 +21,27 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10.4.1
+          bun-version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.18.3
-          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
-        run: pnpm install
+        run: bun install
 
       - name: Build Packages
-        run: pnpm build
+        run: bun run build
 
       - name: Create Release Pull Request or Publish to NPM
         uses: changesets/action@v1
         with:
-          publish: pnpm release
+          publish: bun run release
           commit: "chore(release): publish packages"
           title: "Publish packages"
           createGithubReleases: ${{ github.ref_name == 'master' }}

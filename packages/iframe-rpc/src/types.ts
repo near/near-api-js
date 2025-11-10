@@ -20,9 +20,11 @@ export interface IRPCResponse<T> {
 }
 
 export function isRPCMessage(data: any): data is RPCMessage<any> {
-    return (data.type === 'method' || data.type === 'response')
-        && typeof data.id === 'number'
-        && typeof data.requesterId === 'string';
+    return (
+        (data.type === 'method' || data.type === 'response') &&
+        typeof data.id === 'number' &&
+        typeof data.requesterId === 'string'
+    );
 }
 
 export interface IMessageEvent {

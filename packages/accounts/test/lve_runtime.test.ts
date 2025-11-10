@@ -1,12 +1,12 @@
-import { beforeAll, describe, expect, test } from '@jest/globals';
+import { beforeAll, describe, expect, test } from 'bun:test';
+import { Runtime } from '../src/local-view-execution/runtime.js';
 import {
     GUESTBOOK_CONTRACT_ID,
     GUESTBOOK_CONTRACT_STATE,
     loadGuestBookContractCode,
-} from './test-utils';
-import { Runtime } from '../src/local-view-execution/runtime';
+} from './test-utils.js';
 
-let contractCode;
+let contractCode: any;
 const blockHeight = 1;
 const blockTimestamp = Math.floor(Date.now() * 1000000);
 const contractState = GUESTBOOK_CONTRACT_STATE;

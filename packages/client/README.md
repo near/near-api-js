@@ -10,6 +10,9 @@ npm i -s @near-js/client
 
 # pnpm
 pnpm add @near-js/client
+
+# Bun
+bun add @near-js/client
 ```
 
 ### Usage
