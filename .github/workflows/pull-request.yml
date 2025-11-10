@@ -51,41 +51,34 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
     steps:
-      - name: Query Pull Request changed files
-        id: files
-        uses: octokit/request-action@v2.x
+      - uses: actions/checkout@v4
         with:
-          route: GET /repos/{owner}/{repo}/pulls/{pull_number}/files
-          owner: ${{ github.repository_owner }}
-          repo: ${{ github.event.repository.name }}
-          pull_number: ${{ github.event.pull_request.number }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          fetch-depth: 0
 
-      # This step is necessary to avoid parsing errors
-      - name: Store changed files in a file
-        run: |
-          cat << 'EOF' > changed_files.json
-          ${{ steps.files.outputs.data }}
-          EOF
-
-
-      - name: Evaluate changesets changes
+      - name: Check for changeset files
         id: changesets
         run: |
-          FILES_ADDED=$(jq 'map(select(.status == "added") | select(.filename | test("^\\.changeset/[^/]+\\.md$")) | select(.filename != ".changeset/README.md")) | length' changed_files.json)
-          echo "has_added=$([ "$FILES_ADDED" -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
+          # Check if any changeset files were added (excluding README.md)
+          if git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep -q '^\.changeset/.*\.md$' | grep -v 'README\.md'; then
+            echo "has_added=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_added=false" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Evaluate source file changes
+      - name: Check for source file changes
         id: source-files
         run: |
-          FILES_CHANGED=$(jq 'map(select(.filename | test("^packages/[^/]+/src/"))) | length' changed_files.json)
-          echo "has_changed=$([ "$FILES_CHANGED" -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
+          # Check if any source files in packages were changed
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q '^packages/.*/src/'; then
+            echo "has_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Fail if source files changed, but no new changeset
         if: steps.source-files.outputs.has_changed == 'true' && steps.changesets.outputs.has_added == 'false'
         run: |
-          echo "❌ Source files changed, but no new changset file was added."
+          echo "❌ Source files changed, but no new changeset file was added."
           echo "Please run 'bun changeset' and commit the generated file."
           exit 1
 
