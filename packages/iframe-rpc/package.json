@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "build": "tsc -b tsconfig.build.json",
-        "clean": "rm -rf lib",
+        "clean": "rm -rf lib *.tsbuildinfo",
         "typecheck": "tsc --noEmit",
         "check-exports": "attw --pack . --profile esm-only --no-summary"
     },

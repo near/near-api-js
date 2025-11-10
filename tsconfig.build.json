@@ -1,0 +1,22 @@
+{
+    "files": [],
+    "references": [
+        { "path": "packages/types/tsconfig.build.json" },
+        { "path": "packages/crypto/tsconfig.build.json" },
+        { "path": "packages/transactions/tsconfig.build.json" },
+        { "path": "packages/utils/tsconfig.build.json" },
+        { "path": "packages/tokens/tsconfig.build.json" },
+        { "path": "packages/iframe-rpc/tsconfig.build.json" },
+        { "path": "packages/sandbox/tsconfig.build.json" },
+        { "path": "packages/keystores/tsconfig.build.json" },
+        { "path": "packages/keystores-browser/tsconfig.build.json" },
+        { "path": "packages/keystores-node/tsconfig.build.json" },
+        { "path": "packages/biometric-ed25519/tsconfig.build.json" },
+        { "path": "packages/providers/tsconfig.build.json" },
+        { "path": "packages/signers/tsconfig.build.json" },
+        { "path": "packages/accounts/tsconfig.build.json" },
+        { "path": "packages/client/tsconfig.build.json" },
+        { "path": "packages/near-api-js/tsconfig.build.json" },
+        { "path": "packages/cookbook/tsconfig.build.json" }
+    ]
+}

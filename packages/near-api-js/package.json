@@ -53,7 +53,7 @@
     "license": "(MIT AND Apache-2.0)",
     "scripts": {
         "build": "tsc -b tsconfig.build.json",
-        "clean": "rm -rf lib dist",
+        "clean": "rm -rf lib dist *.tsbuildinfo",
         "typecheck": "tsc --noEmit",
         "test": "bun test",
         "lint": "bunx --bun biome check",

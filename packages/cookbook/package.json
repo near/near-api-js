@@ -9,6 +9,7 @@
     "license": "ISC",
     "scripts": {
         "build": "tsc -b tsconfig.build.json",
+        "clean": "rm -rf lib *.tsbuildinfo",
         "typecheck": "tsc --noEmit",
         "addFullAccessKey": "tsx -e \"import f from './accounts/access-keys/create-full-access-key.ts'; f(...process.argv.slice(1));\"",
         "addFunctionCallAccessKey": "tsx -e \"import f from './accounts/access-keys/create-function-access-key.ts'; f(...process.argv.slice(1));\"",

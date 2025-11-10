@@ -10,9 +10,9 @@
         "node": ">=20.18.3"
     },
     "scripts": {
-        "build": "bun run --filter '*' build",
+        "build": "tsc -b tsconfig.build.json",
         "check-exports": "bun run --filter '*' check-exports",
-        "clean": "bun run --filter '*' clean",
+        "clean": "bun run --filter '*' clean && rm -f *.tsbuildinfo",
         "lint": "bunx --bun biome check",
         "lint:fix": "bunx --bun biome check --write",
         "test": "bun test packages/",
