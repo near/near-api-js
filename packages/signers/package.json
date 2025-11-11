@@ -18,7 +18,6 @@
 	"license": "ISC",
 	"dependencies": {
 		"@near-js/crypto": "workspace:*",
-		"@near-js/keystores": "workspace:*",
 		"@near-js/transactions": "workspace:*",
 		"@noble/hashes": "1.7.1",
 		"borsh": "1.0.0"
@@ -33,7 +32,6 @@
 	},
 	"peerDependencies": {
 		"@near-js/crypto": "^2.0.1",
-		"@near-js/keystores": "^2.0.1",
 		"@near-js/transactions": "^2.0.1"
 	},
 	"files": [

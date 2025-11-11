@@ -22,7 +22,6 @@
 		"@near-js/signers": "workspace:*",
 		"@near-js/tokens": "workspace:*",
 		"@near-js/transactions": "workspace:*",
-		"@near-js/keystores": "workspace:*",
 		"@near-js/types": "workspace:*",
 		"@near-js/utils": "workspace:*",
 		"@noble/hashes": "1.7.1",
@@ -51,7 +50,6 @@
 		"@near-js/providers": "^2.0.1",
 		"@near-js/signers": "^2.0.1",
 		"@near-js/transactions": "^2.0.1",
-		"@near-js/keystores": "^2.0.1",
 		"@near-js/types": "^2.0.1",
 		"@near-js/utils": "^2.0.1",
 		"@near-js/tokens": "^2.0.1"

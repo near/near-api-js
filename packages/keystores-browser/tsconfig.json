@@ -1,9 +1,0 @@
-{
-    "extends": "tsconfig/browser.json",
-    "compilerOptions": {
-        "outDir": "./lib/esm",
-    },
-    "files": [
-        "src/index.ts"
-    ]
-}

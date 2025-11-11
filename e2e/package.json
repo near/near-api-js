@@ -17,7 +17,6 @@
         "@near-js/signers": "file:../packages/signers",
         "@near-js/tokens": "file:../packages/tokens",
         "@near-js/transactions": "file:../packages/transactions",
-        "@near-js/keystores": "file:../packages/keystores",
         "@near-js/types": "file:../packages/types",
         "@near-js/utils": "file:../packages/utils"
     },
