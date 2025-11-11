@@ -1,5 +1,5 @@
-import { PublicKey } from "@near-js/crypto";
-import { type Provider } from "@near-js/providers";
+import { PublicKey } from '@near-js/crypto';
+import { type Provider } from '@near-js/providers';
 import {
     type Action,
     type DelegateAction,
@@ -10,7 +10,7 @@ import {
     actionCreators,
     buildDelegateAction,
     createTransaction,
-} from "@near-js/transactions";
+} from '@near-js/transactions';
 import {
     type AccessKeyList,
     type AccessKeyView,
@@ -20,16 +20,16 @@ import {
     type Finality,
     type SerializedReturnValue,
     type TxExecutionStatus,
-} from "@near-js/types";
+} from '@near-js/types';
 import {
     baseDecode,
     getTransactionLastResult,
     parseResultError,
-} from "@near-js/utils";
-import { type SignedMessage, type Signer } from "@near-js/signers";
+} from '@near-js/utils';
+import { type SignedMessage, type Signer } from '@near-js/signers';
 
-import type { FungibleToken, NativeToken } from "@near-js/tokens";
-import { NEAR } from "@near-js/tokens";
+import type { FungibleToken, NativeToken } from '@near-js/tokens';
+import { NEAR } from '@near-js/tokens';
 
 const {
     addKey,
@@ -45,8 +45,8 @@ const {
     useGlobalContract,
 } = actionCreators;
 
-const DEFAULT_FINALITY: Finality =  "optimistic";
-export const DEFAULT_WAIT_STATUS: TxExecutionStatus = "EXECUTED_OPTIMISTIC";
+const DEFAULT_FINALITY: Finality =  'optimistic';
+export const DEFAULT_WAIT_STATUS: TxExecutionStatus = 'EXECUTED_OPTIMISTIC';
 const DEFAULT_FUNCTION_CALL_GAS = 30_000_000_000_000n; // 30 TGas
 
 export interface AccountState {
@@ -176,7 +176,7 @@ export class Account {
         actions: Action[],
         publicKey: PublicKey | string
     ) {
-        if (!publicKey) throw new Error("Please provide a public key");
+        if (!publicKey) throw new Error('Please provide a public key');
 
         const pk = PublicKey.from(publicKey);
 
@@ -206,7 +206,7 @@ export class Account {
         receiverId: string,
         actions: Action[]
     ): Promise<SignedTransaction> {
-        if (!this.signer) throw new Error("Please set a signer");
+        if (!this.signer) throw new Error('Please set a signer');
 
         const tx = await this.createTransaction(
             receiverId,
@@ -232,7 +232,7 @@ export class Account {
         blockHeightTtl: number = 200,
         publicKey: PublicKey | string
     ): Promise<DelegateAction> {
-        if (!publicKey) throw new Error(`Please provide a public key`);
+        if (!publicKey) throw new Error('Please provide a public key');
 
         const pk = PublicKey.from(publicKey);
 
@@ -267,7 +267,7 @@ export class Account {
         actions: Action[],
         blockHeightTtl: number = 200
     ): Promise<[Uint8Array, SignedDelegate]> {
-        if (!this.signer) throw new Error(`Please set a signer`);
+        if (!this.signer) throw new Error('Please set a signer');
 
         const delegateAction = await this.createMetaTransaction(
             receiverId,
@@ -311,8 +311,8 @@ export class Account {
 
         if (
             throwOnFailure &&
-            typeof result.status === "object" &&
-            typeof result.status.Failure === "object" &&
+            typeof result.status === 'object' &&
+            typeof result.status.Failure === 'object' &&
             result.status.Failure !== null
         ) {
             throw parseResultError(result);
@@ -330,7 +330,7 @@ export class Account {
         waitUntil?: TxExecutionStatus;
         throwOnFailure?: boolean;
     }): Promise<FinalExecutionOutcome[]> {
-        if (!this.signer) throw new Error("Please set a signer");
+        if (!this.signer) throw new Error('Please set a signer');
 
         const results = await Promise.all(
             transactions.map(async ({ receiverId, actions }) => {
@@ -365,7 +365,7 @@ export class Account {
     public async createAccount(
         newAccountId: string,
         publicKey: PublicKey | string,
-        nearToTransfer: bigint | string | number = "0"
+        nearToTransfer: bigint | string | number = '0'
     ): Promise<FinalExecutionOutcome> {
         if (newAccountId.endsWith(this.accountId)) {
             return this.createSubAccount(
@@ -375,10 +375,10 @@ export class Account {
             );
         }
 
-        const splitted = newAccountId.split(".");
+        const splitted = newAccountId.split('.');
         if (splitted.length != 2) {
             throw new Error(
-                "newAccountId needs to be of the form <string>.<tla>"
+                'newAccountId needs to be of the form <string>.<tla>'
             );
         }
 
@@ -387,12 +387,12 @@ export class Account {
             receiverId: TLA,
             actions: [
                 functionCall(
-                    "create_account",
+                    'create_account',
                     {
                         new_account_id: newAccountId,
                         new_public_key: publicKey.toString(),
                     },
-                    BigInt("60000000000000"),
+                    BigInt('60000000000000'),
                     BigInt(nearToTransfer)
                 ),
             ],
@@ -411,16 +411,16 @@ export class Account {
     public async createSubAccount(
         accountOrPrefix: string,
         publicKey: PublicKey | string,
-        nearToTransfer: bigint | string | number = "0"
+        nearToTransfer: bigint | string | number = '0'
     ): Promise<FinalExecutionOutcome> {
-        if (!this.signer) throw new Error("Please set a signer");
+        if (!this.signer) throw new Error('Please set a signer');
 
-        const newAccountId = accountOrPrefix.includes(".")
+        const newAccountId = accountOrPrefix.includes('.')
             ? accountOrPrefix
             : `${accountOrPrefix}.${this.accountId}`;
 
         if (newAccountId.length > 64) {
-            throw new Error(`Accounts cannot exceed 64 characters`);
+            throw new Error('Accounts cannot exceed 64 characters');
         }
 
         if (!newAccountId.endsWith(this.accountId)) {
@@ -478,9 +478,9 @@ export class Account {
      */
     public async deployGlobalContract(
         code: Uint8Array,
-        deployMode: "codeHash" | "accountId"
+        deployMode: 'codeHash' | 'accountId'
     ): Promise<FinalExecutionOutcome> {
-        const mode = deployMode === "codeHash" 
+        const mode = deployMode === 'codeHash' 
             ? new GlobalContractDeployMode({ CodeHash: null })
             : new GlobalContractDeployMode({ AccountId: null });
             
@@ -498,11 +498,11 @@ export class Account {
     public async useGlobalContract(
         contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }
     ): Promise<FinalExecutionOutcome> {
-        const identifier = "accountId" in contractIdentifier
+        const identifier = 'accountId' in contractIdentifier
             ? new GlobalContractIdentifier({ AccountId: contractIdentifier.accountId })
             : new GlobalContractIdentifier({ 
-                CodeHash: typeof contractIdentifier.codeHash === "string" 
-                    ? Buffer.from(contractIdentifier.codeHash, "hex")
+                CodeHash: typeof contractIdentifier.codeHash === 'string' 
+                    ? Buffer.from(contractIdentifier.codeHash, 'hex')
                     : contractIdentifier.codeHash 
             });
             
@@ -525,7 +525,7 @@ export class Account {
         publicKey,
         contractId,
         methodNames = [],
-        allowance = NEAR.toUnits("0.25"),
+        allowance = NEAR.toUnits('0.25'),
     }: {
         publicKey: PublicKey | string;
         contractId: string;
@@ -595,7 +595,7 @@ export class Account {
         gas?: bigint | string | number;
         waitUntil?: TxExecutionStatus;
     }): Promise<T> {
-        const outcome = await this.callFunctionRaw(params)
+        const outcome = await this.callFunctionRaw(params);
         return getTransactionLastResult(outcome) as T;
     }
 
@@ -615,7 +615,7 @@ export class Account {
         contractId,
         methodName,
         args = {},
-        deposit = "0",
+        deposit = '0',
         gas = DEFAULT_FUNCTION_CALL_GAS,
         waitUntil = DEFAULT_WAIT_STATUS,
     }: {
@@ -656,7 +656,7 @@ export class Account {
         nonce: Uint8Array;
         callbackUrl?: string;
     }): Promise<SignedMessage> {
-        if (!this.signer) throw new Error("Please set a signer");
+        if (!this.signer) throw new Error('Please set a signer');
         return this.signer.signNep413Message(
             message,
             this.accountId,

@@ -105,7 +105,7 @@ describe('errors', () => {
 describe('with deploy contract', () => {
     const contractId = generateUniqueString('test_contract');
     // @ts-expect-error infer type here
-    let contract = new TypedContract({})
+    let contract = new TypedContract({});
 
     beforeAll(async () => {
         const keyPair = KeyPair.fromRandom('ed25519');
