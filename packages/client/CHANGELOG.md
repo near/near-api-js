@@ -1,5 +1,19 @@
 # @near-js/client
 
+## 2.5.1
+
+### Patch Changes
+
+- Updated dependencies [[`aad9fd6`](https://github.com/near/near-api-js/commit/aad9fd68e10ba1cee810a207a8c8b3584435a130), [`8e9a81b`](https://github.com/near/near-api-js/commit/8e9a81b320e90242cadcea8b465e3bff259dd1eb), [`5375dcc`](https://github.com/near/near-api-js/commit/5375dccd6e26ea3977a5980dab6d6895896c0b05)]:
+  - @near-js/crypto@2.5.1
+  - @near-js/utils@2.5.1
+  - @near-js/providers@2.5.1
+  - @near-js/accounts@2.5.1
+  - @near-js/keystores@2.5.1
+  - @near-js/signers@2.5.1
+  - @near-js/transactions@2.5.1
+  - @near-js/types@2.5.1
+
 ## 2.5.0
 
 ### Patch Changes

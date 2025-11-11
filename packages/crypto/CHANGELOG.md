@@ -1,5 +1,15 @@
 # @near-js/crypto
 
+## 2.5.1
+
+### Patch Changes
+
+- [#1662](https://github.com/near/near-api-js/pull/1662) [`aad9fd6`](https://github.com/near/near-api-js/commit/aad9fd68e10ba1cee810a207a8c8b3584435a130) Thanks [@denbite](https://github.com/denbite)! - Add duplicate of `keyToImplicitAddress` to `@near-js/crypto` to prevent cycle dependency between packages
+
+- Updated dependencies [[`aad9fd6`](https://github.com/near/near-api-js/commit/aad9fd68e10ba1cee810a207a8c8b3584435a130)]:
+  - @near-js/utils@2.5.1
+  - @near-js/types@2.5.1
+
 ## 2.5.0
 
 ### Patch Changes

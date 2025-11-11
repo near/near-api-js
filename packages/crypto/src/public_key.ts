@@ -151,3 +151,19 @@ export class PublicKey extends Enum {
         return this.keyPair.data;
     }
 }
+
+export function keyToImplicitAddress(publicKey: string | PublicKey): string {
+    const pk = PublicKey.from(publicKey);
+
+    const publicKeyWithoutPrefix = pk.toString().replace(/^ed25519:/, '');
+  
+    const decoded = baseDecode(publicKeyWithoutPrefix);
+    // Converting to hex string is implemented manually 
+    // to avoid issues with environments that do not support Buffer
+    let result = '';
+    for (let i = 0; i < decoded.length; i++) {
+        const hex = decoded[i].toString(16);
+        result += hex.length === 1 ? '0' + hex : hex;
+    }
+    return result;
+}
