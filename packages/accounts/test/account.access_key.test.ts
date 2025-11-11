@@ -2,15 +2,16 @@ import { afterAll, beforeAll, beforeEach, expect, jest, test } from '@jest/globa
 import { KeyPair } from '@near-js/crypto';
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
-import { Account } from '../src';
+import { Account, TypedContract } from '../src';
 import { KeyPairSigner } from '@near-js/signers';
 
 import { Worker } from 'near-workspaces';
 
-let nearjs;
+let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 let workingAccount: Account;
-let contractId;
-let contract;
+let contractId: string;
+// @ts-expect-error infer type here
+let contract = new TypedContract({});
 
 jest.setTimeout(50000);
 
@@ -30,7 +31,8 @@ beforeEach(async () => {
     try {
         contractId = generateUniqueString('test');
         workingAccount = await createAccount(nearjs);
-        contract = await deployContract(nearjs.accountCreator.masterAccount, contractId);
+        // @ts-expect-error abi is unknown
+        contract = await deployContract(nearjs.account, contractId);
     } catch (e) {
         console.error(e);
     }
@@ -38,15 +40,19 @@ beforeEach(async () => {
 
 test('make function call using access key', async() => {
     const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, '', 2000000000000000000000000n);
+    await workingAccount.addFunctionCallAccessKey({
+        publicKey: keyPair.getPublicKey(),
+        contractId,
+        methodNames: [],
+        allowance: 2000000000000000000000000n
+    });
 
     const setCallValue = generateUniqueString('setCallPrefix');
-    await contract.setValue({
-        // Override signer in the workingAccount to the given access key.
-        signerAccount: new Account(workingAccount.accountId, workingAccount.provider, new KeyPairSigner(keyPair)),
+    await contract.call.setValue({
+        account: new Account(workingAccount.accountId, workingAccount.provider, new KeyPairSigner(keyPair)),
         args: { value: setCallValue },
     });
-    expect(await contract.getValue()).toEqual(setCallValue);
+    expect(await contract.view.getValue()).toEqual(setCallValue);
 });
 
 test('remove access key no longer works', async() => {
@@ -54,14 +60,14 @@ test('remove access key no longer works', async() => {
 
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.getPublicKey();
-    await near.accountCreator.masterAccount.addKey(publicKey, contractId, '', 400000n);
-    await near.accountCreator.masterAccount.deleteKey(publicKey);
+    await near.account.addFunctionCallAccessKey({ publicKey, contractId, methodNames: [], allowance: 400000n });
+    await near.account.deleteKey(publicKey);
     // Override account in the Contract to the masterAccount with the given access key.
-    contract.account = new Account(near.accountCreator.masterAccount.accountId, near.accountCreator.masterAccount.provider, new KeyPairSigner(keyPair));
+    near.account.setSigner(new KeyPairSigner(keyPair));
 
     let failed = true;
     try {
-        await contract.setValue({ args: { value: 'test' } });
+        await contract.call.setValue({ args: { value: 'test' }, account: near.account });
         failed = false;
     } catch (e) {
         expect(e.message).toEqual(`Can't complete the action because access key ${keyPair.getPublicKey().toString()} doesn't exist`);
@@ -76,40 +82,14 @@ test('remove access key no longer works', async() => {
     await worker.tearDown();
 });
 
-test('view account details after adding access keys', async() => {
-    const keyPair = KeyPair.fromRandom('ed25519');
-    await nearjs.accountCreator.masterAccount.addKey(keyPair.getPublicKey(), contractId, '', 1000000000);
-
-    const contract2 = await deployContract(nearjs.accountCreator.masterAccount, generateUniqueString('test_contract2'));
-    const keyPair2 = KeyPair.fromRandom('ed25519');
-    await nearjs.accountCreator.masterAccount.addKey(keyPair2.getPublicKey(), contract2.contractId, '', 2000000000);
-
-    const details = await nearjs.accountCreator.masterAccount.getAccountDetails();
-    const authorizedApps = [{
-        contractId,
-        amount: '1000000000',
-        publicKey: keyPair.getPublicKey().toString(),
-    },
-    {
-        contractId: contract2.contractId,
-        amount: '2000000000',
-        publicKey: keyPair2.getPublicKey().toString(),
-    }];
-
-    expect(details.authorizedApps).toEqual(expect.arrayContaining(authorizedApps));
-    expect(authorizedApps).toEqual(expect.arrayContaining(details.authorizedApps));
-    expect(details.authorizedApps).toHaveLength(authorizedApps.length);
-});
-
 test('loading account after adding a full key', async() => {
     const keyPair = KeyPair.fromRandom('ed25519');
-    // wallet calls this with an empty string for contract id and method
-    await workingAccount.addKey(keyPair.getPublicKey(), '', '');
+    await workingAccount.addFullAccessKey(keyPair.getPublicKey());
 
-    const accessKeys = await workingAccount.getAccessKeys();
+    const accessKeys = await workingAccount.getAccessKeyList();
 
-    expect(accessKeys.length).toBe(2);
-    const addedKey = accessKeys.find(item => item.public_key == keyPair.getPublicKey().toString());
+    expect(accessKeys.keys.length).toBe(2);
+    const addedKey = accessKeys.keys.find(item => item.public_key == keyPair.getPublicKey().toString());
     expect(addedKey).toBeTruthy();
     expect(addedKey!.access_key.permission).toEqual('FullAccess');
 });

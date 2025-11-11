@@ -5,7 +5,6 @@
  * which can be used to interact with multiple [NEAR RPC APIs](https://docs.near.org/api/rpc/introduction).
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
-import { Logger } from '@near-js/utils';
 import {
     AccessKeyWithPublicKey,
     BlockId,
@@ -72,10 +71,6 @@ export class FailoverRpcProvider implements Provider {
         } else {
             this.currentProviderIndex += 1;
         }
-
-        Logger.debug(
-            `Switched to provider at the index ${this.currentProviderIndex}`
-        );
     }
 
     private get currentProvider(): Provider {
@@ -108,14 +103,6 @@ export class FailoverRpcProvider implements Provider {
             `Exceeded ${this.providers.length} providers to execute request`,
             'RetriesExceeded'
         );
-    }
-
-    /**
-     * Gets the RPC's status
-     * @see [https://docs.near.org/docs/develop/front-end/rpc#general-validator-status](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
-     */
-    async status(): Promise<NodeStatusResult> {
-        return this.withBackoff((currentProvider) => currentProvider.status());
     }
 
     async getNetworkId(): Promise<string> {
@@ -174,10 +161,6 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewNodeStatus());
     }
 
-    public async viewValidators(blockId?: BlockId): Promise<EpochValidatorInfo> {
-        return this.withBackoff((currentProvider) => currentProvider.viewValidators(blockId));
-    }
-
     public async viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo> {
         return this.withBackoff((currentProvider) => currentProvider.viewValidatorsV2(params));
     }
@@ -225,38 +208,6 @@ export class FailoverRpcProvider implements Provider {
     }
 
     /**
-     * Gets a transaction's status from the RPC
-     * @see [https://docs.near.org/docs/develop/front-end/rpc#transaction-status](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
-     *
-     * @param txHash A transaction hash as either a Uint8Array or a base58 encoded string
-     * @param accountId The NEAR account that signed the transaction
-     */
-    async txStatus(
-        txHash: Uint8Array | string,
-        accountId: string, 
-        waitUntil: TxExecutionStatus
-    ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.txStatus(txHash, accountId, waitUntil)
-        );
-    }
-
-    /**
-     * Gets a transaction's status from the RPC with receipts
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status-with-receipts)
-     * @param txHash The hash of the transaction
-     * @param accountId The NEAR account that signed the transaction
-     * @returns {Promise<FinalExecutionOutcome>}
-     */
-    async txStatusReceipts(
-        txHash: Uint8Array | string,
-        accountId: string,
-        waitUntil: TxExecutionStatus
-    ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) => currentProvider.txStatusReceipts(txHash, accountId, waitUntil)
-        );
-    }
-
-    /**
      * Query the RPC by passing an {@link "@near-js/types".provider/request.RpcQueryRequest | RpcQueryRequest }
      * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
      *
@@ -282,16 +233,7 @@ export class FailoverRpcProvider implements Provider {
         );
     }
 
-    /**
-     * Query for block info from the RPC
-     * pass block_id OR finality as blockQuery, not both
-     * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
-     *
-     * @param blockQuery {@link BlockReference} (passing a {@link BlockId} is deprecated)
-     */
-    async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
-        return this.withBackoff((currentProvider) => currentProvider.block(blockQuery));
-    }
+
 
     /**
      * Query changes in block from the RPC
@@ -301,26 +243,6 @@ export class FailoverRpcProvider implements Provider {
     async blockChanges(blockQuery: BlockReference): Promise<BlockChangeResult> {
         return this.withBackoff((currentProvider) => currentProvider.blockChanges(blockQuery)
         );
-    }
-
-    /**
-     * Queries for details about a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
-     * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
-     *
-     * @param chunkId Hash of a chunk ID or shard ID
-     */
-    async chunk(chunkId: ChunkId): Promise<ChunkResult> {
-        return this.withBackoff((currentProvider) => currentProvider.chunk(chunkId));
-    }
-
-    /**
-     * Query validators of the epoch defined by the given block id.
-     * @see [https://docs.near.org/api/rpc/network#validation-status](https://docs.near.org/api/rpc/network#validation-status)
-     *
-     * @param blockId Block hash or height, or null for latest.
-     */
-    async validators(blockId: BlockId | null): Promise<EpochValidatorInfo> {
-        return this.withBackoff((currentProvider) => currentProvider.validators(blockId));
     }
 
     /**
@@ -437,15 +359,5 @@ export class FailoverRpcProvider implements Provider {
     ): Promise<ChangeResult> {
         return this.withBackoff((currentProvider) => currentProvider.contractCodeChanges(accountIdArray, blockQuery)
         );
-    }
-
-    /**
-     * Returns gas price for a specific block_height or block_hash.
-     * @see [https://docs.near.org/api/rpc/gas](https://docs.near.org/api/rpc/gas)
-     *
-     * @param blockId Block hash or height, or null for latest.
-     */
-    async gasPrice(blockId: BlockId | null): Promise<GasPrice> {
-        return this.withBackoff((currentProvider) => currentProvider.gasPrice(blockId));
     }
 }

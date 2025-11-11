@@ -2,27 +2,29 @@ import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals
 import { getTransactionLastResult } from '@near-js/utils';
 import { Worker } from 'near-workspaces';
 import { TextEncoder } from 'util';
-import { FailoverRpcProvider, JsonRpcProvider } from '../src';
+import { FailoverRpcProvider, JsonRpcProvider, Provider } from '../src';
 
 jest.setTimeout(20000);
 global.TextEncoder = TextEncoder;
 
 ['json provider', 'fallback provider'].forEach((name) => {
     describe(name, () => {
-        let worker;
-        let provider;
+        let worker: Worker;
+        let provider: Provider;
 
         beforeAll(async () => {
             worker = await Worker.init();
+            // @ts-expect-error accessing protected property
+            const url = worker.manager.config.rpcAddr as string;
 
             if (name === 'json provider') {
                 provider = new JsonRpcProvider({
-                    url: worker.manager.config.rpcAddr,
+                    url,
                 });
             } else if (name === 'fallback provider') {
                 provider = new FailoverRpcProvider([
                     new JsonRpcProvider({
-                        url: worker.manager.config.rpcAddr,
+                        url,
                     }),
                 ]);
             }
@@ -35,31 +37,31 @@ global.TextEncoder = TextEncoder;
         });
 
         test('rpc fetch node status', async () => {
-            const response = await provider.status();
+            const response = await provider.viewNodeStatus();
             expect(response.chain_id).toBeTruthy();
         });
         
         test('rpc fetch block info', async () => {
-            const stat = await provider.status();
+            const stat = await provider.viewNodeStatus();
             const height = stat.sync_info.latest_block_height - 1;
-            const response = await provider.block({ blockId: height });
+            const response = await provider.viewBlock({ blockId: height });
             expect(response.header.height).toEqual(height);
         
-            const sameBlock = await provider.block({ blockId: response.header.hash });
+            const sameBlock = await provider.viewBlock({ blockId: response.header.hash });
             expect(sameBlock.header.height).toEqual(height);
         
-            const optimisticBlock = await provider.block({ finality: 'optimistic' });
+            const optimisticBlock = await provider.viewBlock({ finality: 'optimistic' });
             expect(optimisticBlock.header.height - height).toBeLessThan(5);
         
-            const nearFinalBlock = await provider.block({ finality: 'near-final' });
+            const nearFinalBlock = await provider.viewBlock({ finality: 'near-final' });
             expect(nearFinalBlock.header.height - height).toBeLessThan(5);
         
-            const finalBlock = await provider.block({ finality: 'final' });
+            const finalBlock = await provider.viewBlock({ finality: 'final' });
             expect(finalBlock.header.height - height).toBeLessThan(5);
         });
         
         test('rpc fetch block changes', async () => {
-            const stat = await provider.status();
+            const stat = await provider.viewNodeStatus();
             const height = stat.sync_info.latest_block_height - 1;
             const response = await provider.blockChanges({ blockId: height });
         
@@ -70,26 +72,26 @@ global.TextEncoder = TextEncoder;
         });
         
         test('rpc fetch chunk info', async () => {
-            const stat = await provider.status();
+            const stat = await provider.viewNodeStatus();
             const height = stat.sync_info.latest_block_height - 1;
-            const response = await provider.chunk([height, 0]);
+            const response = await provider.viewChunk([height, 0]);
             expect(response.header.shard_id).toEqual(0);
-            const sameChunk = await provider.chunk(response.header.chunk_hash);
+            const sameChunk = await provider.viewChunk(response.header.chunk_hash);
             expect(sameChunk.header.chunk_hash).toEqual(response.header.chunk_hash);
             expect(sameChunk.header.shard_id).toEqual(0);
         });
         
         test('rpc fetch validators info', async () => {
-            const validators = await provider.validators(null);
+            const validators = await provider.viewValidatorsV2(null);
             expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
         });
         
         test('rpc query with block_id', async () => {
-            const stat = await provider.status();
+            const stat = await provider.viewNodeStatus();
             const block_id = stat.sync_info.latest_block_height - 1;
         
             const response = await provider.query({
-                block_id,
+                blockId: block_id,
                 request_type: 'view_account',
                 account_id: 'test.near'
             });
@@ -124,10 +126,10 @@ global.TextEncoder = TextEncoder;
         });
         
         test('json rpc fetch protocol config', async () => {
-            const status = await provider.status();
+            const status = await provider.viewNodeStatus();
             const blockHeight = status.sync_info.latest_block_height;
             const blockHash = status.sync_info.latest_block_hash;
-            for (const blockReference of [{ sync_checkpoint: 'genesis' }, { blockId: blockHeight }, { blockId: blockHash }, { finality: 'final' }, { finality: 'optimistic' }]) {
+            for (const blockReference of [{ blockId: blockHeight }, { blockId: blockHash }, { finality: 'final' as const }, { finality: 'optimistic' as const }]) {
                 const response = await provider.experimental_protocolConfig(blockReference);
                 expect('chain_id' in response).toBe(true);
                 expect('genesis_height' in response).toBe(true);
@@ -137,21 +139,21 @@ global.TextEncoder = TextEncoder;
         });
         
         test('json rpc gas price', async () => {
-            const status = await provider.status();
+            const status = await provider.viewNodeStatus();
             const positiveIntegerRegex = /^[+]?\d+([.]\d+)?$/;
         
-            const response1 = await provider.gasPrice(status.sync_info.latest_block_height);
+            const response1 = await provider.viewGasPrice(status.sync_info.latest_block_height);
             expect(response1.gas_price).toMatch(positiveIntegerRegex);
         
-            const response2 = await provider.gasPrice(status.sync_info.latest_block_hash);
+            const response2 = await provider.viewGasPrice(status.sync_info.latest_block_hash);
             expect(response2.gas_price).toMatch(positiveIntegerRegex);
         
-            const response3 = await provider.gasPrice();
+            const response3 = await provider.viewGasPrice();
             expect(response3.gas_price).toMatch(positiveIntegerRegex);
         });
         
         test('near json rpc fetch node status', async () => {
-            const response = await provider.status();
+            const response = await provider.viewNodeStatus();
             expect(response.chain_id).toBeTruthy();
         });
     });
@@ -176,7 +178,7 @@ describe('failover provider', () => {
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
-                    status() {
+                    viewNodeStatus() {
                         return 'first';
                     },
                 },
@@ -184,7 +186,7 @@ describe('failover provider', () => {
             ),
             Object.setPrototypeOf(
                 {
-                    status() {
+                    viewNodeStatus() {
                         return 'second';
                     },
                 },
@@ -194,14 +196,14 @@ describe('failover provider', () => {
 
         const provider = new FailoverRpcProvider(jsonProviders);
 
-        expect(await provider.status()).toBe('first');
+        expect(await provider.viewNodeStatus()).toBe('first');
     });
 
     test('FailoverRpc switches to next provider in case of error', async () => {
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
-                    status() {
+                    viewNodeStatus() {
                         throw new Error();
                     },
                 },
@@ -209,7 +211,7 @@ describe('failover provider', () => {
             ),
             Object.setPrototypeOf(
                 {
-                    status() {
+                    viewNodeStatus() {
                         return 'second';
                     },
                 },
@@ -219,7 +221,7 @@ describe('failover provider', () => {
 
         const provider = new FailoverRpcProvider(jsonProviders);
 
-        expect(await provider.status()).toBe('second');
+        expect(await provider.viewNodeStatus()).toBe('second');
     });
 
     test('FailoverRpc returns error if all providers are unavailable', async () => {
@@ -244,7 +246,7 @@ describe('failover provider', () => {
 
         const provider = new FailoverRpcProvider(jsonProviders);
 
-        await expect(() => provider.status()).rejects.toThrow();
+        await expect(() => provider.viewNodeStatus()).rejects.toThrow();
     });
 });
 
@@ -325,7 +327,7 @@ test('final tx result with null', async () => {
 // TODO: Use a near-workspaces Worker when time traveling is available
 test('json rpc get next light client block', async () => {
     const provider = new JsonRpcProvider({ url: 'https://rpc.testnet.near.org' });
-    const stat = await provider.status();
+    const stat = await provider.viewNodeStatus();
 
     // Get block in at least the last epoch (epoch duration 43,200 blocks on mainnet and testnet)
     const height = stat.sync_info.latest_block_height;
@@ -336,7 +338,7 @@ test('json rpc get next light client block', async () => {
     // on a fresh network, would need to wait for blocks to be produced and indexed.
     // @ts-expect-error test input
     const prevEpochHeight = height - protocolConfig.epoch_length;
-    const prevBlock = await provider.block({ blockId: prevEpochHeight });
+    const prevBlock = await provider.viewBlock({ blockId: prevEpochHeight });
     const nextBlock = await provider.nextLightClientBlock({ last_block_hash: prevBlock.header.hash });
     expect('inner_lite' in nextBlock).toBeTruthy();
     // Verify that requesting from previous epoch includes the set of new block producers.
