@@ -122,6 +122,34 @@ describe('with deploy contract', () => {
         });
     });
 
+    test('cross-contact assertion and panic', async () => {
+        await expect(nearjs.account.callFunctionRaw({
+            contractId: contract.contractId,
+            methodName: 'crossContract',
+            args: {},
+            gas: 300000000000000
+        })).rejects.toThrow(/Smart contract panicked: expected to fail./);
+    });
+
+    test('cross-contact assertion and panic 2', async () => {
+        const result = await nearjs.account.signAndSendTransaction({
+            receiverId: contract.contractId,
+            actions: [
+                actionCreators.functionCall('crossContract', {}, 300000000000000n, 0n)
+            ],
+            throwOnFailure: false
+        });
+
+        const logs = result.receipts_outcome.map(({ outcome }) => outcome.logs).flat();
+        const contractId = contract.contractId;
+
+        expect(logs.length).toEqual(4);
+        expect(logs[0]).toMatch(new RegExp(`${contractId}`));
+        expect(logs[1]).toMatch(new RegExp('log before planned panic'));
+        expect(logs[2]).toMatch(new RegExp('log before assert'));
+        expect(logs[3]).toMatch(new RegExp('ABORT: expected to fail, filename: "assembly/index.ts" line: \\d+ col: \\d+$'));
+    });
+
     test('make function calls via account', async () => {
         const result = await workingAccount.provider.callFunction(
             contractId,
@@ -265,6 +293,18 @@ describe('with deploy contract', () => {
         });
         expect(result2).toEqual(setCallValue);
         expect(await contract.view.getValue()).toEqual(setCallValue);
+    });
+
+    test('can get logs from raw method result', async () => {
+        const result = await nearjs.account.callFunctionRaw({ contractId: contract.contractId, methodName: 'generateLogs', args: {} });
+
+        const logs = result.receipts_outcome.map(({ outcome }) => outcome.logs).flat();
+        expect(logs).toEqual(['log1', 'log2']);
+    });
+
+    test('can get logs from raw view call', async () => {
+        const result = await nearjs.provider.callFunctionRaw(contract.contractId, 'returnHiWithLogs', {});
+        expect(result.logs).toEqual(['loooog1', 'loooog2']);
     });
 
     test('test set/remove', async () => {
