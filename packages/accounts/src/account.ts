@@ -541,8 +541,59 @@ export class Account {
     }
 
     /**
+     * Publish contract code to the global registry for reuse by multiple accounts.
+     * This is the new ergonomic API that replaces deployGlobalContract.
+     *
+     * @param code The compiled contract code bytes to publish
+     * @param accountId Optional account ID for mutable contracts. If provided, the contract
+     *                  can be updated by this account. If omitted, the contract is immutable
+     *                  and identified by its code hash.
+     * @returns Promise resolving to the transaction outcome
+     *
+     * @example
+     * // Publish immutable contract (identified by code hash)
+     * await account.publishContract(contractCode);
+     *
+     * // Publish mutable contract (identified by account, can be updated)
+     * await account.publishContract(contractCode, "my-contract.near");
+     */
+    public async publishContract(
+        code: Uint8Array,
+        accountId?: string
+    ): Promise<FinalExecutionOutcome> {
+        const deployMode = accountId ? "accountId" : "codeHash";
+        return this.deployGlobalContract(code, deployMode);
+    }
+
+    /**
+     * Deploy a contract to this account from previously published code in the global registry.
+     * This is the new ergonomic API that replaces useGlobalContract.
+     *
+     * @param reference The reference to the published contract - must be either:
+     *                  - { codeHash: Uint8Array | string } - Reference by code hash (as Uint8Array or hex string)
+     *                  - { accountId: string } - Reference by the account that published it
+     * @returns Promise resolving to the transaction outcome
+     *
+     * @example
+     * // Deploy from code hash (Uint8Array)
+     * await account.deployFromPublished({ codeHash: codeHashBytes });
+     *
+     * // Deploy from code hash (hex string)
+     * await account.deployFromPublished({ codeHash: "a1b2c3d4..." });
+     *
+     * // Deploy from account ID
+     * await account.deployFromPublished({ accountId: "contract-publisher.near" });
+     */
+    public async deployFromPublished(
+        reference: { codeHash: string | Uint8Array } | { accountId: string }
+    ): Promise<FinalExecutionOutcome> {
+        return this.useGlobalContract(reference);
+    }
+
+    /**
      * Deploy a global contract that can be reused by multiple accounts
      *
+     * @deprecated Use publishContract() instead. This method will be removed in a future version.
      * @param code The compiled contract code bytes
      * @param deployMode Deploy mode - "codeHash" for immutable contracts, "accountId" for updateable contracts
      */
@@ -550,10 +601,10 @@ export class Account {
         code: Uint8Array,
         deployMode: "codeHash" | "accountId"
     ): Promise<FinalExecutionOutcome> {
-        const mode = deployMode === "codeHash" 
+        const mode = deployMode === "codeHash"
             ? new GlobalContractDeployMode({ CodeHash: null })
             : new GlobalContractDeployMode({ AccountId: null });
-            
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deployGlobalContract(code, mode)],
@@ -563,6 +614,7 @@ export class Account {
     /**
      * Use a previously deployed global contract on this account
      *
+     * @deprecated Use deployFromPublished() instead. This method will be removed in a future version.
      * @param contractIdentifier The global contract identifier - either { accountId: string } or { codeHash: string | Uint8Array }
      */
     public async useGlobalContract(
@@ -570,12 +622,12 @@ export class Account {
     ): Promise<FinalExecutionOutcome> {
         const identifier = "accountId" in contractIdentifier
             ? new GlobalContractIdentifier({ AccountId: contractIdentifier.accountId })
-            : new GlobalContractIdentifier({ 
-                CodeHash: typeof contractIdentifier.codeHash === "string" 
+            : new GlobalContractIdentifier({
+                CodeHash: typeof contractIdentifier.codeHash === "string"
                     ? Buffer.from(contractIdentifier.codeHash, "hex")
-                    : contractIdentifier.codeHash 
+                    : contractIdentifier.codeHash
             });
-            
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [useGlobalContract(identifier)],
