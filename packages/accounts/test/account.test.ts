@@ -576,6 +576,156 @@ describe('global contracts', () => {
         });
     });
 
+    describe('publishContract (new ergonomic API)', () => {
+        const contractCode = new Uint8Array([0x00, 0x61, 0x73, 0x6d]);
+
+        test('publishes immutable contract when accountId is not provided', async () => {
+            await account.publishContract(contractCode);
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        deployGlobalContract: expect.objectContaining({
+                            code: contractCode,
+                            deployMode: expect.objectContaining({
+                                enum: 'CodeHash',
+                                CodeHash: null
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('publishes mutable contract when accountId is provided', async () => {
+            await account.publishContract(contractCode, 'my-contract.near');
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        deployGlobalContract: expect.objectContaining({
+                            code: contractCode,
+                            deployMode: expect.objectContaining({
+                                enum: 'AccountId',
+                                AccountId: null
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('handles both publish modes correctly', async () => {
+            await account.publishContract(contractCode);
+            await account.publishContract(contractCode, 'owner.near');
+            expect(mockSignAndSendTransaction).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('deployFromPublished (new ergonomic API)', () => {
+        test('deploys from code hash as Uint8Array', async () => {
+            const codeHash = new Uint8Array(32);
+            await account.deployFromPublished(codeHash);
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        useGlobalContract: expect.objectContaining({
+                            contractIdentifier: expect.objectContaining({
+                                enum: 'CodeHash',
+                                CodeHash: codeHash
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('deploys from code hash as hex string (64 chars)', async () => {
+            const codeHashHex = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
+            const expectedBytes = Buffer.from(codeHashHex, 'hex');
+            await account.deployFromPublished(codeHashHex);
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        useGlobalContract: expect.objectContaining({
+                            contractIdentifier: expect.objectContaining({
+                                enum: 'CodeHash',
+                                CodeHash: expectedBytes
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('deploys from account ID', async () => {
+            await account.deployFromPublished('contract-owner.near');
+
+            expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
+                receiverId: 'test.near',
+                actions: expect.arrayContaining([
+                    expect.objectContaining({
+                        useGlobalContract: expect.objectContaining({
+                            contractIdentifier: expect.objectContaining({
+                                enum: 'AccountId',
+                                AccountId: 'contract-owner.near'
+                            })
+                        })
+                    })
+                ])
+            });
+        });
+
+        test('correctly distinguishes between hex hash and account ID', async () => {
+            // Hex string should be treated as code hash
+            const hexHash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+            await account.deployFromPublished(hexHash);
+            expect(mockSignAndSendTransaction).toHaveBeenLastCalledWith(
+                expect.objectContaining({
+                    actions: expect.arrayContaining([
+                        expect.objectContaining({
+                            useGlobalContract: expect.objectContaining({
+                                contractIdentifier: expect.objectContaining({
+                                    enum: 'CodeHash'
+                                })
+                            })
+                        })
+                    ])
+                })
+            );
+
+            // Account ID should be treated as AccountId
+            await account.deployFromPublished('some-account.near');
+            expect(mockSignAndSendTransaction).toHaveBeenLastCalledWith(
+                expect.objectContaining({
+                    actions: expect.arrayContaining([
+                        expect.objectContaining({
+                            useGlobalContract: expect.objectContaining({
+                                contractIdentifier: expect.objectContaining({
+                                    enum: 'AccountId'
+                                })
+                            })
+                        })
+                    ])
+                })
+            );
+        });
+
+        test('handles all reference formats correctly', async () => {
+            await account.deployFromPublished('owner.near');
+            const codeHash = new Uint8Array(32);
+            await account.deployFromPublished(codeHash);
+            await account.deployFromPublished('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef');
+            expect(mockSignAndSendTransaction).toHaveBeenCalledTimes(3);
+        });
+    });
+
     describe('useGlobalContract', () => {
         test('uses global contract with account ID', async () => {
             await account.useGlobalContract({ accountId: 'contract-owner.near' });
