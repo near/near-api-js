@@ -1,7 +1,7 @@
 {
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
-    "version": "6.5.0",
+    "version": "6.5.1",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
@@ -19,12 +19,7 @@
     },
     "dependencies": {
         "@near-js/accounts": "workspace:*",
-        "@near-js/biometric-ed25519": "workspace:*",
         "@near-js/crypto": "workspace:*",
-        "@near-js/iframe-rpc": "workspace:*",
-        "@near-js/keystores": "workspace:*",
-        "@near-js/keystores-browser": "workspace:*",
-        "@near-js/keystores-node": "workspace:*",
         "@near-js/providers": "workspace:*",
         "@near-js/signers": "workspace:*",
         "@near-js/tokens": "workspace:*",

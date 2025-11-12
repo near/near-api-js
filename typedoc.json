@@ -3,12 +3,7 @@
   "entryPoints": [
     "packages/near-api-js",
     "packages/accounts",
-    "packages/biometric-ed25519",
     "packages/crypto",
-    "packages/iframe-rpc",
-    "packages/keystores",
-    "packages/keystores-browser",
-    "packages/keystores-node",
     "packages/providers",
     "packages/signers",
     "packages/tokens",

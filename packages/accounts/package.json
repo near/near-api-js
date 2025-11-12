@@ -1,6 +1,6 @@
 {
 	"name": "@near-js/accounts",
-	"version": "2.5.0",
+	"version": "2.5.1",
 	"description": "Classes encapsulating account-specific functionality",
 	"main": "lib/commonjs/index.cjs",
 	"module": "lib/esm/index.js",
@@ -33,7 +33,6 @@
 	},
 	"devDependencies": {
 		"@jest/globals": "^29.7.0",
-		"@near-js/keystores": "workspace:*",
 		"@scure/base": "^1.2.4",
 		"@types/depd": "^1.1.37",
 		"@types/json-schema": "^7.0.15",
