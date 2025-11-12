@@ -196,6 +196,9 @@ importers:
       '@near-js/signers':
         specifier: workspace:*
         version: link:../signers
+      '@near-js/tokens':
+        specifier: workspace:*
+        version: link:../tokens
       '@near-js/transactions':
         specifier: workspace:*
         version: link:../transactions
@@ -205,40 +208,13 @@ importers:
       '@near-js/utils':
         specifier: workspace:*
         version: link:../utils
-      '@noble/curves':
-        specifier: 1.8.1
-        version: 1.8.1
-      borsh:
-        specifier: 1.0.0
-        version: 1.0.0
-      depd:
-        specifier: 2.0.0
-        version: 2.0.0
-      http-errors:
-        specifier: 1.7.2
-        version: 1.7.2
-      near-abi:
-        specifier: 0.2.0
-        version: 0.2.0
-      node-fetch:
-        specifier: 2.6.7
-        version: 2.6.7(encoding@0.1.13)
     devDependencies:
-      '@types/depd':
-        specifier: ^1.1.37
-        version: 1.1.37
-      '@types/http-errors':
-        specifier: 1.6.1
-        version: 1.6.1
       '@types/node':
         specifier: 20.0.0
         version: 20.0.0
       concurrently:
         specifier: 9.1.2
         version: 9.1.2
-      in-publish:
-        specifier: 2.0.0
-        version: 2.0.0
       jest:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.0.0)(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.0.0)(typescript@5.6.1-rc))
@@ -1596,9 +1572,6 @@ packages:
   '@types/http-cache-semantics@4.0.4':
     resolution: {integrity: sha512-1m0bIFVc7eJWyve9S0RnuRgcQqF/Xd5QsUZAZeQFr1Q3/p9JWoQQEqmVy+DPTNpGXwhgIetAoYF8JSc33q29QA==}
 
-  '@types/http-errors@1.6.1':
-    resolution: {integrity: sha512-s+RHKSGc3r0m3YEE2UXomJYrpQaY9cDmNDLU2XvG1/LAZsQ7y8emYkTLfcw/ByDtcsTyRQKwr76Bj4PkN2hfWg==}
-
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
 
@@ -2584,10 +2557,6 @@ packages:
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
-
-  in-publish@2.0.0:
-    resolution: {integrity: sha512-S/Qt3SBbP15k2Yll5xaguu2c5E1LZnhwERvHt/FqUx+Ae/lYHVf2ZE96hUgcXJkcCbXoxkkSRohsG/YXXMNOCQ==}
-    hasBin: true
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
@@ -5406,8 +5375,6 @@ snapshots:
 
   '@types/http-cache-semantics@4.0.4': {}
 
-  '@types/http-errors@1.6.1': {}
-
   '@types/istanbul-lib-coverage@2.0.6': {}
 
   '@types/istanbul-lib-report@3.0.3':
@@ -6519,8 +6486,6 @@ snapshots:
   import-meta-resolve@4.1.0: {}
 
   imurmurhash@0.1.4: {}
-
-  in-publish@2.0.0: {}
 
   inflight@1.0.6:
     dependencies:
