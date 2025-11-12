@@ -122,6 +122,15 @@ describe('with deploy contract', () => {
         });
     });
 
+    test('cross-contact assertion and panic', async () => {
+        await expect(nearjs.account.callFunctionRaw({
+            contractId: contract.contractId,
+            methodName: 'crossContract',
+            args: {},
+            gas: 300000000000000
+        })).rejects.toThrow(/Smart contract panicked: expected to fail./);
+    });
+
     test('make function calls via account', async () => {
         const result = await workingAccount.provider.callFunction(
             contractId,
@@ -265,6 +274,13 @@ describe('with deploy contract', () => {
         });
         expect(result2).toEqual(setCallValue);
         expect(await contract.view.getValue()).toEqual(setCallValue);
+    });
+
+    test('can get logs from raw method result', async () => {
+        const result = await nearjs.account.callFunctionRaw({ contractId: contract.contractId, methodName: 'generateLogs', args: {} });
+        
+        const logs = result.receipts_outcome.map(({ outcome }) => outcome.logs).flat();
+        expect(logs).toEqual(['log1', 'log2']);
     });
 
     test('test set/remove', async () => {
