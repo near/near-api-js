@@ -92,7 +92,7 @@ test('view account details after adding access keys', async() => {
 
     const response = await workingAccount.getAccessKeyList();
 
-    const key1 = response.keys.find(item => item.public_key == keyPair.getPublicKey().toString());
+    const key1 = response.keys.find(item => item.public_key === keyPair.getPublicKey().toString());
     expect(key1).toBeDefined();
     expect(key1!.access_key).toMatchObject({
         nonce: expect.any(Number),
@@ -105,7 +105,7 @@ test('view account details after adding access keys', async() => {
         },
     });
 
-    const key2 = response.keys.find(item => item.public_key == keyPair2.getPublicKey().toString());
+    const key2 = response.keys.find(item => item.public_key === keyPair2.getPublicKey().toString());
     expect(key2).toBeDefined();
     expect(key2!.access_key).toMatchObject({
         nonce: expect.any(Number),
