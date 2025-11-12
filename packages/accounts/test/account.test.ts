@@ -145,9 +145,9 @@ describe('with deploy contract', () => {
 
         expect(logs.length).toEqual(4);
         expect(logs[0]).toMatch(new RegExp(`${contractId}`));
-        expect(logs[1]).toMatch(new RegExp(`log before planned panic`));
+        expect(logs[1]).toMatch(new RegExp('log before planned panic'));
         expect(logs[2]).toMatch(new RegExp('log before assert'));
-        expect(logs[3]).toMatch(new RegExp(`ABORT: expected to fail, filename: "assembly/index.ts" line: \\d+ col: \\d+$`));
+        expect(logs[3]).toMatch(new RegExp('ABORT: expected to fail, filename: "assembly/index.ts" line: \\d+ col: \\d+$'));
     });
 
     test('make function calls via account', async () => {
