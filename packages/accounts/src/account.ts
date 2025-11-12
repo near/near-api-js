@@ -569,42 +569,25 @@ export class Account {
      * Deploy a contract to this account from previously published code in the global registry.
      * This is the new ergonomic API that replaces useGlobalContract.
      *
-     * @param reference The reference to the published contract - can be either:
-     *                  - A code hash as Uint8Array (32 bytes)
-     *                  - A code hash as hex string (64 characters)
-     *                  - An account ID string that published the contract
+     * @param reference The reference to the published contract - must be either:
+     *                  - { codeHash: Uint8Array | string } - Reference by code hash (as Uint8Array or hex string)
+     *                  - { accountId: string } - Reference by the account that published it
      * @returns Promise resolving to the transaction outcome
      *
      * @example
      * // Deploy from code hash (Uint8Array)
-     * await account.deployFromPublished(codeHashBytes);
+     * await account.deployFromPublished({ codeHash: codeHashBytes });
      *
      * // Deploy from code hash (hex string)
-     * await account.deployFromPublished("a1b2c3d4...");
+     * await account.deployFromPublished({ codeHash: "a1b2c3d4..." });
      *
      * // Deploy from account ID
-     * await account.deployFromPublished("contract-publisher.near");
+     * await account.deployFromPublished({ accountId: "contract-publisher.near" });
      */
     public async deployFromPublished(
-        reference: string | Uint8Array
+        reference: { codeHash: string | Uint8Array } | { accountId: string }
     ): Promise<FinalExecutionOutcome> {
-        // Determine if reference is a code hash or account ID
-        if (reference instanceof Uint8Array) {
-            // It's a code hash as Uint8Array
-            return this.useGlobalContract({ codeHash: reference });
-        }
-
-        // Check if it's a hex string (code hash) or account ID
-        // Code hashes are 64 hex characters (32 bytes)
-        const isHexHash = /^[0-9a-fA-F]{64}$/.test(reference);
-
-        if (isHexHash) {
-            // It's a code hash as hex string
-            return this.useGlobalContract({ codeHash: reference });
-        } else {
-            // It's an account ID
-            return this.useGlobalContract({ accountId: reference });
-        }
+        return this.useGlobalContract(reference);
     }
 
     /**

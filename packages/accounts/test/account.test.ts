@@ -627,7 +627,7 @@ describe('global contracts', () => {
     describe('deployFromPublished (new ergonomic API)', () => {
         test('deploys from code hash as Uint8Array', async () => {
             const codeHash = new Uint8Array(32);
-            await account.deployFromPublished(codeHash);
+            await account.deployFromPublished({ codeHash });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
                 receiverId: 'test.near',
@@ -644,10 +644,10 @@ describe('global contracts', () => {
             });
         });
 
-        test('deploys from code hash as hex string (64 chars)', async () => {
+        test('deploys from code hash as hex string', async () => {
             const codeHashHex = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
             const expectedBytes = Buffer.from(codeHashHex, 'hex');
-            await account.deployFromPublished(codeHashHex);
+            await account.deployFromPublished({ codeHash: codeHashHex });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
                 receiverId: 'test.near',
@@ -665,7 +665,7 @@ describe('global contracts', () => {
         });
 
         test('deploys from account ID', async () => {
-            await account.deployFromPublished('contract-owner.near');
+            await account.deployFromPublished({ accountId: 'contract-owner.near' });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
                 receiverId: 'test.near',
@@ -682,46 +682,11 @@ describe('global contracts', () => {
             });
         });
 
-        test('correctly distinguishes between hex hash and account ID', async () => {
-            // Hex string should be treated as code hash
-            const hexHash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-            await account.deployFromPublished(hexHash);
-            expect(mockSignAndSendTransaction).toHaveBeenLastCalledWith(
-                expect.objectContaining({
-                    actions: expect.arrayContaining([
-                        expect.objectContaining({
-                            useGlobalContract: expect.objectContaining({
-                                contractIdentifier: expect.objectContaining({
-                                    enum: 'CodeHash'
-                                })
-                            })
-                        })
-                    ])
-                })
-            );
-
-            // Account ID should be treated as AccountId
-            await account.deployFromPublished('some-account.near');
-            expect(mockSignAndSendTransaction).toHaveBeenLastCalledWith(
-                expect.objectContaining({
-                    actions: expect.arrayContaining([
-                        expect.objectContaining({
-                            useGlobalContract: expect.objectContaining({
-                                contractIdentifier: expect.objectContaining({
-                                    enum: 'AccountId'
-                                })
-                            })
-                        })
-                    ])
-                })
-            );
-        });
-
         test('handles all reference formats correctly', async () => {
-            await account.deployFromPublished('owner.near');
+            await account.deployFromPublished({ accountId: 'owner.near' });
             const codeHash = new Uint8Array(32);
-            await account.deployFromPublished(codeHash);
-            await account.deployFromPublished('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef');
+            await account.deployFromPublished({ codeHash });
+            await account.deployFromPublished({ codeHash: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' });
             expect(mockSignAndSendTransaction).toHaveBeenCalledTimes(3);
         });
     });

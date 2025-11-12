@@ -29,17 +29,17 @@ export default async function globalContracts() {
     console.log("Mutable global contract published:", publishResultMutable);
 
     // Deploy from published code using account ID
-    const deployFromAccount = await account.deployFromPublished("contract-owner.testnet");
+    const deployFromAccount = await account.deployFromPublished({ accountId: "contract-owner.testnet" });
     console.log("Deployed from account ID:", deployFromAccount);
 
     // Deploy from published code using code hash (Uint8Array)
     const codeHash = new Uint8Array(32); // 32-byte hash placeholder
-    const deployFromHash = await account.deployFromPublished(codeHash);
+    const deployFromHash = await account.deployFromPublished({ codeHash });
     console.log("Deployed from hash (Uint8Array):", deployFromHash);
 
     // Deploy from published code using code hash (hex string)
     const codeHashHex = "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
-    const deployFromHexHash = await account.deployFromPublished(codeHashHex);
+    const deployFromHexHash = await account.deployFromPublished({ codeHash: codeHashHex });
     console.log("Deployed from hash (hex string):", deployFromHexHash);
 
     // ============================================================================
