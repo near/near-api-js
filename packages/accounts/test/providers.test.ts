@@ -6,16 +6,15 @@ import { base58 } from '@scure/base';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
 import { Worker } from 'near-workspaces';
+import { IdType } from '@near-js/types';
 
 jest.setTimeout(60000);
 
-let provider;
-let near;
+let near: Awaited<ReturnType<typeof setUpTestConnection>>;
 
 
 beforeAll(async () => {
     near = await setUpTestConnection();
-    provider = near.connection.provider;
 });
 
 afterAll(async () => {
@@ -30,9 +29,9 @@ describe('providers', () => {
     test('txStatus with string hash and buffer hash', async () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
-        const outcome = await sender.sendMoney(receiver.accountId, 1n);
-        const responseWithString = await provider.txStatus(outcome.transaction.hash, sender.accountId);
-        const responseWithUint8Array = await provider.txStatus(base58.decode(outcome.transaction.hash), sender.accountId);
+        const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
+        const responseWithString = await near.provider.viewTransactionStatus(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
+        const responseWithUint8Array = await near.provider.viewTransactionStatus(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
         expect(responseWithString).toMatchObject(outcome);
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
@@ -40,11 +39,11 @@ describe('providers', () => {
     test('txStatusReciept with string hash and buffer hash', async () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
-        const outcome = await sender.sendMoney(receiver.accountId, 1n);
-        const reciepts = await provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
+        const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
+        const reciepts = await near.provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
     
-        const responseWithString = await provider.txStatusReceipts(outcome.transaction.hash, sender.accountId);
-        const responseWithUint8Array = await provider.txStatusReceipts(base58.decode(outcome.transaction.hash), sender.accountId);
+        const responseWithString = await near.provider.viewTransactionStatusWithReceipts(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
+        const responseWithUint8Array = await near.provider.viewTransactionStatusWithReceipts(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
         expect('transaction_outcome' in responseWithString).toBeTruthy();
         expect('logs' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('receipt_ids' in responseWithString.transaction_outcome.outcome).toBeTruthy();
@@ -58,20 +57,20 @@ describe('providers', () => {
     
     test('json rpc query account', async () => {
         const account = await createAccount(near);
-        const response = await provider.query({
+        const response = await near.provider.query({
             request_type: 'view_account',
             finality: 'optimistic',
             account_id: account.accountId });
+        // @ts-expect-error "code_hash" exists in response
         expect(response.code_hash).toEqual('11111111111111111111111111111111');
     });
     
     test('json rpc query view_state', async () => {
-        const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
-        // @ts-expect-error test input
-        await contract.setValue({ args: { value: 'hello' } });
+        const contract = await deployContract(near.account, generateUniqueString('test'));
+        await contract.call.setValue({ args: { value: 'hello' }, account: near.account });
     
         return waitFor(async () => {
-            const response = await provider.query({
+            const response = await near.provider.query({
                 request_type: 'view_state',
                 finality: 'final',
                 account_id: contract.contractId,
@@ -88,10 +87,10 @@ describe('providers', () => {
     });
     
     test('json rpc query view_code', async () => {
-        const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
+        const contract = await deployContract(near.account, generateUniqueString('test'));
     
         return waitFor(async () => {
-            const response = await provider.query({
+            const response = await near.provider.query({
                 request_type: 'view_code',
                 finality: 'final',
                 account_id: contract.contractId
@@ -107,13 +106,12 @@ describe('providers', () => {
     });
     
     test('json rpc query call_function', async () => {
-        const contract = await deployContract(near.accountCreator.masterAccount, generateUniqueString('test'));
+        const contract = await deployContract(near.account, generateUniqueString('test'));
 
-        // @ts-expect-error test input
-        await contract.setValue({ args: { value: 'hello' } });
+        await contract.call.setValue({ args: { value: 'hello' }, account: near.account });
     
         return waitFor(async () => {
-            const response = await provider.query({
+            const response = await near.provider.query({
                 request_type: 'call_function',
                 finality: 'final',
                 account_id: contract.contractId,
@@ -139,14 +137,13 @@ describe('providers', () => {
     
     test('json rpc light client proof', async () => {
         const workingAccount = await createAccount(near);
-        const executionOutcome = await workingAccount.sendMoney(workingAccount.accountId, 10000n);
-        const provider = near.connection.provider;
+        const executionOutcome = await workingAccount.transfer({ receiverId: workingAccount.accountId, amount: 10000n });
     
         async function waitForStatusMatching(isMatching) {
             const MAX_ATTEMPTS = 10;
             for (let i = 0; i < MAX_ATTEMPTS; i++) {
                 await sleep(500);
-                const nodeStatus = await provider.status();
+                const nodeStatus = await near.provider.viewNodeStatus();
                 if (isMatching(nodeStatus)) {
                     return nodeStatus;
                 }
@@ -161,15 +158,15 @@ describe('providers', () => {
         const finalizedStatus = await waitForStatusMatching(status =>
             status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL);
     
-        const block = await provider.block({ blockId: finalizedStatus.sync_info.latest_block_hash });
+        const block = await near.provider.viewBlock({ blockId: finalizedStatus.sync_info.latest_block_hash });
         const lightClientHead = block.header.last_final_block;
         let lightClientRequest = {
-            type: 'transaction',
+            type: IdType.Transaction,
             light_client_head: lightClientHead,
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
-        const lightClientProof = await provider.lightClientProof(lightClientRequest);
+        const lightClientProof = await near.provider.lightClientProof(lightClientRequest);
         expect('prev_block_hash' in lightClientProof.block_header_lite).toBe(true);
         expect('inner_rest_hash' in lightClientProof.block_header_lite).toBe(true);
         expect('inner_lite' in lightClientProof.block_header_lite).toBe(true);
@@ -181,38 +178,37 @@ describe('providers', () => {
     
         // pass nonexistent hash for light client head will fail
         lightClientRequest = {
-            type: 'transaction',
+            type: IdType.Transaction,
             light_client_head: '11111111111111111111111111111111',
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
-        await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
+        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
     
         // Use old block hash as light client head should fail
         lightClientRequest = {
-            type: 'transaction',
+            type: IdType.Transaction,
             // @ts-expect-error test input
             light_client_head: executionOutcome.transaction_outcome.block_hash,
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
     
-        await expect(provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
+        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
     });
 });
 
 describe('providers errors', () => {
     test('JSON RPC Error - MethodNotFound', async () => {
         const contract = await deployContract(
-            near.accountCreator.masterAccount,
+            near.account,
             generateUniqueString('test')
         );
 
-        // @ts-expect-error test input
-        await contract.setValue({ args: { value: 'hello' } });
+        await contract.call.setValue({ args: { value: 'hello' }, account: near.account });
 
         try {
-            const response = await provider.query({
+            const response = await near.provider.query({
                 request_type: 'call_function',
                 finality: 'optimistic',
                 account_id: contract.contractId,
@@ -231,7 +227,7 @@ describe('providers errors', () => {
         const { accountId } = await createAccount(near);
 
         try {
-            const response = await provider.query({
+            const response = await near.provider.query({
                 request_type: 'call_function',
                 finality: 'optimistic',
                 account_id: accountId,
@@ -251,7 +247,7 @@ describe('providers errors', () => {
     test('JSON RPC Error - AccountDoesNotExist', async () => {
         const accountName = 'abc.near';
         try {
-            const response = await provider.query({
+            const response = await near.provider.query({
                 request_type: 'call_function',
                 finality: 'optimistic',
                 account_id: accountName,
@@ -272,7 +268,7 @@ describe('providers errors', () => {
         const { accountId } = await createAccount(near);
 
         try {
-            const response = await provider.query({
+            const response = await near.provider.query({
                 request_type: 'view_access_key',
                 finality: 'optimistic',
                 account_id: accountId,

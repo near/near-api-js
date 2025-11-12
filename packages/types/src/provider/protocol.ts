@@ -44,10 +44,7 @@ export type TxExecutionStatus = 'NONE' | 'INCLUDED' | 'INCLUDED_FINAL' | 'EXECUT
 
 export type FinalityReference = { finality: Finality };
 
-export type BlockReference = { blockId: BlockId } | FinalityReference | { 
-    /** @deprecated */
-    sync_checkpoint: 'genesis' | 'earliest_available' 
-}
+export type BlockReference = { blockId: BlockId } | FinalityReference;
 
 export interface TotalWeight {
     num: number;

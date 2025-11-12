@@ -39,9 +39,6 @@ import { PublicKey } from '@near-js/crypto';
 
 /** @hidden */
 export interface Provider {
-    /** @deprecated use {@link viewNodeStatus} */
-    status(): Promise<NodeStatusResult>;
-
     getNetworkId(): Promise<string>;
 
     viewAccessKey(accountId: string, publicKey: PublicKey | string, finalityQuery?: FinalityReference): Promise<AccessKeyView>;
@@ -59,8 +56,6 @@ export interface Provider {
     viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
 
     viewNodeStatus(): Promise<NodeStatusResult>;
-    /** @deprecated use {@link viewValidatorsV2} */
-    viewValidators(blockId?: BlockId): Promise<EpochValidatorInfo>;
     viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo>
 
     viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
@@ -71,26 +66,13 @@ export interface Provider {
     sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
 
-    /** @deprecated use {@link viewTransactionStatus} */
-    txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
-    /** @deprecated use {@link viewTransactionStatusWithReceipts} */
-    txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
-
     query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
     query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
 
-    /** @deprecated use {@link viewBlock} */
-    block(blockQuery: BlockId | BlockReference): Promise<BlockResult>;
     blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult>;
-    /** @deprecated use {@link viewChunk} */
-    chunk(chunkId: ChunkId): Promise<ChunkResult>;
-    /** @deprecated use {@link viewValidators} */
-    validators(blockId: BlockId | null): Promise<EpochValidatorInfo>;
-    experimental_protocolConfig(blockReference: BlockReference): Promise<NearProtocolConfig>;
+    experimental_protocolConfig(blockReference: BlockReference | { sync_checkpoint: 'genesis' }): Promise<NearProtocolConfig>;
     lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse>;
-    /** @deprecated use {@link viewGasPrice} */
-    gasPrice(blockId: BlockId | null): Promise<GasPrice>;
     accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
     accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;

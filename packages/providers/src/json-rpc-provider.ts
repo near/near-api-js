@@ -127,7 +127,7 @@ export class JsonRpcProvider implements Provider {
     public async getCurrentEpochSeatPrice(): Promise<bigint> {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
-        const { current_validators: currentValidators } = await this.viewValidators();
+        const { current_validators: currentValidators } = await this.viewValidatorsV2(null);
 
         // hard-coded in the protocol
         const maxNumberOfSeats = 300;
@@ -138,7 +138,7 @@ export class JsonRpcProvider implements Provider {
     public async getNextEpochSeatPrice(): Promise<bigint> {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
-        const { next_validators: nextValidators } = await this.viewValidators();
+        const { next_validators: nextValidators } = await this.viewValidatorsV2(null);
 
         // hard-coded in the protocol
         const maxNumberOfSeats = 300;
@@ -285,12 +285,6 @@ export class JsonRpcProvider implements Provider {
         return this.sendJsonRpc('status', []);
     }
 
-    public async viewValidators(
-        blockId?: BlockId
-    ): Promise<EpochValidatorInfo> {
-        return this.sendJsonRpc('validators', [blockId || null]);
-    }
-
     /**
      * Query validators of an epoch.
      * @see [https://docs.near.org/api/rpc/network#validation-status](https://docs.near.org/api/rpc/network#validation-status)
@@ -352,14 +346,6 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Gets the RPC's status
-     * @see [https://docs.near.org/docs/develop/front-end/rpc#general-validator-status](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
-     */
-    async status(): Promise<NodeStatusResult> {
-        return this.sendJsonRpc('status', []);
-    }
-
-    /**
      * Sends a signed transaction to the RPC
      *
      * @param signedTransaction The signed transaction being sent
@@ -391,47 +377,6 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Gets a transaction's status from the RPC
-     * @see [https://docs.near.org/docs/develop/front-end/rpc#transaction-status](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
-     *
-     * @param txHash A transaction hash as either a Uint8Array or a base58 encoded string
-     * @param accountId The NEAR account that signed the transaction
-     * @param waitUntil
-     */
-    async txStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'): Promise<FinalExecutionOutcome> {
-        if (typeof txHash === 'string') {
-            return this.txStatusString(txHash, accountId, waitUntil);
-        } else {
-            return this.txStatusUint8Array(txHash, accountId, waitUntil);
-        }
-    }
-
-    private async txStatusUint8Array(txHash: Uint8Array, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', { tx_hash: baseEncode(txHash), sender_account_id: accountId, wait_until: waitUntil });
-    }
-
-    private async txStatusString(txHash: string, accountId: string, waitUntil: string): Promise<FinalExecutionOutcome> {
-        return this.sendJsonRpc('tx', { tx_hash: txHash, sender_account_id: accountId, wait_until: waitUntil });
-    }
-
-    /**
-     * Gets a transaction's status from the RPC with receipts
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#transaction-status-with-receipts)
-     * @param txHash The hash of the transaction
-     * @param accountId The NEAR account that signed the transaction
-     * @param waitUntil
-     * @returns {Promise<FinalExecutionOutcome>}
-     */
-    async txStatusReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'): Promise<FinalExecutionOutcome> {
-        if (typeof txHash === 'string') {
-            return this.sendJsonRpc('EXPERIMENTAL_tx_status', { tx_hash: txHash, sender_account_id: accountId, wait_until: waitUntil });
-        }
-        else {
-            return this.sendJsonRpc('EXPERIMENTAL_tx_status', { tx_hash: baseEncode(txHash), sender_account_id: accountId, wait_until: waitUntil });
-        }
-    }
-
-    /**
      * Query the RPC by passing an {@link "@near-js/types".provider/request.RpcQueryRequest | RpcQueryRequest }
      * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
      *
@@ -456,19 +401,6 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Query for block info from the RPC
-     * pass block_id OR finality as blockQuery, not both
-     * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
-     *
-     * @param blockQuery {@link BlockReference} (passing a {@link BlockId} is deprecated)
-     */
-    async block(blockQuery: BlockId | BlockReference): Promise<BlockResult> {
-        const { finality } = blockQuery as any;
-        const { blockId } = blockQuery as any;
-        return this.sendJsonRpc('block', { block_id: blockId, finality });
-    }
-
-    /**
      * Query changes in block from the RPC
      * pass block_id OR finality as blockQuery, not both
      * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
@@ -477,26 +409,6 @@ export class JsonRpcProvider implements Provider {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes_in_block', { block_id: blockId, finality });
-    }
-
-    /**
-     * Queries for details about a specific chunk appending details of receipts and transactions to the same chunk data provided by a block
-     * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
-     *
-     * @param chunkId Hash of a chunk ID or shard ID
-     */
-    async chunk(chunkId: ChunkId): Promise<ChunkResult> {
-        return this.sendJsonRpc('chunk', [chunkId]);
-    }
-
-    /**
-     * Query validators of the epoch defined by the given block id.
-     * @see [https://docs.near.org/api/rpc/network#validation-status](https://docs.near.org/api/rpc/network#validation-status)
-     *
-     * @param blockId Block hash or height, or null for latest.
-     */
-    async validators(blockId: BlockId | null): Promise<EpochValidatorInfo> {
-        return this.sendJsonRpc('validators', [blockId]);
     }
 
     /**
@@ -613,16 +525,6 @@ export class JsonRpcProvider implements Provider {
             block_id: blockId,
             finality
         });
-    }
-
-    /**
-     * Returns gas price for a specific block_height or block_hash.
-     * @see [https://docs.near.org/api/rpc/gas](https://docs.near.org/api/rpc/gas)
-     *
-     * @param blockId Block hash or height, or null for latest.
-     */
-    async gasPrice(blockId: BlockId | null): Promise<GasPrice> {
-        return await this.sendJsonRpc('gas_price', [blockId]);
     }
 
     /**
