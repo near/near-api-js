@@ -15,5 +15,10 @@
     "@near-js/types": "2.5.0",
     "@near-js/utils": "2.5.0"
   },
-  "changesets": []
+  "changesets": [
+    "major-near-api-js-consolidation",
+    "sharp-trams-jam",
+    "silent-sloths-buy",
+    "tall-bats-retire"
+  ]
 }
