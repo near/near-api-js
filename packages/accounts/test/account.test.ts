@@ -283,6 +283,11 @@ describe('with deploy contract', () => {
         expect(logs).toEqual(['log1', 'log2']);
     });
 
+    test('can get logs from raw view call', async () => {
+        const result = await nearjs.provider.callFunctionRaw(contract.contractId, 'returnHiWithLogs', {});
+        expect(result.logs).toEqual(['loooog1', 'loooog2']);
+    });
+
     test('test set/remove', async () => {
         await contract.call.testSetRemove({
             args: { value: '123' },
