@@ -1,4 +1,4 @@
-import type { AbiRoot } from "@near-js/accounts";
+import type { AbiRoot } from "near-api-js";
 
 export const abi = {
     schema_version: "0.4.0",
