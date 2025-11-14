@@ -1,17 +1,17 @@
 import { expect, beforeAll, afterAll, test } from "vitest";
 
-import { Account } from "@near-js/accounts";
-import { NEAR } from "@near-js/tokens";
-import { JsonRpcProvider } from "@near-js/providers";
 import {
+    KeyPairSigner,
+    KeyPair,
+    KeyPairString,
     actionCreators,
     GlobalContractDeployMode,
     GlobalContractIdentifier,
-} from "@near-js/transactions";
-
+    JsonRpcProvider,
+    NEAR,
+    Account,
+} from "near-api-js";
 import { Worker } from "near-workspaces";
-import { KeyPair, KeyPairString } from "@near-js/crypto";
-import { KeyPairSigner } from "@near-js/signers";
 import { getRpcUrl, getSecretKey } from "./worker";
 
 let worker: Worker;

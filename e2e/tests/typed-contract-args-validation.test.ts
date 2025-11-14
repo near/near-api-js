@@ -1,12 +1,12 @@
 import { test, describe, expect, vi } from "vitest";
 
 import {
+    JsonRpcProvider,
     Account,
     ArgumentSchemaError,
     TypedContract,
     UnknownArgumentError,
-} from "@near-js/accounts";
-import { JsonRpcProvider } from "@near-js/providers";
+} from "near-api-js";
 
 const provider = new JsonRpcProvider({ url: "" });
 
