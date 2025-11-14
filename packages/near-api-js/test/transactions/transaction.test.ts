@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { actionCreators } from '../src';
+import { actionCreators } from '../../src';
 
 const { functionCall } = actionCreators;
 

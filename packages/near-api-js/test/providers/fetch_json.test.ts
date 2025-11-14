@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
+import { fetchJsonRpc, retryConfig } from '../../src/providers/fetch_json';
 
 describe('fetchJson', () => {
     test('string parameter in fetchJson', async () => {

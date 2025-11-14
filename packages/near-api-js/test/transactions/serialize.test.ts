@@ -1,20 +1,21 @@
 import { describe, expect, test } from '@jest/globals';
-import { KeyPair, PublicKey } from '@near-js/crypto';
-import { baseDecode } from '@near-js/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import { deserialize, serialize } from 'borsh';
 import * as fs from 'node:fs';
 
 
 import {
+    KeyPair,
+    PublicKey,
+    baseDecode,
     GlobalContractDeployMode,
     GlobalContractIdentifier,
     SCHEMA,
     actionCreators,
     createTransaction,
     decodeTransaction,
-    encodeTransaction
-} from '../src';
+    encodeTransaction,
+} from "../../src";
 
 const {
     addKey,
@@ -107,7 +108,7 @@ test('serialize transfer tx', async () => {
 });
 
 describe('roundtrip test', () => {
-    const dataDir = './test/data';
+    const dataDir = './test/transactions/data';
     const testFiles = fs.readdirSync(dataDir);
     for (const testFile of testFiles) {
         if (/.+\.json$/.test(testFile)) {

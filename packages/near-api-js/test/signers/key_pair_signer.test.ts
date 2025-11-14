@@ -1,15 +1,16 @@
 import { expect, test } from '@jest/globals';
 import { TextEncoder } from 'util';
 
-import { KeyPairSigner } from '../src';
-import { KeyPair, PublicKey } from '@near-js/crypto';
 import {
+    KeyPairSigner,
+    KeyPair,
+    PublicKey,
     createTransaction,
     encodeTransaction,
     actionCreators,
     decodeSignedTransaction,
     buildDelegateAction,
-} from '@near-js/transactions';
+} from "../../src";
 
 global.TextEncoder = TextEncoder;
 

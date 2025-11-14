@@ -29,6 +29,7 @@
         "exponential-backoff": "^3.1.2"
     },
     "devDependencies": {
+        "@jest/globals": "^29.7.0",
         "@types/node": "20.0.0",
         "concurrently": "9.1.2",
         "jest": "29.7.0",

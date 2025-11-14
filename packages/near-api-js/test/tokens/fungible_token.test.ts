@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { FungibleToken } from '../src';
+import { FungibleToken } from '../../src';
 
 const FT = new FungibleToken('ft.testnet', { decimals: 6, symbol: 'TEST', name: 'Test Token' });
 

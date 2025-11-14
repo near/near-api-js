@@ -1,9 +1,8 @@
 import { afterAll, beforeAll, beforeEach, expect, jest, test } from '@jest/globals';
-import { KeyPair } from '@near-js/crypto';
+
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
-import { Account, TypedContract } from '../src';
-import { KeyPairSigner } from '@near-js/signers';
+import { Account, TypedContract, KeyPair, KeyPairSigner } from '../../src';
 
 import { Worker } from 'near-workspaces';
 

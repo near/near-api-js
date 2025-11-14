@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { formatNearAmount, NEAR_NOMINATION, parseNearAmount } from '../src';
+import { formatNearAmount, NEAR_NOMINATION, parseNearAmount } from '../../src';
 
 
 test.each`
@@ -26,7 +26,7 @@ test.each`
     ${'1000100000000000000000000000000'} | ${undefined} | ${'1,000,100'}
     ${'910000000000000000000000'}        | ${0}         | ${'1'}
 `('formatNearAmount($balance, $fracDigits) returns $expected', ({ balance, fracDigits, expected }) => {
-    expect(formatNearAmount(balance, fracDigits)).toEqual(expected);
+    expect(formatNearAmount(balance as string, fracDigits as number | undefined)).toEqual(expected as string);
 });
 
 test.each`
@@ -47,7 +47,7 @@ test.each`
     ${'000000.000001'}                | ${'1000000000000000000'}
     ${'1,000,000.1'}                  | ${'1000000100000000000000000000000'}
 `('parseNearAmount($amt) returns $expected', ({ amt, expected }) => {
-    expect(parseNearAmount(amt)).toStrictEqual(expected);
+    expect(parseNearAmount(amt as string)).toStrictEqual(expected as string);
 });
 
 test('parseNearAmount fails when parsing values with ≥25 decimal places', () => {

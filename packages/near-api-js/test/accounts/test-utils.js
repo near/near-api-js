@@ -1,10 +1,7 @@
-import { KeyPair, KeyType } from '@near-js/crypto';
 import fs from 'fs';
 
-import { Account, TypedContract } from '../src';
+import { Account, TypedContract, KeyPair, KeyType, KeyPairSigner, JsonRpcProvider } from '../../src';
 import Config from './config';
-import { KeyPairSigner } from '@near-js/signers';
-import { JsonRpcProvider } from '@near-js/providers';
 
 export const networkId = 'unittest';
 

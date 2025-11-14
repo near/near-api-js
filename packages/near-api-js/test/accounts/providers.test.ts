@@ -1,12 +1,10 @@
 import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
-import { KeyPair } from '@near-js/crypto';
-import { ErrorMessages } from '@near-js/utils';
 import { base58 } from '@scure/base';
+import { KeyPair, ErrorMessages, IdType } from '../../src'
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
 import { Worker } from 'near-workspaces';
-import { IdType } from '@near-js/types';
 
 jest.setTimeout(60000);
 
@@ -32,7 +30,9 @@ describe('providers', () => {
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
         const responseWithString = await near.provider.viewTransactionStatus(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
         const responseWithUint8Array = await near.provider.viewTransactionStatus(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
+        // @ts-expect-error
         expect(responseWithString).toMatchObject(outcome);
+        // @ts-expect-error
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
     
@@ -51,7 +51,9 @@ describe('providers', () => {
         expect('tokens_burnt' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('executor_id' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('status' in responseWithString.transaction_outcome.outcome).toBeTruthy();
+        // @ts-expect-error
         expect(responseWithString).toMatchObject(reciepts);
+        // @ts-expect-error
         expect(responseWithUint8Array).toMatchObject(reciepts);
     });
     

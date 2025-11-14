@@ -1,14 +1,10 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { KeyPair, KeyType } from '@near-js/crypto';
-import { getTransactionLastResult } from '@near-js/utils';
-import { actionCreators } from '@near-js/transactions';
 import * as fs from 'fs';
 
-import { Account, TypedContract } from '../src';
+import { Account, TypedContract, KeyPairSigner, KeyPair, KeyType, getTransactionLastResult, actionCreators } from '../../src';
 import { createAccount, generateUniqueString, HELLO_WASM_PATH, HELLO_WASM_BALANCE, setUpTestConnection } from './test-utils';
 
 import { Worker } from 'near-workspaces';
-import { KeyPairSigner } from '@near-js/signers';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 let workingAccount: Account;

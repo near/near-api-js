@@ -1,5 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { PublicKey, keyToImplicitAddress } from '../src';
+import { PublicKey } from '../../src';
+import { keyToImplicitAddress } from '../../src/crypto';
 
 test.each`
     publicKey                                                 | expected

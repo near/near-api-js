@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { formatError, getErrorTypeFromErrorMessage, parseRpcError, ServerError } from '../src';
+import { formatError, getErrorTypeFromErrorMessage, parseRpcError, ServerError } from '../../src';
 
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 import { Worker } from 'near-workspaces';
-import { TypedContract } from '../src';
+import { TypedContract } from '../../src';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 

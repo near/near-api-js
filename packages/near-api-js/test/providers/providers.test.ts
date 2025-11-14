@@ -1,8 +1,7 @@
 import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
-import { getTransactionLastResult } from '@near-js/utils';
 import { Worker } from 'near-workspaces';
 import { TextEncoder } from 'util';
-import { FailoverRpcProvider, JsonRpcProvider, Provider } from '../src';
+import { FailoverRpcProvider, JsonRpcProvider, Provider, getTransactionLastResult } from '../../src';
 
 jest.setTimeout(20000);
 global.TextEncoder = TextEncoder;

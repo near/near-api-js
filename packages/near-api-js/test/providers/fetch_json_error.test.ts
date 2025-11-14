@@ -6,8 +6,7 @@ import {
     beforeEach,
     afterAll,
 } from '@jest/globals';
-import { fetchJsonRpc, retryConfig } from '../src/fetch_json';
-import { ProviderError } from '../src/fetch_json';
+import { ProviderError, fetchJsonRpc, retryConfig } from '../../src/providers/fetch_json';
 
 describe('fetchJsonError', () => {
     const RPC_URL = 'https://rpc.testnet.near.org';
