@@ -1,39 +1,12 @@
-/**
- * NEAR API JavaScript Library
- *
- * A comprehensive library for interacting with the NEAR Protocol blockchain.
- * This package aggregates all @near-js/* packages for a simple developer experience
- * while maintaining tree-shakeability.
- *
- * @example Basic usage
- * ```ts
- * import { connect, keyStores } from 'near-api-js';
- *
- * const keyStore = new keyStores.InMemoryKeyStore();
- * const near = await connect({
- *   networkId: 'testnet',
- *   keyStore,
- *   nodeUrl: 'https://rpc.testnet.near.org'
- * });
- * ```
- *
- * @example Tree-shakeable imports
- * ```ts
- * import { Account, Contract, KeyPair } from 'near-api-js';
- * ```
- *
- * @module near-api-js
- */
-
 // ============================================================================
 // Core Types
 // ============================================================================
-export * from '@near-js/types';
+export * from './types';
 
 // ============================================================================
 // Utilities
 // ============================================================================
-export * from '@near-js/utils';
+export * from './utils';
 
 // ============================================================================
 // Cryptography
@@ -44,34 +17,34 @@ export {
     KeyPairEd25519,
     KeyPairSecp256k1,
     PublicKey,
-} from '@near-js/crypto';
+} from './crypto';
 export type {
     CurveType,
     KeyPairString,
     Signature as CryptoSignature,
-} from '@near-js/crypto';
+} from './crypto';
 
 // ============================================================================
 // Transactions
 // ============================================================================
-export * from '@near-js/transactions';
+export * from './transactions';
 
 // ============================================================================
 // Providers
 // ============================================================================
-export * from '@near-js/providers';
+export * from './providers';
 
 // ============================================================================
 // Signers
 // ============================================================================
-export * from '@near-js/signers';
+export * from './signers';
 
 // ============================================================================
 // Accounts
 // ============================================================================
-export * from '@near-js/accounts';
+export * from './accounts';
 
 // ============================================================================
 // Tokens (FT & NFT standards)
 // ============================================================================
-export * from '@near-js/tokens';
+export * from './tokens';
