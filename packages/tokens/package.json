@@ -26,10 +26,7 @@
 	},
 	"type": "module",
 	"scripts": {
-		"build": "tsup",
 		"clean": "rimraf lib/ ft.js ft.d.cts nft.js nft.d.cts mainnet.js mainnet.d.cts testnet.js testnet.d.cts ft/",
-		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
-		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
 		"test": "jest",
 		"check-exports": "attw --pack ."
 	},

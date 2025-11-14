@@ -6,10 +6,7 @@
 	"module": "lib/esm/index.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsup",
 		"clean": "rimraf lib/",
-		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc",
-		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts test/**/*.ts --no-eslintrc --fix",
 		"test": "jest",
 		"check-exports": "attw --pack ."
 	},

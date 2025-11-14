@@ -7,9 +7,6 @@
 	"types": "./lib/esm/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsup",
-		"lint": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts",
-		"lint:fix": "eslint -c ../../.eslintrc.ts.yml src/**/*.ts --fix",
 		"check-exports": "attw --pack ."
 	},
 	"keywords": [],
