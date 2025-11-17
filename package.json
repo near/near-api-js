@@ -51,7 +51,8 @@
         "rimraf": "6.0.1",
         "tsup": "8.5.0",
         "typedoc": "0.27.9",
-        "typescript": "5.4.5"
+        "typescript": "5.4.5",
+        "ts-node": "10.9.2"
     },
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
