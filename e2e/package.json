@@ -11,14 +11,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@near-js/accounts": "file:../packages/accounts",
-        "@near-js/crypto": "file:../packages/crypto",
-        "@near-js/providers": "file:../packages/providers",
-        "@near-js/signers": "file:../packages/signers",
-        "@near-js/tokens": "file:../packages/tokens",
-        "@near-js/transactions": "file:../packages/transactions",
-        "@near-js/types": "file:../packages/types",
-        "@near-js/utils": "file:../packages/utils"
+        "near-api-js": "file:../packages/near-api-js"
     },
     "devDependencies": {
         "@types/node": "20.0.0",
