@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  near-sandbox: 0.0.18
+
 importers:
 
   .:
@@ -2420,8 +2423,8 @@ packages:
   near-hello@0.5.1:
     resolution: {integrity: sha512-k7S8VFyESWgkKYDso99B4XbxAdo0VX9b3+GAaO5PvMgQjNr/6o09PHRywg/NkBQpf+ZYj7nNpJcyrNJGQsvA3w==}
 
-  near-sandbox@0.1.5:
-    resolution: {integrity: sha512-oVXDaFXeB/tYPuE78pG505astePJWlo68u2qlJ8TcFxL4cT0b13Go5k+0/kpPDiJ0375LPzlcn7MdHvyNelWcA==}
+  near-sandbox@0.0.18:
+    resolution: {integrity: sha512-6/AjLOzGLQsSzTHavrRe7CVMU5+CUnTg/7g66a7+jkP22ff5CupnwXrUE14iJ2QyyhRZr7VuQQj/G+glUmaNQg==}
     hasBin: true
 
   near-workspaces@5.0.0:
@@ -6011,7 +6014,7 @@ snapshots:
 
   near-hello@0.5.1: {}
 
-  near-sandbox@0.1.5:
+  near-sandbox@0.0.18:
     dependencies:
       got: 11.8.6
       tar: 6.2.1
@@ -6025,7 +6028,7 @@ snapshots:
       fs-extra: 10.1.0
       js-sha256: 0.9.0
       near-api-js: 5.1.1
-      near-sandbox: 0.1.5
+      near-sandbox: 0.0.18
       node-port-check: 2.0.1
       promisify-child-process: 4.1.2
       proper-lockfile: 4.1.2

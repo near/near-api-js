@@ -76,5 +76,8 @@
         "dist"
     ],
     "author": "NEAR Inc",
-    "sideEffects": false
+    "sideEffects": false,
+    "resolutions": {
+        "near-sandbox": "0.0.18"
+    }
 }
