@@ -11,7 +11,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "near-api-js": "file:../packages/near-api-js"
+        "near-api-js": "file:.."
     },
     "devDependencies": {
         "@types/node": "20.0.0",
