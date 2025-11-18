@@ -67,7 +67,7 @@ export interface ViewContractStateParams {
 export interface CallFunctionParams {
     contractId: string;
     method: string;
-    args: Record<string, unknown>;
+    args: Uint8Array | object;
     blockQuery?: BlockReference;
 }
 
@@ -110,7 +110,7 @@ export interface Provider {
     accessKeyChanges(params: { accountIdArray: string[]; blockQuery: BlockId | BlockReference }): Promise<ChangeResult>;
     singleAccessKeyChanges(params: { accessKeyArray: AccessKeyWithPublicKey[]; blockQuery: BlockId | BlockReference }): Promise<ChangeResult>;
     accountChanges(params: { accountIdArray: string[]; blockQuery: BlockId | BlockReference }): Promise<ChangeResult>;
-    contractStateChanges(params: { accountIdArray: string[]; blockQuery: BlockId | BlockReference; keyPrefix: string }): Promise<ChangeResult>;
+    contractStateChanges(params: { accountIdArray: string[]; blockQuery: BlockId | BlockReference; keyPrefix?: string }): Promise<ChangeResult>;
     contractCodeChanges(params: { accountIdArray: string[]; blockQuery: BlockId | BlockReference }): Promise<ChangeResult>;
 
     getCurrentEpochSeatPrice(): Promise<bigint>;

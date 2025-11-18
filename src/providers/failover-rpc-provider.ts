@@ -34,12 +34,10 @@ import {
     ContractStateView,
     CallContractViewFunctionResultRaw,
     ExecutionOutcomeReceiptDetail,
-    FinalityReference,
 } from '../types';
 import { SignedTransaction } from '../transactions';
 import { Provider } from './provider';
 import { TxExecutionStatus } from '../types';
-import { PublicKey } from '../crypto';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
@@ -212,7 +210,7 @@ export class FailoverRpcProvider implements Provider {
     async query<T extends QueryResponseKind>(
         params: RpcQueryRequest | { path: string; data: string }
     ): Promise<T> {
-        return this.withBackoff((currentProvider) => currentProvider.query<T>(params)
+        return this.withBackoff((currentProvider) => currentProvider.query<T>(params as any)
         );
     }
 

@@ -36,7 +36,6 @@ import {
     TypedError,
     AccessKeyViewRaw,
     AccessKeyView,
-    FinalityReference,
     AccessKeyList,
     AccountView,
     AccountViewRaw,
@@ -54,7 +53,6 @@ import {
 import { Provider } from './provider';
 import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
 import { TxExecutionStatus } from '../types';
-import { PublicKey } from '../crypto';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
@@ -253,7 +251,7 @@ export class JsonRpcProvider implements Provider {
         args,
         blockQuery = { finality: DEFAULT_FINALITY }
     }: import('./provider').CallFunctionParams): Promise<CallContractViewFunctionResultRaw> {
-        const argsBuffer = ArrayBuffer.isView(args) ? Buffer.from(args) : Buffer.from(JSON.stringify(args));
+        const argsBuffer = ArrayBuffer.isView(args) ? Buffer.from(args as Uint8Array) : Buffer.from(JSON.stringify(args));
         const argsBase64 = argsBuffer.toString('base64');
 
         return await (

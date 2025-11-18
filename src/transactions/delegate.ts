@@ -74,7 +74,7 @@ export function buildDelegateAction({
                 case 'AddKey': {
                     // @ts-expect-error type workaround
                     const { publicKey, accessKey } = a.params;
-                    return addKey(publicKey, accessKey);
+                    return addKey({ publicKey, accessKey });
                 }
                 case 'CreateAccount': {
                     // @ts-expect-error type workaround
@@ -95,11 +95,11 @@ export function buildDelegateAction({
                 case 'FunctionCall': {
                     // @ts-expect-error type workaround
                     const { methodName, args, gas, deposit } = a.params;
-                    return functionCall(methodName, args, gas, deposit);
+                    return functionCall({ methodName, args, gas, deposit });
                 }
                 case 'Stake': {
                     // @ts-expect-error type workaround
-                    return stake(a.params.stake, a.params.publicKey);
+                    return stake({ stake: a.params.stake, publicKey: a.params.publicKey });
                 }
                 case 'Transfer': {
                     // @ts-expect-error type workaround
@@ -113,7 +113,7 @@ export function buildDelegateAction({
                     const modeInstance = deployMode instanceof GlobalContractDeployMode
                         ? deployMode
                         : new GlobalContractDeployMode(deployMode);
-                    return deployGlobalContract(code, modeInstance);
+                    return deployGlobalContract({ code, deployMode: modeInstance });
                 }
                 case 'UseGlobalContract': {
                     // @ts-expect-error type workaround
