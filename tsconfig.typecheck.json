@@ -1,0 +1,19 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "skipLibCheck": true,
+        "noEmit": true,
+        "types": ["node", "jest"]
+    },
+    "include": [
+        "src/**/*",
+        "test/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "lib",
+        "dist",
+        "**/node_modules"
+    ],
+    "files": []
+}

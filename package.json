@@ -62,6 +62,7 @@
         "prebuild": "pnpm clean",
         "build": "tsc -p ./tsconfig.json",
         "test": "jest test --passWithNoTests --rootDir test",
+        "typecheck": "tsc --noEmit -p ./tsconfig.typecheck.json",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
         "lint:fix": "pnpm lint:src:fix && pnpm lint:test:fix",

@@ -30,9 +30,7 @@ describe('providers', () => {
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
         const responseWithString = await near.provider.viewTransactionStatus(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
         const responseWithUint8Array = await near.provider.viewTransactionStatus(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
-        // @ts-expect-error
         expect(responseWithString).toMatchObject(outcome);
-        // @ts-expect-error
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
     
@@ -51,9 +49,7 @@ describe('providers', () => {
         expect('tokens_burnt' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('executor_id' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('status' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        // @ts-expect-error
         expect(responseWithString).toMatchObject(reciepts);
-        // @ts-expect-error
         expect(responseWithUint8Array).toMatchObject(reciepts);
     });
     
@@ -63,7 +59,6 @@ describe('providers', () => {
             request_type: 'view_account',
             finality: 'optimistic',
             account_id: account.accountId });
-        // @ts-expect-error "code_hash" exists in response
         expect(response.code_hash).toEqual('11111111111111111111111111111111');
     });
     
@@ -154,7 +149,6 @@ describe('providers', () => {
         }
     
         const comittedStatus = await waitForStatusMatching(status =>
-            // @ts-expect-error test input
             status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash);
         const BLOCKS_UNTIL_FINAL = 2;
         const finalizedStatus = await waitForStatusMatching(status =>
@@ -190,7 +184,6 @@ describe('providers', () => {
         // Use old block hash as light client head should fail
         lightClientRequest = {
             type: IdType.Transaction,
-            // @ts-expect-error test input
             light_client_head: executionOutcome.transaction_outcome.block_hash,
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,

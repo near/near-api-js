@@ -29,11 +29,8 @@ describe('with promises', () => {
     const contractName2 = generateUniqueString('cnt');
 
     beforeAll(async () => {
-        // @ts-expect-error abi is unknown
         contract = await deployContract(nearjs.account, contractName);
-        // @ts-expect-error abi is unknown
         contract1 = await deployContract(nearjs.account, contractName1);
-        // @ts-expect-error abi is unknown
         contract2 = await deployContract(nearjs.account, contractName2);
     });
 
