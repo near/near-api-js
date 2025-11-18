@@ -323,7 +323,7 @@ test('final tx result with null', async () => {
 });
 
 // TODO: Use a near-workspaces Worker when time traveling is available
-test.skip('json rpc get next light client block', async () => {
+test('json rpc get next light client block', async () => {
     const provider = new JsonRpcProvider({ url: 'https://rpc.testnet.near.org' });
     const stat = await provider.viewNodeStatus();
 
