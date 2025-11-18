@@ -29,8 +29,11 @@ describe('with promises', () => {
     const contractName2 = generateUniqueString('cnt');
 
     beforeAll(async () => {
+        // @ts-ignore - deployContract returns contract without abi property in type
         contract = await deployContract(nearjs.account, contractName);
+        // @ts-ignore - deployContract returns contract without abi property in type
         contract1 = await deployContract(nearjs.account, contractName1);
+        // @ts-ignore - deployContract returns contract without abi property in type
         contract2 = await deployContract(nearjs.account, contractName2);
     });
 
