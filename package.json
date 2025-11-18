@@ -76,7 +76,8 @@
         "clean": "pnpm rimraf lib",
         "check-exports": "attw --pack .",
         "docs:generate": "typedoc",
-        "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules"
+        "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
+        "release": "changeset publish"
     },
     "files": [
         "lib",
