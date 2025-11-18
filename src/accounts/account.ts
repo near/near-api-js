@@ -66,15 +66,21 @@ export interface AccountState {
  * be used to perform all common actions such as
  * transferring tokens and calling functions
  */
+export interface AccountParams {
+    accountId: string;
+    provider: Provider;
+    signer?: Signer;
+}
+
 export class Account {
     public readonly accountId: string;
     public readonly provider: Provider;
     private signer?: Signer;
 
-    constructor(accountId: string, provider: Provider, signer?: Signer) {
-        this.accountId = accountId;
-        this.provider = provider;
-        this.signer = signer;
+    constructor(params: AccountParams) {
+        this.accountId = params.accountId;
+        this.provider = params.provider;
+        this.signer = params.signer;
     }
 
     /**
@@ -96,10 +102,11 @@ export class Account {
      */
     public async getState(): Promise<AccountState> {
         const protocolConfig = await this.provider.experimental_protocolConfig({
-            finality: DEFAULT_FINALITY,
+            blockReference: { finality: DEFAULT_FINALITY },
         });
-        const state = await this.provider.viewAccount(this.accountId, {
-            finality: DEFAULT_FINALITY,
+        const state = await this.provider.viewAccount({
+            accountId: this.accountId,
+            blockQuery: { finality: DEFAULT_FINALITY },
         });
 
         const costPerByte = BigInt(
@@ -127,11 +134,13 @@ export class Account {
      * Calls {@link Provider.viewAccessKey} to retrieve information for a
      * specific key in the account
      */
-    public async getAccessKey(
-        publicKey: PublicKey | string
-    ): Promise<AccessKeyView> {
-        return this.provider.viewAccessKey(this.accountId, publicKey, {
-            finality: DEFAULT_FINALITY,
+    public async getAccessKey(params: {
+        publicKey: PublicKey | string;
+    }): Promise<AccessKeyView> {
+        return this.provider.viewAccessKey({
+            accountId: this.accountId,
+            publicKey: params.publicKey,
+            finalityQuery: { finality: DEFAULT_FINALITY },
         });
     }
 
@@ -139,8 +148,9 @@ export class Account {
      * Calls {@link Provider.viewAccessKeyList} to retrieve the account's keys
      */
     public async getAccessKeyList(): Promise<AccessKeyList> {
-        return this.provider.viewAccessKeyList(this.accountId, {
-            finality: DEFAULT_FINALITY,
+        return this.provider.viewAccessKeyList({
+            accountId: this.accountId,
+            finalityQuery: { finality: DEFAULT_FINALITY },
         });
     }
 
@@ -149,8 +159,9 @@ export class Account {
      * contract code and its hash
      */
     public async getContractCode(): Promise<ContractCodeView> {
-        return this.provider.viewContractCode(this.accountId, {
-            finality: DEFAULT_FINALITY,
+        return this.provider.viewContractCode({
+            contractId: this.accountId,
+            blockQuery: { finality: DEFAULT_FINALITY },
         });
     }
 
@@ -158,61 +169,64 @@ export class Account {
      * Calls {@link Provider.viewContractState} to retrieve the keys and values
      * stored on the account's contract
      */
-    public async getContractState(prefix?: string): Promise<ContractStateView> {
-        return this.provider.viewContractState(this.accountId, prefix, {
-            finality: DEFAULT_FINALITY,
+    public async getContractState(params?: { prefix?: string }): Promise<ContractStateView> {
+        return this.provider.viewContractState({
+            contractId: this.accountId,
+            prefix: params?.prefix,
+            blockQuery: { finality: DEFAULT_FINALITY },
         });
     }
 
     /**
      * Create a transaction that can be later signed with a {@link Signer}
      *
-     * @param receiverId Account against which to perform the actions
-     * @param actions Actions to perform
-     * @param publicKey The public part of the key that will be used to sign the transaction
+     * @param params.receiverId Account against which to perform the actions
+     * @param params.actions Actions to perform
+     * @param params.publicKey The public part of the key that will be used to sign the transaction
      */
-    public async createTransaction(
-        receiverId: string,
-        actions: Action[],
-        publicKey: PublicKey | string
-    ) {
+    public async createTransaction(params: {
+        receiverId: string;
+        actions: Action[];
+        publicKey: PublicKey | string;
+    }) {
+        const { receiverId, actions, publicKey } = params;
         if (!publicKey) throw new Error('Please provide a public key');
 
         const pk = PublicKey.from(publicKey);
 
-        const accessKey = await this.getAccessKey(pk);
+        const accessKey = await this.getAccessKey({ publicKey: pk });
 
         const block = await this.provider.viewBlock({
-            finality: DEFAULT_FINALITY,
+            blockQuery: { finality: DEFAULT_FINALITY },
         });
         const recentBlockHash = block.header.hash;
 
         const nonce = BigInt(accessKey.nonce) + 1n;
 
-        return createTransaction(
-            this.accountId,
-            pk,
+        return createTransaction({
+            signerId: this.accountId,
+            publicKey: pk,
             receiverId,
-            nonce + 1n,
+            nonce: nonce + 1n,
             actions,
-            baseDecode(recentBlockHash)
-        );
+            blockHash: baseDecode(recentBlockHash),
+        });
     }
 
     /**
      * Create a signed transaction ready to be broadcast by a {@link Provider}
      */
-    public async createSignedTransaction(
-        receiverId: string,
-        actions: Action[]
-    ): Promise<SignedTransaction> {
+    public async createSignedTransaction(params: {
+        receiverId: string;
+        actions: Action[];
+    }): Promise<SignedTransaction> {
         if (!this.signer) throw new Error('Please set a signer');
 
-        const tx = await this.createTransaction(
-            receiverId,
-            actions,
-            await this.signer.getPublicKey()
-        );
+        const tx = await this.createTransaction({
+            receiverId: params.receiverId,
+            actions: params.actions,
+            publicKey: await this.signer.getPublicKey(),
+        });
 
         const [, signedTx] = await this.signer.signTransaction(tx);
 
@@ -222,25 +236,27 @@ export class Account {
     /**
      * Create a meta transaction ready to be signed by a {@link Signer}
      *
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the meta transaction
-     * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     * @param params.receiverId NEAR account receiving the transaction
+     * @param params.actions list of actions to perform as part of the meta transaction
+     * @param params.blockHeightTtl number of blocks after which a meta transaction will expire if not processed (default: 200)
+     * @param params.publicKey The public key that will be used to sign the transaction
      */
-    public async createMetaTransaction(
-        receiverId: string,
-        actions: Action[],
-        blockHeightTtl: number = 200,
-        publicKey: PublicKey | string
-    ): Promise<DelegateAction> {
+    public async createMetaTransaction(params: {
+        receiverId: string;
+        actions: Action[];
+        blockHeightTtl?: number;
+        publicKey: PublicKey | string;
+    }): Promise<DelegateAction> {
+        const { receiverId, actions, blockHeightTtl = 200, publicKey } = params;
         if (!publicKey) throw new Error('Please provide a public key');
 
         const pk = PublicKey.from(publicKey);
 
-        const accessKey = await this.getAccessKey(pk);
+        const accessKey = await this.getAccessKey({ publicKey: pk });
         const nonce = BigInt(accessKey.nonce) + 1n;
 
         const { header } = await this.provider.viewBlock({
-            finality: DEFAULT_FINALITY,
+            blockQuery: { finality: DEFAULT_FINALITY },
         });
 
         const maxBlockHeight = BigInt(header.height) + BigInt(blockHeightTtl);
@@ -258,23 +274,23 @@ export class Account {
     /**
      * Create a signed MetaTransaction that can be broadcasted to a relayer
      *
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the meta transaction
-     * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     * @param params.receiverId NEAR account receiving the transaction
+     * @param params.actions list of actions to perform as part of the meta transaction
+     * @param params.blockHeightTtl number of blocks after which a meta transaction will expire if not processed (default: 200)
      */
-    public async createSignedMetaTransaction(
-        receiverId: string,
-        actions: Action[],
-        blockHeightTtl: number = 200
-    ): Promise<[Uint8Array, SignedDelegate]> {
+    public async createSignedMetaTransaction(params: {
+        receiverId: string;
+        actions: Action[];
+        blockHeightTtl?: number;
+    }): Promise<[Uint8Array, SignedDelegate]> {
         if (!this.signer) throw new Error('Please set a signer');
 
-        const delegateAction = await this.createMetaTransaction(
-            receiverId,
-            actions,
-            blockHeightTtl,
-            await this.signer.getPublicKey()
-        );
+        const delegateAction = await this.createMetaTransaction({
+            receiverId: params.receiverId,
+            actions: params.actions,
+            blockHeightTtl: params.blockHeightTtl,
+            publicKey: await this.signer.getPublicKey(),
+        });
 
         return this.signer.signDelegateAction(delegateAction);
     }
@@ -299,15 +315,15 @@ export class Account {
         waitUntil?: TxExecutionStatus;
         throwOnFailure?: boolean;
     }): Promise<FinalExecutionOutcome> {
-        const signedTx = await this.createSignedTransaction(
+        const signedTx = await this.createSignedTransaction({
             receiverId,
-            actions
-        );
+            actions,
+        });
 
-        const result = await this.provider.sendTransactionUntil(
-            signedTx,
-            waitUntil
-        );
+        const result = await this.provider.sendTransactionUntil({
+            signedTransaction: signedTx,
+            waitUntil,
+        });
 
         if (
             throwOnFailure &&
@@ -348,31 +364,32 @@ export class Account {
 
     /**
      * Creates a new NEAR account with a given ID and public key.
-     * 
+     *
      * This method can create two types of accounts:
-     * 
+     *
      * 1. Top-level accounts of the form `name.tla` (e.g., `bob.near`):
-     * 
+     *
      * 2. Sub-accounts of the current account (e.g., `sub.ana.near`):
      *    - The new account ID must end with the current account ID
      *    - Example: If your account is `ana.near`, you can create `sub.ana.near`
      *
-     * @param newAccountId the new account to create (e.g. bob.near or sub.ana.near)
-     * @param publicKey the public part of the key that will control the account
-     * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
+     * @param params.newAccountId the new account to create (e.g. bob.near or sub.ana.near)
+     * @param params.publicKey the public part of the key that will control the account
+     * @param params.nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
      *
      */
-    public async createAccount(
-        newAccountId: string,
-        publicKey: PublicKey | string,
-        nearToTransfer: bigint | string | number = '0'
-    ): Promise<FinalExecutionOutcome> {
+    public async createAccount(params: {
+        newAccountId: string;
+        publicKey: PublicKey | string;
+        nearToTransfer?: bigint | string | number;
+    }): Promise<FinalExecutionOutcome> {
+        const { newAccountId, publicKey, nearToTransfer = '0' } = params;
         if (newAccountId.endsWith(this.accountId)) {
-            return this.createSubAccount(
-                newAccountId,
+            return this.createSubAccount({
+                accountOrPrefix: newAccountId,
                 publicKey,
-                nearToTransfer
-            );
+                nearToTransfer,
+            });
         }
 
         const splitted = newAccountId.split('.');
@@ -386,15 +403,15 @@ export class Account {
         return this.signAndSendTransaction({
             receiverId: TLA,
             actions: [
-                functionCall(
-                    'create_account',
-                    {
+                functionCall({
+                    methodName: 'create_account',
+                    args: {
                         new_account_id: newAccountId,
                         new_public_key: publicKey.toString(),
                     },
-                    BigInt('60000000000000'),
-                    BigInt(nearToTransfer)
-                ),
+                    gas: BigInt('60000000000000'),
+                    deposit: BigInt(nearToTransfer),
+                }),
             ],
         });
     }
@@ -403,16 +420,17 @@ export class Account {
      * Creates a sub account of this account. For example, if the account is
      * ana.near, you can create sub.ana.near.
      *
-     * @param accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
-     * @param publicKey the public part of the key that will control the account
-     * @param nearToTransfer how much NEAR to transfer to the account (default: 0)
+     * @param params.accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
+     * @param params.publicKey the public part of the key that will control the account
+     * @param params.nearToTransfer how much NEAR to transfer to the account (default: 0)
      *
      */
-    public async createSubAccount(
-        accountOrPrefix: string,
-        publicKey: PublicKey | string,
-        nearToTransfer: bigint | string | number = '0'
-    ): Promise<FinalExecutionOutcome> {
+    public async createSubAccount(params: {
+        accountOrPrefix: string;
+        publicKey: PublicKey | string;
+        nearToTransfer?: bigint | string | number;
+    }): Promise<FinalExecutionOutcome> {
+        const { accountOrPrefix, publicKey, nearToTransfer = '0' } = params;
         if (!this.signer) throw new Error('Please set a signer');
 
         const newAccountId = accountOrPrefix.includes('.')
@@ -430,7 +448,7 @@ export class Account {
         const actions = [
             createAccount(),
             transfer(BigInt(nearToTransfer)),
-            addKey(PublicKey.from(publicKey), fullAccessKey()),
+            addKey({ publicKey: PublicKey.from(publicKey), accessKey: fullAccessKey() }),
         ];
 
         return this.signAndSendTransaction({
@@ -445,48 +463,48 @@ export class Account {
      *
      * Important: Deleting an account does not transfer FTs or NFTs
      *
-     * @param beneficiaryId Will receive the account's remaining balance
+     * @param params.beneficiaryId Will receive the account's remaining balance
      */
-    public async deleteAccount(
-        beneficiaryId: string
-    ): Promise<FinalExecutionOutcome> {
+    public async deleteAccount(params: {
+        beneficiaryId: string;
+    }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteAccount(beneficiaryId)],
+            actions: [deleteAccount(params.beneficiaryId)],
         });
     }
 
     /**
      * Deploy a smart contract in the account
      *
-     * @param code The compiled contract code bytes
+     * @param params.code The compiled contract code bytes
      */
-    public async deployContract(
-        code: Uint8Array
-    ): Promise<FinalExecutionOutcome> {
+    public async deployContract(params: {
+        code: Uint8Array;
+    }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deployContract(code)],
+            actions: [deployContract(params.code)],
         });
     }
 
     /**
      * Deploy a global contract that can be reused by multiple accounts
      *
-     * @param code The compiled contract code bytes
-     * @param deployMode Deploy mode - "codeHash" for immutable contracts, "accountId" for updateable contracts
+     * @param params.code The compiled contract code bytes
+     * @param params.deployMode Deploy mode - "codeHash" for immutable contracts, "accountId" for updateable contracts
      */
-    public async deployGlobalContract(
-        code: Uint8Array,
-        deployMode: 'codeHash' | 'accountId'
-    ): Promise<FinalExecutionOutcome> {
-        const mode = deployMode === 'codeHash' 
+    public async deployGlobalContract(params: {
+        code: Uint8Array;
+        deployMode: 'codeHash' | 'accountId';
+    }): Promise<FinalExecutionOutcome> {
+        const mode = params.deployMode === 'codeHash'
             ? new GlobalContractDeployMode({ CodeHash: null })
             : new GlobalContractDeployMode({ AccountId: null });
-            
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deployGlobalContract(code, mode)],
+            actions: [deployGlobalContract({ code: params.code, deployMode: mode })],
         });
     }
 
@@ -535,14 +553,14 @@ export class Account {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [
-                addKey(
-                    PublicKey.from(publicKey),
-                    functionCallAccessKey(
-                        contractId,
+                addKey({
+                    publicKey: PublicKey.from(publicKey),
+                    accessKey: functionCallAccessKey({
+                        receiverId: contractId,
                         methodNames,
-                        BigInt(allowance)
-                    )
-                ),
+                        allowance: BigInt(allowance),
+                    }),
+                }),
             ],
         });
     }
@@ -550,28 +568,28 @@ export class Account {
     /**
      * Add a full access key to the account
      *
-     * @param publicKey The public key to be added
+     * @param params.publicKey The public key to be added
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    public async addFullAccessKey(
-        publicKey: PublicKey | string
-    ): Promise<FinalExecutionOutcome> {
+    public async addFullAccessKey(params: {
+        publicKey: PublicKey | string;
+    }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [addKey(PublicKey.from(publicKey), fullAccessKey())],
+            actions: [addKey({ publicKey: PublicKey.from(params.publicKey), accessKey: fullAccessKey() })],
         });
     }
 
     /**
-     * @param publicKey The public key to be deleted
+     * @param params.publicKey The public key to be deleted
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    public async deleteKey(
-        publicKey: PublicKey | string
-    ): Promise<FinalExecutionOutcome> {
+    public async deleteKey(params: {
+        publicKey: PublicKey | string;
+    }): Promise<FinalExecutionOutcome> {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deleteKey(PublicKey.from(publicKey))],
+            actions: [deleteKey(PublicKey.from(params.publicKey))],
         });
     }
 
@@ -629,7 +647,12 @@ export class Account {
         return await this.signAndSendTransaction({
             receiverId: contractId,
             actions: [
-                functionCall(methodName, args, BigInt(gas), BigInt(deposit)),
+                functionCall({
+                    methodName,
+                    args,
+                    gas: BigInt(gas),
+                    deposit: BigInt(deposit),
+                }),
             ],
             waitUntil,
         });
@@ -668,12 +691,13 @@ export class Account {
 
     /**
      *
-     * @param token The token to check the balance of. Defaults to Native NEAR.
+     * @param params.token The token to check the balance of. Defaults to Native NEAR.
      * @returns The available balance of the account in units (e.g. yoctoNEAR).
      */
-    public async getBalance(
-        token: NativeToken | FungibleToken = NEAR
-    ): Promise<bigint> {
+    public async getBalance(params?: {
+        token?: NativeToken | FungibleToken;
+    }): Promise<bigint> {
+        const token = params?.token || NEAR;
         return token.getBalance(this);
     }
 
