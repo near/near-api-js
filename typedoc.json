@@ -1,9 +1,11 @@
 {
-  "extends": [
-    "../../typedoc.json"
-  ],
-  "entryPoints": [
-    "src"
-  ],
-  "entryPointStrategy": "expand",
+    "includeVersion": true,
+    "entryPoints": ["src"],
+    "entryPointStrategy": "expand",
+    "githubPages": true,
+    "validation": {
+        "notExported": false
+    },
+    "out": "docs",
+    "readme": "./docs/README_TYPEDOC.md"
 }
