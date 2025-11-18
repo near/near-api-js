@@ -28,8 +28,8 @@ describe('providers', () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
-        const responseWithString = await near.provider.viewTransactionStatus(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
-        const responseWithUint8Array = await near.provider.viewTransactionStatus(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
+        const responseWithString = await near.provider.viewTransactionStatus({ txHash: outcome.transaction.hash, accountId: sender.accountId, waitUntil: 'EXECUTED_OPTIMISTIC' });
+        const responseWithUint8Array = await near.provider.viewTransactionStatus({ txHash: base58.decode(outcome.transaction.hash), accountId: sender.accountId, waitUntil: 'EXECUTED_OPTIMISTIC' });
         // @ts-expect-error
         expect(responseWithString).toMatchObject(outcome);
         // @ts-expect-error
@@ -41,9 +41,9 @@ describe('providers', () => {
         const receiver = await createAccount(near);
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
         const reciepts = await near.provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
-    
-        const responseWithString = await near.provider.viewTransactionStatusWithReceipts(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
-        const responseWithUint8Array = await near.provider.viewTransactionStatusWithReceipts(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
+
+        const responseWithString = await near.provider.viewTransactionStatusWithReceipts({ txHash: outcome.transaction.hash, accountId: sender.accountId, waitUntil: 'EXECUTED_OPTIMISTIC' });
+        const responseWithUint8Array = await near.provider.viewTransactionStatusWithReceipts({ txHash: base58.decode(outcome.transaction.hash), accountId: sender.accountId, waitUntil: 'EXECUTED_OPTIMISTIC' });
         expect('transaction_outcome' in responseWithString).toBeTruthy();
         expect('logs' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('receipt_ids' in responseWithString.transaction_outcome.outcome).toBeTruthy();
@@ -160,7 +160,7 @@ describe('providers', () => {
         const finalizedStatus = await waitForStatusMatching(status =>
             status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL);
     
-        const block = await near.provider.viewBlock({ blockId: finalizedStatus.sync_info.latest_block_hash });
+        const block = await near.provider.viewBlock({ blockQuery: { blockId: finalizedStatus.sync_info.latest_block_hash } });
         const lightClientHead = block.header.last_final_block;
         let lightClientRequest = {
             type: IdType.Transaction,
@@ -168,7 +168,7 @@ describe('providers', () => {
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
-        const lightClientProof = await near.provider.lightClientProof(lightClientRequest);
+        const lightClientProof = await near.provider.lightClientProof({ request: lightClientRequest });
         expect('prev_block_hash' in lightClientProof.block_header_lite).toBe(true);
         expect('inner_rest_hash' in lightClientProof.block_header_lite).toBe(true);
         expect('inner_lite' in lightClientProof.block_header_lite).toBe(true);
@@ -185,7 +185,7 @@ describe('providers', () => {
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
+        await expect(near.provider.lightClientProof({ request: lightClientRequest })).rejects.toThrow('DB Not Found Error');
     
         // Use old block hash as light client head should fail
         lightClientRequest = {
@@ -196,7 +196,7 @@ describe('providers', () => {
             sender_id: workingAccount.accountId,
         };
     
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
+        await expect(near.provider.lightClientProof({ request: lightClientRequest })).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
     });
 });
 
