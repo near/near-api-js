@@ -6,7 +6,7 @@ export default {
     transform: {
         '^.+\\.[tj]s$': ['ts-jest', {
             tsconfig: {
-                module: 'NodeNext',
+                module: 'ESNext',
                 moduleResolution: 'NodeNext',
                 esModuleInterop: true,
                 allowJs: true,

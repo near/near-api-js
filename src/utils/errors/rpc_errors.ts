@@ -3,7 +3,7 @@ import Mustache from 'mustache';
 
 import { formatNearAmount } from '../format.js';
 import { ErrorMessages } from './errors.js';
-import schema from './rpc_error_schema.json' assert { type: 'json' };
+import schema from './rpc_error_schema.js';
 
 const mustacheHelpers = {
     formatNear: () => (n, render) => formatNearAmount(render(n))

@@ -1,3 +1,3 @@
-import ErrorMessagesJson from './error_messages.json' assert { type: 'json' };
+import ErrorMessagesJson from './error_messages.js';
 
 export const ErrorMessages: { [error: string]: string } = ErrorMessagesJson;
