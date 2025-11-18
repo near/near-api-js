@@ -58,12 +58,9 @@ export function formatNearAmount(
  * Effectively this multiplies given amount by {@link NEAR_NOMINATION}.
  *
  * @param amt decimal string (potentially fractional) denominated in NEAR.
- * @returns The parsed yoctoⓃ amount or null if no amount was passed in
+ * @returns The parsed yoctoⓃ amount
  */
-export function parseNearAmount(amt?: string): string | null {
-    if (!amt) {
-        return null;
-    }
+export function parseNearAmount(amt: string): string {
     amt = cleanupAmount(amt);
     const split = amt.split(".");
     const wholePart = split[0];
