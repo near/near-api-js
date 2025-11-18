@@ -34,7 +34,7 @@
 	},
 	"devDependencies": {
 		"@jest/globals": "^29.7.0",
-		"@scure/base": "^1.2.4",
+		"@scure/base": "^2.0.0",
 		"@types/depd": "^1.1.37",
 		"@types/json-schema": "^7.0.15",
 		"@types/node": "20.0.0",
