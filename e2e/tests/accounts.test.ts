@@ -12,7 +12,7 @@ import {
     Account,
 } from "near-api-js";
 import { Worker } from "near-workspaces";
-import { getRpcUrl, getSecretKey } from "./worker";
+import { getRpcUrl, getSecretKey } from "./worker.js";
 
 let worker: Worker;
 let rootAccount: Account;

@@ -1,6 +1,6 @@
 import { test, expectTypeOf, describe } from "vitest";
 
-import { abi as guestbookAbi } from "../contracts/guestbook/abi";
+import { abi as guestbookAbi } from "../contracts/guestbook/abi.js";
 import {
     AbiRoot,
     Account,
