@@ -6,6 +6,11 @@
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
     },
+    "engines": {
+        "node": ">=20.18.3",
+        "pnpm": ">=10.4.1"
+    },
+    "packageManager": "pnpm@10.4.1",
     "homepage": "https://github.com/near/near-api-js",
     "main": "lib/commonjs/index.cjs",
     "module": "lib/esm/index.js",
@@ -69,7 +74,10 @@
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "pnpm rimraf lib",
-        "check-exports": "attw --pack ."
+        "check-exports": "attw --pack .",
+        "docs:generate": "typedoc",
+        "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
+        "release": "changeset publish"
     },
     "files": [
         "lib",
