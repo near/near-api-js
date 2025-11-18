@@ -20,7 +20,7 @@
     "docs:generate": "typedoc"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.18.1",
+    "@arethetypeswrong/cli": "^0.18.2",
     "@changesets/changelog-github": "0.5.1",
     "@changesets/cli": "^2.29.5",
     "@commitlint/cli": "19.3.0",
