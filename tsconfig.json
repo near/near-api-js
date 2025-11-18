@@ -2,8 +2,7 @@
     "compilerOptions": {
         "esModuleInterop": true,
         "lib": [
-            "es2020",
-            "esnext",
+            "ES2023",
             "dom"
         ],
         "module": "ES2022",
@@ -21,7 +20,8 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "experimentalDecorators": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "skipLibCheck": true
     },
     "include": [
         "src/**/*"
