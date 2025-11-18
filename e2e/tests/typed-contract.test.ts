@@ -39,7 +39,7 @@ beforeAll(async () => {
         signer
     );
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile("../contracts/guestbook/contract.wasm");
     const tx = await guestbookAccount.deployContract(wasm);
     await rootAccount.provider.viewTransactionStatus(
         tx.transaction.hash,
@@ -127,7 +127,7 @@ test("TypedContract can invoke a view function", async () => {
         new KeyPairSigner(keypair)
     );
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile("../contracts/guestbook/contract.wasm");
     const tx = await guestbookAccount.deployContract(wasm);
     await rootAccount.provider.viewTransactionStatus(
         tx.transaction.hash,
@@ -162,7 +162,7 @@ test("TypedContract can invoke a call function", async () => {
         new KeyPairSigner(keypair)
     );
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile("../contracts/guestbook/contract.wasm");
     const tx = await guestbookAccount.deployContract(wasm);
     await rootAccount.provider.viewTransactionStatus(
         tx.transaction.hash,
