@@ -203,14 +203,14 @@ export class Account {
 
         const nonce = BigInt(accessKey.nonce) + 1n;
 
-        return createTransaction({
-            signerId: this.accountId,
-            publicKey: pk,
+        return createTransaction(
+            this.accountId,
+            pk,
             receiverId,
-            nonce: nonce + 1n,
+            nonce + 1n,
             actions,
-            blockHash: baseDecode(recentBlockHash),
-        });
+            baseDecode(recentBlockHash)
+        );
     }
 
     /**
@@ -261,14 +261,14 @@ export class Account {
 
         const maxBlockHeight = BigInt(header.height) + BigInt(blockHeightTtl);
 
-        return buildDelegateAction({
+        return buildDelegateAction(
+            this.accountId,
             receiverId,
-            senderId: this.accountId,
             actions,
-            publicKey: pk,
             nonce,
             maxBlockHeight,
-        });
+            pk
+        );
     }
 
     /**

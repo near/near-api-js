@@ -21,17 +21,17 @@ test('test sign transaction with different public key', async () => {
         )
     );
 
-    const transaction = createTransaction({
-        signerId: 'signer',
+    const transaction = createTransaction(
+        'signer',
         // the key is different from what signer operates
-        publicKey: KeyPair.fromString(
+        KeyPair.fromString(
             'ed25519:2Pm1R2qRtkbFErVrjqgtNutMqEVvrErQ3wSns6rN4jd7nnmzCbda4kwRCBAnBR7RWf2faRqVMuFaJzhJp1eYfhvV'
         ).getPublicKey(),
-        receiverId: 'receiver',
-        nonce: 1n,
-        actions: [],
-        blockHash: new Uint8Array(new Array(32))
-    });
+        'receiver',
+        1n,
+        [],
+        new Uint8Array(new Array(32))
+    );
 
     await expect(() => signer.signTransaction(transaction)).rejects.toThrow(
         /The public key doesn't match the signer's key/
@@ -45,14 +45,14 @@ test('test sign transaction with relevant public key', async () => {
         )
     );
 
-    const transaction = createTransaction({
-        signerId: 'signer',
-        publicKey: await signer.getPublicKey(),
-        receiverId: 'receiver',
-        nonce: 1n,
-        actions: [],
-        blockHash: new Uint8Array(new Array(32))
-    });
+    const transaction = createTransaction(
+        'signer',
+        await signer.getPublicKey(),
+        'receiver',
+        1n,
+        [],
+        new Uint8Array(new Array(32))
+    );
 
     const [hash, { signature }] = await signer.signTransaction(transaction);
 
@@ -77,16 +77,16 @@ test('serialize and sign transfer tx object', async () => {
         52, 208, 64, 239, 162, 67, 82, 36, 182, 152, 105, 16, 230, 48, 194, 254,
         246,
     ]);
-    const transaction = createTransaction({
-        signerId: 'test.near',
-        publicKey: PublicKey.fromString(
+    const transaction = createTransaction(
+        'test.near',
+        PublicKey.fromString(
             'ed25519:Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'
         ),
-        receiverId: 'whatever.near',
-        nonce: 1,
+        'whatever.near',
+        1,
         actions,
         blockHash
-    });
+    );
 
     const [, signedTx] = await signer.signTransaction(transaction);
 
@@ -212,14 +212,14 @@ test('test sign delegate action', async () => {
         )
     );
 
-    const delegateAction = buildDelegateAction({
-        receiverId: 'receiver.testnet',
-        senderId: 'sender.testnet',
-        nonce: 1n,
-        maxBlockHeight: 1848319858n,
-        actions: [],
-        publicKey: await signer.getPublicKey(),
-    });
+    const delegateAction = buildDelegateAction(
+        'sender.testnet',
+        'receiver.testnet',
+        [],
+        1n,
+        1848319858n,
+        await signer.getPublicKey()
+    );
 
     const [hash, { signature }] = await signer.signDelegateAction(
         delegateAction
@@ -241,16 +241,16 @@ test('test sign delegate action with wrong public key', async () => {
         )
     );
 
-    const delegateAction = buildDelegateAction({
-        receiverId: 'receiver.testnet',
-        senderId: 'sender.testnet',
-        nonce: 1n,
-        maxBlockHeight: 1848319858n,
-        actions: [],
-        publicKey: KeyPair.fromString(
+    const delegateAction = buildDelegateAction(
+        'sender.testnet',
+        'receiver.testnet',
+        [],
+        1n,
+        1848319858n,
+        KeyPair.fromString(
             'ed25519:2Pm1R2qRtkbFErVrjqgtNutMqEVvrErQ3wSns6rN4jd7nnmzCbda4kwRCBAnBR7RWf2faRqVMuFaJzhJp1eYfhvV'
-        ).getPublicKey(),
-    });
+        ).getPublicKey()
+    );
 
     await expect(() =>
         signer.signDelegateAction(delegateAction)
