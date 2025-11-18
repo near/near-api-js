@@ -8,7 +8,7 @@ export default defineConfig([
     {
         splitting: false,
         bundle: true,
-        entryPoints: ["src/**/*"],
+        entryPoints: ["src/index.ts"],
         format: "cjs" as const,
         outDir: "lib/commonjs",
         clean: true,
@@ -22,7 +22,7 @@ export default defineConfig([
     {
         splitting: false,
         bundle: true,
-        entryPoints: ["src/**/*"],
+        entryPoints: ["src/index.ts"],
         format: "esm" as const,
         outDir: "lib/esm",
         clean: false,
