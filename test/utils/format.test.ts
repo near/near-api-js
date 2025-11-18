@@ -57,6 +57,24 @@ test('parseNearAmount fails when parsing values with ≥25 decimal places', () =
     );
 });
 
+test('parseNearAmount fails when parsing empty strings', () => {
+    expect(() => {
+        parseNearAmount('');
+    }).toThrowError('Amount cannot be empty');
+});
+
+test('parseNearAmount fails when parsing whitespace-only strings', () => {
+    expect(() => {
+        parseNearAmount('   ');
+    }).toThrowError('Amount cannot be empty');
+});
+
+test('parseNearAmount fails when parsing comma-only strings', () => {
+    expect(() => {
+        parseNearAmount(',,,');
+    }).toThrowError('Amount cannot be empty');
+});
+
 test('NEAR_NOMINATION value', () => {
     expect(NEAR_NOMINATION).toEqual(1000000000000000000000000n);
 });

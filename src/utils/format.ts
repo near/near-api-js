@@ -59,9 +59,13 @@ export function formatNearAmount(
  *
  * @param amt decimal string (potentially fractional) denominated in NEAR.
  * @returns The parsed yoctoⓃ amount
+ * @throws {Error} if the amount is empty or invalid
  */
 export function parseNearAmount(amt: string): string {
     amt = cleanupAmount(amt);
+    if (!amt) {
+        throw new Error('Amount cannot be empty');
+    }
     const split = amt.split(".");
     const wholePart = split[0];
     const fracPart = split[1] || "";
