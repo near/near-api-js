@@ -6,7 +6,7 @@ import { FailoverRpcProvider, JsonRpcProvider, Provider, getTransactionLastResul
 global.TextEncoder = TextEncoder;
 
 ['json provider', 'fallback provider'].forEach((name) => {
-    describe.skip(name, () => {
+    describe(name, () => {
         let worker: Worker;
         let provider: Provider;
 
@@ -176,7 +176,6 @@ describe('failover provider', () => {
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
-                    connection: { url: 'test' },
                     viewNodeStatus() {
                         return 'first';
                     },
@@ -185,7 +184,6 @@ describe('failover provider', () => {
             ),
             Object.setPrototypeOf(
                 {
-                    connection: { url: 'test' },
                     viewNodeStatus() {
                         return 'second';
                     },
@@ -203,7 +201,6 @@ describe('failover provider', () => {
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
-                    connection: { url: 'test' },
                     viewNodeStatus() {
                         throw new Error();
                     },
@@ -212,7 +209,6 @@ describe('failover provider', () => {
             ),
             Object.setPrototypeOf(
                 {
-                    connection: { url: 'test' },
                     viewNodeStatus() {
                         return 'second';
                     },
@@ -230,11 +226,7 @@ describe('failover provider', () => {
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
-                    connection: { url: 'test' },
                     status() {
-                        throw new Error();
-                    },
-                    viewNodeStatus() {
                         throw new Error();
                     },
                 },
@@ -242,11 +234,7 @@ describe('failover provider', () => {
             ),
             Object.setPrototypeOf(
                 {
-                    connection: { url: 'test' },
                     status() {
-                        throw new Error();
-                    },
-                    viewNodeStatus() {
                         throw new Error();
                     },
                 },

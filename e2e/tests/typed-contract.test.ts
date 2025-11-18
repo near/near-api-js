@@ -28,29 +28,24 @@ beforeAll(async () => {
 
     rootAccount = new Account(worker.rootAccount.accountId, provider, signer);
 
-    // Skip contract deployment if WASM file doesn't exist
-    try {
-        await rootAccount.createAccount(
-            `guestbook.${rootAccount.accountId}`,
-            await signer.getPublicKey(),
-            NEAR.toUnits("10")
-        );
-        guestbookAccount = new Account(
-            `guestbook.${rootAccount.accountId}`,
-            provider,
-            signer
-        );
+    await rootAccount.createAccount(
+        `guestbook.${rootAccount.accountId}`,
+        await signer.getPublicKey(),
+        NEAR.toUnits("10")
+    );
+    guestbookAccount = new Account(
+        `guestbook.${rootAccount.accountId}`,
+        provider,
+        signer
+    );
 
-        const wasm = await readFile("./contracts/guestbook/contract.wasm");
-        const tx = await guestbookAccount.deployContract(wasm);
-        await rootAccount.provider.viewTransactionStatus(
-            tx.transaction.hash,
-            guestbookAccount.accountId,
-            "FINAL"
-        );
-    } catch (error) {
-        // WASM file doesn't exist, tests will be skipped
-    }
+    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const tx = await guestbookAccount.deployContract(wasm);
+    await rootAccount.provider.viewTransactionStatus(
+        tx.transaction.hash,
+        guestbookAccount.accountId,
+        "FINAL"
+    );
 });
 
 afterAll(async () => {
