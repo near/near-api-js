@@ -13,7 +13,8 @@
         "node_modules",
         "lib",
         "dist",
-        "**/node_modules"
+        "**/node_modules",
+        "e2e"
     ],
     "files": []
 }
