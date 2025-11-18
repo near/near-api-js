@@ -25,7 +25,7 @@ beforeAll(async () => {
         getSecretKey(worker) as KeyPairString
     );
 
-    rootAccount = new Account(worker.rootAccount.accountId, provider, signer);
+    rootAccount = new Account({ accountId: worker.rootAccount.accountId, provider, signer });
 });
 
 afterAll(async () => {
@@ -44,19 +44,19 @@ test("root account creates sub-account", async () => {
     const key = KeyPair.fromRandom("ed25519");
 
     const newAccountId = `sub.${rootAccount.accountId}`;
-    const { transaction } = await rootAccount.createAccount(
+    const { transaction } = await rootAccount.createAccount({
         newAccountId,
-        key.getPublicKey(),
-        0n
-    );
+        publicKey: key.getPublicKey(),
+        nearToTransfer: 0n
+    });
 
-    await rootAccount.provider.viewTransactionStatus(
-        transaction.hash,
-        rootAccount.accountId,
-        "FINAL"
-    );
+    await rootAccount.provider.viewTransactionStatus({
+        txHash: transaction.hash,
+        accountId: rootAccount.accountId,
+        waitUntil: "FINAL"
+    });
 
-    const { amount } = await rootAccount.provider.viewAccount(newAccountId);
+    const { amount } = await rootAccount.provider.viewAccount({ accountId: newAccountId });
 
     expect(amount).toBe(0n);
 });
@@ -64,12 +64,12 @@ test("root account creates sub-account", async () => {
 test("account can send meta transaction with Transfer", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount({ newAccountId, publicKey: keypair.getPublicKey() });
+    const childAccount = new Account({
+        accountId: newAccountId,
+        provider: rootAccount.provider,
+        signer: new KeyPairSigner(keypair)
+    });
 
     const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
         childAccount.accountId,
@@ -92,12 +92,12 @@ test("account can send meta transaction with Transfer", async () => {
 test("account can send meta transaction with DeployGlobalContract(AccountId)", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount({ newAccountId, publicKey: keypair.getPublicKey() });
+    const childAccount = new Account({
+        accountId: newAccountId,
+        provider: rootAccount.provider,
+        signer: new KeyPairSigner(keypair)
+    });
 
     const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
         childAccount.accountId,
@@ -123,12 +123,12 @@ test("account can send meta transaction with DeployGlobalContract(AccountId)", a
 test("account can send meta transaction with DeployGlobalContract(CodeHash)", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount({ newAccountId, publicKey: keypair.getPublicKey() });
+    const childAccount = new Account({
+        accountId: newAccountId,
+        provider: rootAccount.provider,
+        signer: new KeyPairSigner(keypair)
+    });
 
     const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
         childAccount.accountId,
@@ -154,12 +154,12 @@ test("account can send meta transaction with DeployGlobalContract(CodeHash)", as
 test("account can send meta transaction with UseGlobalContract(AccountId)", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount({ newAccountId, publicKey: keypair.getPublicKey() });
+    const childAccount = new Account({
+        accountId: newAccountId,
+        provider: rootAccount.provider,
+        signer: new KeyPairSigner(keypair)
+    });
 
     const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
         childAccount.accountId,
@@ -186,12 +186,12 @@ test("account can send meta transaction with UseGlobalContract(AccountId)", asyn
 test("account can send meta transaction with UseGlobalContract(CodeHash)", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
-    await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
-    const childAccount = new Account(
-        newAccountId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount({ newAccountId, publicKey: keypair.getPublicKey() });
+    const childAccount = new Account({
+        accountId: newAccountId,
+        provider: rootAccount.provider,
+        signer: new KeyPairSigner(keypair)
+    });
 
     const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
         childAccount.accountId,
@@ -221,17 +221,17 @@ test(
     async () => {
         const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
         const keypair = KeyPair.fromRandom("ed25519");
-        await rootAccount.createAccount(
+        await rootAccount.createAccount({
             newAccountId,
-            keypair.getPublicKey(),
-            NEAR.toUnits("1")
-        );
+            publicKey: keypair.getPublicKey(),
+            nearToTransfer: NEAR.toUnits("1")
+        });
 
-        const account = new Account(
-            newAccountId,
-            rootAccount.provider,
-            new KeyPairSigner(keypair)
-        );
+        const account = new Account({
+            accountId: newAccountId,
+            provider: rootAccount.provider,
+            signer: new KeyPairSigner(keypair)
+        });
 
         // First transfer
         await account.transfer({

@@ -26,26 +26,26 @@ beforeAll(async () => {
         getSecretKey(worker) as KeyPairString
     );
 
-    rootAccount = new Account(worker.rootAccount.accountId, provider, signer);
+    rootAccount = new Account({ accountId: worker.rootAccount.accountId, provider, signer });
 
-    await rootAccount.createAccount(
-        `guestbook.${rootAccount.accountId}`,
-        await signer.getPublicKey(),
-        NEAR.toUnits("10")
-    );
-    guestbookAccount = new Account(
-        `guestbook.${rootAccount.accountId}`,
+    await rootAccount.createAccount({
+        newAccountId: `guestbook.${rootAccount.accountId}`,
+        publicKey: await signer.getPublicKey(),
+        nearToTransfer: NEAR.toUnits("10")
+    });
+    guestbookAccount = new Account({
+        accountId: `guestbook.${rootAccount.accountId}`,
         provider,
         signer
-    );
+    });
 
     const wasm = await readFile("./contracts/guestbook/contract.wasm");
-    const tx = await guestbookAccount.deployContract(wasm);
-    await rootAccount.provider.viewTransactionStatus(
-        tx.transaction.hash,
-        guestbookAccount.accountId,
-        "FINAL"
-    );
+    const tx = await guestbookAccount.deployContract({ code: wasm });
+    await rootAccount.provider.viewTransactionStatus({
+        txHash: tx.transaction.hash,
+        accountId: guestbookAccount.accountId,
+        waitUntil: "FINAL"
+    });
 });
 
 afterAll(async () => {
@@ -116,24 +116,24 @@ test("TypedContract can invoke a view function", async () => {
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
 
-    await rootAccount.createAccount(
-        contractId,
-        keypair.getPublicKey(),
-        NEAR.toUnits("10")
-    );
-    const guestbookAccount = new Account(
-        contractId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount({
+        newAccountId: contractId,
+        publicKey: keypair.getPublicKey(),
+        nearToTransfer: NEAR.toUnits("10")
+    });
+    const guestbookAccount = new Account({
+        accountId: contractId,
+        provider: rootAccount.provider,
+        signer: new KeyPairSigner(keypair)
+    });
 
     const wasm = await readFile("./contracts/guestbook/contract.wasm");
-    const tx = await guestbookAccount.deployContract(wasm);
-    await rootAccount.provider.viewTransactionStatus(
-        tx.transaction.hash,
-        guestbookAccount.accountId,
-        "FINAL"
-    );
+    const tx = await guestbookAccount.deployContract({ code: wasm });
+    await rootAccount.provider.viewTransactionStatus({
+        txHash: tx.transaction.hash,
+        accountId: guestbookAccount.accountId,
+        waitUntil: "FINAL"
+    });
 
     const contract = new TypedContract({
         contractId: guestbookAccount.accountId,
@@ -151,24 +151,24 @@ test("TypedContract can invoke a call function", async () => {
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
 
-    await rootAccount.createAccount(
-        contractId,
-        keypair.getPublicKey(),
-        NEAR.toUnits("10")
-    );
-    const guestbookAccount = new Account(
-        contractId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount({
+        newAccountId: contractId,
+        publicKey: keypair.getPublicKey(),
+        nearToTransfer: NEAR.toUnits("10")
+    });
+    const guestbookAccount = new Account({
+        accountId: contractId,
+        provider: rootAccount.provider,
+        signer: new KeyPairSigner(keypair)
+    });
 
     const wasm = await readFile("./contracts/guestbook/contract.wasm");
-    const tx = await guestbookAccount.deployContract(wasm);
-    await rootAccount.provider.viewTransactionStatus(
-        tx.transaction.hash,
-        guestbookAccount.accountId,
-        "FINAL"
-    );
+    const tx = await guestbookAccount.deployContract({ code: wasm });
+    await rootAccount.provider.viewTransactionStatus({
+        txHash: tx.transaction.hash,
+        accountId: guestbookAccount.accountId,
+        waitUntil: "FINAL"
+    });
 
     const contract = new TypedContract({
         contractId: guestbookAccount.accountId,

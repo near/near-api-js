@@ -14,7 +14,7 @@ import {
 const provider = new JsonRpcProvider({ url: "" });
 const keypair = KeyPair.fromRandom("ed25519");
 const signer = new KeyPairSigner(keypair);
-const account = new Account("", provider, signer);
+const account = new Account({ accountId: "", provider, signer });
 
 describe("TypedContract infers function arguments from ABI correctly", () => {
     test('"args" are required if at least one argument is required', () => {

@@ -10,7 +10,7 @@ import {
 
 const provider = new JsonRpcProvider({ url: "" });
 
-const account = new Account("", provider);
+const account = new Account({ accountId: "", provider });
 
 vi.spyOn(JsonRpcProvider.prototype, "callFunction").mockResolvedValue({});
 vi.spyOn(Account.prototype, "callFunction").mockResolvedValue({});
