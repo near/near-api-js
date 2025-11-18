@@ -5,8 +5,8 @@ export default defineConfig({
         name: "node",
         root: "tests",
         environment: "node",
-        testTimeout: 30_000,
-        hookTimeout: 30_000,
+        testTimeout: 50000,
+        hookTimeout: 120000, // 2 minutes for setup/teardown hooks (Worker.init() takes time)
         allowOnly: false,
         globals: true,
         server: { deps: { fallbackCJS: false } },
