@@ -9,7 +9,7 @@ export class FunctionCallPermission {
     receiverId: string;
     methodNames: string[];
 
-    constructor({ allowance, receiverId, methodNames }: { allowance: bigint, receiverId: string, methodNames: string[] }) {
+    constructor({ allowance, receiverId, methodNames }: { allowance?: bigint, receiverId: string, methodNames: string[] }) {
         this.allowance = allowance;
         this.receiverId = receiverId;
         this.methodNames = methodNames;
