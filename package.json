@@ -12,14 +12,11 @@
     },
     "packageManager": "pnpm@10.4.1",
     "homepage": "https://github.com/near/near-api-js",
-    "main": "lib/commonjs/index.cjs",
-    "module": "lib/esm/index.js",
-    "types": "lib/esm/index.d.ts",
     "type": "module",
     "exports": {
         ".": {
-            "import": "./lib/esm/index.js",
-            "require": "./lib/commonjs/index.cjs"
+            "import": "./lib/index.js",
+            "types": "./lib/index.d.ts"
         }
     },
     "dependencies": {

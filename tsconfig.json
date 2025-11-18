@@ -6,9 +6,9 @@
             "esnext",
             "dom"
         ],
-        "module": "commonjs",
+        "module": "ES2022",
         "target": "es2020",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "alwaysStrict": true,
         "outDir": "./lib",
         "declaration": true,
@@ -21,10 +21,9 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "experimentalDecorators": true,
-        "resolveJsonModule": true,
+        "resolveJsonModule": true
     },
-    "files": [
-        "src/index.ts",
-        "src/browser-index.ts",
-    ],
+    "include": [
+        "src/**/*"
+    ]
 }
