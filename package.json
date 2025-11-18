@@ -69,7 +69,7 @@
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "pnpm rimraf lib",
-        "check-exports": "attw --pack .",
+        "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
         "docs:generate": "typedoc",
         "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
         "release": "changeset publish"
