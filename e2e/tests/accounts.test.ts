@@ -71,12 +71,12 @@ test("account can send meta transaction with Transfer", async () => {
         signer: new KeyPairSigner(keypair)
     });
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
+    const [, signedDelegate] = await childAccount.createSignedMetaTransaction({
+        receiverId: childAccount.accountId,
+        actions: [
             actionCreators.transfer(1_000_000n),
         ]
-    );
+    });
 
     const outcome = await rootAccount.signAndSendTransaction({
         receiverId: signedDelegate.delegateAction.senderId,
@@ -99,15 +99,15 @@ test("account can send meta transaction with DeployGlobalContract(AccountId)", a
         signer: new KeyPairSigner(keypair)
     });
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
-            actionCreators.deployGlobalContract(
-                new Uint8Array(128),
-                new GlobalContractDeployMode({ AccountId: null })
-            ),
+    const [, signedDelegate] = await childAccount.createSignedMetaTransaction({
+        receiverId: childAccount.accountId,
+        actions: [
+            actionCreators.deployGlobalContract({
+                code: new Uint8Array(128),
+                deployMode: new GlobalContractDeployMode({ AccountId: null })
+            }),
         ]
-    );
+    });
 
     const outcome = await rootAccount.signAndSendTransaction({
         receiverId: signedDelegate.delegateAction.senderId,
@@ -130,15 +130,15 @@ test("account can send meta transaction with DeployGlobalContract(CodeHash)", as
         signer: new KeyPairSigner(keypair)
     });
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
-            actionCreators.deployGlobalContract(
-                new Uint8Array(128),
-                new GlobalContractDeployMode({ CodeHash: null })
-            ),
+    const [, signedDelegate] = await childAccount.createSignedMetaTransaction({
+        receiverId: childAccount.accountId,
+        actions: [
+            actionCreators.deployGlobalContract({
+                code: new Uint8Array(128),
+                deployMode: new GlobalContractDeployMode({ CodeHash: null })
+            }),
         ]
-    );
+    });
 
     const outcome = await rootAccount.signAndSendTransaction({
         receiverId: signedDelegate.delegateAction.senderId,
@@ -161,16 +161,16 @@ test("account can send meta transaction with UseGlobalContract(AccountId)", asyn
         signer: new KeyPairSigner(keypair)
     });
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
+    const [, signedDelegate] = await childAccount.createSignedMetaTransaction({
+        receiverId: childAccount.accountId,
+        actions: [
             actionCreators.useGlobalContract(
                 new GlobalContractIdentifier({
                     AccountId: "global.testnet",
                 })
             ),
         ]
-    );
+    });
 
     const outcome = await rootAccount.signAndSendTransaction({
         receiverId: signedDelegate.delegateAction.senderId,
@@ -193,16 +193,16 @@ test("account can send meta transaction with UseGlobalContract(CodeHash)", async
         signer: new KeyPairSigner(keypair)
     });
 
-    const [, signedDelegate] = await childAccount.createSignedMetaTransaction(
-        childAccount.accountId,
-        [
+    const [, signedDelegate] = await childAccount.createSignedMetaTransaction({
+        receiverId: childAccount.accountId,
+        actions: [
             actionCreators.useGlobalContract(
                 new GlobalContractIdentifier({
                     CodeHash: new Uint8Array(32),
                 })
             ),
         ]
-    );
+    });
 
     const outcome = await rootAccount.signAndSendTransaction({
         receiverId: signedDelegate.delegateAction.senderId,
