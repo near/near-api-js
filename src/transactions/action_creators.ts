@@ -46,7 +46,7 @@ function fullAccessKey(): AccessKey {
 function functionCallAccessKey(
     receiverId: string,
     methodNames: string[],
-    allowance?: bigint
+    allowance: bigint = 250_000_000_000_000_000_000_000n // 0.25N
 ): AccessKey {
     return new AccessKey({
         nonce: 0n,
