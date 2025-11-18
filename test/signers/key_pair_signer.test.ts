@@ -212,14 +212,14 @@ test('test sign delegate action', async () => {
         )
     );
 
-    const delegateAction = buildDelegateAction({
-        receiverId: 'receiver.testnet',
-        senderId: 'sender.testnet',
-        nonce: 1n,
-        maxBlockHeight: 1848319858n,
-        actions: [],
-        publicKey: await signer.getPublicKey(),
-    });
+    const delegateAction = buildDelegateAction(
+        'sender.testnet',
+        'receiver.testnet',
+        [],
+        1n,
+        1848319858n,
+        await signer.getPublicKey()
+    );
 
     const [hash, { signature }] = await signer.signDelegateAction(
         delegateAction
@@ -241,16 +241,16 @@ test('test sign delegate action with wrong public key', async () => {
         )
     );
 
-    const delegateAction = buildDelegateAction({
-        receiverId: 'receiver.testnet',
-        senderId: 'sender.testnet',
-        nonce: 1n,
-        maxBlockHeight: 1848319858n,
-        actions: [],
-        publicKey: KeyPair.fromString(
+    const delegateAction = buildDelegateAction(
+        'sender.testnet',
+        'receiver.testnet',
+        [],
+        1n,
+        1848319858n,
+        KeyPair.fromString(
             'ed25519:2Pm1R2qRtkbFErVrjqgtNutMqEVvrErQ3wSns6rN4jd7nnmzCbda4kwRCBAnBR7RWf2faRqVMuFaJzhJp1eYfhvV'
-        ).getPublicKey(),
-    });
+        ).getPublicKey()
+    );
 
     await expect(() =>
         signer.signDelegateAction(delegateAction)

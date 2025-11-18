@@ -76,9 +76,10 @@ jobs:
 
     # This step is necessary to avoid parsing errors
     - name: Store changed files in a file
-      run: echo "$FILES_JSON" > changed_files.json
-      env:
-        FILES_JSON: '${{ steps.files.outputs.data }}'
+      run: |
+        cat > changed_files.json <<'EOF'
+        ${{ steps.files.outputs.data }}
+        EOF
 
     - name: Evaluate changesets changes
       id: changesets
@@ -89,7 +90,7 @@ jobs:
     - name: Evaluate source file changes
       id: source-files
       run: |
-        FILES_CHANGED=$(jq 'map(select(.filename | test("^packages/[^/]+/src/"))) | length' changed_files.json)
+        FILES_CHANGED=$(jq 'map(select(.filename | test("^src/"))) | length' changed_files.json)
         echo "has_changed=$([ "$FILES_CHANGED" -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
     
     - name: Fail if source files changed, but no new changeset

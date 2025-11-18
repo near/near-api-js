@@ -69,10 +69,10 @@ test('serialize multi-action tx', async () => {
     const actions = [
         createAccount(),
         deployContract(new Uint8Array([1, 2, 3])),
-        functionCall('qqq', new Uint8Array([1, 2, 3]), 1000n, 1000000n),
+        functionCall({ methodName: 'qqq', args: new Uint8Array([1, 2, 3]), gas: 1000n, deposit: 1000000n }),
         transfer(123n),
-        stake(1000000n, publicKey),
-        addKey(publicKey, functionCallAccessKey('zzz', ['www'], undefined)),
+        stake({ stake: 1000000n, publicKey }),
+        addKey({ publicKey, accessKey: functionCallAccessKey({ receiverId: 'zzz', methodNames: ['www'], allowance: undefined }) }),
         deleteKey(publicKey),
         deleteAccount('123')
     ];
@@ -94,7 +94,8 @@ function createTransferTx() {
         'whatever.near',
         1,
         actions,
-        blockHash);
+        blockHash
+    );
 }
 
 test('serialize transfer tx', async () => {
@@ -154,7 +155,8 @@ describe('serialize and deserialize on different types of nonce', () => {
             'whatever.near',
             '1',
             actions,
-            blockHash);
+            blockHash
+        );
         const serialized = encodeTransaction(transaction);
         expect(Buffer.from(serialized).toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
         const deserialized = decodeTransaction(serialized);
@@ -169,7 +171,8 @@ describe('serialize and deserialize on different types of nonce', () => {
             'whatever.near',
             1n,
             actions,
-            blockHash);
+            blockHash
+        );
         const serialized = encodeTransaction(transaction);
         expect(Buffer.from(serialized).toString('hex')).toEqual('09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000301000000000000000000000000000000');
         const deserialized = decodeTransaction(serialized);
@@ -187,10 +190,10 @@ describe('Global Contract Actions Serialization', () => {
     const sampleCodeHash = sha256(sampleWasmCode);
 
     test('serialize and deserialize DeployGlobalContract action (CodeHash mode)', () => {
-        const action = deployGlobalContract(
-            sampleWasmCode,
-            new GlobalContractDeployMode({ CodeHash: null })
-        );
+        const action = deployGlobalContract({
+            code: sampleWasmCode,
+            deployMode: new GlobalContractDeployMode({ CodeHash: null })
+        });
         const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
         const serializedTx = encodeTransaction(transaction);
         const deserializedTx = decodeTransaction(serializedTx);
@@ -206,10 +209,10 @@ describe('Global Contract Actions Serialization', () => {
     });
 
     test('serialize and deserialize DeployGlobalContract action (AccountId mode)', () => {
-        const action = deployGlobalContract(
-            sampleWasmCode,
-            new GlobalContractDeployMode({ AccountId: null })
-        );
+        const action = deployGlobalContract({
+            code: sampleWasmCode,
+            deployMode: new GlobalContractDeployMode({ AccountId: null })
+        });
         const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
         const serializedTx = encodeTransaction(transaction);
         const deserializedTx = decodeTransaction(serializedTx);

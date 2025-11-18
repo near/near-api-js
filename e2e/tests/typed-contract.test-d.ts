@@ -17,7 +17,7 @@ type AbiFunctionKind = AbiRoot["body"]["functions"][number]["kind"];
 const provider = new JsonRpcProvider({ url: "" });
 const keypair = KeyPair.fromRandom("ed25519");
 const signer = new KeyPairSigner(keypair);
-const account = new Account("", provider, signer);
+const account = new Account({ accountId: "", provider, signer });
 
 describe("TypedContract can infer Guestbook's ABI", () => {
     const contract = new TypedContract({

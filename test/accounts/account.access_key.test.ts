@@ -48,7 +48,7 @@ test('make function call using access key', async() => {
 
     const setCallValue = generateUniqueString('setCallPrefix');
     await contract.call.setValue({
-        account: new Account(workingAccount.accountId, workingAccount.provider, new KeyPairSigner(keyPair)),
+        account: new Account({ accountId: workingAccount.accountId, provider: workingAccount.provider, signer: new KeyPairSigner(keyPair) }),
         args: { value: setCallValue },
     });
     expect(await contract.view.getValue()).toEqual(setCallValue);
@@ -60,7 +60,7 @@ test('remove access key no longer works', async() => {
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.getPublicKey();
     await near.account.addFunctionCallAccessKey({ publicKey, contractId, methodNames: [], allowance: 400000n });
-    await near.account.deleteKey(publicKey);
+    await near.account.deleteKey({ publicKey });
     // Override account in the Contract to the masterAccount with the given access key.
     near.account.setSigner(new KeyPairSigner(keyPair));
 
@@ -120,7 +120,7 @@ test('view account details after adding access keys', async() => {
 
 test('loading account after adding a full key', async() => {
     const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addFullAccessKey(keyPair.getPublicKey());
+    await workingAccount.addFullAccessKey({ publicKey: keyPair.getPublicKey() });
 
     const accessKeys = await workingAccount.getAccessKeyList();
 

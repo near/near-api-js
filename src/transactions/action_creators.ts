@@ -36,18 +36,22 @@ function fullAccessKey(): AccessKey {
     });
 }
 
+export interface FunctionCallAccessKeyParams {
+    /** The NEAR account ID of the function call receiver. */
+    receiverId: string;
+    /** An array of method names allowed for function calls. */
+    methodNames: string[];
+    /** An optional allowance (maximum amount) for the function call. Default: Unlimited. */
+    allowance?: bigint;
+}
+
 /**
  * Creates an access key with function call permission for a specific receiver and method names.
- * @param receiverId The NEAR account ID of the function call receiver.
- * @param methodNames An array of method names allowed for function calls.
- * @param allowance An optional allowance (maximum amount) for the function call. Default: Unlimited.
+ * @param params Function call access key parameters
  * @returns A new access key with function call permission.
  */
-function functionCallAccessKey(
-    receiverId: string,
-    methodNames: string[],
-    allowance?: bigint
-): AccessKey {
+function functionCallAccessKey(params: FunctionCallAccessKeyParams): AccessKey {
+    const { receiverId, methodNames, allowance } = params;
     return new AccessKey({
         nonce: 0n,
         permission: new AccessKeyPermission({
@@ -88,23 +92,32 @@ export function stringifyJsonOrBytes(args: any): Buffer {
     return isUint8Array ? args : Buffer.from(JSON.stringify(args));
 }
 
+export interface FunctionCallParams {
+    /** The name of the method to call */
+    methodName: string;
+    /** Arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically or `Uint8Array` instance which represents bytes passed as is. */
+    args: Uint8Array | object;
+    /** Max amount of gas that method call can use. Default: 0n */
+    gas?: bigint;
+    /** Amount of NEAR (in yoctoNEAR) to send together with the call. Default: 0n */
+    deposit?: bigint;
+    /** Convert input arguments into bytes array. Default: stringifyJsonOrBytes */
+    stringify?: (args: any) => Buffer;
+}
+
 /**
  * Constructs {@link Action} instance representing contract method call.
  *
- * @param methodName the name of the method to call
- * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
- *  or `Uint8Array` instance which represents bytes passed as is.
- * @param gas max amount of gas that method call can use
- * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
- * @param stringify Convert input arguments into bytes array.
+ * @param params Function call parameters
  */
-function functionCall(
-    methodName: string,
-    args: Uint8Array | object,
-    gas = 0n,
-    deposit = 0n,
-    stringify = stringifyJsonOrBytes,
-): Action {
+function functionCall(params: FunctionCallParams): Action {
+    const {
+        methodName,
+        args,
+        gas = 0n,
+        deposit = 0n,
+        stringify = stringifyJsonOrBytes
+    } = params;
     return new Action({
         functionCall: new FunctionCall({
             methodName,
@@ -124,23 +137,37 @@ function transfer(deposit = 0n): Action {
     return new Action({ transfer: new Transfer({ deposit }) });
 }
 
+export interface StakeParams {
+    /** The amount to be staked. Default: 0n */
+    stake?: bigint;
+    /** The public key associated with the staking action. */
+    publicKey: PublicKey;
+}
+
 /**
  * Creates a new action for staking tokens, specifying the stake amount and public key.
- * @param stake The amount to be staked. Default: 0.
- * @param publicKey The public key associated with the staking action.
+ * @param params Stake parameters
  * @returns A new action for staking tokens.
  */
-function stake(stake = 0n, publicKey: PublicKey): Action {
+function stake(params: StakeParams): Action {
+    const { stake = 0n, publicKey } = params;
     return new Action({ stake: new Stake({ stake, publicKey }) });
+}
+
+export interface AddKeyParams {
+    /** The public key to be added. */
+    publicKey: PublicKey;
+    /** The access key associated with the added public key. */
+    accessKey: AccessKey;
 }
 
 /**
  * Creates a new action for adding a public key with a specified access key.
- * @param publicKey The public key to be added.
- * @param accessKey The access key associated with the added public key.
+ * @param params Add key parameters
  * @returns A new action for adding a public key.
  */
-function addKey(publicKey: PublicKey, accessKey: AccessKey): Action {
+function addKey(params: AddKeyParams): Action {
+    const { publicKey, accessKey } = params;
     return new Action({ addKey: new AddKey({ publicKey, accessKey }) });
 }
 
@@ -180,16 +207,20 @@ function signedDelegate({
     });
 }
 
+export interface DeployGlobalContractParams {
+    /** The Uint8Array representing the contract code. */
+    code: Uint8Array;
+    /** The mode to deploy global contract (CodeHash or AccountId). */
+    deployMode: GlobalContractDeployMode;
+}
+
 /**
  * Creates a new action for deploying a global contract with provided code and mode.
- * @param code The Uint8Array representing the contract code.
- * @param deployMode The mode to deploy global contract (CodeHash or AccountId).
+ * @param params Deploy global contract parameters
  * @returns A new action for deploying a global contract.
  */
-function deployGlobalContract(
-    code: Uint8Array,
-    deployMode: GlobalContractDeployMode,
-): Action {
+function deployGlobalContract(params: DeployGlobalContractParams): Action {
+    const { code, deployMode } = params;
     return new Action({ deployGlobalContract: new DeployGlobalContract({ code, deployMode }) });
 }
 

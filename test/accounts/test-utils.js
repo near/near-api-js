@@ -21,7 +21,7 @@ export async function setUpTestConnection() {
     const provider = new JsonRpcProvider({ url: config.nodeUrl, headers: config.headers });
     const signer = KeyPairSigner.fromSecretKey(secretKey);
 
-    const account = new Account(config.masterAccount, provider, signer);
+    const account = new Account({ accountId: config.masterAccount, provider, signer });
 
     return {
         account,
@@ -45,9 +45,9 @@ export async function createAccount({ account, provider }, keyType = KeyType.ED2
     const keyPair = KeyPair.fromRandom(Object.values(KeyType)[keyType]);
 
     const newPublicKey = keyPair.getPublicKey();
-    await account.createAccount(newAccountName, newPublicKey, '500000000000000000000000000');
+    await account.createAccount({ newAccountId: newAccountName, publicKey: newPublicKey, nearToTransfer: '500000000000000000000000000' });
 
-    return new Account(newAccountName, provider, new KeyPairSigner(keyPair));
+    return new Account({ accountId: newAccountName, provider, signer: new KeyPairSigner(keyPair) });
 }
 
 export async function deployContract(workingAccount, contractId) {
@@ -55,9 +55,9 @@ export async function deployContract(workingAccount, contractId) {
     const newPublicKey = keyPair.getPublicKey();
 
     const data = fs.readFileSync(HELLO_WASM_PATH);
-    await workingAccount.createAccount(contractId, newPublicKey, HELLO_WASM_BALANCE);
-    const contractAccount = new Account(contractId, workingAccount.provider, new KeyPairSigner(keyPair));
-    await contractAccount.deployContract(data);
+    await workingAccount.createAccount({ newAccountId: contractId, publicKey: newPublicKey, nearToTransfer: HELLO_WASM_BALANCE });
+    const contractAccount = new Account({ accountId: contractId, provider: workingAccount.provider, signer: new KeyPairSigner(keyPair) });
+    await contractAccount.deployContract({ code: data });
     return new TypedContract({
         contractId,
         provider: workingAccount.provider,

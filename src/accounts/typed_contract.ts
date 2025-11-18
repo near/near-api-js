@@ -396,12 +396,12 @@ class Contract<const abi extends AbiRoot, contractId extends string> {
                                 validateArguments(args, abiFunction, abi);
                             }
 
-                            return provider.callFunction(
+                            return provider.callFunction({
                                 contractId,
-                                functionName,
-                                args as Record<string, unknown>,
-                                params.blockQuery
-                            );
+                                method: functionName,
+                                args: args as Record<string, unknown>,
+                                blockQuery: params.blockQuery
+                            });
                         };
                     },
                 }

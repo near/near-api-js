@@ -45,21 +45,21 @@ export class DelegateAction {
 
 /**
  * Compose a delegate action for inclusion with a meta transaction signed on the sender's behalf
- * @param actions The set of actions to be included in the meta transaction
- * @param maxBlockHeight The maximum block height for which this action can be executed as part of a transaction
- * @param nonce Current nonce on the access key used to sign the delegate action
- * @param publicKey Public key for the access key used to sign the delegate action
- * @param receiverId Account ID for the intended receiver of the meta transaction
  * @param senderId Account ID for the intended signer of the delegate action
+ * @param receiverId Account ID for the intended receiver of the meta transaction
+ * @param actions The set of actions to be included in the meta transaction
+ * @param nonce Current nonce on the access key used to sign the delegate action
+ * @param maxBlockHeight The maximum block height for which this action can be executed as part of a transaction
+ * @param publicKey Public key for the access key used to sign the delegate action
  */
-export function buildDelegateAction({
-    actions,
-    maxBlockHeight,
-    nonce,
-    publicKey,
-    receiverId,
-    senderId,
-}: DelegateAction): DelegateAction {
+export function buildDelegateAction(
+    senderId: string,
+    receiverId: string,
+    actions: Action[],
+    nonce: bigint,
+    maxBlockHeight: bigint,
+    publicKey: PublicKey
+): DelegateAction {
     return new DelegateAction({
         senderId,
         receiverId,
@@ -74,7 +74,7 @@ export function buildDelegateAction({
                 case 'AddKey': {
                     // @ts-expect-error type workaround
                     const { publicKey, accessKey } = a.params;
-                    return addKey(publicKey, accessKey);
+                    return addKey({ publicKey, accessKey });
                 }
                 case 'CreateAccount': {
                     // @ts-expect-error type workaround
@@ -95,11 +95,11 @@ export function buildDelegateAction({
                 case 'FunctionCall': {
                     // @ts-expect-error type workaround
                     const { methodName, args, gas, deposit } = a.params;
-                    return functionCall(methodName, args, gas, deposit);
+                    return functionCall({ methodName, args, gas, deposit });
                 }
                 case 'Stake': {
                     // @ts-expect-error type workaround
-                    return stake(a.params.stake, a.params.publicKey);
+                    return stake({ stake: a.params.stake, publicKey: a.params.publicKey });
                 }
                 case 'Transfer': {
                     // @ts-expect-error type workaround
@@ -113,7 +113,7 @@ export function buildDelegateAction({
                     const modeInstance = deployMode instanceof GlobalContractDeployMode
                         ? deployMode
                         : new GlobalContractDeployMode(deployMode);
-                    return deployGlobalContract(code, modeInstance);
+                    return deployGlobalContract({ code, deployMode: modeInstance });
                 }
                 case 'UseGlobalContract': {
                     // @ts-expect-error type workaround
