@@ -116,7 +116,7 @@ test("TypedContract doesn't have view & call properties if ABI is empty", async 
     expect(contract.contractId).not.toHaveProperty('call');
 });
 
-test.skip("TypedContract can invoke a view function", async () => {
+test("TypedContract can invoke a view function", async () => {
     // TODO: use fixtures for account creation and contract deploy
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
@@ -151,7 +151,7 @@ test.skip("TypedContract can invoke a view function", async () => {
     expect(totalMessages).toBe(0);
 });
 
-test.skip("TypedContract can invoke a call function", async () => {
+test("TypedContract can invoke a call function", async () => {
     // TODO: use fixtures for account creation and contract deploy
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");

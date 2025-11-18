@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { fetchJsonRpc, retryConfig } from '../../src/providers/fetch_json';
 
-describe.skip('fetchJson', () => {
+describe('fetchJson', () => {
     test('string parameter in fetchJson', async () => {
         const RPC_URL = 'https://rpc.testnet.near.org';
         const statusRequest = {
