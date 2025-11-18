@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, vi, test } from 'vitest';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 import { Worker } from 'near-workspaces';
 import { TypedContract } from '../../src';
@@ -7,7 +7,6 @@ let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 
 const CONTRACT_CALL_GAS = 300000000000000n;
 
-jest.setTimeout(120000);
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();

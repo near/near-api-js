@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, vi, test } from 'vitest';
 import { base58 } from '@scure/base';
 import { KeyPair, ErrorMessages, IdType, TypedError } from '../../src'
 
@@ -6,7 +6,6 @@ import { createAccount, deployContract, generateUniqueString, setUpTestConnectio
 
 import { Worker } from 'near-workspaces';
 
-jest.setTimeout(60000);
 
 let near: Awaited<ReturnType<typeof setUpTestConnection>>;
 

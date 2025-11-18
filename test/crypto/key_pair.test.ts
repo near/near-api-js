@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 import { sha256 } from '@noble/hashes/sha256';
 import { KeyPair, KeyPairEd25519, PublicKey, KeyPairSecp256k1, baseEncode } from '../../src';
 

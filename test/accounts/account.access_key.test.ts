@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, expect, vi, test } from 'vitest';
 
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
@@ -12,7 +12,6 @@ let contractId: string;
 // @ts-expect-error infer type here
 let contract = new TypedContract({});
 
-jest.setTimeout(50000);
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
