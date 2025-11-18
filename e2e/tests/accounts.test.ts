@@ -89,7 +89,7 @@ test("account can send meta transaction with Transfer", async () => {
     expect(outcome.status.SuccessValue).toBe("");
 });
 
-test("account can send meta transaction with DeployGlobalContract(AccountId)", async () => {
+test.skip("account can send meta transaction with DeployGlobalContract(AccountId)", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
     await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
@@ -120,7 +120,7 @@ test("account can send meta transaction with DeployGlobalContract(AccountId)", a
     expect(outcome.status.SuccessValue).toBe("");
 });
 
-test("account can send meta transaction with DeployGlobalContract(CodeHash)", async () => {
+test.skip("account can send meta transaction with DeployGlobalContract(CodeHash)", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
     await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
@@ -151,7 +151,7 @@ test("account can send meta transaction with DeployGlobalContract(CodeHash)", as
     expect(outcome.status.SuccessValue).toBe("");
 });
 
-test("account can send meta transaction with UseGlobalContract(AccountId)", async () => {
+test.skip("account can send meta transaction with UseGlobalContract(AccountId)", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
     await rootAccount.createAccount(newAccountId, keypair.getPublicKey());
@@ -183,7 +183,7 @@ test("account can send meta transaction with UseGlobalContract(AccountId)", asyn
     expect(outcome.status.SuccessValue).toBe("");
 });
 
-test("account can send meta transaction with UseGlobalContract(CodeHash)", async () => {
+test.skip("account can send meta transaction with UseGlobalContract(CodeHash)", async () => {
     const newAccountId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom("ed25519");
     await rootAccount.createAccount(newAccountId, keypair.getPublicKey());

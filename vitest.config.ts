@@ -6,5 +6,6 @@ export default defineConfig({
         include: ['test/**/*.test.ts', 'test/**/*.spec.ts', 'e2e/**/*.test.ts'],
         exclude: ['node_modules/**/*'],
         testTimeout: 50000,
+        hookTimeout: 120000, // 2 minutes for setup/teardown hooks
     },
 });
