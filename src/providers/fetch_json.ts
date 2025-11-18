@@ -1,4 +1,4 @@
-import { TypedError } from '../types';
+import { TypedError } from '../types/index.js';
 import { backOff } from 'exponential-backoff';
 
 const BACKOFF_MULTIPLIER = 1.5;

@@ -1,4 +1,4 @@
-import type { AccountLike } from '../../types';
+import type { AccountLike } from '../../types/index.js';
 
 export class MultiTokenContract {
     public readonly accountId: string;

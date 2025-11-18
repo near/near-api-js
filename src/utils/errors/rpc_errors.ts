@@ -1,9 +1,9 @@
-import { TypedError } from '../../types';
+import { TypedError } from '../../types/index.js';
 import Mustache from 'mustache';
 
-import { formatNearAmount } from '../format';
-import { ErrorMessages } from './errors';
-import schema from './rpc_error_schema.json';
+import { formatNearAmount } from '../format.js';
+import { ErrorMessages } from './errors.js';
+import schema from './rpc_error_schema.json' assert { type: 'json' };
 
 const mustacheHelpers = {
     formatNear: () => (n, render) => formatNearAmount(render(n))

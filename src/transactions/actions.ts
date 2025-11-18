@@ -1,8 +1,8 @@
-import type { PublicKey } from '../crypto';
-import { Enum } from '../types';
+import type { PublicKey } from '../crypto/index.js';
+import { Enum } from '../types/index.js';
 
-import type { DelegateAction } from './delegate';
-import type { Signature } from './signature';
+import type { DelegateAction } from './delegate.js';
+import type { Signature } from './signature.js';
 
 export class FunctionCallPermission {
     allowance?: bigint;

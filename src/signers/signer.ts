@@ -1,10 +1,10 @@
-import { PublicKey } from '../crypto';
+import { PublicKey } from '../crypto/index.js';
 import {
     DelegateAction,
     SignedDelegate,
     SignedTransaction,
     Transaction,
-} from '../transactions';
+} from '../transactions/index.js';
 import { Schema } from 'borsh';
 
 export interface SignMessageParams {

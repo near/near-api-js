@@ -5,9 +5,9 @@
             "ES2023",
             "dom"
         ],
-        "module": "ES2022",
+        "module": "NodeNext",
         "target": "es2020",
-        "moduleResolution": "bundler",
+        "moduleResolution": "NodeNext",
         "alwaysStrict": true,
         "outDir": "./lib",
         "declaration": true,

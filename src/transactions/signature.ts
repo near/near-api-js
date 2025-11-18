@@ -1,5 +1,5 @@
-import { KeyType } from '../crypto';
-import { Enum } from '../types';
+import { KeyType } from '../crypto/index.js';
+import { Enum } from '../types/index.js';
 
 class ED25519Signature { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
 class SECP256K1Signature { keyType: KeyType = KeyType.SECP256K1; data: Uint8Array; }

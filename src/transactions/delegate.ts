@@ -1,7 +1,7 @@
-import type { PublicKey } from '../crypto';
+import type { PublicKey } from '../crypto/index.js';
 
-import { actionCreators } from './action_creators';
-import { type Action, GlobalContractDeployMode, GlobalContractIdentifier } from './actions';
+import { actionCreators } from './action_creators.js';
+import { type Action, GlobalContractDeployMode, GlobalContractIdentifier } from './actions.js';
 
 const {
     addKey,

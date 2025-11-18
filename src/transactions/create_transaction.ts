@@ -1,7 +1,7 @@
-import { PublicKey } from '../crypto';
+import { PublicKey } from '../crypto/index.js';
 
-import { Action } from './actions';
-import { Transaction } from './schema';
+import { Action } from './actions.js';
+import { Transaction } from './schema.js';
 
 /**
  * Creates a new transaction object with the provided parameters.

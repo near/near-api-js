@@ -1,4 +1,4 @@
-import { FinalExecutionOutcome } from '../types';
+import { FinalExecutionOutcome } from '../types/index.js';
 
 /** @hidden */
 // eslint-disable-next-line @typescript-eslint/ban-types

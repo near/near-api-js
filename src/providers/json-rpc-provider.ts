@@ -12,7 +12,7 @@ import {
     getErrorTypeFromErrorMessage,
     parseRpcError,
     ServerError,
-} from '../utils';
+} from '../utils/index.js';
 import {
     AccessKeyWithPublicKey,
     BlockId,
@@ -45,16 +45,16 @@ import {
     ContractStateView,
     CallContractViewFunctionResultRaw,
     ExecutionOutcomeReceiptDetail,
-} from '../types';
+} from '../types/index.js';
 import {
     encodeTransaction,
     SignedTransaction,
-} from '../transactions';
+} from '../transactions/index.js';
 
-import { Provider } from './provider';
-import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
-import { TxExecutionStatus } from '../types';
-import { PublicKey } from '../crypto';
+import { Provider } from './provider.js';
+import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
+import { TxExecutionStatus } from '../types/index.js';
+import { PublicKey } from '../crypto/index.js';
 
 /** @hidden */
 // Default number of retries before giving up on a request.

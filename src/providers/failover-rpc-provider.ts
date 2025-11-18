@@ -35,11 +35,11 @@ import {
     CallContractViewFunctionResultRaw,
     ExecutionOutcomeReceiptDetail,
     FinalityReference,
-} from '../types';
-import { SignedTransaction } from '../transactions';
-import { Provider } from './provider';
-import { TxExecutionStatus } from '../types';
-import { PublicKey } from '../crypto';
+} from '../types/index.js';
+import { SignedTransaction } from '../transactions/index.js';
+import { Provider } from './provider.js';
+import { TxExecutionStatus } from '../types/index.js';
+import { PublicKey } from '../crypto/index.js';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
