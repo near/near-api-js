@@ -35,7 +35,7 @@
     "tsconfig": "workspace:*",
     "tsup": "^8.5.0",
     "turbo": "2.4.4",
-    "typedoc": "0.27.9",
+    "typedoc": "0.28.14",
     "typescript": "5.4.5"
   },
   "resolutions": {
