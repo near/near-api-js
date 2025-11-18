@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       near-api-js:
-        specifier: file:../packages/near-api-js
-        version: file:../packages/near-api-js
+        specifier: file:..
+        version: file:..
     devDependencies:
       '@types/node':
         specifier: 20.0.0
@@ -729,8 +729,8 @@ packages:
   near-api-js@5.1.1:
     resolution: {integrity: sha512-h23BGSKxNv8ph+zU6snicstsVK1/CTXsQz4LuGGwoRE24Hj424nSe4+/1tzoiC285Ljf60kPAqRCmsfv9etF2g==}
 
-  near-api-js@file:../packages/near-api-js:
-    resolution: {directory: ../packages/near-api-js, type: directory}
+  near-api-js@file:..:
+    resolution: {directory: .., type: directory}
 
   near-sandbox@0.1.5:
     resolution: {integrity: sha512-oVXDaFXeB/tYPuE78pG505astePJWlo68u2qlJ8TcFxL4cT0b13Go5k+0/kpPDiJ0375LPzlcn7MdHvyNelWcA==}
@@ -1786,7 +1786,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  near-api-js@file:../packages/near-api-js:
+  near-api-js@file:..:
     dependencies:
       '@noble/curves': 1.8.1
       '@noble/hashes': 1.7.1

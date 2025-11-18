@@ -1,5 +1,0 @@
-package-lock.json linguist-generated=true -diff
-yarn.lock linguist-generated=true -diff
-docs/**/*.md linguist-generated=true -diff
-lib/**/*.js linguist-generated=true -diff
-lib/**/*.d.ts linguist-generated=true -diff

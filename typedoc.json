@@ -1,22 +1,9 @@
 {
-  "includeVersion": true,
-  "entryPoints": [
-    "packages/near-api-js",
-    "packages/accounts",
-    "packages/crypto",
-    "packages/providers",
-    "packages/signers",
-    "packages/tokens",
-    "packages/transactions",
-    "packages/types",
-    "packages/utils",
-    "packages/wallet-account"
+  "extends": [
+    "../../typedoc.json"
   ],
-  "entryPointStrategy": "packages",
-  "githubPages": true,
-  "validation": {
-    "notExported": false
-  },
-  "out": "docs",
-  "readme": "./docs/README_TYPEDOC.md"
+  "entryPoints": [
+    "src"
+  ],
+  "entryPointStrategy": "expand",
 }
