@@ -9,7 +9,7 @@ export class FunctionCallPermission {
     receiverId: string;
     methodNames: string[];
 
-    constructor({ allowance, receiverId, methodNames }: { allowance: bigint, receiverId: string, methodNames: string[] }) {
+    constructor({ allowance, receiverId, methodNames }: { allowance?: bigint, receiverId: string, methodNames: string[] }) {
         this.allowance = allowance;
         this.receiverId = receiverId;
         this.methodNames = methodNames;
@@ -19,7 +19,7 @@ export class FunctionCallPermission {
 export class FullAccessPermission {}
 
 export class AccessKeyPermission extends Enum {
-    enum: string;
+    enum!: string;
     functionCall?: FunctionCallPermission;
     fullAccess?: FullAccessPermission;
 
@@ -67,7 +67,7 @@ export class FunctionCall {
 }
 
 export class GlobalContractDeployMode extends Enum {
-    enum: string;
+    enum!: string;
     CodeHash?: null;
     AccountId?: null;
 
@@ -81,7 +81,7 @@ export class GlobalContractDeployMode extends Enum {
 }
 
 export class GlobalContractIdentifier extends Enum {
-    enum: string;
+    enum!: string;
     CodeHash?: Uint8Array;
     AccountId?: string;
 
@@ -166,7 +166,7 @@ export class SignedDelegate {
  * @see {@link https://nomicon.io/RuntimeSpec/Actions.html | Actions Spec}
  */
 export class Action extends Enum {
-    enum: string;
+    enum!: string;
     createAccount?: CreateAccount;
     deployContract?: DeployContract;
     functionCall?: FunctionCall;

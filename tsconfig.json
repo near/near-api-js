@@ -10,6 +10,7 @@
         "target": "es2020",
         "moduleResolution": "node",
         "alwaysStrict": true,
+        "strict": true,
         "outDir": "./lib",
         "declaration": true,
         "preserveSymlinks": false,
@@ -24,7 +25,6 @@
         "resolveJsonModule": true,
     },
     "files": [
-        "src/index.ts",
-        "src/browser-index.ts",
+        "src/index.ts"
     ],
 }
