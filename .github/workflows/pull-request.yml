@@ -78,7 +78,7 @@ jobs:
     - name: Evaluate source file changes
       id: source-files
       run: |
-        FILES_CHANGED=$(jq 'map(select(.filename | test("^packages/[^/]+/src/"))) | length' changed_files.json)
+        FILES_CHANGED=$(jq 'map(select(.filename | test("^src/"))) | length' changed_files.json)
         echo "has_changed=$([ "$FILES_CHANGED" -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
     
     - name: Fail if source files changed, but no new changeset
