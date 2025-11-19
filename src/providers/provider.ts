@@ -3,7 +3,7 @@
  * @module
  */
 
-import { SignedTransaction } from '../transactions';
+import { SignedTransaction } from '../transactions/index.js';
 import {
     AccessKeyView,
     AccessKeyList,
@@ -34,8 +34,8 @@ import {
     ChunkResult,
     FinalityReference,
     CallContractViewFunctionResultRaw,
-} from '../types';
-import { PublicKey } from '../crypto';
+} from '../types/index.js';
+import { PublicKey } from '../crypto/index.js';
 
 /** @hidden */
 export interface Provider {

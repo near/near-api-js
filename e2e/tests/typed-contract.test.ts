@@ -10,8 +10,8 @@ import {
     KeyPairString,
     KeyPairSigner,
 } from "near-api-js";
-import { getRpcUrl, getSecretKey } from "./worker";
-import { abi } from "../contracts/guestbook/abi";
+import { getRpcUrl, getSecretKey } from "./worker.js";
+import { abi } from "../contracts/guestbook/abi.js";
 import { readFile } from "fs/promises";
 
 let worker: Worker;

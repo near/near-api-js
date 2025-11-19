@@ -1,5 +1,5 @@
-import { formatAmount, parseAmount } from './format';
-import type { AccountLike } from '../../types';
+import { formatAmount, parseAmount } from './format.js';
+import type { AccountLike } from '../../types/index.js';
 
 interface FTMetadata {
     spec?: string;
