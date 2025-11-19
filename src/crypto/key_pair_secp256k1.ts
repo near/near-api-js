@@ -1,10 +1,10 @@
-import { baseDecode, baseEncode } from '../utils';
+import { baseDecode, baseEncode } from '../utils/index.js';
 import { randomBytes } from '@noble/hashes/utils';
 import secp256k1 from 'secp256k1';
 
-import { KeyPairString, KeySize, KeyType } from './constants';
-import { KeyPairBase, Signature } from './key_pair_base';
-import { PublicKey } from './public_key';
+import { KeyPairString, KeySize, KeyType } from './constants.js';
+import { KeyPairBase, Signature } from './key_pair_base.js';
+import { PublicKey } from './public_key.js';
 
 /**
  * This class provides key pair functionality for secp256k1 curve:

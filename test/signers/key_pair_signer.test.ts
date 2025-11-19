@@ -64,7 +64,7 @@ test('test sign transaction with relevant public key', async () => {
         '2571e3539ab5556e39441913e66abd07e634fb9850434006a719306100e641a2'
     );
 
-    expect(Buffer.from(signature.signature.data).toString('hex')).toBe(
+    expect(Buffer.from(signature.data).toString('hex')).toBe(
         'bfe2858d227e3116076a8e5ea9c5bef923c7755f19f0137d1acd9bb67973f1b8a7f83dfc0be23e307e106c8807eaa6e14c0fcb46c42acdf293c4a6a81a27fc05'
     );
 });
@@ -319,7 +319,7 @@ test('test sign delegate action', async () => {
         '6d35575b3566fddf04f79317c3e574eb89c5bc228c5e755f2a3179e164dbb36b'
     );
 
-    expect(Buffer.from(signature.signature.data).toString('hex')).toBe(
+    expect(Buffer.from(signature.data).toString('hex')).toBe(
         '6996219a3d971a256fcf7b7ad748aec7f1c84868cd59df3d756d8a022498a636e63f16809a54918c473e9a8bf4b0b35477a6b671eab65b1b28fd9fae2a668c00'
     );
 });

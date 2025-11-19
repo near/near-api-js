@@ -1,7 +1,7 @@
-export { KeyType } from './constants';
-export type { CurveType, KeyPairString } from './constants';
-export { KeyPair } from './key_pair';
-export type { Signature } from './key_pair_base';
-export { KeyPairEd25519 } from './key_pair_ed25519';
-export { KeyPairSecp256k1 } from './key_pair_secp256k1';
-export { PublicKey, keyToImplicitAddress } from './public_key';
+export { KeyType } from './constants.js';
+export type { CurveType, KeyPairString } from './constants.js';
+export { KeyPair } from './key_pair.js';
+export type { Signature } from './key_pair_base.js';
+export { KeyPairEd25519 } from './key_pair_ed25519.js';
+export { KeyPairSecp256k1 } from './key_pair_secp256k1.js';
+export { PublicKey, keyToImplicitAddress } from './public_key.js';

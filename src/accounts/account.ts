@@ -1,5 +1,5 @@
-import { PublicKey } from '../crypto';
-import { type Provider } from '../providers';
+import { PublicKey } from '../crypto/index.js';
+import { type Provider } from '../providers/index.js';
 import {
     type Action,
     type DelegateAction,
@@ -10,7 +10,7 @@ import {
     actionCreators,
     buildDelegateAction,
     createTransaction,
-} from '../transactions';
+} from '../transactions/index.js';
 import {
     type AccessKeyList,
     type AccessKeyView,
@@ -20,16 +20,16 @@ import {
     type Finality,
     type SerializedReturnValue,
     type TxExecutionStatus,
-} from '../types';
+} from '../types/index.js';
 import {
     baseDecode,
     getTransactionLastResult,
     parseResultError,
-} from '../utils';
-import { type SignedMessage, type Signer } from '../signers';
+} from '../utils/index.js';
+import { type SignedMessage, type Signer } from '../signers/index.js';
 
-import type { FungibleToken, NativeToken } from '../tokens';
-import { NEAR } from '../tokens';
+import type { FungibleToken, NativeToken } from '../tokens/index.js';
+import { NEAR } from '../tokens/index.js';
 
 const {
     addKey,

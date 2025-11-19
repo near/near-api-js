@@ -1,4 +1,4 @@
-import type { AccountLike } from '../../types';
+import type { AccountLike } from '../../types/index.js';
 
 interface ContractMetadata {
     spec?: string;

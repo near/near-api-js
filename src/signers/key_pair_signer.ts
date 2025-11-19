@@ -1,6 +1,5 @@
-import { KeyPair, PublicKey, KeyPairString } from '../crypto';
-
-import { Signer } from './signer';
+import { KeyPair, PublicKey, KeyPairString } from "../crypto/index.js";
+import { Signer } from "./signer.js";
 
 /**
  * Signs using in KeyPair.

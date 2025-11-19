@@ -12,14 +12,11 @@
     },
     "packageManager": "pnpm@10.4.1",
     "homepage": "https://github.com/near/near-api-js",
-    "main": "lib/commonjs/index.cjs",
-    "module": "lib/esm/index.js",
-    "types": "lib/esm/index.d.ts",
     "type": "module",
     "exports": {
         ".": {
-            "import": "./lib/esm/index.js",
-            "require": "./lib/commonjs/index.cjs"
+            "import": "./lib/index.js",
+            "types": "./lib/index.d.ts"
         }
     },
     "dependencies": {
@@ -50,11 +47,9 @@
         "@typescript-eslint/eslint-plugin": "6.21.0",
         "@typescript-eslint/parser": "6.21.0",
         "commitlint": "19.7.1",
-        "esbuild-fix-imports-plugin": "1.0.21",
         "eslint": "8.20.0",
         "husky": "9.1.7",
         "rimraf": "6.0.1",
-        "tsup": "8.5.0",
         "typedoc": "0.27.9",
         "typescript": "5.4.5",
         "ts-node": "10.9.2"
@@ -64,8 +59,10 @@
     "scripts": {
         "compile": "tsc -p ./tsconfig.json",
         "dev": "pnpm compile -w",
-        "build": "tsup",
+        "prebuild": "pnpm clean",
+        "build": "tsc -p ./tsconfig.json",
         "test": "jest test --passWithNoTests --rootDir test",
+        "typecheck": "tsc --noEmit -p ./tsconfig.typecheck.json",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
         "lint:fix": "pnpm lint:src:fix && pnpm lint:test:fix",
@@ -74,7 +71,7 @@
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "pnpm rimraf lib",
-        "check-exports": "attw --pack .",
+        "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
         "docs:generate": "typedoc",
         "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
         "release": "changeset publish"

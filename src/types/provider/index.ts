@@ -1,14 +1,14 @@
 
 export {
     IdType
-} from './light_client';
+} from './light_client.js';
 export type {
     LightClientBlockLiteView,
     LightClientProof,
     LightClientProofRequest,
     NextLightClientBlockRequest,
     NextLightClientBlockResponse
-} from './light_client';
+} from './light_client.js';
 export type {
     AccessKeyWithPublicKey,
     BlockHash,
@@ -40,7 +40,7 @@ export type {
     TotalWeight,
     Transaction as ProviderTransaction,
     TxExecutionStatus,
-} from './protocol';
+} from './protocol.js';
 export type {
     CallFunctionRequest,
     RpcQueryRequest,
@@ -49,10 +49,10 @@ export type {
     ViewAccountRequest,
     ViewCodeRequest,
     ViewStateRequest,
-} from './request';
+} from './request.js';
 export {
     ExecutionStatusBasic, FinalExecutionStatusBasic
-} from './response';
+} from './response.js';
 export type {
     AccessKeyInfoView,
     AccessKeyList,
@@ -76,11 +76,11 @@ export type {
     ExecutionOutcomeReceiptDetail,
     ContractStateView,
     CallContractViewFunctionResultRaw
-} from './response';
+} from './response.js';
 export type {
     CurrentEpochValidatorInfo,
     EpochValidatorInfo,
     NextEpochValidatorInfo,
     StakedAccount,
     ValidatorStakeView
-} from './validator';
+} from './validator.js';

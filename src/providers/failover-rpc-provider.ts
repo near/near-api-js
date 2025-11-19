@@ -35,11 +35,11 @@ import {
     CallContractViewFunctionResultRaw,
     ExecutionOutcomeReceiptDetail,
     FinalityReference,
-} from '../types';
-import { SignedTransaction } from '../transactions';
-import { Provider } from './provider';
-import { TxExecutionStatus } from '../types';
-import { PublicKey } from '../crypto';
+} from '../types/index.js';
+import { SignedTransaction } from '../transactions/index.js';
+import { Provider } from './provider.js';
+import { TxExecutionStatus } from '../types/index.js';
+import { PublicKey } from '../crypto/index.js';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
@@ -161,15 +161,15 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewNodeStatus());
     }
 
-    public async viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo> {
-        return this.withBackoff((currentProvider) => currentProvider.viewValidatorsV2(params));
+    public async viewValidators(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo> {
+        return this.withBackoff((currentProvider) => currentProvider.viewValidators(params));
     }
 
-    public async viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
+    public async viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'): Promise<FinalExecutionOutcome> {
         return this.withBackoff((currentProvider) => currentProvider.viewTransactionStatus(txHash, accountId, waitUntil));
     }
 
-    public async viewTransactionStatusWithReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>> {
+    public async viewTransactionStatusWithReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>> {
         return this.withBackoff((currentProvider) => currentProvider.viewTransactionStatusWithReceipts(txHash, accountId, waitUntil));
     }
 

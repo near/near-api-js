@@ -12,7 +12,7 @@ import {
     getErrorTypeFromErrorMessage,
     parseRpcError,
     ServerError,
-} from '../utils';
+} from '../utils/index.js';
 import {
     AccessKeyWithPublicKey,
     BlockId,
@@ -45,16 +45,16 @@ import {
     ContractStateView,
     CallContractViewFunctionResultRaw,
     ExecutionOutcomeReceiptDetail,
-} from '../types';
+} from '../types/index.js';
 import {
     encodeTransaction,
     SignedTransaction,
-} from '../transactions';
+} from '../transactions/index.js';
 
-import { Provider } from './provider';
-import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json';
-import { TxExecutionStatus } from '../types';
-import { PublicKey } from '../crypto';
+import { Provider } from './provider.js';
+import { ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
+import { TxExecutionStatus } from '../types/index.js';
+import { PublicKey } from '../crypto/index.js';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
@@ -127,7 +127,7 @@ export class JsonRpcProvider implements Provider {
     public async getCurrentEpochSeatPrice(): Promise<bigint> {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
-        const { current_validators: currentValidators } = await this.viewValidatorsV2(null);
+        const { current_validators: currentValidators } = await this.viewValidators(null);
 
         // hard-coded in the protocol
         const maxNumberOfSeats = 300;
@@ -138,7 +138,7 @@ export class JsonRpcProvider implements Provider {
     public async getNextEpochSeatPrice(): Promise<bigint> {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } = await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
-        const { next_validators: nextValidators } = await this.viewValidatorsV2(null);
+        const { next_validators: nextValidators } = await this.viewValidators(null);
 
         // hard-coded in the protocol
         const maxNumberOfSeats = 300;
@@ -294,20 +294,20 @@ export class JsonRpcProvider implements Provider {
      * - `{ epochId }`: Epoch hash.
      * - `null`: Current epoch.
      */
-    public async viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo> {
+    public async viewValidators(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo> {
         if (params === null) return this.sendJsonRpc('validators', [null]);
 
         if (typeof params === 'object' && 'blockId' in params) return this.sendJsonRpc('validators', { block_id: params.blockId });
 
         if (typeof params === 'object' && 'epochId' in params) return this.sendJsonRpc('validators', { epoch_id: params.epochId });
 
-        throw new Error('Invalid parameters for validatorsV2');
+        throw new Error('Invalid parameters for validators');
     }
 
     public async viewTransactionStatus(
         txHash: Uint8Array | string,
         accountId: string,
-        waitUntil: TxExecutionStatus
+        waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'
     ): Promise<FinalExecutionOutcome> {
         const encodedTxHash =
             typeof txHash === 'string' ? txHash : baseEncode(txHash);
@@ -322,7 +322,7 @@ export class JsonRpcProvider implements Provider {
     public async viewTransactionStatusWithReceipts(
         txHash: Uint8Array | string,
         accountId: string,
-        waitUntil: TxExecutionStatus
+        waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'
     ): Promise<
         FinalExecutionOutcome &
             Required<Pick<FinalExecutionOutcome, 'receipts'>>

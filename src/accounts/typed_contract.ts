@@ -10,12 +10,12 @@ import type {
     AbiType,
     RootSchema,
     SchemaObject,
-} from './abi_types';
-import { Provider } from '../providers';
-import { Account } from './account';
+} from './abi_types.js';
+import { Provider } from '../providers/index.js';
+import { Account } from './account.js';
 
-import { BlockReference, TxExecutionStatus } from '../types';
-import { ArgumentSchemaError, UnknownArgumentError } from './errors';
+import { BlockReference, TxExecutionStatus } from '../types/index.js';
+import { ArgumentSchemaError, UnknownArgumentError } from './errors.js';
 import validator from 'is-my-json-valid';
 
 type IsNullable<T> = [null] extends [T] ? true : false;
@@ -339,13 +339,13 @@ class Contract<const abi extends AbiRoot, contractId extends string> {
     abi?: abi;
     contractId: contractId;
 
-    view: ContractReturnType<abi, contractId> extends {
+    view!: ContractReturnType<abi, contractId> extends {
         view: infer ViewMethods;
     }
         ? ViewMethods
         : never;
 
-    call: ContractReturnType<abi, contractId> extends {
+    call!: ContractReturnType<abi, contractId> extends {
         call: infer CallMethods;
     }
         ? CallMethods

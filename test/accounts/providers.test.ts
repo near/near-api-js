@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { base58 } from '@scure/base';
-import { KeyPair, ErrorMessages, IdType } from '../../src'
+import { KeyPair, ErrorMessages, IdType, TypedError } from '../../src'
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
@@ -30,9 +30,9 @@ describe('providers', () => {
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
         const responseWithString = await near.provider.viewTransactionStatus(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
         const responseWithUint8Array = await near.provider.viewTransactionStatus(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
-        // @ts-expect-error
+        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithString).toMatchObject(outcome);
-        // @ts-expect-error
+        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
     
@@ -51,9 +51,9 @@ describe('providers', () => {
         expect('tokens_burnt' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('executor_id' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('status' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        // @ts-expect-error
+        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithString).toMatchObject(reciepts);
-        // @ts-expect-error
+        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithUint8Array).toMatchObject(reciepts);
     });
     
@@ -63,7 +63,7 @@ describe('providers', () => {
             request_type: 'view_account',
             finality: 'optimistic',
             account_id: account.accountId });
-        // @ts-expect-error "code_hash" exists in response
+        // @ts-expect-error - code_hash exists in response but not in union type
         expect(response.code_hash).toEqual('11111111111111111111111111111111');
     });
     
@@ -154,7 +154,7 @@ describe('providers', () => {
         }
     
         const comittedStatus = await waitForStatusMatching(status =>
-            // @ts-expect-error test input
+            // @ts-expect-error - block_hash exists at runtime but not in type definition
             status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash);
         const BLOCKS_UNTIL_FINAL = 2;
         const finalizedStatus = await waitForStatusMatching(status =>
@@ -190,7 +190,7 @@ describe('providers', () => {
         // Use old block hash as light client head should fail
         lightClientRequest = {
             type: IdType.Transaction,
-            // @ts-expect-error test input
+            // @ts-expect-error - block_hash exists at runtime but not in type definition
             light_client_head: executionOutcome.transaction_outcome.block_hash,
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
@@ -220,8 +220,8 @@ describe('providers errors', () => {
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'MethodNotFound';
-            expect(e.type).toEqual(errorType);
-            expect(e.message).toEqual(ErrorMessages[errorType]);
+            expect((e as TypedError).type).toEqual(errorType);
+            expect((e as TypedError).message).toEqual(ErrorMessages[errorType]);
         }
     });
 
@@ -239,8 +239,8 @@ describe('providers errors', () => {
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'CodeDoesNotExist';
-            expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
+            expect((e as TypedError).type).toEqual(errorType);
+            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
                 ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }
@@ -259,8 +259,8 @@ describe('providers errors', () => {
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'AccountDoesNotExist';
-            expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
+            expect((e as TypedError).type).toEqual(errorType);
+            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
                 ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }
@@ -281,8 +281,8 @@ describe('providers errors', () => {
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'AccessKeyDoesNotExist';
-            expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
+            expect((e as TypedError).type).toEqual(errorType);
+            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
                 ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }

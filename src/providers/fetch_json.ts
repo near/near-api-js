@@ -1,4 +1,4 @@
-import { TypedError } from '../types';
+import { TypedError } from '../types/index.js';
 import { backOff } from 'exponential-backoff';
 
 const BACKOFF_MULTIPLIER = 1.5;
@@ -30,7 +30,7 @@ export interface ConnectionInfo {
 }
 
 export class ProviderError extends Error {
-    cause: number;
+    cause: number = -1;
     constructor(message: string, options: any) {
         super(message, options);
         if (options.cause) {

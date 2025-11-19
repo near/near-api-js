@@ -1,15 +1,12 @@
 {
     "compilerOptions": {
         "esModuleInterop": true,
-        "lib": [
-            "es2020",
-            "esnext",
-            "dom"
-        ],
-        "module": "commonjs",
+        "lib": ["ES2023", "dom"],
+        "module": "NodeNext",
         "target": "es2020",
-        "moduleResolution": "node",
+        "moduleResolution": "NodeNext",
         "alwaysStrict": true,
+        "strict": true,
         "outDir": "./lib",
         "declaration": true,
         "preserveSymlinks": false,
@@ -22,9 +19,7 @@
         "noUnusedLocals": true,
         "experimentalDecorators": true,
         "resolveJsonModule": true,
+        "skipLibCheck": true
     },
-    "files": [
-        "src/index.ts",
-        "src/browser-index.ts",
-    ],
+    "include": ["src/index.ts"]
 }

@@ -1,4 +1,4 @@
-import { KeyType, PublicKey } from '../crypto';
+import { KeyType, PublicKey } from '../crypto/index.js';
 import {
     Signature,
     DelegateAction,
@@ -7,7 +7,7 @@ import {
     Transaction,
     encodeTransaction,
     encodeDelegateAction,
-} from '../transactions';
+} from '../transactions/index.js';
 import { Schema, serialize } from 'borsh';
 import { sha256 } from '@noble/hashes/sha256';
 

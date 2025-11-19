@@ -1,4 +1,4 @@
-import { FungibleToken } from '../ft';
+import { FungibleToken } from '../ft/index.js';
 
 export const wNEAR = new FungibleToken(
     'wrap.near',

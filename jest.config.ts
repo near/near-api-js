@@ -6,8 +6,16 @@ export default {
     transform: {
         '^.+\\.[tj]s$': ['ts-jest', {
             tsconfig: {
+                module: 'ESNext',
+                moduleResolution: 'NodeNext',
+                esModuleInterop: true,
                 allowJs: true,
             },
+            useESM: true,
         }],
+    },
+    extensionsToTreatAsEsm: ['.ts'],
+    moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1',
     },
 };

@@ -3,7 +3,7 @@
  * @module
  */
 
-import { SignedTransaction } from '../transactions';
+import { SignedTransaction } from '../transactions/index.js';
 import {
     AccessKeyView,
     AccessKeyList,
@@ -34,8 +34,8 @@ import {
     ChunkResult,
     FinalityReference,
     CallContractViewFunctionResultRaw,
-} from '../types';
-import { PublicKey } from '../crypto';
+} from '../types/index.js';
+import { PublicKey } from '../crypto/index.js';
 
 /** @hidden */
 export interface Provider {
@@ -56,10 +56,10 @@ export interface Provider {
     viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
 
     viewNodeStatus(): Promise<NodeStatusResult>;
-    viewValidatorsV2(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo>
+    viewValidators(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo>
 
-    viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
-    viewTransactionStatusWithReceipts(txHash: Uint8Array | string, accountId: string, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>>;
+    viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil?: TxExecutionStatus): Promise<FinalExecutionOutcome>;
+    viewTransactionStatusWithReceipts(txHash: Uint8Array | string, accountId: string, waitUntil?: TxExecutionStatus): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>>;
     viewTransactionReceipt(receiptId:  string): Promise<ExecutionOutcomeReceiptDetail>;
 
     sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;

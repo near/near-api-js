@@ -1,3 +1,3 @@
-export { KeyPairSigner } from './key_pair_signer';
-export { Signer, Nep413MessageSchema } from './signer';
-export type { SignedMessage, SignMessageParams } from './signer';
+export { KeyPairSigner } from './key_pair_signer.js';
+export { Signer, Nep413MessageSchema } from './signer.js';
+export type { SignedMessage, SignMessageParams } from './signer.js';

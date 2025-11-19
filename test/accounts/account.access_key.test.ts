@@ -2,7 +2,7 @@ import { afterAll, beforeAll, beforeEach, expect, jest, test } from '@jest/globa
 
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
-import { Account, TypedContract, KeyPair, KeyPairSigner } from '../../src';
+import { Account, TypedContract, KeyPair, KeyPairSigner, TypedError } from '../../src';
 
 import { Worker } from 'near-workspaces';
 
@@ -30,7 +30,7 @@ beforeEach(async () => {
     try {
         contractId = generateUniqueString('test');
         workingAccount = await createAccount(nearjs);
-        // @ts-expect-error abi is unknown
+        // @ts-expect-error - deployContract returns contract without abi property in type
         contract = await deployContract(nearjs.account, contractId);
     } catch (e) {
         console.error(e);
@@ -69,8 +69,8 @@ test('remove access key no longer works', async() => {
         await contract.call.setValue({ args: { value: 'test' }, account: near.account });
         failed = false;
     } catch (e) {
-        expect(e.message).toEqual(`Can't complete the action because access key ${keyPair.getPublicKey().toString()} doesn't exist`);
-        expect(e.type).toEqual('AccessKeyDoesNotExist');
+        expect((e as TypedError).message).toEqual(`Can't complete the action because access key ${keyPair.getPublicKey().toString()} doesn't exist`);
+        expect((e as TypedError).type).toEqual('AccessKeyDoesNotExist');
     }
 
     if (!failed) {
