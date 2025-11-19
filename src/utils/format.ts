@@ -1,5 +1,7 @@
 import { base58 } from "@scure/base";
 
+type NumericString = `${number}`;
+
 /**
  * Exponent for calculating how many indivisible units are there in one NEAR. See {@link NEAR_NOMINATION}.
  */
@@ -61,16 +63,16 @@ export function formatNearAmount(
  * @returns The parsed yoctoⓃ amount
  * @throws {Error} if the amount is empty or invalid
  */
-export function parseNearAmount(amt: string): string {
-    amt = cleanupAmount(amt);
-    if (!amt) {
+export function parseNearAmount(amount: NumericString | number): string {
+    const cleanedAmount = cleanupAmount(amount.toString());
+    if (!cleanedAmount) {
         throw new Error('Amount cannot be empty');
     }
-    const split = amt.split(".");
+    const split = cleanedAmount.split(".");
     const wholePart = split[0];
     const fracPart = split[1] || "";
     if (split.length > 2 || fracPart.length > NEAR_NOMINATION_EXP) {
-        throw new Error(`Cannot parse '${amt}' as NEAR amount`);
+        throw new Error(`Cannot parse '${amount}' as NEAR amount`);
     }
     return trimLeadingZeroes(
         wholePart + fracPart.padEnd(NEAR_NOMINATION_EXP, "0")
