@@ -81,7 +81,7 @@ global.TextEncoder = TextEncoder;
         });
         
         test('rpc fetch validators info', async () => {
-            const validators = await provider.viewValidatorsV2(null);
+            const validators = await provider.viewValidators(null);
             expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
         });
         
