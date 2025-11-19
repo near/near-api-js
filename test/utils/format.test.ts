@@ -31,7 +31,6 @@ test.each`
 
 test.each`
     amt                               | expected
-    ${null}                           | ${null}
     ${'5.3'}                          | ${'5300000000000000000000000'}
     ${'5'}                            | ${'5000000000000000000000000'}
     ${'1'}                            | ${'1000000000000000000000000'}
@@ -47,7 +46,11 @@ test.each`
     ${'000000.000001'}                | ${'1000000000000000000'}
     ${'1,000,000.1'}                  | ${'1000000100000000000000000000000'}
 `('parseNearAmount($amt) returns $expected', ({ amt, expected }) => {
-    expect(parseNearAmount(amt as string)).toStrictEqual(expected as string);
+    expect(parseNearAmount(amt as `${number}`)).toStrictEqual(expected as string);
+});
+
+test('parseNearAmount works with numbers', () => {
+    expect(parseNearAmount(5.3)).toBe('5300000000000000000000000');
 });
 
 test('parseNearAmount fails when parsing values with ≥25 decimal places', () => {
@@ -56,6 +59,12 @@ test('parseNearAmount fails when parsing values with ≥25 decimal places', () =
     }).toThrowError(
         'Cannot parse \'0.0000080990999998370878871\' as NEAR amount'
     );
+});
+
+test('parseNearAmount fails when parsing whitespace-only strings', () => {
+    expect(() => {
+        parseNearAmount('   ');
+    }).toThrowError('Amount cannot be empty');
 });
 
 test('NEAR_NOMINATION value', () => {
