@@ -1,7 +1,5 @@
 ---
-"@near-js/signers": patch
+"near-api-js": major
 ---
 
-Refactored signer: move all logic into abstract signer, and expose only protected 'signBytes' that need to be implemented
-    
-Add unit tests to verify nep413MessageSignature 
+Refactor the abstract class `Signer` to implement every method, except for `getPublicKey` and `signBytes`, which are intended for users
