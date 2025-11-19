@@ -29,7 +29,7 @@ beforeEach(async () => {
     try {
         contractId = generateUniqueString('test');
         workingAccount = await createAccount(nearjs);
-        // @ts-expect-error abi is unknown
+        // @ts-expect-error - deployContract returns contract without abi property in type
         contract = await deployContract(nearjs.account, contractId);
     } catch (e) {
         console.error(e);
