@@ -339,13 +339,13 @@ class Contract<const abi extends AbiRoot, contractId extends string> {
     abi?: abi;
     contractId: contractId;
 
-    view: ContractReturnType<abi, contractId> extends {
+    view!: ContractReturnType<abi, contractId> extends {
         view: infer ViewMethods;
     }
         ? ViewMethods
         : never;
 
-    call: ContractReturnType<abi, contractId> extends {
+    call!: ContractReturnType<abi, contractId> extends {
         call: infer CallMethods;
     }
         ? CallMethods

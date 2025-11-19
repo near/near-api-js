@@ -30,7 +30,7 @@ export interface ConnectionInfo {
 }
 
 export class ProviderError extends Error {
-    cause: number;
+    cause: number = -1;
     constructor(message: string, options: any) {
         super(message, options);
         if (options.cause) {

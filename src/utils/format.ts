@@ -127,7 +127,7 @@ function formatWithCommas(value: string): string {
  */
 export function baseEncode(value: Uint8Array | string): string {
     if (typeof value === "string") {
-        const bytes = [];
+        const bytes: number[] = [];
         for (let c = 0; c < value.length; c++) {
             bytes.push(value.charCodeAt(c));
         }

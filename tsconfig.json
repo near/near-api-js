@@ -1,14 +1,12 @@
 {
     "compilerOptions": {
         "esModuleInterop": true,
-        "lib": [
-            "ES2023",
-            "dom"
-        ],
+        "lib": ["ES2023", "dom"],
         "module": "NodeNext",
         "target": "es2020",
         "moduleResolution": "NodeNext",
         "alwaysStrict": true,
+        "strict": true,
         "outDir": "./lib",
         "declaration": true,
         "preserveSymlinks": false,
@@ -23,7 +21,5 @@
         "resolveJsonModule": true,
         "skipLibCheck": true
     },
-    "include": [
-        "src/index.ts"
-    ]
+    "include": ["src/index.ts"]
 }

@@ -20,8 +20,8 @@ function str_to_key_type(keyType: string): KeyType {
     }
 }
 
-class ED25519PublicKey { keyType: KeyType = KeyType.ED25519; data: Uint8Array; }
-class SECP256K1PublicKey { keyType: KeyType = KeyType.SECP256K1; data: Uint8Array; }
+class ED25519PublicKey { keyType: KeyType = KeyType.ED25519; data!: Uint8Array; }
+class SECP256K1PublicKey { keyType: KeyType = KeyType.SECP256K1; data!: Uint8Array; }
 
 function resolveEnumKeyName(keyType: KeyType) {
     switch (keyType) {
@@ -144,10 +144,14 @@ export class PublicKey extends Enum {
     }
 
     get keyType(): KeyType {
+        if (typeof this.keyPair === 'undefined') throw new Error(`Property 'keyPair' of PublicKey is undefined`);
+
         return this.keyPair.keyType;
     }
 
     get data(): Uint8Array {
+        if (typeof this.keyPair === 'undefined') throw new Error(`Property 'keyPair' of PublicKey is undefined`);
+
         return this.keyPair.data;
     }
 }

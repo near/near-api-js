@@ -86,7 +86,7 @@ export function diffEpochValidators(currentValidators: CurrentEpochValidatorInfo
     return {
         newValidators: nextValidators.filter(v => !validatorsMap.has(v.account_id)),
         removedValidators: currentValidators.filter(v => !nextValidatorsSet.has(v.account_id)),
-        changedValidators: nextValidators.filter(v => (validatorsMap.has(v.account_id) && validatorsMap.get(v.account_id).stake != v.stake))
-            .map(v => ({ current: validatorsMap.get(v.account_id), next: v }))
+        changedValidators: nextValidators.filter(v => (validatorsMap.has(v.account_id) && validatorsMap.get(v.account_id)!.stake != v.stake))
+            .map(v => ({ current: validatorsMap.get(v.account_id)!, next: v }))
     };
 }

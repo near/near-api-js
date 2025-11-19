@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { base58 } from '@scure/base';
-import { KeyPair, ErrorMessages, IdType } from '../../src'
+import { KeyPair, ErrorMessages, IdType, TypedError } from '../../src'
 
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
@@ -220,8 +220,8 @@ describe('providers errors', () => {
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'MethodNotFound';
-            expect(e.type).toEqual(errorType);
-            expect(e.message).toEqual(ErrorMessages[errorType]);
+            expect((e as TypedError).type).toEqual(errorType);
+            expect((e as TypedError).message).toEqual(ErrorMessages[errorType]);
         }
     });
 
@@ -239,8 +239,8 @@ describe('providers errors', () => {
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'CodeDoesNotExist';
-            expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
+            expect((e as TypedError).type).toEqual(errorType);
+            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
                 ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }
@@ -259,8 +259,8 @@ describe('providers errors', () => {
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'AccountDoesNotExist';
-            expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
+            expect((e as TypedError).type).toEqual(errorType);
+            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
                 ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }
@@ -281,8 +281,8 @@ describe('providers errors', () => {
             expect(response).toBeUndefined();
         } catch (e) {
             const errorType = 'AccessKeyDoesNotExist';
-            expect(e.type).toEqual(errorType);
-            expect(e.message.split(' ').slice(0, 5)).toEqual(
+            expect((e as TypedError).type).toEqual(errorType);
+            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
                 ErrorMessages[errorType].split(' ').slice(0, 5)
             );
         }
