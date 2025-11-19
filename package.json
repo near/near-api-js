@@ -58,7 +58,8 @@
     "scripts": {
         "compile": "tsc -p ./tsconfig.json",
         "dev": "pnpm compile -w",
-        "build": "tsup",
+        "prebuild": "pnpm clean",
+        "build": "tsc -p ./tsconfig.json",
         "test": "vitest run test",
         "lint": "concurrently \"pnpm:lint:*(!fix) --no-error-on-unmatched-pattern\"",
         "lint:src": "eslint --ext .ts src",
