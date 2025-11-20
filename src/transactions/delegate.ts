@@ -13,7 +13,7 @@ const {
     stake,
     transfer,
     deployGlobalContract,
-    useGlobalContract
+    useGlobalContract,
 } = actionCreators;
 
 export class DelegateAction {
@@ -24,16 +24,21 @@ export class DelegateAction {
     maxBlockHeight: bigint;
     publicKey: PublicKey;
 
-    constructor({ senderId, receiverId, actions, nonce, maxBlockHeight, publicKey }:
-      {
-          senderId: string,
-          receiverId: string,
-          actions: Action[],
-          nonce: bigint,
-          maxBlockHeight: bigint,
-          publicKey: PublicKey,
-      }
-    ) {
+    constructor({
+        senderId,
+        receiverId,
+        actions,
+        nonce,
+        maxBlockHeight,
+        publicKey,
+    }: {
+        senderId: string;
+        receiverId: string;
+        actions: Action[];
+        nonce: bigint;
+        maxBlockHeight: bigint;
+        publicKey: PublicKey;
+    }) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.actions = actions;
@@ -110,18 +115,20 @@ export function buildDelegateAction({
                     // @ts-expect-error type workaround
                     const { code, deployMode } = a.params;
                     // Ensure deployMode is an instance if passed as a plain object
-                    const modeInstance = deployMode instanceof GlobalContractDeployMode
-                        ? deployMode
-                        : new GlobalContractDeployMode(deployMode);
+                    const modeInstance =
+                        deployMode instanceof GlobalContractDeployMode
+                            ? deployMode
+                            : new GlobalContractDeployMode(deployMode);
                     return deployGlobalContract(code, modeInstance);
                 }
                 case 'UseGlobalContract': {
                     // @ts-expect-error type workaround
                     const { identifier } = a.params;
                     // Ensure identifier is an instance if passed as a plain object
-                    const idInstance = identifier instanceof GlobalContractIdentifier
-                        ? identifier
-                        : new GlobalContractIdentifier(identifier);
+                    const idInstance =
+                        identifier instanceof GlobalContractIdentifier
+                            ? identifier
+                            : new GlobalContractIdentifier(identifier);
                     return useGlobalContract(idInstance);
                 }
             }

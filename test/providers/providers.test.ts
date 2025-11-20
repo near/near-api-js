@@ -1,7 +1,7 @@
-import { afterAll, beforeAll, describe, expect, vi, test } from 'vitest';
 import { Worker } from 'near-workspaces';
 import { TextEncoder } from 'util';
-import { FailoverRpcProvider, JsonRpcProvider, Provider, getTransactionLastResult } from '../../src';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../src';
 
 global.TextEncoder = TextEncoder;
 
@@ -38,37 +38,37 @@ global.TextEncoder = TextEncoder;
             const response = await provider.viewNodeStatus();
             expect(response.chain_id).toBeTruthy();
         });
-        
+
         test('rpc fetch block info', async () => {
             const stat = await provider.viewNodeStatus();
             const height = stat.sync_info.latest_block_height - 1;
             const response = await provider.viewBlock({ blockId: height });
             expect(response.header.height).toEqual(height);
-        
+
             const sameBlock = await provider.viewBlock({ blockId: response.header.hash });
             expect(sameBlock.header.height).toEqual(height);
-        
+
             const optimisticBlock = await provider.viewBlock({ finality: 'optimistic' });
             expect(optimisticBlock.header.height - height).toBeLessThan(5);
-        
+
             const nearFinalBlock = await provider.viewBlock({ finality: 'near-final' });
             expect(nearFinalBlock.header.height - height).toBeLessThan(5);
-        
+
             const finalBlock = await provider.viewBlock({ finality: 'final' });
             expect(finalBlock.header.height - height).toBeLessThan(5);
         });
-        
+
         test('rpc fetch block changes', async () => {
             const stat = await provider.viewNodeStatus();
             const height = stat.sync_info.latest_block_height - 1;
             const response = await provider.blockChanges({ blockId: height });
-        
+
             expect(response).toMatchObject({
                 block_hash: expect.any(String),
-                changes: expect.arrayContaining([])
+                changes: expect.arrayContaining([]),
             });
         });
-        
+
         test('rpc fetch chunk info', async () => {
             const stat = await provider.viewNodeStatus();
             const height = stat.sync_info.latest_block_height - 1;
@@ -78,22 +78,22 @@ global.TextEncoder = TextEncoder;
             expect(sameChunk.header.chunk_hash).toEqual(response.header.chunk_hash);
             expect(sameChunk.header.shard_id).toEqual(0);
         });
-        
+
         test('rpc fetch validators info', async () => {
             const validators = await provider.viewValidators(null);
             expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
         });
-        
+
         test('rpc query with block_id', async () => {
             const stat = await provider.viewNodeStatus();
             const block_id = stat.sync_info.latest_block_height - 1;
-        
+
             const response = await provider.query({
                 blockId: block_id,
                 request_type: 'view_account',
-                account_id: 'test.near'
+                account_id: 'test.near',
             });
-        
+
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
@@ -104,14 +104,14 @@ global.TextEncoder = TextEncoder;
                 storage_paid_at: 0,
             });
         });
-        
+
         test('rpc query view_account', async () => {
             const response = await provider.query({
                 request_type: 'view_account',
                 finality: 'final',
-                account_id: 'test.near'
+                account_id: 'test.near',
             });
-        
+
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
@@ -122,12 +122,17 @@ global.TextEncoder = TextEncoder;
                 storage_paid_at: 0,
             });
         });
-        
+
         test('json rpc fetch protocol config', async () => {
             const status = await provider.viewNodeStatus();
             const blockHeight = status.sync_info.latest_block_height;
             const blockHash = status.sync_info.latest_block_hash;
-            for (const blockReference of [{ blockId: blockHeight }, { blockId: blockHash }, { finality: 'final' as const }, { finality: 'optimistic' as const }]) {
+            for (const blockReference of [
+                { blockId: blockHeight },
+                { blockId: blockHash },
+                { finality: 'final' as const },
+                { finality: 'optimistic' as const },
+            ]) {
                 const response = await provider.experimental_protocolConfig(blockReference);
                 expect('chain_id' in response).toBe(true);
                 expect('genesis_height' in response).toBe(true);
@@ -135,21 +140,21 @@ global.TextEncoder = TextEncoder;
                 expect('storage_amount_per_byte' in response.runtime_config).toBe(true);
             }
         });
-        
+
         test('json rpc gas price', async () => {
             const status = await provider.viewNodeStatus();
             const positiveIntegerRegex = /^[+]?\d+([.]\d+)?$/;
-        
+
             const response1 = await provider.viewGasPrice(status.sync_info.latest_block_height);
             expect(response1.gas_price).toMatch(positiveIntegerRegex);
-        
+
             const response2 = await provider.viewGasPrice(status.sync_info.latest_block_hash);
             expect(response2.gas_price).toMatch(positiveIntegerRegex);
-        
+
             const response3 = await provider.viewGasPrice();
             expect(response3.gas_price).toMatch(positiveIntegerRegex);
         });
-        
+
         test('near json rpc fetch node status', async () => {
             const response = await provider.viewNodeStatus();
             expect(response.chain_id).toBeTruthy();

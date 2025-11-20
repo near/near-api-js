@@ -31,14 +31,7 @@ export type SingleOrVecFor_InstanceType = InstanceType | InstanceType[];
  *
  * See [JSON Schema 4.2.1. Instance Data Model](https://tools.ietf.org/html/draft-handrews-json-schema-02#section-4.2.1).
  */
-export type InstanceType =
-    | 'null'
-    | 'boolean'
-    | 'object'
-    | 'array'
-    | 'number'
-    | 'string'
-    | 'integer';
+export type InstanceType = 'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer';
 /**
  * Function kind regulates whether this function's invocation requires a transaction (so-called call functions) or not (view functions).
  */

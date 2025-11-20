@@ -35,24 +35,16 @@ export class NFTContract {
         this.accountId = accountId;
     }
 
-    transfer({
-        from,
-        receiverId,
-        tokenId
-    }: {
-        from: AccountLike;
-        receiverId: string;
-        tokenId: string;
-    }): Promise<any> {
+    transfer({ from, receiverId, tokenId }: { from: AccountLike; receiverId: string; tokenId: string }): Promise<any> {
         return from.callFunction({
             contractId: this.accountId,
             methodName: 'nft_transfer',
             args: {
                 receiver_id: receiverId,
-                token_id: tokenId
+                token_id: tokenId,
             },
             deposit: 1,
-            gas: 30000000000000
+            gas: 30000000000000,
         });
     }
 }
@@ -63,12 +55,7 @@ export class NonFungibleToken {
     public readonly ownerId: string;
     public readonly metadata: NFTMetadata;
 
-    constructor(
-        contractId: string,
-        tokenId: string,
-        ownerId: string,
-        metadata: NFTMetadata
-    ) {
+    constructor(contractId: string, tokenId: string, ownerId: string, metadata: NFTMetadata) {
         this.contractId = contractId;
         this.tokenId = tokenId;
         this.ownerId = ownerId;

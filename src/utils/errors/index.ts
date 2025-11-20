@@ -1,8 +1,8 @@
 export { ErrorMessages } from './errors.js';
 export {
-    ServerError,
     formatError,
     getErrorTypeFromErrorMessage,
     parseResultError,
     parseRpcError,
+    ServerError,
 } from './rpc_errors.js';

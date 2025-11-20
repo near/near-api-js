@@ -1,27 +1,26 @@
-import { test, expectTypeOf, describe } from "vitest";
-
-import { abi as guestbookAbi } from "../contracts/guestbook/abi.js";
 import {
-    AbiRoot,
+    type AbiRoot,
     Account,
-    TypedContract,
+    type BlockReference,
     JsonRpcProvider,
     KeyPair,
     KeyPairSigner,
-    BlockReference,
-    TxExecutionStatus,
-} from "near-api-js";
+    type TxExecutionStatus,
+    TypedContract,
+} from 'near-api-js';
+import { describe, expectTypeOf, test } from 'vitest';
+import { abi as guestbookAbi } from '../contracts/guestbook/abi.js';
 
-type AbiFunctionKind = AbiRoot["body"]["functions"][number]["kind"];
+type AbiFunctionKind = AbiRoot['body']['functions'][number]['kind'];
 
-const provider = new JsonRpcProvider({ url: "" });
-const keypair = KeyPair.fromRandom("ed25519");
+const provider = new JsonRpcProvider({ url: '' });
+const keypair = KeyPair.fromRandom('ed25519');
 const signer = new KeyPairSigner(keypair);
-const account = new Account("", provider, signer);
+const account = new Account('', provider, signer);
 
 describe("TypedContract can infer Guestbook's ABI", () => {
     const contract = new TypedContract({
-        contractId: "guestbook.testnet",
+        contractId: 'guestbook.testnet',
         provider: account.provider,
         abi: guestbookAbi,
     });
@@ -35,9 +34,7 @@ describe("TypedContract can infer Guestbook's ABI", () => {
             blockQuery?: BlockReference;
             args?: ExpectedGetMessagesArgs | undefined;
         };
-        type ExpectedGetMessagesFunction = (
-            params?: ExpectedGetMessagesParams | undefined
-        ) => Promise<
+        type ExpectedGetMessagesFunction = (params?: ExpectedGetMessagesParams | undefined) => Promise<
             {
                 premium: boolean;
                 sender: string;
@@ -45,19 +42,13 @@ describe("TypedContract can infer Guestbook's ABI", () => {
             }[]
         >;
 
-        expectTypeOf(
-            contract.view.get_messages
-        ).toEqualTypeOf<ExpectedGetMessagesFunction>();
+        expectTypeOf(contract.view.get_messages).toEqualTypeOf<ExpectedGetMessagesFunction>();
     });
 
     test('"total_messages" view function', () => {
-        type ExpectedTotalMessagesFunction = (params?: {
-            blockQuery?: BlockReference;
-        }) => Promise<number>;
+        type ExpectedTotalMessagesFunction = (params?: { blockQuery?: BlockReference }) => Promise<number>;
 
-        expectTypeOf(
-            contract.view.total_messages
-        ).toEqualTypeOf<ExpectedTotalMessagesFunction>();
+        expectTypeOf(contract.view.total_messages).toEqualTypeOf<ExpectedTotalMessagesFunction>();
     });
 
     test('"add_message" call function', () => {
@@ -71,19 +62,17 @@ describe("TypedContract can infer Guestbook's ABI", () => {
             };
         }) => Promise<void>;
 
-        expectTypeOf(
-            contract.call.add_message
-        ).toEqualTypeOf<ExpectedAddMessageFunction>();
+        expectTypeOf(contract.call.add_message).toEqualTypeOf<ExpectedAddMessageFunction>();
     });
 });
 
-describe("TypedContract can infer general interface without ABI", () => {
+describe('TypedContract can infer general interface without ABI', () => {
     const contract = new TypedContract({
-        contractId: "guestbook.testnet",
+        contractId: 'guestbook.testnet',
         provider: account.provider,
     });
 
-    test("any view function", () => {
+    test('any view function', () => {
         type ExpectedViewFunction = <Response>(params?: {
             blockQuery?: BlockReference;
             args?: Record<string, unknown>;
@@ -92,12 +81,10 @@ describe("TypedContract can infer general interface without ABI", () => {
         expectTypeOf(contract.view).toEqualTypeOf<{
             [_: string]: ExpectedViewFunction;
         }>();
-        expectTypeOf(
-            contract.view.it_could_be_anything
-        ).toEqualTypeOf<ExpectedViewFunction>();
+        expectTypeOf(contract.view.it_could_be_anything).toEqualTypeOf<ExpectedViewFunction>();
     });
 
-    test("any call function", () => {
+    test('any call function', () => {
         type ExpectedCallFunction = <Response>(params: {
             deposit?: bigint;
             gas?: bigint;
@@ -109,16 +96,14 @@ describe("TypedContract can infer general interface without ABI", () => {
         expectTypeOf(contract.call).toEqualTypeOf<{
             [_: string]: ExpectedCallFunction;
         }>();
-        expectTypeOf(
-            contract.call.it_could_be_anything
-        ).toEqualTypeOf<ExpectedCallFunction>();
+        expectTypeOf(contract.call.it_could_be_anything).toEqualTypeOf<ExpectedCallFunction>();
     });
 });
 
-describe("TypedContract shape adapts to ABI", () => {
-    test("TypedContract infers nothing from empty ABI", () => {
+describe('TypedContract shape adapts to ABI', () => {
+    test('TypedContract infers nothing from empty ABI', () => {
         const emptyAbi = {
-            schema_version: "0.4.0",
+            schema_version: '0.4.0',
             metadata: {},
             body: {
                 functions: [],
@@ -127,69 +112,65 @@ describe("TypedContract shape adapts to ABI", () => {
         } as const satisfies AbiRoot;
 
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: emptyAbi,
         });
 
         expectTypeOf(contract).toEqualTypeOf<{
             abi: typeof emptyAbi;
-            contractId: "guestbook.testnet";
+            contractId: 'guestbook.testnet';
         }>();
     });
 
-    test("TypedContract includes both kind of methods if ABI defines both view and call functions", () => {
+    test('TypedContract includes both kind of methods if ABI defines both view and call functions', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test_read",
-                            kind: "view",
+                            name: 'test_read',
+                            kind: 'view',
                         },
                         {
-                            name: "test_read2",
-                            kind: "view",
+                            name: 'test_read2',
+                            kind: 'view',
                         },
-                        { name: "test_write", kind: "call" },
-                        { name: "test_write2", kind: "call" },
+                        { name: 'test_write', kind: 'call' },
+                        { name: 'test_write2', kind: 'call' },
                     ],
                     root_schema: {},
                 },
             },
         });
 
-        type ViewFunctionNames = "test_read" | "test_read2";
-        expectTypeOf<
-            keyof typeof contract.view
-        >().toEqualTypeOf<ViewFunctionNames>();
+        type ViewFunctionNames = 'test_read' | 'test_read2';
+        expectTypeOf<keyof typeof contract.view>().toEqualTypeOf<ViewFunctionNames>();
 
-        type CallFunctionNames = "test_write" | "test_write2";
-        expectTypeOf<
-            keyof typeof contract.call
-        >().toEqualTypeOf<CallFunctionNames>();
+        type CallFunctionNames = 'test_write' | 'test_write2';
+        expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<CallFunctionNames>();
     });
 
-    test("TypedContract includes only view methods if ABI defines only view functions", () => {
+    test('TypedContract includes only view methods if ABI defines only view functions', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test_read",
-                            kind: "view",
+                            name: 'test_read',
+                            kind: 'view',
                         },
                         {
-                            name: "test_read2",
-                            kind: "view",
+                            name: 'test_read2',
+                            kind: 'view',
                         },
                     ],
                     root_schema: {},
@@ -197,30 +178,28 @@ describe("TypedContract shape adapts to ABI", () => {
             },
         });
 
-        type ViewFunctionNames = "test_read" | "test_read2";
-        expectTypeOf<
-            keyof typeof contract.view
-        >().toEqualTypeOf<ViewFunctionNames>();
+        type ViewFunctionNames = 'test_read' | 'test_read2';
+        expectTypeOf<keyof typeof contract.view>().toEqualTypeOf<ViewFunctionNames>();
 
-        expectTypeOf(contract).not.toHaveProperty("call");
+        expectTypeOf(contract).not.toHaveProperty('call');
     });
 
-    test("TypedContract includes only call if ABI defines only call functions", () => {
+    test('TypedContract includes only call if ABI defines only call functions', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test_write",
-                            kind: "call",
+                            name: 'test_write',
+                            kind: 'call',
                         },
                         {
-                            name: "test_write2",
-                            kind: "call",
+                            name: 'test_write2',
+                            kind: 'call',
                         },
                     ],
                     root_schema: {},
@@ -228,29 +207,27 @@ describe("TypedContract shape adapts to ABI", () => {
             },
         });
 
-        expectTypeOf(contract).not.toHaveProperty("view");
+        expectTypeOf(contract).not.toHaveProperty('view');
 
-        type CallFunctionNames = "test_write" | "test_write2";
-        expectTypeOf<
-            keyof typeof contract.call
-        >().toEqualTypeOf<CallFunctionNames>();
+        type CallFunctionNames = 'test_write' | 'test_write2';
+        expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<CallFunctionNames>();
     });
 });
 
-describe("TypedContract interface depends on how ABI is declared", () => {
+describe('TypedContract interface depends on how ABI is declared', () => {
     test('TypedContract provides autocompletion if ABI is passed using "as const" assertion', () => {
         const testAbi = {
-            schema_version: "0.4.0",
+            schema_version: '0.4.0',
             metadata: {},
             body: {
                 functions: [
                     {
-                        name: "test_read",
-                        kind: "view",
+                        name: 'test_read',
+                        kind: 'view',
                     },
                     {
-                        name: "test_write",
-                        kind: "call",
+                        name: 'test_write',
+                        kind: 'call',
                     },
                 ],
                 root_schema: {},
@@ -258,38 +235,34 @@ describe("TypedContract interface depends on how ABI is declared", () => {
         } as const satisfies AbiRoot;
 
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: testAbi,
         });
 
-        type ViewFunctionNames = "test_read";
-        expectTypeOf<
-            keyof typeof contract.view
-        >().toEqualTypeOf<ViewFunctionNames>();
+        type ViewFunctionNames = 'test_read';
+        expectTypeOf<keyof typeof contract.view>().toEqualTypeOf<ViewFunctionNames>();
 
-        type CallFunctionNames = "test_write";
-        expectTypeOf<
-            keyof typeof contract.call
-        >().toEqualTypeOf<CallFunctionNames>();
+        type CallFunctionNames = 'test_write';
+        expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<CallFunctionNames>();
     });
 
-    test("TypedContract provides autocompletion if ABI is passed inline", () => {
+    test('TypedContract provides autocompletion if ABI is passed inline', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test_read",
-                            kind: "view",
+                            name: 'test_read',
+                            kind: 'view',
                         },
                         {
-                            name: "test_write",
-                            kind: "call",
+                            name: 'test_write',
+                            kind: 'call',
                         },
                     ],
                     root_schema: {},
@@ -297,30 +270,26 @@ describe("TypedContract interface depends on how ABI is declared", () => {
             },
         });
 
-        type ViewFunctionNames = "test_read";
-        expectTypeOf<
-            keyof typeof contract.view
-        >().toEqualTypeOf<ViewFunctionNames>();
+        type ViewFunctionNames = 'test_read';
+        expectTypeOf<keyof typeof contract.view>().toEqualTypeOf<ViewFunctionNames>();
 
-        type CallFunctionNames = "test_write";
-        expectTypeOf<
-            keyof typeof contract.call
-        >().toEqualTypeOf<CallFunctionNames>();
+        type CallFunctionNames = 'test_write';
+        expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<CallFunctionNames>();
     });
 
     test('TypedContract returns general interface without autocompletion if ABI is typed "as AbiRoot"', () => {
         const testAbi: AbiRoot = {
-            schema_version: "0.4.0",
+            schema_version: '0.4.0',
             metadata: {},
             body: {
                 functions: [
                     {
-                        name: "test_read",
-                        kind: "view",
+                        name: 'test_read',
+                        kind: 'view',
                     },
                     {
-                        name: "test_write",
-                        kind: "call",
+                        name: 'test_write',
+                        kind: 'call',
                     },
                 ],
                 root_schema: {},
@@ -328,7 +297,7 @@ describe("TypedContract interface depends on how ABI is declared", () => {
         };
 
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: testAbi,
         });
@@ -340,17 +309,17 @@ describe("TypedContract interface depends on how ABI is declared", () => {
 
     test('TypedContract returns general interface without autocompletion if ABI is defined without "as const" assertion', () => {
         const testAbi = {
-            schema_version: "0.4.0",
+            schema_version: '0.4.0',
             metadata: {},
             body: {
                 functions: [
                     {
-                        name: "test_read",
-                        kind: "view" as AbiFunctionKind,
+                        name: 'test_read',
+                        kind: 'view' as AbiFunctionKind,
                     },
                     {
-                        name: "test_write",
-                        kind: "call" as AbiFunctionKind,
+                        name: 'test_write',
+                        kind: 'call' as AbiFunctionKind,
                     },
                 ],
                 root_schema: {},
@@ -358,7 +327,7 @@ describe("TypedContract interface depends on how ABI is declared", () => {
         };
 
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: testAbi,
         });

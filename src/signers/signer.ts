@@ -1,15 +1,15 @@
-import { KeyType, PublicKey } from '../crypto/index.js';
+import { sha256 } from '@noble/hashes/sha256';
+import { type Schema, serialize } from 'borsh';
+import { KeyType, type PublicKey } from '../crypto/index.js';
 import {
+    type DelegateAction,
+    encodeDelegateAction,
+    encodeTransaction,
     Signature,
-    DelegateAction,
     SignedDelegate,
     SignedTransaction,
-    Transaction,
-    encodeTransaction,
-    encodeDelegateAction,
+    type Transaction,
 } from '../transactions/index.js';
-import { Schema, serialize } from 'borsh';
-import { sha256 } from '@noble/hashes/sha256';
 
 export interface SignMessageParams {
     message: string; // The message that wants to be transmitted.
@@ -36,7 +36,7 @@ export const Nep413MessageSchema: Schema = {
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
- *  
+ *
  * The signer must return a valid PublicKey from `getPublicKey()`, and must implement raw byte signing
  * that can be verified with the corresponding public key. (To verify the signature, serialize and hash transaction/delegate action,
  * or get payload hash for NEP-413 message from `utils.ts` and verify with the public key).
@@ -48,10 +48,10 @@ export abstract class Signer {
     public abstract getPublicKey(): Promise<PublicKey>;
 
     /**
-    * Implement this method to sign given bytes payload.
-    * @param bytes - The payload to sign.
-    * @returns {Promise<Uint8Array>} - Promise of the bytes representation of the signature.
-    */
+     * Implement this method to sign given bytes payload.
+     * @param bytes - The payload to sign.
+     * @returns {Promise<Uint8Array>} - Promise of the bytes representation of the signature.
+     */
     protected abstract signBytes(bytes: Uint8Array): Promise<Uint8Array>;
 
     /**
@@ -61,21 +61,15 @@ export abstract class Signer {
      * @param accountId - The account name to which the public key corresponds (e.g. "alice.near").
      * @param params - The parameters including message, recipient, nonce, and optional callbackUrl.
      */
-    public async signNep413Message(
-        accountId: string,
-        params: SignMessageParams
-    ): Promise<SignedMessage> {
-        if (params.nonce.length !== 32)
-            throw new Error('Nonce must be exactly 32 bytes long');
+    public async signNep413Message(accountId: string, params: SignMessageParams): Promise<SignedMessage> {
+        if (params.nonce.length !== 32) throw new Error('Nonce must be exactly 32 bytes long');
 
         // 2**31 + 413 == 2147484061
         const PREFIX = 2147484061;
         const serializedPrefix = serialize('u32', PREFIX);
         const serializedParams = serialize(Nep413MessageSchema, params);
 
-        const serializedPayload = new Uint8Array(
-            serializedPrefix.length + serializedParams.length
-        );
+        const serializedPayload = new Uint8Array(serializedPrefix.length + serializedParams.length);
         serializedPayload.set(serializedPrefix);
         serializedPayload.set(serializedParams, serializedPrefix.length);
 
@@ -95,13 +89,11 @@ export abstract class Signer {
      * @param transaction - The transaction to sign.
      * @returns {Promise<[Uint8Array, SignedTransaction]>} - Promise of the hash that can be verified and signed transaction.
      */
-    public async signTransaction(
-        transaction: Transaction
-    ): Promise<[Uint8Array, SignedTransaction]> {
+    public async signTransaction(transaction: Transaction): Promise<[Uint8Array, SignedTransaction]> {
         const pk = await this.getPublicKey();
 
         if (transaction.publicKey.toString() !== pk.toString())
-            throw new Error('The public key doesn\'t match the signer\'s key');
+            throw new Error("The public key doesn't match the signer's key");
 
         const serializedTx = encodeTransaction(transaction);
         const txHash = new Uint8Array(sha256(serializedTx));
@@ -110,9 +102,7 @@ export abstract class Signer {
         const signedTx = new SignedTransaction({
             transaction,
             signature: new Signature({
-                keyType: transaction.publicKey.ed25519Key
-                    ? KeyType.ED25519
-                    : KeyType.SECP256K1,
+                keyType: transaction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1,
                 data: signature,
             }),
         });
@@ -124,13 +114,11 @@ export abstract class Signer {
      * @param delegateAction - The delegate action to sign.
      * @returns {Promise<[Uint8Array, SignedDelegate]>} - Promise of the hash that can be verified and signed delegate action.
      */
-    public async signDelegateAction(
-        delegateAction: DelegateAction
-    ): Promise<[Uint8Array, SignedDelegate]> {
+    public async signDelegateAction(delegateAction: DelegateAction): Promise<[Uint8Array, SignedDelegate]> {
         const pk = await this.getPublicKey();
 
         if (delegateAction.publicKey.toString() !== pk.toString())
-            throw new Error('The public key doesn\'t match the signer\'s key');
+            throw new Error("The public key doesn't match the signer's key");
 
         const serializedDelegate = encodeDelegateAction(delegateAction);
         const delegateHash = new Uint8Array(sha256(serializedDelegate));

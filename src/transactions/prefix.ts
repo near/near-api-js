@@ -1,4 +1,4 @@
-const ACTIONABLE_MESSAGE_BASE = Math.pow(2, 30);
+const ACTIONABLE_MESSAGE_BASE = 2 ** 30;
 // const NON_ACTIONABLE_MESSAGE_BASE = Math.pow(2, 31);
 
 /** The set of NEPs for which an [NEP-461](https://github.com/near/NEPs/pull/461) prefix is required on the message prior to hashing **/
@@ -13,7 +13,6 @@ abstract class NEPPrefix {
     constructor({ prefix }: { prefix: number }) {
         this.prefix = prefix;
     }
-
 }
 
 /** Class for constructing prefixes on actionable (on-chain) messages **/
@@ -36,4 +35,8 @@ abstract class ActionableMessagePrefix extends NEPPrefix {
 // }
 
 /** Prefix for delegate actions whose signatures must always be distinguishable from valid transaction signatures **/
-export class DelegateActionPrefix extends ActionableMessagePrefix { constructor() { super(NEP.MetaTransactions); } }
+export class DelegateActionPrefix extends ActionableMessagePrefix {
+    constructor() {
+        super(NEP.MetaTransactions);
+    }
+}

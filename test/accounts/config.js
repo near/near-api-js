@@ -1,5 +1,5 @@
-import { Worker } from 'near-workspaces';
 import fs from 'fs';
+import { Worker } from 'near-workspaces';
 
 module.exports = async function getConfig(env) {
     switch (env) {
@@ -44,7 +44,7 @@ module.exports = async function getConfig(env) {
                 nodeUrl: worker.manager.config.rpcAddr,
                 masterAccount: worker.rootAccount._accountId,
                 secretKey: keyPair.secret_key || keyPair.private_key,
-                worker: worker
+                worker: worker,
             };
         }
         default:

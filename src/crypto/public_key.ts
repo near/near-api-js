@@ -1,27 +1,39 @@
-import { baseEncode, baseDecode } from '../utils/index.js';
 import { ed25519 } from '@noble/curves/ed25519';
 import secp256k1 from 'secp256k1';
+import { baseDecode, baseEncode } from '../utils/index.js';
 
 import { KeySize, KeyType } from './constants.js';
 
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
-        case KeyType.ED25519: return 'ed25519';
-        case KeyType.SECP256K1: return 'secp256k1';
-        default: throw new Error(`Unknown key type ${keyType}`);
+        case KeyType.ED25519:
+            return 'ed25519';
+        case KeyType.SECP256K1:
+            return 'secp256k1';
+        default:
+            throw new Error(`Unknown key type ${keyType}`);
     }
 }
 
 function str_to_key_type(keyType: string): KeyType {
     switch (keyType.toLowerCase()) {
-        case 'ed25519': return KeyType.ED25519;
-        case 'secp256k1': return KeyType.SECP256K1;
-        default: throw new Error(`Unknown key type ${keyType}`);
+        case 'ed25519':
+            return KeyType.ED25519;
+        case 'secp256k1':
+            return KeyType.SECP256K1;
+        default:
+            throw new Error(`Unknown key type ${keyType}`);
     }
 }
 
-class ED25519PublicKey { keyType: KeyType = KeyType.ED25519; data!: Uint8Array; }
-class SECP256K1PublicKey { keyType: KeyType = KeyType.SECP256K1; data!: Uint8Array; }
+class ED25519PublicKey {
+    keyType: KeyType = KeyType.ED25519;
+    data!: Uint8Array;
+}
+class SECP256K1PublicKey {
+    keyType: KeyType = KeyType.SECP256K1;
+    data!: Uint8Array;
+}
 
 function resolveEnumKeyName(keyType: KeyType) {
     switch (keyType) {
@@ -64,7 +76,7 @@ export class PublicKey extends Enum {
     ed25519Key?: ED25519PublicKey;
     secp256k1Key?: SECP256K1PublicKey;
 
-    constructor(publicKey: { keyType: KeyType, data: Uint8Array }) {
+    constructor(publicKey: { keyType: KeyType; data: Uint8Array }) {
         const keyName = resolveEnumKeyName(publicKey.keyType);
         super({ [keyName]: publicKey });
         this[keyName] = publicKey;
@@ -160,14 +172,14 @@ export function keyToImplicitAddress(publicKey: string | PublicKey): string {
     const pk = PublicKey.from(publicKey);
 
     const publicKeyWithoutPrefix = pk.toString().replace(/^ed25519:/, '');
-  
+
     const decoded = baseDecode(publicKeyWithoutPrefix);
-    // Converting to hex string is implemented manually 
+    // Converting to hex string is implemented manually
     // to avoid issues with environments that do not support Buffer
     let result = '';
     for (let i = 0; i < decoded.length; i++) {
         const hex = decoded[i]!.toString(16);
-        result += hex.length === 1 ? '0' + hex : hex;
+        result += hex.length === 1 ? `0${hex}` : hex;
     }
     return result;
 }
