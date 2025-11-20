@@ -1,8 +1,22 @@
 {
-    "mode": "pre",
-    "tag": "rc",
-    "initialVersions": {
-        "near-api-js": "6.5.0"
-    },
-    "changesets": []
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "near-api-js": "6.5.0"
+  },
+  "changesets": [
+    "all-rockets-attend",
+    "better-results-watch",
+    "bold-schools-wear",
+    "clean-radios-dream",
+    "fine-windows-end",
+    "grumpy-keys-ask",
+    "mighty-parts-pump",
+    "sharp-trams-jam",
+    "silent-sloths-buy",
+    "sixty-gifts-teach",
+    "tall-bats-retire",
+    "tiny-colts-teach",
+    "wild-adults-grow"
+  ]
 }

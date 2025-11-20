@@ -1,5 +1,37 @@
 # near-api-js
 
+## 7.0.0-rc.0
+
+### Major Changes
+
+- [#1691](https://github.com/near/near-api-js/pull/1691) [`f8666a0`](https://github.com/near/near-api-js/commit/f8666a0112e82d6000fed8ae9f10d893d65878ab) Thanks [@r-near](https://github.com/r-near)! - Update `parseNearAmount` to only accept either a numeric string, or actual number, and not undefined, as well as throw error rather than silently return `null`
+
+- [#1691](https://github.com/near/near-api-js/pull/1691) [`f8666a0`](https://github.com/near/near-api-js/commit/f8666a0112e82d6000fed8ae9f10d893d65878ab) Thanks [@r-near](https://github.com/r-near)! - Rename stable `viewValidatorsV2` function back to `viewValidators`
+
+- [#1672](https://github.com/near/near-api-js/pull/1672) [`eee87c2`](https://github.com/near/near-api-js/commit/eee87c2d55d63050e2e50a1d645ec7d61bd78dbd) Thanks [@github-actions](https://github.com/apps/github-actions)! - Consolidate functionality of the `@near-js/*` packages into a single, tree-shakeable `near-api-js` package
+
+- [#1669](https://github.com/near/near-api-js/pull/1669) [`683e1db`](https://github.com/near/near-api-js/commit/683e1dbd17008c618cda6d5c3cb9e7994ceb2d55) Thanks [@denbite](https://github.com/denbite)! - Remove no longer maintained packages `@near-js/iframe-rpc`, `@near-js/biometric-ed25519` and `@near-js/client` with `@near-js/cookbook` examples
+
+- [#1670](https://github.com/near/near-api-js/pull/1670) [`54e4d48`](https://github.com/near/near-api-js/commit/54e4d48ffd23e0aa0619a0353d521f22a04a74f5) Thanks [@denbite](https://github.com/denbite)! - Remove no longer maintained packages `@near-js/keystores`, `@near-js/keystores-node` and `@near-js/keystores-browser`
+
+- [#1673](https://github.com/near/near-api-js/pull/1673) [`5d86344`](https://github.com/near/near-api-js/commit/5d86344494416f98a71a9266be60105be7fc0def) Thanks [@denbite](https://github.com/denbite)! - Consolidate `@near-js/*` packages into a single `near-api-js` codebase
+
+- [#1668](https://github.com/near/near-api-js/pull/1668) [`20672fb`](https://github.com/near/near-api-js/commit/20672fb915a5cd9609bbc3df2f1b65535bc5c16b) Thanks [@denbite](https://github.com/denbite)! - Remove deprecated functionality
+
+- [#1589](https://github.com/near/near-api-js/pull/1589) [`5cfdab8`](https://github.com/near/near-api-js/commit/5cfdab86b0e3eb6023b427224b1deea9463426eb) Thanks [@AlexKushnir1](https://github.com/AlexKushnir1)! - Refactor the abstract class `Signer` to implement every method, except for `getPublicKey` and `signBytes`, which are intended for users
+
+### Patch Changes
+
+- [#1691](https://github.com/near/near-api-js/pull/1691) [`f8666a0`](https://github.com/near/near-api-js/commit/f8666a0112e82d6000fed8ae9f10d893d65878ab) Thanks [@r-near](https://github.com/r-near)! - Add default `EXECUTED_OPTIMISTIC` value to `waitUntil` argument of `viewTransactionStatus` and `viewTransactionStatusWithReceipts`
+
+- [#1692](https://github.com/near/near-api-js/pull/1692) [`4ecebde`](https://github.com/near/near-api-js/commit/4ecebde34a7c3a16ce7293d8633e5efecc181390) Thanks [@r-near](https://github.com/r-near)! - feat: replace ESLint with Biome for linting
+
+- [#1690](https://github.com/near/near-api-js/pull/1690) [`fe0a52e`](https://github.com/near/near-api-js/commit/fe0a52eaeec4c102c128b38a012c84a4692c04f7) Thanks [@r-near](https://github.com/r-near)! - Migrate to `ESM` only
+
+- [#1693](https://github.com/near/near-api-js/pull/1693) [`26ed0cd`](https://github.com/near/near-api-js/commit/26ed0cd922c976d0ad35e413c683abb6745174c8) Thanks [@denbite](https://github.com/denbite)! - Enable TypeScript `strict` mode for better reliability
+
+- [#1720](https://github.com/near/near-api-js/pull/1720) [`1a41e6c`](https://github.com/near/near-api-js/commit/1a41e6cf7bee81bf940a16d0b78dbcaf565e827f) Thanks [@denbite](https://github.com/denbite)! - Use the most strictest checks in `tsconfig`
+
 ## 6.5.1
 
 ### Patch Changes
