@@ -1,13 +1,12 @@
 import { expect, test } from 'vitest';
 import { formatNearAmount, NEAR_NOMINATION, parseNearAmount } from '../../src';
 
-
 test.each`
     balance                              | fracDigits   | expected
     ${'8999999999837087887'}             | ${undefined} | ${'0.000008999999999837087887'}
     ${'8099099999837087887'}             | ${undefined} | ${'0.000008099099999837087887'}
     ${'999998999999999837087887000'}     | ${undefined} | ${'999.998999999999837087887'}
-    ${'1'+'0'.repeat(13)}                | ${undefined} | ${'0.00000000001'}
+    ${`1${'0'.repeat(13)}`}              | ${undefined} | ${'0.00000000001'}
     ${'9999989999999998370878870000000'} | ${undefined} | ${'9,999,989.99999999837087887'}
     ${'000000000000000000000000'}        | ${undefined} | ${'0'}
     ${'1000000000000000000000000'}       | ${undefined} | ${'1'}
@@ -56,9 +55,7 @@ test('parseNearAmount works with numbers', () => {
 test('parseNearAmount fails when parsing values with ≥25 decimal places', () => {
     expect(() => {
         parseNearAmount('0.0000080990999998370878871');
-    }).toThrowError(
-        'Cannot parse \'0.0000080990999998370878871\' as NEAR amount'
-    );
+    }).toThrowError("Cannot parse '0.0000080990999998370878871' as NEAR amount");
 });
 
 test('parseNearAmount fails when parsing whitespace-only strings', () => {

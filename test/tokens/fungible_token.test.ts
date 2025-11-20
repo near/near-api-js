@@ -109,7 +109,6 @@ test('test toDecimal formats units', () => {
     expect(FT.toDecimal(0)).toBe('0');
     expect(FT.toDecimal(BigInt(0))).toBe('0');
     expect(FT.toDecimal(0, 2)).toBe('0');
-
 });
 
 test('test toDecimal fails on non-integer units', () => {

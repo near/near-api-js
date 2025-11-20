@@ -1,11 +1,15 @@
-import { TypedError } from '../types/index.js';
 import { backOff } from 'exponential-backoff';
+import { TypedError } from '../types/index.js';
 
 const BACKOFF_MULTIPLIER = 1.5;
 const RETRY_NUMBER = 10;
 const RETRY_DELAY = 0;
 
-export function retryConfig(numOfAttempts=RETRY_NUMBER, timeMultiple=BACKOFF_MULTIPLIER, startingDelay=RETRY_DELAY) {
+export function retryConfig(
+    numOfAttempts = RETRY_NUMBER,
+    timeMultiple = BACKOFF_MULTIPLIER,
+    startingDelay = RETRY_DELAY
+) {
     return {
         numOfAttempts: numOfAttempts,
         timeMultiple: timeMultiple,
@@ -20,7 +24,7 @@ export function retryConfig(numOfAttempts=RETRY_NUMBER, timeMultiple=BACKOFF_MUL
             }
 
             return false;
-        }
+        },
     };
 }
 
@@ -53,12 +57,17 @@ interface JsonRpcRequest {
  * @param headers HTTP headers to include with the request
  * @returns Promise<any> }arsed JSON response from the HTTP request.
  */
-export async function fetchJsonRpc(url: string, json: JsonRpcRequest, headers: object, retryConfig: object): Promise<any> {
+export async function fetchJsonRpc(
+    url: string,
+    json: JsonRpcRequest,
+    headers: object,
+    retryConfig: object
+): Promise<any> {
     const response = await backOff(async () => {
         const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(json),
-            headers: { ...headers, 'Content-Type': 'application/json' }
+            headers: { ...headers, 'Content-Type': 'application/json' },
         });
 
         const { ok, status } = res;

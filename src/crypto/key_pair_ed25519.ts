@@ -1,9 +1,9 @@
-import { baseEncode, baseDecode } from '../utils/index.js';
 import { ed25519 } from '@noble/curves/ed25519';
 import { randomBytes } from '@noble/hashes/utils';
+import { baseDecode, baseEncode } from '../utils/index.js';
 
-import { KeyPairString, KeySize, KeyType } from './constants.js';
-import { KeyPairBase, Signature } from './key_pair_base.js';
+import { type KeyPairString, KeySize, KeyType } from './constants.js';
+import { KeyPairBase, type Signature } from './key_pair_base.js';
 import { PublicKey } from './public_key.js';
 
 /**

@@ -29,9 +29,7 @@ export function parseAmount(amount: string, fracDigits: number): string {
     const split = amount.split('.');
 
     if (split.length > 2) {
-        throw new Error(
-            `Cannot parse amount '${amount}' as it contains more than a single dot`
-        );
+        throw new Error(`Cannot parse amount '${amount}' as it contains more than a single dot`);
     }
 
     const wholePart = split[0];
@@ -43,9 +41,7 @@ export function parseAmount(amount: string, fracDigits: number): string {
         );
     }
 
-    return trimLeadingZeroes(
-        wholePart + fracPart.substring(0, fracDigits).padEnd(fracDigits, '0')
-    );
+    return trimLeadingZeroes(wholePart + fracPart.substring(0, fracDigits).padEnd(fracDigits, '0'));
 }
 
 /**

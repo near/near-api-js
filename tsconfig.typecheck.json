@@ -4,16 +4,7 @@
         "skipLibCheck": true,
         "noEmit": true
     },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "lib",
-        "dist",
-        "**/node_modules",
-        "e2e",
-        "test"
-    ],
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "lib", "dist", "**/node_modules", "e2e", "test"],
     "files": []
 }

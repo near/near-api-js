@@ -1,12 +1,11 @@
-import { afterAll, beforeAll, describe, expect, vi, test } from 'vitest';
-import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
-import { Worker } from 'near-workspaces';
+import type { Worker } from 'near-workspaces';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { TypedContract } from '../../src';
+import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 
 const CONTRACT_CALL_GAS = 300000000000000n;
-
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
@@ -22,7 +21,9 @@ afterAll(async () => {
 
 describe('with promises', () => {
     // @ts-expect-error infer type here
-    let contract = new TypedContract({}), contract1 = new TypedContract({}), contract2 = new TypedContract({});
+    let contract = new TypedContract({}),
+        contract1 = new TypedContract({}),
+        contract2 = new TypedContract({});
     const contractName = generateUniqueString('cnt');
     const contractName1 = generateUniqueString('cnt');
     const contractName2 = generateUniqueString('cnt');
@@ -52,7 +53,7 @@ describe('with promises', () => {
                     callbackArgs: null,
                     callbackBalance: '0',
                     callbackGas: '0',
-                }
+                },
             },
             gas: CONTRACT_CALL_GAS,
             account: nearjs.account,
@@ -77,8 +78,8 @@ describe('with promises', () => {
                     callback: 'callbackWithName',
                     callbackArgs: null,
                     callbackBalance: '0',
-                    callbackGas: '2000000000000', 
-                }
+                    callbackGas: '2000000000000',
+                },
             },
             gas: CONTRACT_CALL_GAS,
             account: nearjs.account,
@@ -90,10 +91,12 @@ describe('with promises', () => {
         });
         const lastResult = await contract.view.getLastResult();
         expect(lastResult).toEqual({
-            rs: [{
-                ok: true,
-                r: lastResult1,
-            }],
+            rs: [
+                {
+                    ok: true,
+                    r: lastResult1,
+                },
+            ],
             n: contractName,
         });
         expect(realResult).toEqual(lastResult);
@@ -122,7 +125,7 @@ describe('with promises', () => {
                     callbackArgs: null,
                     callbackBalance: '0',
                     callbackGas: '60000000000000',
-                }
+                },
             },
             gas: CONTRACT_CALL_GAS,
             account: nearjs.account,
@@ -158,7 +161,7 @@ describe('with promises', () => {
                     callbackArgs: null,
                     callbackBalance: '0',
                     callbackGas: '30000000000000',
-                }
+                },
             },
             gas: CONTRACT_CALL_GAS,
             account: nearjs.account,
@@ -170,18 +173,22 @@ describe('with promises', () => {
         });
         const lastResult1 = await contract1.view.getLastResult();
         expect(lastResult1).toEqual({
-            rs: [{
-                ok: true,
-                r: lastResult2,
-            }],
+            rs: [
+                {
+                    ok: true,
+                    r: lastResult2,
+                },
+            ],
             n: contractName1,
         });
         const lastResult = await contract.view.getLastResult();
         expect(lastResult).toEqual({
-            rs: [{
-                ok: true,
-                r: lastResult1,
-            }],
+            rs: [
+                {
+                    ok: true,
+                    r: lastResult1,
+                },
+            ],
             n: contractName,
         });
         expect(realResult).toEqual(lastResult);
@@ -210,28 +217,32 @@ describe('with promises', () => {
                     callbackArgs: null,
                     callbackBalance: '0',
                     callbackGas: '30000000000000',
-                }
+                },
             },
             gas: CONTRACT_CALL_GAS,
             account: nearjs.account,
         });
         const lastResult1 = await contract1.view.getLastResult();
         expect(lastResult1).toEqual({
-            rs: [{
-                ok: true,
-                r: {
-                    rs: [],
-                    n: contractName,
+            rs: [
+                {
+                    ok: true,
+                    r: {
+                        rs: [],
+                        n: contractName,
+                    },
                 },
-            }],
+            ],
             n: contractName1,
         });
         const lastResult = await contract.view.getLastResult();
         expect(lastResult).toEqual({
-            rs: [{
-                ok: true,
-                r: lastResult1,
-            }],
+            rs: [
+                {
+                    ok: true,
+                    r: lastResult1,
+                },
+            ],
             n: contractName,
         });
         expect(realResult).toEqual(lastResult);
@@ -259,8 +270,8 @@ describe('with promises', () => {
                     callback: 'callbackWithName',
                     callbackArgs: null,
                     callbackBalance: '0',
-                    callbackGas: '30000000000000'
-                }
+                    callbackGas: '30000000000000',
+                },
             },
             gas: CONTRACT_CALL_GAS,
             account: nearjs.account,
@@ -272,10 +283,12 @@ describe('with promises', () => {
         });
         const lastResult = await contract.view.getLastResult();
         expect(lastResult).toEqual({
-            rs: [{
-                ok: true,
-                r: lastResult2,
-            }],
+            rs: [
+                {
+                    ok: true,
+                    r: lastResult2,
+                },
+            ],
             n: contractName,
         });
         expect(realResult).toEqual(lastResult);
@@ -304,7 +317,7 @@ describe('with promises', () => {
                     callbackArgs: null,
                     callbackBalance: '0',
                     callbackGas: '0',
-                }
+                },
             },
             gas: CONTRACT_CALL_GAS,
             account: nearjs.account,
@@ -316,13 +329,14 @@ describe('with promises', () => {
         });
         const lastResult1 = await contract1.view.getLastResult();
         expect(lastResult1).toEqual({
-            rs: [{
-                ok: true,
-                r: lastResult2,
-            }],
+            rs: [
+                {
+                    ok: true,
+                    r: lastResult2,
+                },
+            ],
             n: contractName1,
         });
         expect(realResult).toEqual(lastResult1);
     });
-
 });

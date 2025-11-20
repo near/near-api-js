@@ -1,14 +1,10 @@
-import { afterAll, beforeAll, describe, expect, vi, test } from 'vitest';
 import { base58 } from '@scure/base';
-import { KeyPair, ErrorMessages, IdType, TypedError } from '../../src'
-
+import type { Worker } from 'near-workspaces';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { ErrorMessages, IdType, KeyPair, type TypedError } from '../../src';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
-import { Worker } from 'near-workspaces';
-
-
 let near: Awaited<ReturnType<typeof setUpTestConnection>>;
-
 
 beforeAll(async () => {
     near = await setUpTestConnection();
@@ -27,22 +23,41 @@ describe('providers', () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
-        const responseWithString = await near.provider.viewTransactionStatus(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
-        const responseWithUint8Array = await near.provider.viewTransactionStatus(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
+        const responseWithString = await near.provider.viewTransactionStatus(
+            outcome.transaction.hash,
+            sender.accountId,
+            'EXECUTED_OPTIMISTIC'
+        );
+        const responseWithUint8Array = await near.provider.viewTransactionStatus(
+            base58.decode(outcome.transaction.hash),
+            sender.accountId,
+            'EXECUTED_OPTIMISTIC'
+        );
         // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithString).toMatchObject(outcome);
         // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
-    
+
     test('txStatusReciept with string hash and buffer hash', async () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
-        const reciepts = await near.provider.sendJsonRpc('EXPERIMENTAL_tx_status', [outcome.transaction.hash, sender.accountId]);
-    
-        const responseWithString = await near.provider.viewTransactionStatusWithReceipts(outcome.transaction.hash, sender.accountId, 'EXECUTED_OPTIMISTIC');
-        const responseWithUint8Array = await near.provider.viewTransactionStatusWithReceipts(base58.decode(outcome.transaction.hash), sender.accountId, 'EXECUTED_OPTIMISTIC');
+        const reciepts = await near.provider.sendJsonRpc('EXPERIMENTAL_tx_status', [
+            outcome.transaction.hash,
+            sender.accountId,
+        ]);
+
+        const responseWithString = await near.provider.viewTransactionStatusWithReceipts(
+            outcome.transaction.hash,
+            sender.accountId,
+            'EXECUTED_OPTIMISTIC'
+        );
+        const responseWithUint8Array = await near.provider.viewTransactionStatusWithReceipts(
+            base58.decode(outcome.transaction.hash),
+            sender.accountId,
+            'EXECUTED_OPTIMISTIC'
+        );
         expect('transaction_outcome' in responseWithString).toBeTruthy();
         expect('logs' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('receipt_ids' in responseWithString.transaction_outcome.outcome).toBeTruthy();
@@ -55,91 +70,85 @@ describe('providers', () => {
         // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithUint8Array).toMatchObject(reciepts);
     });
-    
+
     test('json rpc query account', async () => {
         const account = await createAccount(near);
         const response = await near.provider.query({
             request_type: 'view_account',
             finality: 'optimistic',
-            account_id: account.accountId });
+            account_id: account.accountId,
+        });
         // @ts-expect-error - code_hash exists in response but not in union type
         expect(response.code_hash).toEqual('11111111111111111111111111111111');
     });
-    
+
     test('json rpc query view_state', async () => {
         const contract = await deployContract(near.account, generateUniqueString('test'));
         await contract.call.setValue({ args: { value: 'hello' }, account: near.account });
-    
+
         return waitFor(async () => {
             const response = await near.provider.query({
                 request_type: 'view_state',
                 finality: 'final',
                 account_id: contract.contractId,
-                prefix_base64: ''
+                prefix_base64: '',
             });
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
-                values: [
-                    { key: 'bmFtZQ==', value: 'aGVsbG8=' }
-                ]
+                values: [{ key: 'bmFtZQ==', value: 'aGVsbG8=' }],
             });
         });
     });
-    
+
     test('json rpc query view_code', async () => {
         const contract = await deployContract(near.account, generateUniqueString('test'));
-    
+
         return waitFor(async () => {
             const response = await near.provider.query({
                 request_type: 'view_code',
                 finality: 'final',
-                account_id: contract.contractId
+                account_id: contract.contractId,
             });
-    
+
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
                 code_base64: expect.any(String),
-                hash: expect.any(String)
+                hash: expect.any(String),
             });
         });
     });
-    
+
     test('json rpc query call_function', async () => {
         const contract = await deployContract(near.account, generateUniqueString('test'));
 
         await contract.call.setValue({ args: { value: 'hello' }, account: near.account });
-    
+
         return waitFor(async () => {
             const response = await near.provider.query({
                 request_type: 'call_function',
                 finality: 'final',
                 account_id: contract.contractId,
                 method_name: 'getValue',
-                args_base64: ''
+                args_base64: '',
             });
             expect(response).toEqual({
                 block_height: expect.any(Number),
                 block_hash: expect.any(String),
                 logs: [],
-                result: [
-                    34,
-                    104,
-                    101,
-                    108,
-                    108,
-                    111,
-                    34
-                ]
+                result: [34, 104, 101, 108, 108, 111, 34],
             });
         });
     });
-    
+
     test('json rpc light client proof', async () => {
         const workingAccount = await createAccount(near);
-        const executionOutcome = await workingAccount.transfer({ receiverId: workingAccount.accountId, amount: 10000n });
-    
+        const executionOutcome = await workingAccount.transfer({
+            receiverId: workingAccount.accountId,
+            amount: 10000n,
+        });
+
         async function waitForStatusMatching(isMatching) {
             const MAX_ATTEMPTS = 10;
             for (let i = 0; i < MAX_ATTEMPTS; i++) {
@@ -151,14 +160,18 @@ describe('providers', () => {
             }
             throw new Error(`Exceeded ${MAX_ATTEMPTS} attempts waiting for matching node status.`);
         }
-    
-        const comittedStatus = await waitForStatusMatching(status =>
-            // @ts-expect-error - block_hash exists at runtime but not in type definition
-            status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash);
+
+        const comittedStatus = await waitForStatusMatching(
+            (status) =>
+                // @ts-expect-error - block_hash exists at runtime but not in type definition
+                status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash
+        );
         const BLOCKS_UNTIL_FINAL = 2;
-        const finalizedStatus = await waitForStatusMatching(status =>
-            status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL);
-    
+        const finalizedStatus = await waitForStatusMatching(
+            (status) =>
+                status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL
+        );
+
         const block = await near.provider.viewBlock({ blockId: finalizedStatus.sync_info.latest_block_hash });
         const lightClientHead = block.header.last_final_block;
         let lightClientRequest = {
@@ -176,7 +189,7 @@ describe('providers', () => {
         expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
         expect(lightClientProof.outcome_root_proof).toEqual([]);
         expect(lightClientProof.block_proof.length).toBeGreaterThan(0);
-    
+
         // pass nonexistent hash for light client head will fail
         lightClientRequest = {
             type: IdType.Transaction,
@@ -185,7 +198,7 @@ describe('providers', () => {
             sender_id: workingAccount.accountId,
         };
         await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
-    
+
         // Use old block hash as light client head should fail
         lightClientRequest = {
             type: IdType.Transaction,
@@ -194,17 +207,16 @@ describe('providers', () => {
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
-    
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(/.+ block .+ is ahead of head block .+/);
+
+        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(
+            /.+ block .+ is ahead of head block .+/
+        );
     });
 });
 
 describe('providers errors', () => {
     test('JSON RPC Error - MethodNotFound', async () => {
-        const contract = await deployContract(
-            near.account,
-            generateUniqueString('test')
-        );
+        const contract = await deployContract(near.account, generateUniqueString('test'));
 
         await contract.call.setValue({ args: { value: 'hello' }, account: near.account });
 
@@ -273,9 +285,7 @@ describe('providers errors', () => {
                 request_type: 'view_access_key',
                 finality: 'optimistic',
                 account_id: accountId,
-                public_key: KeyPair.fromRandom('ed25519')
-                    .getPublicKey()
-                    .toString(),
+                public_key: KeyPair.fromRandom('ed25519').getPublicKey().toString(),
             });
             expect(response).toBeUndefined();
         } catch (e) {
@@ -287,4 +297,3 @@ describe('providers errors', () => {
         }
     });
 });
-

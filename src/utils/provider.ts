@@ -1,8 +1,10 @@
-import { FinalExecutionOutcome } from '../types/index.js';
+import type { FinalExecutionOutcome } from '../types/index.js';
 
 /** @hidden */
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function getTransactionLastResult(txResult: FinalExecutionOutcome): Exclude<object | string | number | null, Function> {
+export function getTransactionLastResult(
+    txResult: FinalExecutionOutcome
+): Exclude<object | string | number | null, Function> {
     if (typeof txResult.status === 'object' && typeof txResult.status.SuccessValue === 'string') {
         const value = Buffer.from(txResult.status.SuccessValue, 'base64').toString();
         try {

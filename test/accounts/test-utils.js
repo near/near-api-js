@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { Account, TypedContract, KeyPair, KeyType, KeyPairSigner, JsonRpcProvider } from '../../src';
+import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, KeyType, TypedContract } from '../../src';
 import Config from './config';
 
 export const networkId = 'unittest';
@@ -16,7 +16,9 @@ export async function setUpTestConnection() {
         networkId,
     });
 
-    const secretKey = config.secretKey || 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
+    const secretKey =
+        config.secretKey ||
+        'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
 
     const provider = new JsonRpcProvider({ url: config.nodeUrl, headers: config.headers });
     const signer = KeyPairSigner.fromSecretKey(secretKey);
@@ -27,16 +29,16 @@ export async function setUpTestConnection() {
         account,
         provider,
         // return worker, so we can gracefully shut down tests
-        worker: config.worker || undefined
+        worker: config.worker || undefined,
     };
 }
 
 // Generate some unique string of length at least RANDOM_ACCOUNT_LENGTH with a given prefix using the alice nonce.
 export function generateUniqueString(prefix) {
     let result = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
-    let add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
+    const add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
     for (let i = add_symbols; i > 0; --i) result += '0';
-    return result + '.test.near';
+    return `${result}.test.near`;
 }
 
 export async function createAccount({ account, provider }, keyType = KeyType.ED25519) {
@@ -65,7 +67,7 @@ export async function deployContract(workingAccount, contractId) {
 }
 
 export function sleep(time) {
-    return new Promise(function (resolve) {
+    return new Promise((resolve) => {
         setTimeout(resolve, time);
     });
 }
@@ -78,8 +80,7 @@ export function waitFor(fn) {
             if (count > 0) {
                 await sleep(500);
                 return _waitFor(count - 1);
-            }
-            else throw e;
+            } else throw e;
         }
     };
 

@@ -1,16 +1,15 @@
-import { TypedError } from '../../types/index.js';
 import Mustache from 'mustache';
+import { TypedError } from '../../types/index.js';
 
 import { formatNearAmount } from '../format.js';
 import { ErrorMessages } from './errors.js';
 import schema from './rpc_error_schema.js';
 
 const mustacheHelpers = {
-    formatNear: () => (n, render) => formatNearAmount(render(n))
+    formatNear: () => (n, render) => formatNearAmount(render(n)),
 };
 
-export class ServerError extends TypedError {
-}
+export class ServerError extends TypedError {}
 
 class ServerTransactionError extends ServerError {
     public transaction_outcome: any;
@@ -39,7 +38,7 @@ export function formatError(errorClassName: string, errorData): string {
     if (typeof ErrorMessages[errorClassName] === 'string') {
         return Mustache.render(ErrorMessages[errorClassName], {
             ...errorData,
-            ...mustacheHelpers
+            ...mustacheHelpers,
         });
     }
     return JSON.stringify(errorData);
@@ -69,8 +68,6 @@ function walkSubtype(errorObj, schema, result, typeName) {
             error = errorObj.kind[errorName];
             type = schema[errorName];
             errorTypeName = errorName;
-        } else {
-            continue;
         }
     }
     if (error && type) {
@@ -94,11 +91,15 @@ export function getErrorTypeFromErrorMessage(errorMessage, errorType) {
             return 'AccountDoesNotExist';
         case /^access key .*? does not exist while viewing$/.test(errorMessage):
             return 'AccessKeyDoesNotExist';
-        case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(errorMessage):
+        case /wasm execution failed with error: FunctionCallError\(CompilationError\(CodeDoesNotExist/.test(
+            errorMessage
+        ):
             return 'CodeDoesNotExist';
         case /wasm execution failed with error: CompilationError\(CodeDoesNotExist/.test(errorMessage):
             return 'CodeDoesNotExist';
-        case /wasm execution failed with error: FunctionCallError\(MethodResolveError\(MethodNotFound/.test(errorMessage):
+        case /wasm execution failed with error: FunctionCallError\(MethodResolveError\(MethodNotFound/.test(
+            errorMessage
+        ):
             return 'MethodNotFound';
         case /wasm execution failed with error: MethodResolveError\(MethodNotFound/.test(errorMessage):
             return 'MethodNotFound';

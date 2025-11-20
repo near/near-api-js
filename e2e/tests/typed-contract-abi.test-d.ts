@@ -1,47 +1,41 @@
-import { describe, expectTypeOf, test } from "vitest";
-import {
-    KeyPair,
-    KeyPairSigner,
-    JsonRpcProvider,
-    Account,
-    TypedContract,
-} from "near-api-js";
+import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, TypedContract } from 'near-api-js';
+import { describe, expectTypeOf, test } from 'vitest';
 
 /// These tests have to be in "packages/accounts",
 /// but since Jest doesn't support type checking,
 /// they temporarily live here
 
-const provider = new JsonRpcProvider({ url: "" });
-const keypair = KeyPair.fromRandom("ed25519");
+const provider = new JsonRpcProvider({ url: '' });
+const keypair = KeyPair.fromRandom('ed25519');
 const signer = new KeyPairSigner(keypair);
-const account = new Account("", provider, signer);
+const account = new Account('', provider, signer);
 
-describe("TypedContract infers function arguments from ABI correctly", () => {
+describe('TypedContract infers function arguments from ABI correctly', () => {
     test('"args" are required if at least one argument is required', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
-                                            type: "string",
+                                            type: 'string',
                                         },
                                     },
                                     {
-                                        name: "arg2",
+                                        name: 'arg2',
                                         type_schema: {
-                                            type: ["string", "null"],
+                                            type: ['string', 'null'],
                                         },
                                     },
                                 ],
@@ -60,29 +54,29 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
 
     test('"args" are optional if none of arguments is required', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
-                                            type: ["string", "null"],
+                                            type: ['string', 'null'],
                                         },
                                     },
                                     {
-                                        name: "arg2",
+                                        name: 'arg2',
                                         type_schema: {
-                                            type: ["string", "null"],
+                                            type: ['string', 'null'],
                                         },
                                     },
                                 ],
@@ -96,42 +90,40 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
 
         type ExpectedArgs = { args?: any };
 
-        expectTypeOf(contract.view.test)
-            .parameter(0)
-            .toExtend<ExpectedArgs | undefined>();
+        expectTypeOf(contract.view.test).parameter(0).toExtend<ExpectedArgs | undefined>();
     });
 
     test('parses "string" as string', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
-                                            type: "string",
+                                            type: 'string',
                                         },
                                     },
                                     {
-                                        name: "arg2",
+                                        name: 'arg2',
                                         type_schema: {
-                                            type: ["string"],
+                                            type: ['string'],
                                         },
                                     },
                                     {
-                                        name: "arg3",
+                                        name: 'arg3',
                                         type_schema: {
-                                            type: ["string", "null"],
+                                            type: ['string', 'null'],
                                         },
                                     },
                                 ],
@@ -156,53 +148,53 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
 
     test('parses "number" or "integer" as number', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
-                                            type: "number",
+                                            type: 'number',
                                         },
                                     },
                                     {
-                                        name: "arg2",
+                                        name: 'arg2',
                                         type_schema: {
-                                            type: ["number"],
+                                            type: ['number'],
                                         },
                                     },
                                     {
-                                        name: "arg3",
+                                        name: 'arg3',
                                         type_schema: {
-                                            type: ["number", "null"],
+                                            type: ['number', 'null'],
                                         },
                                     },
                                     {
-                                        name: "arg4",
+                                        name: 'arg4',
                                         type_schema: {
-                                            type: "integer",
+                                            type: 'integer',
                                         },
                                     },
                                     {
-                                        name: "arg5",
+                                        name: 'arg5',
                                         type_schema: {
-                                            type: ["integer"],
+                                            type: ['integer'],
                                         },
                                     },
                                     {
-                                        name: "arg6",
+                                        name: 'arg6',
                                         type_schema: {
-                                            type: ["integer", "null"],
+                                            type: ['integer', 'null'],
                                         },
                                     },
                                 ],
@@ -230,35 +222,35 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
 
     test('parses "boolean" as boolean', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
-                                            type: "boolean",
+                                            type: 'boolean',
                                         },
                                     },
                                     {
-                                        name: "arg2",
+                                        name: 'arg2',
                                         type_schema: {
-                                            type: ["boolean"],
+                                            type: ['boolean'],
                                         },
                                     },
                                     {
-                                        name: "arg3",
+                                        name: 'arg3',
                                         type_schema: {
-                                            type: ["boolean", "null"],
+                                            type: ['boolean', 'null'],
                                         },
                                     },
                                 ],
@@ -283,63 +275,63 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
 
     test('parses "array" as array', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
-                                            type: "array",
+                                            type: 'array',
                                             items: {
-                                                type: "string",
+                                                type: 'string',
                                             },
                                         },
                                     },
                                     {
-                                        name: "arg2",
+                                        name: 'arg2',
                                         type_schema: {
-                                            type: "array",
+                                            type: 'array',
                                             items: {
-                                                type: "number",
+                                                type: 'number',
                                             },
                                         },
                                     },
                                     {
-                                        name: "arg3",
+                                        name: 'arg3',
                                         type_schema: {
-                                            type: "array",
+                                            type: 'array',
                                             items: {
-                                                type: "integer",
+                                                type: 'integer',
                                             },
                                         },
                                     },
                                     {
-                                        name: "arg4",
+                                        name: 'arg4',
                                         type_schema: {
-                                            type: "array",
+                                            type: 'array',
                                             items: {
-                                                type: "boolean",
+                                                type: 'boolean',
                                             },
                                         },
                                     },
                                     {
-                                        name: "arg5",
+                                        name: 'arg5',
                                         type_schema: {
-                                            type: "array",
+                                            type: 'array',
                                             items: {
-                                                type: "array",
+                                                type: 'array',
                                                 items: {
-                                                    type: "string",
+                                                    type: 'string',
                                                 },
                                             },
                                         },
@@ -368,55 +360,48 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
 
     test('parses "object" as object', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
-                                            type: "object",
-                                            required: [
-                                                "key1",
-                                                "key2",
-                                                "key3",
-                                                "key4",
-                                                "key5",
-                                                "key7",
-                                            ],
+                                            type: 'object',
+                                            required: ['key1', 'key2', 'key3', 'key4', 'key5', 'key7'],
                                             properties: {
                                                 key1: {
-                                                    type: "string",
+                                                    type: 'string',
                                                 },
                                                 key2: {
-                                                    type: "number",
+                                                    type: 'number',
                                                 },
                                                 key3: {
-                                                    type: "integer",
+                                                    type: 'integer',
                                                 },
                                                 key4: {
-                                                    type: "boolean",
+                                                    type: 'boolean',
                                                 },
                                                 key5: {
-                                                    type: ["string", "null"],
+                                                    type: ['string', 'null'],
                                                 },
                                                 key6: {
-                                                    type: "string",
+                                                    type: 'string',
                                                 },
                                                 key7: {
-                                                    type: "object",
+                                                    type: 'object',
                                                     properties: {
                                                         subkey1: {
-                                                            type: "string",
+                                                            type: 'string',
                                                         },
                                                     },
                                                 },
@@ -451,31 +436,31 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
             .toEqualTypeOf<ExpectedArgs>();
     });
 
-    test("parses schema definitions", () => {
+    test('parses schema definitions', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
-                                            $ref: "#/definitions/AccountId",
+                                            $ref: '#/definitions/AccountId',
                                         },
                                     },
                                     {
-                                        name: "arg2",
+                                        name: 'arg2',
                                         type_schema: {
-                                            $ref: "#/definitions/Message",
+                                            $ref: '#/definitions/Message',
                                         },
                                     },
                                 ],
@@ -485,17 +470,17 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                     root_schema: {
                         definitions: {
                             AccountId: {
-                                type: "string",
+                                type: 'string',
                             },
                             Message: {
-                                type: "object",
-                                required: ["sender", "text"],
+                                type: 'object',
+                                required: ['sender', 'text'],
                                 properties: {
                                     sender: {
-                                        $ref: "#/definitions/AccountId",
+                                        $ref: '#/definitions/AccountId',
                                     },
                                     text: {
-                                        type: "string",
+                                        type: 'string',
                                     },
                                 },
                             },
@@ -520,56 +505,49 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
 
     test('parses "enum" string', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
                                             oneOf: [
                                                 {
-                                                    type: "object",
-                                                    required: [
-                                                        "version",
-                                                        "name",
-                                                    ],
+                                                    type: 'object',
+                                                    required: ['version', 'name'],
                                                     properties: {
                                                         version: {
-                                                            type: "string",
-                                                            enum: ["V0"],
+                                                            type: 'string',
+                                                            enum: ['V0'],
                                                         },
                                                         name: {
-                                                            type: "string",
+                                                            type: 'string',
                                                         },
                                                     },
                                                 },
                                                 {
-                                                    type: "object",
-                                                    required: [
-                                                        "version",
-                                                        "name",
-                                                        "age",
-                                                    ],
+                                                    type: 'object',
+                                                    required: ['version', 'name', 'age'],
                                                     properties: {
                                                         version: {
-                                                            type: "string",
-                                                            enum: ["V1"],
+                                                            type: 'string',
+                                                            enum: ['V1'],
                                                         },
                                                         name: {
-                                                            type: "string",
+                                                            type: 'string',
                                                         },
                                                         age: {
-                                                            type: "number",
+                                                            type: 'number',
                                                         },
                                                     },
                                                 },
@@ -577,10 +555,10 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
                                         },
                                     },
                                     {
-                                        name: "arg2",
+                                        name: 'arg2',
                                         type_schema: {
-                                            type: "string",
-                                            enum: ["V0", "V1", "V2", "3.0"],
+                                            type: 'string',
+                                            enum: ['V0', 'V1', 'V2', '3.0'],
                                         },
                                     },
                                 ],
@@ -593,10 +571,8 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
         });
 
         type ExpectedArgs = {
-            arg1:
-                | { version: "V0"; name: string }
-                | { version: "V1"; name: string; age: number };
-            arg2: "V0" | "V1" | "V2" | "3.0";
+            arg1: { version: 'V0'; name: string } | { version: 'V1'; name: string; age: number };
+            arg2: 'V0' | 'V1' | 'V2' | '3.0';
         };
         expectTypeOf(contract.view.test)
             .parameter(0)
@@ -606,28 +582,28 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
 
     test('parses "additionalProperties"', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             params: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 args: [
                                     {
-                                        name: "arg1",
+                                        name: 'arg1',
                                         type_schema: {
                                             default: {},
-                                            type: "object",
+                                            type: 'object',
                                             additionalProperties: {
-                                                type: "array",
+                                                type: 'array',
                                                 items: {
-                                                    type: "string",
+                                                    type: 'string',
                                                 },
                                             },
                                         },
@@ -651,19 +627,19 @@ describe("TypedContract infers function arguments from ABI correctly", () => {
     });
 });
 
-describe("TypedContract infers function returns from ABI correctly", () => {
+describe('TypedContract infers function returns from ABI correctly', () => {
     test('returns "void" by default', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                         },
                     ],
                     root_schema: {},
@@ -676,20 +652,20 @@ describe("TypedContract infers function returns from ABI correctly", () => {
 
     test('parses ["string", "null"] as optional string', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: ["string", "null"],
+                                    type: ['string', 'null'],
                                 },
                             },
                         },
@@ -699,27 +675,25 @@ describe("TypedContract infers function returns from ABI correctly", () => {
             },
         });
 
-        expectTypeOf(contract.view.test).returns.resolves.toEqualTypeOf<
-            string | null
-        >();
+        expectTypeOf(contract.view.test).returns.resolves.toEqualTypeOf<string | null>();
     });
 
     test('parses "string" as string', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: "string",
+                                    type: 'string',
                                 },
                             },
                         },
@@ -734,20 +708,20 @@ describe("TypedContract infers function returns from ABI correctly", () => {
 
     test('parses "number" as number', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: "number",
+                                    type: 'number',
                                 },
                             },
                         },
@@ -762,20 +736,20 @@ describe("TypedContract infers function returns from ABI correctly", () => {
 
     test('parses "integer" as number', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: "integer",
+                                    type: 'integer',
                                 },
                             },
                         },
@@ -790,20 +764,20 @@ describe("TypedContract infers function returns from ABI correctly", () => {
 
     test('parses "boolean" as boolean', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: "boolean",
+                                    type: 'boolean',
                                 },
                             },
                         },
@@ -818,22 +792,22 @@ describe("TypedContract infers function returns from ABI correctly", () => {
 
     test('parses "array" as array', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: "array",
+                                    type: 'array',
                                     items: {
-                                        type: "string",
+                                        type: 'string',
                                     },
                                 },
                             },
@@ -850,39 +824,39 @@ describe("TypedContract infers function returns from ABI correctly", () => {
 
     test('parses "object" as object', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: "object",
-                                    required: ["res1", "res2", "res3", "res5"],
+                                    type: 'object',
+                                    required: ['res1', 'res2', 'res3', 'res5'],
                                     properties: {
                                         res1: {
-                                            type: "string",
+                                            type: 'string',
                                         },
                                         res2: {
-                                            type: "number",
+                                            type: 'number',
                                         },
                                         res3: {
-                                            type: ["string", "null"],
+                                            type: ['string', 'null'],
                                         },
                                         res4: {
-                                            type: "string",
+                                            type: 'string',
                                         },
                                         res5: {
-                                            type: "object",
-                                            required: ["sub1"],
+                                            type: 'object',
+                                            required: ['sub1'],
                                             properties: {
-                                                sub1: { type: "string" },
+                                                sub1: { type: 'string' },
                                             },
                                         },
                                     },
@@ -904,34 +878,32 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                 sub1: string;
             };
         };
-        expectTypeOf(
-            contract.view.test
-        ).returns.resolves.toEqualTypeOf<ExpectedReturn>();
+        expectTypeOf(contract.view.test).returns.resolves.toEqualTypeOf<ExpectedReturn>();
     });
 
-    test("parses schema definitions", () => {
+    test('parses schema definitions', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: "object",
-                                    required: ["res1", "res2", "res3"],
+                                    type: 'object',
+                                    required: ['res1', 'res2', 'res3'],
                                     properties: {
                                         res1: {
-                                            $ref: "#/definitions/AccountId",
+                                            $ref: '#/definitions/AccountId',
                                         },
-                                        res2: { $ref: "#/definitions/Message" },
-                                        res3: { type: "number" },
+                                        res2: { $ref: '#/definitions/Message' },
+                                        res3: { type: 'number' },
                                     },
                                 },
                             },
@@ -940,17 +912,17 @@ describe("TypedContract infers function returns from ABI correctly", () => {
                     root_schema: {
                         definitions: {
                             AccountId: {
-                                type: "string",
+                                type: 'string',
                             },
                             Message: {
-                                type: "object",
-                                required: ["sender", "text"],
+                                type: 'object',
+                                required: ['sender', 'text'],
                                 properties: {
                                     sender: {
-                                        $ref: "#/definitions/AccountId",
+                                        $ref: '#/definitions/AccountId',
                                     },
                                     text: {
-                                        type: "string",
+                                        type: 'string',
                                     },
                                 },
                             },
@@ -968,72 +940,63 @@ describe("TypedContract infers function returns from ABI correctly", () => {
             };
             res3: number;
         };
-        expectTypeOf(
-            contract.view.test
-        ).returns.resolves.toEqualTypeOf<ExpectedReturn>();
+        expectTypeOf(contract.view.test).returns.resolves.toEqualTypeOf<ExpectedReturn>();
     });
 
     test('parses "enum" string', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
-                                    type: "object",
-                                    required: ["res1", "res2"],
+                                    type: 'object',
+                                    required: ['res1', 'res2'],
                                     properties: {
                                         res1: {
                                             oneOf: [
                                                 {
-                                                    type: "object",
-                                                    required: [
-                                                        "version",
-                                                        "name",
-                                                    ],
+                                                    type: 'object',
+                                                    required: ['version', 'name'],
                                                     properties: {
                                                         version: {
-                                                            type: "string",
-                                                            enum: ["V0"],
+                                                            type: 'string',
+                                                            enum: ['V0'],
                                                         },
                                                         name: {
-                                                            type: "string",
+                                                            type: 'string',
                                                         },
                                                     },
                                                 },
                                                 {
-                                                    type: "object",
-                                                    required: [
-                                                        "version",
-                                                        "name",
-                                                        "age",
-                                                    ],
+                                                    type: 'object',
+                                                    required: ['version', 'name', 'age'],
                                                     properties: {
                                                         version: {
-                                                            type: "string",
-                                                            enum: ["V1"],
+                                                            type: 'string',
+                                                            enum: ['V1'],
                                                         },
                                                         name: {
-                                                            type: "string",
+                                                            type: 'string',
                                                         },
                                                         age: {
-                                                            type: "number",
+                                                            type: 'number',
                                                         },
                                                     },
                                                 },
                                             ],
                                         },
                                         res2: {
-                                            type: "string",
-                                            enum: ["V0", "V1", "V2", "3.0"],
+                                            type: 'string',
+                                            enum: ['V0', 'V1', 'V2', '3.0'],
                                         },
                                     },
                                 },
@@ -1046,37 +1009,33 @@ describe("TypedContract infers function returns from ABI correctly", () => {
         });
 
         type ExpectedReturn = {
-            res1:
-                | { version: "V0"; name: string }
-                | { version: "V1"; name: string; age: number };
-            res2: "V0" | "V1" | "V2" | "3.0";
+            res1: { version: 'V0'; name: string } | { version: 'V1'; name: string; age: number };
+            res2: 'V0' | 'V1' | 'V2' | '3.0';
         };
-        expectTypeOf(
-            contract.view.test
-        ).returns.resolves.toEqualTypeOf<ExpectedReturn>();
+        expectTypeOf(contract.view.test).returns.resolves.toEqualTypeOf<ExpectedReturn>();
     });
 
     test('parses "additionalProperties"', () => {
         const contract = new TypedContract({
-            contractId: "guestbook.testnet",
+            contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
-                schema_version: "0.4.0",
+                schema_version: '0.4.0',
                 metadata: {},
                 body: {
                     functions: [
                         {
-                            name: "test",
-                            kind: "view",
+                            name: 'test',
+                            kind: 'view',
                             result: {
-                                serialization_type: "json",
+                                serialization_type: 'json',
                                 type_schema: {
                                     default: {},
-                                    type: "object",
+                                    type: 'object',
                                     additionalProperties: {
-                                        type: "array",
+                                        type: 'array',
                                         items: {
-                                            type: "string",
+                                            type: 'string',
                                         },
                                     },
                                 },
@@ -1090,8 +1049,6 @@ describe("TypedContract infers function returns from ABI correctly", () => {
 
         type ExpectedReturn = Record<string, string[]>;
 
-        expectTypeOf(
-            contract.view.test
-        ).returns.resolves.toEqualTypeOf<ExpectedReturn>();
+        expectTypeOf(contract.view.test).returns.resolves.toEqualTypeOf<ExpectedReturn>();
     });
 });
