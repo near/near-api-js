@@ -1,10 +1,7 @@
-import type { PublicKey } from '../crypto/index.js';
 import { b } from '@zorsh/zorsh';
+import type { PublicKey } from '../crypto/index.js';
 
-import type {
-    Action,
-    SignedDelegate,
-} from './actions.js';
+import type { Action, SignedDelegate } from './actions.js';
 import type { DelegateAction } from './delegate.js';
 import { DelegateActionPrefix } from './prefix.js';
 import type { Signature } from './signature.js';
@@ -97,16 +94,21 @@ export class Transaction {
     actions: Action[];
     blockHash: Uint8Array;
 
-    constructor({ signerId, publicKey, nonce, receiverId, actions, blockHash }:
-    {
-      signerId: string,
-      publicKey: PublicKey,
-      nonce: bigint,
-      receiverId: string,
-      actions: Action[],
-      blockHash: Uint8Array,
-    }
-    ) {
+    constructor({
+        signerId,
+        publicKey,
+        nonce,
+        receiverId,
+        actions,
+        blockHash,
+    }: {
+        signerId: string;
+        publicKey: PublicKey;
+        nonce: bigint;
+        receiverId: string;
+        actions: Action[];
+        blockHash: Uint8Array;
+    }) {
         this.signerId = signerId;
         this.publicKey = publicKey;
         this.nonce = nonce;
@@ -128,7 +130,7 @@ export class SignedTransaction {
     transaction: Transaction;
     signature: Signature;
 
-    constructor({ transaction, signature }: { transaction: Transaction, signature: Signature}) {
+    constructor({ transaction, signature }: { transaction: Transaction; signature: Signature }) {
         this.transaction = transaction;
         this.signature = signature;
     }
