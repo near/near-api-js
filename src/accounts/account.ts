@@ -45,7 +45,7 @@ const {
     useGlobalContract,
 } = actionCreators;
 
-const DEFAULT_FINALITY: Finality =  'optimistic';
+const DEFAULT_FINALITY: Finality = 'optimistic';
 export const DEFAULT_WAIT_STATUS: TxExecutionStatus = 'EXECUTED_OPTIMISTIC';
 const DEFAULT_FUNCTION_CALL_GAS = 30_000_000_000_000n; // 30 TGas
 
@@ -480,10 +480,10 @@ export class Account {
         code: Uint8Array,
         deployMode: 'codeHash' | 'accountId'
     ): Promise<FinalExecutionOutcome> {
-        const mode = deployMode === 'codeHash' 
+        const mode = deployMode === 'codeHash'
             ? new GlobalContractDeployMode({ CodeHash: null })
             : new GlobalContractDeployMode({ AccountId: null });
-            
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deployGlobalContract(code, mode)],
@@ -500,12 +500,12 @@ export class Account {
     ): Promise<FinalExecutionOutcome> {
         const identifier = 'accountId' in contractIdentifier
             ? new GlobalContractIdentifier({ AccountId: contractIdentifier.accountId })
-            : new GlobalContractIdentifier({ 
-                CodeHash: typeof contractIdentifier.codeHash === 'string' 
+            : new GlobalContractIdentifier({
+                CodeHash: typeof contractIdentifier.codeHash === 'string'
                     ? Buffer.from(contractIdentifier.codeHash, 'hex')
-                    : contractIdentifier.codeHash 
+                    : contractIdentifier.codeHash
             });
-            
+
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [useGlobalContract(identifier)],
@@ -658,11 +658,13 @@ export class Account {
     }): Promise<SignedMessage> {
         if (!this.signer) throw new Error('Please set a signer');
         return this.signer.signNep413Message(
-            message,
             this.accountId,
-            recipient,
-            nonce,
-            callbackUrl
+            {
+                message,
+                recipient,
+                nonce,
+                callbackUrl,
+            }
         );
     }
 

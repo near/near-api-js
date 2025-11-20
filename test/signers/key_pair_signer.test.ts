@@ -12,6 +12,10 @@ import {
     buildDelegateAction,
 } from "../../src";
 
+import { Nep413MessageSchema } from '../../src';
+import { serialize } from 'borsh';
+import { sha256 } from '@noble/hashes/sha256';
+
 global.TextEncoder = TextEncoder;
 
 test('test sign transaction with different public key', async () => {
@@ -114,16 +118,18 @@ test('test sign NEP-413 message with callback url', async () => {
     );
 
     const { signature } = await signer.signNep413Message(
-        'Hello NEAR!',
         'round-toad.testnet',
-        'example.near',
-        new Uint8Array(
-            Buffer.from(
-                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
-                'base64'
-            )
-        ),
-        'http://localhost:3000'
+        {
+            message: 'Hello NEAR!',
+            recipient: 'example.near',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
+            ),
+            callbackUrl: 'http://localhost:3000'
+        }
     );
 
     const expectedSignature = new Uint8Array(
@@ -144,15 +150,17 @@ test('test sign NEP-413 message without callback url', async () => {
     );
 
     const { signature } = await signer.signNep413Message(
-        'Hello NEAR!',
         'round-toad.testnet',
-        'example.near',
-        new Uint8Array(
-            Buffer.from(
-                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
-                'base64'
+        {
+            message: 'Hello NEAR!',
+            recipient: 'example.near',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
             )
-        )
+        }
     );
 
     const expectedSignature = new Uint8Array(
@@ -174,13 +182,95 @@ test('test sign NEP-413 message throws error on invalid nonce', async () => {
 
     await expect(() =>
         signer.signNep413Message(
-            'Hello NEAR!',
-            'round-toad.testnet',
             'example.near',
-            new Uint8Array(new Array(28))
+            {
+                message: 'Hello NEAR!',
+                recipient: 'round-toad.testnet',
+                nonce: new Uint8Array(new Array(28))
+            }
         )
     ).rejects.toThrow();
 });
+
+test('generate correct hash for NEP-413-compliant message', async () => {
+    const signMessageParams = {
+        message: 'Hello NEAR!',
+        recipient: 'round-toad.testnet',
+        nonce: new Uint8Array(
+            Buffer.from(
+                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                'base64'
+            )
+        ),
+    };
+
+    const serializedPrefix = serialize('u32', 2147484061);
+    const serializedParams = serialize(Nep413MessageSchema, signMessageParams);
+
+    const serializedPayload = new Uint8Array(
+        serializedPrefix.length + serializedParams.length
+    );
+    serializedPayload.set(serializedPrefix);
+    serializedPayload.set(serializedParams, serializedPrefix.length);
+
+    const existingSerializedPayloadHash = new Uint8Array(sha256(serializedPayload));
+
+
+    const expectedSerializedPayloadHash = new Uint8Array([1, 152, 236, 223, 103, 218, 230, 0,
+        34, 54, 210, 18, 244, 68, 108, 252,
+        140, 166, 102, 57, 242, 4, 202, 234,
+        205, 94, 246, 245, 198, 141, 23, 250]);
+
+    expect(existingSerializedPayloadHash).toEqual(expectedSerializedPayloadHash);
+});
+
+test('verify signature generated using NEP-413 payload hash', async () => {
+    const signer = new KeyPairSigner(
+        KeyPair.fromString(
+            'ed25519:3FyRtUUMxiNT1g2ST6mbj7W1CN7KfQBbomawC7YG4A1zwHmw2TRsn1Wc8NaFcBCoJDu3zt3znJDSwKQ31oRaKXH7'
+        )
+    );
+
+    const { signature } = await signer.signNep413Message(
+        'example.near',
+        {
+            message: 'Hello NEAR!',
+            recipient: 'round-toad.testnet',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
+            )
+        },
+    );
+
+    const signMessageParams = {
+        message: 'Hello NEAR!',
+        recipient: 'round-toad.testnet',
+        nonce: new Uint8Array(
+            Buffer.from(
+                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                'base64'
+            )
+        ),
+    };
+    const serializedPrefix = serialize('u32', 2147484061);
+    const serializedParams = serialize(Nep413MessageSchema, signMessageParams);
+
+    const serializedPayload = new Uint8Array(
+        serializedPrefix.length + serializedParams.length
+    );
+    serializedPayload.set(serializedPrefix);
+    serializedPayload.set(serializedParams, serializedPrefix.length);
+
+    const existingSerializedPayloadHash = new Uint8Array(sha256(serializedPayload));
+
+    const publicKey = (await signer.getPublicKey());
+
+    expect(publicKey.verify(existingSerializedPayloadHash, signature)).toBe(true);
+});
+
 
 test('test getPublicKey returns correct public key', async () => {
     const keyPair = KeyPair.fromString(
