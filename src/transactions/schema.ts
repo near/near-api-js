@@ -32,9 +32,11 @@ function ensureBigInt(obj: any): any {
             }
             // Convert specific monetary/counter fields to BigInt
             else if (['deposit', 'stake', 'gas', 'nonce', 'allowance', 'maxBlockHeight'].includes(key)) {
-                if (value === null || value === undefined) {
+                if (value === undefined) {
                     // zorsh expects null for optional fields, not undefined
-                    result[key] = key === 'allowance' && value === undefined ? null : value;
+                    result[key] = null;
+                } else if (value === null) {
+                    result[key] = null;
                 } else if (typeof value === 'number' || typeof value === 'bigint') {
                     result[key] = BigInt(value);
                 } else {
