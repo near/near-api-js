@@ -1,5 +1,5 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { serialize } from 'borsh';
+import { b } from '@zorsh/zorsh';
 import { TextEncoder } from 'util';
 import { expect, test } from 'vitest';
 import {
@@ -167,10 +167,11 @@ test('generate correct hash for NEP-413-compliant message', async () => {
         message: 'Hello NEAR!',
         recipient: 'round-toad.testnet',
         nonce: new Uint8Array(Buffer.from('KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=', 'base64')),
+        callbackUrl: null,
     };
 
-    const serializedPrefix = serialize('u32', 2147484061);
-    const serializedParams = serialize(Nep413MessageSchema, signMessageParams);
+    const serializedPrefix = b.u32().serialize(2147484061);
+    const serializedParams = Nep413MessageSchema.serialize(signMessageParams);
 
     const serializedPayload = new Uint8Array(serializedPrefix.length + serializedParams.length);
     serializedPayload.set(serializedPrefix);
@@ -203,9 +204,10 @@ test('verify signature generated using NEP-413 payload hash', async () => {
         message: 'Hello NEAR!',
         recipient: 'round-toad.testnet',
         nonce: new Uint8Array(Buffer.from('KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=', 'base64')),
+        callbackUrl: null,
     };
-    const serializedPrefix = serialize('u32', 2147484061);
-    const serializedParams = serialize(Nep413MessageSchema, signMessageParams);
+    const serializedPrefix = b.u32().serialize(2147484061);
+    const serializedParams = Nep413MessageSchema.serialize(signMessageParams);
 
     const serializedPayload = new Uint8Array(serializedPrefix.length + serializedParams.length);
     serializedPayload.set(serializedPrefix);

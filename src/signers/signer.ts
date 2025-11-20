@@ -1,5 +1,5 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { type Schema, serialize } from 'borsh';
+import { b } from '@zorsh/zorsh';
 import { KeyType, type PublicKey } from '../crypto/index.js';
 import {
     type DelegateAction,
@@ -25,14 +25,12 @@ export interface SignedMessage {
     state?: string; // Optional, applicable to browser wallets (e.g. MyNearWallet). The same state passed in SignMessageParams.
 }
 
-export const Nep413MessageSchema: Schema = {
-    struct: {
-        message: 'string',
-        nonce: { array: { type: 'u8', len: 32 } },
-        recipient: 'string',
-        callbackUrl: { option: 'string' },
-    },
-};
+export const Nep413MessageSchema = b.struct({
+    message: b.string(),
+    nonce: b.bytes(32),
+    recipient: b.string(),
+    callbackUrl: b.option(b.string()),
+});
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
@@ -66,8 +64,11 @@ export abstract class Signer {
 
         // 2**31 + 413 == 2147484061
         const PREFIX = 2147484061;
-        const serializedPrefix = serialize('u32', PREFIX);
-        const serializedParams = serialize(Nep413MessageSchema, params);
+        const serializedPrefix = b.u32().serialize(PREFIX);
+        const serializedParams = Nep413MessageSchema.serialize({
+            ...params,
+            callbackUrl: params.callbackUrl ?? null,
+        });
 
         const serializedPayload = new Uint8Array(serializedPrefix.length + serializedParams.length);
         serializedPayload.set(serializedPrefix);

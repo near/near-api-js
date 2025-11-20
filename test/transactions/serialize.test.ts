@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import { sha256 } from '@noble/hashes/sha256';
-import { deserialize, serialize } from 'borsh';
+import { b } from '@zorsh/zorsh';
 import { describe, expect, test } from 'vitest';
 
 import {
@@ -30,27 +30,15 @@ const {
     useGlobalContract,
 } = actionCreators;
 
-class Test {
-    constructor(props: any) {
-        for (const [k, v] of Object.entries(props || {})) {
-            this[k] = v;
-        }
-    }
-}
-
 test('serialize object', async () => {
-    const value = new Test({ x: 255, y: 20, z: '123', q: [1, 2, 3] });
-    const schema = { struct: { x: 'u8', y: 'u16', z: 'string', q: { array: { type: 'u8' } } } };
-    const buf = serialize(schema, value);
-    const new_value = new Test(deserialize(schema, buf));
-    // @ts-expect-error test input
+    const value = { x: 255, y: 20, z: '123', q: Uint8Array.from([1, 2, 3]) };
+    const schema = b.struct({ x: b.u8(), y: b.u16(), z: b.string(), q: b.bytes() });
+    const buf = schema.serialize(value);
+    const new_value = schema.deserialize(buf);
     expect(new_value.x).toEqual(255);
-    // @ts-expect-error test input
     expect(new_value.y.toString()).toEqual('20');
-    // @ts-expect-error test input
     expect(new_value.z).toEqual('123');
-    // @ts-expect-error test input
-    expect(new_value.q).toEqual([1, 2, 3]);
+    expect(new_value.q).toEqual(Uint8Array.from([1, 2, 3]));
 });
 
 test('deserialize delegate', async () => {
@@ -69,7 +57,7 @@ test('deserialize delegate', async () => {
     // @ts-expect-error test input
     const {
         signedDelegate: { delegateAction },
-    } = deserialize(SCHEMA.Action, serialized);
+    } = SCHEMA.Action.deserialize(Uint8Array.from(serialized));
     expect(delegateAction.senderId).toEqual('the-user.testnet');
     expect(delegateAction.receiverId).toEqual('hello.near-examples.testnet');
     expect(String(delegateAction.nonce)).toEqual('158895108000003');
@@ -93,7 +81,7 @@ test('serialize multi-action tx', async () => {
     const blockHash = baseDecode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
     const transaction = createTransaction('test.near', publicKey, '123', 1n, actions, blockHash);
     // expect(baseEncode(hash)).toEqual('Fo3MJ9XzKjnKuDuQKhDAC6fra5H2UWawRejFSEpPNk3Y');
-    const serialized = Buffer.from(serialize(SCHEMA.Transaction, transaction));
+    const serialized = Buffer.from(encodeTransaction(transaction));
     expect(serialized.toString('hex')).toEqual(
         '09000000746573742e6e656172000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef80100000000000000030000003132330fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef608000000000103000000010203020300000071717103000000010203e80300000000000040420f00000000000000000000000000037b0000000000000000000000000000000440420f00000000000000000000000000000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef805000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef800000000000000000000030000007a7a7a010000000300000077777706000f56a5f028dfc089ec7c39c1183b321b4d8f89ba5bec9e1762803cc2491f6ef80703000000313233'
     );
@@ -134,8 +122,8 @@ describe('roundtrip test', () => {
             test(testFile, () => {
                 const data = Buffer.from(testDefinition.data, 'hex');
                 const type = testDefinition.type;
-                const deserialized = deserialize(SCHEMA[type], Uint8Array.from(data));
-                const serialized = Buffer.from(serialize(SCHEMA[type], deserialized));
+                const deserialized = SCHEMA[type].deserialize(Uint8Array.from(data));
+                const serialized = Buffer.from(SCHEMA[type].serialize(deserialized));
                 expect(serialized).toEqual(data);
             });
         }
@@ -253,7 +241,7 @@ describe('Global Contract Actions Serialization', () => {
         expect(deserializedAction).toBeDefined();
         if (deserializedAction) {
             // Type guard
-            expect(deserializedAction.contractIdentifier).toEqual({ CodeHash: Array.from(sampleCodeHash) });
+            expect(deserializedAction.contractIdentifier.CodeHash).toEqual(sampleCodeHash);
         }
     });
 
