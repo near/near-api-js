@@ -382,7 +382,7 @@ export class Account {
             );
         }
 
-        const TLA = splitted[1];
+        const TLA = splitted[1]!;
         return this.signAndSendTransaction({
             receiverId: TLA,
             actions: [

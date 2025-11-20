@@ -35,7 +35,7 @@ function findSeatPriceForProtocolBefore49(validators: (CurrentEpochValidatorInfo
         let found = false;
         let currentSum = 0n;
         for (let i = 0; i < stakes.length; ++i) {
-            currentSum = currentSum + (stakes[i] / mid);
+            currentSum = currentSum + (stakes[i]! / mid);
             if (currentSum >= num) {
                 left = mid;
                 found = true;
@@ -57,9 +57,11 @@ function findSeatPriceForProtocolAfter49(validators: (CurrentEpochValidatorInfo 
     const stakes = validators.map(v => BigInt(v.stake)).sort(sortBigIntAsc);
     const stakesSum = stakes.reduce((a, b) => a + b);
     if (validators.length < maxNumberOfSeats) {
-        return stakesSum * BigInt(minimumStakeRatio[0]) / BigInt(minimumStakeRatio[1]);
+        return stakesSum * BigInt(minimumStakeRatio[0]!) / BigInt(minimumStakeRatio[1]!);
+    } else if (stakes.length > 0) {
+        return stakes[0]! + 1n;
     } else {
-        return stakes[0] + 1n;
+        throw new Error(`Unreachable`);
     }
 }
 

@@ -134,7 +134,7 @@ type ContractFunctionArgs<
     abiFunction extends AbiFunction
 > = abiFunction extends { params: infer Params }
     ? Params extends AbiParameters
-        ? Params['args'] extends { name: infer N; type_schema: infer S }[]
+        ? Params['args'] extends { name: any; type_schema: any }[]
             ? Prettify<
                   {
                       [Arg in Params['args'][number] as IsNullable<

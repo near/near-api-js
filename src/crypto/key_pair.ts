@@ -24,9 +24,9 @@ export abstract class KeyPair extends KeyPairBase {
     static fromString(encodedKey: KeyPairString): KeyPair {
         const parts = encodedKey.split(':');
         if (parts.length === 2) {
-            switch (parts[0].toUpperCase()) {
-                case 'ED25519': return new KeyPairEd25519(parts[1]);
-                case 'SECP256K1': return new KeyPairSecp256k1(parts[1]);
+            switch (parts[0]!.toUpperCase()) {
+                case 'ED25519': return new KeyPairEd25519(parts[1]!);
+                case 'SECP256K1': return new KeyPairSecp256k1(parts[1]!);
                 default: throw new Error(`Unknown curve: ${parts[0]}`);
             }
         } else {
