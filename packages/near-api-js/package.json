@@ -37,38 +37,6 @@
             "types": "./lib/transaction.d.ts",
             "default": "./lib/transaction.js"
         },
-        "./account": {
-            "types": "./lib/account.d.ts",
-            "default": "./lib/account.js"
-        },
-        "./contract": {
-            "types": "./lib/contract.d.ts",
-            "default": "./lib/contract.js"
-        },
-        "./connection": {
-            "types": "./lib/connection.d.ts",
-            "default": "./lib/connection.js"
-        },
-        "./validators": {
-            "types": "./lib/validators.d.ts",
-            "default": "./lib/validators.js"
-        },
-        "./account-creator": {
-            "types": "./lib/account_creator.d.ts",
-            "default": "./lib/account_creator.js"
-        },
-        "./connect": {
-            "types": "./lib/connect.d.ts",
-            "default": "./lib/connect.js"
-        },
-        "./constants": {
-            "types": "./lib/constants.d.ts",
-            "default": "./lib/constants.js"
-        },
-        "./near": {
-            "types": "./lib/near.d.ts",
-            "default": "./lib/near.js"
-        },
         "./package.json": "./package.json"
     },
     "dependencies": {

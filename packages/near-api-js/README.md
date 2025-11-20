@@ -10,53 +10,36 @@ npm install near-api-js
 
 ## Import Patterns
 
-The library now supports clean subpath exports for commonly used modules:
+The library supports clean subpath exports for commonly used module groups:
 
 ```javascript
-// Main package
-import { connect, keyStores } from 'near-api-js';
+// Main package - includes Account, Contract, Connection, Near, connect, etc.
+import { connect, keyStores, Account, Contract, Near } from 'near-api-js';
 
-// Providers
+// Providers - Provider classes
 import { JsonRpcProvider, FailoverRpcProvider } from 'near-api-js/providers';
 
-// Keystores
+// Keystores - KeyStore implementations
 import { InMemoryKeyStore, UnencryptedFileSystemKeyStore } from 'near-api-js/keystores';
 
-// Signers
+// Signers - Signer classes
 import { Signer, KeyPairSigner } from 'near-api-js/signers';
 
-// Utils
-import { KeyPair, PublicKey } from 'near-api-js/utils';
+// Utils - Utility functions and classes
+import { KeyPair, PublicKey, format, serialize } from 'near-api-js/utils';
 
-// Transactions
-import { createTransaction, signTransaction } from 'near-api-js/transactions';
-
-// Account, Contract, Connection
-import { Account } from 'near-api-js/account';
-import { Contract } from 'near-api-js/contract';
-import { Connection } from 'near-api-js/connection';
-
-// Other utilities
-import { connect } from 'near-api-js/connect';
-import { Near } from 'near-api-js/near';
+// Transactions - Transaction utilities and action creators
+import { createTransaction, signTransaction, transfer } from 'near-api-js/transactions';
 ```
 
 ### Available Subpath Exports
 
-- `near-api-js` - Main entry point
-- `near-api-js/providers` - Provider classes (JsonRpcProvider, FailoverRpcProvider, etc.)
-- `near-api-js/keystores` - KeyStore classes (InMemoryKeyStore, UnencryptedFileSystemKeyStore, etc.)
-- `near-api-js/signers` - Signer classes
+- `near-api-js` - Main entry point (includes Account, Contract, Connection, Near, connect, validators, constants, etc.)
+- `near-api-js/providers` - Provider classes (JsonRpcProvider, FailoverRpcProvider)
+- `near-api-js/keystores` - KeyStore implementations (InMemoryKeyStore, UnencryptedFileSystemKeyStore, etc.)
+- `near-api-js/signers` - Signer classes (Signer, KeyPairSigner)
 - `near-api-js/utils` - Utility functions (KeyPair, PublicKey, serialize, format, etc.)
-- `near-api-js/transactions` - Transaction utilities
-- `near-api-js/account` - Account class
-- `near-api-js/contract` - Contract class
-- `near-api-js/connection` - Connection class
-- `near-api-js/validators` - Validator functions
-- `near-api-js/account-creator` - Account creator utilities
-- `near-api-js/connect` - Connect function
-- `near-api-js/constants` - Constants
-- `near-api-js/near` - Near class
+- `near-api-js/transactions` - Transaction utilities and action creators
 
 ### Backward Compatibility
 
