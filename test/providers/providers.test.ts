@@ -171,8 +171,6 @@ describe('json provider', () => {
 });
 
 describe('failover provider', () => {
-    beforeAll(async () => {});
-
     test('FailoverRpc throws error on empty list of providers in constructor', async () => {
         expect(() => new FailoverRpcProvider([])).toThrow();
     });

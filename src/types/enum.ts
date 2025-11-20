@@ -7,7 +7,7 @@ export abstract class Enum {
         if (Object.keys(properties).length !== 1) {
             throw new Error('Enum can only take single value');
         }
-        Object.keys(properties).map((key: string) => {
+        Object.keys(properties).forEach((key: string) => {
             (this as any)[key] = properties[key];
         });
     }

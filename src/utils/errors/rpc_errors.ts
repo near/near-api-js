@@ -68,7 +68,6 @@ function walkSubtype(errorObj, schema, result, typeName) {
             error = errorObj.kind[errorName];
             type = schema[errorName];
             errorTypeName = errorName;
-        } else {
         }
     }
     if (error && type) {

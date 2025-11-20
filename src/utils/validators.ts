@@ -99,7 +99,9 @@ export function diffEpochValidators(
     nextValidators: NextEpochValidatorInfo[]
 ): EpochValidatorsDiff {
     const validatorsMap = new Map<string, CurrentEpochValidatorInfo>();
-    currentValidators.forEach((v) => validatorsMap.set(v.account_id, v));
+    currentValidators.forEach((v) => {
+        validatorsMap.set(v.account_id, v);
+    });
     const nextValidatorsSet = new Set(nextValidators.map((v) => v.account_id));
     return {
         newValidators: nextValidators.filter((v) => !validatorsMap.has(v.account_id)),
