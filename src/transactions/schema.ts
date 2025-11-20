@@ -1,10 +1,46 @@
-import { deserialize, type Schema, serialize } from 'borsh';
 import type { PublicKey } from '../crypto/index.js';
+import { b } from '@zorsh/zorsh';
 
-import type { Action, SignedDelegate } from './actions.js';
+import type {
+    Action,
+    SignedDelegate,
+} from './actions.js';
 import type { DelegateAction } from './delegate.js';
 import { DelegateActionPrefix } from './prefix.js';
 import type { Signature } from './signature.js';
+
+/**
+ * Recursively converts numeric values to BigInt for u128/u64 fields in objects
+ * and undefined to null for option types to ensure compatibility with zorsh serialization
+ */
+function ensureBigInt(obj: any): any {
+    if (obj === null || obj === undefined) return obj;
+    if (typeof obj === 'number') return BigInt(obj);
+    if (typeof obj === 'bigint') return obj;
+    if (obj instanceof Uint8Array) return obj;
+    if (Array.isArray(obj)) return obj.map(ensureBigInt);
+    if (typeof obj === 'object') {
+        // Preserve the prototype chain for class instances
+        const result: any = Object.create(Object.getPrototypeOf(obj));
+        for (const [key, value] of Object.entries(obj)) {
+            // Convert numeric fields that should be BigInt
+            if (['deposit', 'stake', 'gas', 'nonce', 'allowance', 'maxBlockHeight'].includes(key)) {
+                if (value === null || value === undefined) {
+                    // zorsh's option type requires null, not undefined
+                    result[key] = value === undefined ? null : value;
+                } else if (typeof value === 'number' || typeof value === 'bigint') {
+                    result[key] = BigInt(value);
+                } else {
+                    result[key] = value;
+                }
+            } else {
+                result[key] = ensureBigInt(value);
+            }
+        }
+        return result;
+    }
+    return obj;
+}
 
 /**
  * Borsh-encode a delegate action for inclusion as an action within a meta transaction
@@ -14,8 +50,8 @@ import type { Signature } from './signature.js';
  */
 export function encodeDelegateAction(delegateAction: DelegateAction) {
     return new Uint8Array([
-        ...serialize(SCHEMA.DelegateActionPrefix, new DelegateActionPrefix()),
-        ...serialize(SCHEMA.DelegateAction, delegateAction),
+        ...SCHEMA.DelegateActionPrefix.serialize(new DelegateActionPrefix()),
+        ...SCHEMA.DelegateAction.serialize(ensureBigInt(delegateAction)),
     ]);
 }
 
@@ -24,7 +60,7 @@ export function encodeDelegateAction(delegateAction: DelegateAction) {
  * @param signedDelegate Signed delegate to be executed in a meta transaction
  */
 export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
-    return serialize(SCHEMA.SignedDelegate, signedDelegate);
+    return SCHEMA.SignedDelegate.serialize(ensureBigInt(signedDelegate));
 }
 
 /**
@@ -33,8 +69,8 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
  * @returns A serialized representation of the input transaction.
  */
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
-    const schema: Schema = 'signature' in transaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
-    return serialize(schema, transaction);
+    const schema = 'signature' in transaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
+    return schema.serialize(ensureBigInt(transaction));
 }
 
 /**
@@ -42,7 +78,7 @@ export function encodeTransaction(transaction: Transaction | SignedTransaction) 
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeTransaction(bytes: Uint8Array) {
-    return new Transaction(deserialize(SCHEMA.Transaction, bytes) as Transaction);
+    return new Transaction(SCHEMA.Transaction.deserialize(bytes) as Transaction);
 }
 
 /**
@@ -50,7 +86,7 @@ export function decodeTransaction(bytes: Uint8Array) {
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeSignedTransaction(bytes: Uint8Array) {
-    return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes) as SignedTransaction);
+    return new SignedTransaction(SCHEMA.SignedTransaction.deserialize(bytes) as SignedTransaction);
 }
 
 export class Transaction {
@@ -61,21 +97,16 @@ export class Transaction {
     actions: Action[];
     blockHash: Uint8Array;
 
-    constructor({
-        signerId,
-        publicKey,
-        nonce,
-        receiverId,
-        actions,
-        blockHash,
-    }: {
-        signerId: string;
-        publicKey: PublicKey;
-        nonce: bigint;
-        receiverId: string;
-        actions: Action[];
-        blockHash: Uint8Array;
-    }) {
+    constructor({ signerId, publicKey, nonce, receiverId, actions, blockHash }:
+    {
+      signerId: string,
+      publicKey: PublicKey,
+      nonce: bigint,
+      receiverId: string,
+      actions: Action[],
+      blockHash: Uint8Array,
+    }
+    ) {
         this.signerId = signerId;
         this.publicKey = publicKey;
         this.nonce = nonce;
@@ -97,7 +128,7 @@ export class SignedTransaction {
     transaction: Transaction;
     signature: Signature;
 
-    constructor({ transaction, signature }: { transaction: Transaction; signature: Signature }) {
+    constructor({ transaction, signature }: { transaction: Transaction, signature: Signature}) {
         this.transaction = transaction;
         this.signature = signature;
     }
@@ -111,184 +142,195 @@ export class SignedTransaction {
     }
 }
 
-export const SCHEMA = new (class BorshSchema {
-    Ed25519Signature: Schema = {
-        struct: {
-            data: { array: { type: 'u8', len: 64 } },
-        },
-    };
-    Secp256k1Signature: Schema = {
-        struct: {
-            data: { array: { type: 'u8', len: 65 } },
-        },
-    };
-    Signature: Schema = {
-        enum: [
-            { struct: { ed25519Signature: this.Ed25519Signature } },
-            { struct: { secp256k1Signature: this.Secp256k1Signature } },
-        ],
-    };
-    Ed25519Data: Schema = {
-        struct: {
-            data: { array: { type: 'u8', len: 32 } },
-        },
-    };
-    Secp256k1Data: Schema = {
-        struct: {
-            data: { array: { type: 'u8', len: 64 } },
-        },
-    };
-    PublicKey: Schema = {
-        enum: [{ struct: { ed25519Key: this.Ed25519Data } }, { struct: { secp256k1Key: this.Secp256k1Data } }],
-    };
-    FunctionCallPermission: Schema = {
-        struct: {
-            allowance: { option: 'u128' },
-            receiverId: 'string',
-            methodNames: { array: { type: 'string' } },
-        },
-    };
-    FullAccessPermission: Schema = {
-        struct: {},
-    };
-    AccessKeyPermission: Schema = {
-        enum: [
-            { struct: { functionCall: this.FunctionCallPermission } },
-            { struct: { fullAccess: this.FullAccessPermission } },
-        ],
-    };
-    AccessKey: Schema = {
-        struct: {
-            nonce: 'u64',
-            permission: this.AccessKeyPermission,
-        },
-    };
-    CreateAccount: Schema = {
-        struct: {},
-    };
-    DeployContract: Schema = {
-        struct: {
-            code: { array: { type: 'u8' } },
-        },
-    };
-    FunctionCall: Schema = {
-        struct: {
-            methodName: 'string',
-            args: { array: { type: 'u8' } },
-            gas: 'u64',
-            deposit: 'u128',
-        },
-    };
-    Transfer: Schema = {
-        struct: {
-            deposit: 'u128',
-        },
-    };
-    Stake: Schema = {
-        struct: {
-            stake: 'u128',
-            publicKey: this.PublicKey,
-        },
-    };
-    AddKey: Schema = {
-        struct: {
-            publicKey: this.PublicKey,
-            accessKey: this.AccessKey,
-        },
-    };
-    DeleteKey: Schema = {
-        struct: {
-            publicKey: this.PublicKey,
-        },
-    };
-    DeleteAccount: Schema = {
-        struct: {
-            beneficiaryId: 'string',
-        },
-    };
-    GlobalContractDeployMode: Schema = {
-        enum: [{ struct: { CodeHash: { struct: {} } } }, { struct: { AccountId: { struct: {} } } }],
-    };
-    GlobalContractIdentifier: Schema = {
-        enum: [{ struct: { CodeHash: { array: { type: 'u8', len: 32 } } } }, { struct: { AccountId: 'string' } }],
-    };
-    DeployGlobalContract: Schema = {
-        struct: {
-            code: { array: { type: 'u8' } },
-            deployMode: this.GlobalContractDeployMode,
-        },
-    };
-    UseGlobalContract: Schema = {
-        struct: {
-            contractIdentifier: this.GlobalContractIdentifier,
-        },
-    };
-    DelegateActionPrefix: Schema = {
-        struct: {
-            prefix: 'u32',
-        },
-    };
-    /** @todo: get rid of "ClassicActions" and keep only "Action" schema to be consistent with "nearcore" */
-    ClassicActions: Schema = {
-        enum: [
-            { struct: { createAccount: this.CreateAccount } },
-            { struct: { deployContract: this.DeployContract } },
-            { struct: { functionCall: this.FunctionCall } },
-            { struct: { transfer: this.Transfer } },
-            { struct: { stake: this.Stake } },
-            { struct: { addKey: this.AddKey } },
-            { struct: { deleteKey: this.DeleteKey } },
-            { struct: { deleteAccount: this.DeleteAccount } },
-            { struct: { signedDelegate: 'string' } }, // placeholder to keep the right enum order, should not be used
-            { struct: { deployGlobalContract: this.DeployGlobalContract } },
-            { struct: { useGlobalContract: this.UseGlobalContract } },
-        ],
-    };
-    DelegateAction: Schema = {
-        struct: {
-            senderId: 'string',
-            receiverId: 'string',
-            actions: { array: { type: this.ClassicActions } },
-            nonce: 'u64',
-            maxBlockHeight: 'u64',
-            publicKey: this.PublicKey,
-        },
-    };
-    SignedDelegate: Schema = {
-        struct: {
-            delegateAction: this.DelegateAction,
-            signature: this.Signature,
-        },
-    };
-    Action: Schema = {
-        enum: [
-            { struct: { createAccount: this.CreateAccount } },
-            { struct: { deployContract: this.DeployContract } },
-            { struct: { functionCall: this.FunctionCall } },
-            { struct: { transfer: this.Transfer } },
-            { struct: { stake: this.Stake } },
-            { struct: { addKey: this.AddKey } },
-            { struct: { deleteKey: this.DeleteKey } },
-            { struct: { deleteAccount: this.DeleteAccount } },
-            { struct: { signedDelegate: this.SignedDelegate } },
-            { struct: { deployGlobalContract: this.DeployGlobalContract } },
-            { struct: { useGlobalContract: this.UseGlobalContract } },
-        ],
-    };
-    Transaction: Schema = {
-        struct: {
-            signerId: 'string',
-            publicKey: this.PublicKey,
-            nonce: 'u64',
-            receiverId: 'string',
-            blockHash: { array: { type: 'u8', len: 32 } },
-            actions: { array: { type: this.Action } },
-        },
-    };
-    SignedTransaction: Schema = {
-        struct: {
-            transaction: this.Transaction,
-            signature: this.Signature,
-        },
-    };
-})();
+// Define schemas using zorsh builder API
+const Ed25519SignatureSchema = b.struct({
+    data: b.bytes(64),
+});
+
+const Secp256k1SignatureSchema = b.struct({
+    data: b.bytes(65),
+});
+
+const SignatureSchema = b.enum({
+    ed25519Signature: Ed25519SignatureSchema,
+    secp256k1Signature: Secp256k1SignatureSchema,
+});
+
+const Ed25519DataSchema = b.struct({
+    data: b.bytes(32),
+});
+
+const Secp256k1DataSchema = b.struct({
+    data: b.bytes(64),
+});
+
+const PublicKeySchema = b.enum({
+    ed25519Key: Ed25519DataSchema,
+    secp256k1Key: Secp256k1DataSchema,
+});
+
+const FunctionCallPermissionSchema = b.struct({
+    allowance: b.option(b.u128()),
+    receiverId: b.string(),
+    methodNames: b.vec(b.string()),
+});
+
+const FullAccessPermissionSchema = b.struct({});
+
+const AccessKeyPermissionSchema = b.enum({
+    functionCall: FunctionCallPermissionSchema,
+    fullAccess: FullAccessPermissionSchema,
+});
+
+const AccessKeySchema = b.struct({
+    nonce: b.u64(),
+    permission: AccessKeyPermissionSchema,
+});
+
+const CreateAccountSchema = b.struct({});
+
+const DeployContractSchema = b.struct({
+    code: b.bytes(),
+});
+
+const FunctionCallSchema = b.struct({
+    methodName: b.string(),
+    args: b.bytes(),
+    gas: b.u64(),
+    deposit: b.u128(),
+});
+
+const TransferSchema = b.struct({
+    deposit: b.u128(),
+});
+
+const StakeSchema = b.struct({
+    stake: b.u128(),
+    publicKey: PublicKeySchema,
+});
+
+const AddKeySchema = b.struct({
+    publicKey: PublicKeySchema,
+    accessKey: AccessKeySchema,
+});
+
+const DeleteKeySchema = b.struct({
+    publicKey: PublicKeySchema,
+});
+
+const DeleteAccountSchema = b.struct({
+    beneficiaryId: b.string(),
+});
+
+const GlobalContractDeployModeSchema = b.enum({
+    CodeHash: b.struct({}),
+    AccountId: b.struct({}),
+});
+
+const GlobalContractIdentifierSchema = b.enum({
+    CodeHash: b.bytes(32),
+    AccountId: b.string(),
+});
+
+const DeployGlobalContractSchema = b.struct({
+    code: b.bytes(),
+    deployMode: GlobalContractDeployModeSchema,
+});
+
+const UseGlobalContractSchema = b.struct({
+    contractIdentifier: GlobalContractIdentifierSchema,
+});
+
+const DelegateActionPrefixSchema = b.struct({
+    prefix: b.u32(),
+});
+
+/** @todo: get rid of "ClassicActions" and keep only "Action" schema to be consistent with "nearcore" */
+const ClassicActionsSchema = b.enum({
+    createAccount: CreateAccountSchema,
+    deployContract: DeployContractSchema,
+    functionCall: FunctionCallSchema,
+    transfer: TransferSchema,
+    stake: StakeSchema,
+    addKey: AddKeySchema,
+    deleteKey: DeleteKeySchema,
+    deleteAccount: DeleteAccountSchema,
+    signedDelegate: b.string(), // placeholder to keep the right enum order, should not be used
+    deployGlobalContract: DeployGlobalContractSchema,
+    useGlobalContract: UseGlobalContractSchema,
+});
+
+const DelegateActionSchema = b.struct({
+    senderId: b.string(),
+    receiverId: b.string(),
+    actions: b.vec(ClassicActionsSchema),
+    nonce: b.u64(),
+    maxBlockHeight: b.u64(),
+    publicKey: PublicKeySchema,
+});
+
+const SignedDelegateSchema = b.struct({
+    delegateAction: DelegateActionSchema,
+    signature: SignatureSchema,
+});
+
+const ActionSchema = b.enum({
+    createAccount: CreateAccountSchema,
+    deployContract: DeployContractSchema,
+    functionCall: FunctionCallSchema,
+    transfer: TransferSchema,
+    stake: StakeSchema,
+    addKey: AddKeySchema,
+    deleteKey: DeleteKeySchema,
+    deleteAccount: DeleteAccountSchema,
+    signedDelegate: SignedDelegateSchema,
+    deployGlobalContract: DeployGlobalContractSchema,
+    useGlobalContract: UseGlobalContractSchema,
+});
+
+const TransactionSchema = b.struct({
+    signerId: b.string(),
+    publicKey: PublicKeySchema,
+    nonce: b.u64(),
+    receiverId: b.string(),
+    blockHash: b.bytes(32),
+    actions: b.vec(ActionSchema),
+});
+
+const SignedTransactionSchema = b.struct({
+    transaction: TransactionSchema,
+    signature: SignatureSchema,
+});
+
+// Export SCHEMA object for backward compatibility
+export const SCHEMA = {
+    Ed25519Signature: Ed25519SignatureSchema,
+    Secp256k1Signature: Secp256k1SignatureSchema,
+    Signature: SignatureSchema,
+    Ed25519Data: Ed25519DataSchema,
+    Secp256k1Data: Secp256k1DataSchema,
+    PublicKey: PublicKeySchema,
+    FunctionCallPermission: FunctionCallPermissionSchema,
+    FullAccessPermission: FullAccessPermissionSchema,
+    AccessKeyPermission: AccessKeyPermissionSchema,
+    AccessKey: AccessKeySchema,
+    CreateAccount: CreateAccountSchema,
+    DeployContract: DeployContractSchema,
+    FunctionCall: FunctionCallSchema,
+    Transfer: TransferSchema,
+    Stake: StakeSchema,
+    AddKey: AddKeySchema,
+    DeleteKey: DeleteKeySchema,
+    DeleteAccount: DeleteAccountSchema,
+    GlobalContractDeployMode: GlobalContractDeployModeSchema,
+    GlobalContractIdentifier: GlobalContractIdentifierSchema,
+    DeployGlobalContract: DeployGlobalContractSchema,
+    UseGlobalContract: UseGlobalContractSchema,
+    DelegateActionPrefix: DelegateActionPrefixSchema,
+    ClassicActions: ClassicActionsSchema,
+    DelegateAction: DelegateActionSchema,
+    SignedDelegate: SignedDelegateSchema,
+    Action: ActionSchema,
+    Transaction: TransactionSchema,
+    SignedTransaction: SignedTransactionSchema,
+};

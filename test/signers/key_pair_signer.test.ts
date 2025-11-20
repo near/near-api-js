@@ -1,18 +1,20 @@
-import { sha256 } from '@noble/hashes/sha256';
-import { serialize } from 'borsh';
+import { expect, test } from '@jest/globals';
 import { TextEncoder } from 'util';
-import { expect, test } from 'vitest';
+
 import {
-    actionCreators,
-    buildDelegateAction,
-    createTransaction,
-    decodeSignedTransaction,
-    encodeTransaction,
-    KeyPair,
     KeyPairSigner,
-    Nep413MessageSchema,
+    KeyPair,
     PublicKey,
-} from '../../src';
+    createTransaction,
+    encodeTransaction,
+    actionCreators,
+    decodeSignedTransaction,
+    buildDelegateAction,
+} from "../../src";
+
+import { Nep413MessageSchema } from '../../src';
+import { b } from '@zorsh/zorsh';
+import { sha256 } from '@noble/hashes/sha256';
 
 global.TextEncoder = TextEncoder;
 
@@ -58,7 +60,9 @@ test('test sign transaction with relevant public key', async () => {
 
     const [hash, { signature }] = await signer.signTransaction(transaction);
 
-    expect(Buffer.from(hash).toString('hex')).toBe('2571e3539ab5556e39441913e66abd07e634fb9850434006a719306100e641a2');
+    expect(Buffer.from(hash).toString('hex')).toBe(
+        '2571e3539ab5556e39441913e66abd07e634fb9850434006a719306100e641a2'
+    );
 
     expect(Buffer.from(signature.data).toString('hex')).toBe(
         'bfe2858d227e3116076a8e5ea9c5bef923c7755f19f0137d1acd9bb67973f1b8a7f83dfc0be23e307e106c8807eaa6e14c0fcb46c42acdf293c4a6a81a27fc05'
@@ -73,12 +77,15 @@ test('serialize and sign transfer tx object', async () => {
 
     const actions = [actionCreators.transfer(1n)];
     const blockHash = new Uint8Array([
-        15, 164, 115, 253, 38, 144, 29, 242, 150, 190, 106, 220, 76, 196, 223, 52, 208, 64, 239, 162, 67, 82, 36, 182,
-        152, 105, 16, 230, 48, 194, 254, 246,
+        15, 164, 115, 253, 38, 144, 29, 242, 150, 190, 106, 220, 76, 196, 223,
+        52, 208, 64, 239, 162, 67, 82, 36, 182, 152, 105, 16, 230, 48, 194, 254,
+        246,
     ]);
     const transaction = createTransaction(
         'test.near',
-        PublicKey.fromString('ed25519:Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'),
+        PublicKey.fromString(
+            'ed25519:Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC'
+        ),
         'whatever.near',
         1,
         actions,
@@ -87,7 +94,11 @@ test('serialize and sign transfer tx object', async () => {
 
     const [, signedTx] = await signer.signTransaction(transaction);
 
-    expect(Buffer.from(signedTx.signature.ed25519Signature!.data).toString('base64')).toEqual(
+    expect(
+        Buffer.from(signedTx.signature.ed25519Signature!.data).toString(
+            'base64'
+        )
+    ).toEqual(
         'lpqDMyGG7pdV5IOTJVJYBuGJo9LSu0tHYOlEQ+l+HE8i3u7wBZqOlxMQDtpuGRRNp+ig735TmyBwi6HY0CG9AQ=='
     );
     const serialized = encodeTransaction(signedTx);
@@ -106,12 +117,20 @@ test('test sign NEP-413 message with callback url', async () => {
         )
     );
 
-    const { signature } = await signer.signNep413Message('round-toad.testnet', {
-        message: 'Hello NEAR!',
-        recipient: 'example.near',
-        nonce: new Uint8Array(Buffer.from('KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=', 'base64')),
-        callbackUrl: 'http://localhost:3000',
-    });
+    const { signature } = await signer.signNep413Message(
+        'round-toad.testnet',
+        {
+            message: 'Hello NEAR!',
+            recipient: 'example.near',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
+            ),
+            callbackUrl: 'http://localhost:3000'
+        }
+    );
 
     const expectedSignature = new Uint8Array(
         Buffer.from(
@@ -130,11 +149,19 @@ test('test sign NEP-413 message without callback url', async () => {
         )
     );
 
-    const { signature } = await signer.signNep413Message('round-toad.testnet', {
-        message: 'Hello NEAR!',
-        recipient: 'example.near',
-        nonce: new Uint8Array(Buffer.from('KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=', 'base64')),
-    });
+    const { signature } = await signer.signNep413Message(
+        'round-toad.testnet',
+        {
+            message: 'Hello NEAR!',
+            recipient: 'example.near',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
+            )
+        }
+    );
 
     const expectedSignature = new Uint8Array(
         Buffer.from(
@@ -154,11 +181,14 @@ test('test sign NEP-413 message throws error on invalid nonce', async () => {
     );
 
     await expect(() =>
-        signer.signNep413Message('example.near', {
-            message: 'Hello NEAR!',
-            recipient: 'round-toad.testnet',
-            nonce: new Uint8Array(new Array(28)),
-        })
+        signer.signNep413Message(
+            'example.near',
+            {
+                message: 'Hello NEAR!',
+                recipient: 'round-toad.testnet',
+                nonce: new Uint8Array(new Array(28))
+            }
+        )
     ).rejects.toThrow();
 });
 
@@ -166,22 +196,31 @@ test('generate correct hash for NEP-413-compliant message', async () => {
     const signMessageParams = {
         message: 'Hello NEAR!',
         recipient: 'round-toad.testnet',
-        nonce: new Uint8Array(Buffer.from('KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=', 'base64')),
+        nonce: new Uint8Array(
+            Buffer.from(
+                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                'base64'
+            )
+        ),
+        callbackUrl: null,
     };
 
-    const serializedPrefix = serialize('u32', 2147484061);
-    const serializedParams = serialize(Nep413MessageSchema, signMessageParams);
+    const serializedPrefix = b.u32().serialize(2147484061);
+    const serializedParams = Nep413MessageSchema.serialize(signMessageParams);
 
-    const serializedPayload = new Uint8Array(serializedPrefix.length + serializedParams.length);
+    const serializedPayload = new Uint8Array(
+        serializedPrefix.length + serializedParams.length
+    );
     serializedPayload.set(serializedPrefix);
     serializedPayload.set(serializedParams, serializedPrefix.length);
 
     const existingSerializedPayloadHash = new Uint8Array(sha256(serializedPayload));
 
-    const expectedSerializedPayloadHash = new Uint8Array([
-        1, 152, 236, 223, 103, 218, 230, 0, 34, 54, 210, 18, 244, 68, 108, 252, 140, 166, 102, 57, 242, 4, 202, 234,
-        205, 94, 246, 245, 198, 141, 23, 250,
-    ]);
+
+    const expectedSerializedPayloadHash = new Uint8Array([1, 152, 236, 223, 103, 218, 230, 0,
+        34, 54, 210, 18, 244, 68, 108, 252,
+        140, 166, 102, 57, 242, 4, 202, 234,
+        205, 94, 246, 245, 198, 141, 23, 250]);
 
     expect(existingSerializedPayloadHash).toEqual(expectedSerializedPayloadHash);
 });
@@ -193,44 +232,69 @@ test('verify signature generated using NEP-413 payload hash', async () => {
         )
     );
 
-    const { signature } = await signer.signNep413Message('example.near', {
-        message: 'Hello NEAR!',
-        recipient: 'round-toad.testnet',
-        nonce: new Uint8Array(Buffer.from('KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=', 'base64')),
-    });
+    const { signature } = await signer.signNep413Message(
+        'example.near',
+        {
+            message: 'Hello NEAR!',
+            recipient: 'round-toad.testnet',
+            nonce: new Uint8Array(
+                Buffer.from(
+                    'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                    'base64'
+                )
+            )
+        },
+    );
 
     const signMessageParams = {
         message: 'Hello NEAR!',
         recipient: 'round-toad.testnet',
-        nonce: new Uint8Array(Buffer.from('KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=', 'base64')),
+        nonce: new Uint8Array(
+            Buffer.from(
+                'KNV0cOpvJ50D5vfF9pqWom8wo2sliQ4W+Wa7uZ3Uk6Y=',
+                'base64'
+            )
+        ),
+        callbackUrl: null,
     };
-    const serializedPrefix = serialize('u32', 2147484061);
-    const serializedParams = serialize(Nep413MessageSchema, signMessageParams);
+    const serializedPrefix = b.u32().serialize(2147484061);
+    const serializedParams = Nep413MessageSchema.serialize(signMessageParams);
 
-    const serializedPayload = new Uint8Array(serializedPrefix.length + serializedParams.length);
+    const serializedPayload = new Uint8Array(
+        serializedPrefix.length + serializedParams.length
+    );
     serializedPayload.set(serializedPrefix);
     serializedPayload.set(serializedParams, serializedPrefix.length);
 
     const existingSerializedPayloadHash = new Uint8Array(sha256(serializedPayload));
 
-    const publicKey = await signer.getPublicKey();
+    const publicKey = (await signer.getPublicKey());
 
     expect(publicKey.verify(existingSerializedPayloadHash, signature)).toBe(true);
 });
 
+
 test('test getPublicKey returns correct public key', async () => {
-    const keyPair = KeyPair.fromString('ed25519:4RDn17Y8bm6FRg57BhW7eVnrHTF2nsmRfkj1nPXR1zYB');
+    const keyPair = KeyPair.fromString(
+        'ed25519:4RDn17Y8bm6FRg57BhW7eVnrHTF2nsmRfkj1nPXR1zYB'
+    );
     const signer = new KeyPairSigner(keyPair);
 
     const publicKey = (await signer.getPublicKey()).toString();
-    expect(publicKey).toBe('ed25519:Bpz2oUnMM8MM8trXmdAJW5sS1TtPkMot4cosa16ZeYFQ');
+    expect(publicKey).toBe(
+        'ed25519:Bpz2oUnMM8MM8trXmdAJW5sS1TtPkMot4cosa16ZeYFQ'
+    );
 });
 
 test('test static fromSecretKey creates a corresponding KeyPair', async () => {
-    const signer = KeyPairSigner.fromSecretKey('ed25519:4RDn17Y8bm6FRg57BhW7eVnrHTF2nsmRfkj1nPXR1zYB');
+    const signer = KeyPairSigner.fromSecretKey(
+        'ed25519:4RDn17Y8bm6FRg57BhW7eVnrHTF2nsmRfkj1nPXR1zYB'
+    );
 
     const publicKey = (await signer.getPublicKey()).toString();
-    expect(publicKey).toBe('ed25519:Bpz2oUnMM8MM8trXmdAJW5sS1TtPkMot4cosa16ZeYFQ');
+    expect(publicKey).toBe(
+        'ed25519:Bpz2oUnMM8MM8trXmdAJW5sS1TtPkMot4cosa16ZeYFQ'
+    );
 });
 
 test('test sign delegate action', async () => {
@@ -249,9 +313,13 @@ test('test sign delegate action', async () => {
         publicKey: await signer.getPublicKey(),
     });
 
-    const [hash, { signature }] = await signer.signDelegateAction(delegateAction);
+    const [hash, { signature }] = await signer.signDelegateAction(
+        delegateAction
+    );
 
-    expect(Buffer.from(hash).toString('hex')).toBe('6d35575b3566fddf04f79317c3e574eb89c5bc228c5e755f2a3179e164dbb36b');
+    expect(Buffer.from(hash).toString('hex')).toBe(
+        '6d35575b3566fddf04f79317c3e574eb89c5bc228c5e755f2a3179e164dbb36b'
+    );
 
     expect(Buffer.from(signature.data).toString('hex')).toBe(
         '6996219a3d971a256fcf7b7ad748aec7f1c84868cd59df3d756d8a022498a636e63f16809a54918c473e9a8bf4b0b35477a6b671eab65b1b28fd9fae2a668c00'
@@ -276,5 +344,7 @@ test('test sign delegate action with wrong public key', async () => {
         ).getPublicKey(),
     });
 
-    await expect(() => signer.signDelegateAction(delegateAction)).rejects.toThrow();
+    await expect(() =>
+        signer.signDelegateAction(delegateAction)
+    ).rejects.toThrow();
 });
