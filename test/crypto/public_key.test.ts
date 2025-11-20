@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { PublicKey } from '../../src';
 import { keyToImplicitAddress } from '../../src/crypto';
 

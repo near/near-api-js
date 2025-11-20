@@ -2,10 +2,10 @@ import {
     describe,
     expect,
     test,
-    jest,
+    vi,
     beforeEach,
     afterAll,
-} from '@jest/globals';
+} from 'vitest';
 import { ProviderError, fetchJsonRpc, retryConfig } from '../../src/providers/fetch_json';
 
 describe('fetchJsonError', () => {
@@ -22,7 +22,7 @@ describe('fetchJsonError', () => {
 
     beforeEach(() => {
         // Reset fetch for each test with proper typing
-        jest
+        vi
             .spyOn(global, 'fetch')
             .mockImplementation(() => Promise.resolve(new Response()));
     });
@@ -33,7 +33,7 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 500 Internal Server Error', async () => {
-        jest
+        vi
             .spyOn(global, 'fetch')
             .mockImplementation(() =>
                 Promise.resolve(new Response('', { status: 500 })),
@@ -47,7 +47,7 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 408 Timeout Error', async () => {
-        jest
+        vi
             .spyOn(global, 'fetch')
             .mockImplementation(() =>
                 Promise.resolve(new Response('', { status: 408 })),
@@ -59,7 +59,7 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 400 Request Validation Error', async () => {
-        jest
+        vi
             .spyOn(global, 'fetch')
             .mockImplementation(() =>
                 Promise.resolve(new Response('', { status: 400 })),
@@ -73,7 +73,7 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 503 Service Unavailable', async () => {
-        jest
+        vi
             .spyOn(global, 'fetch')
             .mockImplementation(() =>
                 Promise.resolve(new Response('', { status: 503 })),

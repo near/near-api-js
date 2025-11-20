@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 import { sha256 } from '@noble/hashes/sha256';
 import { deserialize, serialize } from 'borsh';
 import * as fs from 'node:fs';

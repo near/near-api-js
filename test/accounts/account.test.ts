@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, vi, test } from 'vitest';
 import * as fs from 'fs';
 
 import { Account, TypedContract, KeyPairSigner, KeyPair, KeyType, getTransactionLastResult, actionCreators } from '../../src';
@@ -9,7 +9,6 @@ import { Worker } from 'near-workspaces';
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 let workingAccount: Account;
 
-jest.setTimeout(50000);
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
@@ -326,7 +325,7 @@ describe('global contracts', () => {
 
     beforeEach(() => {
         account = nearjs.account;
-        mockSignAndSendTransaction = jest.spyOn(account, 'signAndSendTransaction');
+        mockSignAndSendTransaction = vi.spyOn(account, 'signAndSendTransaction');
         mockSignAndSendTransaction.mockResolvedValue({ status: 'success' } as any);
     });
 
