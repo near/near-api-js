@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { diffEpochValidators, findSeatPrice } from '../../src';
 
 test('find seat price', async () => {

@@ -1,9 +1,8 @@
-import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, vi, test } from 'vitest';
 import { Worker } from 'near-workspaces';
 import { TextEncoder } from 'util';
 import { FailoverRpcProvider, JsonRpcProvider, Provider, getTransactionLastResult } from '../../src';
 
-jest.setTimeout(20000);
 global.TextEncoder = TextEncoder;
 
 ['json provider', 'fallback provider'].forEach((name) => {
