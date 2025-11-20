@@ -10,6 +10,67 @@
     "main": "lib/index.js",
     "browser": "lib/browser-index.js",
     "types": "lib/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "browser": "./lib/browser-index.js",
+            "default": "./lib/index.js"
+        },
+        "./providers": {
+            "types": "./lib/providers/index.d.ts",
+            "default": "./lib/providers/index.js"
+        },
+        "./keystores": {
+            "types": "./lib/key_stores/index.d.ts",
+            "browser": "./lib/key_stores/browser-index.js",
+            "default": "./lib/key_stores/index.js"
+        },
+        "./signers": {
+            "types": "./lib/signer.d.ts",
+            "default": "./lib/signer.js"
+        },
+        "./utils": {
+            "types": "./lib/utils/index.d.ts",
+            "default": "./lib/utils/index.js"
+        },
+        "./transactions": {
+            "types": "./lib/transaction.d.ts",
+            "default": "./lib/transaction.js"
+        },
+        "./account": {
+            "types": "./lib/account.d.ts",
+            "default": "./lib/account.js"
+        },
+        "./contract": {
+            "types": "./lib/contract.d.ts",
+            "default": "./lib/contract.js"
+        },
+        "./connection": {
+            "types": "./lib/connection.d.ts",
+            "default": "./lib/connection.js"
+        },
+        "./validators": {
+            "types": "./lib/validators.d.ts",
+            "default": "./lib/validators.js"
+        },
+        "./account-creator": {
+            "types": "./lib/account_creator.d.ts",
+            "default": "./lib/account_creator.js"
+        },
+        "./connect": {
+            "types": "./lib/connect.d.ts",
+            "default": "./lib/connect.js"
+        },
+        "./constants": {
+            "types": "./lib/constants.d.ts",
+            "default": "./lib/constants.js"
+        },
+        "./near": {
+            "types": "./lib/near.d.ts",
+            "default": "./lib/near.js"
+        },
+        "./package.json": "./package.json"
+    },
     "dependencies": {
         "@near-js/accounts": "workspace:*",
         "@near-js/crypto": "workspace:*",
