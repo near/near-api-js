@@ -7,35 +7,53 @@ import { DelegateActionPrefix } from './prefix.js';
 import type { Signature } from './signature.js';
 
 /**
- * Recursively converts numeric values to BigInt for u128/u64 fields in objects
- * and undefined to null for option types to ensure compatibility with zorsh serialization
+ * Recursively converts numeric values to BigInt for zorsh serialization.
+ * Only converts specific monetary/counter fields (deposit, stake, gas, nonce, etc.).
+ * Preserves enum values like keyType which should remain as regular numbers.
  */
 function ensureBigInt(obj: any): any {
     if (obj === null || obj === undefined) return obj;
-    if (typeof obj === 'number') return BigInt(obj);
     if (typeof obj === 'bigint') return obj;
+    if (typeof obj === 'string') return obj;
+    if (typeof obj === 'boolean') return obj;
     if (obj instanceof Uint8Array) return obj;
-    if (Array.isArray(obj)) return obj.map(ensureBigInt);
+
+    if (Array.isArray(obj)) {
+        return obj.map(ensureBigInt);
+    }
+
     if (typeof obj === 'object') {
         // Preserve the prototype chain for class instances
         const result: any = Object.create(Object.getPrototypeOf(obj));
         for (const [key, value] of Object.entries(obj)) {
-            // Convert numeric fields that should be BigInt
-            if (['deposit', 'stake', 'gas', 'nonce', 'allowance', 'maxBlockHeight'].includes(key)) {
+            // Exclude keyType from BigInt conversion (it's an enum value: 0 or 1)
+            if (key === 'keyType') {
+                result[key] = value;
+            }
+            // Convert specific monetary/counter fields to BigInt
+            else if (['deposit', 'stake', 'gas', 'nonce', 'allowance', 'maxBlockHeight'].includes(key)) {
                 if (value === null || value === undefined) {
-                    // zorsh's option type requires null, not undefined
-                    result[key] = value === undefined ? null : value;
+                    // zorsh expects null for optional fields, not undefined
+                    result[key] = key === 'allowance' && value === undefined ? null : value;
                 } else if (typeof value === 'number' || typeof value === 'bigint') {
                     result[key] = BigInt(value);
                 } else {
                     result[key] = value;
                 }
-            } else {
+            }
+            // Recurse for everything else
+            else {
                 result[key] = ensureBigInt(value);
             }
         }
         return result;
     }
+
+    // For primitive numbers at the top level, convert to BigInt
+    if (typeof obj === 'number') {
+        return BigInt(obj);
+    }
+
     return obj;
 }
 
