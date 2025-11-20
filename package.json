@@ -59,7 +59,7 @@
         "build": "tsc -p ./tsconfig.json",
         "test": "vitest run test",
         "typecheck": "tsc --noEmit -p ./tsconfig.typecheck.json",
-        "lint": "biome check --write .",
+        "lint": "biome check",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
         "clean": "pnpm rimraf lib",
