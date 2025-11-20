@@ -1,13 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import {
-    actionCreators,
-    baseDecode,
-    createTransaction,
-    encodeTransaction,
-    KeyPair,
-    PublicKey,
-} from '../../src';
+import { actionCreators, baseDecode, createTransaction, encodeTransaction, KeyPair } from '../../src';
 
 const { transfer } = actionCreators;
 
@@ -26,14 +19,7 @@ describe('Real transaction scenarios', () => {
 
         const actions = [transfer(amount)];
 
-        const transaction = createTransaction(
-            'sender.near',
-            publicKey,
-            'receiver.near',
-            nonce,
-            actions,
-            blockHash
-        );
+        const transaction = createTransaction('sender.near', publicKey, 'receiver.near', nonce, actions, blockHash);
 
         // This should not throw "Cannot mix BigInt and other types"
         const serialized = encodeTransaction(transaction);
@@ -78,14 +64,7 @@ describe('Real transaction scenarios', () => {
         const amount = 5000000000000000000000000n; // BigInt
 
         const actions = [transfer(amount)];
-        const transaction = createTransaction(
-            'alice.near',
-            publicKey,
-            'bob.near',
-            nonce,
-            actions,
-            blockHash
-        );
+        const transaction = createTransaction('alice.near', publicKey, 'bob.near', nonce, actions, blockHash);
 
         const serialized = encodeTransaction(transaction);
         expect(serialized).toBeInstanceOf(Uint8Array);
