@@ -1,8 +1,8 @@
 {
-  "mode": "pre",
-  "tag": "rc",
-  "initialVersions": {
-    "near-api-js": "6.5.0"
-  },
-  "changesets": []
+    "mode": "pre",
+    "tag": "rc",
+    "initialVersions": {
+        "near-api-js": "6.5.0"
+    },
+    "changesets": []
 }

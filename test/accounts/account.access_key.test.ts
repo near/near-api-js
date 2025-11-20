@@ -1,17 +1,13 @@
-import { afterAll, beforeAll, beforeEach, expect, vi, test } from 'vitest';
-
-
+import type { Worker } from 'near-workspaces';
+import { afterAll, beforeAll, beforeEach, expect, test } from 'vitest';
+import { Account, KeyPair, KeyPairSigner, TypedContract, type TypedError } from '../../src';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
-import { Account, TypedContract, KeyPair, KeyPairSigner, TypedError } from '../../src';
-
-import { Worker } from 'near-workspaces';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 let workingAccount: Account;
 let contractId: string;
 // @ts-expect-error infer type here
 let contract = new TypedContract({});
-
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
@@ -36,13 +32,13 @@ beforeEach(async () => {
     }
 });
 
-test('make function call using access key', async() => {
+test('make function call using access key', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
     await workingAccount.addFunctionCallAccessKey({
         publicKey: keyPair.getPublicKey(),
         contractId,
         methodNames: [],
-        allowance: 2000000000000000000000000n
+        allowance: 2000000000000000000000000n,
     });
 
     const setCallValue = generateUniqueString('setCallPrefix');
@@ -53,7 +49,7 @@ test('make function call using access key', async() => {
     expect(await contract.view.getValue()).toEqual(setCallValue);
 });
 
-test('remove access key no longer works', async() => {
+test('remove access key no longer works', async () => {
     const near = await setUpTestConnection();
 
     const keyPair = KeyPair.fromRandom('ed25519');
@@ -68,7 +64,9 @@ test('remove access key no longer works', async() => {
         await contract.call.setValue({ args: { value: 'test' }, account: near.account });
         failed = false;
     } catch (e) {
-        expect((e as TypedError).message).toEqual(`Can't complete the action because access key ${keyPair.getPublicKey().toString()} doesn't exist`);
+        expect((e as TypedError).message).toEqual(
+            `Can't complete the action because access key ${keyPair.getPublicKey().toString()} doesn't exist`
+        );
         expect((e as TypedError).type).toEqual('AccessKeyDoesNotExist');
     }
 
@@ -80,17 +78,27 @@ test('remove access key no longer works', async() => {
     await worker.tearDown();
 });
 
-test('view account details after adding access keys', async() => {
+test('view account details after adding access keys', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addFunctionCallAccessKey({ publicKey: keyPair.getPublicKey(), contractId, methodNames: [], allowance: 1000000000 });
+    await workingAccount.addFunctionCallAccessKey({
+        publicKey: keyPair.getPublicKey(),
+        contractId,
+        methodNames: [],
+        allowance: 1000000000,
+    });
 
     const contract2 = await deployContract(nearjs.account, generateUniqueString('test_contract2'));
     const keyPair2 = KeyPair.fromRandom('ed25519');
-    await workingAccount.addFunctionCallAccessKey({ publicKey: keyPair2.getPublicKey(), contractId: contract2.contractId, methodNames: [], allowance: 2000000000 });
+    await workingAccount.addFunctionCallAccessKey({
+        publicKey: keyPair2.getPublicKey(),
+        contractId: contract2.contractId,
+        methodNames: [],
+        allowance: 2000000000,
+    });
 
     const response = await workingAccount.getAccessKeyList();
 
-    const key1 = response.keys.find(item => item.public_key === keyPair.getPublicKey().toString());
+    const key1 = response.keys.find((item) => item.public_key === keyPair.getPublicKey().toString());
     expect(key1).toBeDefined();
     expect(key1!.access_key).toMatchObject({
         nonce: expect.any(Number),
@@ -103,7 +111,7 @@ test('view account details after adding access keys', async() => {
         },
     });
 
-    const key2 = response.keys.find(item => item.public_key === keyPair2.getPublicKey().toString());
+    const key2 = response.keys.find((item) => item.public_key === keyPair2.getPublicKey().toString());
     expect(key2).toBeDefined();
     expect(key2!.access_key).toMatchObject({
         nonce: expect.any(Number),
@@ -117,14 +125,14 @@ test('view account details after adding access keys', async() => {
     });
 });
 
-test('loading account after adding a full key', async() => {
+test('loading account after adding a full key', async () => {
     const keyPair = KeyPair.fromRandom('ed25519');
     await workingAccount.addFullAccessKey(keyPair.getPublicKey());
 
     const accessKeys = await workingAccount.getAccessKeyList();
 
     expect(accessKeys.keys.length).toBe(2);
-    const addedKey = accessKeys.keys.find(item => item.public_key == keyPair.getPublicKey().toString());
+    const addedKey = accessKeys.keys.find((item) => item.public_key == keyPair.getPublicKey().toString());
     expect(addedKey).toBeTruthy();
     expect(addedKey!.access_key.permission).toEqual('FullAccess');
 });

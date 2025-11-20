@@ -1,18 +1,9 @@
-import { expect, beforeAll, afterAll, test } from "vitest";
-
-import { Worker } from "near-workspaces";
-import {
-    Account,
-    TypedContract,
-    NEAR,
-    JsonRpcProvider,
-    KeyPair,
-    KeyPairString,
-    KeyPairSigner,
-} from "near-api-js";
-import { getRpcUrl, getSecretKey } from "./worker.js";
-import { abi } from "../contracts/guestbook/abi.js";
-import { readFile } from "fs/promises";
+import { readFile } from 'fs/promises';
+import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString, NEAR, TypedContract } from 'near-api-js';
+import { Worker } from 'near-workspaces';
+import { afterAll, beforeAll, expect, test } from 'vitest';
+import { abi } from '../contracts/guestbook/abi.js';
+import { getRpcUrl, getSecretKey } from './worker.js';
 
 let worker: Worker;
 let rootAccount: Account;
@@ -22,30 +13,20 @@ beforeAll(async () => {
     worker = await Worker.init();
 
     const provider = new JsonRpcProvider({ url: getRpcUrl(worker) });
-    const signer = KeyPairSigner.fromSecretKey(
-        getSecretKey(worker) as KeyPairString
-    );
+    const signer = KeyPairSigner.fromSecretKey(getSecretKey(worker) as KeyPairString);
 
     rootAccount = new Account(worker.rootAccount.accountId, provider, signer);
 
     await rootAccount.createAccount(
         `guestbook.${rootAccount.accountId}`,
         await signer.getPublicKey(),
-        NEAR.toUnits("10")
+        NEAR.toUnits('10')
     );
-    guestbookAccount = new Account(
-        `guestbook.${rootAccount.accountId}`,
-        provider,
-        signer
-    );
+    guestbookAccount = new Account(`guestbook.${rootAccount.accountId}`, provider, signer);
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile('./contracts/guestbook/contract.wasm');
     const tx = await guestbookAccount.deployContract(wasm);
-    await rootAccount.provider.viewTransactionStatus(
-        tx.transaction.hash,
-        guestbookAccount.accountId,
-        "FINAL"
-    );
+    await rootAccount.provider.viewTransactionStatus(tx.transaction.hash, guestbookAccount.accountId, 'FINAL');
 });
 
 afterAll(async () => {
@@ -54,7 +35,7 @@ afterAll(async () => {
     await worker.tearDown();
 });
 
-test("TypedContract has abi", async () => {
+test('TypedContract has abi', async () => {
     const contract = new TypedContract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
@@ -64,7 +45,7 @@ test("TypedContract has abi", async () => {
     expect(contract.abi).toBe(abi);
 });
 
-test("TypedContract has contractId", async () => {
+test('TypedContract has contractId', async () => {
     const contract = new TypedContract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
@@ -102,38 +83,26 @@ test("TypedContract doesn't have view & call properties if ABI is empty", async 
             metadata: {},
             body: {
                 functions: [],
-                root_schema: {}
-            }
-        }
+                root_schema: {},
+            },
+        },
     });
 
     expect(contract.contractId).not.toHaveProperty('view');
     expect(contract.contractId).not.toHaveProperty('call');
 });
 
-test("TypedContract can invoke a view function", async () => {
+test('TypedContract can invoke a view function', async () => {
     // TODO: use fixtures for account creation and contract deploy
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
-    const keypair = KeyPair.fromRandom("ed25519");
+    const keypair = KeyPair.fromRandom('ed25519');
 
-    await rootAccount.createAccount(
-        contractId,
-        keypair.getPublicKey(),
-        NEAR.toUnits("10")
-    );
-    const guestbookAccount = new Account(
-        contractId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount(contractId, keypair.getPublicKey(), NEAR.toUnits('10'));
+    const guestbookAccount = new Account(contractId, rootAccount.provider, new KeyPairSigner(keypair));
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile('./contracts/guestbook/contract.wasm');
     const tx = await guestbookAccount.deployContract(wasm);
-    await rootAccount.provider.viewTransactionStatus(
-        tx.transaction.hash,
-        guestbookAccount.accountId,
-        "FINAL"
-    );
+    await rootAccount.provider.viewTransactionStatus(tx.transaction.hash, guestbookAccount.accountId, 'FINAL');
 
     const contract = new TypedContract({
         contractId: guestbookAccount.accountId,
@@ -146,29 +115,17 @@ test("TypedContract can invoke a view function", async () => {
     expect(totalMessages).toBe(0);
 });
 
-test("TypedContract can invoke a call function", async () => {
+test('TypedContract can invoke a call function', async () => {
     // TODO: use fixtures for account creation and contract deploy
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
-    const keypair = KeyPair.fromRandom("ed25519");
+    const keypair = KeyPair.fromRandom('ed25519');
 
-    await rootAccount.createAccount(
-        contractId,
-        keypair.getPublicKey(),
-        NEAR.toUnits("10")
-    );
-    const guestbookAccount = new Account(
-        contractId,
-        rootAccount.provider,
-        new KeyPairSigner(keypair)
-    );
+    await rootAccount.createAccount(contractId, keypair.getPublicKey(), NEAR.toUnits('10'));
+    const guestbookAccount = new Account(contractId, rootAccount.provider, new KeyPairSigner(keypair));
 
-    const wasm = await readFile("./contracts/guestbook/contract.wasm");
+    const wasm = await readFile('./contracts/guestbook/contract.wasm');
     const tx = await guestbookAccount.deployContract(wasm);
-    await rootAccount.provider.viewTransactionStatus(
-        tx.transaction.hash,
-        guestbookAccount.accountId,
-        "FINAL"
-    );
+    await rootAccount.provider.viewTransactionStatus(tx.transaction.hash, guestbookAccount.accountId, 'FINAL');
 
     const contract = new TypedContract({
         contractId: guestbookAccount.accountId,
@@ -178,19 +135,19 @@ test("TypedContract can invoke a call function", async () => {
 
     await contract.call.add_message({
         args: {
-            text: "Hello, world!",
+            text: 'Hello, world!',
         },
         deposit: 1n,
         gas: 30_000_000_000_000n,
-        waitUntil: "FINAL",
-        account: rootAccount
+        waitUntil: 'FINAL',
+        account: rootAccount,
     });
 
     const messages = await contract.view.get_messages({ args: {} });
     expect(messages.length).toBe(1);
     expect(messages.at(0)!).toMatchObject({
         sender: rootAccount.accountId,
-        text: "Hello, world!",
+        text: 'Hello, world!',
         premium: false,
     });
 });

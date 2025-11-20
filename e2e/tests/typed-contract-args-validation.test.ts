@@ -1,99 +1,92 @@
-import { test, describe, expect, vi } from "vitest";
+import { Account, ArgumentSchemaError, JsonRpcProvider, TypedContract, UnknownArgumentError } from 'near-api-js';
+import { describe, expect, test, vi } from 'vitest';
 
-import {
-    JsonRpcProvider,
-    Account,
-    ArgumentSchemaError,
-    TypedContract,
-    UnknownArgumentError,
-} from "near-api-js";
+const provider = new JsonRpcProvider({ url: '' });
 
-const provider = new JsonRpcProvider({ url: "" });
+const account = new Account('', provider);
 
-const account = new Account("", provider);
-
-vi.spyOn(JsonRpcProvider.prototype, "callFunction").mockResolvedValue({});
-vi.spyOn(Account.prototype, "callFunction").mockResolvedValue({});
+vi.spyOn(JsonRpcProvider.prototype, 'callFunction').mockResolvedValue({});
+vi.spyOn(Account.prototype, 'callFunction').mockResolvedValue({});
 
 describe('TypedContract validates "view" function arguments based on ABI', () => {
     const contract = new TypedContract({
-        contractId: "",
+        contractId: '',
         provider: provider,
         abi: {
-            schema_version: "0.4.0",
+            schema_version: '0.4.0',
             metadata: {},
             body: {
                 functions: [
                     {
-                        name: "test_string",
-                        kind: "view",
+                        name: 'test_string',
+                        kind: 'view',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
-                                    type_schema: { type: "string" },
+                                    name: 'arg',
+                                    type_schema: { type: 'string' },
                                 },
                             ],
                         },
                     },
                     {
-                        name: "test_integer",
-                        kind: "view",
+                        name: 'test_integer',
+                        kind: 'view',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
-                                    type_schema: { type: "integer" },
+                                    name: 'arg',
+                                    type_schema: { type: 'integer' },
                                 },
                             ],
                         },
                     },
                     {
-                        name: "test_number",
-                        kind: "view",
+                        name: 'test_number',
+                        kind: 'view',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
-                                    type_schema: { type: "number" },
+                                    name: 'arg',
+                                    type_schema: { type: 'number' },
                                 },
                             ],
                         },
                     },
                     {
-                        name: "test_bool",
-                        kind: "view",
+                        name: 'test_bool',
+                        kind: 'view',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
-                                    type_schema: { type: "boolean" },
+                                    name: 'arg',
+                                    type_schema: { type: 'boolean' },
                                 },
                             ],
                         },
                     },
                     {
-                        name: "test_extra_args",
-                        kind: "view",
+                        name: 'test_extra_args',
+                        kind: 'view',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [],
                         },
                     },
                     {
-                        name: "test_definitions",
-                        kind: "view",
+                        name: 'test_definitions',
+                        kind: 'view',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
+                                    name: 'arg',
                                     type_schema: {
-                                        $ref: "#/definitions/Pagination",
+                                        $ref: '#/definitions/Pagination',
                                     },
                                 },
                             ],
@@ -103,11 +96,11 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                 root_schema: {
                     definitions: {
                         Pagination: {
-                            type: "object",
-                            required: ["page", "perPage"],
+                            type: 'object',
+                            required: ['page', 'perPage'],
                             properties: {
-                                page: { type: "number" },
-                                perPage: { type: "number" },
+                                page: { type: 'number' },
+                                perPage: { type: 'number' },
                             },
                         },
                     },
@@ -120,7 +113,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         await expect(
             contract.view.test_string({
                 args: {
-                    arg: "hello",
+                    arg: 'hello',
                 },
             })
         ).resolves.toStrictEqual({});
@@ -165,7 +158,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
             contract.view.test_number({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "12345",
+                    arg: '12345',
                 },
             })
         ).rejects.toThrow(ArgumentSchemaError);
@@ -174,7 +167,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
             contract.view.test_number({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "text",
+                    arg: 'text',
                 },
             })
         ).rejects.toThrow(ArgumentSchemaError);
@@ -210,7 +203,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
             contract.view.test_integer({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "12345",
+                    arg: '12345',
                 },
             })
         ).rejects.toThrow(ArgumentSchemaError);
@@ -219,7 +212,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
             contract.view.test_integer({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "text",
+                    arg: 'text',
                 },
             })
         ).rejects.toThrow(ArgumentSchemaError);
@@ -264,13 +257,13 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
             contract.view.test_bool({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "text",
+                    arg: 'text',
                 },
             })
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test("TypedContract throws on extra arguments", async () => {
+    test('TypedContract throws on extra arguments', async () => {
         await expect(
             contract.view.test_extra_args({
                 args: {},
@@ -280,7 +273,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         await expect(
             contract.view.test_extra_args({
                 args: {
-                    arg: "text",
+                    arg: 'text',
                 },
             })
         ).rejects.toThrow(UnknownArgumentError);
@@ -302,7 +295,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         ).rejects.toThrow(UnknownArgumentError);
     });
 
-    test("TypedContract validates types from definitions correctly", async () => {
+    test('TypedContract validates types from definitions correctly', async () => {
         await expect(
             contract.view.test_definitions({
                 args: {
@@ -337,7 +330,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                 args: {
                     arg: {
                         // @ts-expect-error intentionally
-                        page: "text",
+                        page: 'text',
                         perPage: 10,
                     },
                 },
@@ -350,7 +343,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
                     arg: {
                         page: 4,
                         // @ts-expect-error intentionally
-                        perPage: "text",
+                        perPage: 'text',
                     },
                 },
             })
@@ -358,16 +351,16 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
     });
 
     // Various argument types can be passed to the function without causing failures
-    test("TypedContract skips validation if no ABI provided", async () => {
+    test('TypedContract skips validation if no ABI provided', async () => {
         const contractWithoutAbi = new TypedContract({
-            contractId: "",
+            contractId: '',
             provider: provider,
         });
 
         await expect(
             contractWithoutAbi.view.test_skip_validation({
                 args: {
-                    arg: "text",
+                    arg: 'text',
                 },
             })
         ).resolves.toStrictEqual({});
@@ -392,7 +385,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
             contractWithoutAbi.view.test_skip_validation({
                 args: {
                     arg: {
-                        text: "Hello, world",
+                        text: 'Hello, world',
                     },
                 },
             })
@@ -402,83 +395,83 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
 
 describe('TypedContract validates "call" function arguments based on ABI', () => {
     const contract = new TypedContract({
-        contractId: "",
+        contractId: '',
         provider: provider,
         abi: {
-            schema_version: "0.4.0",
+            schema_version: '0.4.0',
             metadata: {},
             body: {
                 functions: [
                     {
-                        name: "test_string",
-                        kind: "call",
+                        name: 'test_string',
+                        kind: 'call',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
-                                    type_schema: { type: "string" },
+                                    name: 'arg',
+                                    type_schema: { type: 'string' },
                                 },
                             ],
                         },
                     },
                     {
-                        name: "test_integer",
-                        kind: "call",
+                        name: 'test_integer',
+                        kind: 'call',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
-                                    type_schema: { type: "integer" },
+                                    name: 'arg',
+                                    type_schema: { type: 'integer' },
                                 },
                             ],
                         },
                     },
                     {
-                        name: "test_number",
-                        kind: "call",
+                        name: 'test_number',
+                        kind: 'call',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
-                                    type_schema: { type: "number" },
+                                    name: 'arg',
+                                    type_schema: { type: 'number' },
                                 },
                             ],
                         },
                     },
                     {
-                        name: "test_bool",
-                        kind: "call",
+                        name: 'test_bool',
+                        kind: 'call',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
-                                    type_schema: { type: "boolean" },
+                                    name: 'arg',
+                                    type_schema: { type: 'boolean' },
                                 },
                             ],
                         },
                     },
                     {
-                        name: "test_extra_args",
-                        kind: "call",
+                        name: 'test_extra_args',
+                        kind: 'call',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [],
                         },
                     },
                     {
-                        name: "test_definitions",
-                        kind: "call",
+                        name: 'test_definitions',
+                        kind: 'call',
                         params: {
-                            serialization_type: "json",
+                            serialization_type: 'json',
                             args: [
                                 {
-                                    name: "arg",
+                                    name: 'arg',
                                     type_schema: {
-                                        $ref: "#/definitions/Pagination",
+                                        $ref: '#/definitions/Pagination',
                                     },
                                 },
                             ],
@@ -488,11 +481,11 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 root_schema: {
                     definitions: {
                         Pagination: {
-                            type: "object",
-                            required: ["page", "perPage"],
+                            type: 'object',
+                            required: ['page', 'perPage'],
                             properties: {
-                                page: { type: "number" },
-                                perPage: { type: "number" },
+                                page: { type: 'number' },
+                                perPage: { type: 'number' },
                             },
                         },
                     },
@@ -505,7 +498,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         await expect(
             contract.call.test_string({
                 args: {
-                    arg: "hello",
+                    arg: 'hello',
                 },
                 account: account,
             })
@@ -555,7 +548,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
             contract.call.test_number({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "12345",
+                    arg: '12345',
                 },
                 account: account,
             })
@@ -565,7 +558,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
             contract.call.test_number({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "text",
+                    arg: 'text',
                 },
                 account: account,
             })
@@ -605,7 +598,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
             contract.call.test_integer({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "12345",
+                    arg: '12345',
                 },
                 account: account,
             })
@@ -615,7 +608,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
             contract.call.test_integer({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "text",
+                    arg: 'text',
                 },
                 account: account,
             })
@@ -665,14 +658,14 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
             contract.call.test_bool({
                 args: {
                     // @ts-expect-error intentionally
-                    arg: "text",
+                    arg: 'text',
                 },
                 account: account,
             })
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test("TypedContract throws on extra arguments", async () => {
+    test('TypedContract throws on extra arguments', async () => {
         await expect(
             contract.call.test_extra_args({
                 args: {},
@@ -683,7 +676,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         await expect(
             contract.call.test_extra_args({
                 args: {
-                    arg: "text",
+                    arg: 'text',
                 },
                 account: account,
             })
@@ -708,7 +701,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         ).rejects.toThrow(UnknownArgumentError);
     });
 
-    test("TypedContract validates types from definitions correctly", async () => {
+    test('TypedContract validates types from definitions correctly', async () => {
         await expect(
             contract.call.test_definitions({
                 args: {
@@ -744,7 +737,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                 args: {
                     arg: {
                         // @ts-expect-error intentionally
-                        page: "text",
+                        page: 'text',
                         perPage: 10,
                     },
                 },
@@ -757,7 +750,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
                     arg: {
                         page: 4,
                         // @ts-expect-error intentionally
-                        perPage: "text",
+                        perPage: 'text',
                     },
                 },
                 account: account,
@@ -766,16 +759,16 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
     });
 
     // Various argument types can be passed to the function without causing failures
-    test("TypedContract skips validation if no ABI provided", async () => {
+    test('TypedContract skips validation if no ABI provided', async () => {
         const contractWithoutAbi = new TypedContract({
-            contractId: "",
+            contractId: '',
             provider: provider,
         });
 
         await expect(
             contractWithoutAbi.call.test_skip_validation({
                 args: {
-                    arg: "text",
+                    arg: 'text',
                 },
                 account: account,
             })
@@ -803,7 +796,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
             contractWithoutAbi.call.test_skip_validation({
                 args: {
                     arg: {
-                        text: "Hello, world",
+                        text: 'Hello, world',
                     },
                 },
                 account: account,

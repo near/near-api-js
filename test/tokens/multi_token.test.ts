@@ -24,9 +24,16 @@ function createMockAccount(accountId: string) {
                 return {};
             },
         },
-        get calls() { return calls; },
-        get providerCalls() { return providerCalls; },
-        clear() { calls.length = 0; providerCalls.length = 0; }
+        get calls() {
+            return calls;
+        },
+        get providerCalls() {
+            return providerCalls;
+        },
+        clear() {
+            calls.length = 0;
+            providerCalls.length = 0;
+        },
     };
 }
 
@@ -47,7 +54,7 @@ test('getBalance calls view and returns bigint', async () => {
     expect(mock.providerCalls[0]).toEqual({
         contractId: 'mt.contract.testnet',
         methodName: 'mt_balance_of',
-        args: { account_id: 'alice.testnet', token_id: 'token-1' }
+        args: { account_id: 'alice.testnet', token_id: 'token-1' },
     });
 });
 
@@ -65,7 +72,7 @@ test('getBatchedBalance calls view and returns bigint[]', async () => {
     expect(mock.providerCalls[0]).toEqual({
         contractId: 'mt.contract.testnet',
         methodName: 'mt_batch_balance_of',
-        args: { account_id: 'bob.testnet', token_ids: ['t1', 't2', 't3'] }
+        args: { account_id: 'bob.testnet', token_ids: ['t1', 't2', 't3'] },
     });
 });
 

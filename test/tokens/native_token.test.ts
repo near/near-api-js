@@ -13,17 +13,11 @@ test('test toUnits parses formatted amount', () => {
 
     expect(NEAR.toUnits('00001.234')).toBe(BigInt('1234000000000000000000000'));
 
-    expect(NEAR.toUnits('0000000000000.576919')).toBe(
-        BigInt('576919000000000000000000')
-    );
+    expect(NEAR.toUnits('0000000000000.576919')).toBe(BigInt('576919000000000000000000'));
 
     // exceeds the precision, rounding down
-    expect(NEAR.toUnits('0000000000000.5769191111')).toBe(
-        BigInt('576919111100000000000000')
-    );
-    expect(NEAR.toUnits('.5769191111')).toBe(
-        BigInt('576919111100000000000000')
-    );
+    expect(NEAR.toUnits('0000000000000.5769191111')).toBe(BigInt('576919111100000000000000'));
+    expect(NEAR.toUnits('.5769191111')).toBe(BigInt('576919111100000000000000'));
 
     expect(NEAR.toUnits('0')).toBe(BigInt('0'));
 });
@@ -33,13 +27,9 @@ test('test toUnits parses formatted amount with comma', () => {
     expect(NEAR.toUnits('1,234567')).toBe(BigInt('1234567000000000000000000'));
 
     expect(NEAR.toUnits('00001,234')).toBe(BigInt('1234000000000000000000000'));
-    expect(NEAR.toUnits('0000000000000,576919')).toBe(
-        BigInt('576919000000000000000000')
-    );
+    expect(NEAR.toUnits('0000000000000,576919')).toBe(BigInt('576919000000000000000000'));
     // exceeds the precision, rounding down
-    expect(NEAR.toUnits('0000000000000,5769191111')).toBe(
-        BigInt('576919111100000000000000')
-    );
+    expect(NEAR.toUnits('0000000000000,5769191111')).toBe(BigInt('576919111100000000000000'));
 });
 
 test('test toUnits fails on precision of more than 24 decimals', () => {
@@ -74,9 +64,7 @@ test('test toDecimal formats units', () => {
 
     expect(NEAR.toDecimal('12345678')).toBe('0.000000000000000012345678');
     expect(NEAR.toDecimal(12_345_678)).toBe('0.000000000000000012345678');
-    expect(NEAR.toDecimal(BigInt(12_345_678))).toBe(
-        '0.000000000000000012345678'
-    );
+    expect(NEAR.toDecimal(BigInt(12_345_678))).toBe('0.000000000000000012345678');
 
     expect(NEAR.toDecimal('710')).toBe('0.00000000000000000000071');
     expect(NEAR.toDecimal(710)).toBe('0.00000000000000000000071');

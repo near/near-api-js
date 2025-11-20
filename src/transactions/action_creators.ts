@@ -43,11 +43,7 @@ function fullAccessKey(): AccessKey {
  * @param allowance An optional allowance (maximum amount) for the function call. Default: Unlimited.
  * @returns A new access key with function call permission.
  */
-function functionCallAccessKey(
-    receiverId: string,
-    methodNames: string[],
-    allowance?: bigint
-): AccessKey {
+function functionCallAccessKey(receiverId: string, methodNames: string[], allowance?: bigint): AccessKey {
     return new AccessKey({
         nonce: 0n,
         permission: new AccessKeyPermission({
@@ -83,8 +79,7 @@ function deployContract(code: Uint8Array): Action {
  * @returns A Buffer representation of the input argument.
  */
 export function stringifyJsonOrBytes(args: any): Buffer {
-    const isUint8Array =
-        args.byteLength !== undefined && args.byteLength === args.length;
+    const isUint8Array = args.byteLength !== undefined && args.byteLength === args.length;
     return isUint8Array ? args : Buffer.from(JSON.stringify(args));
 }
 
@@ -103,7 +98,7 @@ function functionCall(
     args: Uint8Array | object,
     gas = 0n,
     deposit = 0n,
-    stringify = stringifyJsonOrBytes,
+    stringify = stringifyJsonOrBytes
 ): Action {
     return new Action({
         functionCall: new FunctionCall({
@@ -186,10 +181,7 @@ function signedDelegate({
  * @param deployMode The mode to deploy global contract (CodeHash or AccountId).
  * @returns A new action for deploying a global contract.
  */
-function deployGlobalContract(
-    code: Uint8Array,
-    deployMode: GlobalContractDeployMode,
-): Action {
+function deployGlobalContract(code: Uint8Array, deployMode: GlobalContractDeployMode): Action {
     return new Action({ deployGlobalContract: new DeployGlobalContract({ code, deployMode }) });
 }
 
@@ -198,9 +190,7 @@ function deployGlobalContract(
  * @param contractIdentifier The global contract identifier (hash or account id).
  * @returns A new action for using a global contract.
  */
-function useGlobalContract(
-    contractIdentifier: GlobalContractIdentifier,
-): Action {
+function useGlobalContract(contractIdentifier: GlobalContractIdentifier): Action {
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier }) });
 }
 
@@ -217,5 +207,5 @@ export const actionCreators = {
     stake,
     transfer,
     deployGlobalContract,
-    useGlobalContract
+    useGlobalContract,
 };

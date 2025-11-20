@@ -3,66 +3,91 @@
  * @module
  */
 
-import { SignedTransaction } from '../transactions/index.js';
-import {
-    AccessKeyView,
+import type { PublicKey } from '../crypto/index.js';
+import type { SignedTransaction } from '../transactions/index.js';
+import type {
     AccessKeyList,
+    AccessKeyView,
     AccessKeyWithPublicKey,
     AccountView,
     BlockChangeResult,
     BlockId,
     BlockReference,
     BlockResult,
+    CallContractViewFunctionResultRaw,
     ChangeResult,
+    ChunkId,
+    ChunkResult,
+    ContractCodeView,
+    ContractStateView,
+    EpochValidatorInfo,
+    ExecutionOutcomeReceiptDetail,
     FinalExecutionOutcome,
+    FinalityReference,
     GasPrice,
     LightClientProof,
     LightClientProofRequest,
+    NearProtocolConfig,
     NextLightClientBlockRequest,
     NextLightClientBlockResponse,
-    NearProtocolConfig,
     NodeStatusResult,
     QueryResponseKind,
     RpcQueryRequest,
-    type SerializedReturnValue,
-    EpochValidatorInfo,
-    ExecutionOutcomeReceiptDetail,
+    SerializedReturnValue,
     TxExecutionStatus,
-    ContractCodeView,
-    ContractStateView,
-    ChunkId,
-    ChunkResult,
-    FinalityReference,
-    CallContractViewFunctionResultRaw,
 } from '../types/index.js';
-import { PublicKey } from '../crypto/index.js';
 
 /** @hidden */
 export interface Provider {
     getNetworkId(): Promise<string>;
 
-    viewAccessKey(accountId: string, publicKey: PublicKey | string, finalityQuery?: FinalityReference): Promise<AccessKeyView>;
+    viewAccessKey(
+        accountId: string,
+        publicKey: PublicKey | string,
+        finalityQuery?: FinalityReference
+    ): Promise<AccessKeyView>;
     viewAccessKeyList(accountId: string, finalityQuery?: FinalityReference): Promise<AccessKeyList>;
 
     viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView>;
     viewContractCode(contractId: string, blockQuery?: BlockReference): Promise<ContractCodeView>;
     viewContractState(contractId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView>;
-    callFunction<T extends SerializedReturnValue>(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<T | undefined>;
-    callFunctionRaw(contractId: string, method: string, args: Record<string, unknown>, blockQuery?: BlockReference): Promise<CallContractViewFunctionResultRaw>;
+    callFunction<T extends SerializedReturnValue>(
+        contractId: string,
+        method: string,
+        args: Record<string, unknown>,
+        blockQuery?: BlockReference
+    ): Promise<T | undefined>;
+    callFunctionRaw(
+        contractId: string,
+        method: string,
+        args: Record<string, unknown>,
+        blockQuery?: BlockReference
+    ): Promise<CallContractViewFunctionResultRaw>;
 
     viewBlock(blockQuery: BlockReference): Promise<BlockResult>;
     viewChunk(chunkId: ChunkId): Promise<ChunkResult>;
-    
+
     viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
 
     viewNodeStatus(): Promise<NodeStatusResult>;
-    viewValidators(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo>
+    viewValidators(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo>;
 
-    viewTransactionStatus(txHash: Uint8Array | string, accountId: string, waitUntil?: TxExecutionStatus): Promise<FinalExecutionOutcome>;
-    viewTransactionStatusWithReceipts(txHash: Uint8Array | string, accountId: string, waitUntil?: TxExecutionStatus): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>>;
-    viewTransactionReceipt(receiptId:  string): Promise<ExecutionOutcomeReceiptDetail>;
+    viewTransactionStatus(
+        txHash: Uint8Array | string,
+        accountId: string,
+        waitUntil?: TxExecutionStatus
+    ): Promise<FinalExecutionOutcome>;
+    viewTransactionStatusWithReceipts(
+        txHash: Uint8Array | string,
+        accountId: string,
+        waitUntil?: TxExecutionStatus
+    ): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>>;
+    viewTransactionReceipt(receiptId: string): Promise<ExecutionOutcomeReceiptDetail>;
 
-    sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome>;
+    sendTransactionUntil(
+        signedTransaction: SignedTransaction,
+        waitUntil: TxExecutionStatus
+    ): Promise<FinalExecutionOutcome>;
     sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
     sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
 
@@ -70,13 +95,22 @@ export interface Provider {
     query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
 
     blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult>;
-    experimental_protocolConfig(blockReference: BlockReference | { sync_checkpoint: 'genesis' }): Promise<NearProtocolConfig>;
+    experimental_protocolConfig(
+        blockReference: BlockReference | { sync_checkpoint: 'genesis' }
+    ): Promise<NearProtocolConfig>;
     lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
     nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse>;
     accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
-    singleAccessKeyChanges(accessKeyArray: AccessKeyWithPublicKey[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    singleAccessKeyChanges(
+        accessKeyArray: AccessKeyWithPublicKey[],
+        BlockQuery: BlockId | BlockReference
+    ): Promise<ChangeResult>;
     accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
-    contractStateChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference, keyPrefix: string): Promise<ChangeResult>;
+    contractStateChanges(
+        accountIdArray: string[],
+        BlockQuery: BlockId | BlockReference,
+        keyPrefix: string
+    ): Promise<ChangeResult>;
     contractCodeChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
 
     getCurrentEpochSeatPrice(): Promise<bigint>;

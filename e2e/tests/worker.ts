@@ -1,6 +1,6 @@
-import assert from "assert";
-import { type Worker } from "near-workspaces";
-import { readFileSync } from "fs";
+import assert from 'assert';
+import { readFileSync } from 'fs';
+import type { Worker } from 'near-workspaces';
 
 export function getRpcUrl(worker: Worker): string {
     // @ts-expect-error config is protected field
@@ -14,8 +14,8 @@ export function getSecretKey(worker: Worker): string {
     const keyPair = JSON.parse(keyFile.toString());
     const secretKey = keyPair.secret_key || keyPair.private_key;
 
-    assert(!!secretKey, "Secret key must exist");
-    assert(typeof secretKey === "string", "Secret key must be a string");
+    assert(!!secretKey, 'Secret key must exist');
+    assert(typeof secretKey === 'string', 'Secret key must be a string');
 
     return secretKey;
 }

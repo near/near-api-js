@@ -1,12 +1,5 @@
-import {
-    describe,
-    expect,
-    test,
-    vi,
-    beforeEach,
-    afterAll,
-} from 'vitest';
-import { ProviderError, fetchJsonRpc, retryConfig } from '../../src/providers/fetch_json';
+import { afterAll, beforeEach, describe, expect, test, vi } from 'vitest';
+import { fetchJsonRpc, ProviderError, retryConfig } from '../../src/providers/fetch_json';
 
 describe('fetchJsonError', () => {
     const RPC_URL = 'https://rpc.testnet.near.org';
@@ -22,9 +15,7 @@ describe('fetchJsonError', () => {
 
     beforeEach(() => {
         // Reset fetch for each test with proper typing
-        vi
-            .spyOn(global, 'fetch')
-            .mockImplementation(() => Promise.resolve(new Response()));
+        vi.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response()));
     });
 
     afterAll(() => {
@@ -33,56 +24,34 @@ describe('fetchJsonError', () => {
     });
 
     test('handles 500 Internal Server Error', async () => {
-        vi
-            .spyOn(global, 'fetch')
-            .mockImplementation(() =>
-                Promise.resolve(new Response('', { status: 500 })),
-            );
+        vi.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 500 })));
 
-        await expect(
-            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
-        ).rejects.toThrowError(
-            new ProviderError('Internal server error', { cause: 500 }),
+        await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
+            new ProviderError('Internal server error', { cause: 500 })
         );
     });
 
     test('handles 408 Timeout Error', async () => {
-        vi
-            .spyOn(global, 'fetch')
-            .mockImplementation(() =>
-                Promise.resolve(new Response('', { status: 408 })),
-            );
+        vi.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 408 })));
 
-        await expect(
-            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
-        ).rejects.toThrowError(new ProviderError('Timeout error', { cause: 408 }));
+        await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
+            new ProviderError('Timeout error', { cause: 408 })
+        );
     });
 
     test('handles 400 Request Validation Error', async () => {
-        vi
-            .spyOn(global, 'fetch')
-            .mockImplementation(() =>
-                Promise.resolve(new Response('', { status: 400 })),
-            );
+        vi.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 400 })));
 
-        await expect(
-            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
-        ).rejects.toThrowError(
-            new ProviderError('Request validation error', { cause: 400 }),
+        await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
+            new ProviderError('Request validation error', { cause: 400 })
         );
     });
 
     test('handles 503 Service Unavailable', async () => {
-        vi
-            .spyOn(global, 'fetch')
-            .mockImplementation(() =>
-                Promise.resolve(new Response('', { status: 503 })),
-            );
+        vi.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 503 })));
 
-        await expect(
-            fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig()),
-        ).rejects.toThrowError(
-            new ProviderError(`${RPC_URL} unavailable`, { cause: 503 }),
+        await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
+            new ProviderError(`${RPC_URL} unavailable`, { cause: 503 })
         );
     });
 });

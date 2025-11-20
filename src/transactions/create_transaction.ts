@@ -1,6 +1,6 @@
-import { PublicKey } from '../crypto/index.js';
+import type { PublicKey } from '../crypto/index.js';
 
-import { Action } from './actions.js';
+import type { Action } from './actions.js';
 import { Transaction } from './schema.js';
 
 /**
