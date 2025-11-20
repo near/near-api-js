@@ -93,10 +93,10 @@ export class PublicKey extends Enum {
         let publicKey: string;
         let keyType;
         if (parts.length === 1) {
-            publicKey = parts[0];
+            publicKey = parts[0]!;
         } else if (parts.length === 2) {
-            publicKey = parts[1];
-            keyType = str_to_key_type(parts[0]);
+            publicKey = parts[1]!;
+            keyType = str_to_key_type(parts[0]!);
         } else {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
@@ -115,7 +115,7 @@ export class PublicKey extends Enum {
      * Returns a string representation of the public key.
      * @returns {string} The string representation of the public key.
      */
-    toString(): string {
+    override toString(): string {
         const encodedKey = baseEncode(this.data);
         return `${key_type_to_str(this.keyType)}:${encodedKey}`;
     }
@@ -166,7 +166,7 @@ export function keyToImplicitAddress(publicKey: string | PublicKey): string {
     // to avoid issues with environments that do not support Buffer
     let result = '';
     for (let i = 0; i < decoded.length; i++) {
-        const hex = decoded[i].toString(16);
+        const hex = decoded[i]!.toString(16);
         result += hex.length === 1 ? '0' + hex : hex;
     }
     return result;

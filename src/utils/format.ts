@@ -40,7 +40,7 @@ export function formatNearAmount(
         // Adjust balance for rounding at given number of digits
         const roundingExp = NEAR_NOMINATION_EXP - fracDigits - 1;
         if (roundingExp > 0) {
-            balanceBN += ROUNDING_OFFSETS[roundingExp];
+            balanceBN += ROUNDING_OFFSETS[roundingExp]!;
         }
     }
 

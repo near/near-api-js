@@ -19,7 +19,15 @@
         "noUnusedLocals": true,
         "experimentalDecorators": true,
         "resolveJsonModule": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+        "exactOptionalPropertyTypes": false,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedParameters": true,
+        "isolatedModules": true,
     },
     "include": ["src/index.ts"]
 }
