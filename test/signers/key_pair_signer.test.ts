@@ -1,7 +1,7 @@
-import { expect, test } from '@jest/globals';
 import { sha256 } from '@noble/hashes/sha256';
 import { b } from '@zorsh/zorsh';
 import { TextEncoder } from 'util';
+import { expect, test } from 'vitest';
 import {
     actionCreators,
     buildDelegateAction,
