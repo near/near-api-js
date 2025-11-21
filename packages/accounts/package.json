@@ -38,7 +38,7 @@
 		"@types/depd": "^1.1.37",
 		"@types/json-schema": "^7.0.15",
 		"@types/node": "20.0.0",
-		"jest": "29.7.0",
+		"jest": "30.2.0",
 		"near-hello": "0.5.1",
 		"near-workspaces": "5.0.0",
 		"semver": "7.7.1",
