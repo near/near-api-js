@@ -28,7 +28,7 @@
     "@typescript-eslint/eslint-plugin": "6.21.0",
     "@typescript-eslint/parser": "6.21.0",
     "commitlint": "19.7.1",
-    "esbuild-fix-imports-plugin": "^1.0.21",
+    "esbuild-fix-imports-plugin": "^1.0.23",
     "eslint": "8.20.0",
     "husky": "9.1.7",
     "rimraf": "6.0.1",
