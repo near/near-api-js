@@ -31,7 +31,7 @@
     "esbuild-fix-imports-plugin": "^1.0.21",
     "eslint": "8.20.0",
     "husky": "9.1.7",
-    "rimraf": "6.0.1",
+    "rimraf": "6.1.2",
     "tsconfig": "workspace:*",
     "tsup": "^8.5.0",
     "turbo": "2.4.4",
