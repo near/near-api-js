@@ -33,7 +33,7 @@
 		"near-abi": "0.2.0"
 	},
 	"devDependencies": {
-		"@jest/globals": "^29.7.0",
+		"@jest/globals": "^30.2.0",
 		"@scure/base": "^1.2.4",
 		"@types/depd": "^1.1.37",
 		"@types/json-schema": "^7.0.15",

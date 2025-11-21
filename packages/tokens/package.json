@@ -37,7 +37,7 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"@jest/globals": "^29.7.0",
+		"@jest/globals": "^30.2.0",
 		"@near-js/types": "workspace:*",
 		"@types/node": "20.0.0",
 		"jest": "29.7.0",

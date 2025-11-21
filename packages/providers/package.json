@@ -25,7 +25,7 @@
 		"exponential-backoff": "^3.1.2"
 	},
 	"devDependencies": {
-		"@jest/globals": "^29.7.0",
+		"@jest/globals": "^30.2.0",
 		"@types/node": "20.0.0",
 		"jest": "29.7.0",
 		"near-workspaces": "5.0.0",
