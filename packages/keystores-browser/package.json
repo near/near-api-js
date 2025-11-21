@@ -21,7 +21,7 @@
 	},
 	"devDependencies": {
 		"@jest/globals": "^29.7.0",
-		"jest": "29.7.0",
+		"jest": "30.2.0",
 		"localstorage-memory": "1.0.3",
 		"ts-jest": "29.2.6",
 		"tsconfig": "workspace:*",
