@@ -32,7 +32,7 @@
         "@types/depd": "^1.1.37",
         "@types/http-errors": "1.6.1",
         "@types/node": "20.0.0",
-        "concurrently": "9.1.2",
+        "concurrently": "9.2.1",
         "in-publish": "2.0.0",
         "jest": "29.7.0",
         "near-hello": "0.5.1",
