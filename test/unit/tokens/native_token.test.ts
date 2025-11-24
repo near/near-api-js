@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { NEAR } from '../../src';
+import { NEAR } from '../../../src';
 
 test('test toUnits parses formatted amount', () => {
     expect(NEAR.toUnits('1.234')).toBe(BigInt('1234000000000000000000000'));

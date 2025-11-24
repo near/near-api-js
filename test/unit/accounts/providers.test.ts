@@ -1,7 +1,7 @@
 import { base58 } from '@scure/base';
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { ErrorMessages, IdType, KeyPair, type TypedError } from '../../src';
+import { ErrorMessages, IdType, KeyPair, type TypedError } from '../../../src';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
 let near: Awaited<ReturnType<typeof setUpTestConnection>>;

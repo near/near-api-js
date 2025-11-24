@@ -1,7 +1,7 @@
 import { Worker } from 'near-workspaces';
 import { TextEncoder } from 'util';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../src';
+import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src';
 
 global.TextEncoder = TextEncoder;
 

@@ -9,7 +9,7 @@ import {
     KeyPairSigner,
     KeyType,
     TypedContract,
-} from '../../src';
+} from '../../../src';
 import {
     createAccount,
     generateUniqueString,

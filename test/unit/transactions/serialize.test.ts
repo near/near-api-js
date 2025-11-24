@@ -14,7 +14,7 @@ import {
     KeyPair,
     PublicKey,
     SCHEMA,
-} from '../../src';
+} from '../../../src';
 
 const {
     addKey,
@@ -125,7 +125,7 @@ test('serialize transfer tx', async () => {
 });
 
 describe('roundtrip test', () => {
-    const dataDir = './test/transactions/data';
+    const dataDir = './test/unit/transactions/data';
     const testFiles = fs.readdirSync(dataDir);
     for (const testFile of testFiles) {
         if (/.+\.json$/.test(testFile)) {

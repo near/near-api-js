@@ -1,6 +1,6 @@
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, beforeEach, expect, test } from 'vitest';
-import { Account, KeyPair, KeyPairSigner, TypedContract, type TypedError } from '../../src';
+import { Account, KeyPair, KeyPairSigner, TypedContract, type TypedError } from '../../../src';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;

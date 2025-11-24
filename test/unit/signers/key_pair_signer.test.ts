@@ -12,7 +12,7 @@ import {
     KeyPairSigner,
     Nep413MessageSchema,
     PublicKey,
-} from '../../src';
+} from '../../../src';
 
 global.TextEncoder = TextEncoder;
 

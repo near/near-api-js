@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { formatError, getErrorTypeFromErrorMessage, parseRpcError } from '../../src';
+import { formatError, getErrorTypeFromErrorMessage, parseRpcError } from '../../../src';
 
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {

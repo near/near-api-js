@@ -1,7 +1,7 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { TextEncoder } from 'util';
 import { describe, expect, test } from 'vitest';
-import { baseEncode, KeyPair, KeyPairEd25519, KeyPairSecp256k1, PublicKey } from '../../src';
+import { baseEncode, KeyPair, KeyPairEd25519, KeyPairSecp256k1, PublicKey } from '../../../src';
 
 global.TextEncoder = TextEncoder;
 

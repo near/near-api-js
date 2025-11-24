@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, describe, expect, test, vi } from 'vitest';
-import { fetchJsonRpc, ProviderError, retryConfig } from '../../src/providers/fetch_json';
+import { fetchJsonRpc, ProviderError, retryConfig } from '../../../src/providers/fetch_json';
 
 describe('fetchJsonError', () => {
     const RPC_URL = 'https://rpc.testnet.near.org';

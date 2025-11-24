@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { MultiTokenContract } from '../../src';
+import { MultiTokenContract } from '../../../src';
 
 function createMockAccount(accountId: string) {
     const calls: any[] = [];
