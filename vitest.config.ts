@@ -7,5 +7,10 @@ export default defineConfig({
         exclude: ['node_modules/**/*'],
         testTimeout: 50000,
         hookTimeout: 120000, // 2 minutes for setup/teardown hooks
+        coverage: {
+            enabled: true,
+            include: ['src/**/*.ts'],
+            exclude: ['src/**/index.ts'],
+        },
     },
 });

@@ -38,6 +38,7 @@
         "@commitlint/cli": "19.3.0",
         "@commitlint/config-conventional": "19.7.1",
         "@types/node": "20.0.0",
+        "@vitest/coverage-v8": "4.0.10",
         "@vitest/ui": "4.0.10",
         "commitlint": "19.7.1",
         "husky": "9.1.7",
