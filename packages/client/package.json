@@ -21,7 +21,7 @@
 		"@near-js/types": "workspace:*",
 		"@near-js/utils": "workspace:*",
 		"@near-js/accounts": "workspace:*",
-		"@noble/hashes": "1.7.1"
+		"@noble/hashes": "2.0.1"
 	},
 	"keywords": [],
 	"author": "",

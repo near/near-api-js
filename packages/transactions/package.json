@@ -20,7 +20,7 @@
 		"@near-js/crypto": "workspace:*",
 		"@near-js/types": "workspace:*",
 		"@near-js/utils": "workspace:*",
-		"@noble/hashes": "1.7.1",
+		"@noble/hashes": "2.0.1",
 		"borsh": "1.0.0"
 	},
 	"devDependencies": {

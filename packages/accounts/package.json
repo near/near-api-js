@@ -25,7 +25,7 @@
 		"@near-js/keystores": "workspace:*",
 		"@near-js/types": "workspace:*",
 		"@near-js/utils": "workspace:*",
-		"@noble/hashes": "1.7.1",
+		"@noble/hashes": "2.0.1",
 		"borsh": "1.0.0",
 		"depd": "2.0.0",
 		"is-my-json-valid": "^2.20.6",
