@@ -40,7 +40,7 @@
     "@near-js/accounts": "workspace:*",
     "@near-js/providers": "workspace:*",
     "@types/node": "^22.15.24",
-    "chalk": "5.4.1",
+    "chalk": "5.6.2",
     "homedir": "0.6.0",
     "near-api-js": "workspace:*",
     "ts-node": "^10.9.2",
