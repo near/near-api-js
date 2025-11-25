@@ -22,7 +22,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.1",
     "@changesets/changelog-github": "0.5.1",
-    "@changesets/cli": "^2.29.5",
+    "@changesets/cli": "^2.29.7",
     "@commitlint/cli": "19.3.0",
     "@commitlint/config-conventional": "19.7.1",
     "@typescript-eslint/eslint-plugin": "6.21.0",
