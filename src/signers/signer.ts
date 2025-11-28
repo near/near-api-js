@@ -25,6 +25,16 @@ export interface SignedMessage {
     state?: string; // Optional, applicable to browser wallets (e.g. MyNearWallet). The same state passed in SignMessageParams.
 }
 
+export interface SignTransactionReturn {
+    txHash: Uint8Array;
+    signedTransaction: SignedTransaction;
+}
+
+export interface SignDelegateActionReturn {
+    delegateHash: Uint8Array;
+    signedDelegate: SignedDelegate;
+}
+
 export const Nep413MessageSchema: Schema = {
     struct: {
         message: 'string',
@@ -89,7 +99,7 @@ export abstract class Signer {
      * @param transaction - The transaction to sign.
      * @returns {Promise<[Uint8Array, SignedTransaction]>} - Promise of the hash that can be verified and signed transaction.
      */
-    public async signTransaction(transaction: Transaction): Promise<[Uint8Array, SignedTransaction]> {
+    public async signTransaction(transaction: Transaction): Promise<SignTransactionReturn> {
         const pk = await this.getPublicKey();
 
         if (transaction.publicKey.toString() !== pk.toString())
@@ -106,7 +116,7 @@ export abstract class Signer {
                 data: signature,
             }),
         });
-        return [txHash, signedTx];
+        return { txHash, signedTransaction: signedTx };
     }
 
     /**
@@ -114,7 +124,7 @@ export abstract class Signer {
      * @param delegateAction - The delegate action to sign.
      * @returns {Promise<[Uint8Array, SignedDelegate]>} - Promise of the hash that can be verified and signed delegate action.
      */
-    public async signDelegateAction(delegateAction: DelegateAction): Promise<[Uint8Array, SignedDelegate]> {
+    public async signDelegateAction(delegateAction: DelegateAction): Promise<SignDelegateActionReturn> {
         const pk = await this.getPublicKey();
 
         if (delegateAction.publicKey.toString() !== pk.toString())
@@ -132,6 +142,6 @@ export abstract class Signer {
             }),
         });
 
-        return [delegateHash, signedDelegate];
+        return { delegateHash, signedDelegate };
     }
 }

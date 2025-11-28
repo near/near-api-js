@@ -6,7 +6,6 @@
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
 
-import type { PublicKey } from '../crypto/index.js';
 import { encodeTransaction, type SignedTransaction } from '../transactions/index.js';
 import {
     type AccessKeyList,
@@ -29,7 +28,6 @@ import {
     type EpochValidatorInfo,
     type ExecutionOutcomeReceiptDetail,
     type FinalExecutionOutcome,
-    type FinalityReference,
     type GasPrice,
     type LightClientProof,
     type LightClientProofRequest,
@@ -51,7 +49,17 @@ import {
     ServerError,
 } from '../utils/index.js';
 import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
-import type { Provider } from './provider.js';
+import type {
+    CallFunctionArgs,
+    Provider,
+    ViewAccessKeyArgs,
+    ViewAccessKeyListArgs,
+    ViewAccountArgs,
+    ViewContractCodeArgs,
+    ViewContractStateArgs,
+    ViewTransactionStatusArgs,
+    ViewValidatorsArgs,
+} from './provider.js';
 
 /** @hidden */
 // Default number of retries before giving up on a request.
@@ -145,11 +153,11 @@ export class JsonRpcProvider implements Provider {
         return findSeatPrice(nextValidators, maxNumberOfSeats, minStakeRatio, protocolVersion);
     }
 
-    public async viewAccessKey(
-        accountId: string,
-        publicKey: PublicKey | string,
-        finalityQuery: FinalityReference = { finality: DEFAULT_FINALITY }
-    ): Promise<AccessKeyView> {
+    public async viewAccessKey({
+        accountId,
+        publicKey,
+        finalityQuery = { finality: DEFAULT_FINALITY },
+    }: ViewAccessKeyArgs): Promise<AccessKeyView> {
         const data = await (this as Provider).query<AccessKeyViewRaw>({
             ...finalityQuery,
             request_type: 'view_access_key',
@@ -163,10 +171,10 @@ export class JsonRpcProvider implements Provider {
         };
     }
 
-    public async viewAccessKeyList(
-        accountId: string,
-        finalityQuery: FinalityReference = { finality: DEFAULT_FINALITY }
-    ): Promise<AccessKeyList> {
+    public async viewAccessKeyList({
+        accountId,
+        finalityQuery = { finality: DEFAULT_FINALITY },
+    }: ViewAccessKeyListArgs): Promise<AccessKeyList> {
         return (this as Provider).query<AccessKeyList>({
             ...finalityQuery,
             request_type: 'view_access_key_list',
@@ -174,10 +182,10 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async viewAccount(
-        accountId: string,
-        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
-    ): Promise<AccountView> {
+    public async viewAccount({
+        accountId,
+        blockQuery = { finality: DEFAULT_FINALITY },
+    }: ViewAccountArgs): Promise<AccountView> {
         const data = await (this as Provider).query<AccountViewRaw>({
             ...blockQuery,
             request_type: 'view_account',
@@ -191,10 +199,10 @@ export class JsonRpcProvider implements Provider {
         };
     }
 
-    public async viewContractCode(
-        contractId: string,
-        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
-    ): Promise<ContractCodeView> {
+    public async viewContractCode({
+        contractId,
+        blockQuery = { finality: DEFAULT_FINALITY },
+    }: ViewContractCodeArgs): Promise<ContractCodeView> {
         const data = await (this as Provider).query<ContractCodeViewRaw>({
             ...blockQuery,
             request_type: 'view_code',
@@ -207,11 +215,11 @@ export class JsonRpcProvider implements Provider {
         };
     }
 
-    public async viewContractState(
-        contractId: string,
-        prefix?: string,
-        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
-    ): Promise<ContractStateView> {
+    public async viewContractState({
+        contractId,
+        prefix,
+        blockQuery = { finality: DEFAULT_FINALITY },
+    }: ViewContractStateArgs): Promise<ContractStateView> {
         const prefixBase64 = Buffer.from(prefix || '').toString('base64');
 
         return (this as Provider).query<ContractStateView>({
@@ -222,13 +230,13 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async callFunction<T extends SerializedReturnValue>(
-        contractId: string,
-        method: string,
-        args: Record<string, unknown> | Uint8Array,
-        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
-    ): Promise<T | undefined> {
-        const { result } = await this.callFunctionRaw(contractId, method, args, blockQuery);
+    public async callFunction<T extends SerializedReturnValue>({
+        contractId,
+        method,
+        args,
+        blockQuery = { finality: DEFAULT_FINALITY },
+    }: CallFunctionArgs): Promise<T | undefined> {
+        const { result } = await this.callFunctionRaw({ contractId, method, args, blockQuery });
 
         if (result.length === 0) return undefined;
 
@@ -241,12 +249,12 @@ export class JsonRpcProvider implements Provider {
         }
     }
 
-    public async callFunctionRaw(
-        contractId: string,
-        method: string,
-        args: Record<string, unknown> | Uint8Array,
-        blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
-    ): Promise<CallContractViewFunctionResultRaw> {
+    public async callFunctionRaw({
+        contractId,
+        method,
+        args,
+        blockQuery = { finality: DEFAULT_FINALITY },
+    }: CallFunctionArgs): Promise<CallContractViewFunctionResultRaw> {
         const argsBuffer = ArrayBuffer.isView(args) ? Buffer.from(args) : Buffer.from(JSON.stringify(args));
         const argsBase64 = argsBuffer.toString('base64');
 
@@ -286,9 +294,7 @@ export class JsonRpcProvider implements Provider {
      * - `{ epochId }`: Epoch hash.
      * - `null`: Current epoch.
      */
-    public async viewValidators(
-        params: { blockId: string | number } | { epochId: string } | null
-    ): Promise<EpochValidatorInfo> {
+    public async viewValidators(params: ViewValidatorsArgs): Promise<EpochValidatorInfo> {
         if (params === null) return this.sendJsonRpc('validators', [null]);
 
         if (typeof params === 'object' && 'blockId' in params)
@@ -300,11 +306,11 @@ export class JsonRpcProvider implements Provider {
         throw new Error('Invalid parameters for validators');
     }
 
-    public async viewTransactionStatus(
-        txHash: Uint8Array | string,
-        accountId: string,
-        waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'
-    ): Promise<FinalExecutionOutcome> {
+    public async viewTransactionStatus({
+        txHash,
+        accountId,
+        waitUntil = 'EXECUTED_OPTIMISTIC',
+    }: ViewTransactionStatusArgs): Promise<FinalExecutionOutcome> {
         const encodedTxHash = typeof txHash === 'string' ? txHash : baseEncode(txHash);
 
         return this.sendJsonRpc('tx', {
@@ -314,11 +320,11 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async viewTransactionStatusWithReceipts(
-        txHash: Uint8Array | string,
-        accountId: string,
-        waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'
-    ): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>> {
+    public async viewTransactionStatusWithReceipts({
+        txHash,
+        accountId,
+        waitUntil = 'EXECUTED_OPTIMISTIC',
+    }: ViewTransactionStatusArgs): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>> {
         const encodedTxHash = typeof txHash === 'string' ? txHash : baseEncode(txHash);
 
         return this.sendJsonRpc('EXPERIMENTAL_tx_status', {

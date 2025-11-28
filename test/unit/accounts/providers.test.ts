@@ -23,16 +23,16 @@ describe('providers', () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
-        const responseWithString = await near.provider.viewTransactionStatus(
-            outcome.transaction.hash,
-            sender.accountId,
-            'EXECUTED_OPTIMISTIC'
-        );
-        const responseWithUint8Array = await near.provider.viewTransactionStatus(
-            base58.decode(outcome.transaction.hash),
-            sender.accountId,
-            'EXECUTED_OPTIMISTIC'
-        );
+        const responseWithString = await near.provider.viewTransactionStatus({
+            txHash: outcome.transaction.hash,
+            accountId: sender.accountId,
+            waitUntil: 'EXECUTED_OPTIMISTIC',
+        });
+        const responseWithUint8Array = await near.provider.viewTransactionStatus({
+            txHash: base58.decode(outcome.transaction.hash),
+            accountId: sender.accountId,
+            waitUntil: 'EXECUTED_OPTIMISTIC',
+        });
         // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithString).toMatchObject(outcome);
         // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
@@ -48,16 +48,16 @@ describe('providers', () => {
             sender.accountId,
         ]);
 
-        const responseWithString = await near.provider.viewTransactionStatusWithReceipts(
-            outcome.transaction.hash,
-            sender.accountId,
-            'EXECUTED_OPTIMISTIC'
-        );
-        const responseWithUint8Array = await near.provider.viewTransactionStatusWithReceipts(
-            base58.decode(outcome.transaction.hash),
-            sender.accountId,
-            'EXECUTED_OPTIMISTIC'
-        );
+        const responseWithString = await near.provider.viewTransactionStatusWithReceipts({
+            txHash: outcome.transaction.hash,
+            accountId: sender.accountId,
+            waitUntil: 'EXECUTED_OPTIMISTIC',
+        });
+        const responseWithUint8Array = await near.provider.viewTransactionStatusWithReceipts({
+            txHash: base58.decode(outcome.transaction.hash),
+            accountId: sender.accountId,
+            waitUntil: 'EXECUTED_OPTIMISTIC',
+        });
         expect('transaction_outcome' in responseWithString).toBeTruthy();
         expect('logs' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('receipt_ids' in responseWithString.transaction_outcome.outcome).toBeTruthy();

@@ -47,7 +47,11 @@ export async function createAccount({ account, provider }, keyType = KeyType.ED2
     const keyPair = KeyPair.fromRandom(Object.values(KeyType)[keyType]);
 
     const newPublicKey = keyPair.getPublicKey();
-    await account.createAccount(newAccountName, newPublicKey, '500000000000000000000000000');
+    await account.createAccount({
+        newAccountId: newAccountName,
+        publicKey: newPublicKey,
+        nearToTransfer: '500000000000000000000000000',
+    });
 
     return new Account(newAccountName, provider, new KeyPairSigner(keyPair));
 }
@@ -57,7 +61,11 @@ export async function deployContract(workingAccount, contractId) {
     const newPublicKey = keyPair.getPublicKey();
 
     const data = fs.readFileSync(HELLO_WASM_PATH);
-    await workingAccount.createAccount(contractId, newPublicKey, HELLO_WASM_BALANCE);
+    await workingAccount.createAccount({
+        newAccountId: contractId,
+        publicKey: newPublicKey,
+        nearToTransfer: HELLO_WASM_BALANCE,
+    });
     const contractAccount = new Account(contractId, workingAccount.provider, new KeyPairSigner(keyPair));
     await contractAccount.deployContract(data);
     return new TypedContract({

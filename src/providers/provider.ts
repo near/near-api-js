@@ -37,32 +37,82 @@ import type {
     TxExecutionStatus,
 } from '../types/index.js';
 
+type Prettify<T> = {
+    [K in keyof T]: T[K];
+} & {};
+
+export interface FinalityQuery {
+    finalityQuery?: FinalityReference;
+}
+
+export interface BlockQuery {
+    blockQuery?: BlockReference;
+}
+
+export interface TransactionExecutionReference {
+    waitUntil?: TxExecutionStatus;
+}
+
+export type ViewAccessKeyArgs = Prettify<
+    {
+        accountId: string;
+        publicKey: PublicKey | string;
+    } & FinalityQuery
+>;
+
+export type ViewAccessKeyListArgs = Prettify<
+    {
+        accountId: string;
+    } & FinalityQuery
+>;
+
+export type ViewAccountArgs = Prettify<
+    {
+        accountId: string;
+    } & BlockQuery
+>;
+
+export type ViewContractCodeArgs = Prettify<
+    {
+        contractId: string;
+    } & BlockQuery
+>;
+
+export type ViewContractStateArgs = Prettify<
+    {
+        contractId: string;
+        prefix?: string;
+    } & BlockQuery
+>;
+
+export type CallFunctionArgs = Prettify<
+    {
+        contractId: string;
+        method: string;
+        args: Record<string, unknown> | Uint8Array;
+    } & BlockQuery
+>;
+
+export type ViewValidatorsArgs = { blockId: BlockId } | { epochId: string } | null;
+
+export type ViewTransactionStatusArgs = Prettify<
+    {
+        txHash: Uint8Array | string;
+        accountId: string;
+    } & TransactionExecutionReference
+>;
+
 /** @hidden */
 export interface Provider {
     getNetworkId(): Promise<string>;
 
-    viewAccessKey(
-        accountId: string,
-        publicKey: PublicKey | string,
-        finalityQuery?: FinalityReference
-    ): Promise<AccessKeyView>;
-    viewAccessKeyList(accountId: string, finalityQuery?: FinalityReference): Promise<AccessKeyList>;
-
-    viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView>;
-    viewContractCode(contractId: string, blockQuery?: BlockReference): Promise<ContractCodeView>;
-    viewContractState(contractId: string, prefix?: string, blockQuery?: BlockReference): Promise<ContractStateView>;
-    callFunction<T extends SerializedReturnValue>(
-        contractId: string,
-        method: string,
-        args: Record<string, unknown>,
-        blockQuery?: BlockReference
-    ): Promise<T | undefined>;
-    callFunctionRaw(
-        contractId: string,
-        method: string,
-        args: Record<string, unknown>,
-        blockQuery?: BlockReference
-    ): Promise<CallContractViewFunctionResultRaw>;
+    viewAccessKey(params: ViewAccessKeyArgs): Promise<AccessKeyView>;
+    viewAccessKeyList(params: ViewAccessKeyListArgs): Promise<AccessKeyList>;
+    viewAccount(params: ViewAccountArgs): Promise<AccountView>;
+    viewContractCode(params: ViewContractCodeArgs): Promise<ContractCodeView>;
+    viewContractState(params: ViewContractStateArgs): Promise<ContractStateView>;
+    callFunction<T extends SerializedReturnValue>(params: CallFunctionArgs): Promise<T | undefined>;
+    callFunctionRaw(params: CallFunctionArgs): Promise<CallContractViewFunctionResultRaw>;
 
     viewBlock(blockQuery: BlockReference): Promise<BlockResult>;
     viewChunk(chunkId: ChunkId): Promise<ChunkResult>;
@@ -70,17 +120,11 @@ export interface Provider {
     viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
 
     viewNodeStatus(): Promise<NodeStatusResult>;
-    viewValidators(params: { blockId: string | number } | { epochId: string } | null): Promise<EpochValidatorInfo>;
+    viewValidators(params: ViewValidatorsArgs): Promise<EpochValidatorInfo>;
 
-    viewTransactionStatus(
-        txHash: Uint8Array | string,
-        accountId: string,
-        waitUntil?: TxExecutionStatus
-    ): Promise<FinalExecutionOutcome>;
+    viewTransactionStatus(params: ViewTransactionStatusArgs): Promise<FinalExecutionOutcome>;
     viewTransactionStatusWithReceipts(
-        txHash: Uint8Array | string,
-        accountId: string,
-        waitUntil?: TxExecutionStatus
+        params: ViewTransactionStatusArgs
     ): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>>;
     viewTransactionReceipt(receiptId: string): Promise<ExecutionOutcomeReceiptDetail>;
 

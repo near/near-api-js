@@ -48,7 +48,11 @@ test('create account and then view account returns the created account', async (
         balance: { total },
     } = await workingAccount.getState();
     const newAmount = total / 10n;
-    await nearjs.account.createAccount(newAccountName, newAccountPublicKey, newAmount);
+    await nearjs.account.createAccount({
+        newAccountId: newAccountName,
+        publicKey: newAccountPublicKey,
+        nearToTransfer: newAmount,
+    });
     const newAccount = new Account(newAccountName, nearjs.provider, nearjs.account.getSigner()!);
     const state = await newAccount.getState();
     expect(state.balance.total.toString()).toEqual(newAmount.toString());
@@ -62,7 +66,11 @@ test('create account with a secp256k1 key and then view account returns the crea
         balance: { total },
     } = await workingAccount.getState();
     const newAmount = total / 10n;
-    await nearjs.account.createAccount(newAccountName, newAccountPublicKey, newAmount);
+    await nearjs.account.createAccount({
+        newAccountId: newAccountName,
+        publicKey: newAccountPublicKey,
+        nearToTransfer: newAmount,
+    });
     const newAccount = new Account(newAccountName, nearjs.provider, nearjs.account.getSigner()!);
     const state = await newAccount.getState();
     expect(state.balance.total.toString()).toEqual(newAmount.toString());
@@ -115,11 +123,11 @@ test('delete account', async () => {
 describe('errors', () => {
     test('create existing account', async () => {
         await expect(
-            workingAccount.createAccount(
-                workingAccount.accountId,
-                '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE',
-                BigInt(100)
-            )
+            workingAccount.createAccount({
+                newAccountId: workingAccount.accountId,
+                publicKey: '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE',
+                nearToTransfer: BigInt(100),
+            })
         ).rejects.toThrow(/Can't create a new account .+, because it already exists/);
     });
 });
@@ -133,7 +141,11 @@ describe('with deploy contract', () => {
         const keyPair = KeyPair.fromRandom('ed25519');
         const newPublicKey = keyPair.getPublicKey();
         const data = fs.readFileSync(HELLO_WASM_PATH);
-        await nearjs.account.createAccount(contractId, newPublicKey, HELLO_WASM_BALANCE);
+        await nearjs.account.createAccount({
+            newAccountId: contractId,
+            publicKey: newPublicKey,
+            nearToTransfer: HELLO_WASM_BALANCE,
+        });
         const contractAccount = new Account(contractId, nearjs.provider, new KeyPairSigner(keyPair));
         await contractAccount.deployContract(data);
 
@@ -173,11 +185,11 @@ describe('with deploy contract', () => {
     });
 
     test('make function calls via account', async () => {
-        const result = await workingAccount.provider.callFunction(
+        const result = await workingAccount.provider.callFunction({
             contractId,
-            'hello', // this is the function defined in hello.wasm file that we are calling
-            { name: 'trex' }
-        );
+            method: 'hello', // this is the function defined in hello.wasm file that we are calling
+            args: { name: 'trex' },
+        });
         expect(result).toEqual('hello trex');
 
         const setCallValue = generateUniqueString('setCallPrefix');
@@ -187,7 +199,13 @@ describe('with deploy contract', () => {
             args: { value: setCallValue },
         });
         expect(getTransactionLastResult(result2)).toEqual(setCallValue);
-        expect(await workingAccount.provider.callFunction(contractId, 'getValue', {})).toEqual(setCallValue);
+        expect(
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+            })
+        ).toEqual(setCallValue);
     });
 
     test('view contract state', async () => {
@@ -223,21 +241,38 @@ describe('with deploy contract', () => {
         expect(await contract.view.getValue()).toEqual(setCallValue1);
 
         expect(
-            await workingAccount.provider.callFunction(contractId, 'getValue', {}, { finality: 'optimistic' })
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+                blockQuery: { finality: 'optimistic' },
+            })
         ).toEqual(setCallValue1);
 
-        expect(await workingAccount.provider.callFunction(contractId, 'getValue', {})).toEqual(setCallValue1);
+        expect(await workingAccount.provider.callFunction({ contractId, method: 'getValue', args: {} })).toEqual(
+            setCallValue1
+        );
 
         const block1 = await workingAccount.provider.viewBlock({ finality: 'optimistic' });
         const blockHash1 = block1.header.hash;
         const blockIndex1 = block1.header.height;
 
-        expect(await workingAccount.provider.callFunction(contractId, 'getValue', {}, { blockId: blockHash1 })).toEqual(
-            setCallValue1
-        );
+        expect(
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+                blockQuery: { blockId: blockHash1 },
+            })
+        ).toEqual(setCallValue1);
 
         expect(
-            await workingAccount.provider.callFunction(contractId, 'getValue', {}, { blockId: blockIndex1 })
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+                blockQuery: { blockId: blockIndex1 },
+            })
         ).toEqual(setCallValue1);
 
         const setCallValue2 = generateUniqueString('setCallPrefix');
@@ -246,30 +281,57 @@ describe('with deploy contract', () => {
         expect(await contract.view.getValue()).toEqual(setCallValue2);
 
         expect(
-            await workingAccount.provider.callFunction(contractId, 'getValue', {}, { finality: 'optimistic' })
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+                blockQuery: { finality: 'optimistic' },
+            })
         ).toEqual(setCallValue2);
 
-        expect(await workingAccount.provider.callFunction(contractId, 'getValue', {})).toEqual(setCallValue2);
-
-        // Old blockHash should still be value #1
-        expect(await workingAccount.provider.callFunction(contractId, 'getValue', {}, { blockId: blockHash1 })).toEqual(
-            setCallValue1
+        expect(await workingAccount.provider.callFunction({ contractId, method: 'getValue', args: {} })).toEqual(
+            setCallValue2
         );
 
+        // Old blockHash should still be value #1
         expect(
-            await workingAccount.provider.callFunction(contractId, 'getValue', {}, { blockId: blockIndex1 })
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+                blockQuery: { blockId: blockHash1 },
+            })
+        ).toEqual(setCallValue1);
+
+        expect(
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+                blockQuery: { blockId: blockIndex1 },
+            })
         ).toEqual(setCallValue1);
 
         const block2 = await workingAccount.provider.viewBlock({ finality: 'optimistic' });
         const blockHash2 = block2.header.hash;
         const blockIndex2 = block2.header.height;
 
-        expect(await workingAccount.provider.callFunction(contractId, 'getValue', {}, { blockId: blockHash2 })).toEqual(
-            setCallValue2
-        );
+        expect(
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+                blockQuery: { blockId: blockHash2 },
+            })
+        ).toEqual(setCallValue2);
 
         expect(
-            await workingAccount.provider.callFunction(contractId, 'getValue', {}, { blockId: blockIndex2 })
+            await workingAccount.provider.callFunction({
+                contractId,
+                method: 'getValue',
+                args: {},
+                blockQuery: { blockId: blockIndex2 },
+            })
         ).toEqual(setCallValue2);
     });
 
@@ -296,7 +358,11 @@ describe('with deploy contract', () => {
     });
 
     test('can get logs from raw view call', async () => {
-        const result = await nearjs.provider.callFunctionRaw(contract.contractId, 'returnHiWithLogs', {});
+        const result = await nearjs.provider.callFunctionRaw({
+            contractId: contract.contractId,
+            method: 'returnHiWithLogs',
+            args: {},
+        });
         expect(result.logs).toEqual(['loooog1', 'loooog2']);
     });
 
@@ -308,11 +374,11 @@ describe('with deploy contract', () => {
     });
 
     test('make viewFunction call with object format', async () => {
-        const result = await workingAccount.provider.callFunction(
+        const result = await workingAccount.provider.callFunction({
             contractId,
-            'hello', // this is the function defined in hello.wasm file that we are calling
-            { name: 'trex' }
-        );
+            method: 'hello', // this is the function defined in hello.wasm file that we are calling
+            args: { name: 'trex' },
+        });
         expect(result).toEqual('hello trex');
     });
 });
