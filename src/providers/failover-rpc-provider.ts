@@ -6,7 +6,6 @@
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
 
-import type { PublicKey } from '../crypto/index.js';
 import type { SignedTransaction } from '../transactions/index.js';
 import {
     type AccessKeyList,
@@ -26,7 +25,6 @@ import {
     type EpochValidatorInfo,
     type ExecutionOutcomeReceiptDetail,
     type FinalExecutionOutcome,
-    type FinalityReference,
     type GasPrice,
     type LightClientProof,
     type LightClientProofRequest,
@@ -40,7 +38,16 @@ import {
     type TxExecutionStatus,
     TypedError,
 } from '../types/index.js';
-import type { Provider } from './provider.js';
+import type {
+    CallFunctionArgs,
+    Provider,
+    ViewAccessKeyArgs,
+    ViewAccessKeyListArgs,
+    ViewAccountArgs,
+    ViewContractCodeArgs,
+    ViewContractStateArgs,
+    ViewTransactionStatusArgs,
+} from './provider.js';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
@@ -112,56 +119,32 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.getNextEpochSeatPrice());
     }
 
-    public async viewAccessKey(
-        accountId: string,
-        publicKey: PublicKey,
-        finalityQuery?: FinalityReference
-    ): Promise<AccessKeyView> {
-        return this.withBackoff((currentProvider) =>
-            currentProvider.viewAccessKey(accountId, publicKey, finalityQuery)
-        );
+    public async viewAccessKey(params: ViewAccessKeyArgs): Promise<AccessKeyView> {
+        return this.withBackoff((currentProvider) => currentProvider.viewAccessKey(params));
     }
 
-    public async viewAccessKeyList(accountId: string, finalityQuery?: FinalityReference): Promise<AccessKeyList> {
-        return this.withBackoff((currentProvider) => currentProvider.viewAccessKeyList(accountId, finalityQuery));
+    public async viewAccessKeyList(params: ViewAccessKeyListArgs): Promise<AccessKeyList> {
+        return this.withBackoff((currentProvider) => currentProvider.viewAccessKeyList(params));
     }
 
-    public async viewAccount(accountId: string, blockQuery?: BlockReference): Promise<AccountView> {
-        return this.withBackoff((currentProvider) => currentProvider.viewAccount(accountId, blockQuery));
+    public async viewAccount(params: ViewAccountArgs): Promise<AccountView> {
+        return this.withBackoff((currentProvider) => currentProvider.viewAccount(params));
     }
 
-    public async viewContractCode(accountId: string, blockQuery?: BlockReference): Promise<ContractCodeView> {
-        return this.withBackoff((currentProvider) => currentProvider.viewContractCode(accountId, blockQuery));
+    public async viewContractCode(params: ViewContractCodeArgs): Promise<ContractCodeView> {
+        return this.withBackoff((currentProvider) => currentProvider.viewContractCode(params));
     }
 
-    public async viewContractState(
-        accountId: string,
-        prefix?: string,
-        blockQuery?: BlockReference
-    ): Promise<ContractStateView> {
-        return this.withBackoff((currentProvider) => currentProvider.viewContractState(accountId, prefix, blockQuery));
+    public async viewContractState(params: ViewContractStateArgs): Promise<ContractStateView> {
+        return this.withBackoff((currentProvider) => currentProvider.viewContractState(params));
     }
 
-    public async callFunction<T extends SerializedReturnValue>(
-        accountId: string,
-        method: string,
-        args: Record<string, unknown>,
-        blockQuery?: BlockReference
-    ): Promise<T | undefined> {
-        return this.withBackoff((currentProvider) =>
-            currentProvider.callFunction<T>(accountId, method, args, blockQuery)
-        );
+    public async callFunction<T extends SerializedReturnValue>(params: CallFunctionArgs): Promise<T | undefined> {
+        return this.withBackoff((currentProvider) => currentProvider.callFunction<T>(params));
     }
 
-    public async callFunctionRaw(
-        accountId: string,
-        method: string,
-        args: Record<string, unknown>,
-        blockQuery?: BlockReference
-    ): Promise<CallContractViewFunctionResultRaw> {
-        return this.withBackoff((currentProvider) =>
-            currentProvider.callFunctionRaw(accountId, method, args, blockQuery)
-        );
+    public async callFunctionRaw(params: CallFunctionArgs): Promise<CallContractViewFunctionResultRaw> {
+        return this.withBackoff((currentProvider) => currentProvider.callFunctionRaw(params));
     }
 
     public async viewBlock(blockQuery: BlockReference): Promise<BlockResult> {
@@ -186,24 +169,14 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewValidators(params));
     }
 
-    public async viewTransactionStatus(
-        txHash: Uint8Array | string,
-        accountId: string,
-        waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'
-    ): Promise<FinalExecutionOutcome> {
-        return this.withBackoff((currentProvider) =>
-            currentProvider.viewTransactionStatus(txHash, accountId, waitUntil)
-        );
+    public async viewTransactionStatus(params: ViewTransactionStatusArgs): Promise<FinalExecutionOutcome> {
+        return this.withBackoff((currentProvider) => currentProvider.viewTransactionStatus(params));
     }
 
     public async viewTransactionStatusWithReceipts(
-        txHash: Uint8Array | string,
-        accountId: string,
-        waitUntil: TxExecutionStatus = 'EXECUTED_OPTIMISTIC'
+        params: ViewTransactionStatusArgs
     ): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>> {
-        return this.withBackoff((currentProvider) =>
-            currentProvider.viewTransactionStatusWithReceipts(txHash, accountId, waitUntil)
-        );
+        return this.withBackoff((currentProvider) => currentProvider.viewTransactionStatusWithReceipts(params));
     }
 
     public async viewTransactionReceipt(receiptId: string): Promise<ExecutionOutcomeReceiptDetail> {

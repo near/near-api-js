@@ -56,7 +56,10 @@ test('test sign transaction with relevant public key', async () => {
         new Uint8Array(new Array(32))
     );
 
-    const [hash, { signature }] = await signer.signTransaction(transaction);
+    const {
+        txHash: hash,
+        signedTransaction: { signature },
+    } = await signer.signTransaction(transaction);
 
     expect(Buffer.from(hash).toString('hex')).toBe('2571e3539ab5556e39441913e66abd07e634fb9850434006a719306100e641a2');
 
@@ -85,7 +88,7 @@ test('serialize and sign transfer tx object', async () => {
         blockHash
     );
 
-    const [, signedTx] = await signer.signTransaction(transaction);
+    const { signedTransaction: signedTx } = await signer.signTransaction(transaction);
 
     expect(Buffer.from(signedTx.signature.ed25519Signature!.data).toString('base64')).toEqual(
         'lpqDMyGG7pdV5IOTJVJYBuGJo9LSu0tHYOlEQ+l+HE8i3u7wBZqOlxMQDtpuGRRNp+ig735TmyBwi6HY0CG9AQ=='
@@ -249,7 +252,10 @@ test('test sign delegate action', async () => {
         publicKey: await signer.getPublicKey(),
     });
 
-    const [hash, { signature }] = await signer.signDelegateAction(delegateAction);
+    const {
+        delegateHash: hash,
+        signedDelegate: { signature },
+    } = await signer.signDelegateAction(delegateAction);
 
     expect(Buffer.from(hash).toString('hex')).toBe('6d35575b3566fddf04f79317c3e574eb89c5bc228c5e755f2a3179e164dbb36b');
 
