@@ -734,6 +734,7 @@ packages:
 
   near-api-js@file:..:
     resolution: {directory: .., type: directory}
+    engines: {node: '>=20.18.3', pnpm: '>=10.4.1'}
 
   near-sandbox@0.1.5:
     resolution: {integrity: sha512-oVXDaFXeB/tYPuE78pG505astePJWlo68u2qlJ8TcFxL4cT0b13Go5k+0/kpPDiJ0375LPzlcn7MdHvyNelWcA==}
