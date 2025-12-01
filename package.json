@@ -17,6 +17,18 @@
         ".": {
             "import": "./lib/index.js",
             "types": "./lib/index.d.ts"
+        },
+        "./tokens": {
+            "import": "./lib/tokens/index.js",
+            "types": "./lib/tokens/index.d.ts"
+        },
+        "./tokens/mainnet": {
+            "import": "./lib/tokens/mainnet/index.js",
+            "types": "./lib/tokens/mainnet/index.d.ts"
+        },
+        "./tokens/testnet": {
+            "import": "./lib/tokens/testnet/index.js",
+            "types": "./lib/tokens/testnet/index.d.ts"
         }
     },
     "dependencies": {

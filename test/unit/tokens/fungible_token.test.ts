@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { FungibleToken } from '../../../src';
+import { FungibleToken } from '../../../src/tokens';
 
 const FT = new FungibleToken('ft.testnet', { decimals: 6, symbol: 'TEST', name: 'Test Token' });
 

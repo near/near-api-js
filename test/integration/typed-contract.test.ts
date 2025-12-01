@@ -1,7 +1,8 @@
 import { readFile } from 'fs/promises';
 import { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, expect, test } from 'vitest';
-import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString, NEAR, TypedContract } from '../../src';
+import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString, TypedContract } from '../../src';
+import { NEAR } from '../../src/tokens';
 import { abi } from '../contracts/guestbook/abi.js';
 import { getRpcUrl, getSecretKey } from './worker.js';
 
