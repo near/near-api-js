@@ -49,8 +49,11 @@ jobs:
     - name: Check exports
       run: bun run check-exports
     
+    - name: Install E2E Dependencies
+      run: cd e2e && bun install
+
     - name: E2E tests
-      run: cd e2e && bun install && bun run test
+      run: cd e2e && bun run test
 
   changeset-checks:
     runs-on: ubuntu-latest
