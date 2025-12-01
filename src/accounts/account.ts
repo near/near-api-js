@@ -1,6 +1,6 @@
-import { PublicKey } from '../crypto/index.js';
+import { type KeyPairString, PublicKey } from '../crypto/index.js';
 import type { Provider } from '../providers/index.js';
-import type { SignedMessage, Signer } from '../signers/index.js';
+import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
 import type { SignDelegateActionReturn } from '../signers/signer.js';
 import type { FungibleToken, NativeToken } from '../tokens/index.js';
 import { NEAR } from '../tokens/index.js';
@@ -147,10 +147,14 @@ export class Account {
     public readonly provider: Provider;
     private signer?: Signer;
 
-    constructor(accountId: string, provider: Provider, signer?: Signer) {
+    constructor(accountId: string, provider: Provider, signer?: Signer | KeyPairString) {
         this.accountId = accountId;
         this.provider = provider;
-        this.signer = signer;
+        if (typeof signer === 'string') {
+            this.signer = KeyPairSigner.fromSecretKey(signer);
+        } else {
+            this.signer = signer;
+        }
     }
 
     /**
