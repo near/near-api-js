@@ -22,6 +22,4 @@ lib/
 # Generated test files
 test-keys/
 
-.turbo
-
 typedoc-docs/

@@ -7,10 +7,9 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "engines": {
-        "node": ">=20.18.3",
-        "pnpm": ">=10.4.1"
+        "node": ">=20.18.3"
     },
-    "packageManager": "pnpm@10.4.1",
+    "packageManager": "bun@1.1.42",
     "homepage": "https://github.com/near/near-api-js",
     "type": "module",
     "exports": {
@@ -55,15 +54,15 @@
     "license": "(MIT AND Apache-2.0)",
     "scripts": {
         "compile": "tsc -p ./tsconfig.json",
-        "dev": "pnpm compile -w",
-        "prebuild": "pnpm clean",
+        "dev": "bun run compile -w",
+        "prebuild": "bun run clean",
         "build": "tsc -p ./tsconfig.json",
         "test": "vitest run test",
         "typecheck": "tsc --noEmit -p ./tsconfig.typecheck.json",
         "lint": "biome check",
-        "prefuzz": "pnpm build",
+        "prefuzz": "bun run build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib",
+        "clean": "rimraf lib",
         "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
         "docs:generate": "typedoc",
         "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",

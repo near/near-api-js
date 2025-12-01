@@ -9,7 +9,7 @@ Happy contributing!
 - [ ] I have read the [Contributing Guidelines on pull requests](https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md).
 - [ ] Commit messages follow the [conventional commits](https://www.conventionalcommits.org/) spec
 - [ ] **If this is a code change**: I have written unit tests.
-- [ ] **If this changes code in a published package**: I have run `pnpm changeset` to create a `changeset` JSON document appropriate for this change.
+- [ ] **If this changes code in a published package**: I have run `bun changeset` to create a `changeset` JSON document appropriate for this change.
 - [ ] **If this is a new API or substantial change**: the PR has an accompanying issue (closes #0000) and the maintainers have approved on my working plan.
 
 ## Motivation

@@ -9,7 +9,7 @@ npm install near-api-js
 # or
 yarn add near-api-js
 # or
-pnpm add near-api-js
+bun add near-api-js
 ```
 
 ## Why near-api-js?

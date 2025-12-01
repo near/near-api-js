@@ -1,3 +1,3 @@
 #!/bin/sh
 
-pnpm commitlint --edit $1
+bun commitlint --edit $1
