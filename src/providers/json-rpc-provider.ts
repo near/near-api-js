@@ -133,7 +133,7 @@ export class JsonRpcProvider implements Provider {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } =
             await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
-        const { current_validators: currentValidators } = await this.viewValidators(null);
+        const { current_validators: currentValidators } = await this.viewValidators();
 
         // hard-coded in the protocol
         const maxNumberOfSeats = 300;
@@ -145,7 +145,7 @@ export class JsonRpcProvider implements Provider {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } =
             await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
-        const { next_validators: nextValidators } = await this.viewValidators(null);
+        const { next_validators: nextValidators } = await this.viewValidators();
 
         // hard-coded in the protocol
         const maxNumberOfSeats = 300;
@@ -294,8 +294,8 @@ export class JsonRpcProvider implements Provider {
      * - `{ epochId }`: Epoch hash.
      * - `null`: Current epoch.
      */
-    public async viewValidators(params: ViewValidatorsArgs): Promise<EpochValidatorInfo> {
-        if (params === null) return this.sendJsonRpc('validators', [null]);
+    public async viewValidators(params?: ViewValidatorsArgs): Promise<EpochValidatorInfo> {
+        if (typeof params === 'undefined') return this.sendJsonRpc('validators', [null]);
 
         if (typeof params === 'object' && 'blockId' in params)
             return this.sendJsonRpc('validators', { block_id: params.blockId });

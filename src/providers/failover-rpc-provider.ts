@@ -164,7 +164,7 @@ export class FailoverRpcProvider implements Provider {
     }
 
     public async viewValidators(
-        params: { blockId: string | number } | { epochId: string } | null
+        params?: { blockId: string | number } | { epochId: string }
     ): Promise<EpochValidatorInfo> {
         return this.withBackoff((currentProvider) => currentProvider.viewValidators(params));
     }
