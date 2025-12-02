@@ -11,7 +11,8 @@ describe('Access Keys E2E', () => {
     beforeAll(async () => {
         worker = await Worker.init();
         root = worker.rootAccount;
-        provider = new JsonRpcProvider({ url: worker.manager.config.rpcAddr });
+        const rpcAddr = (worker as any).manager.config.rpcAddr;
+        provider = new JsonRpcProvider({ url: rpcAddr });
 
         const accountId = `keys-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {

@@ -11,7 +11,8 @@ describe('Account Operations E2E', () => {
     beforeAll(async () => {
         worker = await Worker.init();
         root = worker.rootAccount;
-        provider = new JsonRpcProvider({ url: worker.manager.config.rpcAddr });
+        const rpcAddr = (worker as any).manager.config.rpcAddr;
+        provider = new JsonRpcProvider({ url: rpcAddr });
 
         // Create a test account using near-workspaces
         const accountId = `test-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;

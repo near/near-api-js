@@ -17,7 +17,8 @@ describe('Cryptographic Operations E2E', () => {
     beforeAll(async () => {
         worker = await Worker.init();
         root = worker.rootAccount;
-        provider = new JsonRpcProvider({ url: worker.manager.config.rpcAddr });
+        const rpcAddr = (worker as any).manager.config.rpcAddr;
+        provider = new JsonRpcProvider({ url: rpcAddr });
     });
 
     afterAll(async () => {
