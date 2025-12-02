@@ -668,6 +668,8 @@ export class Account {
     /**
      * This function simply calls the `signNep413Message` method of the Signer
      *
+     * @deprecated This method is deprecated and will be removed in future versions. Please use `signMessage` from `near-api-js/nep413` to sign NEP-413 messages.
+     *
      * @param options
      * @param options.message The message to be signed (e.g. "authenticating")
      * @param options.recipient Who will receive the message (e.g. auth.app.com)

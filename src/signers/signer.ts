@@ -1,6 +1,6 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { type Schema, serialize } from 'borsh';
 import { KeyType, type PublicKey } from '../crypto/index.js';
+import { type MessagePayload, serializeMessage } from '../nep413/schema.js';
 import {
     type DelegateAction,
     encodeDelegateAction,
@@ -11,18 +11,11 @@ import {
     type Transaction,
 } from '../transactions/index.js';
 
-export interface SignMessageParams {
-    message: string; // The message that wants to be transmitted.
-    recipient: string; // The recipient to whom the message is destined (e.g. "alice.near" or "myapp.com").
-    nonce: Uint8Array; // A nonce that uniquely identifies this instance of the message, denoted as a 32 bytes array (a fixed `Buffer` in JS/TS).
-    callbackUrl?: string; // Optional, applicable to browser wallets (e.g. MyNearWallet). The URL to call after the signing process. Defaults to `window.location.href`.
-}
-
 export interface SignedMessage {
     accountId: string; // The account name to which the publicKey corresponds as plain text (e.g. "alice.near")
     publicKey: PublicKey; // The public counterpart of the key used to sign, expressed as a string with format "<key-type>:<base58-key-bytes>" (e.g. "ed25519:6TupyNrcHGTt5XRLmHTc2KGaiSbjhQi1KHtCXTgbcr4Y")
     signature: Uint8Array; // The bytes representation of the signature.
-    state?: string; // Optional, applicable to browser wallets (e.g. MyNearWallet). The same state passed in SignMessageParams.
+    state?: string; // Optional, applicable to browser wallets (e.g. MyNearWallet). The same state passed in MessagePayload.
 }
 
 export interface SignTransactionReturn {
@@ -34,15 +27,6 @@ export interface SignDelegateActionReturn {
     delegateHash: Uint8Array;
     signedDelegate: SignedDelegate;
 }
-
-export const Nep413MessageSchema: Schema = {
-    struct: {
-        message: 'string',
-        nonce: { array: { type: 'u8', len: 32 } },
-        recipient: 'string',
-        callbackUrl: { option: 'string' },
-    },
-};
 
 /**
  * General signing interface, can be used for in memory signing, RPC singing, external wallet, HSM, etc.
@@ -71,19 +55,10 @@ export abstract class Signer {
      * @param accountId - The account name to which the public key corresponds (e.g. "alice.near").
      * @param params - The parameters including message, recipient, nonce, and optional callbackUrl.
      */
-    public async signNep413Message(accountId: string, params: SignMessageParams): Promise<SignedMessage> {
+    public async signNep413Message(accountId: string, params: MessagePayload): Promise<SignedMessage> {
         if (params.nonce.length !== 32) throw new Error('Nonce must be exactly 32 bytes long');
 
-        // 2**31 + 413 == 2147484061
-        const PREFIX = 2147484061;
-        const serializedPrefix = serialize('u32', PREFIX);
-        const serializedParams = serialize(Nep413MessageSchema, params);
-
-        const serializedPayload = new Uint8Array(serializedPrefix.length + serializedParams.length);
-        serializedPayload.set(serializedPrefix);
-        serializedPayload.set(serializedParams, serializedPrefix.length);
-
-        const hash = new Uint8Array(sha256(serializedPayload));
+        const hash = serializeMessage(params);
 
         const signature = await this.signBytes(hash);
         return {

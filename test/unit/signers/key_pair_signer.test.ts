@@ -10,9 +10,9 @@ import {
     encodeTransaction,
     KeyPair,
     KeyPairSigner,
-    Nep413MessageSchema,
     PublicKey,
 } from '../../../src';
+import { Nep413MessageSchema } from '../../../src/nep413/schema';
 
 global.TextEncoder = TextEncoder;
 
