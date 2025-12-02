@@ -26,10 +26,10 @@ describe('Transactions E2E', () => {
 
         const accountId = `txn-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '100 N',
+            initialBalance: '10000000000000000000000000',
         });
 
-        const keyPair = KeyPair.fromString(subAccount.getKey().toString());
+        const keyPair = KeyPair.fromString((await subAccount.getKey()).toString());
         const signer = new KeyPairSigner(keyPair);
         testAccount = new Account(subAccount.accountId, provider, signer);
     });
@@ -40,7 +40,7 @@ describe('Transactions E2E', () => {
 
     it('should execute a simple transfer transaction', async () => {
         const receiverId = `recv-${Date.now()}.${testAccount.accountId}`;
-        const receiverKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const receiverKeyPair = KeyPair.fromRandom('ed25519');
 
         await testAccount.createAccount({
             newAccountId: receiverId,
@@ -68,7 +68,7 @@ describe('Transactions E2E', () => {
 
     it('should create and sign transaction manually', async () => {
         const receiverId = `manual-recv-${Date.now()}.${testAccount.accountId}`;
-        const receiverKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const receiverKeyPair = KeyPair.fromRandom('ed25519');
 
         await testAccount.createAccount({
             newAccountId: receiverId,
@@ -107,7 +107,7 @@ describe('Transactions E2E', () => {
 
     it('should execute batch transaction with multiple actions', async () => {
         const receiverId = `batch-recv-${Date.now()}.${testAccount.accountId}`;
-        const receiverKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const receiverKeyPair = KeyPair.fromRandom('ed25519');
 
         const result = await testAccount.signAndSendTransaction({
             receiverId,
@@ -131,7 +131,7 @@ describe('Transactions E2E', () => {
 
     it('should get transaction result', async () => {
         const receiverId = `result-recv-${Date.now()}.${testAccount.accountId}`;
-        const receiverKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const receiverKeyPair = KeyPair.fromRandom('ed25519');
 
         const result = await testAccount.createAccount({
             newAccountId: receiverId,
@@ -150,7 +150,7 @@ describe('Transactions E2E', () => {
 
     it('should handle transaction with different key types', async () => {
         // Create account with secp256k1 key
-        const secp256k1KeyPair = KeyPair.fromRandom(KeyType.SECP256K1);
+        const secp256k1KeyPair = KeyPair.fromRandom('secp256k1');
         const secpAccountId = `secp-txn-${Date.now()}.${testAccount.accountId}`;
 
         await testAccount.createAccount({
@@ -167,7 +167,7 @@ describe('Transactions E2E', () => {
 
         // Execute transaction using secp256k1 key
         const receiverId = `secp-recv-${Date.now()}.${testAccount.accountId}`;
-        const receiverKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const receiverKeyPair = KeyPair.fromRandom('ed25519');
 
         const result = await secpAccount.createAccount({
             newAccountId: receiverId,
@@ -190,9 +190,9 @@ describe('Transactions E2E', () => {
         const account2Id = `seq2-${Date.now()}.${testAccount.accountId}`;
         const account3Id = `seq3-${Date.now()}.${testAccount.accountId}`;
 
-        const keyPair1 = KeyPair.fromRandom(KeyType.ED25519);
-        const keyPair2 = KeyPair.fromRandom(KeyType.ED25519);
-        const keyPair3 = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPair1 = KeyPair.fromRandom('ed25519');
+        const keyPair2 = KeyPair.fromRandom('ed25519');
+        const keyPair3 = KeyPair.fromRandom('ed25519');
 
         // Execute multiple transactions sequentially
         await testAccount.createAccount({

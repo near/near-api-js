@@ -16,10 +16,10 @@ describe('Access Keys E2E', () => {
 
         const accountId = `keys-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '50 N',
+            initialBalance: '10000000000000000000000000',
         });
 
-        const keyPair = KeyPair.fromString(subAccount.getKey().toString());
+        const keyPair = KeyPair.fromString((await subAccount.getKey()).toString());
         const signer = new KeyPairSigner(keyPair);
         testAccount = new Account(subAccount.accountId, provider, signer);
     });
@@ -29,7 +29,7 @@ describe('Access Keys E2E', () => {
     });
 
     it('should add full access key', async () => {
-        const newKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const newKeyPair = KeyPair.fromRandom('ed25519');
         const newPublicKey = newKeyPair.getPublicKey();
 
         await testAccount.addKey(newPublicKey);
@@ -46,12 +46,12 @@ describe('Access Keys E2E', () => {
     });
 
     it('should add function call access key', async () => {
-        const newKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const newKeyPair = KeyPair.fromRandom('ed25519');
         const newPublicKey = newKeyPair.getPublicKey();
 
         // Create a contract account for the function call key
         const contractId = `contract-${Date.now()}.${testAccount.accountId}`;
-        const contractKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const contractKeyPair = KeyPair.fromRandom('ed25519');
         
         await testAccount.createAccount({
             newAccountId: contractId,
@@ -74,7 +74,7 @@ describe('Access Keys E2E', () => {
     });
 
     it('should delete access key', async () => {
-        const keyPairToDelete = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPairToDelete = KeyPair.fromRandom('ed25519');
         const publicKeyToDelete = keyPairToDelete.getPublicKey();
 
         // Add the key first
@@ -115,7 +115,7 @@ describe('Access Keys E2E', () => {
     });
 
     it('should add secp256k1 access key', async () => {
-        const newKeyPair = KeyPair.fromRandom(KeyType.SECP256K1);
+        const newKeyPair = KeyPair.fromRandom('secp256k1');
         const newPublicKey = newKeyPair.getPublicKey();
 
         await testAccount.addKey(newPublicKey);
@@ -132,9 +132,9 @@ describe('Access Keys E2E', () => {
     });
 
     it('should handle multiple key operations in sequence', async () => {
-        const key1 = KeyPair.fromRandom(KeyType.ED25519);
-        const key2 = KeyPair.fromRandom(KeyType.ED25519);
-        const key3 = KeyPair.fromRandom(KeyType.ED25519);
+        const key1 = KeyPair.fromRandom('ed25519');
+        const key2 = KeyPair.fromRandom('ed25519');
+        const key3 = KeyPair.fromRandom('ed25519');
 
         // Add multiple keys
         await testAccount.addKey(key1.getPublicKey());

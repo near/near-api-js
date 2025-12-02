@@ -16,10 +16,10 @@ describe('Provider Operations E2E', () => {
 
         const accountId = `provider-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '50 N',
+            initialBalance: '10000000000000000000000000',
         });
 
-        const keyPair = KeyPair.fromString(subAccount.getKey().toString());
+        const keyPair = KeyPair.fromString((await subAccount.getKey()).toString());
         const signer = new KeyPairSigner(keyPair);
         testAccount = new Account(subAccount.accountId, provider, signer);
     });
@@ -112,7 +112,7 @@ describe('Provider Operations E2E', () => {
     it('should get transaction status', async () => {
         // Create a transaction
         const receiverId = `tx-status-${Date.now()}.${testAccount.accountId}`;
-        const keyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPair = KeyPair.fromRandom('ed25519');
 
         const txResult = await testAccount.createAccount({
             newAccountId: receiverId,
@@ -142,7 +142,7 @@ describe('Provider Operations E2E', () => {
 
     it('should send transaction', async () => {
         const receiverId = `send-tx-${Date.now()}.${testAccount.accountId}`;
-        const keyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPair = KeyPair.fromRandom('ed25519');
 
         const result = await testAccount.createAccount({
             newAccountId: receiverId,

@@ -26,7 +26,7 @@ describe('Cryptographic Operations E2E', () => {
     });
 
     it('should create and use ED25519 key pair', async () => {
-        const keyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPair = KeyPair.fromRandom('ed25519');
         const publicKey = keyPair.getPublicKey();
 
         expect(keyPair).toBeDefined();
@@ -36,12 +36,12 @@ describe('Cryptographic Operations E2E', () => {
         // Create account with this key pair
         const accountId = `ed25519-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '10 N',
+            initialBalance: '10000000000000000000000000',
         });
 
         // Replace key with our generated one
         await subAccount.updateAccessKey(
-            subAccount.getKey().toString(),
+            (await subAccount.getKey()).toString(),
             {
                 nonce: 0,
                 permission: 'FullAccess',
@@ -55,7 +55,7 @@ describe('Cryptographic Operations E2E', () => {
     });
 
     it('should create and use SECP256K1 key pair', async () => {
-        const keyPair = KeyPair.fromRandom(KeyType.SECP256K1);
+        const keyPair = KeyPair.fromRandom('secp256k1');
         const publicKey = keyPair.getPublicKey();
 
         expect(keyPair).toBeDefined();
@@ -65,13 +65,13 @@ describe('Cryptographic Operations E2E', () => {
         // Create account with secp256k1 key
         const accountId = `secp-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '10 N',
+            initialBalance: '10000000000000000000000000',
         });
 
         const account = new Account(
             accountId,
             provider,
-            new KeyPairSigner(KeyPair.fromString(subAccount.getKey().toString()))
+            new KeyPairSigner(KeyPair.fromString((await subAccount.getKey()).toString()))
         );
 
         // Add secp256k1 key to account
@@ -87,7 +87,7 @@ describe('Cryptographic Operations E2E', () => {
     });
 
     it('should parse key pair from string', async () => {
-        const originalKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const originalKeyPair = KeyPair.fromRandom('ed25519');
         const keyString = originalKeyPair.toString();
 
         const parsedKeyPair = KeyPair.fromString(keyString);
@@ -99,7 +99,7 @@ describe('Cryptographic Operations E2E', () => {
     });
 
     it('should parse public key from string', async () => {
-        const keyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPair = KeyPair.fromRandom('ed25519');
         const publicKey = keyPair.getPublicKey();
         const publicKeyString = publicKey.toString();
 
@@ -111,7 +111,7 @@ describe('Cryptographic Operations E2E', () => {
     });
 
     it('should sign and verify message with ED25519', async () => {
-        const keyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPair = KeyPair.fromRandom('ed25519');
         const message = new Uint8Array([1, 2, 3, 4, 5]);
 
         const signature = keyPair.sign(message);
@@ -127,7 +127,7 @@ describe('Cryptographic Operations E2E', () => {
     });
 
     it('should sign and verify message with SECP256K1', async () => {
-        const keyPair = KeyPair.fromRandom(KeyType.SECP256K1);
+        const keyPair = KeyPair.fromRandom('secp256k1');
         const message = new Uint8Array([1, 2, 3, 4, 5]);
 
         const signature = keyPair.sign(message);
@@ -143,7 +143,7 @@ describe('Cryptographic Operations E2E', () => {
     });
 
     it('should handle key pair signer operations', async () => {
-        const keyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPair = KeyPair.fromRandom('ed25519');
         const signer = new KeyPairSigner(keyPair);
 
         const publicKey = await signer.getPublicKey();
@@ -158,7 +158,7 @@ describe('Cryptographic Operations E2E', () => {
     });
 
     it('should create key pair from secret key', async () => {
-        const originalKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const originalKeyPair = KeyPair.fromRandom('ed25519');
         const secretKey = originalKeyPair.toString();
 
         const signer = KeyPairSigner.fromSecretKey(secretKey);
@@ -170,17 +170,17 @@ describe('Cryptographic Operations E2E', () => {
     it('should handle different key types in same account', async () => {
         const accountId = `multi-key-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '20 N',
+            initialBalance: '10000000000000000000000000',
         });
 
         const account = new Account(
             accountId,
             provider,
-            new KeyPairSigner(KeyPair.fromString(subAccount.getKey().toString()))
+            new KeyPairSigner(KeyPair.fromString((await subAccount.getKey()).toString()))
         );
 
-        const ed25519Key = KeyPair.fromRandom(KeyType.ED25519);
-        const secp256k1Key = KeyPair.fromRandom(KeyType.SECP256K1);
+        const ed25519Key = KeyPair.fromRandom('ed25519');
+        const secp256k1Key = KeyPair.fromRandom('secp256k1');
 
         // Add both types of keys
         await account.addKey(ed25519Key.getPublicKey());
@@ -204,18 +204,18 @@ describe('Cryptographic Operations E2E', () => {
 
     it('should use different signers for same account', async () => {
         const accountId = `signer-test-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
-        const keyPair1 = KeyPair.fromRandom(KeyType.ED25519);
-        const keyPair2 = KeyPair.fromRandom(KeyType.ED25519);
+        const keyPair1 = KeyPair.fromRandom('ed25519');
+        const keyPair2 = KeyPair.fromRandom('ed25519');
 
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '20 N',
+            initialBalance: '10000000000000000000000000',
         });
 
         // First use the root key to add our keys
         const tempAccount = new Account(
             accountId,
             provider,
-            new KeyPairSigner(KeyPair.fromString(subAccount.getKey().toString()))
+            new KeyPairSigner(KeyPair.fromString((await subAccount.getKey()).toString()))
         );
 
         await tempAccount.addKey(keyPair1.getPublicKey());
@@ -237,8 +237,8 @@ describe('Cryptographic Operations E2E', () => {
         // Both should be able to sign transactions
         const receiverId1 = `recv1-${Date.now()}.${accountId}`;
         const receiverId2 = `recv2-${Date.now()}.${accountId}`;
-        const receiverKey1 = KeyPair.fromRandom(KeyType.ED25519);
-        const receiverKey2 = KeyPair.fromRandom(KeyType.ED25519);
+        const receiverKey1 = KeyPair.fromRandom('ed25519');
+        const receiverKey2 = KeyPair.fromRandom('ed25519');
 
         await account1.createAccount({
             newAccountId: receiverId1,

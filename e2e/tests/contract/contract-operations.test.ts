@@ -21,10 +21,10 @@ describe('Contract Deployment and Interaction E2E', () => {
 
         const accountId = `deployer-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '100 N',
+            initialBalance: '10000000000000000000000000',
         });
 
-        const keyPair = KeyPair.fromString(subAccount.getKey().toString());
+        const keyPair = KeyPair.fromString((await subAccount.getKey()).toString());
         const signer = new KeyPairSigner(keyPair);
         testAccount = new Account(subAccount.accountId, provider, signer);
     });
@@ -35,7 +35,7 @@ describe('Contract Deployment and Interaction E2E', () => {
 
     it('should deploy a contract', async () => {
         const contractId = `contract-${Date.now()}.${testAccount.accountId}`;
-        const contractKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const contractKeyPair = KeyPair.fromRandom('ed25519');
 
         // Create contract account
         await testAccount.createAccount({
@@ -66,7 +66,7 @@ describe('Contract Deployment and Interaction E2E', () => {
         // Use the contract deployed in previous test
         if (!contractAccount) {
             const contractId = `view-contract-${Date.now()}.${testAccount.accountId}`;
-            const contractKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+            const contractKeyPair = KeyPair.fromRandom('ed25519');
 
             await testAccount.createAccount({
                 newAccountId: contractId,
@@ -97,7 +97,7 @@ describe('Contract Deployment and Interaction E2E', () => {
 
     it('should call contract change method', async () => {
         const contractId = `change-contract-${Date.now()}.${testAccount.accountId}`;
-        const contractKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const contractKeyPair = KeyPair.fromRandom('ed25519');
 
         await testAccount.createAccount({
             newAccountId: contractId,
@@ -142,7 +142,7 @@ describe('Contract Deployment and Interaction E2E', () => {
 
     it('should use TypedContract for contract interaction', async () => {
         const contractId = `typed-contract-${Date.now()}.${testAccount.accountId}`;
-        const contractKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const contractKeyPair = KeyPair.fromRandom('ed25519');
 
         await testAccount.createAccount({
             newAccountId: contractId,
@@ -174,7 +174,7 @@ describe('Contract Deployment and Interaction E2E', () => {
 
     it('should handle contract with payable methods', async () => {
         const contractId = `payable-contract-${Date.now()}.${testAccount.accountId}`;
-        const contractKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const contractKeyPair = KeyPair.fromRandom('ed25519');
 
         await testAccount.createAccount({
             newAccountId: contractId,
@@ -219,7 +219,7 @@ describe('Contract Deployment and Interaction E2E', () => {
 
     it('should call batch contract operations', async () => {
         const contractId = `batch-contract-${Date.now()}.${testAccount.accountId}`;
-        const contractKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const contractKeyPair = KeyPair.fromRandom('ed25519');
 
         await testAccount.createAccount({
             newAccountId: contractId,

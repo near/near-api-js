@@ -17,10 +17,10 @@ describe('Account Operations E2E', () => {
         // Create a test account using near-workspaces
         const accountId = `test-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         const subAccount = await root.createSubAccount(accountId, {
-            initialBalance: '50 N',
+            initialBalance: '10000000000000000000000000',
         });
 
-        const keyPair = KeyPair.fromString(subAccount.getKey().toString());
+        const keyPair = KeyPair.fromString((await subAccount.getKey()).toString());
         const signer = new KeyPairSigner(keyPair);
         testAccount = new Account(subAccount.accountId, provider, signer);
     });
@@ -42,7 +42,7 @@ describe('Account Operations E2E', () => {
 
     it('should create a new account', async () => {
         const newAccountId = `sub-${Date.now()}-${Math.floor(Math.random() * 1000000)}.${testAccount.accountId}`;
-        const newKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const newKeyPair = KeyPair.fromRandom('ed25519');
         const newPublicKey = newKeyPair.getPublicKey();
 
         await testAccount.createAccount({
@@ -65,7 +65,7 @@ describe('Account Operations E2E', () => {
     it('should transfer NEAR tokens', async () => {
         // Create receiver account
         const receiverId = `receiver-${Date.now()}-${Math.floor(Math.random() * 1000000)}.${testAccount.accountId}`;
-        const receiverKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const receiverKeyPair = KeyPair.fromRandom('ed25519');
         
         await testAccount.createAccount({
             newAccountId: receiverId,
@@ -97,7 +97,7 @@ describe('Account Operations E2E', () => {
     it('should delete account', async () => {
         // Create an account to delete
         const accountToDeleteId = `delete-${Date.now()}-${Math.floor(Math.random() * 1000000)}.${testAccount.accountId}`;
-        const deleteKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const deleteKeyPair = KeyPair.fromRandom('ed25519');
         
         await testAccount.createAccount({
             newAccountId: accountToDeleteId,
@@ -135,7 +135,7 @@ describe('Account Operations E2E', () => {
 
     it('should create account with secp256k1 key', async () => {
         const newAccountId = `secp-${Date.now()}-${Math.floor(Math.random() * 1000000)}.${testAccount.accountId}`;
-        const newKeyPair = KeyPair.fromRandom(KeyType.SECP256K1);
+        const newKeyPair = KeyPair.fromRandom('secp256k1');
         const newPublicKey = newKeyPair.getPublicKey();
 
         await testAccount.createAccount({
@@ -156,7 +156,7 @@ describe('Account Operations E2E', () => {
 
         // Verify the account can sign transactions with secp256k1
         const receiverId = `recv-${Date.now()}.${testAccount.accountId}`;
-        const receiverKeyPair = KeyPair.fromRandom(KeyType.ED25519);
+        const receiverKeyPair = KeyPair.fromRandom('ed25519');
         
         await newAccount.createAccount({
             newAccountId: receiverId,
