@@ -36,6 +36,20 @@ afterAll(async () => {
     await worker.tearDown();
 });
 
+test('create instance of Account with string secret key', async () => {
+    const account = new Account(
+        'test.near',
+        nearjs.provider,
+        'ed25519:3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv'
+    );
+
+    const signer = account.getSigner();
+    expect(signer).toBeInstanceOf(KeyPairSigner);
+
+    const pk = await signer!.getPublicKey();
+    expect(pk.toString()).toBe('ed25519:Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC');
+});
+
 test('view pre-defined account works and returns correct name', async () => {
     const status = await workingAccount.getState();
     expect(status.codeHash).toEqual('11111111111111111111111111111111');

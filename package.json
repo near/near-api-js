@@ -1,7 +1,7 @@
 {
     "name": "near-api-js",
     "description": "JavaScript library to interact with NEAR Protocol via RPC API",
-    "version": "6.5.1",
+    "version": "7.0.0-rc.0",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/near/near-api-js.git"
@@ -17,6 +17,22 @@
         ".": {
             "import": "./lib/index.js",
             "types": "./lib/index.d.ts"
+        },
+        "./tokens": {
+            "import": "./lib/tokens/index.js",
+            "types": "./lib/tokens/index.d.ts"
+        },
+        "./tokens/mainnet": {
+            "import": "./lib/tokens/mainnet/index.js",
+            "types": "./lib/tokens/mainnet/index.d.ts"
+        },
+        "./tokens/testnet": {
+            "import": "./lib/tokens/testnet/index.js",
+            "types": "./lib/tokens/testnet/index.d.ts"
+        },
+        "./nep413": {
+            "import": "./lib/nep413/index.js",
+            "types": "./lib/nep413/index.d.ts"
         }
     },
     "dependencies": {

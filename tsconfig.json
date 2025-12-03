@@ -29,5 +29,11 @@
         "noUnusedParameters": true,
         "isolatedModules": true
     },
-    "include": ["src/index.ts"]
+    "include": [
+        "src/index.ts",
+        "src/tokens/index.ts",
+        "src/tokens/mainnet/index.ts",
+        "src/tokens/testnet/index.ts",
+        "src/nep413/index.ts"
+    ]
 }
