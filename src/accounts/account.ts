@@ -385,7 +385,7 @@ export class Account {
         const signedTx = await this.createSignedTransaction({
             receiverId,
             actions,
-            signer
+            signer,
         });
 
         const result = await this.provider.sendTransactionUntil(signedTx, waitUntil);
@@ -417,7 +417,7 @@ export class Account {
                     actions,
                     waitUntil,
                     throwOnFailure,
-                    signer
+                    signer,
                 });
             })
         );
