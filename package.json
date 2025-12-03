@@ -29,6 +29,10 @@
         "./tokens/testnet": {
             "import": "./lib/tokens/testnet/index.js",
             "types": "./lib/tokens/testnet/index.d.ts"
+        },
+        "./nep413": {
+            "import": "./lib/nep413/index.js",
+            "types": "./lib/nep413/index.d.ts"
         }
     },
     "dependencies": {
