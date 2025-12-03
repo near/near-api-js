@@ -22,17 +22,17 @@ type IsNullable<T> = [null] extends [T] ? true : false;
 
 type IsNever<T> = [T] extends [never] ? true : false;
 
-export type IsNarrowable<T, U> = IsNever<(T extends U ? true : false) & (U extends T ? false : true)> extends true
-    ? false
-    : true;
+export type IsNarrowable<T, U> =
+    IsNever<(T extends U ? true : false) & (U extends T ? false : true)> extends true ? false : true;
 
-type IsFullyOptional<T> = IsNever<keyof T> extends true
-    ? true
-    : {
-            [K in keyof T]-?: {} extends Pick<T, K> ? true : false;
-        }[keyof T] extends true
-      ? true
-      : false;
+type IsFullyOptional<T> =
+    IsNever<keyof T> extends true
+        ? true
+        : {
+                [K in keyof T]-?: {} extends Pick<T, K> ? true : false;
+            }[keyof T] extends true
+          ? true
+          : false;
 
 type Prettify<T> = {
     [K in keyof T]: T[K];
