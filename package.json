@@ -79,10 +79,10 @@
         "lint": "biome check",
         "prefuzz": "bun run build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "rimraf lib",
+        "clean": "bun rimraf lib",
         "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
         "docs:generate": "typedoc",
-        "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
+        "autoclave": "bun rimraf lib && bun rimraf node_modules && bun rimraf coverage && bun rimraf node_modules && bun rimraf e2e/node_modules && bun rimraf e2e/coverage && bun rimraf e2e/tests/node_modules",
         "release": "changeset publish"
     },
     "files": [
