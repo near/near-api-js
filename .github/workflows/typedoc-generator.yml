@@ -1,16 +1,15 @@
 name: Deploy TypeDoc on GitHub pages
 
 on:
-    push:
-      branches:
-        master  
+  push:
+    branches: master
 
 env:
   NODE_VERSION: 20.18.3
-  ENTRY_FILE: 'packages'
-  CONFIG_PATH: 'tsconfig.base.json'
+  ENTRY_FILE: "packages"
+  CONFIG_PATH: "tsconfig.base.json"
   DESTINATION_FOLDER: "docs"
-  
+
 jobs:
   deploy:
     concurrency: ci-${{ github.ref }}
@@ -22,8 +21,6 @@ jobs:
 
       - name: Setup bun
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.1.42
 
       - uses: actions/setup-node@v4
         with:
@@ -33,10 +30,10 @@ jobs:
         run: bun install
 
       - name: Build project
-        run:  bun run build
+        run: bun run build
 
       - name: Build documentation
-        run:  bun run docs:generate
+        run: bun run docs:generate
 
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
