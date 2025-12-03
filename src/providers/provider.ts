@@ -93,7 +93,7 @@ export type CallFunctionArgs = Prettify<
     } & BlockQuery
 >;
 
-export type ViewValidatorsArgs = { blockId: BlockId } | { epochId: string } | null;
+export type ViewValidatorsArgs = { blockId: BlockId } | { epochId: string };
 
 export type ViewTransactionStatusArgs = Prettify<
     {
@@ -120,7 +120,7 @@ export interface Provider {
     viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
 
     viewNodeStatus(): Promise<NodeStatusResult>;
-    viewValidators(params: ViewValidatorsArgs): Promise<EpochValidatorInfo>;
+    viewValidators(params?: ViewValidatorsArgs): Promise<EpochValidatorInfo>;
 
     viewTransactionStatus(params: ViewTransactionStatusArgs): Promise<FinalExecutionOutcome>;
     viewTransactionStatusWithReceipts(
