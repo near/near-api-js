@@ -64,6 +64,7 @@ export interface CreateTransactionArgs {
 export interface CreateSignedTransactionArgs {
     receiverId: string;
     actions: Action[];
+    signer?: Signer;
 }
 
 export interface CreateMetaTransactionArgs {
@@ -77,6 +78,7 @@ export interface CreateSignedMetaTransactionArgs {
     receiverId: string;
     actions: Action[];
     blockHeightTtl?: number;
+    signer?: Signer;
 }
 
 export interface SignAndSendTransactionArgs {
@@ -84,6 +86,7 @@ export interface SignAndSendTransactionArgs {
     actions: Action[];
     waitUntil?: TxExecutionStatus;
     throwOnFailure?: boolean;
+    signer?: Signer;
 }
 
 export interface SignAndSendTransactionsArgs {
@@ -93,6 +96,7 @@ export interface SignAndSendTransactionsArgs {
     }>;
     waitUntil?: TxExecutionStatus;
     throwOnFailure?: boolean;
+    signer?: Signer;
 }
 
 export interface CreateAccountArgs {
@@ -286,16 +290,17 @@ export class Account {
     public async createSignedTransaction({
         receiverId,
         actions,
+        signer = this.signer,
     }: CreateSignedTransactionArgs): Promise<SignedTransaction> {
-        if (!this.signer) throw new Error('Please set a signer');
+        if (!signer) throw new Error('Please set a signer');
 
         const tx = await this.createTransaction({
             receiverId,
             actions,
-            publicKey: await this.signer.getPublicKey(),
+            publicKey: await signer.getPublicKey(),
         });
 
-        const { signedTransaction } = await this.signer.signTransaction(tx);
+        const { signedTransaction } = await signer.signTransaction(tx);
 
         return signedTransaction;
     }
@@ -347,17 +352,18 @@ export class Account {
         receiverId,
         actions,
         blockHeightTtl = 200,
+        signer = this.signer,
     }: CreateSignedMetaTransactionArgs): Promise<SignDelegateActionReturn> {
-        if (!this.signer) throw new Error('Please set a signer');
+        if (!signer) throw new Error('Please set a signer');
 
         const delegateAction = await this.createMetaTransaction({
             receiverId,
             actions,
             blockHeightTtl,
-            publicKey: await this.signer.getPublicKey(),
+            publicKey: await signer.getPublicKey(),
         });
 
-        return this.signer.signDelegateAction(delegateAction);
+        return signer.signDelegateAction(delegateAction);
     }
 
     /**
@@ -374,10 +380,12 @@ export class Account {
         actions,
         waitUntil = DEFAULT_WAIT_STATUS,
         throwOnFailure = true,
+        signer = this.signer,
     }: SignAndSendTransactionArgs): Promise<FinalExecutionOutcome> {
         const signedTx = await this.createSignedTransaction({
             receiverId,
             actions,
+            signer
         });
 
         const result = await this.provider.sendTransactionUntil(signedTx, waitUntil);
@@ -398,6 +406,7 @@ export class Account {
         transactions,
         waitUntil = DEFAULT_WAIT_STATUS,
         throwOnFailure = true,
+        signer = this.signer,
     }: SignAndSendTransactionsArgs): Promise<FinalExecutionOutcome[]> {
         if (!this.signer) throw new Error('Please set a signer');
 
@@ -408,6 +417,7 @@ export class Account {
                     actions,
                     waitUntil,
                     throwOnFailure,
+                    signer
                 });
             })
         );
