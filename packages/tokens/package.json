@@ -39,7 +39,7 @@
 	"devDependencies": {
 		"@jest/globals": "^29.7.0",
 		"@near-js/types": "workspace:*",
-		"@types/node": "20.0.0",
+		"@types/node": "24.10.2",
 		"jest": "29.7.0",
 		"ts-jest": "29.2.6",
 		"tsconfig": "workspace:*",
