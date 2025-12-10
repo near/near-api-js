@@ -1,28 +1,32 @@
 {
-    "mode": "pre",
-    "tag": "rc",
-    "initialVersions": {
-        "near-api-js": "6.5.0"
-    },
-    "changesets": [
-        "all-rockets-attend",
-        "better-forks-sneeze",
-        "better-results-watch",
-        "bold-schools-wear",
-        "clean-radios-dream",
-        "clever-feet-drum",
-        "dirty-coats-laugh",
-        "fine-windows-end",
-        "grumpy-keys-ask",
-        "mighty-parts-pump",
-        "petite-meals-brake",
-        "salty-cows-smell",
-        "sharp-trams-jam",
-        "silent-sloths-buy",
-        "sixty-gifts-teach",
-        "tall-bats-retire",
-        "tasty-monkeys-hang",
-        "tiny-colts-teach",
-        "wild-adults-grow"
-    ]
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "near-api-js": "6.5.0"
+  },
+  "changesets": [
+    "all-rockets-attend",
+    "better-forks-sneeze",
+    "better-results-watch",
+    "big-falcons-drive",
+    "bold-schools-wear",
+    "clean-radios-dream",
+    "clever-feet-drum",
+    "dirty-coats-laugh",
+    "dirty-mice-cry",
+    "dull-dots-greet",
+    "fine-windows-end",
+    "grumpy-keys-ask",
+    "huge-paths-lay",
+    "mighty-parts-pump",
+    "petite-meals-brake",
+    "salty-cows-smell",
+    "sharp-trams-jam",
+    "silent-sloths-buy",
+    "sixty-gifts-teach",
+    "tall-bats-retire",
+    "tasty-monkeys-hang",
+    "tiny-colts-teach",
+    "wild-adults-grow"
+  ]
 }
