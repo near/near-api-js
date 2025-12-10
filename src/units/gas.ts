@@ -11,4 +11,3 @@ export function gigaToGas(giga: NumericString | number): bigint {
 export function teraToGas(tera: NumericString | number): bigint {
     return toUnits(tera, TERA_NOMINATION_EXP);
 }
-

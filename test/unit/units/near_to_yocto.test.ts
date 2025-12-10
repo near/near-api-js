@@ -26,9 +26,7 @@ test(`nearToYocto throws on empty string`, () => {
 });
 
 test(`nearToYocto throws on amount with more than 24 decimals`, () => {
-    expect(() => nearToYocto('0.0000000000000000000000001')).toThrowError(
-        `Cannot parse '0.0000000000000000000000001'`
-    );
+    expect(() => nearToYocto('0.0000000000000000000000001')).toThrowError(`Cannot parse '0.0000000000000000000000001'`);
 });
 
 test(`nearToYocto throws on non-numeric input`, () => {

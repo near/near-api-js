@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { yoctoToNear, nearToYocto } from '../../../src';
+import { nearToYocto, yoctoToNear } from '../../../src';
 import type { BigintString, NumericString } from '../../../src/units/types';
 
 test.each<[bigint | BigintString, NumericString]>([
