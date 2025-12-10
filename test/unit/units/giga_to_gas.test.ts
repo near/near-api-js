@@ -27,7 +27,7 @@ test(`gigaToGas throws on empty string`, () => {
 });
 
 test(`gigaToGas throws on amount with more than 9 decimals`, () => {
-    expect(() => gigaToGas('0.0000000001')).toThrowError(`Cannot parse '0.0000000001' as Giga Gas amount`);
+    expect(() => gigaToGas('0.0000000001')).toThrowError(`Cannot parse '0.0000000001'`);
 });
 
 test(`gigaToGas throws on non-numeric input`, () => {

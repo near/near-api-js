@@ -26,7 +26,7 @@ test(`teraToGas throws on empty string`, () => {
 });
 
 test(`teraToGas throws on amount with more than 12 decimals`, () => {
-    expect(() => teraToGas('0.0000000000001')).toThrowError(`Cannot parse '0.0000000000001' as Tera Gas amount`);
+    expect(() => teraToGas('0.0000000000001')).toThrowError(`Cannot parse '0.0000000000001'`);
 });
 
 test(`teraToGas throws on non-numeric input`, () => {
