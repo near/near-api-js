@@ -1,6 +1,5 @@
-import { sha256 } from '@noble/hashes/sha256';
+import { sha256 } from '@noble/hashes/sha2.js';
 import { serialize } from 'borsh';
-import { TextEncoder } from 'util';
 import { expect, test } from 'vitest';
 import {
     actionCreators,
@@ -13,8 +12,6 @@ import {
     PublicKey,
 } from '../../../src';
 import { Nep413MessageSchema } from '../../../src/nep413/schema';
-
-global.TextEncoder = TextEncoder;
 
 test('test sign transaction with different public key', async () => {
     const signer = new KeyPairSigner(

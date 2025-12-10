@@ -1,9 +1,8 @@
-import { sha256 } from '@noble/hashes/sha256';
-import { TextEncoder } from 'util';
+import { sha256 } from '@noble/hashes/sha2.js';
 import { describe, expect, test } from 'vitest';
 import { baseEncode, KeyPair, KeyPairEd25519, KeyPairSecp256k1, PublicKey } from '../../../src';
 
-global.TextEncoder = TextEncoder;
+const encoder = new TextEncoder();
 
 describe('Using Ed25519 Curve', () => {
     test('test sign and verify', async () => {
@@ -11,7 +10,7 @@ describe('Using Ed25519 Curve', () => {
             '26x56YPzPDro5t2smQfGcYAPy3j7R2jB2NUb7xKbAGK23B6x4WNQPh3twb6oDksFov5X8ts5CtntUNbpQpAKFdbR'
         );
         expect(keyPair.publicKey.toString()).toEqual('ed25519:AYWv9RAN1hpSQA4p1DLhCNnpnNXwxhfH9qeHN8B4nJ59');
-        const message = new Uint8Array(sha256('message'));
+        const message = sha256(encoder.encode('message'));
         const signature = keyPair.sign(message);
         expect(baseEncode(signature.signature)).toEqual(
             '26gFr4xth7W9K7HPWAxq3BLsua8oTy378mC1MYFiEXHBBpeBjP8WmJEJo8XTBowetvqbRshcQEtBUdwQcAqDyP8T'
@@ -20,7 +19,7 @@ describe('Using Ed25519 Curve', () => {
 
     test('test sign and verify with random', async () => {
         const keyPair = KeyPairEd25519.fromRandom();
-        const message = new Uint8Array(sha256('message'));
+        const message = sha256(encoder.encode('message'));
         const signature = keyPair.sign(message);
         expect(keyPair.verify(message, signature.signature)).toBeTruthy();
     });
@@ -29,7 +28,7 @@ describe('Using Ed25519 Curve', () => {
         const keyPair = new KeyPairEd25519(
             '5JueXZhEEVqGVT5powZ5twyPP8wrap2K7RdAYGGdjBwiBdd7Hh6aQxMP1u3Ma9Yanq1nEv32EW7u8kUJsZ6f315C'
         );
-        const message = new Uint8Array(sha256('message'));
+        const message = sha256(encoder.encode('message'));
         const signature = keyPair.sign(message);
         const publicKey = PublicKey.from('ed25519:EWrekY1deMND7N3Q7Dixxj12wD7AVjFRt2H9q21QHUSW');
         expect(publicKey.verify(message, signature.signature)).toBeTruthy();
@@ -60,7 +59,7 @@ describe('Using Secp256k1 Curve', () => {
         expect(keyPair.publicKey.toString()).toEqual(
             'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28'
         );
-        const message = new Uint8Array(sha256('message'));
+        const message = sha256(encoder.encode('message'));
         const signature = keyPair.sign(message);
         expect(baseEncode(signature.signature)).toEqual(
             '3xamkuNXQr4HHLXygRdp42Q19BRs6X5vENHbVtj7duaphZpdaRR2dZD7NvxWHw2twFiUxCvYXue6ZDsWg77DWBxNb'
@@ -69,14 +68,14 @@ describe('Using Secp256k1 Curve', () => {
 
     test('Should sign and verify random message using Secp256k1 curve', async () => {
         const keyPair = KeyPairSecp256k1.fromRandom();
-        const message = new Uint8Array(sha256('message'));
+        const message = sha256(encoder.encode('message'));
         const signature = keyPair.sign(message);
         expect(keyPair.verify(message, signature.signature)).toBeTruthy();
     });
 
     test('Should sign and verify public key created using Secp256k1', async () => {
         const keyPair = new KeyPairSecp256k1('Cqmi5vHc59U1MHhq7JCxTSJentvVBYMcKGUA7s7kwnKn');
-        const message = new Uint8Array(sha256('message'));
+        const message = sha256(encoder.encode('message'));
         const signature = keyPair.sign(message);
         const publicKey = PublicKey.from(
             'secp256k1:45KcWwYt6MYRnnWFSxyQVkuu9suAzxoSkUMEnFNBi9kDayTo5YPUaqMWUrf7YHUDNMMj3w75vKuvfAMgfiFXBy28'

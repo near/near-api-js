@@ -1,5 +1,5 @@
 import * as fs from 'node:fs';
-import { sha256 } from '@noble/hashes/sha256';
+import { sha256 } from '@noble/hashes/sha2.js';
 import { deserialize, serialize } from 'borsh';
 import { describe, expect, test } from 'vitest';
 

@@ -1,4 +1,4 @@
-import { sha256 } from '@noble/hashes/sha256';
+import { sha256 } from '@noble/hashes/sha2.js';
 import { KeyType, type PublicKey } from '../crypto/index.js';
 import { type MessagePayload, serializeMessage } from '../nep413/schema.js';
 import {

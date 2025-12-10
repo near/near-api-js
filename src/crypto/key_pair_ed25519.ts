@@ -1,5 +1,5 @@
-import { ed25519 } from '@noble/curves/ed25519';
-import { randomBytes } from '@noble/hashes/utils';
+import { ed25519 } from '@noble/curves/ed25519.js';
+import { randomBytes } from '@noble/hashes/utils.js';
 import { baseDecode, baseEncode } from '../utils/index.js';
 
 import { type KeyPairString, KeySize, KeyType } from './constants.js';
