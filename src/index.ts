@@ -35,6 +35,7 @@ export * from './signers/index.js';
 // ============================================================================
 export * from './transactions/index.js';
 export * from './types/index.js';
+export { gigaToGas, nearToYocto, teraToGas, yoctoToNear } from './units/index.js';
 // ============================================================================
 // Utilities
 // ============================================================================
