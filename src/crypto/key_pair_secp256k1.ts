@@ -1,4 +1,4 @@
-import { randomBytes } from '@noble/hashes/utils';
+import { randomBytes } from '@noble/hashes/utils.js';
 import secp256k1 from 'secp256k1';
 import { baseDecode, baseEncode } from '../utils/index.js';
 
