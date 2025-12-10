@@ -179,15 +179,17 @@ export class Account {
      * balance, storage usage, and code hash
      */
     public async getState(): Promise<AccountState> {
-        const protocolConfig = await this.provider.experimental_protocolConfig({
-            finality: DEFAULT_FINALITY,
-        });
-        const state = await this.provider.viewAccount({
-            accountId: this.accountId,
-            blockQuery: {
+        const [protocolConfig, state] = await Promise.all([
+            this.provider.experimental_protocolConfig({
                 finality: DEFAULT_FINALITY,
-            },
-        });
+            }),
+            this.provider.viewAccount({
+                accountId: this.accountId,
+                blockQuery: {
+                    finality: DEFAULT_FINALITY,
+                },
+            }),
+        ]);
 
         const costPerByte = BigInt(protocolConfig.runtime_config.storage_amount_per_byte);
         const usedOnStorage = BigInt(state.storage_usage) * costPerByte;
@@ -272,11 +274,13 @@ export class Account {
 
         const pk = PublicKey.from(publicKey);
 
-        const accessKey = await this.getAccessKey(pk);
+        const [accessKey, block] = await Promise.all([
+            this.getAccessKey(pk),
+            this.provider.viewBlock({
+                finality: DEFAULT_FINALITY,
+            }),
+        ]);
 
-        const block = await this.provider.viewBlock({
-            finality: DEFAULT_FINALITY,
-        });
         const recentBlockHash = block.header.hash;
 
         const nonce = BigInt(accessKey.nonce) + 1n;
@@ -322,14 +326,15 @@ export class Account {
 
         const pk = PublicKey.from(publicKey);
 
-        const accessKey = await this.getAccessKey(pk);
+        const [accessKey, block] = await Promise.all([
+            this.getAccessKey(pk),
+            this.provider.viewBlock({
+                finality: DEFAULT_FINALITY,
+            }),
+        ]);
+
         const nonce = BigInt(accessKey.nonce) + 1n;
-
-        const { header } = await this.provider.viewBlock({
-            finality: DEFAULT_FINALITY,
-        });
-
-        const maxBlockHeight = BigInt(header.height) + BigInt(blockHeightTtl);
+        const maxBlockHeight = BigInt(block.header.height) + BigInt(blockHeightTtl);
 
         return buildDelegateAction({
             receiverId,
