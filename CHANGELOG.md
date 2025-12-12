@@ -1,5 +1,19 @@
 # near-api-js
 
+## 7.0.0-rc.1
+
+### Minor Changes
+
+- [#1761](https://github.com/near/near-api-js/pull/1761) [`9d8799b`](https://github.com/near/near-api-js/commit/9d8799ba91be05fde2c13dfe833ced75d4a6cec6) Thanks [@denbite](https://github.com/denbite)! - Introduce `teraToGas` and `gigaToGas` helper functions to convert `Gas` amounts conviniently
+
+- [#1761](https://github.com/near/near-api-js/pull/1761) [`fcbb1fe`](https://github.com/near/near-api-js/commit/fcbb1fed22fb0cc8ab055159ef1ef11b05ee13c0) Thanks [@denbite](https://github.com/denbite)! - Introduce `yoctoToNear` and `nearToYocto` helper functions
+
+### Patch Changes
+
+- [#1765](https://github.com/near/near-api-js/pull/1765) [`0ff1536`](https://github.com/near/near-api-js/commit/0ff1536d693e95d27d5a59be83e7b85553297d80) Thanks [@gagdiez](https://github.com/gagdiez)! - Update dependencies
+
+- [#1762](https://github.com/near/near-api-js/pull/1762) [`c711103`](https://github.com/near/near-api-js/commit/c711103be855534b79993a7e61d9fd3def126ac4) Thanks [@denbite](https://github.com/denbite)! - Speed up some `Account` methods by merging sequential `Promises` into `Promise.all()` for slightly better performance
+
 ## 7.0.0-rc.0
 
 ### Major Changes
