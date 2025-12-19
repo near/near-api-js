@@ -6,33 +6,11 @@
 import type { PublicKey } from '../crypto/index.js';
 import type { SignedTransaction } from '../transactions/index.js';
 import type {
-    AccessKeyList,
-    AccessKeyView,
     AccessKeyWithPublicKey,
-    AccountView,
-    BlockChangeResult,
     BlockId,
     BlockReference,
-    BlockResult,
-    CallContractViewFunctionResultRaw,
-    ChangeResult,
     ChunkId,
-    ChunkResult,
-    ContractCodeView,
-    ContractStateView,
-    EpochValidatorInfo,
-    ExecutionOutcomeReceiptDetail,
-    FinalExecutionOutcome,
     FinalityReference,
-    GasPrice,
-    LightClientProof,
-    LightClientProofRequest,
-    NearProtocolConfig,
-    NextLightClientBlockRequest,
-    NextLightClientBlockResponse,
-    NodeStatusResult,
-    QueryResponseKind,
-    RpcQueryRequest,
     SerializedReturnValue,
     TxExecutionStatus,
 } from '../types/index.js';
@@ -102,6 +80,33 @@ export type ViewTransactionStatusArgs = Prettify<
     } & TransactionExecutionReference
 >;
 
+import type {
+    AccessKeyList,
+    AccessKeyView,
+    AccountView,
+    CallResult,
+    ContractCodeView,
+    QueryRequest,
+    RpcBlockResponse,
+    RpcChunkResponse,
+    RpcGasPriceResponse,
+    RpcLightClientExecutionProofRequest,
+    RpcLightClientExecutionProofResponse,
+    RpcLightClientNextBlockRequest,
+    RpcLightClientNextBlockResponse,
+    RpcProtocolConfigResponse,
+    RpcQueryResponse,
+    RpcReceiptResponse,
+    RpcStateChangesInBlockByTypeResponse,
+    RpcStateChangesInBlockResponse,
+    RpcStatusResponse,
+    RpcTransactionResponse,
+    RpcValidatorResponse,
+    ViewStateResult,
+} from '@near-js/jsonrpc-types';
+
+export type StripKeys<T, K extends string> = T extends any ? Omit<T, K> : never;
+
 /** @hidden */
 export interface Provider {
     getNetworkId(): Promise<string>;
@@ -110,52 +115,64 @@ export interface Provider {
     viewAccessKeyList(params: ViewAccessKeyListArgs): Promise<AccessKeyList>;
     viewAccount(params: ViewAccountArgs): Promise<AccountView>;
     viewContractCode(params: ViewContractCodeArgs): Promise<ContractCodeView>;
-    viewContractState(params: ViewContractStateArgs): Promise<ContractStateView>;
+    viewContractState(params: ViewContractStateArgs): Promise<ViewStateResult>;
     callFunction<T extends SerializedReturnValue>(params: CallFunctionArgs): Promise<T | undefined>;
-    callFunctionRaw(params: CallFunctionArgs): Promise<CallContractViewFunctionResultRaw>;
+    callFunctionRaw(params: CallFunctionArgs): Promise<CallResult>;
 
-    viewBlock(blockQuery: BlockReference): Promise<BlockResult>;
-    viewChunk(chunkId: ChunkId): Promise<ChunkResult>;
+    viewBlock(blockQuery: BlockReference): Promise<RpcBlockResponse>;
+    viewChunk(chunkId: ChunkId): Promise<RpcChunkResponse>;
 
-    viewGasPrice(blockId?: BlockId): Promise<GasPrice>;
+    viewGasPrice(blockId?: BlockId): Promise<RpcGasPriceResponse>;
 
-    viewNodeStatus(): Promise<NodeStatusResult>;
-    viewValidators(params?: ViewValidatorsArgs): Promise<EpochValidatorInfo>;
+    viewNodeStatus(): Promise<RpcStatusResponse>;
+    viewValidators(params?: ViewValidatorsArgs): Promise<RpcValidatorResponse>;
 
-    viewTransactionStatus(params: ViewTransactionStatusArgs): Promise<FinalExecutionOutcome>;
-    viewTransactionStatusWithReceipts(
-        params: ViewTransactionStatusArgs
-    ): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>>;
-    viewTransactionReceipt(receiptId: string): Promise<ExecutionOutcomeReceiptDetail>;
+    viewTransactionStatus(params: ViewTransactionStatusArgs): Promise<RpcTransactionResponse>;
+    viewTransactionStatusWithReceipts(params: ViewTransactionStatusArgs): Promise<RpcTransactionResponse>;
+    viewTransactionReceipt(receiptId: string): Promise<RpcReceiptResponse>;
 
     sendTransactionUntil(
         signedTransaction: SignedTransaction,
         waitUntil: TxExecutionStatus
-    ): Promise<FinalExecutionOutcome>;
-    sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
-    sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome>;
+    ): Promise<RpcTransactionResponse>;
+    sendTransaction(signedTransaction: SignedTransaction): Promise<RpcTransactionResponse>;
+    sendTransactionAsync(signedTransaction: SignedTransaction): Promise<RpcTransactionResponse>;
 
-    query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
-    query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
+    query<R extends StripKeys<RpcQueryResponse, 'blockHash' | 'blockHeight'>>(
+        params: QueryRequest['params']
+    ): Promise<R & { blockHash: string; blockHeight: number }>;
+    query<R extends StripKeys<RpcQueryResponse, 'blockHash' | 'blockHeight'>>(
+        path: string,
+        data: string
+    ): Promise<R & { blockHash: string; blockHeight: number }>;
 
-    blockChanges(blockQuery: BlockId | BlockReference): Promise<BlockChangeResult>;
+    blockChanges(blockQuery: BlockId | BlockReference): Promise<RpcStateChangesInBlockByTypeResponse>;
     experimental_protocolConfig(
-        blockReference: BlockReference | { sync_checkpoint: 'genesis' }
-    ): Promise<NearProtocolConfig>;
-    lightClientProof(request: LightClientProofRequest): Promise<LightClientProof>;
-    nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse>;
-    accessKeyChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+        blockReference: BlockReference | { syncCheckpoint: 'genesis' }
+    ): Promise<RpcProtocolConfigResponse>;
+    lightClientProof(request: RpcLightClientExecutionProofRequest): Promise<RpcLightClientExecutionProofResponse>;
+    nextLightClientBlock(request: RpcLightClientNextBlockRequest): Promise<RpcLightClientNextBlockResponse>;
+    accessKeyChanges(
+        accountIdArray: string[],
+        BlockQuery: BlockId | BlockReference
+    ): Promise<RpcStateChangesInBlockResponse>;
     singleAccessKeyChanges(
         accessKeyArray: AccessKeyWithPublicKey[],
         BlockQuery: BlockId | BlockReference
-    ): Promise<ChangeResult>;
-    accountChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    ): Promise<RpcStateChangesInBlockResponse>;
+    accountChanges(
+        accountIdArray: string[],
+        BlockQuery: BlockId | BlockReference
+    ): Promise<RpcStateChangesInBlockResponse>;
     contractStateChanges(
         accountIdArray: string[],
         BlockQuery: BlockId | BlockReference,
         keyPrefix: string
-    ): Promise<ChangeResult>;
-    contractCodeChanges(accountIdArray: string[], BlockQuery: BlockId | BlockReference): Promise<ChangeResult>;
+    ): Promise<RpcStateChangesInBlockResponse>;
+    contractCodeChanges(
+        accountIdArray: string[],
+        BlockQuery: BlockId | BlockReference
+    ): Promise<RpcStateChangesInBlockResponse>;
 
     getCurrentEpochSeatPrice(): Promise<bigint>;
     getNextEpochSeatPrice(): Promise<bigint>;

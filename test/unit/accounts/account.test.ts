@@ -142,7 +142,7 @@ describe('errors', () => {
                 publicKey: '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE',
                 nearToTransfer: BigInt(100),
             })
-        ).rejects.toThrow(/Can't create a new account .+, because it already exists/);
+        ).rejects.toThrow(/Can't create a new account , because it already exists/);
     });
 });
 
@@ -188,7 +188,7 @@ describe('with deploy contract', () => {
             throwOnFailure: false,
         });
 
-        const logs = result.receipts_outcome.flatMap(({ outcome }) => outcome.logs);
+        const logs = result.receiptsOutcome.flatMap(({ outcome }) => outcome.logs);
         const contractId = contract.contractId;
 
         expect(logs.length).toEqual(4);
@@ -367,7 +367,7 @@ describe('with deploy contract', () => {
             args: {},
         });
 
-        const logs = result.receipts_outcome.flatMap(({ outcome }) => outcome.logs);
+        const logs = result.receiptsOutcome.flatMap(({ outcome }) => outcome.logs);
         expect(logs).toEqual(['log1', 'log2']);
     });
 

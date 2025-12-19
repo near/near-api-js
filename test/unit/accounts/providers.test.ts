@@ -1,7 +1,8 @@
+import type { RpcLightClientExecutionProofRequest, RpcStatusResponse } from '@near-js/jsonrpc-types';
 import { base58 } from '@scure/base';
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { ErrorMessages, IdType, KeyPair, type TypedError } from '../../../src';
+import { KeyPair, type TypedError } from '../../../src';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
 let near: Awaited<ReturnType<typeof setUpTestConnection>>;
@@ -33,9 +34,7 @@ describe('providers', () => {
             accountId: sender.accountId,
             waitUntil: 'EXECUTED_OPTIMISTIC',
         });
-        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithString).toMatchObject(outcome);
-        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
 
@@ -43,10 +42,10 @@ describe('providers', () => {
         const sender = await createAccount(near);
         const receiver = await createAccount(near);
         const outcome = await sender.transfer({ receiverId: receiver.accountId, amount: 1n });
-        const reciepts = await near.provider.sendJsonRpc('EXPERIMENTAL_tx_status', [
-            outcome.transaction.hash,
-            sender.accountId,
-        ]);
+        const reciepts = await near.provider.viewTransactionStatusWithReceipts({
+            txHash: outcome.transaction.hash,
+            accountId: sender.accountId,
+        });
 
         const responseWithString = await near.provider.viewTransactionStatusWithReceipts({
             txHash: outcome.transaction.hash,
@@ -58,28 +57,26 @@ describe('providers', () => {
             accountId: sender.accountId,
             waitUntil: 'EXECUTED_OPTIMISTIC',
         });
-        expect('transaction_outcome' in responseWithString).toBeTruthy();
-        expect('logs' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        expect('receipt_ids' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        expect('gas_burnt' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        expect('tokens_burnt' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        expect('executor_id' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        expect('status' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
+        expect('transactionOutcome' in responseWithString).toBeTruthy();
+        expect('logs' in responseWithString.transactionOutcome.outcome).toBeTruthy();
+        expect('receiptIds' in responseWithString.transactionOutcome.outcome).toBeTruthy();
+        expect('gasBurnt' in responseWithString.transactionOutcome.outcome).toBeTruthy();
+        expect('tokensBurnt' in responseWithString.transactionOutcome.outcome).toBeTruthy();
+        expect('executorId' in responseWithString.transactionOutcome.outcome).toBeTruthy();
+        expect('status' in responseWithString.transactionOutcome.outcome).toBeTruthy();
         expect(responseWithString).toMatchObject(reciepts);
-        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithUint8Array).toMatchObject(reciepts);
     });
 
     test('json rpc query account', async () => {
         const account = await createAccount(near);
         const response = await near.provider.query({
-            request_type: 'view_account',
+            requestType: 'view_account',
             finality: 'optimistic',
-            account_id: account.accountId,
+            accountId: account.accountId,
         });
         // @ts-expect-error - code_hash exists in response but not in union type
-        expect(response.code_hash).toEqual('11111111111111111111111111111111');
+        expect(response.codeHash).toEqual('11111111111111111111111111111111');
     });
 
     test('json rpc query view_state', async () => {
@@ -88,14 +85,14 @@ describe('providers', () => {
 
         return waitFor(async () => {
             const response = await near.provider.query({
-                request_type: 'view_state',
+                requestType: 'view_state',
                 finality: 'final',
-                account_id: contract.contractId,
-                prefix_base64: '',
+                accountId: contract.contractId,
+                prefixBase64: '',
             });
             expect(response).toEqual({
-                block_height: expect.any(Number),
-                block_hash: expect.any(String),
+                blockHeight: expect.any(Number),
+                blockHash: expect.any(String),
                 values: [{ key: 'bmFtZQ==', value: 'aGVsbG8=' }],
             });
         });
@@ -106,15 +103,15 @@ describe('providers', () => {
 
         return waitFor(async () => {
             const response = await near.provider.query({
-                request_type: 'view_code',
+                requestType: 'view_code',
                 finality: 'final',
-                account_id: contract.contractId,
+                accountId: contract.contractId,
             });
 
             expect(response).toEqual({
-                block_height: expect.any(Number),
-                block_hash: expect.any(String),
-                code_base64: expect.any(String),
+                blockHeight: expect.any(Number),
+                blockHash: expect.any(String),
+                codeBase64: expect.any(String),
                 hash: expect.any(String),
             });
         });
@@ -127,15 +124,15 @@ describe('providers', () => {
 
         return waitFor(async () => {
             const response = await near.provider.query({
-                request_type: 'call_function',
+                requestType: 'call_function',
                 finality: 'final',
-                account_id: contract.contractId,
-                method_name: 'getValue',
-                args_base64: '',
+                accountId: contract.contractId,
+                methodName: 'getValue',
+                argsBase64: '',
             });
             expect(response).toEqual({
-                block_height: expect.any(Number),
-                block_hash: expect.any(String),
+                blockHeight: expect.any(Number),
+                blockHash: expect.any(String),
                 logs: [],
                 result: [34, 104, 101, 108, 108, 111, 34],
             });
@@ -149,7 +146,7 @@ describe('providers', () => {
             amount: 10000n,
         });
 
-        async function waitForStatusMatching(isMatching) {
+        async function waitForStatusMatching(isMatching: (status: RpcStatusResponse) => boolean) {
             const MAX_ATTEMPTS = 10;
             for (let i = 0; i < MAX_ATTEMPTS; i++) {
                 await sleep(500);
@@ -162,55 +159,51 @@ describe('providers', () => {
         }
 
         const comittedStatus = await waitForStatusMatching(
-            (status) =>
-                // @ts-expect-error - block_hash exists at runtime but not in type definition
-                status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash
+            (status) => status.syncInfo.latestBlockHash !== executionOutcome.transactionOutcome.blockHash
         );
         const BLOCKS_UNTIL_FINAL = 2;
         const finalizedStatus = await waitForStatusMatching(
             (status) =>
-                status.sync_info.latest_block_height > comittedStatus.sync_info.latest_block_height + BLOCKS_UNTIL_FINAL
+                status.syncInfo.latestBlockHeight > comittedStatus.syncInfo.latestBlockHeight + BLOCKS_UNTIL_FINAL
         );
 
-        const block = await near.provider.viewBlock({ blockId: finalizedStatus.sync_info.latest_block_hash });
-        const lightClientHead = block.header.last_final_block;
-        let lightClientRequest = {
-            type: IdType.Transaction,
-            light_client_head: lightClientHead,
-            transaction_hash: executionOutcome.transaction.hash,
-            sender_id: workingAccount.accountId,
+        const block = await near.provider.viewBlock({ blockId: finalizedStatus.syncInfo.latestBlockHash });
+        const lightClientHead = block.header.lastFinalBlock;
+        let lightClientRequest: RpcLightClientExecutionProofRequest = {
+            type: 'transaction',
+            lightClientHead: lightClientHead,
+            transactionHash: executionOutcome.transaction.hash,
+            senderId: workingAccount.accountId,
         };
+
         const lightClientProof = await near.provider.lightClientProof(lightClientRequest);
-        expect('prev_block_hash' in lightClientProof.block_header_lite).toBe(true);
-        expect('inner_rest_hash' in lightClientProof.block_header_lite).toBe(true);
-        expect('inner_lite' in lightClientProof.block_header_lite).toBe(true);
-        expect('timestamp_nanosec' in lightClientProof.block_header_lite.inner_lite).toBe(true);
-        expect(lightClientProof.outcome_proof.id).toEqual(executionOutcome.transaction_outcome.id);
-        expect('block_hash' in lightClientProof.outcome_proof).toBe(true);
-        expect(lightClientProof.outcome_root_proof).toEqual([]);
-        expect(lightClientProof.block_proof.length).toBeGreaterThan(0);
+        expect('prevBlockHash' in lightClientProof.blockHeaderLite).toBe(true);
+        expect('innerRestHash' in lightClientProof.blockHeaderLite).toBe(true);
+        expect('innerLite' in lightClientProof.blockHeaderLite).toBe(true);
+        expect('timestampNanosec' in lightClientProof.blockHeaderLite.innerLite).toBe(true);
+        expect(lightClientProof.outcomeProof.id).toEqual(executionOutcome.transactionOutcome.id);
+        expect('blockHash' in lightClientProof.outcomeProof).toBe(true);
+        expect(lightClientProof.outcomeRootProof).toEqual([]);
+        expect(lightClientProof.blockProof.length).toBeGreaterThan(0);
 
         // pass nonexistent hash for light client head will fail
         lightClientRequest = {
-            type: IdType.Transaction,
-            light_client_head: '11111111111111111111111111111111',
-            transaction_hash: executionOutcome.transaction.hash,
-            sender_id: workingAccount.accountId,
+            type: 'transaction',
+            lightClientHead: '11111111111111111111111111111111',
+            transactionHash: executionOutcome.transaction.hash,
+            senderId: workingAccount.accountId,
         };
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
+        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow('Server error');
 
         // Use old block hash as light client head should fail
         lightClientRequest = {
-            type: IdType.Transaction,
-            // @ts-expect-error - block_hash exists at runtime but not in type definition
-            light_client_head: executionOutcome.transaction_outcome.block_hash,
-            transaction_hash: executionOutcome.transaction.hash,
-            sender_id: workingAccount.accountId,
+            type: 'transaction',
+            lightClientHead: executionOutcome.transactionOutcome.blockHash,
+            transactionHash: executionOutcome.transaction.hash,
+            senderId: workingAccount.accountId,
         };
 
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(
-            /.+ block .+ is ahead of head block .+/
-        );
+        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow('Server error');
     });
 });
 
@@ -222,17 +215,17 @@ describe('providers errors', () => {
 
         try {
             const response = await near.provider.query({
-                request_type: 'call_function',
+                requestType: 'call_function',
                 finality: 'optimistic',
-                account_id: contract.contractId,
-                method_name: 'methodNameThatDoesNotExist',
-                args_base64: '',
+                accountId: contract.contractId,
+                methodName: 'methodNameThatDoesNotExist',
+                argsBase64: '',
             });
             expect(response).toBeUndefined();
         } catch (e) {
-            const errorType = 'MethodNotFound';
-            expect((e as TypedError).type).toEqual(errorType);
-            expect((e as TypedError).message).toEqual(ErrorMessages[errorType]);
+            expect((e as TypedError).message).toMatch(
+                `RPC Error: wasm execution failed with error: MethodResolveError(MethodNotFound)`
+            );
         }
     });
 
@@ -241,18 +234,16 @@ describe('providers errors', () => {
 
         try {
             const response = await near.provider.query({
-                request_type: 'call_function',
+                requestType: 'call_function',
                 finality: 'optimistic',
-                account_id: accountId,
-                method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
-                args_base64: '',
+                accountId: accountId,
+                methodName: 'methodNameThatDoesNotExistOnContractNotDeployed',
+                argsBase64: '',
             });
             expect(response).toBeUndefined();
         } catch (e) {
-            const errorType = 'CodeDoesNotExist';
-            expect((e as TypedError).type).toEqual(errorType);
-            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
+            expect((e as Error).message).toMatch(
+                `RPC Error: wasm execution failed with error: CompilationError(CodeDoesNotExist { account_id: "${accountId}" })`
             );
         }
     });
@@ -261,39 +252,33 @@ describe('providers errors', () => {
         const accountName = 'abc.near';
         try {
             const response = await near.provider.query({
-                request_type: 'call_function',
+                requestType: 'call_function',
                 finality: 'optimistic',
-                account_id: accountName,
-                method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
-                args_base64: '',
+                accountId: accountName,
+                methodName: 'methodNameThatDoesNotExistOnContractNotDeployed',
+                argsBase64: '',
             });
             expect(response).toBeUndefined();
         } catch (e) {
-            const errorType = 'AccountDoesNotExist';
-            expect((e as TypedError).type).toEqual(errorType);
-            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
-            );
+            expect((e as Error).message).toMatch('Server error');
         }
     });
 
     test('JSON RPC Error - AccessKeyDoesNotExist', async () => {
         const { accountId } = await createAccount(near);
 
+        const pk = KeyPair.fromRandom('ed25519').getPublicKey();
+
         try {
             const response = await near.provider.query({
-                request_type: 'view_access_key',
+                requestType: 'view_access_key',
                 finality: 'optimistic',
-                account_id: accountId,
-                public_key: KeyPair.fromRandom('ed25519').getPublicKey().toString(),
+                accountId: accountId,
+                publicKey: pk.toString(),
             });
             expect(response).toBeUndefined();
         } catch (e) {
-            const errorType = 'AccessKeyDoesNotExist';
-            expect((e as TypedError).type).toEqual(errorType);
-            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
-            );
+            expect((e as Error).message).toMatch(`RPC Error: access key ${pk.toString()}`);
         }
     });
 });

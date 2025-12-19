@@ -201,6 +201,6 @@ export interface GasPrice {
 }
 
 export interface AccessKeyWithPublicKey {
-    account_id: string;
-    public_key: string;
+    accountId: string;
+    publicKey: string;
 }

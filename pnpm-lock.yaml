@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@near-js/jsonrpc-client':
+        specifier: ^1.5.0
+        version: 1.5.0
       '@noble/curves':
         specifier: 2.0.1
         version: 2.0.1
@@ -57,6 +60,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: 20.2.0
         version: 20.2.0
+      '@near-js/jsonrpc-types':
+        specifier: ^1.5.0
+        version: 1.5.0
       '@types/node':
         specifier: 24.10.2
         version: 24.10.2
@@ -556,6 +562,12 @@ packages:
 
   '@near-js/crypto@1.4.2':
     resolution: {integrity: sha512-GRfchsyfWvSAPA1gI9hYhw5FH94Ac1BUo+Cmp5rSJt/V0K3xVzCWgOQxvv4R3kDnWjaXJEuAmpEEnr4Bp3FWrA==}
+
+  '@near-js/jsonrpc-client@1.5.0':
+    resolution: {integrity: sha512-ZQIgI2NnploENT10PgxMCq7jhtswC75g4RB6XSBskL8sK9iVuqLoFfCHHfSABk6dxUuzFhrJbeDmTONk899Daw==}
+
+  '@near-js/jsonrpc-types@1.5.0':
+    resolution: {integrity: sha512-pgidkMApxPWp/tSgHUpVsn9n9fF1RZmk/A/yM/TEuzuczqMhnnT9I5ow4qmYPQyVMMWFialELT2SGm/LKym8bA==}
 
   '@near-js/keystores-browser@0.2.2':
     resolution: {integrity: sha512-Pxqm7WGtUu6zj32vGCy9JcEDpZDSB5CCaLQDTQdF3GQyL0flyRv2I/guLAgU5FLoYxU7dJAX9mslJhPW7P2Bfw==}
@@ -2404,6 +2416,9 @@ packages:
     resolution: {integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ==}
     engines: {node: '>=12.20'}
 
+  zod@4.2.1:
+    resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
+
 snapshots:
 
   '@andrewbranch/untar.js@1.0.3': {}
@@ -2923,6 +2938,14 @@ snapshots:
       borsh: 1.0.0
       randombytes: 2.1.0
       secp256k1: 5.0.1
+
+  '@near-js/jsonrpc-client@1.5.0':
+    dependencies:
+      '@near-js/jsonrpc-types': 1.5.0
+
+  '@near-js/jsonrpc-types@1.5.0':
+    dependencies:
+      zod: 4.2.1
 
   '@near-js/keystores-browser@0.2.2':
     dependencies:
@@ -4766,3 +4789,5 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@1.2.2: {}
+
+  zod@4.2.1: {}

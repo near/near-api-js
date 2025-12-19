@@ -1,3 +1,4 @@
+import type { RpcTransactionResponse } from '@near-js/jsonrpc-types';
 import { type KeyPairString, PublicKey } from '../crypto/index.js';
 import type { Provider } from '../providers/index.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
@@ -14,16 +15,7 @@ import {
     GlobalContractIdentifier,
     type SignedTransaction,
 } from '../transactions/index.js';
-import type {
-    AccessKeyList,
-    AccessKeyView,
-    ContractCodeView,
-    ContractStateView,
-    FinalExecutionOutcome,
-    Finality,
-    SerializedReturnValue,
-    TxExecutionStatus,
-} from '../types/index.js';
+import type { Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
 import { baseDecode, getTransactionLastResult, parseResultError } from '../utils/index.js';
 
 const {
@@ -191,8 +183,13 @@ export class Account {
             }),
         ]);
 
-        const costPerByte = BigInt(protocolConfig.runtime_config.storage_amount_per_byte);
-        const usedOnStorage = BigInt(state.storage_usage) * costPerByte;
+        if (typeof protocolConfig.runtimeConfig === 'undefined')
+            throw new Error(`Property 'runtime_config' is missing in the protocol config`);
+        if (typeof protocolConfig.runtimeConfig.storageAmountPerByte === 'undefined')
+            throw new Error(`Property 'runtime_config.storage_amount_per_byte' is missing in the protocol config`);
+
+        const costPerByte = BigInt(protocolConfig.runtimeConfig.storageAmountPerByte);
+        const usedOnStorage = BigInt(state.storageUsage) * costPerByte;
         const locked = BigInt(state.locked);
         const total = BigInt(state.amount) + locked;
         const available = total - (locked > usedOnStorage ? locked : usedOnStorage);
@@ -204,8 +201,8 @@ export class Account {
                 locked,
                 available,
             },
-            storageUsage: state.storage_usage,
-            codeHash: state.code_hash,
+            storageUsage: state.storageUsage,
+            codeHash: state.codeHash,
         };
     }
 
@@ -213,7 +210,7 @@ export class Account {
      * Calls {@link Provider.viewAccessKey} to retrieve information for a
      * specific key in the account
      */
-    public async getAccessKey(publicKey: PublicKey | string): Promise<AccessKeyView> {
+    public async getAccessKey(publicKey: PublicKey | string) {
         return this.provider.viewAccessKey({
             accountId: this.accountId,
             publicKey,
@@ -226,7 +223,7 @@ export class Account {
     /**
      * Calls {@link Provider.viewAccessKeyList} to retrieve the account's keys
      */
-    public async getAccessKeyList(): Promise<AccessKeyList> {
+    public async getAccessKeyList() {
         return this.provider.viewAccessKeyList({
             accountId: this.accountId,
             finalityQuery: {
@@ -239,7 +236,7 @@ export class Account {
      * Calls {@link Provider.viewContractCode} to retrieve the account's
      * contract code and its hash
      */
-    public async getContractCode(): Promise<ContractCodeView> {
+    public async getContractCode() {
         return this.provider.viewContractCode({
             contractId: this.accountId,
             blockQuery: {
@@ -252,7 +249,7 @@ export class Account {
      * Calls {@link Provider.viewContractState} to retrieve the keys and values
      * stored on the account's contract
      */
-    public async getContractState(prefix?: string): Promise<ContractStateView> {
+    public async getContractState(prefix?: string) {
         return this.provider.viewContractState({
             contractId: this.accountId,
             prefix,
@@ -386,7 +383,7 @@ export class Account {
         waitUntil = DEFAULT_WAIT_STATUS,
         throwOnFailure = true,
         signer = this.signer,
-    }: SignAndSendTransactionArgs): Promise<FinalExecutionOutcome> {
+    }: SignAndSendTransactionArgs) {
         const signedTx = await this.createSignedTransaction({
             receiverId,
             actions,
@@ -398,6 +395,7 @@ export class Account {
         if (
             throwOnFailure &&
             typeof result.status === 'object' &&
+            'Failure' in result.status &&
             typeof result.status.Failure === 'object' &&
             result.status.Failure !== null
         ) {
@@ -412,7 +410,7 @@ export class Account {
         waitUntil = DEFAULT_WAIT_STATUS,
         throwOnFailure = true,
         signer = this.signer,
-    }: SignAndSendTransactionsArgs): Promise<FinalExecutionOutcome[]> {
+    }: SignAndSendTransactionsArgs) {
         if (!this.signer) throw new Error('Please set a signer');
 
         const results = await Promise.all(
@@ -446,11 +444,7 @@ export class Account {
      * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
      *
      */
-    public async createAccount({
-        newAccountId,
-        publicKey,
-        nearToTransfer = 0n,
-    }: CreateAccountArgs): Promise<FinalExecutionOutcome> {
+    public async createAccount({ newAccountId, publicKey, nearToTransfer = 0n }: CreateAccountArgs) {
         if (newAccountId.endsWith(this.accountId)) {
             return this.createSubAccount({ accountOrPrefix: newAccountId, publicKey, nearToTransfer });
         }
@@ -486,11 +480,7 @@ export class Account {
      * @param nearToTransfer how much NEAR to transfer to the account (default: 0)
      *
      */
-    public async createSubAccount({
-        accountOrPrefix,
-        publicKey,
-        nearToTransfer = 0n,
-    }: CreateSubAccountArgs): Promise<FinalExecutionOutcome> {
+    public async createSubAccount({ accountOrPrefix, publicKey, nearToTransfer = 0n }: CreateSubAccountArgs) {
         if (!this.signer) throw new Error('Please set a signer');
 
         const newAccountId = accountOrPrefix.includes('.') ? accountOrPrefix : `${accountOrPrefix}.${this.accountId}`;
@@ -523,7 +513,7 @@ export class Account {
      *
      * @param beneficiaryId Will receive the account's remaining balance
      */
-    public async deleteAccount(beneficiaryId: string): Promise<FinalExecutionOutcome> {
+    public async deleteAccount(beneficiaryId: string) {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteAccount(beneficiaryId)],
@@ -535,7 +525,7 @@ export class Account {
      *
      * @param code The compiled contract code bytes
      */
-    public async deployContract(code: Uint8Array): Promise<FinalExecutionOutcome> {
+    public async deployContract(code: Uint8Array) {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deployContract(code)],
@@ -548,10 +538,7 @@ export class Account {
      * @param code The compiled contract code bytes
      * @param deployMode Deploy mode - "codeHash" for immutable contracts, "accountId" for updateable contracts
      */
-    public async deployGlobalContract(
-        code: Uint8Array,
-        deployMode: 'codeHash' | 'accountId'
-    ): Promise<FinalExecutionOutcome> {
+    public async deployGlobalContract(code: Uint8Array, deployMode: 'codeHash' | 'accountId') {
         const mode =
             deployMode === 'codeHash'
                 ? new GlobalContractDeployMode({ CodeHash: null })
@@ -568,9 +555,7 @@ export class Account {
      *
      * @param contractIdentifier The global contract identifier - either { accountId: string } or { codeHash: string | Uint8Array }
      */
-    public async useGlobalContract(
-        contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }
-    ): Promise<FinalExecutionOutcome> {
+    public async useGlobalContract(contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }) {
         const identifier =
             'accountId' in contractIdentifier
                 ? new GlobalContractIdentifier({
@@ -603,7 +588,7 @@ export class Account {
         contractId,
         methodNames = [],
         allowance = NEAR.toUnits('0.25'),
-    }: AddFunctionAccessKeyArgs): Promise<FinalExecutionOutcome> {
+    }: AddFunctionAccessKeyArgs) {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [
@@ -618,7 +603,7 @@ export class Account {
      * @param publicKey The public key to be added
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    public async addFullAccessKey(publicKey: PublicKey | string): Promise<FinalExecutionOutcome> {
+    public async addFullAccessKey(publicKey: PublicKey | string) {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [addKey(PublicKey.from(publicKey), fullAccessKey())],
@@ -629,7 +614,7 @@ export class Account {
      * @param publicKey The public key to be deleted
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    public async deleteKey(publicKey: PublicKey | string): Promise<FinalExecutionOutcome> {
+    public async deleteKey(publicKey: PublicKey | string) {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [deleteKey(PublicKey.from(publicKey))],
@@ -672,7 +657,7 @@ export class Account {
         deposit = 0n,
         gas = DEFAULT_FUNCTION_CALL_GAS,
         waitUntil = DEFAULT_WAIT_STATUS,
-    }: CallFunctionArgs): Promise<FinalExecutionOutcome> {
+    }: CallFunctionArgs) {
         return await this.signAndSendTransaction({
             receiverId: contractId,
             actions: [functionCall(methodName, args, BigInt(gas), BigInt(deposit))],
@@ -727,7 +712,7 @@ export class Account {
      * @param token - The token to transfer. Defaults to Native NEAR.
      *
      */
-    public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<FinalExecutionOutcome> {
+    public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<RpcTransactionResponse> {
         return token.transfer({ from: this, receiverId, amount });
     }
 }

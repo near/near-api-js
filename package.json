@@ -36,6 +36,7 @@
         }
     },
     "dependencies": {
+        "@near-js/jsonrpc-client": "^1.5.0",
         "@noble/curves": "2.0.1",
         "@noble/hashes": "2.0.1",
         "@scure/base": "2.0.0",
@@ -53,6 +54,7 @@
         "@changesets/cli": "2.29.8",
         "@commitlint/cli": "20.2.0",
         "@commitlint/config-conventional": "20.2.0",
+        "@near-js/jsonrpc-types": "^1.5.0",
         "@types/node": "24.10.2",
         "@vitest/coverage-v8": "4.0.15",
         "@vitest/ui": "4.0.15",

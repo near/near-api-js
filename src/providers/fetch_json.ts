@@ -30,7 +30,7 @@ export function retryConfig(
 
 export interface ConnectionInfo {
     url: string;
-    headers?: { [key: string]: string | number };
+    headers?: { [key: string]: string };
 }
 
 export class ProviderError extends Error {

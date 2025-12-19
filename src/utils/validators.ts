@@ -1,3 +1,4 @@
+import type { RpcValidatorResponse } from '@near-js/jsonrpc-types';
 import depd from 'depd';
 import type { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from '../types/index.js';
 import { sortBigIntAsc } from './utils.js';
@@ -10,7 +11,7 @@ import { sortBigIntAsc } from './utils.js';
  * @param protocolVersion: version of the protocol from genesis config
  */
 export function findSeatPrice(
-    validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[],
+    validators: RpcValidatorResponse['nextValidators'],
     maxNumberOfSeats: number,
     minimumStakeRatio: number[],
     protocolVersion?: number
@@ -27,7 +28,7 @@ export function findSeatPrice(
 }
 
 function findSeatPriceForProtocolBefore49(
-    validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[],
+    validators: RpcValidatorResponse['nextValidators'],
     numSeats: number
 ): bigint {
     const stakes = validators.map((v) => BigInt(v.stake)).sort(sortBigIntAsc);
@@ -60,7 +61,7 @@ function findSeatPriceForProtocolBefore49(
 
 // nearcore reference: https://github.com/near/nearcore/blob/5a8ae263ec07930cd34d0dcf5bcee250c67c02aa/chain/epoch_manager/src/validator_selection.rs#L308;L315
 function findSeatPriceForProtocolAfter49(
-    validators: (CurrentEpochValidatorInfo | NextEpochValidatorInfo)[],
+    validators: RpcValidatorResponse['nextValidators'],
     maxNumberOfSeats: number,
     minimumStakeRatio: number[]
 ): bigint {
