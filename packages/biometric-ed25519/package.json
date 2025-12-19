@@ -25,7 +25,7 @@
 		"borsh": "1.0.0",
 		"buffer": "6.0.3",
 		"cbor-js": "^0.1.0",
-		"fido2-lib": "3.4.1"
+		"fido2-lib": "3.5.6"
 	},
 	"devDependencies": {
 		"@jest/globals": "^29.7.0",
