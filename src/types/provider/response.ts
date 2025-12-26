@@ -102,7 +102,7 @@ export interface AccountView extends QueryResponseKind {
     locked: bigint;
     code_hash: string;
     storage_usage: number;
-    storage_paid_at: BlockHeight;
+    storage_paid_at?: BlockHeight;
 }
 
 export interface AccountBalanceInfo {
@@ -160,7 +160,7 @@ export interface ContractCodeView extends QueryResponseKind {
 
 export interface FunctionCallPermissionView {
     FunctionCall: {
-        allowance: string;
+        allowance?: string | null;
         receiver_id: string;
         method_names: string[];
     };

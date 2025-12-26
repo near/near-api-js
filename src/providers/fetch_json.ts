@@ -1,5 +1,6 @@
 import { backOff } from 'exponential-backoff';
 import { TypedError } from '../types/index.js';
+import type { JsonRpcRequest, JsonRpcResponse } from './methods.js';
 
 const BACKOFF_MULTIPLIER = 1.5;
 const RETRY_NUMBER = 10;
@@ -43,13 +44,6 @@ export class ProviderError extends Error {
     }
 }
 
-interface JsonRpcRequest {
-    id: number;
-    jsonrpc: string;
-    method: string;
-    params: object;
-}
-
 /**
  * Performs an HTTP request to an RPC endpoint
  * @param url URL for the HTTP request
@@ -57,12 +51,12 @@ interface JsonRpcRequest {
  * @param headers HTTP headers to include with the request
  * @returns Promise<any> }arsed JSON response from the HTTP request.
  */
-export async function fetchJsonRpc(
+export async function fetchJsonRpc<Req extends JsonRpcRequest>(
     url: string,
-    json: JsonRpcRequest,
+    json: Req,
     headers: object,
     retryConfig: object
-): Promise<any> {
+): Promise<JsonRpcResponse<Req['method']>> {
     const response = await backOff(async () => {
         const res = await fetch(url, {
             method: 'POST',
