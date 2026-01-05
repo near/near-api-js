@@ -6,36 +6,37 @@
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
 
+import type {
+    AccessKeyList,
+    AccessKeyView,
+    AccountView,
+    CallResult,
+    CryptoHash,
+    ContractCodeView as RawContractCodeView,
+    RpcBlockResponse,
+    RpcChunkResponse,
+    RpcGasPriceResponse,
+    RpcLightClientExecutionProofResponse,
+    RpcLightClientNextBlockResponse,
+    RpcProtocolConfigResponse,
+    RpcQueryResponse,
+    RpcReceiptResponse,
+    RpcStateChangesInBlockByTypeResponse,
+    RpcStateChangesInBlockResponse,
+    RpcStatusResponse,
+    RpcTransactionResponse,
+    RpcValidatorResponse,
+    ViewStateResult,
+} from '../rpc/index.js';
 import { encodeTransaction, type SignedTransaction } from '../transactions/index.js';
 import {
-    type AccessKeyList,
-    type AccessKeyView,
-    type AccessKeyViewRaw,
     type AccessKeyWithPublicKey,
-    type AccountView,
-    type AccountViewRaw,
-    type BlockChangeResult,
     type BlockId,
     type BlockReference,
-    type BlockResult,
-    type CallContractViewFunctionResultRaw,
-    type ChangeResult,
     type ChunkId,
-    type ChunkResult,
-    type ContractCodeView,
-    type ContractCodeViewRaw,
-    type ContractStateView,
-    type EpochValidatorInfo,
-    type ExecutionOutcomeReceiptDetail,
-    type FinalExecutionOutcome,
-    type GasPrice,
-    type LightClientProof,
     type LightClientProofRequest,
-    type NearProtocolConfig,
     type NextLightClientBlockRequest,
-    type NextLightClientBlockResponse,
-    type NodeStatusResult,
-    type QueryResponseKind,
+    type RpcQueryRequest,
     type SerializedReturnValue,
     type TxExecutionStatus,
     TypedError,
@@ -49,6 +50,7 @@ import {
     ServerError,
 } from '../utils/index.js';
 import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
+import type { Methods } from './methods.js';
 import type {
     CallFunctionArgs,
     Provider,
@@ -133,6 +135,9 @@ export class JsonRpcProvider implements Provider {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } =
             await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
 
+        if (!Array.isArray(minStakeRatio))
+            throw new Error('minimum_stake_ratio is not available on this protocol version');
+
         const { current_validators: currentValidators } = await this.viewValidators();
 
         // hard-coded in the protocol
@@ -144,6 +149,9 @@ export class JsonRpcProvider implements Provider {
     public async getNextEpochSeatPrice(): Promise<bigint> {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } =
             await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
+
+        if (!Array.isArray(minStakeRatio))
+            throw new Error('minimum_stake_ratio is not available on this protocol version');
 
         const { next_validators: nextValidators } = await this.viewValidators();
 
@@ -157,8 +165,8 @@ export class JsonRpcProvider implements Provider {
         accountId,
         publicKey,
         finalityQuery = { finality: DEFAULT_FINALITY },
-    }: ViewAccessKeyArgs): Promise<AccessKeyView> {
-        const data = await (this as Provider).query<AccessKeyViewRaw>({
+    }: ViewAccessKeyArgs) {
+        const data = await this.query<AccessKeyView>({
             ...finalityQuery,
             request_type: 'view_access_key',
             account_id: accountId,
@@ -174,19 +182,16 @@ export class JsonRpcProvider implements Provider {
     public async viewAccessKeyList({
         accountId,
         finalityQuery = { finality: DEFAULT_FINALITY },
-    }: ViewAccessKeyListArgs): Promise<AccessKeyList> {
-        return (this as Provider).query<AccessKeyList>({
+    }: ViewAccessKeyListArgs) {
+        return this.query<AccessKeyList>({
             ...finalityQuery,
             request_type: 'view_access_key_list',
             account_id: accountId,
         });
     }
 
-    public async viewAccount({
-        accountId,
-        blockQuery = { finality: DEFAULT_FINALITY },
-    }: ViewAccountArgs): Promise<AccountView> {
-        const data = await (this as Provider).query<AccountViewRaw>({
+    public async viewAccount({ accountId, blockQuery = { finality: DEFAULT_FINALITY } }: ViewAccountArgs) {
+        const data = await this.query<AccountView>({
             ...blockQuery,
             request_type: 'view_account',
             account_id: accountId,
@@ -199,11 +204,8 @@ export class JsonRpcProvider implements Provider {
         };
     }
 
-    public async viewContractCode({
-        contractId,
-        blockQuery = { finality: DEFAULT_FINALITY },
-    }: ViewContractCodeArgs): Promise<ContractCodeView> {
-        const data = await (this as Provider).query<ContractCodeViewRaw>({
+    public async viewContractCode({ contractId, blockQuery = { finality: DEFAULT_FINALITY } }: ViewContractCodeArgs) {
+        const data = await this.query<RawContractCodeView>({
             ...blockQuery,
             request_type: 'view_code',
             account_id: contractId,
@@ -219,10 +221,10 @@ export class JsonRpcProvider implements Provider {
         contractId,
         prefix,
         blockQuery = { finality: DEFAULT_FINALITY },
-    }: ViewContractStateArgs): Promise<ContractStateView> {
+    }: ViewContractStateArgs) {
         const prefixBase64 = Buffer.from(prefix || '').toString('base64');
 
-        return (this as Provider).query<ContractStateView>({
+        return this.query<ViewStateResult>({
             ...blockQuery,
             request_type: 'view_state',
             account_id: contractId,
@@ -254,11 +256,11 @@ export class JsonRpcProvider implements Provider {
         method,
         args,
         blockQuery = { finality: DEFAULT_FINALITY },
-    }: CallFunctionArgs): Promise<CallContractViewFunctionResultRaw> {
+    }: CallFunctionArgs) {
         const argsBuffer = ArrayBuffer.isView(args) ? Buffer.from(args) : Buffer.from(JSON.stringify(args));
         const argsBase64 = argsBuffer.toString('base64');
 
-        return await (this as Provider).query<CallContractViewFunctionResultRaw>({
+        return this.query<CallResult>({
             ...blockQuery,
             request_type: 'call_function',
             account_id: contractId,
@@ -267,21 +269,21 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async viewBlock(blockQuery: BlockReference): Promise<BlockResult> {
+    public async viewBlock(blockQuery: BlockReference): Promise<RpcBlockResponse> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('block', { block_id: blockId, finality });
     }
 
-    public async viewChunk(chunkId: ChunkId): Promise<ChunkResult> {
+    public async viewChunk(chunkId: ChunkId): Promise<RpcChunkResponse> {
         return this.sendJsonRpc('chunk', [chunkId]);
     }
 
-    public async viewGasPrice(blockId?: BlockId): Promise<GasPrice> {
+    public async viewGasPrice(blockId?: BlockId): Promise<RpcGasPriceResponse> {
         return this.sendJsonRpc('gas_price', [blockId || null]);
     }
 
-    public async viewNodeStatus(): Promise<NodeStatusResult> {
+    public async viewNodeStatus(): Promise<RpcStatusResponse> {
         return this.sendJsonRpc('status', []);
     }
 
@@ -294,7 +296,7 @@ export class JsonRpcProvider implements Provider {
      * - `{ epochId }`: Epoch hash.
      * - `null`: Current epoch.
      */
-    public async viewValidators(params?: ViewValidatorsArgs): Promise<EpochValidatorInfo> {
+    public async viewValidators(params?: ViewValidatorsArgs): Promise<RpcValidatorResponse> {
         if (typeof params === 'undefined') return this.sendJsonRpc('validators', [null]);
 
         if (typeof params === 'object' && 'blockId' in params)
@@ -310,7 +312,7 @@ export class JsonRpcProvider implements Provider {
         txHash,
         accountId,
         waitUntil = 'EXECUTED_OPTIMISTIC',
-    }: ViewTransactionStatusArgs): Promise<FinalExecutionOutcome> {
+    }: ViewTransactionStatusArgs): Promise<RpcTransactionResponse> {
         const encodedTxHash = typeof txHash === 'string' ? txHash : baseEncode(txHash);
 
         return this.sendJsonRpc('tx', {
@@ -324,7 +326,7 @@ export class JsonRpcProvider implements Provider {
         txHash,
         accountId,
         waitUntil = 'EXECUTED_OPTIMISTIC',
-    }: ViewTransactionStatusArgs): Promise<FinalExecutionOutcome & Required<Pick<FinalExecutionOutcome, 'receipts'>>> {
+    }: ViewTransactionStatusArgs): Promise<RpcTransactionResponse> {
         const encodedTxHash = typeof txHash === 'string' ? txHash : baseEncode(txHash);
 
         return this.sendJsonRpc('EXPERIMENTAL_tx_status', {
@@ -334,7 +336,7 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
-    public async viewTransactionReceipt(receiptId: string): Promise<ExecutionOutcomeReceiptDetail> {
+    public async viewTransactionReceipt(receiptId: string): Promise<RpcReceiptResponse> {
         return this.sendJsonRpc('EXPERIMENTAL_receipt', {
             receipt_id: receiptId,
         });
@@ -349,7 +351,7 @@ export class JsonRpcProvider implements Provider {
     async sendTransactionUntil(
         signedTransaction: SignedTransaction,
         waitUntil: TxExecutionStatus
-    ): Promise<FinalExecutionOutcome> {
+    ): Promise<RpcTransactionResponse> {
         const bytes = encodeTransaction(signedTransaction);
         return this.sendJsonRpc('send_tx', {
             signed_tx_base64: Buffer.from(bytes).toString('base64'),
@@ -363,7 +365,7 @@ export class JsonRpcProvider implements Provider {
      *
      * @param signedTransaction The signed transaction being sent
      */
-    async sendTransaction(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
+    async sendTransaction(signedTransaction: SignedTransaction): Promise<RpcTransactionResponse> {
         return this.sendTransactionUntil(signedTransaction, 'EXECUTED_OPTIMISTIC');
     }
 
@@ -373,7 +375,7 @@ export class JsonRpcProvider implements Provider {
      * @param signedTransaction The signed transaction being sent
      * @returns {Promise<FinalExecutionOutcome>}
      */
-    async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<FinalExecutionOutcome> {
+    async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<RpcTransactionResponse> {
         return this.sendTransactionUntil(signedTransaction, 'NONE');
     }
 
@@ -383,14 +385,31 @@ export class JsonRpcProvider implements Provider {
      *
      * @typeParam T the shape of the returned query response
      */
-    async query<T extends QueryResponseKind>(...args: any[]): Promise<T> {
+    query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
+        params: RpcQueryRequest
+    ): Promise<
+        R & {
+            block_hash: CryptoHash;
+            block_height: number;
+        }
+    >;
+    query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
+        path: string,
+        data: string
+    ): Promise<
+        R & {
+            block_hash: CryptoHash;
+            block_height: number;
+        }
+    >;
+    async query(...args: any[]) {
         let result;
         if (args.length === 1) {
             const { block_id, blockId, ...otherParams } = args[0];
-            result = await this.sendJsonRpc<T>('query', { ...otherParams, block_id: block_id || blockId });
+            result = await this.sendJsonRpc('query', { ...otherParams, block_id: block_id || blockId });
         } else {
             const [path, data] = args;
-            result = await this.sendJsonRpc<T>('query', [path, data]);
+            result = await this.sendJsonRpc('query', [path, data]);
         }
         if (result && result.error) {
             throw new TypedError(
@@ -406,7 +425,7 @@ export class JsonRpcProvider implements Provider {
      * pass block_id OR finality as blockQuery, not both
      * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
      */
-    async blockChanges(blockQuery: BlockReference): Promise<BlockChangeResult> {
+    async blockChanges(blockQuery: BlockReference): Promise<RpcStateChangesInBlockByTypeResponse> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes_in_block', { block_id: blockId, finality });
@@ -419,7 +438,7 @@ export class JsonRpcProvider implements Provider {
      */
     async experimental_protocolConfig(
         blockReference: BlockReference | { sync_checkpoint: 'genesis' }
-    ): Promise<NearProtocolConfig> {
+    ): Promise<RpcProtocolConfigResponse> {
         const { blockId, ...otherParams } = blockReference as any;
         return await this.sendJsonRpc('EXPERIMENTAL_protocol_config', { ...otherParams, block_id: blockId });
     }
@@ -428,7 +447,7 @@ export class JsonRpcProvider implements Provider {
      * Gets a light client execution proof for verifying execution outcomes
      * @see [https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof](https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      */
-    async lightClientProof(request: LightClientProofRequest): Promise<LightClientProof> {
+    async lightClientProof(request: LightClientProofRequest): Promise<RpcLightClientExecutionProofResponse> {
         return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
     }
 
@@ -439,16 +458,18 @@ export class JsonRpcProvider implements Provider {
      *
      * @see [https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
      */
-    async nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse> {
+    async nextLightClientBlock(request: NextLightClientBlockRequest): Promise<RpcLightClientNextBlockResponse> {
         return await this.sendJsonRpc('next_light_client_block', request);
     }
 
     /**
      * Gets access key changes for a given array of accountIds
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-all)
-     * @returns {Promise<ChangeResult>}
      */
-    async accessKeyChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
+    async accessKeyChanges(
+        accountIdArray: string[],
+        blockQuery: BlockReference
+    ): Promise<RpcStateChangesInBlockResponse> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -463,12 +484,11 @@ export class JsonRpcProvider implements Provider {
      * Gets single access key changes for a given array of access keys
      * pass block_id OR finality as blockQuery, not both
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-single)
-     * @returns {Promise<ChangeResult>}
      */
     async singleAccessKeyChanges(
         accessKeyArray: AccessKeyWithPublicKey[],
         blockQuery: BlockReference
-    ): Promise<ChangeResult> {
+    ): Promise<RpcStateChangesInBlockResponse> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -483,9 +503,11 @@ export class JsonRpcProvider implements Provider {
      * Gets account changes for a given array of accountIds
      * pass block_id OR finality as blockQuery, not both
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-account-changes)
-     * @returns {Promise<ChangeResult>}
      */
-    async accountChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
+    async accountChanges(
+        accountIdArray: string[],
+        blockQuery: BlockReference
+    ): Promise<RpcStateChangesInBlockResponse> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -501,13 +523,12 @@ export class JsonRpcProvider implements Provider {
      * pass block_id OR finality as blockQuery, not both
      * Note: If you pass a keyPrefix it must be base64 encoded
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-state-changes)
-     * @returns {Promise<ChangeResult>}
      */
     async contractStateChanges(
         accountIdArray: string[],
         blockQuery: BlockReference,
         keyPrefix = ''
-    ): Promise<ChangeResult> {
+    ): Promise<RpcStateChangesInBlockResponse> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -524,9 +545,11 @@ export class JsonRpcProvider implements Provider {
      * pass block_id OR finality as blockQuery, not both
      * Note: Change is returned in a base64 encoded WASM file
      * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-code-changes)
-     * @returns {Promise<ChangeResult>}
      */
-    async contractCodeChanges(accountIdArray: string[], blockQuery: BlockReference): Promise<ChangeResult> {
+    async contractCodeChanges(
+        accountIdArray: string[],
+        blockQuery: BlockReference
+    ): Promise<RpcStateChangesInBlockResponse> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('EXPERIMENTAL_changes', {
@@ -543,44 +566,55 @@ export class JsonRpcProvider implements Provider {
      * @param method RPC method
      * @param params Parameters to the method
      */
-    async sendJsonRpc<T>(method: string, params: object): Promise<T> {
+    async sendJsonRpc<
+        Method extends keyof Methods,
+        Params = Methods[Method]['request']['params'],
+        Result = Extract<Methods[Method]['response'], { result: object }>['result'],
+    >(method: Method, params: Params): Promise<Result> {
         const request = {
             method,
             params,
-            id: _nextId++,
+            id: String(_nextId++),
             jsonrpc: '2.0',
         };
         const response = await fetchJsonRpc(
             this.connection.url,
-            request,
+            request as Methods[Method]['request'],
             this.connection.headers || {},
             retryConfig(this.options.retries, this.options.backoff, this.options.wait)
         );
-        if (response.error) {
+        if ('error' in response && typeof response.error !== 'undefined') {
+            // @ts-expect-error
             if (typeof response.error.data === 'object') {
                 if (
+                    // @ts-expect-error
                     typeof response.error.data.error_message === 'string' &&
+                    // @ts-expect-error
                     typeof response.error.data.error_type === 'string'
                 ) {
                     // if error data has error_message and error_type properties, we consider that node returned an error in the old format
+                    // @ts-expect-error
                     throw new TypedError(response.error.data.error_message, response.error.data.error_type);
                 }
+                // @ts-expect-error
                 throw parseRpcError(response.error.data);
             } else {
+                // @ts-expect-error
                 const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
 
+                // @ts-expect-error
                 const errorType = getErrorTypeFromErrorMessage(response.error.data, '');
                 if (errorType) {
                     throw new TypedError(formatError(errorType, params), errorType);
                 }
                 throw new TypedError(errorMessage, response.error.name);
             }
-        } else if (typeof response.result?.error === 'string') {
-            const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
-            if (errorType) {
-                throw new ServerError(formatError(errorType, params), errorType);
-            }
         }
+
+        if (!('result' in response)) {
+            throw new Error(`JSON RPC response must include either "result", or "error" property`);
+        }
+
         const { result } = response;
         // From jsonrpc spec:
         // result
@@ -592,6 +626,21 @@ export class JsonRpcProvider implements Provider {
                 'RetriesExceeded'
             );
         }
-        return result;
+
+        // "null" is a valid result that shouldn't be treated as error
+        if (response.result === null) return null as Result;
+
+        if (
+            typeof response.result === 'object' &&
+            'error' in response.result &&
+            typeof response.result.error === 'string'
+        ) {
+            const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
+            if (errorType) {
+                throw new ServerError(formatError(errorType, params), errorType);
+            }
+        }
+
+        return result as Result;
     }
 }

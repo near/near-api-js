@@ -53,6 +53,7 @@
         "@changesets/cli": "2.29.8",
         "@commitlint/cli": "20.2.0",
         "@commitlint/config-conventional": "20.2.0",
+        "@hey-api/openapi-ts": "^0.89.0",
         "@types/node": "24.10.2",
         "@vitest/coverage-v8": "4.0.15",
         "@vitest/ui": "4.0.15",
@@ -83,7 +84,9 @@
         "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
         "docs:generate": "typedoc",
         "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
-        "release": "changeset publish"
+        "release": "changeset publish",
+        "rpc:generate": "pnpm openapi-ts",
+        "postrpc:generate": "biome check --fix"
     },
     "files": [
         "lib",
