@@ -1,4 +1,5 @@
 import { PublicKey } from '../../crypto/public_key.js';
+import type { BlockReference } from '../../rpc/types.gen.js';
 import type { Methods } from '../methods.js';
 import {
     AccessKeyDoesNotExistError,
@@ -6,6 +7,7 @@ import {
     ContractCodeDoesNotExistError,
     ContractMethodNotFoundError,
     HandlerError,
+    UnknownBlockError,
 } from './handler.js';
 import { RpcError } from './rpc.js';
 
@@ -50,9 +52,11 @@ function parseHandlerError(error: RawHandlerError): HandlerError {
                 error.info.block_hash,
                 error.info.block_height
             );
-
-        case 'INTERNAL_ERROR':
         case 'UNKNOWN_BLOCK':
+            return new UnknownBlockError(
+                'block_reference' in error.info ? (error.info.block_reference as BlockReference) : undefined
+            );
+        case 'INTERNAL_ERROR':
         case 'NOT_SYNCED_YET':
         case 'INVALID_SHARD_ID':
         case 'UNKNOWN_CHUNK':

@@ -7,6 +7,7 @@ import {
     AccountDoesNotExistError,
     ContractCodeDoesNotExistError,
     ContractMethodNotFoundError,
+    UnknownBlockError,
 } from '../../../src/providers/errors/handler';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
@@ -203,7 +204,7 @@ describe('providers', () => {
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
+        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(UnknownBlockError);
 
         // Use old block hash as light client head should fail
         lightClientRequest = {
@@ -215,7 +216,7 @@ describe('providers', () => {
         };
 
         await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(
-            /.+ block .+ is ahead of head block .+/
+            /block .+ is ahead of head block .+/
         );
     });
 });
