@@ -9,7 +9,7 @@ import {
     HandlerError,
     UnknownBlockError,
 } from './handler.js';
-import { RpcError } from './rpc.js';
+import { InternalRpcError, RpcError } from './rpc.js';
 
 type RawRpcError = Extract<Methods[keyof Methods]['response'], { error: object }>['error'];
 
@@ -26,7 +26,7 @@ export function parseRpcError(error: RawRpcError): RpcError {
             return parseHandlerError(error.cause);
         }
         case 'INTERNAL_ERROR': {
-            return new RpcError();
+            return new InternalRpcError(error.cause.info.error_message);
         }
     }
 }

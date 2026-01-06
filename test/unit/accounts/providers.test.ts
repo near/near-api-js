@@ -9,6 +9,7 @@ import {
     ContractMethodNotFoundError,
     UnknownBlockError,
 } from '../../../src/providers/errors/handler';
+import { InternalRpcError } from '../../../src/providers/errors/rpc.js';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
 let near: Awaited<ReturnType<typeof setUpTestConnection>>;
@@ -215,9 +216,14 @@ describe('providers', () => {
             sender_id: workingAccount.accountId,
         };
 
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(
-            /block .+ is ahead of head block .+/
-        );
+        try {
+            await near.provider.lightClientProof(lightClientRequest);
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(InternalRpcError);
+            expect((thrown as InternalRpcError).message).toMatch(/block .+ is ahead of head block .+/);
+        }
     });
 });
 
