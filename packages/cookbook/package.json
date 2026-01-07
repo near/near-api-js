@@ -47,6 +47,6 @@
     "tsconfig": "workspace:*",
     "tsx": "^4.19.2",
     "typescript": "5.4.5",
-    "undici-types": "^7.10.0"
+    "undici-types": "^7.18.2"
   }
 }
