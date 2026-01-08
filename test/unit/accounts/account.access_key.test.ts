@@ -1,6 +1,7 @@
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, beforeEach, expect, test } from 'vitest';
-import { Account, KeyPair, KeyPairSigner, TypedContract, type TypedError } from '../../../src';
+import { Account, KeyPair, KeyPairSigner, TypedContract } from '../../../src';
+import { AccessKeyDoesNotExistError } from '../../../src/providers/errors/handler';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
@@ -63,15 +64,13 @@ test('remove access key no longer works', async () => {
     try {
         await contract.call.setValue({ args: { value: 'test' }, account: near.account });
         failed = false;
-    } catch (e) {
-        expect((e as TypedError).message).toEqual(
-            `Can't complete the action because access key ${keyPair.getPublicKey().toString()} doesn't exist`
-        );
-        expect((e as TypedError).type).toEqual('AccessKeyDoesNotExist');
+    } catch (thrown: unknown) {
+        expect(thrown).toBeInstanceOf(AccessKeyDoesNotExistError);
+        expect((thrown as AccessKeyDoesNotExistError).publicKey.toString()).toEqual(keyPair.getPublicKey().toString());
     }
 
     if (!failed) {
-        throw new Error('should throw an error');
+        expect.fail('should throw an error');
     }
 
     const worker = near.worker as Worker;

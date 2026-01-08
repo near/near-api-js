@@ -1,7 +1,15 @@
 import { base58 } from '@scure/base';
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { ErrorMessages, IdType, KeyPair, type TypedError } from '../../../src';
+import { IdType, KeyPair } from '../../../src';
+import {
+    AccessKeyDoesNotExistError,
+    AccountDoesNotExistError,
+    ContractCodeDoesNotExistError,
+    ContractMethodNotFoundError,
+    UnknownBlockError,
+} from '../../../src/providers/errors/handler';
+import { InternalRpcError } from '../../../src/providers/errors/rpc.js';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
 let near: Awaited<ReturnType<typeof setUpTestConnection>>;
@@ -197,7 +205,7 @@ describe('providers', () => {
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
         };
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow('DB Not Found Error');
+        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(UnknownBlockError);
 
         // Use old block hash as light client head should fail
         lightClientRequest = {
@@ -208,9 +216,14 @@ describe('providers', () => {
             sender_id: workingAccount.accountId,
         };
 
-        await expect(near.provider.lightClientProof(lightClientRequest)).rejects.toThrow(
-            /.+ block .+ is ahead of head block .+/
-        );
+        try {
+            await near.provider.lightClientProof(lightClientRequest);
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(InternalRpcError);
+            expect((thrown as InternalRpcError).message).toMatch(/block .+ is ahead of head block .+/);
+        }
     });
 });
 
@@ -229,10 +242,8 @@ describe('providers errors', () => {
                 args_base64: '',
             });
             expect(response).toBeUndefined();
-        } catch (e) {
-            const errorType = 'MethodNotFound';
-            expect((e as TypedError).type).toEqual(errorType);
-            expect((e as TypedError).message).toEqual(ErrorMessages[errorType]);
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(ContractMethodNotFoundError);
         }
     });
 
@@ -248,12 +259,9 @@ describe('providers errors', () => {
                 args_base64: '',
             });
             expect(response).toBeUndefined();
-        } catch (e) {
-            const errorType = 'CodeDoesNotExist';
-            expect((e as TypedError).type).toEqual(errorType);
-            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
-            );
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(ContractCodeDoesNotExistError);
+            expect((thrown as ContractCodeDoesNotExistError).contractId).toEqual(accountId);
         }
     });
 
@@ -268,32 +276,28 @@ describe('providers errors', () => {
                 args_base64: '',
             });
             expect(response).toBeUndefined();
-        } catch (e) {
-            const errorType = 'AccountDoesNotExist';
-            expect((e as TypedError).type).toEqual(errorType);
-            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
-            );
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(AccountDoesNotExistError);
+            expect((thrown as AccountDoesNotExistError).accountId).toEqual(accountName);
         }
     });
 
     test('JSON RPC Error - AccessKeyDoesNotExist', async () => {
         const { accountId } = await createAccount(near);
 
+        const pk = KeyPair.fromRandom('ed25519').getPublicKey().toString();
+
         try {
             const response = await near.provider.query({
                 request_type: 'view_access_key',
                 finality: 'optimistic',
                 account_id: accountId,
-                public_key: KeyPair.fromRandom('ed25519').getPublicKey().toString(),
+                public_key: pk,
             });
             expect(response).toBeUndefined();
-        } catch (e) {
-            const errorType = 'AccessKeyDoesNotExist';
-            expect((e as TypedError).type).toEqual(errorType);
-            expect((e as TypedError).message.split(' ').slice(0, 5)).toEqual(
-                ErrorMessages[errorType].split(' ').slice(0, 5)
-            );
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(AccessKeyDoesNotExistError);
+            expect((thrown as AccessKeyDoesNotExistError).publicKey.toString()).toEqual(pk);
         }
     });
 });

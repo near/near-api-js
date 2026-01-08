@@ -41,14 +41,9 @@ import {
     type TxExecutionStatus,
     TypedError,
 } from '../types/index.js';
-import {
-    baseEncode,
-    findSeatPrice,
-    formatError,
-    getErrorTypeFromErrorMessage,
-    parseRpcError,
-    ServerError,
-} from '../utils/index.js';
+import { baseEncode, findSeatPrice, getErrorTypeFromErrorMessage } from '../utils/index.js';
+import { parseRpcError, parseRpcErrorMessage } from './errors/parse.js';
+import { RpcError } from './errors/rpc.js';
 import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
 import type { Methods } from './methods.js';
 import type {
@@ -584,31 +579,7 @@ export class JsonRpcProvider implements Provider {
             retryConfig(this.options.retries, this.options.backoff, this.options.wait)
         );
         if ('error' in response && typeof response.error !== 'undefined') {
-            // @ts-expect-error
-            if (typeof response.error.data === 'object') {
-                if (
-                    // @ts-expect-error
-                    typeof response.error.data.error_message === 'string' &&
-                    // @ts-expect-error
-                    typeof response.error.data.error_type === 'string'
-                ) {
-                    // if error data has error_message and error_type properties, we consider that node returned an error in the old format
-                    // @ts-expect-error
-                    throw new TypedError(response.error.data.error_message, response.error.data.error_type);
-                }
-                // @ts-expect-error
-                throw parseRpcError(response.error.data);
-            } else {
-                // @ts-expect-error
-                const errorMessage = `[${response.error.code}] ${response.error.message}: ${response.error.data}`;
-
-                // @ts-expect-error
-                const errorType = getErrorTypeFromErrorMessage(response.error.data, '');
-                if (errorType) {
-                    throw new TypedError(formatError(errorType, params), errorType);
-                }
-                throw new TypedError(errorMessage, response.error.name);
-            }
+            throw parseRpcError(response.error);
         }
 
         if (!('result' in response)) {
@@ -635,9 +606,14 @@ export class JsonRpcProvider implements Provider {
             'error' in response.result &&
             typeof response.result.error === 'string'
         ) {
-            const errorType = getErrorTypeFromErrorMessage(response.result.error, '');
-            if (errorType) {
-                throw new ServerError(formatError(errorType, params), errorType);
+            if ('block_hash' in response.result && 'block_height' in response.result) {
+                throw parseRpcErrorMessage(
+                    response.result.error,
+                    response.result.block_hash,
+                    response.result.block_height
+                );
+            } else {
+                throw new RpcError(response.result.error);
             }
         }
 
