@@ -10,6 +10,7 @@ import {
     KeyType,
     TypedContract,
 } from '../../../src';
+import { AccountAlreadyExistsError } from '../../../src/providers/errors/transaction_execution';
 import {
     createAccount,
     generateUniqueString,
@@ -136,13 +137,18 @@ test('delete account', async () => {
 
 describe('errors', () => {
     test('create existing account', async () => {
-        await expect(
-            workingAccount.createAccount({
+        try {
+            await workingAccount.createAccount({
                 newAccountId: workingAccount.accountId,
                 publicKey: '9AhWenZ3JddamBoyMqnTbp7yVbRuvqAv3zwfrWgfVRJE',
                 nearToTransfer: BigInt(100),
-            })
-        ).rejects.toThrow(/Can't create a new account .+, because it already exists/);
+            });
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(AccountAlreadyExistsError);
+            expect((thrown as AccountAlreadyExistsError).accountId).toBe(workingAccount.accountId);
+        }
     });
 });
 
