@@ -70,8 +70,6 @@ export async function fetchJsonRpc<Req extends JsonRpcRequest>(
             throw new ProviderError('Internal server error', { cause: status });
         } else if (status === 408) {
             throw new ProviderError('Timeout error', { cause: status });
-        } else if (status === 400) {
-            throw new ProviderError('Request validation error', { cause: status });
         } else if (status === 503) {
             throw new ProviderError(`${url} unavailable`, { cause: status });
         }

@@ -1,4 +1,5 @@
 import { type KeyPairString, PublicKey } from '../crypto/index.js';
+import { parseTransactionExecutionError } from '../providers/errors/parse.js';
 import type { Provider } from '../providers/index.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
 import type { SignDelegateActionReturn } from '../signers/signer.js';
@@ -15,7 +16,7 @@ import {
     type SignedTransaction,
 } from '../transactions/index.js';
 import type { FinalExecutionOutcome, Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
-import { baseDecode, getTransactionLastResult, parseResultError } from '../utils/index.js';
+import { baseDecode, getTransactionLastResult } from '../utils/index.js';
 
 const {
     addKey,
@@ -400,7 +401,11 @@ export class Account {
             typeof result.status.Failure === 'object' &&
             result.status.Failure !== null
         ) {
-            throw parseResultError(result);
+            throw parseTransactionExecutionError(
+                result.status.Failure,
+                result.transaction_outcome.id,
+                result.transaction_outcome.block_hash
+            );
         }
 
         return result;
