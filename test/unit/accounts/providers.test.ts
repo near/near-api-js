@@ -3,12 +3,15 @@ import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { IdType, KeyPair } from '../../../src';
 import {
-    AccessKeyDoesNotExistError,
-    AccountDoesNotExistError,
     ContractCodeDoesNotExistError,
     ContractMethodNotFoundError,
+} from '../../../src/providers/errors/contract_execution.js';
+import {
+    AccessKeyDoesNotExistError,
+    AccountDoesNotExistError,
     UnknownBlockError,
 } from '../../../src/providers/errors/handler';
+import { RpcMethodNotFoundError, RpcRequestParseError } from '../../../src/providers/errors/request_validation.js';
 import { InternalRpcError } from '../../../src/providers/errors/rpc.js';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
 
@@ -298,6 +301,84 @@ describe('providers errors', () => {
         } catch (thrown: unknown) {
             expect(thrown).toBeInstanceOf(AccessKeyDoesNotExistError);
             expect((thrown as AccessKeyDoesNotExistError).publicKey.toString()).toEqual(pk);
+        }
+    });
+
+    test('JSON RPC Error - RpcMethodNotFoundError', async () => {
+        try {
+            // @ts-expect-error - testing unknown method
+            await near.provider.sendJsonRpc('unknown_rpc_method', {});
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(RpcMethodNotFoundError);
+            expect((thrown as RpcMethodNotFoundError).methodName).toEqual('unknown_rpc_method');
+        }
+    });
+
+    test('JSON RPC Error - RpcRequestParseError because of unknown arguments', async () => {
+        try {
+            await near.provider.sendJsonRpc('block', {
+                unknown_arg: 'some_value',
+            });
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(RpcRequestParseError);
+        }
+    });
+
+    test('JSON RPC Error - RpcRequestParseError because of missing arguments', async () => {
+        try {
+            await near.provider.sendJsonRpc('block', {});
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(RpcRequestParseError);
+        }
+    });
+
+    test('JSON RPC Error - RpcRequestParseError because of invalid signed_tx_base64 payload', async () => {
+        try {
+            await near.provider.sendJsonRpc('send_tx', { signed_tx_base64: 'e30', wait_until: 'EXECUTED_OPTIMISTIC' });
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(RpcRequestParseError);
+        }
+    });
+
+    test('JSON RPC Error - RpcRequestParseError because of invalid account ID', async () => {
+        try {
+            await near.provider.viewAccount({ accountId: '%41s0=--11.near', blockQuery: { finality: 'optimistic' } });
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(RpcRequestParseError);
+        }
+    });
+
+    test('JSON RPC Error - UnknownBlockError because of unknown block height', async () => {
+        try {
+            await near.provider.sendJsonRpc('block', {
+                block_id: 1_000_000_000,
+            });
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(UnknownBlockError);
+        }
+    });
+
+    test('JSON RPC Error - UnknownBlockError because of unknown block hash', async () => {
+        try {
+            await near.provider.sendJsonRpc('block', {
+                block_id: 'AVmZ29QFkWtPUuhrerpYcWp3AdxP5jZRp1XAy68AR3Md',
+            });
+
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(UnknownBlockError);
         }
     });
 });

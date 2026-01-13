@@ -39,14 +39,6 @@ describe('fetchJsonError', () => {
         );
     });
 
-    test('handles 400 Request Validation Error', async () => {
-        vi.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 400 })));
-
-        await expect(fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig())).rejects.toThrowError(
-            new ProviderError('Request validation error', { cause: 400 })
-        );
-    });
-
     test('handles 503 Service Unavailable', async () => {
         vi.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(new Response('', { status: 503 })));
 
