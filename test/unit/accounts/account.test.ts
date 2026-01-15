@@ -5,6 +5,7 @@ import {
     Account,
     actionCreators,
     getTransactionLastResult,
+    JsonRpcProvider,
     KeyPair,
     KeyPairSigner,
     KeyType,
@@ -533,4 +534,11 @@ describe('global contracts', () => {
             expect(mockSignAndSendTransaction).toHaveBeenCalledTimes(3);
         });
     });
+});
+
+test('Account can be created with string Provider', () => {
+    const account = new Account('user.near', 'https://rpc.testnet.near.org');
+
+    expect(account.provider).toBeInstanceOf(JsonRpcProvider);
+    expect((account.provider as JsonRpcProvider).connection.url).toBe('https://rpc.testnet.near.org');
 });

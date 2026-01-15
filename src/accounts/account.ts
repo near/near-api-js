@@ -1,6 +1,6 @@
 import { type KeyPairString, PublicKey } from '../crypto/index.js';
 import { parseTransactionExecutionError } from '../providers/errors/parse.js';
-import type { Provider } from '../providers/index.js';
+import { JsonRpcProvider, type Provider } from '../providers/index.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
 import type { SignDelegateActionReturn } from '../signers/signer.js';
 import type { FungibleToken, NativeToken } from '../tokens/index.js';
@@ -143,9 +143,13 @@ export class Account {
     public readonly provider: Provider;
     private signer?: Signer;
 
-    constructor(accountId: string, provider: Provider, signer?: Signer | KeyPairString) {
+    constructor(accountId: string, provider: Provider | string, signer?: Signer | KeyPairString) {
         this.accountId = accountId;
-        this.provider = provider;
+        if (typeof provider === 'string') {
+            this.provider = new JsonRpcProvider({ url: provider });
+        } else {
+            this.provider = provider;
+        }
         if (typeof signer === 'string') {
             this.signer = KeyPairSigner.fromSecretKey(signer);
         } else {
