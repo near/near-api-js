@@ -55,6 +55,7 @@ import type {
     ViewAccountArgs,
     ViewContractCodeArgs,
     ViewContractStateArgs,
+    ViewGlobalContractCodeArgs,
     ViewTransactionStatusArgs,
     ViewValidatorsArgs,
 } from './provider.js';
@@ -226,6 +227,50 @@ export class JsonRpcProvider implements Provider {
             request_type: 'view_code',
             account_id: contractId,
         });
+
+        return {
+            ...data,
+            code: new Uint8Array(Buffer.from(data.code_base64, 'base64')),
+        };
+    }
+
+    public async viewGlobalContractCode({
+        identifier,
+        blockQuery = { finality: DEFAULT_FINALITY },
+    }: ViewGlobalContractCodeArgs) {
+        let data: RawContractCodeView & {
+            block_hash: CryptoHash;
+            block_height: number;
+        };
+
+        let reference: { block_id: BlockId } | { finality: Finality };
+
+        if ('blockId' in blockQuery) {
+            reference = { block_id: blockQuery.blockId };
+        } else if ('finality' in blockQuery) {
+            reference = { finality: blockQuery.finality };
+        } else {
+            throw new Error('Either blockId or finality must be provided in blockQuery');
+        }
+
+        if ('codeHash' in identifier) {
+            data = await this.query<RawContractCodeView>({
+                ...reference,
+                request_type: 'view_global_contract_code',
+                code_hash:
+                    typeof identifier.codeHash === 'string'
+                        ? identifier.codeHash
+                        : Buffer.from(identifier.codeHash).toString('hex'),
+            });
+        } else if ('accountId' in identifier) {
+            data = await this.query<RawContractCodeView>({
+                ...reference,
+                request_type: 'view_global_contract_code_by_account_id',
+                account_id: identifier.accountId,
+            });
+        } else {
+            throw new Error('Either "codeHash", or "accountId" must be provided in identifier');
+        }
 
         return {
             ...data,

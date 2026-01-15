@@ -81,6 +81,12 @@ export type ViewContractCodeArgs = Prettify<
     } & BlockQuery
 >;
 
+export type ViewGlobalContractCodeArgs = Prettify<
+    {
+        identifier: { codeHash: CryptoHash | Uint8Array } | { accountId: string };
+    } & BlockQuery
+>;
+
 export type ViewContractStateArgs = Prettify<
     {
         contractId: string;
@@ -118,6 +124,7 @@ export interface Provider {
     >;
     viewAccount(params: ViewAccountArgs): Promise<InternalAccountView>;
     viewContractCode(params: ViewContractCodeArgs): Promise<InternalContractCodeView>;
+    viewGlobalContractCode(params: ViewGlobalContractCodeArgs): Promise<InternalContractCodeView>;
     viewContractState(params: ViewContractStateArgs): Promise<
         ViewStateResult & {
             block_hash: CryptoHash;
