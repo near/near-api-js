@@ -89,7 +89,7 @@ global.TextEncoder = TextEncoder;
             const block_id = stat.sync_info.latest_block_height - 1;
 
             const response = await provider.query({
-                blockId: block_id,
+                block_id: block_id,
                 request_type: 'view_account',
                 account_id: 'test.near',
             });
