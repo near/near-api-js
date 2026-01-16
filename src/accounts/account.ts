@@ -1,7 +1,7 @@
 import { type KeyPairString, PublicKey } from '../crypto/index.js';
 import { parseTransactionExecutionError } from '../providers/errors/parse.js';
 import { InvalidNonceError } from '../providers/errors/transaction_execution.js';
-import type { Provider } from '../providers/index.js';
+import { JsonRpcProvider, type Provider } from '../providers/index.js';
 import type { RpcTransactionResponse } from '../rpc/types.gen.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
 import type { SignDelegateActionReturn } from '../signers/signer.js';
@@ -148,9 +148,13 @@ export class Account {
     private signer?: Signer;
     private readonly nonceManager: NonceManager;
 
-    constructor(accountId: string, provider: Provider, signer?: Signer | KeyPairString) {
+    constructor(accountId: string, provider: Provider | string, signer?: Signer | KeyPairString) {
         this.accountId = accountId;
-        this.provider = provider;
+        if (typeof provider === 'string') {
+            this.provider = new JsonRpcProvider({ url: provider });
+        } else {
+            this.provider = provider;
+        }
         if (typeof signer === 'string') {
             this.signer = KeyPairSigner.fromSecretKey(signer);
         } else {
