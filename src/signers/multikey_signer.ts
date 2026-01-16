@@ -78,7 +78,7 @@ export class MultiKeySigner extends Signer {
      * so we use a consistent key for signing.
      */
     public override async signNep413Message(accountId: string, params: MessagePayload): Promise<SignedMessage> {
-        const signer = new KeyPairSigner(this.keys[0]);
+        const signer = new KeyPairSigner(this.keys[0]!);
         return signer.signNep413Message(accountId, params);
     }
 
