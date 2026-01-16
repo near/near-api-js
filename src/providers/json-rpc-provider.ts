@@ -19,6 +19,7 @@ import type {
     RpcLightClientExecutionProofResponse,
     RpcLightClientNextBlockResponse,
     RpcProtocolConfigResponse,
+    RpcQueryRequest,
     RpcQueryResponse,
     RpcReceiptResponse,
     RpcStateChangesInBlockByTypeResponse,
@@ -34,14 +35,14 @@ import {
     type BlockId,
     type BlockReference,
     type ChunkId,
+    type Finality,
     type LightClientProofRequest,
     type NextLightClientBlockRequest,
-    type RpcQueryRequest,
     type SerializedReturnValue,
     type TxExecutionStatus,
     TypedError,
 } from '../types/index.js';
-import { baseEncode, findSeatPrice, getErrorTypeFromErrorMessage } from '../utils/index.js';
+import { baseEncode, findSeatPrice } from '../utils/index.js';
 import { parseRpcError, parseRpcErrorMessage } from './errors/parse.js';
 import { RpcError } from './errors/rpc.js';
 import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
@@ -162,7 +163,7 @@ export class JsonRpcProvider implements Provider {
         finalityQuery = { finality: DEFAULT_FINALITY },
     }: ViewAccessKeyArgs) {
         const data = await this.query<AccessKeyView>({
-            ...finalityQuery,
+            finality: finalityQuery.finality,
             request_type: 'view_access_key',
             account_id: accountId,
             public_key: publicKey.toString(),
@@ -179,15 +180,25 @@ export class JsonRpcProvider implements Provider {
         finalityQuery = { finality: DEFAULT_FINALITY },
     }: ViewAccessKeyListArgs) {
         return this.query<AccessKeyList>({
-            ...finalityQuery,
+            finality: finalityQuery.finality,
             request_type: 'view_access_key_list',
             account_id: accountId,
         });
     }
 
     public async viewAccount({ accountId, blockQuery = { finality: DEFAULT_FINALITY } }: ViewAccountArgs) {
+        let reference: { block_id: BlockId } | { finality: Finality };
+
+        if ('blockId' in blockQuery) {
+            reference = { block_id: blockQuery.blockId };
+        } else if ('finality' in blockQuery) {
+            reference = { finality: blockQuery.finality };
+        } else {
+            throw new Error('Either blockId or finality must be provided in blockQuery');
+        }
+
         const data = await this.query<AccountView>({
-            ...blockQuery,
+            ...reference,
             request_type: 'view_account',
             account_id: accountId,
         });
@@ -200,8 +211,18 @@ export class JsonRpcProvider implements Provider {
     }
 
     public async viewContractCode({ contractId, blockQuery = { finality: DEFAULT_FINALITY } }: ViewContractCodeArgs) {
+        let reference: { block_id: BlockId } | { finality: Finality };
+
+        if ('blockId' in blockQuery) {
+            reference = { block_id: blockQuery.blockId };
+        } else if ('finality' in blockQuery) {
+            reference = { finality: blockQuery.finality };
+        } else {
+            throw new Error('Either blockId or finality must be provided in blockQuery');
+        }
+
         const data = await this.query<RawContractCodeView>({
-            ...blockQuery,
+            ...reference,
             request_type: 'view_code',
             account_id: contractId,
         });
@@ -219,8 +240,18 @@ export class JsonRpcProvider implements Provider {
     }: ViewContractStateArgs) {
         const prefixBase64 = Buffer.from(prefix || '').toString('base64');
 
-        return this.query<ViewStateResult>({
-            ...blockQuery,
+        let reference: { block_id: BlockId } | { finality: Finality };
+
+        if ('blockId' in blockQuery) {
+            reference = { block_id: blockQuery.blockId };
+        } else if ('finality' in blockQuery) {
+            reference = { finality: blockQuery.finality };
+        } else {
+            throw new Error('Either blockId or finality must be provided in blockQuery');
+        }
+
+        return await this.query<ViewStateResult>({
+            ...reference,
             request_type: 'view_state',
             account_id: contractId,
             prefix_base64: prefixBase64,
@@ -255,13 +286,25 @@ export class JsonRpcProvider implements Provider {
         const argsBuffer = ArrayBuffer.isView(args) ? Buffer.from(args) : Buffer.from(JSON.stringify(args));
         const argsBase64 = argsBuffer.toString('base64');
 
-        return this.query<CallResult>({
-            ...blockQuery,
-            request_type: 'call_function',
-            account_id: contractId,
-            method_name: method,
-            args_base64: argsBase64,
-        });
+        if ('blockId' in blockQuery) {
+            return this.query<CallResult>({
+                request_type: 'call_function',
+                account_id: contractId,
+                method_name: method,
+                args_base64: argsBase64,
+                block_id: blockQuery.blockId,
+            });
+        } else if ('finality' in blockQuery) {
+            return this.query<CallResult>({
+                request_type: 'call_function',
+                account_id: contractId,
+                method_name: method,
+                args_base64: argsBase64,
+                finality: blockQuery.finality,
+            });
+        } else {
+            throw new Error('Either blockId or finality must be provided in blockQuery');
+        }
     }
 
     public async viewBlock(blockQuery: BlockReference): Promise<RpcBlockResponse> {
@@ -375,44 +418,19 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Query the RPC by passing an {@link "@near-js/types".provider/request.RpcQueryRequest | RpcQueryRequest }
+     * Query the RPC by passing an {@link RpcQueryRequest }
      * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
      *
-     * @typeParam T the shape of the returned query response
      */
-    query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
+    async query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
         params: RpcQueryRequest
     ): Promise<
         R & {
             block_hash: CryptoHash;
             block_height: number;
         }
-    >;
-    query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
-        path: string,
-        data: string
-    ): Promise<
-        R & {
-            block_hash: CryptoHash;
-            block_height: number;
-        }
-    >;
-    async query(...args: any[]) {
-        let result;
-        if (args.length === 1) {
-            const { block_id, blockId, ...otherParams } = args[0];
-            result = await this.sendJsonRpc('query', { ...otherParams, block_id: block_id || blockId });
-        } else {
-            const [path, data] = args;
-            result = await this.sendJsonRpc('query', [path, data]);
-        }
-        if (result && result.error) {
-            throw new TypedError(
-                `Querying failed: ${result.error}.\n${JSON.stringify(result, null, 2)}`,
-                getErrorTypeFromErrorMessage(result.error, result.error.name)
-            );
-        }
-        return result;
+    > {
+        return this.sendJsonRpc('query', params);
     }
 
     /**

@@ -6,6 +6,7 @@
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
 
+import type { CryptoHash, RpcQueryRequest, RpcQueryResponse } from '../rpc/index.js';
 import type { SignedTransaction } from '../transactions/index.js';
 import {
     type AccessKeyWithPublicKey,
@@ -14,8 +15,6 @@ import {
     type ChunkId,
     type LightClientProofRequest,
     type NextLightClientBlockRequest,
-    type QueryResponseKind,
-    type RpcQueryRequest,
     type SerializedReturnValue,
     type TxExecutionStatus,
     TypedError,
@@ -187,19 +186,19 @@ export class FailoverRpcProvider implements Provider {
     }
 
     /**
-     * Query the RPC by passing an {@link "@near-js/types".provider/request.RpcQueryRequest | RpcQueryRequest }
+     * Query the RPC by passing an {@link RpcQueryRequest }
      * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
      *
-     * @typeParam T the shape of the returned query response
      */
-    async query<T extends QueryResponseKind>(params: RpcQueryRequest): Promise<T>;
-    async query<T extends QueryResponseKind>(path: string, data: string): Promise<T>;
-    async query<T extends QueryResponseKind>(paramsOrPath: any, data?: any): Promise<T> {
-        if (data) {
-            return this.withBackoff((currentProvider) => currentProvider.query<T>(paramsOrPath, data));
+    async query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
+        params: RpcQueryRequest
+    ): Promise<
+        R & {
+            block_hash: CryptoHash;
+            block_height: number;
         }
-
-        return this.withBackoff((currentProvider) => currentProvider.query<T>(paramsOrPath));
+    > {
+        return this.withBackoff((currentProvider) => currentProvider.query(params));
     }
 
     /**

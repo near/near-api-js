@@ -14,6 +14,7 @@ import type {
     RpcLightClientExecutionProofResponse,
     RpcLightClientNextBlockResponse,
     RpcProtocolConfigResponse,
+    RpcQueryRequest,
     RpcQueryResponse,
     RpcReceiptResponse,
     RpcStateChangesInBlockByTypeResponse,
@@ -35,7 +36,6 @@ import type {
     ContractCodeView as InternalContractCodeView,
     LightClientProofRequest,
     NextLightClientBlockRequest,
-    RpcQueryRequest,
     SerializedReturnValue,
     TxExecutionStatus,
 } from '../types/index.js';
@@ -153,15 +153,6 @@ export interface Provider {
 
     query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
         params: RpcQueryRequest
-    ): Promise<
-        R & {
-            block_hash: CryptoHash;
-            block_height: number;
-        }
-    >;
-    query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
-        path: string,
-        data: string
     ): Promise<
         R & {
             block_hash: CryptoHash;
