@@ -1,5 +1,89 @@
 # near-api-js
 
+## 7.0.0-rc.2
+
+### Major Changes
+
+- [#1781](https://github.com/near/near-api-js/pull/1781) [`1caddf4`](https://github.com/near/near-api-js/commit/1caddf45510f8e63c96aa7b09855cb56666922c6) Thanks [@denbite](https://github.com/denbite)! - Replace `TypedError` class with a few specific errors created from fully type-safe RPC interfaces
+
+- [#1795](https://github.com/near/near-api-js/pull/1795) [`b96c604`](https://github.com/near/near-api-js/commit/b96c604c4ec543e35d7cb42b77d45147f3b0ab67) Thanks [@denbite](https://github.com/denbite)! - Renovate `Provider.query` by removing the deprecated inline-argument overload and fully aligning the method with the nearcore RPC API spec.
+
+  Previously supported (no longer works):
+
+  ```ts
+  provider.query("view_account", JSON.stringify({ ... }));
+  ```
+
+  New required usage (fully typed):
+
+  ```ts
+  provider.query({
+    request_type: "view_account",
+    ...
+  });
+  ```
+
+  Once `request_type` is specified, remaining parameters are inferred automatically by the IDE.
+
+### Minor Changes
+
+- [#1790](https://github.com/near/near-api-js/pull/1790) [`2f7a30d`](https://github.com/near/near-api-js/commit/2f7a30dfaf58497821dd4e9e98518a4891e2b04b) Thanks [@denbite](https://github.com/denbite)! - Introduce many specific errors based on generated response types from OpenAPI spec and which are thrown when calling `Provider.sendJsonRpc` method
+
+- [#1798](https://github.com/near/near-api-js/pull/1798) [`a52592b`](https://github.com/near/near-api-js/commit/a52592b586ee220ed502bcb666dcd47533149782) Thanks [@gagdiez](https://github.com/gagdiez)! - Added a new multi-key signer which handles multiples keys and transparently rotates them as users ask to sign transactions
+
+- [#1796](https://github.com/near/near-api-js/pull/1796) [`c2601e2`](https://github.com/near/near-api-js/commit/c2601e2cf179f9d95109d7318f8aa79fea7278cd) Thanks [@denbite](https://github.com/denbite)! - Add a new `Provider.viewGlobalContractCode` method for retrieving global contract code using either a `codeHash`, or an `accountId` identifier.
+
+  Example usage:
+
+  ```ts
+  provider.viewGlobalContractCode({
+    identifier: { accountId: "global_contract.near" },
+  });
+  provider.viewGlobalContractCode({
+    identifier: { codeHash: "J1arLz48fgXcGyCPVckFwLnewNH6j1uw79thsvwqGYTY" },
+  });
+  ```
+
+- [#1794](https://github.com/near/near-api-js/pull/1794) [`7b6ff4f`](https://github.com/near/near-api-js/commit/7b6ff4f9ad72374102297b76dd035104add87201) Thanks [@denbite](https://github.com/denbite)! - Extend the `Account` constructor to accept an RPC URL string in addition to a `Provider`, making account instantiation simpler and more ergonomic.
+
+  New supported usage:
+
+  ```ts
+  new Account("user.near", "https://rpc.testnet.near.org");
+  ```
+
+  Previously, users had to always manually create a provider:
+
+  ```ts
+  const provider = new JsonRpcProvider({ url: "https://rpc.testnet.near.org" });
+  new Account("user.near", provider);
+  ```
+
+- [#1793](https://github.com/near/near-api-js/pull/1793) [`ddceeab`](https://github.com/near/near-api-js/commit/ddceeab4d0518683353bd0b704c43dc734469e36) Thanks [@denbite](https://github.com/denbite)! - Add concurrent transactions support by introducing nonce caching and automatic retries on `InvalidNonceError`.
+
+  The following example that previously failed due to nonce collisions, now works reliably:
+
+  ```ts
+  await Promise.all([
+    account.transfer({
+      amount: nearToYocto(1),
+      receiverId: "user1.testnet",
+    }),
+    account.transfer({
+      amount: nearToYocto(2),
+      receiverId: "user2.testnet",
+    }),
+    account.transfer({
+      amount: nearToYocto(3),
+      receiverId: "user3.testnet",
+    }),
+  ]);
+  ```
+
+### Patch Changes
+
+- [#1774](https://github.com/near/near-api-js/pull/1774) [`741671b`](https://github.com/near/near-api-js/commit/741671b81f012e638064e571927e5b4b98c34795) Thanks [@denbite](https://github.com/denbite)! - Extend `Provider` interfaces using types generated from `nearcore` OpenAPI spec
+
 ## 7.0.0-rc.1
 
 ### Minor Changes
