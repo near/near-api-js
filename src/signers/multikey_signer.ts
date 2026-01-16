@@ -1,11 +1,8 @@
-import { KeyPairSigner } from './key_pair_signer.js';
 import { KeyPair, type KeyPairString, type PublicKey } from '../crypto/index.js';
-import {
-    type DelegateAction,
-    type Transaction,
-} from '../transactions/index.js';
-import { SignedMessage, Signer, type SignDelegateActionReturn, type SignTransactionReturn } from './signer.js';
-import { MessagePayload } from '../nep413/schema.js';
+import type { MessagePayload } from '../nep413/schema.js';
+import type { DelegateAction, Transaction } from '../transactions/index.js';
+import { KeyPairSigner } from './key_pair_signer.js';
+import { type SignDelegateActionReturn, type SignedMessage, Signer, type SignTransactionReturn } from './signer.js';
 
 /**
  * Signs using Multiple Keys, rotating through them for parallel transaction signing.
@@ -70,7 +67,9 @@ export class MultiKeySigner extends Signer {
     }
 
     protected async signBytes(bytes: Uint8Array): Promise<Uint8Array> {
-        throw new Error('MultiKeySigner does not support signBytes directly. Use signTransaction or signDelegateAction instead.');
+        throw new Error(
+            'MultiKeySigner does not support signBytes directly. Use signTransaction or signDelegateAction instead.'
+        );
     }
 
     /**
