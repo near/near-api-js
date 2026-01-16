@@ -156,7 +156,7 @@ export class Account {
         } else {
             this.signer = signer;
         }
-        this.nonceManager = new NonceManager(this.accountId, this.provider);
+        this.nonceManager = new NonceManager();
     }
 
     /**
@@ -279,7 +279,7 @@ export class Account {
         const pk = PublicKey.from(publicKey);
 
         const [nonce, block] = await Promise.all([
-            this.nonceManager.resolveNextNonce(pk),
+            this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
             this.provider.viewBlock({
                 finality: DEFAULT_FINALITY,
             }),
@@ -287,7 +287,7 @@ export class Account {
 
         const recentBlockHash = block.header.hash;
 
-        return createTransaction(this.accountId, pk, receiverId, nonce + 1n, actions, baseDecode(recentBlockHash));
+        return createTransaction(this.accountId, pk, receiverId, nonce, actions, baseDecode(recentBlockHash));
     }
 
     /**
@@ -388,7 +388,7 @@ export class Account {
         waitUntil = DEFAULT_WAIT_STATUS,
         throwOnFailure = true,
         signer = this.signer,
-        retries = 3, // four attempts in total by default
+        retries = 3,
     }: SignAndSendTransactionArgs) {
         const signedTx = await this.createSignedTransaction({
             receiverId,

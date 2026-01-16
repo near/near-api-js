@@ -2,35 +2,24 @@ import type { PublicKey } from '../crypto/public_key.js';
 import type { Provider } from '../providers/provider.js';
 
 export class NonceManager {
-    private readonly accountId: string;
-    private readonly provider: Provider;
-
     private nonces: Record<string, bigint>;
     private locks: Record<string, Promise<void>>;
 
-    constructor(accountId: string, provider: Provider) {
-        this.accountId = accountId;
-        this.provider = provider;
+    constructor() {
         this.nonces = {};
         this.locks = {};
     }
 
-    private getCacheKey(pk: PublicKey): string {
-        return [this.accountId, pk.toString()].join(':');
-    }
-
-    public async resolveNextNonce(pk: PublicKey): Promise<bigint> {
-        const key = this.getCacheKey(pk);
+    public async resolveNextNonce(pk: PublicKey, accountId: string, provider: Provider): Promise<bigint> {
+        const key = pk.toString();
 
         // wait until unlocked
         const lock = this.locks[key];
         if (lock) await lock;
 
-        const cachedNonce = this.nonces[key];
-
-        if (typeof cachedNonce === 'bigint') {
-            this.nonces[key] = cachedNonce + 1n;
-            return cachedNonce;
+        if (typeof this.nonces[key] === 'bigint') {
+            this.nonces[key] = this.nonces[key] + 1n;
+            return this.nonces[key];
         }
 
         // biome-ignore lint/suspicious/noEmptyBlockStatements: unlock is immediately overwritten
@@ -42,22 +31,22 @@ export class NonceManager {
         this.locks[key] = newLock;
 
         try {
-            const accessKey = await this.provider.viewAccessKey({
-                accountId: this.accountId,
+            const accessKey = await provider.viewAccessKey({
+                accountId,
                 publicKey: pk,
                 finalityQuery: { finality: 'optimistic' },
             });
 
-            this.nonces[key] = accessKey.nonce + 2n;
+            this.nonces[key] = accessKey.nonce + 1n;
 
-            return accessKey.nonce + 1n;
+            return this.nonces[key];
         } finally {
             unlock();
         }
     }
 
     public async invalidate(pk: PublicKey): Promise<void> {
-        const key = this.getCacheKey(pk);
+        const key = pk.toString();
 
         // make sure to wait until unlocked
         const lock = this.locks[key];
