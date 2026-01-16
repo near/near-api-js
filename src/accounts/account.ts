@@ -1,6 +1,8 @@
 import { type KeyPairString, PublicKey } from '../crypto/index.js';
 import { parseTransactionExecutionError } from '../providers/errors/parse.js';
 import { JsonRpcProvider, type Provider } from '../providers/index.js';
+import { InvalidNonceError } from '../providers/errors/transaction_execution.js';
+import type { RpcTransactionResponse } from '../rpc/types.gen.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
 import type { SignDelegateActionReturn } from '../signers/signer.js';
 import type { FungibleToken, NativeToken } from '../tokens/index.js';
@@ -17,6 +19,7 @@ import {
 } from '../transactions/index.js';
 import type { FinalExecutionOutcome, Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
 import { baseDecode, getTransactionLastResult } from '../utils/index.js';
+import { NonceManager } from './nonce-manager.js';
 
 const {
     addKey,
@@ -79,6 +82,7 @@ export interface SignAndSendTransactionArgs {
     waitUntil?: TxExecutionStatus;
     throwOnFailure?: boolean;
     signer?: Signer;
+    retries?: number;
 }
 
 export interface SignAndSendTransactionsArgs {
@@ -142,6 +146,7 @@ export class Account {
     public readonly accountId: string;
     public readonly provider: Provider;
     private signer?: Signer;
+    private readonly nonceManager: NonceManager;
 
     constructor(accountId: string, provider: Provider | string, signer?: Signer | KeyPairString) {
         this.accountId = accountId;
@@ -155,6 +160,7 @@ export class Account {
         } else {
             this.signer = signer;
         }
+        this.nonceManager = new NonceManager();
     }
 
     /**
@@ -276,8 +282,8 @@ export class Account {
 
         const pk = PublicKey.from(publicKey);
 
-        const [accessKey, block] = await Promise.all([
-            this.getAccessKey(pk),
+        const [nonce, block] = await Promise.all([
+            this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
             this.provider.viewBlock({
                 finality: DEFAULT_FINALITY,
             }),
@@ -285,9 +291,7 @@ export class Account {
 
         const recentBlockHash = block.header.hash;
 
-        const nonce = BigInt(accessKey.nonce) + 1n;
-
-        return createTransaction(this.accountId, pk, receiverId, nonce + 1n, actions, baseDecode(recentBlockHash));
+        return createTransaction(this.accountId, pk, receiverId, nonce, actions, baseDecode(recentBlockHash));
     }
 
     /**
@@ -388,6 +392,7 @@ export class Account {
         waitUntil = DEFAULT_WAIT_STATUS,
         throwOnFailure = true,
         signer = this.signer,
+        retries = 3,
     }: SignAndSendTransactionArgs) {
         const signedTx = await this.createSignedTransaction({
             receiverId,
@@ -395,7 +400,28 @@ export class Account {
             signer,
         });
 
-        const result = await this.provider.sendTransactionUntil(signedTx, waitUntil);
+        let result: RpcTransactionResponse;
+        try {
+            result = await this.provider.sendTransactionUntil(signedTx, waitUntil);
+        } catch (error: unknown) {
+            if (error instanceof InvalidNonceError) {
+                // invalidate nonce cache so we don't send another transaction with stale nonce
+                await this.nonceManager.invalidate(signedTx.transaction.publicKey);
+
+                if (retries > 0) {
+                    return this.signAndSendTransaction({
+                        receiverId,
+                        actions,
+                        waitUntil,
+                        throwOnFailure,
+                        signer,
+                        retries: retries - 1,
+                    });
+                }
+            }
+
+            throw error;
+        }
 
         if (
             throwOnFailure &&
