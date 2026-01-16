@@ -170,7 +170,7 @@ import {
 
 type RawRpcError = Extract<Methods[keyof Methods]['response'], { error: object }>['error'];
 
-type RawHandlerError = NonNullable<Extract<RawRpcError, { name: 'HANDLER_ERROR' }>['cause']>;
+type RawHandlerError = NonNullable<Extract<RawRpcError, { name: 'HANDLER_ERROR' }>>;
 
 export function parseRpcError(error: RawRpcError): RpcError {
     switch (error.name) {
@@ -180,7 +180,7 @@ export function parseRpcError(error: RawRpcError): RpcError {
         case 'HANDLER_ERROR': {
             if (!error.cause) return new RpcError(`Handler error with no cause`);
 
-            return parseHandlerError(error.cause);
+            return parseHandlerError(error);
         }
         case 'INTERNAL_ERROR': {
             return new InternalRpcError(error.cause.info.error_message);
@@ -207,7 +207,9 @@ function parseRequestValidationError(error: RawRequestValidationError): RequestV
     }
 }
 
-function parseHandlerError(error: RawHandlerError): HandlerError {
+function parseHandlerError(rawError: RawHandlerError): HandlerError {
+    const error = rawError.cause!;
+
     switch (error.name) {
         case 'UNKNOWN_ACCOUNT': {
             return new AccountDoesNotExistError(
@@ -265,6 +267,17 @@ function parseHandlerError(error: RawHandlerError): HandlerError {
             );
 
         case 'INVALID_TRANSACTION':
+            if (
+                'data' in rawError &&
+                typeof rawError.data === 'object' &&
+                rawError.data !== null &&
+                'TxExecutionError' in rawError.data &&
+                typeof rawError.data.TxExecutionError === 'object' &&
+                rawError.data.TxExecutionError !== null
+            ) {
+                return parseTransactionExecutionError(rawError.data.TxExecutionError as TxExecutionError, '', '');
+            }
+
             return new InvalidTransactionError();
 
         case 'UNKNOWN_TRANSACTION':
