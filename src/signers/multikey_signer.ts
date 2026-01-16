@@ -66,7 +66,7 @@ export class MultiKeySigner extends Signer {
         return key;
     }
 
-    protected async signBytes(bytes: Uint8Array): Promise<Uint8Array> {
+    protected async signBytes(_bytes: Uint8Array): Promise<Uint8Array> {
         throw new Error(
             'MultiKeySigner does not support signBytes directly. Use signTransaction or signDelegateAction instead.'
         );
