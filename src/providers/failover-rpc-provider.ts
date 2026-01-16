@@ -27,6 +27,7 @@ import type {
     ViewAccountArgs,
     ViewContractCodeArgs,
     ViewContractStateArgs,
+    ViewGlobalContractCodeArgs,
     ViewTransactionStatusArgs,
 } from './provider.js';
 
@@ -114,6 +115,10 @@ export class FailoverRpcProvider implements Provider {
 
     public async viewContractCode(params: ViewContractCodeArgs) {
         return this.withBackoff((currentProvider) => currentProvider.viewContractCode(params));
+    }
+
+    public async viewGlobalContractCode(params: ViewGlobalContractCodeArgs) {
+        return this.withBackoff((currentProvider) => currentProvider.viewGlobalContractCode(params));
     }
 
     public async viewContractState(params: ViewContractStateArgs) {
