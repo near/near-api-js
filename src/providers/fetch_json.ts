@@ -16,10 +16,7 @@ interface BackOffOptions<E> {
  * Simple exponential backoff implementation.
  * Retries a function with exponentially increasing delays.
  */
-async function backOff<T, E extends Error>(
-    fn: () => Promise<T>,
-    options: BackOffOptions<E>
-): Promise<T | undefined> {
+async function backOff<T, E extends Error>(fn: () => Promise<T>, options: BackOffOptions<E>): Promise<T | undefined> {
     const { numOfAttempts, timeMultiple, startingDelay, retry } = options;
     let delay = startingDelay;
 

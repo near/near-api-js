@@ -10,16 +10,15 @@ import schema from './rpc_error_schema.js';
  */
 function renderTemplate(template: string, data: Record<string, any>): string {
     // Handle {{#formatNear}}{{value}}{{/formatNear}} sections
-    let result = template.replace(
-        /\{\{#formatNear\}\}\{\{(\w+)\}\}\{\{\/formatNear\}\}/g,
-        (_, key) => yoctoToNear(data[key])
+    let result = template.replace(/\{\{#formatNear\}\}\{\{(\w+)\}\}\{\{\/formatNear\}\}/g, (_, key) =>
+        yoctoToNear(data[key])
     );
-    
+
     // Handle simple {{variable}} substitutions
     result = result.replace(/\{\{(\w+)\}\}/g, (_, key) => {
         return data[key] !== undefined ? String(data[key]) : '';
     });
-    
+
     return result;
 }
 

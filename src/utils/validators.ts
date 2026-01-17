@@ -20,7 +20,7 @@ export function findSeatPrice(
     if (!minimumStakeRatio) {
         console.warn(
             'DeprecationWarning: findSeatPrice(validators, maxNumberOfSeats) is deprecated. ' +
-            'Use findSeatPrice(validators, maxNumberOfSeats, minimumStakeRatio) instead.'
+                'Use findSeatPrice(validators, maxNumberOfSeats, minimumStakeRatio) instead.'
         );
         minimumStakeRatio = [1, 6250]; // hardcoded minimumStakeRation from 12/7/21
     }
