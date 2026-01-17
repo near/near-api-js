@@ -33,6 +33,10 @@
         "./nep413": {
             "import": "./lib/nep413/index.js",
             "types": "./lib/nep413/index.d.ts"
+        },
+        "./seed-phrase": {
+            "import": "./lib/seed-phrase/index.js",
+            "types": "./lib/seed-phrase/index.d.ts"
         }
     },
     "dependencies": {
@@ -44,6 +48,7 @@
         "exponential-backoff": "3.1.3",
         "is-my-json-valid": "2.20.6",
         "mustache": "4.2.0",
+        "near-seed-phrase": "0.2.1",
         "secp256k1": "5.0.1"
     },
     "devDependencies": {
