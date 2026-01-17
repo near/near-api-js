@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.0.0-rc.4
+
+### Patch Changes
+
+- [#1801](https://github.com/near/near-api-js/pull/1801) [`3e045fe`](https://github.com/near/near-api-js/commit/3e045fe84bebd3ed84e73034a400244893d9c512) Thanks [@gagdiez](https://github.com/gagdiez)! - Replaced some dependencies by internal functions
+
 ## 7.0.0-rc.3
 
 ### Minor Changes
