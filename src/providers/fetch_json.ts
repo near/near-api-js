@@ -40,7 +40,7 @@ export function retryConfig(
     numOfAttempts = RETRY_NUMBER,
     timeMultiple = BACKOFF_MULTIPLIER,
     startingDelay = RETRY_DELAY
-) {
+): BackOffOptions<ProviderError> {
     return {
         numOfAttempts: numOfAttempts,
         timeMultiple: timeMultiple,
@@ -85,7 +85,7 @@ export async function fetchJsonRpc<Req extends JsonRpcRequest>(
     url: string,
     json: Req,
     headers: object,
-    retryConfig: object
+    retryConfig: BackOffOptions<ProviderError>
 ): Promise<JsonRpcResponse<Req['method']>> {
     const response = await backOff(async () => {
         const res = await fetch(url, {
