@@ -5,6 +5,7 @@ test('import from "near-api-js/seed-phrase" exposes only certain objects', () =>
     expect(seedPhrase).toMatchInlineSnapshot(`
       {
         "parseSeedPhrase": [Function],
+        "generateSeedPhrase": [Function],
       }
     `);
 });
