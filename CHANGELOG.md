@@ -1,5 +1,22 @@
 # near-api-js
 
+## 7.0.0-rc.3
+
+### Minor Changes
+
+- [#1799](https://github.com/near/near-api-js/pull/1799) [`a7c3cd9`](https://github.com/near/near-api-js/commit/a7c3cd9b57759a63dc4cb0da6ea428f0719782d4) Thanks [@denbite](https://github.com/denbite)! - Add `parseSeedPhrase` method, exported via the `seed-phrase` sub-path, which converts a string seed phrase into a `KeyPair`.
+
+  For example:
+
+  ```ts
+  import { parseSeedPhrase } from "near-api-js/seed-phrase";
+
+  const keyPair = parseSeedPhrase("tag interest match ...");
+
+  keyPair.getPublicKey().toString(); // ed25519:9uMmkWHW...
+  keyPair.toString(); // ed25519:3N6TYZVRrkQxh...
+  ```
+
 ## 7.0.0-rc.2
 
 ### Major Changes
