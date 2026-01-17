@@ -1,13 +1,26 @@
-import Mustache from 'mustache';
 import { TypedError } from '../../types/index.js';
+import { yoctoToNear } from '../../units/near.js';
 
-import { formatNearAmount } from '../format.js';
 import { ErrorMessages } from './errors.js';
 import schema from './rpc_error_schema.js';
 
-const mustacheHelpers = {
-    formatNear: () => (n, render) => formatNearAmount(render(n)),
-};
+/**
+ * Simple template renderer to replace Mustache dependency.
+ * Supports {{variable}} and {{#formatNear}}{{value}}{{/formatNear}} syntax.
+ */
+function renderTemplate(template: string, data: Record<string, any>): string {
+    // Handle {{#formatNear}}{{value}}{{/formatNear}} sections
+    let result = template.replace(/\{\{#formatNear\}\}\{\{(\w+)\}\}\{\{\/formatNear\}\}/g, (_, key) =>
+        yoctoToNear(data[key])
+    );
+
+    // Handle simple {{variable}} substitutions
+    result = result.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+        return data[key] !== undefined ? String(data[key]) : '';
+    });
+
+    return result;
+}
 
 export class ServerError extends TypedError {}
 
@@ -36,10 +49,7 @@ export function parseResultError(result: any): ServerTransactionError {
 
 export function formatError(errorClassName: string, errorData): string {
     if (typeof ErrorMessages[errorClassName] === 'string') {
-        return Mustache.render(ErrorMessages[errorClassName], {
-            ...errorData,
-            ...mustacheHelpers,
-        });
+        return renderTemplate(ErrorMessages[errorClassName], errorData);
     }
     return JSON.stringify(errorData);
 }

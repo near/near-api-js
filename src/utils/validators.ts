@@ -1,4 +1,3 @@
-import depd from 'depd';
 import type { CurrentEpochValidatorInfo, NextEpochValidatorInfo } from '../types/index.js';
 import { sortBigIntAsc } from './utils.js';
 
@@ -19,8 +18,10 @@ export function findSeatPrice(
         return findSeatPriceForProtocolBefore49(validators, maxNumberOfSeats);
     }
     if (!minimumStakeRatio) {
-        const deprecate = depd('findSeatPrice(validators, maxNumberOfSeats)');
-        deprecate('`use `findSeatPrice(validators, maxNumberOfSeats, minimumStakeRatio)` instead');
+        console.warn(
+            'DeprecationWarning: findSeatPrice(validators, maxNumberOfSeats) is deprecated. ' +
+                'Use findSeatPrice(validators, maxNumberOfSeats, minimumStakeRatio) instead.'
+        );
         minimumStakeRatio = [1, 6250]; // hardcoded minimumStakeRation from 12/7/21
     }
     return findSeatPriceForProtocolAfter49(validators, maxNumberOfSeats, minimumStakeRatio);

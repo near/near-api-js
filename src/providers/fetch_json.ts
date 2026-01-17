@@ -1,4 +1,3 @@
-import { backOff } from 'exponential-backoff';
 import { TypedError } from '../types/index.js';
 import type { JsonRpcRequest, JsonRpcResponse } from './methods.js';
 
@@ -6,11 +5,42 @@ const BACKOFF_MULTIPLIER = 1.5;
 const RETRY_NUMBER = 10;
 const RETRY_DELAY = 0;
 
+interface BackOffOptions<E> {
+    numOfAttempts: number;
+    timeMultiple: number;
+    startingDelay: number;
+    retry: (error: E) => boolean;
+}
+
+/**
+ * Simple exponential backoff implementation.
+ * Retries a function with exponentially increasing delays.
+ */
+async function backOff<T, E extends Error>(fn: () => Promise<T>, options: BackOffOptions<E>): Promise<T | undefined> {
+    const { numOfAttempts, timeMultiple, startingDelay, retry } = options;
+    let delay = startingDelay;
+
+    for (let attempt = 1; attempt <= numOfAttempts; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (attempt === numOfAttempts || !retry(error as E)) {
+                throw error;
+            }
+            if (delay > 0) {
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            }
+            delay = delay === 0 ? 1 : delay * timeMultiple;
+        }
+    }
+    return undefined;
+}
+
 export function retryConfig(
     numOfAttempts = RETRY_NUMBER,
     timeMultiple = BACKOFF_MULTIPLIER,
     startingDelay = RETRY_DELAY
-) {
+): BackOffOptions<ProviderError> {
     return {
         numOfAttempts: numOfAttempts,
         timeMultiple: timeMultiple,
@@ -55,7 +85,7 @@ export async function fetchJsonRpc<Req extends JsonRpcRequest>(
     url: string,
     json: Req,
     headers: object,
-    retryConfig: object
+    retryConfig: BackOffOptions<ProviderError>
 ): Promise<JsonRpcResponse<Req['method']>> {
     const response = await backOff(async () => {
         const res = await fetch(url, {
