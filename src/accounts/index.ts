@@ -6,4 +6,4 @@ export {
     UnknownArgumentError,
     UnsupportedSerializationError,
 } from './errors.js';
-export { TypedContract } from './typed_contract.js';
+export { Contract } from './typed_contract.js';

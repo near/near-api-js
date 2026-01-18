@@ -3,11 +3,11 @@ import {
     type AbiRoot,
     Account,
     type BlockReference,
+    Contract,
     JsonRpcProvider,
     KeyPair,
     KeyPairSigner,
     type TxExecutionStatus,
-    TypedContract,
 } from '../../src';
 import { abi as guestbookAbi } from '../contracts/guestbook/abi.js';
 
@@ -18,8 +18,8 @@ const keypair = KeyPair.fromRandom('ed25519');
 const signer = new KeyPairSigner(keypair);
 const account = new Account('', provider, signer);
 
-describe("TypedContract can infer Guestbook's ABI", () => {
-    const contract = new TypedContract({
+describe("Contract can infer Guestbook's ABI", () => {
+    const contract = new Contract({
         contractId: 'guestbook.testnet',
         provider: account.provider,
         abi: guestbookAbi,
@@ -66,8 +66,8 @@ describe("TypedContract can infer Guestbook's ABI", () => {
     });
 });
 
-describe('TypedContract can infer general interface without ABI', () => {
-    const contract = new TypedContract({
+describe('Contract can infer general interface without ABI', () => {
+    const contract = new Contract({
         contractId: 'guestbook.testnet',
         provider: account.provider,
     });
@@ -100,8 +100,8 @@ describe('TypedContract can infer general interface without ABI', () => {
     });
 });
 
-describe('TypedContract shape adapts to ABI', () => {
-    test('TypedContract infers nothing from empty ABI', () => {
+describe('Contract shape adapts to ABI', () => {
+    test('Contract infers nothing from empty ABI', () => {
         const emptyAbi = {
             schema_version: '0.4.0',
             metadata: {},
@@ -111,7 +111,7 @@ describe('TypedContract shape adapts to ABI', () => {
             },
         } as const satisfies AbiRoot;
 
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: emptyAbi,
@@ -123,8 +123,8 @@ describe('TypedContract shape adapts to ABI', () => {
         }>();
     });
 
-    test('TypedContract includes both kind of methods if ABI defines both view and call functions', () => {
-        const contract = new TypedContract({
+    test('Contract includes both kind of methods if ABI defines both view and call functions', () => {
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -155,8 +155,8 @@ describe('TypedContract shape adapts to ABI', () => {
         expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<CallFunctionNames>();
     });
 
-    test('TypedContract includes only view methods if ABI defines only view functions', () => {
-        const contract = new TypedContract({
+    test('Contract includes only view methods if ABI defines only view functions', () => {
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -184,8 +184,8 @@ describe('TypedContract shape adapts to ABI', () => {
         expectTypeOf(contract).not.toHaveProperty('call');
     });
 
-    test('TypedContract includes only call if ABI defines only call functions', () => {
-        const contract = new TypedContract({
+    test('Contract includes only call if ABI defines only call functions', () => {
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -214,8 +214,8 @@ describe('TypedContract shape adapts to ABI', () => {
     });
 });
 
-describe('TypedContract interface depends on how ABI is declared', () => {
-    test('TypedContract provides autocompletion if ABI is passed using "as const" assertion', () => {
+describe('Contract interface depends on how ABI is declared', () => {
+    test('Contract provides autocompletion if ABI is passed using "as const" assertion', () => {
         const testAbi = {
             schema_version: '0.4.0',
             metadata: {},
@@ -234,7 +234,7 @@ describe('TypedContract interface depends on how ABI is declared', () => {
             },
         } as const satisfies AbiRoot;
 
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: testAbi,
@@ -247,8 +247,8 @@ describe('TypedContract interface depends on how ABI is declared', () => {
         expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<CallFunctionNames>();
     });
 
-    test('TypedContract provides autocompletion if ABI is passed inline', () => {
-        const contract = new TypedContract({
+    test('Contract provides autocompletion if ABI is passed inline', () => {
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -277,7 +277,7 @@ describe('TypedContract interface depends on how ABI is declared', () => {
         expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<CallFunctionNames>();
     });
 
-    test('TypedContract returns general interface without autocompletion if ABI is typed "as AbiRoot"', () => {
+    test('Contract returns general interface without autocompletion if ABI is typed "as AbiRoot"', () => {
         const testAbi: AbiRoot = {
             schema_version: '0.4.0',
             metadata: {},
@@ -296,7 +296,7 @@ describe('TypedContract interface depends on how ABI is declared', () => {
             },
         };
 
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: testAbi,
@@ -307,7 +307,7 @@ describe('TypedContract interface depends on how ABI is declared', () => {
         expectTypeOf<keyof typeof contract.call>().toEqualTypeOf<string>();
     });
 
-    test('TypedContract returns general interface without autocompletion if ABI is defined without "as const" assertion', () => {
+    test('Contract returns general interface without autocompletion if ABI is defined without "as const" assertion', () => {
         const testAbi = {
             schema_version: '0.4.0',
             metadata: {},
@@ -326,7 +326,7 @@ describe('TypedContract interface depends on how ABI is declared', () => {
             },
         };
 
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: testAbi,

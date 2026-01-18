@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises';
 import { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, expect, test } from 'vitest';
-import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString, TypedContract } from '../../src';
+import { Account, Contract, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString } from '../../src';
 import { NEAR } from '../../src/tokens';
 import { abi } from '../contracts/guestbook/abi.js';
 import { getRpcUrl, getSecretKey } from './worker.js';
@@ -40,8 +40,8 @@ afterAll(async () => {
     await worker.tearDown();
 });
 
-test('TypedContract has abi', async () => {
-    const contract = new TypedContract({
+test('Contract has abi', async () => {
+    const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
         abi: abi,
@@ -50,8 +50,8 @@ test('TypedContract has abi', async () => {
     expect(contract.abi).toBe(abi);
 });
 
-test('TypedContract has contractId', async () => {
-    const contract = new TypedContract({
+test('Contract has contractId', async () => {
+    const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
         abi: abi,
@@ -60,8 +60,8 @@ test('TypedContract has contractId', async () => {
     expect(contract.contractId).toBe(guestbookAccount.accountId);
 });
 
-test("TypedContract has view & call properties even if ABI isn't provided", async () => {
-    const contract = new TypedContract({
+test("Contract has view & call properties even if ABI isn't provided", async () => {
+    const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
     });
@@ -70,8 +70,8 @@ test("TypedContract has view & call properties even if ABI isn't provided", asyn
     expect(contract).toHaveProperty('call');
 });
 
-test("TypedContract doesn't have abi if ABI isn't provided", async () => {
-    const contract = new TypedContract({
+test("Contract doesn't have abi if ABI isn't provided", async () => {
+    const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
     });
@@ -79,8 +79,8 @@ test("TypedContract doesn't have abi if ABI isn't provided", async () => {
     expect(contract).not.toHaveProperty('abi');
 });
 
-test("TypedContract doesn't have view & call properties if ABI is empty", async () => {
-    const contract = new TypedContract({
+test("Contract doesn't have view & call properties if ABI is empty", async () => {
+    const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
         abi: {
@@ -97,7 +97,7 @@ test("TypedContract doesn't have view & call properties if ABI is empty", async 
     expect(contract.contractId).not.toHaveProperty('call');
 });
 
-test('TypedContract can invoke a view function', async () => {
+test('Contract can invoke a view function', async () => {
     // TODO: use fixtures for account creation and contract deploy
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom('ed25519');
@@ -117,7 +117,7 @@ test('TypedContract can invoke a view function', async () => {
         waitUntil: 'FINAL',
     });
 
-    const contract = new TypedContract({
+    const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
         abi: abi,
@@ -128,7 +128,7 @@ test('TypedContract can invoke a view function', async () => {
     expect(totalMessages).toBe(0);
 });
 
-test('TypedContract can invoke a call function', async () => {
+test('Contract can invoke a call function', async () => {
     // TODO: use fixtures for account creation and contract deploy
     const contractId = `${Date.now()}.${rootAccount.accountId}`;
     const keypair = KeyPair.fromRandom('ed25519');
@@ -148,7 +148,7 @@ test('TypedContract can invoke a call function', async () => {
         waitUntil: 'FINAL',
     });
 
-    const contract = new TypedContract({
+    const contract = new Contract({
         contractId: guestbookAccount.accountId,
         provider: rootAccount.provider,
         abi: abi,

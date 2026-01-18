@@ -1,6 +1,6 @@
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, beforeEach, expect, test } from 'vitest';
-import { Account, KeyPair, KeyPairSigner, TypedContract } from '../../../src';
+import { Account, Contract, KeyPair, KeyPairSigner } from '../../../src';
 import { AccessKeyDoesNotExistError } from '../../../src/providers/errors/handler';
 import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 
@@ -8,7 +8,7 @@ let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 let workingAccount: Account;
 let contractId: string;
 // @ts-expect-error infer type here
-let contract = new TypedContract({});
+let contract = new Contract({});
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();

@@ -4,12 +4,12 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi 
 import {
     Account,
     actionCreators,
+    Contract,
     getTransactionLastResult,
     JsonRpcProvider,
     KeyPair,
     KeyPairSigner,
     KeyType,
-    TypedContract,
 } from '../../../src';
 import { AccountAlreadyExistsActionError } from '../../../src/providers/errors/transaction_execution';
 import {
@@ -156,7 +156,7 @@ describe('errors', () => {
 describe('with deploy contract', () => {
     const contractId = generateUniqueString('test_contract');
     // @ts-expect-error infer type here
-    let contract = new TypedContract({});
+    let contract = new Contract({});
 
     beforeAll(async () => {
         const keyPair = KeyPair.fromRandom('ed25519');
@@ -171,7 +171,7 @@ describe('with deploy contract', () => {
         await contractAccount.deployContract(data);
 
         // @ts-expect-error abi is unknown
-        contract = new TypedContract({
+        contract = new Contract({
             contractId,
             provider: nearjs.provider,
         });
