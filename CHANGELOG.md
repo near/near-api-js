@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.0.0-rc.7
+
+### Major Changes
+
+- [#1808](https://github.com/near/near-api-js/pull/1808) [`bf7c148`](https://github.com/near/near-api-js/commit/bf7c14843d986d9c1c8d4f292db7759377bfabd3) Thanks [@denbite](https://github.com/denbite)! - Rename `TypedContract` back to `Contract`
+
 ## 7.0.0-rc.6
 
 ### Patch Changes
