@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, test } from 'vitest';
-import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, TypedContract } from '../../src';
+import { Account, Contract, JsonRpcProvider, KeyPair, KeyPairSigner } from '../../src';
 
 /// These tests have to be in "packages/accounts",
 /// but since Jest doesn't support type checking,
@@ -10,9 +10,9 @@ const keypair = KeyPair.fromRandom('ed25519');
 const signer = new KeyPairSigner(keypair);
 const account = new Account('', provider, signer);
 
-describe('TypedContract infers function arguments from ABI correctly', () => {
+describe('Contract infers function arguments from ABI correctly', () => {
     test('"args" are required if at least one argument is required', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -53,7 +53,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('"args" are optional if none of arguments is required', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -94,7 +94,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('parses "string" as string', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -147,7 +147,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('parses "number" or "integer" as number', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -221,7 +221,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('parses "boolean" as boolean', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -274,7 +274,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('parses "array" as array', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -359,7 +359,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('parses "object" as object', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -437,7 +437,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('parses schema definitions', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -504,7 +504,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('parses "enum" string', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -581,7 +581,7 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 
     test('parses "additionalProperties"', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -627,9 +627,9 @@ describe('TypedContract infers function arguments from ABI correctly', () => {
     });
 });
 
-describe('TypedContract infers function returns from ABI correctly', () => {
+describe('Contract infers function returns from ABI correctly', () => {
     test('returns "void" by default', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -651,7 +651,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses ["string", "null"] as optional string', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -679,7 +679,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses "string" as string', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -707,7 +707,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses "number" as number', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -735,7 +735,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses "integer" as number', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -763,7 +763,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses "boolean" as boolean', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -791,7 +791,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses "array" as array', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -823,7 +823,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses "object" as object', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -882,7 +882,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses schema definitions', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -944,7 +944,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses "enum" string', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {
@@ -1016,7 +1016,7 @@ describe('TypedContract infers function returns from ABI correctly', () => {
     });
 
     test('parses "additionalProperties"', () => {
-        const contract = new TypedContract({
+        const contract = new Contract({
             contractId: 'guestbook.testnet',
             provider: account.provider,
             abi: {

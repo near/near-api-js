@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, KeyType, TypedContract } from '../../../src';
+import { Account, Contract, JsonRpcProvider, KeyPair, KeyPairSigner, KeyType } from '../../../src';
 import Config from './config';
 
 export const networkId = 'unittest';
@@ -68,7 +68,7 @@ export async function deployContract(workingAccount, contractId) {
     });
     const contractAccount = new Account(contractId, workingAccount.provider, new KeyPairSigner(keyPair));
     await contractAccount.deployContract(data);
-    return new TypedContract({
+    return new Contract({
         contractId,
         provider: workingAccount.provider,
     });

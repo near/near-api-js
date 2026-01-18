@@ -1,6 +1,6 @@
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { TypedContract } from '../../../src';
+import { Contract } from '../../../src';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
@@ -21,9 +21,9 @@ afterAll(async () => {
 
 describe('with promises', () => {
     // @ts-expect-error infer type here
-    let contract = new TypedContract({}),
-        contract1 = new TypedContract({}),
-        contract2 = new TypedContract({});
+    let contract = new Contract({}),
+        contract1 = new Contract({}),
+        contract2 = new Contract({});
     const contractName = generateUniqueString('cnt');
     const contractName1 = generateUniqueString('cnt');
     const contractName2 = generateUniqueString('cnt');

@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
-import { Account, ArgumentSchemaError, JsonRpcProvider, TypedContract, UnknownArgumentError } from '../../src';
+import { Account, ArgumentSchemaError, Contract, JsonRpcProvider, UnknownArgumentError } from '../../src';
 
 const provider = new JsonRpcProvider({ url: '' });
 
@@ -8,8 +8,8 @@ const account = new Account('', provider);
 vi.spyOn(JsonRpcProvider.prototype, 'callFunction').mockResolvedValue({});
 vi.spyOn(Account.prototype, 'callFunction').mockResolvedValue({});
 
-describe('TypedContract validates "view" function arguments based on ABI', () => {
-    const contract = new TypedContract({
+describe('Contract validates "view" function arguments based on ABI', () => {
+    const contract = new Contract({
         contractId: '',
         provider: provider,
         abi: {
@@ -109,7 +109,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         },
     });
 
-    test('TypedContract validates "string" correctly', async () => {
+    test('Contract validates "string" correctly', async () => {
         await expect(
             contract.view.test_string({
                 args: {
@@ -137,7 +137,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test('TypedContract validates "number" correctly', async () => {
+    test('Contract validates "number" correctly', async () => {
         await expect(
             contract.view.test_number({
                 args: {
@@ -182,7 +182,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test('TypedContract validates "integer" correctly', async () => {
+    test('Contract validates "integer" correctly', async () => {
         await expect(
             contract.view.test_integer({
                 args: {
@@ -227,7 +227,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test('TypedContract validates "boolean" correctly', async () => {
+    test('Contract validates "boolean" correctly', async () => {
         await expect(
             contract.view.test_bool({
                 args: {
@@ -263,7 +263,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test('TypedContract throws on extra arguments', async () => {
+    test('Contract throws on extra arguments', async () => {
         await expect(
             contract.view.test_extra_args({
                 args: {},
@@ -295,7 +295,7 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
         ).rejects.toThrow(UnknownArgumentError);
     });
 
-    test('TypedContract validates types from definitions correctly', async () => {
+    test('Contract validates types from definitions correctly', async () => {
         await expect(
             contract.view.test_definitions({
                 args: {
@@ -351,8 +351,8 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
     });
 
     // Various argument types can be passed to the function without causing failures
-    test('TypedContract skips validation if no ABI provided', async () => {
-        const contractWithoutAbi = new TypedContract({
+    test('Contract skips validation if no ABI provided', async () => {
+        const contractWithoutAbi = new Contract({
             contractId: '',
             provider: provider,
         });
@@ -393,8 +393,8 @@ describe('TypedContract validates "view" function arguments based on ABI', () =>
     });
 });
 
-describe('TypedContract validates "call" function arguments based on ABI', () => {
-    const contract = new TypedContract({
+describe('Contract validates "call" function arguments based on ABI', () => {
+    const contract = new Contract({
         contractId: '',
         provider: provider,
         abi: {
@@ -494,7 +494,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         },
     });
 
-    test('TypedContract validates "string" correctly', async () => {
+    test('Contract validates "string" correctly', async () => {
         await expect(
             contract.call.test_string({
                 args: {
@@ -525,7 +525,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test('TypedContract validates "number" correctly', async () => {
+    test('Contract validates "number" correctly', async () => {
         await expect(
             contract.call.test_number({
                 args: {
@@ -575,7 +575,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test('TypedContract validates "integer" correctly', async () => {
+    test('Contract validates "integer" correctly', async () => {
         await expect(
             contract.call.test_integer({
                 args: {
@@ -625,7 +625,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test('TypedContract validates "boolean" correctly', async () => {
+    test('Contract validates "boolean" correctly', async () => {
         await expect(
             contract.call.test_bool({
                 args: {
@@ -665,7 +665,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         ).rejects.toThrow(ArgumentSchemaError);
     });
 
-    test('TypedContract throws on extra arguments', async () => {
+    test('Contract throws on extra arguments', async () => {
         await expect(
             contract.call.test_extra_args({
                 args: {},
@@ -701,7 +701,7 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
         ).rejects.toThrow(UnknownArgumentError);
     });
 
-    test('TypedContract validates types from definitions correctly', async () => {
+    test('Contract validates types from definitions correctly', async () => {
         await expect(
             contract.call.test_definitions({
                 args: {
@@ -759,8 +759,8 @@ describe('TypedContract validates "call" function arguments based on ABI', () =>
     });
 
     // Various argument types can be passed to the function without causing failures
-    test('TypedContract skips validation if no ABI provided', async () => {
-        const contractWithoutAbi = new TypedContract({
+    test('Contract skips validation if no ABI provided', async () => {
+        const contractWithoutAbi = new Contract({
             contractId: '',
             provider: provider,
         });
