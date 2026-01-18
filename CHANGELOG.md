@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.0.0-rc.6
+
+### Patch Changes
+
+- [#1806](https://github.com/near/near-api-js/pull/1806) [`7d73ef1`](https://github.com/near/near-api-js/commit/7d73ef1cdddd751dc3775b24e519861a30e82d2b) Thanks [@denbite](https://github.com/denbite)! - Handle HTTP 502 and 429 errors
+
 ## 7.0.0-rc.5
 
 ### Major Changes
