@@ -621,9 +621,6 @@ packages:
   exponential-backoff@3.1.2:
     resolution: {integrity: sha512-8QxYTVXUkuy7fIIoitQkPwGonB8F3Zj8eEO8Sqg9Zv/bkI7RJAzowee4gr81Hak/dUTpA2Z7VfQgoijjPNlUZA==}
 
-  exponential-backoff@3.1.3:
-    resolution: {integrity: sha512-ZgEeZXj30q+I0EN+CbSSpIyPaJ5HVQD18Z1m+u1FXbAeT94mr1zw50q4q6jiiC447Nl/YTcIYSAftiGqetwXCA==}
-
   fdir@6.4.6:
     resolution: {integrity: sha512-hiFoqpyZcfNm1yc4u8oWCf9A2c4D3QjCrks3zmoVKVxpQRzmPNar1hUJcBG2RQHvEVGDN+Jm81ZheVLAQMK6+w==}
     peerDependencies:
@@ -853,10 +850,6 @@ packages:
   mustache@4.0.0:
     resolution: {integrity: sha512-FJgjyX/IVkbXBXYUwH+OYwQKqWpFPLaLVESd70yHjSDunwzV2hZOoTBvPf4KLoxesUzzyfTH6F784Uqd7Wm5yA==}
     engines: {npm: '>=1.4.0'}
-    hasBin: true
-
-  mustache@4.2.0:
-    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
     hasBin: true
 
   nanoid@3.3.11:
@@ -1854,8 +1847,6 @@ snapshots:
 
   exponential-backoff@3.1.2: {}
 
-  exponential-backoff@3.1.3: {}
-
   fdir@6.4.6(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
@@ -2121,8 +2112,6 @@ snapshots:
 
   mustache@4.0.0: {}
 
-  mustache@4.2.0: {}
-
   nanoid@3.3.11: {}
 
   near-abi@0.2.0:
@@ -2157,10 +2146,7 @@ snapshots:
       '@noble/hashes': 2.0.1
       '@scure/base': 2.0.0
       borsh: 2.0.0
-      depd: 2.0.0
-      exponential-backoff: 3.1.3
       is-my-json-valid: 2.20.6
-      mustache: 4.2.0
       near-seed-phrase: 0.2.1
       secp256k1: 5.0.1
 

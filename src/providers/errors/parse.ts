@@ -89,83 +89,83 @@ import {
 import { type RequestValidationError, RpcMethodNotFoundError, RpcRequestParseError } from './request_validation.js';
 import { InternalRpcError, RpcError } from './rpc.js';
 import {
-    AccessKeyDepositWithFunctionCallError,
-    AccessKeyMethodNameMismatchError,
-    AccessKeyNotEnoughAllowanceError,
-    AccessKeyNotFoundError,
-    AccessKeyReceiverMismatchError,
-    AccessKeyRequiresFullAccessError,
-    AccountAlreadyExistsError,
-    AccountDoesNotExistError as AccountDoesNotExistActionError,
+    AccessKeyDepositWithFunctionCallActionError,
+    AccessKeyMethodNameMismatchActionError,
+    AccessKeyNotEnoughAllowanceActionError,
+    AccessKeyNotFoundActionError,
+    AccessKeyReceiverMismatchActionError,
+    AccessKeyRequiresFullAccessActionError,
+    AccountAlreadyExistsActionError,
+    AccountDoesNotExistActionError,
     ActionExecutionError,
-    ActorNoPermissionError,
-    AddKeyAlreadyExistsError,
-    AddKeyMethodNameLengthExceededError,
-    AddKeyMethodNamesNumberOfBytesExceededError,
-    ContractSizeExceededValidationError,
+    ActorNoPermissionActionError,
+    AddKeyAlreadyExistsActionError,
+    AddKeyMethodNameLengthExceededActionError,
+    AddKeyMethodNamesNumberOfBytesExceededActionError,
+    ContractSizeExceededValidationActionError,
     CostOverflowError,
-    CreateAccountNotAllowedError,
-    CreateAccountOnlyByRegistrarError,
-    DelegateActionExpiredError,
-    DelegateActionInvalidNonceError,
-    DelegateActionInvalidSignatureError,
-    DelegateActionMustBeOnlyOneError,
-    DelegateActionNonceTooLargeError,
-    DelegateActionSenderDoesNotMatchTxReceiverError,
-    DeleteAccountStakingError,
-    DeleteAccountWithLargeStateError,
-    DeleteActionMustBeFinalError,
-    DeleteKeyDoesNotExistError,
-    DeterministicStateInitKeyLengthExceededError,
-    DeterministicStateInitValueLengthExceededError,
+    CreateAccountNotAllowedActionError,
+    CreateAccountOnlyByRegistrarActionError,
+    DelegateActionExpiredActionError,
+    DelegateActionInvalidNonceActionError,
+    DelegateActionInvalidSignatureActionError,
+    DelegateActionMustBeOnlyOneActionError,
+    DelegateActionNonceTooLargeActionError,
+    DelegateActionSenderDoesNotMatchTxReceiverActionError,
+    DeleteAccountStakingActionError,
+    DeleteAccountWithLargeStateActionError,
+    DeleteActionMustBeFinalActionError,
+    DeleteKeyDoesNotExistActionError,
+    DeterministicStateInitKeyLengthExceededActionError,
+    DeterministicStateInitValueLengthExceededActionError,
     FlatStorageBlockNotSupportedError,
-    FunctionCallArgumentsLengthExceededError,
-    FunctionCallMethodNameLengthExceededError,
-    FunctionCallZeroAttachedGasError,
-    GasKeyAlreadyExistsError,
-    GasKeyDoesNotExistError as GasKeyDoesNotExistActionError,
-    GasKeyPermissionInvalidError,
-    GasKeyTooManyNoncesRequestedError,
-    GlobalContractDoesNotExistError,
-    InsufficientStakeError,
-    IntegerOverflowValidationError,
-    InvalidAccountIdValidationError,
+    FunctionCallArgumentsLengthExceededActionError,
+    FunctionCallMethodNameLengthExceededActionError,
+    FunctionCallZeroAttachedGasActionError,
+    GasKeyAlreadyExistsActionError,
+    GasKeyDoesNotExistActionError,
+    GasKeyPermissionInvalidActionError,
+    GasKeyTooManyNoncesRequestedActionError,
+    GlobalContractDoesNotExistActionError,
+    InsufficientStakeActionError,
+    IntegerOverflowValidationActionError,
+    InvalidAccountIdValidationActionError,
     InvalidChainError,
-    InvalidDataReceiverIdReceiptError,
-    InvalidDeterministicStateInitReceiverError,
+    InvalidDataReceiverIdReceiptActionError,
+    InvalidDeterministicStateInitReceiverActionError,
     InvalidNonceError,
-    InvalidPredecessorIdReceiptError,
+    InvalidPredecessorIdReceiptActionError,
     InvalidReceiverIdError,
-    InvalidReceiverIdReceiptError,
-    InvalidRefundToReceiptError,
+    InvalidReceiverIdReceiptActionError,
+    InvalidRefundToReceiptActionError,
     InvalidSignatureError,
     InvalidSignerIdError,
-    InvalidSignerIdReceiptError,
+    InvalidSignerIdReceiptActionError,
     InvalidTransactionVersionError,
-    LackBalanceForStateError,
+    LackBalanceForStateActionError,
     MemTrieLoadingError,
     MissingTrieValueError,
     NonceTooLargeError,
     NotEnoughBalanceError,
-    NumberInputDataDependenciesExceededReceiptError,
-    OnlyImplicitAccountCreationAllowedError,
-    ReceiptSizeExceededError,
-    ReturnedValueLengthExceededReceiptError,
+    NumberInputDataDependenciesExceededReceiptActionError,
+    OnlyImplicitAccountCreationAllowedActionError,
+    ReceiptSizeExceededActionError,
+    ReturnedValueLengthExceededReceiptActionError,
     ShardCongestedError,
     ShardStuckError,
     SignerDoesNotExistError,
     StorageInconsistentStateError,
     StorageInternalError,
-    TotalNumberOfActionsExceededError,
-    TotalPrepaidGasExceededError,
+    TotalNumberOfActionsExceededActionError,
+    TotalPrepaidGasExceededActionError,
     TransactionExecutionError,
     TransactionExpiredError,
     TransactionSizeExceededError,
-    TriesToStakeError,
-    TriesToUnstakeError,
+    TriesToStakeActionError,
+    TriesToUnstakeActionError,
     UnexpectedTrieValueError,
-    UnsuitableStakingKeyError,
-    UnsupportedProtocolFeatureError,
+    UnsuitableStakingKeyActionError,
+    UnsupportedProtocolFeatureActionError,
 } from './transaction_execution.js';
 
 type RawRpcError = Extract<Methods[keyof Methods]['response'], { error: object }>['error'];
@@ -638,9 +638,9 @@ function parseActionError(
     if (typeof error.kind === 'string') {
         switch (error.kind) {
             case 'DelegateActionInvalidSignature':
-                return new DelegateActionInvalidSignatureError(actionIndex, txHash, blockHash);
+                return new DelegateActionInvalidSignatureActionError(actionIndex, txHash, blockHash);
             case 'DelegateActionExpired':
-                return new DelegateActionExpiredError(actionIndex, txHash, blockHash);
+                return new DelegateActionExpiredActionError(actionIndex, txHash, blockHash);
             default:
                 // ensures all string ActionErrorKind variants are handled at compile time
                 error.kind satisfies never;
@@ -649,7 +649,7 @@ function parseActionError(
     }
 
     if ('AccountAlreadyExists' in error.kind) {
-        return new AccountAlreadyExistsError(
+        return new AccountAlreadyExistsActionError(
             error.kind.AccountAlreadyExists.account_id,
             actionIndex,
             txHash,
@@ -667,7 +667,7 @@ function parseActionError(
     }
 
     if ('ActorNoPermission' in error.kind) {
-        return new ActorNoPermissionError(
+        return new ActorNoPermissionActionError(
             error.kind.ActorNoPermission.account_id,
             error.kind.ActorNoPermission.actor_id,
             actionIndex,
@@ -677,7 +677,7 @@ function parseActionError(
     }
 
     if ('AddKeyAlreadyExists' in error.kind) {
-        return new AddKeyAlreadyExistsError(
+        return new AddKeyAlreadyExistsActionError(
             error.kind.AddKeyAlreadyExists.account_id,
             PublicKey.fromString(error.kind.AddKeyAlreadyExists.public_key),
             actionIndex,
@@ -687,7 +687,7 @@ function parseActionError(
     }
 
     if ('DeleteKeyDoesNotExist' in error.kind) {
-        return new DeleteKeyDoesNotExistError(
+        return new DeleteKeyDoesNotExistActionError(
             error.kind.DeleteKeyDoesNotExist.account_id,
             PublicKey.from(error.kind.DeleteKeyDoesNotExist.public_key),
             actionIndex,
@@ -697,7 +697,7 @@ function parseActionError(
     }
 
     if ('DeleteAccountStaking' in error.kind) {
-        return new DeleteAccountStakingError(
+        return new DeleteAccountStakingActionError(
             error.kind.DeleteAccountStaking.account_id,
             actionIndex,
             txHash,
@@ -706,7 +706,7 @@ function parseActionError(
     }
 
     if ('LackBalanceForState' in error.kind) {
-        return new LackBalanceForStateError(
+        return new LackBalanceForStateActionError(
             error.kind.LackBalanceForState.account_id,
             BigInt(error.kind.LackBalanceForState.amount),
             actionIndex,
@@ -716,11 +716,11 @@ function parseActionError(
     }
 
     if ('TriesToUnstake' in error.kind) {
-        return new TriesToUnstakeError(error.kind.TriesToUnstake.account_id, actionIndex, txHash, blockHash);
+        return new TriesToUnstakeActionError(error.kind.TriesToUnstake.account_id, actionIndex, txHash, blockHash);
     }
 
     if ('TriesToStake' in error.kind) {
-        return new TriesToStakeError(
+        return new TriesToStakeActionError(
             error.kind.TriesToStake.account_id,
             BigInt(error.kind.TriesToStake.balance),
             BigInt(error.kind.TriesToStake.locked),
@@ -732,7 +732,7 @@ function parseActionError(
     }
 
     if ('InsufficientStake' in error.kind) {
-        return new InsufficientStakeError(
+        return new InsufficientStakeActionError(
             error.kind.InsufficientStake.account_id,
             BigInt(error.kind.InsufficientStake.minimum_stake),
             BigInt(error.kind.InsufficientStake.stake),
@@ -743,7 +743,7 @@ function parseActionError(
     }
 
     if ('OnlyImplicitAccountCreationAllowed' in error.kind) {
-        return new OnlyImplicitAccountCreationAllowedError(
+        return new OnlyImplicitAccountCreationAllowedActionError(
             error.kind.OnlyImplicitAccountCreationAllowed.account_id,
             actionIndex,
             txHash,
@@ -752,7 +752,7 @@ function parseActionError(
     }
 
     if ('DeleteAccountWithLargeState' in error.kind) {
-        return new DeleteAccountWithLargeStateError(
+        return new DeleteAccountWithLargeStateActionError(
             error.kind.DeleteAccountWithLargeState.account_id,
             actionIndex,
             txHash,
@@ -761,7 +761,7 @@ function parseActionError(
     }
 
     if ('DelegateActionInvalidNonce' in error.kind) {
-        return new DelegateActionInvalidNonceError(
+        return new DelegateActionInvalidNonceActionError(
             error.kind.DelegateActionInvalidNonce.ak_nonce,
             error.kind.DelegateActionInvalidNonce.delegate_nonce,
             actionIndex,
@@ -771,7 +771,7 @@ function parseActionError(
     }
 
     if ('DelegateActionNonceTooLarge' in error.kind) {
-        return new DelegateActionNonceTooLargeError(
+        return new DelegateActionNonceTooLargeActionError(
             error.kind.DelegateActionNonceTooLarge.delegate_nonce,
             error.kind.DelegateActionNonceTooLarge.upper_bound,
             actionIndex,
@@ -791,7 +791,7 @@ function parseActionError(
     }
 
     if ('GasKeyAlreadyExists' in error.kind) {
-        return new GasKeyAlreadyExistsError(
+        return new GasKeyAlreadyExistsActionError(
             error.kind.GasKeyAlreadyExists.account_id,
             PublicKey.fromString(error.kind.GasKeyAlreadyExists.public_key),
             actionIndex,
@@ -801,7 +801,7 @@ function parseActionError(
     }
 
     if ('GlobalContractDoesNotExist' in error.kind) {
-        return new GlobalContractDoesNotExistError(
+        return new GlobalContractDoesNotExistActionError(
             error.kind.GlobalContractDoesNotExist.identifier,
             actionIndex,
             txHash,
@@ -822,7 +822,7 @@ function parseActionError(
     }
 
     if ('CreateAccountOnlyByRegistrar' in error.kind) {
-        return new CreateAccountOnlyByRegistrarError(
+        return new CreateAccountOnlyByRegistrarActionError(
             error.kind.CreateAccountOnlyByRegistrar.account_id,
             error.kind.CreateAccountOnlyByRegistrar.predecessor_id,
             error.kind.CreateAccountOnlyByRegistrar.registrar_account_id,
@@ -833,7 +833,7 @@ function parseActionError(
     }
 
     if ('CreateAccountNotAllowed' in error.kind) {
-        return new CreateAccountNotAllowedError(
+        return new CreateAccountNotAllowedActionError(
             error.kind.CreateAccountNotAllowed.account_id,
             error.kind.CreateAccountNotAllowed.predecessor_id,
             actionIndex,
@@ -843,7 +843,7 @@ function parseActionError(
     }
 
     if ('DelegateActionSenderDoesNotMatchTxReceiver' in error.kind) {
-        return new DelegateActionSenderDoesNotMatchTxReceiverError(
+        return new DelegateActionSenderDoesNotMatchTxReceiverActionError(
             error.kind.DelegateActionSenderDoesNotMatchTxReceiver.receiver_id,
             error.kind.DelegateActionSenderDoesNotMatchTxReceiver.sender_id,
             actionIndex,
@@ -868,7 +868,7 @@ function parseReceiptValidationError(
     blockHash: BlockHash
 ): ActionExecutionError {
     if ('InvalidPredecessorId' in error) {
-        return new InvalidPredecessorIdReceiptError(
+        return new InvalidPredecessorIdReceiptActionError(
             error.InvalidPredecessorId.account_id,
             actionIndex,
             txHash,
@@ -877,15 +877,20 @@ function parseReceiptValidationError(
     }
 
     if ('InvalidReceiverId' in error) {
-        return new InvalidReceiverIdReceiptError(error.InvalidReceiverId.account_id, actionIndex, txHash, blockHash);
+        return new InvalidReceiverIdReceiptActionError(
+            error.InvalidReceiverId.account_id,
+            actionIndex,
+            txHash,
+            blockHash
+        );
     }
 
     if ('InvalidSignerId' in error) {
-        return new InvalidSignerIdReceiptError(error.InvalidSignerId.account_id, actionIndex, txHash, blockHash);
+        return new InvalidSignerIdReceiptActionError(error.InvalidSignerId.account_id, actionIndex, txHash, blockHash);
     }
 
     if ('InvalidDataReceiverId' in error) {
-        return new InvalidDataReceiverIdReceiptError(
+        return new InvalidDataReceiverIdReceiptActionError(
             error.InvalidDataReceiverId.account_id,
             actionIndex,
             txHash,
@@ -894,7 +899,7 @@ function parseReceiptValidationError(
     }
 
     if ('ReturnedValueLengthExceeded' in error) {
-        return new ReturnedValueLengthExceededReceiptError(
+        return new ReturnedValueLengthExceededReceiptActionError(
             error.ReturnedValueLengthExceeded.length,
             error.ReturnedValueLengthExceeded.limit,
             actionIndex,
@@ -904,7 +909,7 @@ function parseReceiptValidationError(
     }
 
     if ('NumberInputDataDependenciesExceeded' in error) {
-        return new NumberInputDataDependenciesExceededReceiptError(
+        return new NumberInputDataDependenciesExceededReceiptActionError(
             error.NumberInputDataDependenciesExceeded.limit,
             error.NumberInputDataDependenciesExceeded.number_of_input_data_dependencies,
             actionIndex,
@@ -919,7 +924,7 @@ function parseReceiptValidationError(
     }
 
     if ('ReceiptSizeExceeded' in error) {
-        return new ReceiptSizeExceededError(
+        return new ReceiptSizeExceededActionError(
             error.ReceiptSizeExceeded.limit,
             error.ReceiptSizeExceeded.size,
             actionIndex,
@@ -929,7 +934,7 @@ function parseReceiptValidationError(
     }
 
     if ('InvalidRefundTo' in error) {
-        return new InvalidRefundToReceiptError(error.InvalidRefundTo.account_id, actionIndex, txHash, blockHash);
+        return new InvalidRefundToReceiptActionError(error.InvalidRefundTo.account_id, actionIndex, txHash, blockHash);
     }
 
     // ensures all ReceiptValidationError variants are handled at compile time
@@ -946,13 +951,13 @@ function parseActionsValidationError(
     if (typeof error === 'string') {
         switch (error) {
             case 'DeleteActionMustBeFinal':
-                return new DeleteActionMustBeFinalError(actionIndex, txHash, blockHash);
+                return new DeleteActionMustBeFinalActionError(actionIndex, txHash, blockHash);
             case 'IntegerOverflow':
-                return new IntegerOverflowValidationError(actionIndex, txHash, blockHash);
+                return new IntegerOverflowValidationActionError(actionIndex, txHash, blockHash);
             case 'FunctionCallZeroAttachedGas':
-                return new FunctionCallZeroAttachedGasError(actionIndex, txHash, blockHash);
+                return new FunctionCallZeroAttachedGasActionError(actionIndex, txHash, blockHash);
             case 'DelegateActionMustBeOnlyOne':
-                return new DelegateActionMustBeOnlyOneError(actionIndex, txHash, blockHash);
+                return new DelegateActionMustBeOnlyOneActionError(actionIndex, txHash, blockHash);
             default:
                 // ensures all string ActionsValidationError variants are handled at compile time
                 error satisfies never;
@@ -961,7 +966,7 @@ function parseActionsValidationError(
     }
 
     if ('TotalPrepaidGasExceeded' in error) {
-        return new TotalPrepaidGasExceededError(
+        return new TotalPrepaidGasExceededActionError(
             error.TotalPrepaidGasExceeded.limit,
             error.TotalPrepaidGasExceeded.total_prepaid_gas,
             actionIndex,
@@ -971,7 +976,7 @@ function parseActionsValidationError(
     }
 
     if ('TotalNumberOfActionsExceeded' in error) {
-        return new TotalNumberOfActionsExceededError(
+        return new TotalNumberOfActionsExceededActionError(
             error.TotalNumberOfActionsExceeded.limit,
             error.TotalNumberOfActionsExceeded.total_number_of_actions,
             actionIndex,
@@ -981,7 +986,7 @@ function parseActionsValidationError(
     }
 
     if ('AddKeyMethodNamesNumberOfBytesExceeded' in error) {
-        return new AddKeyMethodNamesNumberOfBytesExceededError(
+        return new AddKeyMethodNamesNumberOfBytesExceededActionError(
             error.AddKeyMethodNamesNumberOfBytesExceeded.limit,
             error.AddKeyMethodNamesNumberOfBytesExceeded.total_number_of_bytes,
             actionIndex,
@@ -991,7 +996,7 @@ function parseActionsValidationError(
     }
 
     if ('AddKeyMethodNameLengthExceeded' in error) {
-        return new AddKeyMethodNameLengthExceededError(
+        return new AddKeyMethodNameLengthExceededActionError(
             error.AddKeyMethodNameLengthExceeded.length,
             error.AddKeyMethodNameLengthExceeded.limit,
             actionIndex,
@@ -1001,11 +1006,16 @@ function parseActionsValidationError(
     }
 
     if ('InvalidAccountId' in error) {
-        return new InvalidAccountIdValidationError(error.InvalidAccountId.account_id, actionIndex, txHash, blockHash);
+        return new InvalidAccountIdValidationActionError(
+            error.InvalidAccountId.account_id,
+            actionIndex,
+            txHash,
+            blockHash
+        );
     }
 
     if ('ContractSizeExceeded' in error) {
-        return new ContractSizeExceededValidationError(
+        return new ContractSizeExceededValidationActionError(
             error.ContractSizeExceeded.limit,
             error.ContractSizeExceeded.size,
             actionIndex,
@@ -1015,7 +1025,7 @@ function parseActionsValidationError(
     }
 
     if ('FunctionCallMethodNameLengthExceeded' in error) {
-        return new FunctionCallMethodNameLengthExceededError(
+        return new FunctionCallMethodNameLengthExceededActionError(
             error.FunctionCallMethodNameLengthExceeded.length,
             error.FunctionCallMethodNameLengthExceeded.limit,
             actionIndex,
@@ -1025,7 +1035,7 @@ function parseActionsValidationError(
     }
 
     if ('FunctionCallArgumentsLengthExceeded' in error) {
-        return new FunctionCallArgumentsLengthExceededError(
+        return new FunctionCallArgumentsLengthExceededActionError(
             error.FunctionCallArgumentsLengthExceeded.length,
             error.FunctionCallArgumentsLengthExceeded.limit,
             actionIndex,
@@ -1035,7 +1045,7 @@ function parseActionsValidationError(
     }
 
     if ('UnsuitableStakingKey' in error) {
-        return new UnsuitableStakingKeyError(
+        return new UnsuitableStakingKeyActionError(
             PublicKey.fromString(error.UnsuitableStakingKey.public_key),
             actionIndex,
             txHash,
@@ -1044,7 +1054,7 @@ function parseActionsValidationError(
     }
 
     if ('UnsupportedProtocolFeature' in error) {
-        return new UnsupportedProtocolFeatureError(
+        return new UnsupportedProtocolFeatureActionError(
             error.UnsupportedProtocolFeature.protocol_feature,
             error.UnsupportedProtocolFeature.version,
             actionIndex,
@@ -1054,7 +1064,7 @@ function parseActionsValidationError(
     }
 
     if ('InvalidDeterministicStateInitReceiver' in error) {
-        return new InvalidDeterministicStateInitReceiverError(
+        return new InvalidDeterministicStateInitReceiverActionError(
             error.InvalidDeterministicStateInitReceiver.derived_id,
             error.InvalidDeterministicStateInitReceiver.receiver_id,
             actionIndex,
@@ -1064,7 +1074,7 @@ function parseActionsValidationError(
     }
 
     if ('DeterministicStateInitKeyLengthExceeded' in error) {
-        return new DeterministicStateInitKeyLengthExceededError(
+        return new DeterministicStateInitKeyLengthExceededActionError(
             error.DeterministicStateInitKeyLengthExceeded.length,
             error.DeterministicStateInitKeyLengthExceeded.limit,
             actionIndex,
@@ -1074,7 +1084,7 @@ function parseActionsValidationError(
     }
 
     if ('DeterministicStateInitValueLengthExceeded' in error) {
-        return new DeterministicStateInitValueLengthExceededError(
+        return new DeterministicStateInitValueLengthExceededActionError(
             error.DeterministicStateInitValueLengthExceeded.length,
             error.DeterministicStateInitValueLengthExceeded.limit,
             actionIndex,
@@ -1084,7 +1094,7 @@ function parseActionsValidationError(
     }
 
     if ('GasKeyPermissionInvalid' in error) {
-        return new GasKeyPermissionInvalidError(
+        return new GasKeyPermissionInvalidActionError(
             error.GasKeyPermissionInvalid.permission,
             actionIndex,
             txHash,
@@ -1093,7 +1103,7 @@ function parseActionsValidationError(
     }
 
     if ('GasKeyTooManyNoncesRequested' in error) {
-        return new GasKeyTooManyNoncesRequestedError(
+        return new GasKeyTooManyNoncesRequestedActionError(
             error.GasKeyTooManyNoncesRequested.limit,
             error.GasKeyTooManyNoncesRequested.requested_nonces,
             actionIndex,
@@ -1116,9 +1126,9 @@ function parseInvalidAccessKeyError(
     if (typeof error === 'string') {
         switch (error) {
             case 'RequiresFullAccess':
-                return new AccessKeyRequiresFullAccessError(actionIndex, txHash, blockHash);
+                return new AccessKeyRequiresFullAccessActionError(actionIndex, txHash, blockHash);
             case 'DepositWithFunctionCall':
-                return new AccessKeyDepositWithFunctionCallError(actionIndex, txHash, blockHash);
+                return new AccessKeyDepositWithFunctionCallActionError(actionIndex, txHash, blockHash);
             default:
                 // ensures all string InvalidAccessKeyError variants are handled at compile time
                 error satisfies never;
@@ -1127,7 +1137,7 @@ function parseInvalidAccessKeyError(
     }
 
     if ('AccessKeyNotFound' in error) {
-        return new AccessKeyNotFoundError(
+        return new AccessKeyNotFoundActionError(
             error.AccessKeyNotFound.account_id,
             PublicKey.fromString(error.AccessKeyNotFound.public_key),
             actionIndex,
@@ -1137,7 +1147,7 @@ function parseInvalidAccessKeyError(
     }
 
     if ('ReceiverMismatch' in error) {
-        return new AccessKeyReceiverMismatchError(
+        return new AccessKeyReceiverMismatchActionError(
             error.ReceiverMismatch.ak_receiver,
             error.ReceiverMismatch.tx_receiver,
             actionIndex,
@@ -1147,7 +1157,7 @@ function parseInvalidAccessKeyError(
     }
 
     if ('MethodNameMismatch' in error) {
-        return new AccessKeyMethodNameMismatchError(
+        return new AccessKeyMethodNameMismatchActionError(
             error.MethodNameMismatch.method_name,
             actionIndex,
             txHash,
@@ -1156,7 +1166,7 @@ function parseInvalidAccessKeyError(
     }
 
     if ('NotEnoughAllowance' in error) {
-        return new AccessKeyNotEnoughAllowanceError(
+        return new AccessKeyNotEnoughAllowanceActionError(
             error.NotEnoughAllowance.account_id,
             BigInt(error.NotEnoughAllowance.allowance),
             BigInt(error.NotEnoughAllowance.cost),
@@ -1231,7 +1241,7 @@ function parseInvalidTransactionError(
     }
 
     if ('LackBalanceForState' in error) {
-        return new LackBalanceForStateError(
+        return new LackBalanceForStateActionError(
             error.LackBalanceForState.signer_id,
             BigInt(error.LackBalanceForState.amount),
             null,

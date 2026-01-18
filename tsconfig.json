@@ -35,6 +35,7 @@
         "src/tokens/mainnet/index.ts",
         "src/tokens/testnet/index.ts",
         "src/nep413/index.ts",
-        "src/seed-phrase/index.ts"
+        "src/seed-phrase/index.ts",
+        "src/rpc-errors/index.ts"
     ]
 }
