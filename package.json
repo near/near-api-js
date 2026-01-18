@@ -37,6 +37,10 @@
         "./seed-phrase": {
             "import": "./lib/seed-phrase/index.js",
             "types": "./lib/seed-phrase/index.d.ts"
+        },
+        "./rpc-errors": {
+            "import": "./lib/rpc-errors/index.js",
+            "types": "./lib/rpc-errors/index.d.ts"
         }
     },
     "dependencies": {
