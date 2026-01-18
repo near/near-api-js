@@ -29,7 +29,7 @@ export class ActionExecutionError extends TransactionExecutionError {
     }
 }
 
-export class AccountAlreadyExistsError extends ActionExecutionError {
+export class AccountAlreadyExistsActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         actionIndex: number | null,
@@ -40,7 +40,7 @@ export class AccountAlreadyExistsError extends ActionExecutionError {
     }
 }
 
-export class AccountDoesNotExistError extends ActionExecutionError {
+export class AccountDoesNotExistActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         actionIndex: number | null,
@@ -51,7 +51,7 @@ export class AccountDoesNotExistError extends ActionExecutionError {
     }
 }
 
-export class ActorNoPermissionError extends ActionExecutionError {
+export class ActorNoPermissionActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly actorId: string,
@@ -63,7 +63,7 @@ export class ActorNoPermissionError extends ActionExecutionError {
     }
 }
 
-export class AddKeyAlreadyExistsError extends ActionExecutionError {
+export class AddKeyAlreadyExistsActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly publicKey: PublicKey,
@@ -75,7 +75,7 @@ export class AddKeyAlreadyExistsError extends ActionExecutionError {
     }
 }
 
-export class DeleteKeyDoesNotExistError extends ActionExecutionError {
+export class DeleteKeyDoesNotExistActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly publicKey: PublicKey,
@@ -87,7 +87,7 @@ export class DeleteKeyDoesNotExistError extends ActionExecutionError {
     }
 }
 
-export class DeleteAccountStakingError extends ActionExecutionError {
+export class DeleteAccountStakingActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         actionIndex: number | null,
@@ -98,7 +98,7 @@ export class DeleteAccountStakingError extends ActionExecutionError {
     }
 }
 
-export class LackBalanceForStateError extends ActionExecutionError {
+export class LackBalanceForStateActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly amount: bigint,
@@ -115,7 +115,7 @@ export class LackBalanceForStateError extends ActionExecutionError {
     }
 }
 
-export class TriesToUnstakeError extends ActionExecutionError {
+export class TriesToUnstakeActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         actionIndex: number | null,
@@ -126,7 +126,7 @@ export class TriesToUnstakeError extends ActionExecutionError {
     }
 }
 
-export class TriesToStakeError extends ActionExecutionError {
+export class TriesToStakeActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly balance: bigint,
@@ -145,7 +145,7 @@ export class TriesToStakeError extends ActionExecutionError {
     }
 }
 
-export class InsufficientStakeError extends ActionExecutionError {
+export class InsufficientStakeActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly minimumStake: bigint,
@@ -163,7 +163,7 @@ export class InsufficientStakeError extends ActionExecutionError {
     }
 }
 
-export class OnlyImplicitAccountCreationAllowedError extends ActionExecutionError {
+export class OnlyImplicitAccountCreationAllowedActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         actionIndex: number | null,
@@ -174,7 +174,7 @@ export class OnlyImplicitAccountCreationAllowedError extends ActionExecutionErro
     }
 }
 
-export class DeleteAccountWithLargeStateError extends ActionExecutionError {
+export class DeleteAccountWithLargeStateActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         actionIndex: number | null,
@@ -185,19 +185,19 @@ export class DeleteAccountWithLargeStateError extends ActionExecutionError {
     }
 }
 
-export class DelegateActionInvalidSignatureError extends ActionExecutionError {
+export class DelegateActionInvalidSignatureActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Delegate action has an invalid signature`, actionIndex, txHash, blockHash);
     }
 }
 
-export class DelegateActionExpiredError extends ActionExecutionError {
+export class DelegateActionExpiredActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Delegate action has expired`, actionIndex, txHash, blockHash);
     }
 }
 
-export class DelegateActionInvalidNonceError extends ActionExecutionError {
+export class DelegateActionInvalidNonceActionError extends ActionExecutionError {
     constructor(
         public readonly akNonce: number,
         public readonly delegateNonce: number,
@@ -209,7 +209,7 @@ export class DelegateActionInvalidNonceError extends ActionExecutionError {
     }
 }
 
-export class DelegateActionNonceTooLargeError extends ActionExecutionError {
+export class DelegateActionNonceTooLargeActionError extends ActionExecutionError {
     constructor(
         public readonly delegateNonce: number,
         public readonly upperBound: number,
@@ -221,7 +221,7 @@ export class DelegateActionNonceTooLargeError extends ActionExecutionError {
     }
 }
 
-export class GasKeyDoesNotExistError extends ActionExecutionError {
+export class GasKeyDoesNotExistActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly publicKey: PublicKey,
@@ -233,7 +233,7 @@ export class GasKeyDoesNotExistError extends ActionExecutionError {
     }
 }
 
-export class GasKeyAlreadyExistsError extends ActionExecutionError {
+export class GasKeyAlreadyExistsActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly publicKey: PublicKey,
@@ -245,7 +245,7 @@ export class GasKeyAlreadyExistsError extends ActionExecutionError {
     }
 }
 
-export class GlobalContractDoesNotExistError extends ActionExecutionError {
+export class GlobalContractDoesNotExistActionError extends ActionExecutionError {
     constructor(
         public readonly identifier: GlobalContractIdentifier,
         actionIndex: number | null,
@@ -256,7 +256,7 @@ export class GlobalContractDoesNotExistError extends ActionExecutionError {
     }
 }
 
-export class CreateAccountOnlyByRegistrarError extends ActionExecutionError {
+export class CreateAccountOnlyByRegistrarActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly predecessorId: string,
@@ -274,7 +274,7 @@ export class CreateAccountOnlyByRegistrarError extends ActionExecutionError {
     }
 }
 
-export class CreateAccountNotAllowedError extends ActionExecutionError {
+export class CreateAccountNotAllowedActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly predecessorId: string,
@@ -286,7 +286,7 @@ export class CreateAccountNotAllowedError extends ActionExecutionError {
     }
 }
 
-export class DelegateActionSenderDoesNotMatchTxReceiverError extends ActionExecutionError {
+export class DelegateActionSenderDoesNotMatchTxReceiverActionError extends ActionExecutionError {
     constructor(
         public readonly receiverId: string,
         public readonly senderId: string,
@@ -302,7 +302,7 @@ export class DelegateActionSenderDoesNotMatchTxReceiverError extends ActionExecu
         );
     }
 }
-export class AccessKeyNotFoundError extends ActionExecutionError {
+export class AccessKeyNotFoundActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly publicKey: PublicKey,
@@ -314,7 +314,7 @@ export class AccessKeyNotFoundError extends ActionExecutionError {
     }
 }
 
-export class AccessKeyReceiverMismatchError extends ActionExecutionError {
+export class AccessKeyReceiverMismatchActionError extends ActionExecutionError {
     constructor(
         public readonly akReceiver: string,
         public readonly txReceiver: string,
@@ -331,7 +331,7 @@ export class AccessKeyReceiverMismatchError extends ActionExecutionError {
     }
 }
 
-export class AccessKeyMethodNameMismatchError extends ActionExecutionError {
+export class AccessKeyMethodNameMismatchActionError extends ActionExecutionError {
     constructor(
         public readonly methodName: string,
         actionIndex: number | null,
@@ -342,13 +342,13 @@ export class AccessKeyMethodNameMismatchError extends ActionExecutionError {
     }
 }
 
-export class AccessKeyRequiresFullAccessError extends ActionExecutionError {
+export class AccessKeyRequiresFullAccessActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Access key requires full access`, actionIndex, txHash, blockHash);
     }
 }
 
-export class AccessKeyNotEnoughAllowanceError extends ActionExecutionError {
+export class AccessKeyNotEnoughAllowanceActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
         public readonly allowance: bigint,
@@ -367,79 +367,79 @@ export class AccessKeyNotEnoughAllowanceError extends ActionExecutionError {
     }
 }
 
-export class AccessKeyDepositWithFunctionCallError extends ActionExecutionError {
+export class AccessKeyDepositWithFunctionCallActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Deposit is not allowed with function call`, actionIndex, txHash, blockHash);
     }
 }
 
-export class InvalidPredecessorIdReceiptError extends ActionExecutionError {
+export class InvalidPredecessorIdReceiptActionError extends ActionExecutionError {
     constructor(accountId: string, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Invalid predecessor ID: ${accountId}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class InvalidReceiverIdReceiptError extends ActionExecutionError {
+export class InvalidReceiverIdReceiptActionError extends ActionExecutionError {
     constructor(accountId: string, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Invalid receiver ID: ${accountId}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class InvalidSignerIdReceiptError extends ActionExecutionError {
+export class InvalidSignerIdReceiptActionError extends ActionExecutionError {
     constructor(accountId: string, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Invalid signer ID: ${accountId}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class InvalidDataReceiverIdReceiptError extends ActionExecutionError {
+export class InvalidDataReceiverIdReceiptActionError extends ActionExecutionError {
     constructor(accountId: string, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Invalid data receiver ID: ${accountId}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class ReturnedValueLengthExceededReceiptError extends ActionExecutionError {
+export class ReturnedValueLengthExceededReceiptActionError extends ActionExecutionError {
     constructor(length: number, limit: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Returned value length ${length} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class NumberInputDataDependenciesExceededReceiptError extends ActionExecutionError {
+export class NumberInputDataDependenciesExceededReceiptActionError extends ActionExecutionError {
     constructor(limit: number, count: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Number of input data dependencies ${count} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class ReceiptSizeExceededError extends ActionExecutionError {
+export class ReceiptSizeExceededActionError extends ActionExecutionError {
     constructor(limit: number, size: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Receipt size ${size} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class InvalidRefundToReceiptError extends ActionExecutionError {
+export class InvalidRefundToReceiptActionError extends ActionExecutionError {
     constructor(accountId: string, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Invalid refund-to account ID: ${accountId}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class DeleteActionMustBeFinalError extends ActionExecutionError {
+export class DeleteActionMustBeFinalActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Delete action must be final`, actionIndex, txHash, blockHash);
     }
 }
 
-export class TotalPrepaidGasExceededError extends ActionExecutionError {
+export class TotalPrepaidGasExceededActionError extends ActionExecutionError {
     constructor(limit: number, total: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Total prepaid gas ${total} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class TotalNumberOfActionsExceededError extends ActionExecutionError {
+export class TotalNumberOfActionsExceededActionError extends ActionExecutionError {
     constructor(limit: number, total: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Total number of actions ${total} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class AddKeyMethodNamesNumberOfBytesExceededError extends ActionExecutionError {
+export class AddKeyMethodNamesNumberOfBytesExceededActionError extends ActionExecutionError {
     constructor(
         limit: number,
         totalBytes: number,
@@ -451,61 +451,61 @@ export class AddKeyMethodNamesNumberOfBytesExceededError extends ActionExecution
     }
 }
 
-export class AddKeyMethodNameLengthExceededError extends ActionExecutionError {
+export class AddKeyMethodNameLengthExceededActionError extends ActionExecutionError {
     constructor(length: number, limit: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Method name length ${length} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class IntegerOverflowValidationError extends ActionExecutionError {
+export class IntegerOverflowValidationActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Integer overflow during action validation`, actionIndex, txHash, blockHash);
     }
 }
 
-export class InvalidAccountIdValidationError extends ActionExecutionError {
+export class InvalidAccountIdValidationActionError extends ActionExecutionError {
     constructor(accountId: string, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Invalid account ID: ${accountId}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class ContractSizeExceededValidationError extends ActionExecutionError {
+export class ContractSizeExceededValidationActionError extends ActionExecutionError {
     constructor(limit: number, size: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Contract size ${size} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class FunctionCallMethodNameLengthExceededError extends ActionExecutionError {
+export class FunctionCallMethodNameLengthExceededActionError extends ActionExecutionError {
     constructor(length: number, limit: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Function method name length ${length} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class FunctionCallArgumentsLengthExceededError extends ActionExecutionError {
+export class FunctionCallArgumentsLengthExceededActionError extends ActionExecutionError {
     constructor(length: number, limit: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Function call arguments length ${length} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class UnsuitableStakingKeyError extends ActionExecutionError {
+export class UnsuitableStakingKeyActionError extends ActionExecutionError {
     constructor(publicKey: PublicKey, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Unsuitable staking key ${publicKey}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class FunctionCallZeroAttachedGasError extends ActionExecutionError {
+export class FunctionCallZeroAttachedGasActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Function call has zero attached gas`, actionIndex, txHash, blockHash);
     }
 }
 
-export class DelegateActionMustBeOnlyOneError extends ActionExecutionError {
+export class DelegateActionMustBeOnlyOneActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Delegate action must be the only action in transaction`, actionIndex, txHash, blockHash);
     }
 }
 
-export class UnsupportedProtocolFeatureError extends ActionExecutionError {
+export class UnsupportedProtocolFeatureActionError extends ActionExecutionError {
     constructor(
         feature: string,
         version: number,
@@ -517,7 +517,7 @@ export class UnsupportedProtocolFeatureError extends ActionExecutionError {
     }
 }
 
-export class InvalidDeterministicStateInitReceiverError extends ActionExecutionError {
+export class InvalidDeterministicStateInitReceiverActionError extends ActionExecutionError {
     constructor(
         derived: string,
         receiver: string,
@@ -534,19 +534,19 @@ export class InvalidDeterministicStateInitReceiverError extends ActionExecutionE
     }
 }
 
-export class DeterministicStateInitKeyLengthExceededError extends ActionExecutionError {
+export class DeterministicStateInitKeyLengthExceededActionError extends ActionExecutionError {
     constructor(length: number, limit: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Deterministic state init key length ${length} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class DeterministicStateInitValueLengthExceededError extends ActionExecutionError {
+export class DeterministicStateInitValueLengthExceededActionError extends ActionExecutionError {
     constructor(length: number, limit: number, actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Deterministic state init value length ${length} exceeds limit ${limit}`, actionIndex, txHash, blockHash);
     }
 }
 
-export class GasKeyPermissionInvalidError extends ActionExecutionError {
+export class GasKeyPermissionInvalidActionError extends ActionExecutionError {
     constructor(
         public readonly permission: AccessKeyPermission,
         actionIndex: number | null,
@@ -557,7 +557,7 @@ export class GasKeyPermissionInvalidError extends ActionExecutionError {
     }
 }
 
-export class GasKeyTooManyNoncesRequestedError extends ActionExecutionError {
+export class GasKeyTooManyNoncesRequestedActionError extends ActionExecutionError {
     constructor(
         limit: number,
         requested: number,
