@@ -11,7 +11,7 @@ import {
     KeyType,
     TypedContract,
 } from '../../../src';
-import { AccountAlreadyExistsError } from '../../../src/providers/errors/transaction_execution';
+import { AccountAlreadyExistsActionError } from '../../../src/providers/errors/transaction_execution';
 import {
     createAccount,
     generateUniqueString,
@@ -147,8 +147,8 @@ describe('errors', () => {
 
             expect.fail('should have thrown');
         } catch (thrown: unknown) {
-            expect(thrown).toBeInstanceOf(AccountAlreadyExistsError);
-            expect((thrown as AccountAlreadyExistsError).accountId).toBe(workingAccount.accountId);
+            expect(thrown).toBeInstanceOf(AccountAlreadyExistsActionError);
+            expect((thrown as AccountAlreadyExistsActionError).accountId).toBe(workingAccount.accountId);
         }
     });
 });
