@@ -94,7 +94,7 @@ export async function fetchJsonRpc<Req extends JsonRpcRequest>(
             headers: { ...headers, 'Content-Type': 'application/json' },
         });
 
-        const { ok, status } = res;
+        const { status } = res;
 
         if (status === 500) {
             throw new ProviderError('Internal server error', { cause: status });
@@ -102,10 +102,6 @@ export async function fetchJsonRpc<Req extends JsonRpcRequest>(
             throw new ProviderError('Timeout error', { cause: status });
         } else if (status === 503) {
             throw new ProviderError(`${url} unavailable`, { cause: status });
-        }
-
-        if (!ok) {
-            throw new ProviderError(await res.text(), { cause: status });
         }
 
         return res;
