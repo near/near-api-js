@@ -626,9 +626,7 @@ export class Account {
     }: AddFunctionAccessKeyArgs) {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [
-                addFunctionCallAccessKey(PublicKey.from(publicKey), contractId, methodNames, BigInt(allowance)),
-            ],
+            actions: [addFunctionCallAccessKey(PublicKey.from(publicKey), contractId, methodNames, BigInt(allowance))],
         });
     }
 
