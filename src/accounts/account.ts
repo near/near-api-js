@@ -9,7 +9,7 @@ import type { FungibleToken, NativeToken } from '../tokens/index.js';
 import { NEAR } from '../tokens/index.js';
 import {
     type Action,
-    actionCreators,
+    actions,
     buildDelegateAction,
     createTransaction,
     type DelegateAction,
@@ -22,18 +22,17 @@ import { baseDecode, getTransactionLastResult } from '../utils/index.js';
 import { NonceManager } from './nonce-manager.js';
 
 const {
-    addKey,
+    addFullAccessKey,
+    addFunctionCallAccessKey,
     createAccount,
     deleteAccount,
     deleteKey,
     deployContract,
     deployGlobalContract,
-    fullAccessKey,
     functionCall,
-    functionCallAccessKey,
     transfer,
     useGlobalContract,
-} = actionCreators;
+} = actions;
 
 const DEFAULT_FINALITY: Finality = 'optimistic';
 export const DEFAULT_WAIT_STATUS: TxExecutionStatus = 'EXECUTED_OPTIMISTIC';
@@ -392,7 +391,7 @@ export class Account {
         waitUntil = DEFAULT_WAIT_STATUS,
         throwOnFailure = true,
         signer = this.signer,
-        retries = 3,
+        retries = 10,
     }: SignAndSendTransactionArgs) {
         const signedTx = await this.createSignedTransaction({
             receiverId,
@@ -532,7 +531,7 @@ export class Account {
         const actions = [
             createAccount(),
             transfer(BigInt(nearToTransfer)),
-            addKey(PublicKey.from(publicKey), fullAccessKey()),
+            addFullAccessKey(PublicKey.from(publicKey)),
         ];
 
         return this.signAndSendTransaction({
@@ -628,7 +627,7 @@ export class Account {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [
-                addKey(PublicKey.from(publicKey), functionCallAccessKey(contractId, methodNames, BigInt(allowance))),
+                addFunctionCallAccessKey(PublicKey.from(publicKey), contractId, methodNames, BigInt(allowance)),
             ],
         });
     }
@@ -641,7 +640,7 @@ export class Account {
     public async addFullAccessKey(publicKey: PublicKey | string) {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [addKey(PublicKey.from(publicKey), fullAccessKey())],
+            actions: [addFullAccessKey(PublicKey.from(publicKey))],
         });
     }
 

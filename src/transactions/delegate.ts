@@ -1,6 +1,6 @@
 import type { PublicKey } from '../crypto/index.js';
 
-import { actionCreators } from './action_creators.js';
+import { actions } from './action_creators.js';
 import { type Action, GlobalContractDeployMode, GlobalContractIdentifier } from './actions.js';
 
 const {
@@ -14,7 +14,7 @@ const {
     transfer,
     deployGlobalContract,
     useGlobalContract,
-} = actionCreators;
+} = actions;
 
 export class DelegateAction {
     senderId: string;

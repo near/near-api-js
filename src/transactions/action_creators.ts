@@ -140,6 +140,31 @@ function addKey(publicKey: PublicKey, accessKey: AccessKey): Action {
 }
 
 /**
+ * Creates a new action for adding a full access key.
+ * @param publicKey The public key to be added.
+ * @returns A new action for adding a full access key.
+ */
+function addFullAccessKey(publicKey: PublicKey): Action {
+    return addKey(publicKey, fullAccessKey());
+}
+
+/** * Creates a new action for adding a function call access key.
+ * @param publicKey The public key to be added.
+ * @param receiverId The NEAR account ID of the function call receiver.
+ * @param methodNames An array of method names allowed for function calls.
+ * @param allowance An optional allowance (maximum amount) for the function call.
+ * @returns A new action for adding a function call access key.
+ */
+function addFunctionCallAccessKey(
+    publicKey: PublicKey,
+    receiverId: string,
+    methodNames: string[],
+    allowance?: bigint
+): Action {
+    return addKey(publicKey, functionCallAccessKey(receiverId, methodNames, allowance));
+}
+
+/**
  * Creates a new action for deleting a public key.
  * @param publicKey The public key to be deleted.
  * @returns A new action for deleting a public key.
@@ -194,8 +219,9 @@ function useGlobalContract(contractIdentifier: GlobalContractIdentifier): Action
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier }) });
 }
 
-export const actionCreators = {
-    addKey,
+export const actions = {
+    addFullAccessKey,
+    addFunctionCallAccessKey,
     createAccount,
     deleteAccount,
     deleteKey,
