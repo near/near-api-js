@@ -4,7 +4,7 @@ import { deserialize, serialize } from 'borsh';
 import { describe, expect, test } from 'vitest';
 
 import {
-    actionCreators,
+    actions,
     baseDecode,
     createTransaction,
     decodeTransaction,
@@ -17,18 +17,17 @@ import {
 } from '../../../src';
 
 const {
-    addKey,
+    addFunctionCallAccessKey,
     createAccount,
     deleteAccount,
     deleteKey,
     deployContract,
     functionCall,
-    functionCallAccessKey,
     stake,
     transfer,
     deployGlobalContract,
     useGlobalContract,
-} = actionCreators;
+} = actions;
 
 class Test {
     constructor(props: any) {
@@ -86,7 +85,7 @@ test('serialize multi-action tx', async () => {
         functionCall('qqq', new Uint8Array([1, 2, 3]), 1000n, 1000000n),
         transfer(123n),
         stake(1000000n, publicKey),
-        addKey(publicKey, functionCallAccessKey('zzz', ['www'], undefined)),
+        addFunctionCallAccessKey(publicKey, 'zzz', ['www'], undefined),
         deleteKey(publicKey),
         deleteAccount('123'),
     ];

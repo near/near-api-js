@@ -1,10 +1,9 @@
 import type { PublicKey } from '../crypto/index.js';
 
-import { actionCreators } from './action_creators.js';
-import { type Action, GlobalContractDeployMode, GlobalContractIdentifier } from './actions.js';
+import { actions } from './action_creators.js';
+import { Action, AddKey, GlobalContractDeployMode, GlobalContractIdentifier } from './actions.js';
 
 const {
-    addKey,
     createAccount,
     deleteAccount,
     deleteKey,
@@ -14,7 +13,7 @@ const {
     transfer,
     deployGlobalContract,
     useGlobalContract,
-} = actionCreators;
+} = actions;
 
 export class DelegateAction {
     senderId: string;
@@ -79,7 +78,7 @@ export function buildDelegateAction({
                 case 'AddKey': {
                     // @ts-expect-error type workaround
                     const { publicKey, accessKey } = a.params;
-                    return addKey(publicKey, accessKey);
+                    return new Action({ addKey: new AddKey({ publicKey, accessKey }) });
                 }
                 case 'CreateAccount': {
                     // @ts-expect-error type workaround
