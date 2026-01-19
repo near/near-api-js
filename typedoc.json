@@ -1,27 +1,11 @@
 {
-  "includeVersion": true,
-  "entryPoints": [
-    "packages/near-api-js",
-    "packages/accounts",
-    "packages/biometric-ed25519",
-    "packages/crypto",
-    "packages/iframe-rpc",
-    "packages/keystores",
-    "packages/keystores-browser",
-    "packages/keystores-node",
-    "packages/providers",
-    "packages/signers",
-    "packages/tokens",
-    "packages/transactions",
-    "packages/types",
-    "packages/utils",
-    "packages/wallet-account"
-  ],
-  "entryPointStrategy": "packages",
-  "githubPages": true,
-  "validation": {
-    "notExported": false
-  },
-  "out": "docs",
-  "readme": "./docs/README_TYPEDOC.md"
+    "includeVersion": true,
+    "entryPoints": ["src"],
+    "entryPointStrategy": "expand",
+    "githubPages": true,
+    "validation": {
+        "notExported": false
+    },
+    "out": "docs",
+    "readme": "./docs/README_TYPEDOC.md"
 }

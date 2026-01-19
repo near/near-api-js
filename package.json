@@ -1,45 +1,106 @@
 {
-  "name": "@near-js/monorepo",
-  "private": true,
-  "engines": {
-    "node": ">=20.18.3",
-    "pnpm": ">=10.4.1"
-  },
-  "packageManager": "pnpm@10.4.1",
-  "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "build": "turbo run build",
-    "check-exports": "turbo run check-exports",
-    "clean": "turbo run clean",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
-    "autoclave": "rimraf packages/**/dist && rimraf packages/**/lib && rimraf packages/**/node_modules && rimraf packages/**/coverage && rimraf packages/**/.turbo && rimraf node_modules && rimraf .turbo && rimraf e2e/node_modules && rimraf e2e/coverage",
-    "test": "turbo run test",
-    "release": "changeset publish",
-    "prepare": "husky install",
-    "docs:generate": "typedoc"
-  },
-  "devDependencies": {
-    "@arethetypeswrong/cli": "^0.18.1",
-    "@changesets/changelog-github": "0.5.1",
-    "@changesets/cli": "^2.29.5",
-    "@commitlint/cli": "19.3.0",
-    "@commitlint/config-conventional": "19.7.1",
-    "@typescript-eslint/eslint-plugin": "6.21.0",
-    "@typescript-eslint/parser": "6.21.0",
-    "commitlint": "19.7.1",
-    "esbuild-fix-imports-plugin": "^1.0.21",
-    "eslint": "8.20.0",
-    "husky": "9.1.7",
-    "rimraf": "6.0.1",
-    "tsconfig": "workspace:*",
-    "tsup": "^8.5.0",
-    "turbo": "2.4.4",
-    "typedoc": "0.27.9",
-    "typescript": "5.4.5"
-  },
-  "resolutions": {
-    "near-sandbox": "0.0.18",
-    "near-api-js": "workspace:*"
-  }
+    "name": "near-api-js",
+    "description": "JavaScript library to interact with NEAR Protocol via RPC API",
+    "version": "7.0.0-rc.7",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/near/near-api-js.git"
+    },
+    "engines": {
+        "node": ">=20.18.3",
+        "pnpm": ">=10.4.1"
+    },
+    "packageManager": "pnpm@10.28.0",
+    "homepage": "https://github.com/near/near-api-js",
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./lib/index.js",
+            "types": "./lib/index.d.ts"
+        },
+        "./tokens": {
+            "import": "./lib/tokens/index.js",
+            "types": "./lib/tokens/index.d.ts"
+        },
+        "./tokens/mainnet": {
+            "import": "./lib/tokens/mainnet/index.js",
+            "types": "./lib/tokens/mainnet/index.d.ts"
+        },
+        "./tokens/testnet": {
+            "import": "./lib/tokens/testnet/index.js",
+            "types": "./lib/tokens/testnet/index.d.ts"
+        },
+        "./nep413": {
+            "import": "./lib/nep413/index.js",
+            "types": "./lib/nep413/index.d.ts"
+        },
+        "./seed-phrase": {
+            "import": "./lib/seed-phrase/index.js",
+            "types": "./lib/seed-phrase/index.d.ts"
+        },
+        "./rpc-errors": {
+            "import": "./lib/rpc-errors/index.js",
+            "types": "./lib/rpc-errors/index.d.ts"
+        }
+    },
+    "dependencies": {
+        "@noble/curves": "2.0.1",
+        "@noble/hashes": "2.0.1",
+        "@scure/base": "2.0.0",
+        "borsh": "2.0.0",
+        "is-my-json-valid": "2.20.6",
+        "near-seed-phrase": "0.2.1",
+        "secp256k1": "5.0.1"
+    },
+    "devDependencies": {
+        "@arethetypeswrong/cli": "0.18.2",
+        "@biomejs/biome": "^2.3.11",
+        "@changesets/changelog-github": "0.5.2",
+        "@changesets/cli": "2.29.8",
+        "@commitlint/cli": "20.3.1",
+        "@commitlint/config-conventional": "20.3.1",
+        "@hey-api/openapi-ts": "^0.90.4",
+        "@types/node": "25.0.9",
+        "@vitest/coverage-v8": "4.0.17",
+        "@vitest/ui": "4.0.17",
+        "commitlint": "20.3.1",
+        "husky": "9.1.7",
+        "near-hello": "0.5.1",
+        "near-workspaces": "5.0.0",
+        "rimraf": "6.1.2",
+        "semver": "7.7.3",
+        "ts-node": "10.9.2",
+        "typedoc": "0.28.16",
+        "typescript": "5.9.3",
+        "vitest": "4.0.17"
+    },
+    "keywords": [],
+    "license": "(MIT AND Apache-2.0)",
+    "scripts": {
+        "compile": "tsc -p ./tsconfig.json",
+        "dev": "pnpm compile -w",
+        "prebuild": "pnpm clean",
+        "build": "tsc -p ./tsconfig.json",
+        "test": "vitest run test",
+        "typecheck": "tsc --noEmit -p ./tsconfig.typecheck.json",
+        "lint": "biome check",
+        "prefuzz": "pnpm build",
+        "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
+        "clean": "pnpm rimraf lib",
+        "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
+        "docs:generate": "typedoc",
+        "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
+        "release": "changeset publish",
+        "rpc:generate": "pnpm openapi-ts",
+        "postrpc:generate": "biome check --fix"
+    },
+    "files": [
+        "lib",
+        "dist"
+    ],
+    "author": "NEAR Inc",
+    "sideEffects": false,
+    "resolutions": {
+        "near-sandbox": "0.0.18"
+    }
 }

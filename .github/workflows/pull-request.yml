@@ -33,7 +33,7 @@ jobs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
       with:
-        version: 10.4.1
+        version: 10.28.0
 
     - name: Setup Node
       uses: actions/setup-node@v4
@@ -43,6 +43,9 @@ jobs:
 
     - name: Install dependencies
       run: pnpm install
+
+    - name: Typecheck
+      run: pnpm typecheck
 
     - name: Build
       run: pnpm build
@@ -63,22 +66,11 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
     steps:
-    - name: Query Pull Request changed files
+    - name: Fetch PullRequest changed files into a file
       id: files
-      uses: octokit/request-action@v2.x
-      with:
-        route: GET /repos/{owner}/{repo}/pulls/{pull_number}/files
-        owner: ${{ github.repository_owner }}
-        repo: ${{ github.event.repository.name }}
-        pull_number: ${{ github.event.pull_request.number }}
+      run: gh api repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls/${{ github.event.pull_request.number }}/files > changed_files.json
       env:
         GITHUB_TOKEN: ${{ github.token }}
-
-    # This step is necessary to avoid parsing errors
-    - name: Store changed files in a file
-      run: echo "$FILES_JSON" > changed_files.json
-      env:
-        FILES_JSON: '${{ steps.files.outputs.data }}'
 
     - name: Evaluate changesets changes
       id: changesets
@@ -89,7 +81,7 @@ jobs:
     - name: Evaluate source file changes
       id: source-files
       run: |
-        FILES_CHANGED=$(jq 'map(select(.filename | test("^packages/[^/]+/src/"))) | length' changed_files.json)
+        FILES_CHANGED=$(jq 'map(select(.filename | test("^src/"))) | length' changed_files.json)
         echo "has_changed=$([ "$FILES_CHANGED" -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
     
     - name: Fail if source files changed, but no new changeset

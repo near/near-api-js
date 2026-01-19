@@ -1,0 +1,119 @@
+import { TypedError } from '../types/index.js';
+import type { JsonRpcRequest, JsonRpcResponse } from './methods.js';
+
+const BACKOFF_MULTIPLIER = 1.5;
+const RETRY_NUMBER = 10;
+const RETRY_DELAY = 0;
+
+interface BackOffOptions<E> {
+    numOfAttempts: number;
+    timeMultiple: number;
+    startingDelay: number;
+    retry: (error: E) => boolean;
+}
+
+/**
+ * Simple exponential backoff implementation.
+ * Retries a function with exponentially increasing delays.
+ */
+async function backOff<T, E extends Error>(fn: () => Promise<T>, options: BackOffOptions<E>): Promise<T | undefined> {
+    const { numOfAttempts, timeMultiple, startingDelay, retry } = options;
+    let delay = startingDelay;
+
+    for (let attempt = 1; attempt <= numOfAttempts; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (attempt === numOfAttempts || !retry(error as E)) {
+                throw error;
+            }
+            if (delay > 0) {
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            }
+            delay = delay === 0 ? 1 : delay * timeMultiple;
+        }
+    }
+    return undefined;
+}
+
+export function retryConfig(
+    numOfAttempts = RETRY_NUMBER,
+    timeMultiple = BACKOFF_MULTIPLIER,
+    startingDelay = RETRY_DELAY
+): BackOffOptions<ProviderError> {
+    return {
+        numOfAttempts: numOfAttempts,
+        timeMultiple: timeMultiple,
+        startingDelay: startingDelay,
+        retry: (e: ProviderError) => {
+            if ([503, 500, 408].includes(e.cause)) {
+                return true;
+            }
+
+            if (e.toString().includes('FetchError') || e.toString().includes('Failed to fetch')) {
+                return true;
+            }
+
+            return false;
+        },
+    };
+}
+
+export interface ConnectionInfo {
+    url: string;
+    headers?: { [key: string]: string | number };
+}
+
+export class ProviderError extends Error {
+    override cause: number = -1;
+    constructor(message: string, options: any) {
+        super(message, options);
+        if (options.cause) {
+            this.cause = options.cause;
+        }
+    }
+}
+
+/**
+ * Performs an HTTP request to an RPC endpoint
+ * @param url URL for the HTTP request
+ * @param json Request body
+ * @param headers HTTP headers to include with the request
+ * @returns Promise<any> }arsed JSON response from the HTTP request.
+ */
+export async function fetchJsonRpc<Req extends JsonRpcRequest>(
+    url: string,
+    json: Req,
+    headers: object,
+    retryConfig: BackOffOptions<ProviderError>
+): Promise<JsonRpcResponse<Req['method']>> {
+    const response = await backOff(async () => {
+        const res = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(json),
+            headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+
+        const { status } = res;
+
+        if (status === 500) {
+            throw new ProviderError('Internal server error', { cause: status });
+        } else if (status === 408) {
+            throw new ProviderError('Timeout error', { cause: status });
+        } else if (status === 429) {
+            throw new ProviderError(await res.text(), { cause: status });
+        } else if (status === 502) {
+            throw new ProviderError(`${url} Bad Gateway`, { cause: status });
+        } else if (status === 503) {
+            throw new ProviderError(`${url} unavailable`, { cause: status });
+        }
+
+        return res;
+    }, retryConfig);
+
+    if (!response) {
+        throw new TypedError(`Exceeded ${RETRY_NUMBER} attempts for ${url}.`, 'RetriesExceeded');
+    }
+
+    return await response.json();
+}
