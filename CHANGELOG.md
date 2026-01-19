@@ -1,5 +1,247 @@
 # near-api-js
 
+## 7.0.0
+
+### Major Changes
+
+- [#1691](https://github.com/near/near-api-js/pull/1691) [`f8666a0`](https://github.com/near/near-api-js/commit/f8666a0112e82d6000fed8ae9f10d893d65878ab) Thanks [@r-near](https://github.com/r-near)! - Update `parseNearAmount` to only accept either a numeric string, or actual number, and not undefined, as well as throw error rather than silently return `null`
+
+- [#1691](https://github.com/near/near-api-js/pull/1691) [`f8666a0`](https://github.com/near/near-api-js/commit/f8666a0112e82d6000fed8ae9f10d893d65878ab) Thanks [@r-near](https://github.com/r-near)! - Rename stable `viewValidatorsV2` function back to `viewValidators`
+
+- [#1809](https://github.com/near/near-api-js/pull/1809) [`eee87c2`](https://github.com/near/near-api-js/commit/eee87c2d55d63050e2e50a1d645ec7d61bd78dbd) Thanks [@gagdiez](https://github.com/gagdiez)! - Consolidate functionality of the `@near-js/*` packages into a single, tree-shakeable `near-api-js` package
+
+- [#1805](https://github.com/near/near-api-js/pull/1805) [`9356419`](https://github.com/near/near-api-js/commit/9356419dc03c164c5daba0f8440cde0bf8108068) Thanks [@denbite](https://github.com/denbite)! - Remove no longer needed error utils like `getErrorTypeFromErrorMessage`, `parseRpcError`, `parseResultError`, etc from the package as errors are now handled internally thanks to strongly typed RPC errors and end users can simply catch them in their application using specific error classes imported from `rpc-errors` sub-path
+
+- [#1781](https://github.com/near/near-api-js/pull/1781) [`1caddf4`](https://github.com/near/near-api-js/commit/1caddf45510f8e63c96aa7b09855cb56666922c6) Thanks [@denbite](https://github.com/denbite)! - Replace `TypedError` class with a few specific errors created from fully type-safe RPC interfaces
+
+- [#1808](https://github.com/near/near-api-js/pull/1808) [`bf7c148`](https://github.com/near/near-api-js/commit/bf7c14843d986d9c1c8d4f292db7759377bfabd3) Thanks [@denbite](https://github.com/denbite)! - Rename `TypedContract` back to `Contract`
+
+- [#1669](https://github.com/near/near-api-js/pull/1669) [`683e1db`](https://github.com/near/near-api-js/commit/683e1dbd17008c618cda6d5c3cb9e7994ceb2d55) Thanks [@denbite](https://github.com/denbite)! - Remove no longer maintained packages `@near-js/iframe-rpc`, `@near-js/biometric-ed25519` and `@near-js/client` with `@near-js/cookbook` examples
+
+- [#1670](https://github.com/near/near-api-js/pull/1670) [`54e4d48`](https://github.com/near/near-api-js/commit/54e4d48ffd23e0aa0619a0353d521f22a04a74f5) Thanks [@denbite](https://github.com/denbite)! - Remove no longer maintained packages `@near-js/keystores`, `@near-js/keystores-node` and `@near-js/keystores-browser`
+
+- [#1673](https://github.com/near/near-api-js/pull/1673) [`5d86344`](https://github.com/near/near-api-js/commit/5d86344494416f98a71a9266be60105be7fc0def) Thanks [@denbite](https://github.com/denbite)! - Consolidate `@near-js/*` packages into a single `near-api-js` codebase
+
+- [#1795](https://github.com/near/near-api-js/pull/1795) [`b96c604`](https://github.com/near/near-api-js/commit/b96c604c4ec543e35d7cb42b77d45147f3b0ab67) Thanks [@denbite](https://github.com/denbite)! - Renovate `Provider.query` by removing the deprecated inline-argument overload and fully aligning the method with the nearcore RPC API spec.
+
+  Previously supported (no longer works):
+
+  ```ts
+  provider.query("view_account", JSON.stringify({ ... }));
+  ```
+
+  New required usage (fully typed):
+
+  ```ts
+  provider.query({
+    request_type: "view_account",
+    ...
+  });
+  ```
+
+  Once `request_type` is specified, remaining parameters are inferred automatically by the IDE.
+
+- [#1668](https://github.com/near/near-api-js/pull/1668) [`20672fb`](https://github.com/near/near-api-js/commit/20672fb915a5cd9609bbc3df2f1b65535bc5c16b) Thanks [@denbite](https://github.com/denbite)! - Remove deprecated functionality
+
+- [#1813](https://github.com/near/near-api-js/pull/1813) [`858783c`](https://github.com/near/near-api-js/commit/858783ca7c04e01aae7ae13a2e34a57b6419ce13) Thanks [@gagdiez](https://github.com/gagdiez)! - Renamed actionCreator helper object to simply "actions", and separated the helper addKey into addFullAccessKey and addFunctionCallKey
+
+- [#1589](https://github.com/near/near-api-js/pull/1589) [`5cfdab8`](https://github.com/near/near-api-js/commit/5cfdab86b0e3eb6023b427224b1deea9463426eb) Thanks [@AlexKushnir1](https://github.com/AlexKushnir1)! - Refactor the abstract class `Signer` to implement every method, except for `getPublicKey` and `signBytes`, which are intended for users
+
+### Minor Changes
+
+- [#1790](https://github.com/near/near-api-js/pull/1790) [`2f7a30d`](https://github.com/near/near-api-js/commit/2f7a30dfaf58497821dd4e9e98518a4891e2b04b) Thanks [@denbite](https://github.com/denbite)! - Introduce many specific errors based on generated response types from OpenAPI spec and which are thrown when calling `Provider.sendJsonRpc` method
+
+- [#1798](https://github.com/near/near-api-js/pull/1798) [`a52592b`](https://github.com/near/near-api-js/commit/a52592b586ee220ed502bcb666dcd47533149782) Thanks [@gagdiez](https://github.com/gagdiez)! - Added a new multi-key signer which handles multiples keys and transparently rotates them as users ask to sign transactions
+
+- [#1751](https://github.com/near/near-api-js/pull/1751) [`85f279e`](https://github.com/near/near-api-js/commit/85f279ec020bae04dc631639010dad39a2819328) Thanks [@denbite](https://github.com/denbite)! - Add `nep413` module that implements `signMessage` and `verifyMessage` functions
+
+- [#1748](https://github.com/near/near-api-js/pull/1748) [`917ccea`](https://github.com/near/near-api-js/commit/917ccea1bc0c53d320ec1da9b193edcbaf051411) Thanks [@denbite](https://github.com/denbite)! - Make `Account` to take `KeyPairString` as third parameter
+
+- [#1761](https://github.com/near/near-api-js/pull/1761) [`9d8799b`](https://github.com/near/near-api-js/commit/9d8799ba91be05fde2c13dfe833ced75d4a6cec6) Thanks [@denbite](https://github.com/denbite)! - Introduce `teraToGas` and `gigaToGas` helper functions to convert `Gas` amounts conviniently
+
+- [#1761](https://github.com/near/near-api-js/pull/1761) [`fcbb1fe`](https://github.com/near/near-api-js/commit/fcbb1fed22fb0cc8ab055159ef1ef11b05ee13c0) Thanks [@denbite](https://github.com/denbite)! - Introduce `yoctoToNear` and `nearToYocto` helper functions
+
+- [#1796](https://github.com/near/near-api-js/pull/1796) [`c2601e2`](https://github.com/near/near-api-js/commit/c2601e2cf179f9d95109d7318f8aa79fea7278cd) Thanks [@denbite](https://github.com/denbite)! - Add a new `Provider.viewGlobalContractCode` method for retrieving global contract code using either a `codeHash`, or an `accountId` identifier.
+
+  Example usage:
+
+  ```ts
+  provider.viewGlobalContractCode({
+    identifier: { accountId: "global_contract.near" },
+  });
+  provider.viewGlobalContractCode({
+    identifier: { codeHash: "J1arLz48fgXcGyCPVckFwLnewNH6j1uw79thsvwqGYTY" },
+  });
+  ```
+
+- [#1799](https://github.com/near/near-api-js/pull/1799) [`a7c3cd9`](https://github.com/near/near-api-js/commit/a7c3cd9b57759a63dc4cb0da6ea428f0719782d4) Thanks [@denbite](https://github.com/denbite)! - Add `parseSeedPhrase` method, exported via the `seed-phrase` sub-path, which converts a string seed phrase into a `KeyPair`.
+
+  For example:
+
+  ```ts
+  import { parseSeedPhrase } from "near-api-js/seed-phrase";
+
+  const keyPair = parseSeedPhrase("tag interest match ...");
+
+  keyPair.getPublicKey().toString(); // ed25519:9uMmkWHW...
+  keyPair.toString(); // ed25519:3N6TYZVRrkQxh...
+  ```
+
+- [#1747](https://github.com/near/near-api-js/pull/1747) [`493d9e5`](https://github.com/near/near-api-js/commit/493d9e5f3dd0030c9dbd7aa143b5be18be9e1f03) Thanks [@denbite](https://github.com/denbite)! - Add sub-path exports for "tokens", "tokens/mainnet" and "tokens/testnet" to improve tree-shaking
+
+- [#1794](https://github.com/near/near-api-js/pull/1794) [`7b6ff4f`](https://github.com/near/near-api-js/commit/7b6ff4f9ad72374102297b76dd035104add87201) Thanks [@denbite](https://github.com/denbite)! - Extend the `Account` constructor to accept an RPC URL string in addition to a `Provider`, making account instantiation simpler and more ergonomic.
+
+  New supported usage:
+
+  ```ts
+  new Account("user.near", "https://rpc.testnet.near.org");
+  ```
+
+  Previously, users had to always manually create a provider:
+
+  ```ts
+  const provider = new JsonRpcProvider({ url: "https://rpc.testnet.near.org" });
+  new Account("user.near", provider);
+  ```
+
+- [#1803](https://github.com/near/near-api-js/pull/1803) [`9f3e14d`](https://github.com/near/near-api-js/commit/9f3e14d4a7f1d9601bfe51c6b7666990af2ba289) Thanks [@denbite](https://github.com/denbite)! - Export strongly typed RPC error classes behind the `rpc-errors` sub-path, for end users to reliably handle specific RPC failures.
+
+  For example, end users can now catch action-level errors (e.g. when a transaction fails because the recipient account does not exist):
+
+  ```ts
+  import { AccountDoesNotExistActionError } from "near-api-js/rpc-errors";
+
+  try {
+    await account.transfer({
+      amount: nearToYocto(0.01),
+      receiverId: "unexisted_account_111.testnet",
+    });
+  } catch (error) {
+    if (error instanceof AccountDoesNotExistActionError) {
+      console.error(
+        `Transaction ${error.txHash} failed because recipient ${error.accountId} does not exist!`
+      );
+    }
+  }
+  ```
+
+  Or, RPC request validation and parsing errors can also be handled explicitly (e.g. when an invalid account ID format is included in a transaction):
+
+  ```ts
+  import { RpcRequestParseError } from "near-api-js/rpc-errors";
+
+  try {
+    await account.transfer({
+      amount: nearToYocto(0.001),
+      receiverId: "account_name_that_fail_validation%.testnet",
+    });
+  } catch (error) {
+    if (error instanceof RpcRequestParseError) {
+      // Failed parsing args: the value could not be decoded from borsh due to:
+      // invalid value: "account_name_that_fail_validation%.testnet",
+      // the Account ID contains an invalid character '%' at index 33
+      console.error(error.message);
+    }
+  }
+  ```
+
+  Or, some requests may reference data that is no longer available or cannot be resolved by the node (e.g. querying a block that cannot be found):
+
+  ```ts
+  import { UnknownBlockError } from "near-api-js/rpc-errors";
+
+  const unexistedBlockHeight = 1_000_000_000_000_000;
+
+  try {
+    await provider.viewBlock({ blockId: unexistedBlockHeight });
+  } catch (error) {
+    if (error instanceof UnknownBlockError) {
+      console.error(
+        `Block at height ${unexistedBlockHeight} could not be found on the node!`
+      );
+    }
+  }
+  ```
+
+  All exported errors ultimately extend the `RpcError` base class, so applications can also catch and handle any RPC-related error in a single place when fine-grained handling is not required:
+
+  ```ts
+  import { RpcError } from "near-api-js/rpc-errors";
+
+  try {
+    await provider.viewAccessKey({
+      accountId: "user.testnet",
+      publicKey: "ed25519:EaQnZxCMwh9yhkqW2XE2umd21iNmXep1BkM6Wtw2Qr1b",
+    });
+  } catch (error) {
+    if (error instanceof RpcError) {
+      // Access key ed25519:EaQnZx... does not exist at block height ...
+      console.error(error.message);
+    }
+  }
+
+  try {
+    await provider.viewAccessKey({
+      accountId: "user.testnet",
+      publicKey: "ed25519:EaQnZxCMwh9yhkqW2XE2umd21iNmXep1BkM6Wtw2Qr1bxxxx", // invalid key here
+    });
+  } catch (error) {
+    if (error instanceof RpcError) {
+      // Failed parsing args: invalid key length: expected the input of 32 bytes, but 33 was given
+      console.error(error.message);
+    }
+  }
+  ```
+
+- [#1754](https://github.com/near/near-api-js/pull/1754) [`b3b2947`](https://github.com/near/near-api-js/commit/b3b2947a5e0c05691e330ce03c93c3b9a0296433) Thanks [@gagdiez](https://github.com/gagdiez)! - Added optional signer argument to signing functions on account class
+
+- [#1793](https://github.com/near/near-api-js/pull/1793) [`ddceeab`](https://github.com/near/near-api-js/commit/ddceeab4d0518683353bd0b704c43dc734469e36) Thanks [@denbite](https://github.com/denbite)! - Add concurrent transactions support by introducing nonce caching and automatic retries on `InvalidNonceError`.
+
+  The following example that previously failed due to nonce collisions, now works reliably:
+
+  ```ts
+  await Promise.all([
+    account.transfer({
+      amount: nearToYocto(1),
+      receiverId: "user1.testnet",
+    }),
+    account.transfer({
+      amount: nearToYocto(2),
+      receiverId: "user2.testnet",
+    }),
+    account.transfer({
+      amount: nearToYocto(3),
+      receiverId: "user3.testnet",
+    }),
+  ]);
+  ```
+
+### Patch Changes
+
+- [#1752](https://github.com/near/near-api-js/pull/1752) [`e6c61ae`](https://github.com/near/near-api-js/commit/e6c61ae088d91f492060cae8bc2f3bae404b893e) Thanks [@denbite](https://github.com/denbite)! - Remove redundant `null` argument from `Provider.viewValidators` method
+
+- [#1765](https://github.com/near/near-api-js/pull/1765) [`0ff1536`](https://github.com/near/near-api-js/commit/0ff1536d693e95d27d5a59be83e7b85553297d80) Thanks [@gagdiez](https://github.com/gagdiez)! - Update dependencies
+
+- [#1691](https://github.com/near/near-api-js/pull/1691) [`f8666a0`](https://github.com/near/near-api-js/commit/f8666a0112e82d6000fed8ae9f10d893d65878ab) Thanks [@r-near](https://github.com/r-near)! - Add default `EXECUTED_OPTIMISTIC` value to `waitUntil` argument of `viewTransactionStatus` and `viewTransactionStatusWithReceipts`
+
+- [#1692](https://github.com/near/near-api-js/pull/1692) [`4ecebde`](https://github.com/near/near-api-js/commit/4ecebde34a7c3a16ce7293d8633e5efecc181390) Thanks [@r-near](https://github.com/r-near)! - feat: replace ESLint with Biome for linting
+
+- [#1690](https://github.com/near/near-api-js/pull/1690) [`fe0a52e`](https://github.com/near/near-api-js/commit/fe0a52eaeec4c102c128b38a012c84a4692c04f7) Thanks [@r-near](https://github.com/r-near)! - Migrate to `ESM` only
+
+- [#1762](https://github.com/near/near-api-js/pull/1762) [`c711103`](https://github.com/near/near-api-js/commit/c711103be855534b79993a7e61d9fd3def126ac4) Thanks [@denbite](https://github.com/denbite)! - Speed up some `Account` methods by merging sequential `Promises` into `Promise.all()` for slightly better performance
+
+- [#1693](https://github.com/near/near-api-js/pull/1693) [`26ed0cd`](https://github.com/near/near-api-js/commit/26ed0cd922c976d0ad35e413c683abb6745174c8) Thanks [@denbite](https://github.com/denbite)! - Enable TypeScript `strict` mode for better reliability
+
+- [#1774](https://github.com/near/near-api-js/pull/1774) [`741671b`](https://github.com/near/near-api-js/commit/741671b81f012e638064e571927e5b4b98c34795) Thanks [@denbite](https://github.com/denbite)! - Extend `Provider` interfaces using types generated from `nearcore` OpenAPI spec
+
+- [#1806](https://github.com/near/near-api-js/pull/1806) [`7d73ef1`](https://github.com/near/near-api-js/commit/7d73ef1cdddd751dc3775b24e519861a30e82d2b) Thanks [@denbite](https://github.com/denbite)! - Handle HTTP 502 and 429 errors
+
+- [#1743](https://github.com/near/near-api-js/pull/1743) [`a1ea9aa`](https://github.com/near/near-api-js/commit/a1ea9aa13b9b1ce180a546dc15847338af8a6f2f) Thanks [@denbite](https://github.com/denbite)! - Switch to object args for public APIs across the package
+
+- [#1801](https://github.com/near/near-api-js/pull/1801) [`3e045fe`](https://github.com/near/near-api-js/commit/3e045fe84bebd3ed84e73034a400244893d9c512) Thanks [@gagdiez](https://github.com/gagdiez)! - Replaced some dependencies by internal functions
+
+- [#1720](https://github.com/near/near-api-js/pull/1720) [`1a41e6c`](https://github.com/near/near-api-js/commit/1a41e6cf7bee81bf940a16d0b78dbcaf565e827f) Thanks [@denbite](https://github.com/denbite)! - Use the most strictest checks in `tsconfig`
+
 ## 7.0.0-rc.7
 
 ### Major Changes
