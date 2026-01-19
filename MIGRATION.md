@@ -1,322 +1,75 @@
-# Migrating from near-api-js to @near-js
+# Migrating from @near-js to near-api-js
 
-The `near-api-js@>=2` package now uses the `@near-js/*` packages for most of its functionality. Minimal code
-was changed as part of this migration, so if you are using `near-api-js@<=1.1.0` your imports will continue
-to resolve correctly.
+## Package Imports
+The `near-api-js v7` package now exposes for most functions from `@near-js/*` packages. Minimal code
+was changed as part of this migration, so if you are using `near-api-js v6`, once changing
+`@near-js/<>` for `near-api-js` your imports will continue to resolve correctly.
 
-Moving to the `@near-js/*` packages in your own code is a matter of finding the corresponding export in
-the new package. Below, broken down by domain, are the old and new style imports side by side:
-
-### Accounts
-`near-api-js`
-```ts
-import {
-    Account,
-    accountCreator,
-    Connection,
-    Contract,
-    multisig,
-} from 'near-api-js';
-const {
-    AccountCreator,
-    LocalAccountCreator,
-    UrlAccountCreator,
-} = accountCreator;
-const {
-    Account2FA,
-    AccountMultisig,
-    MULTISIG_ALLOWANCE,
-    MULTISIG_DEPOSIT,
-    MULTISIG_CHANGE_METHODS,
-    MULTISIG_CONFIRM_METHODS,
-    MULTISIG_GAS,
-    MULTISIG_STORAGE_KEY,
-    MultisigDeleteRequestRejectionError,
-    MultisigStateStatus,
-} = multisig;
+**Before:**
+```typescript
+import { Account } from '@near-js/accounts';
+import { KeyPair } from '@near-js/crypto';
+import { JsonRpcProvider } from '@near-js/providers';
 ```
 
-`@near-js/accounts`
-```ts
-
-import {
-    Account,
-    AccountCreator,
-    Account2FA,
-    AccountMultisig,
-    Connection,
-    Contract,
-    LocalAccountCreator,
-    MULTISIG_ALLOWANCE,
-    MULTISIG_CHANGE_METHODS,
-    MULTISIG_CONFIRM_METHODS,
-    MULTISIG_DEPOSIT,
-    MULTISIG_GAS,
-    MULTISIG_STORAGE_KEY,
-    MultisigDeleteRequestRejectionError,
-    MultisigStateStatus,
-    UrlAccountCreator,
-} from '@near-js/accounts';
+**After:**
+```typescript
+import { Account, KeyPair, JsonRpcProvider } from 'near-api-js';
 ```
 
-### Cryptography
-`near-api-js`
-```ts
-import {
-    KeyPair,
-    utils,
-} from 'near-api-js';
-const {
-    KeyPairEd25519,
-    PublicKey,
-} = utils;
+---
+
+## Transaction Building
+
+In `near-api-js` you could import the `actionsCreator`, it has now been moved to a named export `actions`.
+
+**Before:**
+```typescript
+import { actions as actionCreators } from '@near-js/transactions';
+
+const { transfer, functionCall } = actionCreators;
 ```
 
-`@near-js/crypto`
-```ts
-import {
-    KeyPair,
-    KeyPairEd25519,
-    PublicKey,
-} from '@near-js/crypto';
+**After:**
+```typescript
+import { actions } from 'near-api-js';
+const { transfer, functionCall } = actions;
 ```
 
-### Keystores
-`near-api-js`
-```ts
-import {
-    keyStores,
-} from 'near-api-js';
-const {
-    KeyStore,
-    InMemoryKeyStore,
-    BrowserLocalStorageKeyStore,
-    UnencryptedFileSystemKeyStore,
-    MergeKeyStore,
-} = keyStores;
+---
+
+## Signers
+
+The `Signer` interface was changed, so now devs only need to implement the `signBytes` method (though, `signNEP413Message`, `signTransaction` can still be overridden if needed).
+
+---
+
+## Renamed Functions
+
+### parseNear and formatNear
+`near-js/utils` used to have the functions `parseNear` and `formatNear`, they have now been renamed to
+`yoctoToNear` and `nearToYocto`, and they can be imported from `near-api-js` directly.
+
+**Before:**
+```typescript
+import { utils: {parseNear, formatNear} } from 'near-api-js';
 ```
 
-`@near-js/keystores`
-```ts
-import {
-    InMemoryKeyStore,
-    KeyStore,
-    MergeKeyStore,
-} from '@near-js/keystores';
+**After:**
+```typescript
+import { yoctoToNear, nearToYocto } from 'near-api-js';
 ```
 
-`@near-js/keystores-browser`
-```ts
-import {
-    BrowserLocalStorageKeyStore,
-} from '@near-js/keystores-browser';
-```
+### viewValidatorsV2
+The function `viewValidatorsV2` has been renamed to `viewValidators`.
 
-`@near-js/keystores-node`
-```ts
-import {
-    UnencryptedFileSystemKeyStore,
-} from '@near-js/keystores-node';
-```
+---
 
-### Providers
-`near-api-js`
-```ts
-import {
-    providers,
-    utils,
-} from 'near-api-js';
-const {
-    ErrorContext,
-    ExecutionOutcomeWithId,
-    FinalExecutionOutcome,
-    FinalExecutionStatus,
-    FinalExecutionStatusBasic,
-    getTransactionLastResult,
-    JsonRpcProvider,
-    Provider,
-    TypedError,
-} = providers;
-```
+## Removed Packages
 
-`@near-js/providers`
-```ts
-import {
-    exponentialBackoff,
-    fetchJson,
-    JsonRpcProvider,
-    Provider,
-} from '@near-js/providers';
-```
-
-`@near-js/types`
-```ts
-import {
-    ErrorContext,
-    ExecutionOutcomeWithId,
-    FinalExecutionOutcome,
-    FinalExecutionStatus,
-    FinalExecutionStatusBasic,
-    TypedError,
-} from '@near-js/types';
-```
-
-`@near-js/utils`
-```ts
-import {
-    getTransactionLastResult,
-} from '@near-js/utils';
-```
-
-### Signers
-`near-api-js`
-```ts
-import {
-    InMemorySigner,
-    Signer,
-} from 'near-api-js';
-```
-
-`@near-js/providers`
-```ts
-import {
-    InMemorySigner,
-    Signer,
-} from '@near-js/signers';
-```
-
-### Transactions
-`near-api-js`
-```ts
-import {
-    transactions,
-} from 'near-api-js';
-const {
-    addKey,
-    createAccount,
-    deleteKey,
-    deleteAccount,
-    deployContract,
-    fullAccessKey,
-    functionCallAccessKey,
-    functionCall,
-    stake,
-    transfer,
-    stringifyJsonOrBytes,
-    Action,
-    AccessKey,
-    AccessKeyPermission,
-    AddKey,
-    CreateAccount,
-    DeleteAccount,
-    DeleteKey,
-    DeployContract,
-    FullAccessPermission,
-    FunctionCall,
-    FunctionCallPermission,
-    Stake,
-    Transfer,
-    SCHEMA,
-    createTransaction,
-    signTransaction,
-    Signature,
-    SignedTransaction,
-    Transaction,
-} = transactions;
-```
-
-`@near-js/transactions`
-```ts
-import {
-    AccessKey,
-    AccessKeyPermission,
-    Action,
-    AddKey,
-    CreateAccount,
-    DeleteAccount,
-    DeleteKey,
-    DeployContract,
-    FullAccessPermission,
-    FunctionCall,
-    FunctionCallPermission,
-    SignedTransaction,
-    Stake,
-    Transaction,
-    Signature,
-    Transfer,
-    actionCreators,
-    createTransaction,
-    SCHEMA,
-    signTransaction,
-    stringifyJsonOrBytes,
-} from '@near-js/transactions';
-const {
-    addKey,
-    createAccount,
-    deleteAccount,
-    deleteKey,
-    deployContract,
-    fullAccessKey,
-    functionCallAccessKey,
-    functionCall,
-    stake,
-    transfer,
-} = actionCreators;
-```
-
-### Utils
-`near-api-js`
-```ts
-import {
-    DEFAULT_FUNCTION_CALL_GAS,
-    utils,
-    validators,
-} from 'near-api-js';
-const {
-    format,
-    logWarning,
-    rpc_errors,
-    Logger
-} = utils;
-const {
-    formatNearAmount,
-    NEAR_NOMINATION,
-    NEAR_NOMINATION_EXP,
-    parseNearAmount,
-} = format;
-const {
-    formatError,
-    getErrorTypeFromErrorMessage,
-    parseResultError,
-    parseRpcError,
-    ServerError,
-} = rpc_errors;
-const {
-    ChangedValidatorInfo,
-    diffEpochValidators,
-    EpochValidatorsDiff,
-    findSeatPrice,
-} = validators;
-```
-
-`@near-js/utils`
-```ts
-import {
-    DEFAULT_FUNCTION_CALL_GAS,
-    NEAR_NOMINATION,
-    NEAR_NOMINATION_EXP,
-    ServerError,
-    ChangedValidatorInfo,
-    diffEpochValidators,
-    EpochValidatorsDiff,
-    findSeatPrice,
-    formatError,
-    formatNearAmount,
-    getErrorTypeFromErrorMessage,
-    logWarning,
-    parseNearAmount,
-    parseResultError,
-    parseRpcError,
-    Logger
-} from '@near-js/utils';
-```
+All deprecated packages have been removed:
+- `@near-js/iframe-rpc`
+- `@near-js/biometric-ed25519`
+- `@near-js/client`
+- `@near-js/cookbook`
+- `@near-js/keystores`

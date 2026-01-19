@@ -16,10 +16,9 @@ pnpm add near-api-js
 
 Previously, NEAR JavaScript functionality was split across multiple `@near-js/*` packages. While this modular approach is great for tree-shaking, it made it difficult for developers to know which packages they needed.
 
-**near-api-js** solves this by providing a single package that includes everything you need, while still maintaining full tree-shakeability. You get the best of both worlds:
+**near-api-js v7** goes back to be a single package that includes all NEAR JavaScript functionality, making it easier to get started and use NEAR in your projects:
 - ✅ Simple installation - just one package
 - ✅ Easy imports - everything in one place
-- ✅ Tree-shakeable - only bundle what you use
 - ✅ Full TypeScript support
 - ✅ Works in browser and Node.js
 
@@ -79,22 +78,6 @@ for (let i = 0; i < 100; i++) {
 
 const sendNearTokensResults = await Promise.all(transfers)
 sendNearTokensResults.forEach(result => console.log(result))
-```
-
-### Tree-Shakeable Imports
-
-Import only what you need - unused code will be automatically removed by your bundler:
-
-```typescript
-import {
-  Account,
-  Contract,
-  KeyPair,
-  JsonRpcProvider,
-  InMemorySigner
-} from 'near-api-js';
-
-// Your bundler will only include these specific exports
 ```
 
 ### Working with Contracts
