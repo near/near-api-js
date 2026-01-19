@@ -1,21 +1,227 @@
 # NEAR JavaScript API
 
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fnear%2Fnear-api-js%2Fbadge&style=flat&label=Build)](https://actions-badge.atrox.dev/near/near-api-js/goto)
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/near/near-api-js) 
-
 NEAR JavaScript API is a complete library to interact with the NEAR blockchain. You can use it in the browser, or in Node.js runtime.
+
+## Installation
+
+```bash
+npm install near-api-js
+# or
+yarn add near-api-js
+# or
+pnpm add near-api-js
+```
+
+## Why near-api-js?
+
+Previously, NEAR JavaScript functionality was split across multiple `@near-js/*` packages. While this modular approach is great for tree-shaking, it made it difficult for developers to know which packages they needed.
+
+**near-api-js** solves this by providing a single package that includes everything you need, while still maintaining full tree-shakeability. You get the best of both worlds:
+- ✅ Simple installation - just one package
+- ✅ Easy imports - everything in one place
+- ✅ Tree-shakeable - only bundle what you use
+- ✅ Full TypeScript support
+- ✅ Works in browser and Node.js
+
+## Quick Start
+
+### Basic Example
+
+```typescript
+import { Account, actions, JsonRpcProvider, KeyPair, MultiKeySigner } from "near-api-js"
+import { NEAR } from "near-api-js/tokens"
+
+const privateKey = ... // 
+const accountId = ... // 
+
+// Create a connection to testnet RPC
+const provider = new JsonRpcProvider({
+  url: "https://test.rpc.fastnear.com",
+})
+
+// Create an account object
+const account = new Account(accountId, provider, privateKey)
+
+// create 10 keys and add them to the account
+const keys = []
+const txActions = []
+for (let j = 0; j < 10; j++) {
+  const newKeyPair = KeyPair.fromRandom('ed25519')
+  keys.push(newKeyPair)
+  txActions.push(
+    actions.addFullAccessKey(newKeyPair.getPublicKey())
+  )
+}
+
+await account.signAndSendTransaction({
+  receiverId: accountId,
+  actions: txActions
+})
+
+console.log(`Added ${keys.length} keys to account ${accountId}`)
+
+// ------- Send NEAR tokens using multiple keys -------
+const multiKeySigner = new MultiKeySigner(keys)
+const multiAccount = new Account(accountId, provider, multiKeySigner)
+
+const transfers = []
+
+for (let i = 0; i < 100; i++) {
+  transfers.push(
+    multiAccount.transfer(
+      {
+        token: NEAR,
+        amount: NEAR.toUnits("0.001"),
+        receiverId: "influencer.testnet"
+      }
+    ))
+}
+
+const sendNearTokensResults = await Promise.all(transfers)
+sendNearTokensResults.forEach(result => console.log(result))
+```
+
+### Tree-Shakeable Imports
+
+Import only what you need - unused code will be automatically removed by your bundler:
+
+```typescript
+import {
+  Account,
+  Contract,
+  KeyPair,
+  JsonRpcProvider,
+  InMemorySigner
+} from 'near-api-js';
+
+// Your bundler will only include these specific exports
+```
+
+### Working with Contracts
+
+```typescript
+import { Contract } from 'near-api-js';
+
+const contract = new Contract(
+  account, // the account object that is connecting
+  'contract-id.testnet',
+  {
+    viewMethods: ['get_status'],
+    changeMethods: ['set_status'],
+  }
+);
+
+// Call methods
+const status = await contract.get_status();
+await contract.set_status({ message: 'Hello NEAR!' });
+```
+
+## What's Included
+
+near-api-js includes all NEAR JavaScript functionality:
+
+- **Accounts** - Account management and contract interactions
+- **Crypto** - Key pair generation, signing, and verification
+- **Transactions** - Transaction creation and signing
+- **Providers** - RPC providers with failover support
+- **Keystores** - Secure key storage for browser and Node.js
+- **Signers** - Transaction signing interfaces
+- **Types** - Full TypeScript type definitions
+- **Utils** - Formatting, parsing, and helper functions
+- **Tokens** - FT and NFT standard support
+- **Biometric Auth** - WebAuthn support for passwordless auth
+- **IFrame RPC** - Wallet integration helpers
 
 ## Documentation
 
-- [Learn how to use](https://docs.near.org/tools/near-api) the library in your project
-
+- [Learn how to use](https://docs.near.org/tools/near-api-js/quick-reference) the library in your project
 - Read the [TypeDoc API](https://near.github.io/near-api-js/) documentation
+- [Cookbook](https://github.com/near/near-api-js/blob/master/packages/cookbook/README.md) with common use cases
+- To quickly get started with integrating NEAR in a _web browser_, read our [Web Frontend integration](https://docs.near.org/develop/integrate/frontend) article
 
-- [Cookbook](./packages/cookbook) with common use cases
+## Migration from @near-js/* packages
 
-- To quickly get started with integrating NEAR in a _web browser_, read our [Web Frontend integration](https://docs.near.org/develop/integrate/frontend) article.
+If you were previously using individual `@near-js/*` packages, migration is straightforward:
 
-## Contribute to this library
+**Before:**
+```typescript
+import { Account } from '@near-js/accounts';
+import { KeyPair } from '@near-js/crypto';
+import { JsonRpcProvider } from '@near-js/providers';
+```
+
+**After:**
+```typescript
+import { Account, KeyPair, JsonRpcProvider } from 'near-api-js';
+```
+
+All exports remain the same - just change the import source!
+
+## Advanced Usage
+
+### Custom RPC Provider
+
+```typescript
+import { JsonRpcProvider, FailoverRpcProvider } from 'near-api-js';
+
+const provider = new FailoverRpcProvider([
+  new JsonRpcProvider({ url: 'https://rpc.mainnet.near.org' }),
+  new JsonRpcProvider({ url: 'https://rpc.mainnet.pagoda.co' }),
+]);
+```
+
+### Transaction Building
+
+```typescript
+import {
+  actions as actionCreators,
+  createTransaction,
+  signTransaction
+} from 'near-api-js';
+
+const { transfer, functionCall } = actionCreators;
+
+const actions = [
+  transfer(BigInt('1000000000000000000000000')), // 1 NEAR
+  functionCall('method_name', { arg: 'value' }, BigInt('30000000000000'), BigInt('0'))
+];
+
+const transaction = createTransaction(
+  'sender.near',
+  publicKey,
+  'receiver.near',
+  nonce,
+  actions,
+  blockHash
+);
+
+const signedTx = await signTransaction(transaction, signer, 'sender.near', networkId);
+```
+
+## TypeScript Support
+
+near-api-js is written in TypeScript and includes full type definitions:
+
+```typescript
+import type {
+  AccountView,
+  BlockReference,
+  Action,
+  SignedTransaction
+} from 'near-api-js';
+```
+
+## Browser and Node.js Support
+
+- ✅ **Node.js** - Full support for Node.js 18+
+- ✅ **Browsers** - Works in all modern browsers
+- ✅ **ESM** - Native ES modules support
+- ✅ **CommonJS** - For legacy Node.js projects
+- ✅ **TypeScript** - Full type definitions included
+
+## Contributing
+
+Contributions are welcome! Please check out the [contributing guidelines](https://github.com/near/near-api-js/blob/master/CONTRIBUTING.md).
 
 1. Install dependencies
 
@@ -39,54 +245,7 @@ Start the node by following instructions from [nearcore](https://github.com/near
 
 Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello
 
-### E2E Test
-
-From the root directory, run the following commands:
-
-```
-cd e2e
-pnpm install --ignore-workspace
-pnpm test
-```
-
-The `--ignore-workspace` flag is required because the `e2e` project is intentionally excluded from the workspace.
-This setup ensures that packages are installed just like a real application would — as standalone builds. Workspace linking would not allow this, as it forces symlinks instead of proper package installations.
-
-### Update error schema
-
-Follow next steps:
-
-1. [Optionally, set a specific hash for the commit with errors in the nearcore](https://github.com/near/near-api-js/blob/master/packages/utils/fetch_error_schema.js#L4-L5)
-2. Fetch new schema: `node fetch_error_schema.js`
-3. `pnpm build` and `pnpm test` to check tests still work
-4. `pnpm changeset` to generate a changeset with a minor bump for the @near-js/utils package
-5. commit all changes and submit a PR on GitHub
-
-## Packages
-
-![Package Architecture in Onion Diagram](./docs/package-architecture.png)
-<!-- https://www.figma.com/file/TzAPceViAbYW6A6KAuEMCe/NAJ-packages?t=N9nlkGBoAx9FYxoN-1 -->
-
-- [accounts](https://github.com/near/near-api-js/tree/master/packages/accounts) account creation & management
-- [crypto](https://github.com/near/near-api-js/tree/master/packages/crypto) cryptographic key pairs & signing
-- [keystores](https://github.com/near/near-api-js/tree/master/packages/keystores) general-purpose key persistence & management
-- [keystores-browser](https://github.com/near/near-api-js/tree/master/packages/keystores-browser) browser keystores
-- [keystores-node](https://github.com/near/near-api-js/tree/master/packages/keystores-node) NodeJS keystores
-- [providers](https://github.com/near/near-api-js/tree/master/packages/providers) RPC interaction
-- [transactions](https://github.com/near/near-api-js/tree/master/packages/transactions) transaction composition & signing
-- [types](https://github.com/near/near-api-js/tree/master/packages/types) common types
-- [utils](https://github.com/near/near-api-js/tree/master/packages/utils) common methods
-- [wallet-account](https://github.com/near/near-api-js/tree/master/packages/wallet-account) accounts in browser-based wallets
-
-## Example Templates
-
-To help you get started quickly, we have prepared example templates for popular frameworks:
-
-- [React Template](https://github.com/LimeChain/nearjs-react-app)
-- [Nuxt.js Template](https://github.com/near/near-api-js-template-nuxt)
-- [Angular Template](https://github.com/near/near-api-js-template-angular)
-
 ## License
 
 This repository is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
-See [LICENSE](LICENSE) and [LICENSE-APACHE](LICENSE-APACHE) for details.
+See [LICENSE](https://github.com/near/near-api-js/blob/master/LICENSE) and [LICENSE-APACHE](https://github.com/near/near-api-js/blob/master/LICENSE-APACHE) for details.
