@@ -6,10 +6,10 @@ import {
     encodeDelegateAction,
     encodeTransaction,
     Signature,
-    SignedDelegate,
     SignedTransaction,
     type Transaction,
 } from '../transactions/index.js';
+import { SignedDelegate } from '../transactions/actions.js';
 
 export interface SignedMessage {
     accountId: string; // The account name to which the publicKey corresponds as plain text (e.g. "alice.near")

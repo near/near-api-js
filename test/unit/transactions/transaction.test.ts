@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
-import { actions } from '../../../src';
+import { Actions } from '../../../src';
 
-const { functionCall } = actions;
+const { functionCall } = Actions;
 
 test('functionCall with already serialized args', () => {
     const serializedArgs = Buffer.from('{key: value}');

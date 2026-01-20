@@ -2,7 +2,7 @@ import { sha256 } from '@noble/hashes/sha2.js';
 import { serialize } from 'borsh';
 import { expect, test } from 'vitest';
 import {
-    actions as actionCreators,
+    Actions as actionCreators,
     buildDelegateAction,
     createTransaction,
     decodeSignedTransaction,

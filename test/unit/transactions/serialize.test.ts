@@ -4,7 +4,7 @@ import { deserialize, serialize } from 'borsh';
 import { describe, expect, test } from 'vitest';
 
 import {
-    actions,
+    Actions,
     baseDecode,
     createTransaction,
     decodeTransaction,
@@ -27,7 +27,7 @@ const {
     transfer,
     deployGlobalContract,
     useGlobalContract,
-} = actions;
+} = Actions;
 
 class Test {
     constructor(props: any) {
@@ -209,7 +209,7 @@ describe('Global Contract Actions Serialization', () => {
     const sampleCodeHash = sha256(sampleWasmCode);
 
     test('serialize and deserialize DeployGlobalContract action (CodeHash mode)', () => {
-        const action = deployGlobalContract(sampleWasmCode, new GlobalContractDeployMode({ CodeHash: null }));
+        const action = deployGlobalContract(sampleWasmCode, 'codeHash');
         const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
         const serializedTx = encodeTransaction(transaction);
         const deserializedTx = decodeTransaction(serializedTx);
@@ -226,7 +226,7 @@ describe('Global Contract Actions Serialization', () => {
     });
 
     test('serialize and deserialize DeployGlobalContract action (AccountId mode)', () => {
-        const action = deployGlobalContract(sampleWasmCode, new GlobalContractDeployMode({ AccountId: null }));
+        const action = deployGlobalContract(sampleWasmCode, 'accountId');
         const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
         const serializedTx = encodeTransaction(transaction);
         const deserializedTx = decodeTransaction(serializedTx);
@@ -242,7 +242,7 @@ describe('Global Contract Actions Serialization', () => {
     });
 
     test('serialize and deserialize UseGlobalContract action (CodeHash identifier)', () => {
-        const action = useGlobalContract(new GlobalContractIdentifier({ CodeHash: sampleCodeHash }));
+        const action = useGlobalContract({ codeHash: sampleCodeHash });
         const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
         const serializedTx = encodeTransaction(transaction);
         const deserializedTx = decodeTransaction(serializedTx);
@@ -258,7 +258,7 @@ describe('Global Contract Actions Serialization', () => {
 
     test('serialize and deserialize UseGlobalContract action (AccountId identifier)', () => {
         const contractOwnerAccountId = 'contract_owner.near';
-        const action = useGlobalContract(new GlobalContractIdentifier({ AccountId: contractOwnerAccountId }));
+        const action = useGlobalContract({ accountId: contractOwnerAccountId });
         const transaction = createTransaction(signerId, publicKey, receiverId, nonce, [action], blockHash);
         const serializedTx = encodeTransaction(transaction);
         const deserializedTx = decodeTransaction(serializedTx);
