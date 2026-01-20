@@ -284,7 +284,9 @@ export class Account {
         const [nonce, block] = await Promise.all([
             this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
             this.provider.viewBlock({
-                finality: DEFAULT_FINALITY,
+                // block hash referenced in tx must be finalized
+                // to ensure node has it in memory
+                finality: 'final',
             }),
         ]);
 
