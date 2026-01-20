@@ -9,8 +9,6 @@ import {
     createTransaction,
     decodeTransaction,
     encodeTransaction,
-    GlobalContractDeployMode,
-    GlobalContractIdentifier,
     KeyPair,
     PublicKey,
     SCHEMA,

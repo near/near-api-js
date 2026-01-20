@@ -114,10 +114,7 @@ export function buildDelegateAction({
                     // @ts-expect-error type workaround
                     const { code, deployMode } = a.params;
                     // Ensure deployMode is an instance if passed as a plain object
-                    const modeInstance =
-                        'CodeHash' in deployMode
-                            ? 'codeHash'
-                            : 'accountId'
+                    const modeInstance = 'CodeHash' in deployMode ? 'codeHash' : 'accountId';
                     return deployGlobalContract(code, modeInstance);
                 }
                 case 'UseGlobalContract': {
@@ -126,8 +123,8 @@ export function buildDelegateAction({
                     // Ensure identifier is an instance if passed as a plain object
                     const idInstance =
                         'CodeHash' in identifier
-                            ? { 'codeHash': identifier.CodeHash }
-                            : { 'accountId': identifier.AccountId };
+                            ? { codeHash: identifier.CodeHash }
+                            : { accountId: identifier.AccountId };
                     return useGlobalContract(idInstance);
                 }
             }

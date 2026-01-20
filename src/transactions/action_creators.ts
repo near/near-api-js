@@ -224,14 +224,14 @@ function useGlobalContract(identifier: { accountId: string } | { codeHash: strin
     const contractIdentifier =
         'accountId' in identifier
             ? new GlobalContractIdentifier({
-                AccountId: identifier.accountId,
-            })
+                  AccountId: identifier.accountId,
+              })
             : new GlobalContractIdentifier({
-                CodeHash:
-                    typeof identifier.codeHash === 'string'
-                        ? Buffer.from(identifier.codeHash, 'hex')
-                        : identifier.codeHash,
-            });
+                  CodeHash:
+                      typeof identifier.codeHash === 'string'
+                          ? Buffer.from(identifier.codeHash, 'hex')
+                          : identifier.codeHash,
+              });
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier }) });
 }
 

@@ -1,6 +1,7 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { KeyType, type PublicKey } from '../crypto/index.js';
 import { type MessagePayload, serializeMessage } from '../nep413/schema.js';
+import { SignedDelegate } from '../transactions/actions.js';
 import {
     type DelegateAction,
     encodeDelegateAction,
@@ -9,7 +10,6 @@ import {
     SignedTransaction,
     type Transaction,
 } from '../transactions/index.js';
-import { SignedDelegate } from '../transactions/actions.js';
 
 export interface SignedMessage {
     accountId: string; // The account name to which the publicKey corresponds as plain text (e.g. "alice.near")
