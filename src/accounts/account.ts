@@ -15,7 +15,7 @@ import {
     type DelegateAction,
     type SignedTransaction,
 } from '../transactions/index.js';
-import type { FinalExecutionOutcome, Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
+import type { Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
 import { baseDecode, getTransactionLastResult } from '../utils/index.js';
 import { NonceManager } from './nonce-manager.js';
 
@@ -282,7 +282,9 @@ export class Account {
         const [nonce, block] = await Promise.all([
             this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
             this.provider.viewBlock({
-                finality: DEFAULT_FINALITY,
+                // block hash referenced in tx must be finalized
+                // to ensure node has it in memory
+                finality: 'final',
             }),
         ]);
 
@@ -380,7 +382,6 @@ export class Account {
      * @param receiverId The NEAR account ID of the transaction receiver.
      * @param actions The list of actions to be performed in the transaction.
      * @param throwOnFailure Whether to throw an error if the transaction fails.
-     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      *
      */
     async signAndSendTransaction({
@@ -390,7 +391,7 @@ export class Account {
         throwOnFailure = true,
         signer = this.signer,
         retries = 10,
-    }: SignAndSendTransactionArgs) {
+    }: SignAndSendTransactionArgs): Promise<RpcTransactionResponse> {
         const signedTx = await this.createSignedTransaction({
             receiverId,
             actions,
@@ -723,7 +724,7 @@ export class Account {
      * @param token - The token to transfer. Defaults to Native NEAR.
      *
      */
-    public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<FinalExecutionOutcome> {
+    public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<RpcTransactionResponse> {
         return token.transfer({ from: this, receiverId, amount });
     }
 }
