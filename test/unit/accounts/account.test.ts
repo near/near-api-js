@@ -3,7 +3,7 @@ import type { Worker } from 'near-workspaces';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
     Account,
-    Actions,
+    actions,
     Contract,
     getTransactionLastResult,
     JsonRpcProvider,
@@ -122,7 +122,7 @@ test('send money through signAndSendTransaction', async () => {
     } = await receiver.getState();
     await sender.signAndSendTransaction({
         receiverId: receiver.accountId,
-        actions: [Actions.transfer(10000n)],
+        actions: [actions.transfer(10000n)],
     });
     const state = await receiver.getState();
     expect(state.balance.total).toEqual(total + 10000n);
@@ -191,7 +191,7 @@ describe('with deploy contract', () => {
     test('cross-contact assertion and panic 2', async () => {
         const result = await nearjs.account.signAndSendTransaction({
             receiverId: contract.contractId,
-            actions: [Actions.functionCall('crossContract', {}, 300000000000000n, 0n)],
+            actions: [actions.functionCall('crossContract', {}, 300000000000000n, 0n)],
             throwOnFailure: false,
         });
 

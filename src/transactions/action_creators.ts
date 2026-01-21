@@ -235,7 +235,7 @@ function useGlobalContract(identifier: { accountId: string } | { codeHash: strin
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier }) });
 }
 
-export const Actions = {
+export const actions = {
     addFullAccessKey,
     addFunctionCallAccessKey,
     createAccount,

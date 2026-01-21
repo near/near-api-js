@@ -9,7 +9,7 @@ import type { FungibleToken, NativeToken } from '../tokens/index.js';
 import { NEAR } from '../tokens/index.js';
 import {
     type Action,
-    Actions,
+    actions,
     buildDelegateAction,
     createTransaction,
     type DelegateAction,
@@ -30,7 +30,7 @@ const {
     functionCall,
     transfer,
     useGlobalContract,
-} = Actions;
+} = actions;
 
 const DEFAULT_FINALITY: Finality = 'optimistic';
 export const DEFAULT_WAIT_STATUS: TxExecutionStatus = 'EXECUTED_OPTIMISTIC';

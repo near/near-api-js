@@ -4,7 +4,7 @@ import { deserialize, serialize } from 'borsh';
 import { describe, expect, test } from 'vitest';
 
 import {
-    Actions,
+    actions,
     baseDecode,
     createTransaction,
     decodeTransaction,
@@ -25,7 +25,7 @@ const {
     transfer,
     deployGlobalContract,
     useGlobalContract,
-} = Actions;
+} = actions;
 
 class Test {
     constructor(props: any) {
