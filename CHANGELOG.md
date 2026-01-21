@@ -1,5 +1,17 @@
 # near-api-js
 
+## 7.0.1
+
+### Patch Changes
+
+- [#1822](https://github.com/near/near-api-js/pull/1822) [`8493b36`](https://github.com/near/near-api-js/commit/8493b367b3e99df9667556c0fd4f28dcb3561ff8) Thanks [@denbite](https://github.com/denbite)! - Explicitly declare the return type of `Account.signAndSendTransaction` so it doesn't fallback to `any`
+
+- [#1819](https://github.com/near/near-api-js/pull/1819) [`e6f4db2`](https://github.com/near/near-api-js/commit/e6f4db2b7e36b138863bfe752b863ad4b15a7ac6) Thanks [@gagdiez](https://github.com/gagdiez)! - Correctly expose the new `Actions` interface, which simplify creating actions, and hide the old `Action` class, which needs a lot of manual work and is incredibly confusing. Importantly, `Action` (and its different instances) are still being exported as a type, to devs can figure out how to distinguis between different `Action`s.
+
+- [#1818](https://github.com/near/near-api-js/pull/1818) [`a82e47f`](https://github.com/near/near-api-js/commit/a82e47f8e4c6c2fd2097ab8f96d3d77344993518) Thanks [@denbite](https://github.com/denbite)! - Attach finalized `blockHash` to transaction created using `Account.createTransaction` to prevent `TransactionExpiredError` errors.
+
+  Previously, transactions could be created with a `blockHash` that had not yet fully propagated across the network. In some cases, receiver RPC nodes were unable to look up the referenced block, resulting in `TransactionExpiredError` failures (often due to a small propagation delay of a few milliseconds).
+
 ## 7.0.0
 
 ### Major Changes
