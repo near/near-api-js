@@ -13,8 +13,6 @@ import {
     buildDelegateAction,
     createTransaction,
     type DelegateAction,
-    GlobalContractDeployMode,
-    GlobalContractIdentifier,
     type SignedTransaction,
 } from '../transactions/index.js';
 import type { Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
@@ -575,14 +573,9 @@ export class Account {
      * @param deployMode Deploy mode - "codeHash" for immutable contracts, "accountId" for updateable contracts
      */
     public async deployGlobalContract(code: Uint8Array, deployMode: 'codeHash' | 'accountId') {
-        const mode =
-            deployMode === 'codeHash'
-                ? new GlobalContractDeployMode({ CodeHash: null })
-                : new GlobalContractDeployMode({ AccountId: null });
-
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deployGlobalContract(code, mode)],
+            actions: [deployGlobalContract(code, deployMode)],
         });
     }
 
@@ -592,21 +585,9 @@ export class Account {
      * @param contractIdentifier The global contract identifier - either { accountId: string } or { codeHash: string | Uint8Array }
      */
     public async useGlobalContract(contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }) {
-        const identifier =
-            'accountId' in contractIdentifier
-                ? new GlobalContractIdentifier({
-                      AccountId: contractIdentifier.accountId,
-                  })
-                : new GlobalContractIdentifier({
-                      CodeHash:
-                          typeof contractIdentifier.codeHash === 'string'
-                              ? Buffer.from(contractIdentifier.codeHash, 'hex')
-                              : contractIdentifier.codeHash,
-                  });
-
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [useGlobalContract(identifier)],
+            actions: [useGlobalContract(contractIdentifier)],
         });
     }
 

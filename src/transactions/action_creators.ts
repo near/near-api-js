@@ -13,8 +13,8 @@ import {
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
-    type GlobalContractDeployMode,
-    type GlobalContractIdentifier,
+    GlobalContractDeployMode,
+    GlobalContractIdentifier,
     SignedDelegate,
     Stake,
     Transfer,
@@ -206,7 +206,12 @@ function signedDelegate({
  * @param deployMode The mode to deploy global contract (CodeHash or AccountId).
  * @returns A new action for deploying a global contract.
  */
-function deployGlobalContract(code: Uint8Array, deployMode: GlobalContractDeployMode): Action {
+function deployGlobalContract(code: Uint8Array, mode: 'codeHash' | 'accountId'): Action {
+    const deployMode =
+        mode === 'codeHash'
+            ? new GlobalContractDeployMode({ CodeHash: null })
+            : new GlobalContractDeployMode({ AccountId: null });
+
     return new Action({ deployGlobalContract: new DeployGlobalContract({ code, deployMode }) });
 }
 
@@ -215,7 +220,18 @@ function deployGlobalContract(code: Uint8Array, deployMode: GlobalContractDeploy
  * @param contractIdentifier The global contract identifier (hash or account id).
  * @returns A new action for using a global contract.
  */
-function useGlobalContract(contractIdentifier: GlobalContractIdentifier): Action {
+function useGlobalContract(identifier: { accountId: string } | { codeHash: string | Uint8Array }): Action {
+    const contractIdentifier =
+        'accountId' in identifier
+            ? new GlobalContractIdentifier({
+                  AccountId: identifier.accountId,
+              })
+            : new GlobalContractIdentifier({
+                  CodeHash:
+                      typeof identifier.codeHash === 'string'
+                          ? Buffer.from(identifier.codeHash, 'hex')
+                          : identifier.codeHash,
+              });
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier }) });
 }
 
