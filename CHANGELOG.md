@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.0.2
+
+### Patch Changes
+
+- [#1825](https://github.com/near/near-api-js/pull/1825) [`b2b77e9`](https://github.com/near/near-api-js/commit/b2b77e99f42782b8087ad34b4f3491460a0d8395) Thanks [@gagdiez](https://github.com/gagdiez)! - Fix multiple functions within the `tokens` subpath
+
 ## 7.0.1
 
 ### Patch Changes
