@@ -1,4 +1,5 @@
-import type { AccountLike } from '../../types/index.js';
+import type { Account } from '../../accounts/account.js';
+import { actions } from '../../transactions/action_creators.js';
 import { formatAmount, parseAmount } from './format.js';
 
 interface FTMetadata {
@@ -44,7 +45,7 @@ abstract class BaseFT {
      * @param account The account to get the balance of
      * @returns
      */
-    abstract getBalance(account: AccountLike): Promise<bigint>;
+    abstract getBalance(account: Account): Promise<bigint>;
 
     /**
      * Transfer tokens from one account to another
@@ -59,7 +60,7 @@ abstract class BaseFT {
         receiverId,
         amount,
     }: {
-        from: AccountLike;
+        from: Account;
         receiverId: string;
         amount: string | number | bigint;
     }): Promise<any>;
@@ -71,17 +72,17 @@ export class NativeToken extends BaseFT {
         receiverId,
         amount,
     }: {
-        from: AccountLike;
+        from: Account;
         receiverId: string;
         amount: string | number | bigint;
     }): Promise<any> {
         return from.signAndSendTransaction({
             receiverId,
-            actions: [{ transfer: { deposit: amount.toString() } }],
+            actions: [actions.transfer(BigInt(amount))],
         });
     }
 
-    public async getBalance(account: AccountLike): Promise<bigint> {
+    public async getBalance(account: Account): Promise<bigint> {
         const {
             balance: { available },
         } = await account.getState();
@@ -103,7 +104,7 @@ export class FungibleToken extends BaseFT {
         receiverId,
         amount,
     }: {
-        from: AccountLike;
+        from: Account;
         receiverId: string;
         amount: string | number | bigint;
     }): Promise<any> {
@@ -119,11 +120,13 @@ export class FungibleToken extends BaseFT {
         });
     }
 
-    public async getBalance(account: AccountLike): Promise<bigint> {
-        const balance = await account.provider.callFunction(this.accountId, 'ft_balance_of', {
-            account_id: account.accountId,
+    public async getBalance(account: Account): Promise<bigint> {
+        const balance = await account.provider.callFunction({
+            contractId: this.accountId,
+            method: 'ft_balance_of',
+            args: { account_id: account.accountId },
         });
-        return BigInt(balance);
+        return BigInt(balance as string);
     }
 
     /**
@@ -142,7 +145,7 @@ export class FungibleToken extends BaseFT {
         amount,
         msg,
     }: {
-        from: AccountLike;
+        from: Account;
         receiverId: string;
         amount: bigint;
         msg: string;
@@ -171,12 +174,16 @@ export class FungibleToken extends BaseFT {
         accountIdToRegister,
         fundingAccount,
     }: {
-        accountIdToRegister: AccountLike;
-        fundingAccount: AccountLike;
+        accountIdToRegister: Account;
+        fundingAccount: Account;
     }): Promise<any> {
-        const { result } = await fundingAccount.provider.callFunction(this.accountId, 'storage_balance_bounds', {});
+        const bounds = (await fundingAccount.provider.callFunction({
+            contractId: this.accountId,
+            method: 'storage_balance_bounds',
+            args: {},
+        })) as { min: string; max: string | null };
 
-        const requiredDeposit = result.min as string;
+        const requiredDeposit = bounds.min as string;
 
         return fundingAccount.callFunction({
             contractId: this.accountId,
@@ -197,7 +204,7 @@ export class FungibleToken extends BaseFT {
      * @param param.account The Account to unregister
      * @param param.force Whether to remove the account without claiming the storage deposit
      */
-    public async unregisterAccount({ account, force = false }: { account: AccountLike; force: boolean }): Promise<any> {
+    public async unregisterAccount({ account, force = false }: { account: Account; force: boolean }): Promise<any> {
         return account.callFunction({
             contractId: this.accountId,
             methodName: 'storage_unregister',

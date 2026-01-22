@@ -9,8 +9,8 @@ function createMockAccount(accountId: string) {
         account: {
             accountId,
             provider: {
-                callFunction: async (contractId, methodName, args) => {
-                    providerCalls.push({ contractId, methodName, args });
+                callFunction: async ({ contractId, method, args }) => {
+                    providerCalls.push({ contractId, method, args });
                     return undefined as any;
                 },
             },
@@ -42,8 +42,8 @@ const MT = new MultiTokenContract('mt.contract.testnet');
 test('getBalance calls view and returns bigint', async () => {
     const mock = createMockAccount('alice.testnet');
 
-    mock.account.provider.callFunction = async (contractId, methodName, args) => {
-        mock.providerCalls.push({ contractId, methodName, args });
+    mock.account.provider.callFunction = async ({ contractId, method, args }) => {
+        mock.providerCalls.push({ contractId, method, args });
         return '123';
     };
 
@@ -53,15 +53,15 @@ test('getBalance calls view and returns bigint', async () => {
     expect(mock.providerCalls.length).toBe(1);
     expect(mock.providerCalls[0]).toEqual({
         contractId: 'mt.contract.testnet',
-        methodName: 'mt_balance_of',
+        method: 'mt_balance_of',
         args: { account_id: 'alice.testnet', token_id: 'token-1' },
     });
 });
 
 test('getBatchedBalance calls view and returns bigint[]', async () => {
     const mock = createMockAccount('bob.testnet');
-    mock.account.provider.callFunction = async (contractId, methodName, args) => {
-        mock.providerCalls.push({ contractId, methodName, args });
+    mock.account.provider.callFunction = async ({ contractId, method, args }) => {
+        mock.providerCalls.push({ contractId, method, args });
         return ['1', '2', '3'];
     };
 
@@ -71,7 +71,7 @@ test('getBatchedBalance calls view and returns bigint[]', async () => {
     expect(mock.providerCalls.length).toBe(1);
     expect(mock.providerCalls[0]).toEqual({
         contractId: 'mt.contract.testnet',
-        methodName: 'mt_batch_balance_of',
+        method: 'mt_batch_balance_of',
         args: { account_id: 'bob.testnet', token_ids: ['t1', 't2', 't3'] },
     });
 });

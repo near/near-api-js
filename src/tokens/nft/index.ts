@@ -1,4 +1,4 @@
-import type { AccountLike } from '../../types/index.js';
+import type { Account } from '../../accounts/account.js';
 
 interface ContractMetadata {
     spec?: string;
@@ -35,7 +35,7 @@ export class NFTContract {
         this.accountId = accountId;
     }
 
-    transfer({ from, receiverId, tokenId }: { from: AccountLike; receiverId: string; tokenId: string }): Promise<any> {
+    transfer({ from, receiverId, tokenId }: { from: Account; receiverId: string; tokenId: string }): Promise<any> {
         return from.callFunction({
             contractId: this.accountId,
             methodName: 'nft_transfer',
