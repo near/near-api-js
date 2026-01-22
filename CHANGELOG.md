@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.0.3
+
+### Patch Changes
+
+- [#1827](https://github.com/near/near-api-js/pull/1827) [`8443635`](https://github.com/near/near-api-js/commit/844363546491f79cfa26325016b3c609a9dff973) Thanks [@denbite](https://github.com/denbite)! - Fix the bug where `Contract` couldn't be constructed without `abi`
+
 ## 7.0.2
 
 ### Patch Changes
