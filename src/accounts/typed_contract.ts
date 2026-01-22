@@ -276,7 +276,17 @@ export type ContractReturnType<
             : {}) & { abi: abi; contractId: contractId }
 >;
 
-export class Contract<const abi extends AbiRoot, contractId extends string> {
+export type ContractConstructor = {
+    new <const abi extends AbiRoot, contractId extends string>(
+        params: ContractParameters<abi, contractId>
+    ): ContractReturnType<abi, contractId>;
+
+    new <const abi extends AbiRoot, contractId extends string>(
+        params: Prettify<Omit<ContractParameters<abi, contractId>, 'abi'>>
+    ): Prettify<Omit<ContractReturnType<abi, contractId>, 'abi'>>;
+};
+
+class RawContract<const abi extends AbiRoot, contractId extends string> {
     abi?: abi;
     contractId: contractId;
 
@@ -377,6 +387,8 @@ export class Contract<const abi extends AbiRoot, contractId extends string> {
         }
     }
 }
+
+export const Contract = RawContract as ContractConstructor;
 
 function validateArguments(args: object, abiFunction: AbiFunction, abiRoot: AbiRoot) {
     if (typeof args !== 'object' || typeof abiFunction.params !== 'object') return;

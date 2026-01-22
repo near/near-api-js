@@ -1,4 +1,4 @@
-import type { AbiRoot } from 'near-api-js';
+import type { AbiRoot } from '../../../src';
 
 export const abi = {
     schema_version: '0.4.0',
