@@ -44,9 +44,6 @@ jobs:
     - name: Install dependencies
       run: pnpm install
 
-    - name: Typecheck
-      run: pnpm typecheck
-
     - name: Build
       run: pnpm build
 
@@ -61,6 +58,9 @@ jobs:
     
     - name: E2E tests
       run: pnpm it --ignore-workspace --dir e2e
+
+    - name: Typecheck
+      run: pnpm typecheck
 
   changeset-checks:
     runs-on: ubuntu-latest

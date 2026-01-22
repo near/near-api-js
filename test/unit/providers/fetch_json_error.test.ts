@@ -1,14 +1,14 @@
 import { afterAll, beforeEach, describe, expect, test, vi } from 'vitest';
-import { fetchJsonRpc, ProviderError, retryConfig } from '../../../src/providers/fetch_json';
+import { fetchJsonRpc, ProviderError, retryConfig } from '../../../src/providers/fetch_json.js';
 
 describe('fetchJsonError', () => {
     const RPC_URL = 'https://rpc.testnet.near.org';
     const statusRequest = {
         jsonrpc: '2.0',
-        id: 1,
+        id: '1',
         method: 'status',
-        params: [],
-    };
+        params: null,
+    } as const;
 
     // Store original fetch
     const originalFetch = global.fetch;

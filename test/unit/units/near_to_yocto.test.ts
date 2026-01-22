@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import { nearToYocto } from '../../../src';
-import type { NumericString } from '../../../src/units/types';
+import { nearToYocto } from '../../../src/index.js';
+import type { NumericString } from '../../../src/units/types.js';
 
 test.each<[NumericString | number, bigint]>([
     ['999999.998999999999837087887', 999999998999999999837087887000n],

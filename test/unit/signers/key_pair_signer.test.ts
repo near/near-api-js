@@ -10,8 +10,8 @@ import {
     KeyPair,
     KeyPairSigner,
     PublicKey,
-} from '../../../src';
-import { Nep413MessageSchema } from '../../../src/nep413/schema';
+} from '../../../src/index.js';
+import { Nep413MessageSchema } from '../../../src/nep413/schema.js';
 
 test('test sign transaction with different public key', async () => {
     const signer = new KeyPairSigner(

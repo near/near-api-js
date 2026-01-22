@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { diffEpochValidators, findSeatPrice } from '../../../src';
+import { diffEpochValidators, findSeatPrice } from '../../../src/index.js';
 
 test('find seat price', async () => {
     expect(
@@ -57,9 +57,10 @@ test('diff validators', async () => {
     ).toEqual({ newValidators: [], removedValidators: [], changedValidators: [] });
     expect(
         diffEpochValidators(
-            // @ts-expect-error test input
             [
+                // @ts-expect-error test input
                 { account_id: 'x', stake: '10' },
+                // @ts-expect-error test input
                 { account_id: 'y', stake: '10' },
             ],
             [

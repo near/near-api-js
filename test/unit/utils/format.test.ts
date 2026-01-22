@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { formatNearAmount, NEAR_NOMINATION, parseNearAmount } from '../../../src';
+import { formatNearAmount, NEAR_NOMINATION, parseNearAmount } from '../../../src/index.js';
 
 test.each`
     balance                              | fracDigits   | expected

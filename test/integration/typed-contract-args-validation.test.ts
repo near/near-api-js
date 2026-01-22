@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
-import { Account, ArgumentSchemaError, Contract, JsonRpcProvider, UnknownArgumentError } from '../../src';
+import { Account, ArgumentSchemaError, Contract, JsonRpcProvider, UnknownArgumentError } from '../../src/index.js';
 
 const provider = new JsonRpcProvider({ url: '' });
 

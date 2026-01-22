@@ -1,8 +1,8 @@
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, beforeEach, expect, test } from 'vitest';
-import { Account, Contract, KeyPair, KeyPairSigner } from '../../../src';
-import { AccessKeyDoesNotExistError } from '../../../src/providers/errors/handler';
-import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
+import { Account, Contract, KeyPair, KeyPairSigner } from '../../../src/index.js';
+import { AccessKeyDoesNotExistError } from '../../../src/providers/errors/handler.js';
+import { createAccount, deployContract, generateUniqueString, setUpTestConnection } from './test-utils.js';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 let workingAccount: Account;
@@ -26,7 +26,6 @@ beforeEach(async () => {
     try {
         contractId = generateUniqueString('test');
         workingAccount = await createAccount(nearjs);
-        // @ts-expect-error - deployContract returns contract without abi property in type
         contract = await deployContract(nearjs.account, contractId);
     } catch (e) {
         console.error(e);

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import { PublicKey } from '../../../src';
-import { keyToImplicitAddress } from '../../../src/crypto';
+import { keyToImplicitAddress } from '../../../src/crypto/index.js';
+import { PublicKey } from '../../../src/index.js';
 
 test.each`
     publicKey                                                 | expected

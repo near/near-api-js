@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { Account, Contract, JsonRpcProvider, KeyPair, KeyPairSigner, KeyType } from '../../../src';
+import { Account, Contract, JsonRpcProvider, KeyPair, KeyPairSigner, KeyType } from '../../../src/index.js';
 import Config from './config';
 
 export const networkId = 'unittest';

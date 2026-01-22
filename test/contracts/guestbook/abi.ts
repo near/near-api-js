@@ -1,4 +1,4 @@
-import type { AbiRoot } from '../../../src';
+import type { AbiRoot } from '../../../src/accounts/abi_types.js';
 
 export const abi = {
     schema_version: '0.4.0',

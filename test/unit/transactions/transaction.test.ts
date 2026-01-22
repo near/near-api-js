@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { actions } from '../../../src';
+import { actions } from '../../../src/index.js';
 
 const { functionCall } = actions;
 
