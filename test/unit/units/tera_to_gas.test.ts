@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import { teraToGas } from '../../../src';
-import type { NumericString } from '../../../src/units/types';
+import { teraToGas } from '../../../src/index.js';
+import type { NumericString } from '../../../src/units/types.js';
 
 test.each<[NumericString | number, bigint]>([
     ['999.998999999999', 999998999999999n],

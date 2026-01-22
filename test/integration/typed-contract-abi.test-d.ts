@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, test } from 'vitest';
-import { Account, Contract, JsonRpcProvider, KeyPair, KeyPairSigner } from '../../src';
+import { Account, Contract, JsonRpcProvider, KeyPair, KeyPairSigner } from '../../src/index.js';
 
 /// These tests have to be in "packages/accounts",
 /// but since Jest doesn't support type checking,

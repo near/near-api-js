@@ -10,15 +10,15 @@ import {
     KeyPair,
     KeyPairSigner,
     KeyType,
-} from '../../../src';
-import { AccountAlreadyExistsActionError } from '../../../src/providers/errors/transaction_execution';
+} from '../../../src/index.js';
+import { AccountAlreadyExistsActionError } from '../../../src/providers/errors/transaction_execution.js';
 import {
     createAccount,
     generateUniqueString,
     HELLO_WASM_BALANCE,
     HELLO_WASM_PATH,
     setUpTestConnection,
-} from './test-utils';
+} from './test-utils.js';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 let workingAccount: Account;

@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
-import { MultiTokenContract } from '../../../src/tokens';
+import type { Account } from '../../../src/accounts/account.js';
+import { MultiTokenContract } from '../../../src/tokens/index.js';
 
 function createMockAccount(accountId: string) {
     const calls: any[] = [];
@@ -47,7 +48,7 @@ test('getBalance calls view and returns bigint', async () => {
         return '123';
     };
 
-    const balance = await MT.getBalance(mock.account, 'token-1');
+    const balance = await MT.getBalance(mock.account as Account, 'token-1');
     expect(balance).toBe(123n);
 
     expect(mock.providerCalls.length).toBe(1);
@@ -65,7 +66,7 @@ test('getBatchedBalance calls view and returns bigint[]', async () => {
         return ['1', '2', '3'];
     };
 
-    const balances = await MT.getBatchedBalance(mock.account, ['t1', 't2', 't3']);
+    const balances = await MT.getBatchedBalance(mock.account as Account, ['t1', 't2', 't3']);
     expect(balances).toEqual([1n, 2n, 3n]);
 
     expect(mock.providerCalls.length).toBe(1);
@@ -80,7 +81,7 @@ test('transfer calls mt_transfer with correct args', async () => {
     const mock = createMockAccount('carol.testnet');
 
     await MT.transfer({
-        from: mock.account,
+        from: mock.account as Account,
         receiverId: 'dave.testnet',
         tokenId: 't-1',
         amount: 42,
@@ -109,7 +110,7 @@ test('transferCall calls mt_transfer_call with correct args', async () => {
     const mock = createMockAccount('erin.testnet');
 
     await MT.transferCall({
-        from: mock.account,
+        from: mock.account as Account,
         receiverId: 'frank.testnet',
         tokenId: 't-2',
         amount: 100n,
@@ -140,7 +141,7 @@ test('batchTransfer calls mt_batch_transfer with correct args', async () => {
     const mock = createMockAccount('gina.testnet');
 
     await MT.batchTransfer({
-        from: mock.account,
+        from: mock.account as Account,
         receiverId: 'harry.testnet',
         tokenIds: ['a', 'b'],
         amounts: [1, 2n],

@@ -8,7 +8,7 @@ import {
     KeyPair,
     KeyPairSigner,
     type TxExecutionStatus,
-} from '../../src';
+} from '../../src/index.js';
 import { abi as guestbookAbi } from '../contracts/guestbook/abi.js';
 
 type AbiFunctionKind = AbiRoot['body']['functions'][number]['kind'];

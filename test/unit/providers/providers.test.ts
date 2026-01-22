@@ -1,7 +1,7 @@
 import { Worker } from 'near-workspaces';
 import { TextEncoder } from 'util';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src';
+import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src/index.js';
 
 global.TextEncoder = TextEncoder;
 
@@ -137,7 +137,7 @@ global.TextEncoder = TextEncoder;
                 expect('chain_id' in response).toBe(true);
                 expect('genesis_height' in response).toBe(true);
                 expect('runtime_config' in response).toBe(true);
-                expect('storage_amount_per_byte' in response.runtime_config).toBe(true);
+                expect('storage_amount_per_byte' in response.runtime_config!).toBe(true);
             }
         });
 
@@ -349,8 +349,8 @@ test('json rpc get next light client block', async () => {
     // There is a buffer of 10 given to the height, because this seems to be lagging behind the
     // latest finalized block by a few seconds. This delay might just be due to slow or delayed
     // indexing in a node's db. If this fails in the future, we can increase the buffer.
-    expect(nextBlock.inner_lite.height).toBeGreaterThanOrEqual(height - 10);
-    expect(nextBlock.inner_lite.height).toBeGreaterThan(prevEpochHeight);
+    expect(nextBlock.inner_lite!.height).toBeGreaterThanOrEqual(height - 10);
+    expect(nextBlock.inner_lite!.height).toBeGreaterThan(prevEpochHeight);
     expect('prev_block_hash' in nextBlock).toBeTruthy();
     expect('next_block_inner_hash' in nextBlock).toBeTruthy();
     expect('inner_rest_hash' in nextBlock).toBeTruthy();
