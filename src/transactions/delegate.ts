@@ -1,7 +1,7 @@
 import type { PublicKey } from '../crypto/index.js';
 
 import { actions } from './action_creators.js';
-import { Action, AddKey, GlobalContractDeployMode, GlobalContractIdentifier } from './actions.js';
+import { Action, AddKey } from './actions.js';
 
 const {
     createAccount,
@@ -114,10 +114,7 @@ export function buildDelegateAction({
                     // @ts-expect-error type workaround
                     const { code, deployMode } = a.params;
                     // Ensure deployMode is an instance if passed as a plain object
-                    const modeInstance =
-                        deployMode instanceof GlobalContractDeployMode
-                            ? deployMode
-                            : new GlobalContractDeployMode(deployMode);
+                    const modeInstance = 'CodeHash' in deployMode ? 'codeHash' : 'accountId';
                     return deployGlobalContract(code, modeInstance);
                 }
                 case 'UseGlobalContract': {
@@ -125,9 +122,9 @@ export function buildDelegateAction({
                     const { identifier } = a.params;
                     // Ensure identifier is an instance if passed as a plain object
                     const idInstance =
-                        identifier instanceof GlobalContractIdentifier
-                            ? identifier
-                            : new GlobalContractIdentifier(identifier);
+                        'CodeHash' in identifier
+                            ? { codeHash: identifier.CodeHash }
+                            : { accountId: identifier.AccountId };
                     return useGlobalContract(idInstance);
                 }
             }

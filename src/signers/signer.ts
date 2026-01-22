@@ -1,12 +1,12 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { KeyType, type PublicKey } from '../crypto/index.js';
 import { type MessagePayload, serializeMessage } from '../nep413/schema.js';
+import { SignedDelegate } from '../transactions/actions.js';
 import {
     type DelegateAction,
     encodeDelegateAction,
     encodeTransaction,
     Signature,
-    SignedDelegate,
     SignedTransaction,
     type Transaction,
 } from '../transactions/index.js';

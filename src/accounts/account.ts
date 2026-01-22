@@ -13,11 +13,9 @@ import {
     buildDelegateAction,
     createTransaction,
     type DelegateAction,
-    GlobalContractDeployMode,
-    GlobalContractIdentifier,
     type SignedTransaction,
 } from '../transactions/index.js';
-import type { FinalExecutionOutcome, Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
+import type { Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
 import { baseDecode, getTransactionLastResult } from '../utils/index.js';
 import { NonceManager } from './nonce-manager.js';
 
@@ -284,7 +282,9 @@ export class Account {
         const [nonce, block] = await Promise.all([
             this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
             this.provider.viewBlock({
-                finality: DEFAULT_FINALITY,
+                // block hash referenced in tx must be finalized
+                // to ensure node has it in memory
+                finality: 'final',
             }),
         ]);
 
@@ -382,7 +382,6 @@ export class Account {
      * @param receiverId The NEAR account ID of the transaction receiver.
      * @param actions The list of actions to be performed in the transaction.
      * @param throwOnFailure Whether to throw an error if the transaction fails.
-     * @returns {Promise<FinalExecutionOutcome>} A promise that resolves to the final execution outcome of the transaction.
      *
      */
     async signAndSendTransaction({
@@ -392,7 +391,7 @@ export class Account {
         throwOnFailure = true,
         signer = this.signer,
         retries = 10,
-    }: SignAndSendTransactionArgs) {
+    }: SignAndSendTransactionArgs): Promise<RpcTransactionResponse> {
         const signedTx = await this.createSignedTransaction({
             receiverId,
             actions,
@@ -574,14 +573,9 @@ export class Account {
      * @param deployMode Deploy mode - "codeHash" for immutable contracts, "accountId" for updateable contracts
      */
     public async deployGlobalContract(code: Uint8Array, deployMode: 'codeHash' | 'accountId') {
-        const mode =
-            deployMode === 'codeHash'
-                ? new GlobalContractDeployMode({ CodeHash: null })
-                : new GlobalContractDeployMode({ AccountId: null });
-
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [deployGlobalContract(code, mode)],
+            actions: [deployGlobalContract(code, deployMode)],
         });
     }
 
@@ -591,21 +585,9 @@ export class Account {
      * @param contractIdentifier The global contract identifier - either { accountId: string } or { codeHash: string | Uint8Array }
      */
     public async useGlobalContract(contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }) {
-        const identifier =
-            'accountId' in contractIdentifier
-                ? new GlobalContractIdentifier({
-                      AccountId: contractIdentifier.accountId,
-                  })
-                : new GlobalContractIdentifier({
-                      CodeHash:
-                          typeof contractIdentifier.codeHash === 'string'
-                              ? Buffer.from(contractIdentifier.codeHash, 'hex')
-                              : contractIdentifier.codeHash,
-                  });
-
         return this.signAndSendTransaction({
             receiverId: this.accountId,
-            actions: [useGlobalContract(identifier)],
+            actions: [useGlobalContract(contractIdentifier)],
         });
     }
 
@@ -742,7 +724,7 @@ export class Account {
      * @param token - The token to transfer. Defaults to Native NEAR.
      *
      */
-    public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<FinalExecutionOutcome> {
+    public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<RpcTransactionResponse> {
         return token.transfer({ from: this, receiverId, amount });
     }
 }
