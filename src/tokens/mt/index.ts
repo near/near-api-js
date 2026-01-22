@@ -1,4 +1,4 @@
-import type { AccountLike } from '../../types/index.js';
+import type { Account } from '../../accounts/account.js';
 
 export class MultiTokenContract {
     public readonly accountId: string;
@@ -14,12 +14,16 @@ export class MultiTokenContract {
      * @param tokenId The token to retrieve the balance from
      * @returns The balance in the smallest unit as bigint
      */
-    public async getBalance(account: AccountLike, tokenId: string): Promise<bigint> {
-        const balance = await account.provider.callFunction(this.accountId, 'mt_balance_of', {
-            account_id: account.accountId,
-            token_id: tokenId,
+    public async getBalance(account: Account, tokenId: string): Promise<bigint> {
+        const balance = await account.provider.callFunction({
+            contractId: this.accountId,
+            method: 'mt_balance_of',
+            args: {
+                account_id: account.accountId,
+                token_id: tokenId,
+            },
         });
-        return BigInt(balance);
+        return BigInt(balance as string);
     }
 
     /**
@@ -29,10 +33,14 @@ export class MultiTokenContract {
      * @param tokenIds The tokens to retrieve the balances from
      * @returns The balances in the smallest unit as bigint[] matching the order of tokenIds
      */
-    public async getBatchedBalance(account: AccountLike, tokenIds: string[]): Promise<bigint[]> {
-        const balances = await account.provider.callFunction(this.accountId, 'mt_batch_balance_of', {
-            account_id: account.accountId,
-            token_ids: tokenIds,
+    public async getBatchedBalance(account: Account, tokenIds: string[]): Promise<bigint[]> {
+        const balances = await account.provider.callFunction({
+            contractId: this.accountId,
+            method: 'mt_batch_balance_of',
+            args: {
+                account_id: account.accountId,
+                token_ids: tokenIds,
+            },
         });
         return (balances as string[]).map((b) => BigInt(b));
     }
@@ -56,7 +64,7 @@ export class MultiTokenContract {
         approval = null,
         memo = null,
     }: {
-        from: AccountLike;
+        from: Account;
         receiverId: string;
         tokenId: string;
         amount: string | number | bigint;
@@ -100,7 +108,7 @@ export class MultiTokenContract {
         approval = null,
         memo = null,
     }: {
-        from: AccountLike;
+        from: Account;
         receiverId: string;
         tokenId: string;
         amount: bigint;
@@ -143,7 +151,7 @@ export class MultiTokenContract {
         approvals = null,
         memo = null,
     }: {
-        from: AccountLike;
+        from: Account;
         receiverId: string;
         tokenIds: string[];
         amounts: Array<string | number | bigint>;
