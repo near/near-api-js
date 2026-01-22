@@ -174,7 +174,7 @@ export class FungibleToken extends BaseFT {
         accountIdToRegister,
         fundingAccount,
     }: {
-        accountIdToRegister: Account;
+        accountIdToRegister: string;
         fundingAccount: Account;
     }): Promise<any> {
         const bounds = (await fundingAccount.provider.callFunction({
