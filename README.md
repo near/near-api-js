@@ -2,7 +2,24 @@
 
 NEAR JavaScript API is a complete library to interact with the NEAR blockchain. You can use it in the browser, or in Node.js runtime.
 
-## Installation
+> [!IMPORTANT]  
+> `near-api-js` is ideal to build backend services, CLIs, and scripts that interact with NEAR. For frontend development please check the official [web login docs](https://docs.near.org/web3-apps/concepts/web-login)
+
+## Why near-api-js?
+
+**near-api-js v7** is a single package that helps you to easily integrate NEAR blockchain into your JavaScript/TypeScript applications.
+
+It includes all the functionality you need, including account management, transaction building, key management, interacting with smart contracts, making RPC calls, and more.
+
+- ✅ Simple - just one package
+- ✅ Batteries included - everything you need to build scripts and backend services
+- ✅ Friendly - multiple helpers to make your life easier
+- ✅ Full TypeScript support
+- ✅ Works in browser and Node.js
+
+## Quick Start
+
+Add `near-api-js` to your project using your favorite package manager:
 
 ```bash
 npm install near-api-js
@@ -12,19 +29,78 @@ yarn add near-api-js
 pnpm add near-api-js
 ```
 
-## Why near-api-js?
+Start using it!
 
-Previously, NEAR JavaScript functionality was split across multiple `@near-js/*` packages. While this modular approach is great for tree-shaking, it made it difficult for developers to know which packages they needed.
+```ts
+import { Account, JsonRpcProvider, teraToGas, KeyPairString, nearToYocto } from "near-api-js";
 
-**near-api-js v7** goes back to be a single package that includes all NEAR JavaScript functionality, making it easier to get started and use NEAR in your projects:
-- ✅ Simple installation - just one package
-- ✅ Easy imports - everything in one place
-- ✅ Full TypeScript support
-- ✅ Works in browser and Node.js
+// Create a testnet provider
+const provider = new JsonRpcProvider({
+  url: "https://test.rpc.fastnear.com",
+});
 
-## Quick Start
+// For read only calls, you can use the provider directly
+const messages = await provider.callFunction({
+  contractId: 'guestbook.near-examples.testnet',
+  method: "get_messages",
+  args: {},
+});
 
-### Basic Example
+console.log(messages);
+
+// To modify state, you need an account to sign the transaction
+const accountId: string = 'example.testnet';
+const privateKey = 'ed25519:5nM...' as KeyPairString;
+const account = new Account(accountId, provider, privateKey);
+
+// Call the contract
+await account.callFunction({
+  contractId: 'guestbook.near-examples.testnet',
+  methodName: "add_message",
+  args: { text: "Hello!" },
+  gas: teraToGas('30'),
+  deposit: nearToYocto('0.1'),
+});
+```
+
+## Documentation
+
+- [Learn how to use](https://docs.near.org/tools/near-api) the library in your project
+- See it in action in our [API Examples](https://github.com/near-examples/near-api-examples/tree/main/near-api-js)
+- Read the [TypeDoc API](https://near.github.io/near-api-js/) documentation
+
+## Migration from @near-js/* packages
+
+Check out the [migration guide](MIGRATION.md) to help you move from the old `@near-js/*` packages to `near-api-js`.
+
+## Features
+
+`near-api-js` includes some advanced features to help you build robust applications.
+
+### Simple Units Conversions
+
+You can easily convert between NEAR and yoctoNEAR, and between gas units:
+
+```typescript
+import { nearToYocto, yoctoToNear, teraToGas, gigaToGas } from 'near-api-js';
+
+await account.callFunction({
+  contractId: 'example.testnet',
+  methodName: 'some_method',
+  args: {},
+  gas: teraToGas('30'),         // 30 TeraGas
+  deposit: nearToYocto('0.1'),  // 0.1 NEAR
+});
+
+// balance in NEAR with 2 decimals
+const balance = yoctoToNear(await account.getBalance(), 2);
+
+```
+
+### Parallel Transactions
+`near-api-js` can send transactions in parallel by rotating multiple keys for an account.
+
+`nonce` collisions are automatically handled by retrying with incremented nonce.
 
 ```typescript
 import { Account, actions, JsonRpcProvider, KeyPair, MultiKeySigner } from "near-api-js"
@@ -80,69 +156,36 @@ const sendNearTokensResults = await Promise.all(transfers)
 sendNearTokensResults.forEach(result => console.log(result))
 ```
 
-### Working with Contracts
+### Typescript Support
+
+`near-api-js` is written in `TypeScript` and includes full type definitions:
 
 ```typescript
-import { Contract } from 'near-api-js';
-
-const contract = new Contract(
-  account, // the account object that is connecting
-  'contract-id.testnet',
-  {
-    viewMethods: ['get_status'],
-    changeMethods: ['set_status'],
-  }
-);
-
-// Call methods
-const status = await contract.get_status();
-await contract.set_status({ message: 'Hello NEAR!' });
+import type {
+  AccountView,
+  BlockReference,
+  Action,
+  SignedTransaction
+} from 'near-api-js';
 ```
 
-## What's Included
+### Typed Function Calls
 
-near-api-js includes all NEAR JavaScript functionality:
+You can even type the expected results from contract function calls:
 
-- **Accounts** - Account management and contract interactions
-- **Crypto** - Key pair generation, signing, and verification
-- **Transactions** - Transaction creation and signing
-- **Providers** - RPC providers with failover support
-- **Keystores** - Secure key storage for browser and Node.js
-- **Signers** - Transaction signing interfaces
-- **Types** - Full TypeScript type definitions
-- **Utils** - Formatting, parsing, and helper functions
-- **Tokens** - FT and NFT standard support
-- **Biometric Auth** - WebAuthn support for passwordless auth
-- **IFrame RPC** - Wallet integration helpers
-
-## Documentation
-
-- [Learn how to use](https://docs.near.org/tools/near-api-js/quick-reference) the library in your project
-- Read the [TypeDoc API](https://near.github.io/near-api-js/) documentation
-- [Cookbook](https://github.com/near/near-api-js/blob/master/packages/cookbook/README.md) with common use cases
-- To quickly get started with integrating NEAR in a _web browser_, read our [Web Frontend integration](https://docs.near.org/develop/integrate/frontend) article
-
-## Migration from @near-js/* packages
-
-If you were previously using individual `@near-js/*` packages, migration is straightforward:
-
-**Before:**
 ```typescript
-import { Account } from '@near-js/accounts';
-import { KeyPair } from '@near-js/crypto';
-import { JsonRpcProvider } from '@near-js/providers';
+const provider = new JsonRpcProvider({
+  url: "https://test.rpc.fastnear.com",
+});
+const account = new Account("accountId", provider, "privateKey");
+
+await provider.callFunction<T>()
+await account.callFunction<T>()
 ```
 
-**After:**
-```typescript
-import { Account, KeyPair, JsonRpcProvider } from 'near-api-js';
-```
+### Failover RPC Provider
 
-All exports remain the same - just change the import source!
-
-## Advanced Usage
-
-### Custom RPC Provider
+You can easily define multiple RPC endpoints to connect to  NEAR network, if one fails the next one will be used automatically.
 
 ```typescript
 import { JsonRpcProvider, FailoverRpcProvider } from 'near-api-js';
@@ -153,45 +196,37 @@ const provider = new FailoverRpcProvider([
 ]);
 ```
 
-### Transaction Building
+### Decoupled Transaction Signing
+You can separately build transactions, sign them, and broadcast them to the network.
+
+This is useful in scenarios where signing and sending need to be decoupled, such as offline signing
 
 ```typescript
-import {
-  actions as actionCreators,
-  createTransaction,
-  signTransaction
-} from 'near-api-js';
+import { JsonRpcProvider, Account, KeyPairSigner, actions, nearToYocto, KeyPairString } from "near-api-js";
 
-const { transfer, functionCall } = actionCreators;
+const provider = new JsonRpcProvider({
+  url: "https://test.rpc.fastnear.com",
+});
 
-const actions = [
-  transfer(BigInt('1000000000000000000000000')), // 1 NEAR
-  functionCall('method_name', { arg: 'value' }, BigInt('30000000000000'), BigInt('0'))
-];
+// You can create a transaction only knowing the accountId and public key
+const publicKey = '';
+const accountId = '';
+const account = new Account(accountId, provider);
 
-const transaction = createTransaction(
-  'sender.near',
-  publicKey,
-  'receiver.near',
-  nonce,
-  actions,
-  blockHash
-);
+const transaction = await account.createTransaction({
+  receiverId: "receiver-account.testnet",
+  actions: [actions.transfer(nearToYocto("0.1"))],
+  publicKey: publicKey
+});
 
-const signedTx = await signTransaction(transaction, signer, 'sender.near', networkId);
-```
+// Whoever holds the private key can sign the transaction
+const signer = KeyPairSigner.fromSecretKey(privateKey as KeyPairString);
+const signResult = await signer.signTransaction(transaction);
+console.log(signResult.signedTransaction);
 
-## TypeScript Support
-
-near-api-js is written in TypeScript and includes full type definitions:
-
-```typescript
-import type {
-  AccountView,
-  BlockReference,
-  Action,
-  SignedTransaction
-} from 'near-api-js';
+// Anybody can send the signed transaction to the network
+const sendTransactionResult = await provider.sendTransaction(signResult.signedTransaction);
+console.log(sendTransactionResult);
 ```
 
 ## Browser and Node.js Support
@@ -214,19 +249,11 @@ Contributions are welcome! Please check out the [contributing guidelines](https:
 
        pnpm -r compile -w
 
-### Publish
-
-Prepare `dist` version by running:
-
-    pnpm dist
-
 ### Integration Test
 
-Start the node by following instructions from [nearcore](https://github.com/nearprotocol/nearcore), then
+Simply run:
 
     pnpm test
-
-Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello
 
 ## License
 

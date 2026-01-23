@@ -1,5 +1,7 @@
 # Migrating from @near-js to near-api-js
 
+This guide will help you migrate your project from using the deprecated `@near-js/*` packages
+
 ## Package Imports
 The `near-api-js v7` package now exposes for most functions from `@near-js/*` packages. Minimal code
 was changed as part of this migration, so if you are using `near-api-js v6`, once changing
@@ -25,7 +27,7 @@ In `near-api-js` you could import the `actionsCreator`, it has now been moved to
 
 **Before:**
 ```typescript
-import { actions as actionCreators } from '@near-js/transactions';
+import { actionCreators } from '@near-js/transactions';
 
 const { transfer, functionCall } = actionCreators;
 ```
@@ -44,11 +46,10 @@ The `Signer` interface was changed, so now devs only need to implement the `sign
 
 ---
 
-## Renamed Functions
-
-### parseNear and formatNear
-`near-js/utils` used to have the functions `parseNear` and `formatNear`, they have now been renamed to
-`yoctoToNear` and `nearToYocto`, and they can be imported from `near-api-js` directly.
+## Near / Yocto Conversion Utilities
+`@near-js/utils` used to have the functions `parseNear` and `formatNear`,
+they have now been renamed to `yoctoToNear` and `nearToYocto`, and they
+can be imported from `near-api-js` directly.
 
 **Before:**
 ```typescript
@@ -60,8 +61,40 @@ import { utils: {parseNear, formatNear} } from 'near-api-js';
 import { yoctoToNear, nearToYocto } from 'near-api-js';
 ```
 
-### viewValidatorsV2
-The function `viewValidatorsV2` has been renamed to `viewValidators`.
+## Gas Conversion Utilities
+`@near-js` did not have any type of gas conversion utilities, now `near-api-js` includes
+`teraToGas` and `gigaToGas` functions to convert TeraGas and GigaGas to Gas units.
+
+**Before:**
+```typescript
+import { utils: {parseNear} } from 'near-api-js';
+
+account.callFunction({
+  contractId: 'example.testnet',
+  methodName: 'some_method',
+  args: {},
+  gas: '30000000000000',        // 30 TeraGas, maybe?
+  deposit: parseNear('0.1'),    // or was formatNear?
+});
+```
+
+**After:**
+```typescript
+import { teraToGas, nearToYocto } from 'near-api-js';
+
+account.callFunction({
+  contractId: 'example.testnet',
+  methodName: 'some_method',
+  args: {},
+  gas: teraToGas('30'),         // 30 TeraGas
+  deposit: nearToYocto('0.1'),  // 0.1 NEAR
+});
+```
+
+---
+
+## KeyStores
+`near-api-js` does not include any `KeyStore` implementation by default, but it should still be fully compatible with the `@near-js/keystores` implementations.
 
 ---
 
