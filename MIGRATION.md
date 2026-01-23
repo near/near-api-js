@@ -21,9 +21,27 @@ import { Account, KeyPair, JsonRpcProvider } from 'near-api-js';
 
 ---
 
+## Function Parameters
+
+In previous versions of `@near-js`, some functions accepted inline parameters, while some others accepted object parameters.
+
+In `near-api-js`, all functions that accept multiple parameters now accept a single object parameter.
+
+**Before:**
+```typescript
+provider.callFunction(accountId, method, args, finality);
+```
+
+**After:**
+```typescript
+provider.callFunction({ accountId, method, args, finality });
+```
+
+---
+
 ## Transaction Building
 
-In `near-api-js` you could import the `actionsCreator`, it has now been moved to a named export `actions`.
+In `near-api-js` you could import the `actionsCreator` to help you create `Action`s for transactions, it has now been moved to a named export `actions`.
 
 **Before:**
 ```typescript
