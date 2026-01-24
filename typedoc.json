@@ -9,5 +9,5 @@
         "invalidLink": false
     },
     "out": "docs",
-    "readme": "./README.md"
+    "readme": "./docs/README_TYPEDOC.md"
 }
