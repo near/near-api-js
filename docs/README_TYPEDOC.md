@@ -1,44 +1,22 @@
-NEAR JavaScript API is a complete library to interact with the NEAR blockchain. You can use it in the browser, or in Node.js runtime.
+NEAR JavaScript API is a backend-focused library to interact with the NEAR blockchain.
 
-👉 **[Learn how to use](https://docs.near.org/tools/near-api-js/quick-reference) the library in your project.**
+## Educational Resources
 
-## Resources
+- Read the [NEAR API docs](https://docs.near.org/tools/near-api)
 
-- [Cookbook](https://github.com/near/near-api-js/blob/master/packages/cookbook/README.md) with common use cases
+- See our [API Examples](https://github.com/near-examples/near-api-examples) with common use cases
 
-- To quickly get started with integrating NEAR in a _web browser_, read our [Web Frontend integration](https://docs.near.org/develop/integrate/frontend) article.
+## Relevant Classes
 
-- Explore the code in [project's repository](https://github.com/near/near-api-js)
+- [`Account`](https://near.github.io/near-api-js/classes/accounts_account.Account.html): Inspect account data and execute on-chain actions
+- [`Signer`s](https://near.github.io/near-api-js/modules/signers.html): Sign transactions and messages
+- [`Provider`s](https://near.github.io/near-api-js/modules/providers.html): Connect to NEAR nodes via JSON-RPC
+- [`KeyPair`s](https://near.github.io/near-api-js/classes/crypto_key_pair.KeyPair.html): Create and manage public/private key pairs
 
-- Read [NEAR documentation](https://docs.near.org)
 
-- [RPC Endpoints](https://docs.near.org/api/rpc/introduction) reference
-
-## Modules
-
-### Connect to NEAR
-
-- [From the browser](https://near.github.io/near-api-js/modules/near_api_js.browserConnect.html)
-- [From Node.js](https://near.github.io/near-api-js/modules/near_api_js.connect.html)
-
-### Managing Accounts
-
-- Class [`Account`](https://near.github.io/near-api-js/classes/near_api_js.account.Account.html)
-- Module [`walletAccount`](https://near.github.io/near-api-js/modules/_near_js_wallet_account.walletAccount.html)
-- Class [`Contract`](https://near.github.io/near-api-js/classes/_near_js_accounts.contract.Contract.html)
-
-### Managing Keys
-
-- Module [`utils/key_pair`](https://near.github.io/near-api-js/modules/near_api_js.utils_key_pair.html)
-- Class [`InMemoryKeyStore`](https://near.github.io/near-api-js/classes/_near_js_keystores.in_memory_key_store.InMemoryKeyStore.html)
-- Class [`UnencryptedFileSystemKeyStore`](https://near.github.io/near-api-js/classes/_near_js_keystores_node.unencrypted_file_system_keystore.UnencryptedFileSystemKeyStore.html)
-- Class [`MergeKeyStore`](https://near.github.io/near-api-js/classes/_near_js_keystores.merge_key_store.MergeKeyStore.html)
-
-### RPC
-
-- [Request and Response Types](https://near.github.io/near-api-js/modules/near_api_js.providers_provider.html)
-- [Client](https://near.github.io/near-api-js/classes/_near_js_providers.json_rpc_provider.JsonRpcProvider.html)
-
-### Utils
-
-- [Formatting utils](https://near.github.io/near-api-js/modules/_near_js_utils.format.html)
+## Useful Helpers
+- `near-api-js` exports functions to convert between:
+    - `nearToYocto` / `yoctoToNear`
+    - `teraToGas` / `gigaToGas`
+- Easily handle FT / NFT with [`near-api-js/tokens`](https://near.github.io/near-api-js/modules/tokens.html)
+- Sign and verify NEP-413 messages with [`near-api-js/nep413`](https://near.github.io/near-api-js/modules/nep413.html)
