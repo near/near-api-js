@@ -20,7 +20,7 @@ for (let i = 0, offset = 5n; i < NEAR_NOMINATION_EXP; i++, offset = offset * BN1
 }
 
 /**
- * @deprecated use {@link yoctoToNear} instead.
+ * @deprecated use {@link units!yoctoToNear} from 'near-api-js' instead.
  *
  * Convert account balance value from internal indivisible units to NEAR. 1 NEAR is defined by {@link NEAR_NOMINATION}.
  * Effectively this divides given amount by {@link NEAR_NOMINATION}.
@@ -50,12 +50,12 @@ export function formatNearAmount(balance: string | number | bigint, fracDigits: 
 }
 
 /**
- * @deprecated use {@link nearToYocto} instead.
+ * @deprecated use {@link units!nearToYocto} from 'near-api-js' instead.
  *
  * Convert human readable NEAR amount to internal indivisible units.
  * Effectively this multiplies given amount by {@link NEAR_NOMINATION}.
  *
- * @param amt decimal string (potentially fractional) denominated in NEAR.
+ * @param amount decimal string (potentially fractional) denominated in NEAR.
  * @returns The parsed yoctoⓃ amount
  * @throws {Error} if the amount is empty or invalid
  */

@@ -2,10 +2,12 @@
     "includeVersion": true,
     "entryPoints": ["src"],
     "entryPointStrategy": "expand",
+    "tsconfig": "./tsconfig.build.json",
     "githubPages": true,
     "validation": {
-        "notExported": false
+        "notExported": false,
+        "invalidLink": false
     },
     "out": "docs",
-    "readme": "./docs/README_TYPEDOC.md"
+    "readme": "./README.md"
 }
