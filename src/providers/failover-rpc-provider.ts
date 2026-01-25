@@ -1,6 +1,5 @@
 /**
  * @module
- * @description
  * This module contains the {@link FailoverRpcProvider} client class
  * which can be used to interact with multiple [NEAR RPC APIs](https://docs.near.org/api/rpc/introduction).
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types

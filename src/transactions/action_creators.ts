@@ -184,8 +184,9 @@ function deleteAccount(beneficiaryId: string): Action {
 
 /**
  * Creates a new action for a signed delegation, specifying the delegate action and signature.
- * @param delegateAction The delegate action to be performed.
- * @param signature The signature associated with the delegate action.
+ * @param options Signed delegate options
+ * @param options.delegateAction The delegate action to be performed.
+ * @param options.signature The signature associated with the delegate action.
  * @returns A new action for a signed delegation.
  */
 function signedDelegate({
@@ -206,13 +207,13 @@ function signedDelegate({
  * @param deployMode The mode to deploy global contract (CodeHash or AccountId).
  * @returns A new action for deploying a global contract.
  */
-function deployGlobalContract(code: Uint8Array, mode: 'codeHash' | 'accountId'): Action {
-    const deployMode =
-        mode === 'codeHash'
+function deployGlobalContract(code: Uint8Array, deployMode: 'codeHash' | 'accountId'): Action {
+    const mode =
+        deployMode === 'codeHash'
             ? new GlobalContractDeployMode({ CodeHash: null })
             : new GlobalContractDeployMode({ AccountId: null });
 
-    return new Action({ deployGlobalContract: new DeployGlobalContract({ code, deployMode }) });
+    return new Action({ deployGlobalContract: new DeployGlobalContract({ code, deployMode: mode }) });
 }
 
 /**
@@ -220,19 +221,19 @@ function deployGlobalContract(code: Uint8Array, mode: 'codeHash' | 'accountId'):
  * @param contractIdentifier The global contract identifier (hash or account id).
  * @returns A new action for using a global contract.
  */
-function useGlobalContract(identifier: { accountId: string } | { codeHash: string | Uint8Array }): Action {
-    const contractIdentifier =
-        'accountId' in identifier
+function useGlobalContract(contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }): Action {
+    const identifier =
+        'accountId' in contractIdentifier
             ? new GlobalContractIdentifier({
-                  AccountId: identifier.accountId,
+                  AccountId: contractIdentifier.accountId,
               })
             : new GlobalContractIdentifier({
                   CodeHash:
-                      typeof identifier.codeHash === 'string'
-                          ? Buffer.from(identifier.codeHash, 'hex')
-                          : identifier.codeHash,
+                      typeof contractIdentifier.codeHash === 'string'
+                          ? Buffer.from(contractIdentifier.codeHash, 'hex')
+                          : contractIdentifier.codeHash,
               });
-    return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier }) });
+    return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier: identifier }) });
 }
 
 export const actions = {

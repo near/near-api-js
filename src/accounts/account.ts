@@ -270,9 +270,10 @@ export class Account {
     /**
      * Create a transaction that can be later signed with a {@link Signer}
      *
-     * @param receiverId Account against which to perform the actions
-     * @param actions Actions to perform
-     * @param publicKey The public part of the key that will be used to sign the transaction
+     * @param options Transaction options
+     * @param options.receiverId Account against which to perform the actions
+     * @param options.actions Actions to perform
+     * @param options.publicKey The public part of the key that will be used to sign the transaction
      */
     public async createTransaction({ receiverId, actions, publicKey }: CreateTransactionArgs) {
         if (!publicKey) throw new Error('Please provide a public key');
@@ -317,9 +318,10 @@ export class Account {
     /**
      * Create a meta transaction ready to be signed by a {@link Signer}
      *
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the meta transaction
-     * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     * @param options Meta transaction options
+     * @param options.receiverId NEAR account receiving the transaction
+     * @param options.actions list of actions to perform as part of the meta transaction
+     * @param options.blockHeightTtl number of blocks after which a meta transaction will expire if not processed
      */
     public async createMetaTransaction({
         receiverId,
@@ -354,9 +356,10 @@ export class Account {
     /**
      * Create a signed MetaTransaction that can be broadcasted to a relayer
      *
-     * @param receiverId NEAR account receiving the transaction
-     * @param actions list of actions to perform as part of the meta transaction
-     * @param blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     * @param options Signed meta transaction options
+     * @param options.receiverId NEAR account receiving the transaction
+     * @param options.actions list of actions to perform as part of the meta transaction
+     * @param options.blockHeightTtl number of blocks after which a meta transaction will expire if not processed
      */
     public async createSignedMetaTransaction({
         receiverId,
@@ -379,9 +382,10 @@ export class Account {
     /**
      * Creates a transaction, signs it and broadcast it to the network
      *
-     * @param receiverId The NEAR account ID of the transaction receiver.
-     * @param actions The list of actions to be performed in the transaction.
-     * @param throwOnFailure Whether to throw an error if the transaction fails.
+     * @param options Sign and send transaction options
+     * @param options.receiverId The NEAR account ID of the transaction receiver.
+     * @param options.actions The list of actions to be performed in the transaction.
+     * @param options.throwOnFailure Whether to throw an error if the transaction fails.
      *
      */
     async signAndSendTransaction({
@@ -473,9 +477,10 @@ export class Account {
      *    - The new account ID must end with the current account ID
      *    - Example: If your account is `ana.near`, you can create `sub.ana.near`
      *
-     * @param newAccountId the new account to create (e.g. bob.near or sub.ana.near)
-     * @param publicKey the public part of the key that will control the account
-     * @param nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
+     * @param options Account creation options
+     * @param options.newAccountId the new account to create (e.g. bob.near or sub.ana.near)
+     * @param options.publicKey the public part of the key that will control the account
+     * @param options.nearToTransfer how much NEAR to transfer to the account in yoctoNEAR (default: 0)
      *
      */
     public async createAccount({ newAccountId, publicKey, nearToTransfer = 0n }: CreateAccountArgs) {
@@ -509,9 +514,10 @@ export class Account {
      * Creates a sub account of this account. For example, if the account is
      * ana.near, you can create sub.ana.near.
      *
-     * @param accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
-     * @param publicKey the public part of the key that will control the account
-     * @param nearToTransfer how much NEAR to transfer to the account (default: 0)
+     * @param options Sub-account creation options
+     * @param options.accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
+     * @param options.publicKey the public part of the key that will control the account
+     * @param options.nearToTransfer how much NEAR to transfer to the account (default: 0)
      *
      */
     public async createSubAccount({ accountOrPrefix, publicKey, nearToTransfer = 0n }: CreateSubAccountArgs) {
@@ -637,13 +643,13 @@ export class Account {
     /**
      * Call a function on a smart contract and return parsed transaction result
      *
-     * @param options
-     * @param options.contractId The contract in which to call the function
-     * @param options.methodName The method that will be called
-     * @param options.args Arguments, either as a valid JSON Object or a raw Uint8Array
-     * @param options.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
-     * @param options.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
-     * @param options.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
+     * @param params Call function parameters
+     * @param params.contractId The contract in which to call the function
+     * @param params.methodName The method that will be called
+     * @param params.args Arguments, either as a valid JSON Object or a raw Uint8Array
+     * @param params.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
+     * @param params.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
+     * @param params.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
      * @returns
      */
     public async callFunction<T extends SerializedReturnValue>(params: CallFunctionArgs): Promise<T> {
@@ -654,13 +660,13 @@ export class Account {
     /**
      * Call a function on a smart contract and return raw transaction outcome
      *
-     * @param options
-     * @param options.contractId The contract in which to call the function
-     * @param options.methodName The method that will be called
-     * @param options.args Arguments, either as a valid JSON Object or a raw Uint8Array
-     * @param options.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
-     * @param options.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
-     * @param options.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
+     * @param params Call function parameters
+     * @param params.contractId The contract in which to call the function
+     * @param params.methodName The method that will be called
+     * @param params.args Arguments, either as a valid JSON Object or a raw Uint8Array
+     * @param params.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
+     * @param params.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
+     * @param params.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
      */
     public async callFunctionRaw({
         contractId,
@@ -682,11 +688,11 @@ export class Account {
      *
      * @deprecated This method is deprecated and will be removed in future versions. Please use `signMessage` from `near-api-js/nep413` to sign NEP-413 messages.
      *
-     * @param options
-     * @param options.message The message to be signed (e.g. "authenticating")
-     * @param options.recipient Who will receive the message (e.g. auth.app.com)
-     * @param options.nonce A challenge sent by the recipient
-     * @param options.callbackUrl (optional) Deprecated parameter used only by browser wallets
+     * @param args Nep413 message signing arguments
+     * @param args.message The message to be signed (e.g. "authenticating")
+     * @param args.recipient Who will receive the message (e.g. auth.app.com)
+     * @param args.nonce A challenge sent by the recipient
+     * @param args.callbackUrl (optional) Deprecated parameter used only by browser wallets
      * @returns
      */
     public async signNep413Message({
@@ -719,9 +725,10 @@ export class Account {
      *
      * Supports sending either the native NEAR token or any supported Fungible Token (FT).
      *
-     * @param amount - The amount of tokens to transfer in units (e.g. yoctoNEAR).
-     * @param receiverId - The NEAR account ID of the receiver.
-     * @param token - The token to transfer. Defaults to Native NEAR.
+     * @param options Transfer options
+     * @param options.amount - The amount of tokens to transfer in units (e.g. yoctoNEAR).
+     * @param options.receiverId - The NEAR account ID of the receiver.
+     * @param options.token - The token to transfer. Defaults to Native NEAR.
      *
      */
     public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<RpcTransactionResponse> {
