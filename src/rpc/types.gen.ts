@@ -144,9 +144,9 @@ export type AccountDataView = {
  *
  * This is a unique, syntactically valid, human-readable account identifier on the NEAR network.
  *
- * [See the crate-level docs for information about validation.](index.html#account-id-rules)
+ * [See the Rust crate documentation for information about validation.](https://docs.rs/near-account-id/latest/near_account_id/)
  *
- * Also see [Error kind precedence](AccountId#error-kind-precedence).
+ * Also see the error kind documentation.
  *
  * ## Examples
  *
@@ -5127,10 +5127,9 @@ export type RpcStateChangesError =
 /**
  * RpcStateChangesInBlockByTypeRequest
  *
- * It is a [serializable view] of [`StateChangesRequest`].
+ * It is a serializable view of `StateChangesRequest`.
  *
- * [serializable view]: ./index.html
- * [`StateChangesRequest`]: ../types/struct.StateChangesRequest.html
+ * See the Rust crate documentation for more information.
  */
 export type RpcStateChangesInBlockByTypeRequest =
     | ({
@@ -6199,10 +6198,9 @@ export type StateChangeCauseView =
       };
 
 /**
- * It is a [serializable view] of [`StateChangeKind`].
+ * It is a serializable view of `StateChangeKind`.
  *
- * [serializable view]: ./index.html
- * [`StateChangeKind`]: ../types/struct.StateChangeKind.html
+ * See the Rust crate documentation for more information.
  */
 export type StateChangeKindView =
     | {

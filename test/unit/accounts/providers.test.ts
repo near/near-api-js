@@ -1,7 +1,7 @@
 import { base58 } from '@scure/base';
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { IdType, KeyPair } from '../../../src';
+import { IdType, KeyPair } from '../../../src/index.js';
 import {
     ContractCodeDoesNotExistError,
     ContractMethodNotFoundError,
@@ -10,10 +10,17 @@ import {
     AccessKeyDoesNotExistError,
     AccountDoesNotExistError,
     UnknownBlockError,
-} from '../../../src/providers/errors/handler';
+} from '../../../src/providers/errors/handler.js';
 import { RpcMethodNotFoundError, RpcRequestParseError } from '../../../src/providers/errors/request_validation.js';
 import { InternalRpcError } from '../../../src/providers/errors/rpc.js';
-import { createAccount, deployContract, generateUniqueString, setUpTestConnection, sleep, waitFor } from './test-utils';
+import {
+    createAccount,
+    deployContract,
+    generateUniqueString,
+    setUpTestConnection,
+    sleep,
+    waitFor,
+} from './test-utils.js';
 
 let near: Awaited<ReturnType<typeof setUpTestConnection>>;
 
@@ -44,9 +51,7 @@ describe('providers', () => {
             accountId: sender.accountId,
             waitUntil: 'EXECUTED_OPTIMISTIC',
         });
-        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithString).toMatchObject(outcome);
-        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithUint8Array).toMatchObject(outcome);
     });
 
@@ -76,9 +81,7 @@ describe('providers', () => {
         expect('tokens_burnt' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('executor_id' in responseWithString.transaction_outcome.outcome).toBeTruthy();
         expect('status' in responseWithString.transaction_outcome.outcome).toBeTruthy();
-        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithString).toMatchObject(reciepts);
-        // @ts-expect-error - Type mismatch in test, but structurally compatible at runtime
         expect(responseWithUint8Array).toMatchObject(reciepts);
     });
 
@@ -89,7 +92,6 @@ describe('providers', () => {
             finality: 'optimistic',
             account_id: account.accountId,
         });
-        // @ts-expect-error - code_hash exists in response but not in union type
         expect(response.code_hash).toEqual('11111111111111111111111111111111');
     });
 
@@ -173,9 +175,7 @@ describe('providers', () => {
         }
 
         const comittedStatus = await waitForStatusMatching(
-            (status) =>
-                // @ts-expect-error - block_hash exists at runtime but not in type definition
-                status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash
+            (status) => status.sync_info.latest_block_hash !== executionOutcome.transaction_outcome.block_hash
         );
         const BLOCKS_UNTIL_FINAL = 2;
         const finalizedStatus = await waitForStatusMatching(
@@ -213,7 +213,6 @@ describe('providers', () => {
         // Use old block hash as light client head should fail
         lightClientRequest = {
             type: IdType.Transaction,
-            // @ts-expect-error - block_hash exists at runtime but not in type definition
             light_client_head: executionOutcome.transaction_outcome.block_hash,
             transaction_hash: executionOutcome.transaction.hash,
             sender_id: workingAccount.accountId,
@@ -306,7 +305,6 @@ describe('providers errors', () => {
 
     test('JSON RPC Error - RpcMethodNotFoundError', async () => {
         try {
-            // @ts-expect-error - testing unknown method
             await near.provider.sendJsonRpc('unknown_rpc_method', {});
 
             expect.fail('should have thrown');

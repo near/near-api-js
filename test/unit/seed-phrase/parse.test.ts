@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { parseSeedPhrase } from '../../../src/seed-phrase';
+import { parseSeedPhrase } from '../../../src/seed-phrase/index.js';
 
 test.each<[string, string, string]>([
     [

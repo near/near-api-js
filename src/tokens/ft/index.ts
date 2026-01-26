@@ -31,7 +31,7 @@ abstract class BaseFT {
     /**
      * Converts indivisible units to a decimal number (represented as a string)
      *
-     * @param units The amount in indivisible units (e.g. "1234")
+     * @param amount The amount in indivisible units (e.g. "1234")
      * @param precision (optional) number of digits shown to the right of the decimal point - rounded down
      * @returns The amount as a decimal string (e.g. "1.234")
      */
@@ -133,10 +133,10 @@ export class FungibleToken extends BaseFT {
      * Transfer tokens and call a function on the receiver contract,
      * only works if the receiver implements the `ft_on_transfer` method
      *
-     * @param param
+     * @param param Transfer call parameters
      * @param param.from The Account that will transfer the tokens
      * @param param.receiverId The AccountID that will receive the tokens
-     * @param param.units The amount of tokens to transfer in the smallest unit
+     * @param param.amount The amount of tokens to transfer in the smallest unit
      * @param param.msg The message to send to the `ft_on_transfer` method
      */
     public async transferCall({

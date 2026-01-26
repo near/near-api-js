@@ -1,6 +1,6 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { describe, expect, test } from 'vitest';
-import { baseEncode, KeyPair, KeyPairEd25519, KeyPairSecp256k1, PublicKey } from '../../../src';
+import { baseEncode, KeyPair, KeyPairEd25519, KeyPairSecp256k1, PublicKey } from '../../../src/index.js';
 
 const encoder = new TextEncoder();
 

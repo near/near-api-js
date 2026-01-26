@@ -12,7 +12,7 @@ import {
     KeyPair,
     PublicKey,
     SCHEMA,
-} from '../../../src';
+} from '../../../src/index.js';
 
 const {
     addFunctionCallAccessKey,
@@ -51,7 +51,7 @@ test('serialize object', async () => {
 });
 
 test('deserialize delegate', async () => {
-    const serialized = [
+    const serialized = new Uint8Array([
         8, 16, 0, 0, 0, 116, 104, 101, 45, 117, 115, 101, 114, 46, 116, 101, 115, 116, 110, 101, 116, 27, 0, 0, 0, 104,
         101, 108, 108, 111, 46, 110, 101, 97, 114, 45, 101, 120, 97, 109, 112, 108, 101, 115, 46, 116, 101, 115, 116,
         110, 101, 116, 1, 0, 0, 0, 2, 12, 0, 0, 0, 115, 101, 116, 95, 103, 114, 101, 101, 116, 105, 110, 103, 20, 0, 0,
@@ -62,9 +62,9 @@ test('deserialize delegate', async () => {
         243, 17, 186, 140, 168, 139, 9, 81, 33, 8, 74, 73, 85, 254, 127, 62, 54, 193, 60, 50, 235, 49, 13, 37, 152, 94,
         172, 24, 198, 220, 119, 148, 99, 89, 19, 187, 251, 80, 76, 230, 77, 28, 80, 140, 133, 81, 139, 159, 62, 245,
         167, 4,
-    ];
-    // @ts-expect-error test input
+    ]);
     const {
+        // @ts-expect-error test input
         signedDelegate: { delegateAction },
     } = deserialize(SCHEMA.Action, serialized);
     expect(delegateAction.senderId).toEqual('the-user.testnet');

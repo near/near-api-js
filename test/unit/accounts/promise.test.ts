@@ -1,7 +1,7 @@
 import type { Worker } from 'near-workspaces';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { Contract } from '../../../src';
-import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils';
+import { Contract } from '../../../src/index.js';
+import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils.js';
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 
@@ -22,18 +22,17 @@ afterAll(async () => {
 describe('with promises', () => {
     // @ts-expect-error infer type here
     let contract = new Contract({}),
+        // @ts-expect-error infer type here
         contract1 = new Contract({}),
+        // @ts-expect-error infer type here
         contract2 = new Contract({});
     const contractName = generateUniqueString('cnt');
     const contractName1 = generateUniqueString('cnt');
     const contractName2 = generateUniqueString('cnt');
 
     beforeAll(async () => {
-        // @ts-expect-error - deployContract returns contract without abi property in type
         contract = await deployContract(nearjs.account, contractName);
-        // @ts-expect-error - deployContract returns contract without abi property in type
         contract1 = await deployContract(nearjs.account, contractName1);
-        // @ts-expect-error - deployContract returns contract without abi property in type
         contract2 = await deployContract(nearjs.account, contractName2);
     });
 

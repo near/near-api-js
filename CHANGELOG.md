@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.0.4
+
+### Patch Changes
+
+- [#1833](https://github.com/near/near-api-js/pull/1833) [`bf3a34c`](https://github.com/near/near-api-js/commit/bf3a34c94b9ae368893d7b0b1e58a8e71bd5cd41) Thanks [@gagdiez](https://github.com/gagdiez)! - Update jdocs strings
+
 ## 7.0.3
 
 ### Patch Changes

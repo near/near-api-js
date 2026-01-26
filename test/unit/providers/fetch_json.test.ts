@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { fetchJsonRpc, retryConfig } from '../../../src/providers/fetch_json';
+import { fetchJsonRpc, retryConfig } from '../../../src/providers/fetch_json.js';
 
 describe('fetchJson', () => {
     test('string parameter in fetchJson', async () => {
@@ -8,10 +8,10 @@ describe('fetchJson', () => {
             jsonrpc: '2.0',
             id: 'dontcare',
             method: 'status',
-            params: [],
-        };
-        // @ts-expect-error test input
-        const result = await fetchJsonRpc(RPC_URL, statusRequest, undefined, retryConfig());
+            params: null,
+        } as const;
+        const result = await fetchJsonRpc(RPC_URL, statusRequest, {}, retryConfig());
+        // @ts-expect-error result must exist
         expect(result.result.chain_id).toBe('testnet');
     });
     test('object parameter in fetchJson', async () => {
@@ -20,10 +20,10 @@ describe('fetchJson', () => {
             jsonrpc: '2.0',
             id: 'dontcare',
             method: 'status',
-            params: [],
-        };
-        // @ts-expect-error test input
-        const result = await fetchJsonRpc(connection.url, statusRequest, undefined, retryConfig());
+            params: null,
+        } as const;
+        const result = await fetchJsonRpc(connection.url, statusRequest, {}, retryConfig());
+        // @ts-expect-error result must exist
         expect(result.result.chain_id).toBe('testnet');
     });
 });
