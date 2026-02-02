@@ -63,7 +63,7 @@
         "@types/node": "25.0.9",
         "@vitest/coverage-v8": "4.0.17",
         "@vitest/ui": "4.0.17",
-        "commitlint": "20.3.1",
+        "commitlint": "20.4.0",
         "husky": "9.1.7",
         "near-hello": "0.5.1",
         "near-workspaces": "5.0.0",
