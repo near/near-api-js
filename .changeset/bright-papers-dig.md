@@ -1,5 +1,5 @@
 ---
-"near-api-js": patch
+"near-api-js": minor
 ---
 
 Add utils for meta-transaction handling
