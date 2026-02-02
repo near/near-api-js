@@ -13,6 +13,7 @@ import {
     buildDelegateAction,
     createTransaction,
     type DelegateAction,
+    SignedDelegate,
     type SignedTransaction,
 } from '../transactions/index.js';
 import type { Finality, SerializedReturnValue, TxExecutionStatus } from '../types/index.js';
@@ -720,6 +721,18 @@ export class Account {
         return token.getBalance(this);
     }
 
+    /**
+     * Relay a meta-transaction signed by a different account
+     * 
+     * @param signedDelegate The signed delegate action to relay
+     * @returns The transaction response from the relayed meta-transaction
+     */
+    public async relayMetaTransaction(signedDelegate: SignedDelegate) {
+        return this.signAndSendTransaction({
+            receiverId: signedDelegate.delegateAction.senderId,
+            actions: [actions.signedDelegate(signedDelegate)],
+        });
+    }
     /**
      * Transfers a token to the specified receiver.
      *
