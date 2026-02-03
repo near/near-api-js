@@ -20,6 +20,7 @@ export {
     KeyPairEd25519,
     KeyPairSecp256k1,
     KeyType,
+    keyToImplicitAddress,
     PublicKey,
 } from './crypto/index.js';
 // ============================================================================
