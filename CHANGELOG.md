@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.1.0
+
+### Minor Changes
+
+- [#1845](https://github.com/near/near-api-js/pull/1845) [`310a284`](https://github.com/near/near-api-js/commit/310a28407795c66dd1b4ae2455584bf7ea3833a7) Thanks [@gagdiez](https://github.com/gagdiez)! - Add utils for meta-transaction handling
+
 ## 7.0.4
 
 ### Patch Changes
