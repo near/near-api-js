@@ -59,7 +59,7 @@
         "@changesets/cli": "2.29.8",
         "@commitlint/cli": "20.3.1",
         "@commitlint/config-conventional": "20.3.1",
-        "@hey-api/openapi-ts": "^0.90.4",
+        "@hey-api/openapi-ts": "^0.92.3",
         "@types/node": "25.0.9",
         "@vitest/coverage-v8": "4.0.17",
         "@vitest/ui": "4.0.17",
