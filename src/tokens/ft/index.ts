@@ -219,7 +219,9 @@ export class FungibleToken extends BaseFT {
     /**
      * Checks if an account is registered to the fungible token contract
      *
-     * @param accountId The AccountID to check
+     * @param param
+     * @param param.accountId The AccountID to check
+     * @param param.provider A Provider to use for the query
      * @returns Whether the account is registered
      */
     public async isAccountRegistered({
@@ -229,21 +231,23 @@ export class FungibleToken extends BaseFT {
         accountId: string;
         provider: Provider;
     }): Promise<boolean> {
-        const storage = (await provider.callFunction({
-            contractId: this.accountId,
-            method: 'storage_balance_of',
-            args: { account_id: accountId },
-        })) as { total: string; available: string } | null;
+
+        const [storage, required] = await Promise.all([
+            provider.callFunction<{ total: string; available: string }>({
+                contractId: this.accountId,
+                method: 'storage_balance_of',
+                args: { account_id: accountId },
+            }),
+            provider.callFunction<{ min: string; max: string | null }>({
+                contractId: this.accountId,
+                method: 'storage_balance_bounds',
+                args: {},
+            }),
+        ]);
 
         if (!storage) return false;
 
-        const required = (await provider.callFunction({
-            contractId: this.accountId,
-            method: 'storage_balance_bounds',
-            args: {},
-        })) as { min: string; max: string | null };
-
-        return BigInt(storage.total) >= BigInt(required.min);
+        return BigInt(storage.total) >= BigInt(required!.min);
     }
 }
 
