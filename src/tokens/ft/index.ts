@@ -1,5 +1,7 @@
 import type { Account } from '../../accounts/account.js';
+import type { Provider } from '../../providers/provider.js';
 import { actions } from '../../transactions/action_creators.js';
+import { teraToGas } from '../../units/gas.js';
 import { formatAmount, parseAmount } from './format.js';
 
 interface FTMetadata {
@@ -115,7 +117,7 @@ export class FungibleToken extends BaseFT {
                 amount: amount.toString(),
                 receiver_id: receiverId,
             },
-            gas: '30000000000000',
+            gas: teraToGas(30),
             deposit: 1,
         });
     }
@@ -158,7 +160,7 @@ export class FungibleToken extends BaseFT {
                 amount: amount.toString(),
                 msg,
             },
-            gas: '30000000000000',
+            gas: teraToGas(30),
             deposit: 1,
         });
     }
@@ -192,7 +194,7 @@ export class FungibleToken extends BaseFT {
                 account_id: accountIdToRegister,
                 registration_only: true,
             },
-            gas: '30000000000000',
+            gas: teraToGas(30),
             deposit: requiredDeposit,
         });
     }
@@ -209,9 +211,39 @@ export class FungibleToken extends BaseFT {
             contractId: this.accountId,
             methodName: 'storage_unregister',
             args: { force },
-            gas: '30000000000000',
+            gas: teraToGas(30),
             deposit: 1,
         });
+    }
+
+    /**
+     * Checks if an account is registered to the fungible token contract
+     *
+     * @param accountId The AccountID to check
+     * @returns Whether the account is registered
+     */
+    public async isAccountRegistered({
+        accountId,
+        provider,
+    }: {
+        accountId: string;
+        provider: Provider;
+    }): Promise<boolean> {
+        const storage = (await provider.callFunction({
+            contractId: this.accountId,
+            method: 'storage_balance_of',
+            args: { account_id: accountId },
+        })) as { total: string; available: string } | null;
+
+        if (!storage) return false;
+
+        const required = (await provider.callFunction({
+            contractId: this.accountId,
+            method: 'storage_balance_bounds',
+            args: {},
+        })) as { min: string; max: string | null };
+
+        return BigInt(storage.total) >= BigInt(required.min);
     }
 }
 
