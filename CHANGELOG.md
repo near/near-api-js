@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.1.1
+
+### Patch Changes
+
+- [#1857](https://github.com/near/near-api-js/pull/1857) [`bbcb35c`](https://github.com/near/near-api-js/commit/bbcb35c2fa5bdfadf3e68fff738e4cbfa212c177) Thanks [@gagdiez](https://github.com/gagdiez)! - fix: auto-register receiver on ft transfer from account
+
 ## 7.1.0
 
 ### Minor Changes
