@@ -122,7 +122,7 @@ export class FungibleToken extends BaseFT {
         });
     }
 
-    public async getBalance({ accountId, provider }: { accountId: string, provider: Provider }): Promise<bigint> {
+    public async getBalance({ accountId, provider }: { accountId: string; provider: Provider }): Promise<bigint> {
         const balance = await provider.callFunction({
             contractId: this.accountId,
             method: 'ft_balance_of',
@@ -231,7 +231,6 @@ export class FungibleToken extends BaseFT {
         accountId: string;
         provider: Provider;
     }): Promise<boolean> {
-
         const [storage, required] = await Promise.all([
             provider.callFunction<{ total: string; available: string }>({
                 contractId: this.accountId,
