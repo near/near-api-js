@@ -5,8 +5,7 @@ import { JsonRpcProvider, type Provider } from '../providers/index.js';
 import type { RpcTransactionResponse } from '../rpc/types.gen.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
 import type { SignDelegateActionReturn } from '../signers/signer.js';
-import type { FungibleToken, NativeToken } from '../tokens/index.js';
-import { NEAR } from '../tokens/index.js';
+import { FungibleToken, type NativeToken, NEAR } from '../tokens/index.js';
 import {
     type Action,
     actions,
@@ -745,6 +744,16 @@ export class Account {
      *
      */
     public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<RpcTransactionResponse> {
+        if (token instanceof FungibleToken) {
+            const isRegistered = await token.isAccountRegistered({ accountId: receiverId, provider: this.provider });
+
+            if (!isRegistered) {
+                await token.registerAccount({
+                    accountIdToRegister: receiverId,
+                    fundingAccount: this,
+                });
+            }
+        }
         return token.transfer({ from: this, receiverId, amount });
     }
 }

@@ -1,5 +1,7 @@
 import type { Account } from '../../accounts/account.js';
+import type { Provider } from '../../providers/provider.js';
 import { actions } from '../../transactions/action_creators.js';
+import { teraToGas } from '../../units/gas.js';
 import { formatAmount, parseAmount } from './format.js';
 
 interface FTMetadata {
@@ -115,16 +117,16 @@ export class FungibleToken extends BaseFT {
                 amount: amount.toString(),
                 receiver_id: receiverId,
             },
-            gas: '30000000000000',
+            gas: teraToGas(30),
             deposit: 1,
         });
     }
 
-    public async getBalance(account: Account): Promise<bigint> {
-        const balance = await account.provider.callFunction({
+    public async getBalance({ accountId, provider }: { accountId: string; provider: Provider }): Promise<bigint> {
+        const balance = await provider.callFunction({
             contractId: this.accountId,
             method: 'ft_balance_of',
-            args: { account_id: account.accountId },
+            args: { account_id: accountId },
         });
         return BigInt(balance as string);
     }
@@ -158,7 +160,7 @@ export class FungibleToken extends BaseFT {
                 amount: amount.toString(),
                 msg,
             },
-            gas: '30000000000000',
+            gas: teraToGas(30),
             deposit: 1,
         });
     }
@@ -192,7 +194,7 @@ export class FungibleToken extends BaseFT {
                 account_id: accountIdToRegister,
                 registration_only: true,
             },
-            gas: '30000000000000',
+            gas: teraToGas(30),
             deposit: requiredDeposit,
         });
     }
@@ -209,9 +211,42 @@ export class FungibleToken extends BaseFT {
             contractId: this.accountId,
             methodName: 'storage_unregister',
             args: { force },
-            gas: '30000000000000',
+            gas: teraToGas(30),
             deposit: 1,
         });
+    }
+
+    /**
+     * Checks if an account is registered to the fungible token contract
+     *
+     * @param param
+     * @param param.accountId The AccountID to check
+     * @param param.provider A Provider to use for the query
+     * @returns Whether the account is registered
+     */
+    public async isAccountRegistered({
+        accountId,
+        provider,
+    }: {
+        accountId: string;
+        provider: Provider;
+    }): Promise<boolean> {
+        const [storage, required] = await Promise.all([
+            provider.callFunction<{ total: string; available: string }>({
+                contractId: this.accountId,
+                method: 'storage_balance_of',
+                args: { account_id: accountId },
+            }),
+            provider.callFunction<{ min: string; max: string | null }>({
+                contractId: this.accountId,
+                method: 'storage_balance_bounds',
+                args: {},
+            }),
+        ]);
+
+        if (!storage) return false;
+
+        return BigInt(storage.total) >= BigInt(required!.min);
     }
 }
 
