@@ -122,11 +122,11 @@ export class FungibleToken extends BaseFT {
         });
     }
 
-    public async getBalance(account: Account): Promise<bigint> {
-        const balance = await account.provider.callFunction({
+    public async getBalance({ accountId, provider }: { accountId: string, provider: Provider }): Promise<bigint> {
+        const balance = await provider.callFunction({
             contractId: this.accountId,
             method: 'ft_balance_of',
-            args: { account_id: account.accountId },
+            args: { account_id: accountId },
         });
         return BigInt(balance as string);
     }
