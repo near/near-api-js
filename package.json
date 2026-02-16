@@ -70,7 +70,7 @@
         "rimraf": "6.1.2",
         "semver": "7.7.3",
         "ts-node": "10.9.2",
-        "typedoc": "0.28.16",
+        "typedoc": "0.28.17",
         "typescript": "5.9.3",
         "vitest": "4.0.17"
     },
