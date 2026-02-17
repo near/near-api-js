@@ -29,6 +29,18 @@ test.each`
 });
 
 test.each`
+    balance                         | fracDigits   | expected
+    ${'-5300000000000000000000000'} | ${undefined} | ${'-5.3'}
+    ${'-910000000000000000000000'}  | ${undefined} | ${'-0.91'}
+    ${'-1'}                         | ${undefined} | ${'-0.000000000000000000000001'}
+    ${'-910000000000000000000000'}  | ${0}         | ${'-1'}
+    ${'-499999999999999999999999'}  | ${0}         | ${'0'}
+    ${'-500000000000000000000000'}  | ${0}         | ${'-1'}
+`('formatNearAmount($balance, $fracDigits) handles negative balances', ({ balance, fracDigits, expected }) => {
+    expect(formatNearAmount(balance as string, fracDigits as number | undefined)).toEqual(expected as string);
+});
+
+test.each`
     amt                               | expected
     ${'5.3'}                          | ${'5300000000000000000000000'}
     ${'5'}                            | ${'5000000000000000000000000'}
