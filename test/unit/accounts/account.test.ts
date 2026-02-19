@@ -183,7 +183,7 @@ describe('with deploy contract', () => {
                 contractId: contract.contractId,
                 methodName: 'crossContract',
                 args: {},
-                gas: 300000000000000,
+                gas: 1000000000000000,
             })
         ).rejects.toThrow(/Smart contract panicked: expected to fail./);
     });
@@ -191,7 +191,7 @@ describe('with deploy contract', () => {
     test('cross-contact assertion and panic 2', async () => {
         const result = await nearjs.account.signAndSendTransaction({
             receiverId: contract.contractId,
-            actions: [actions.functionCall('crossContract', {}, 300000000000000n, 0n)],
+            actions: [actions.functionCall('crossContract', {}, 1000000000000000n, 0n)],
             throwOnFailure: false,
         });
 
