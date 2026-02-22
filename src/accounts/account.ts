@@ -490,7 +490,7 @@ export class Account {
 
         const splitted = newAccountId.split('.');
         if (splitted.length != 2) {
-            throw new Error('newAccountId needs to be of the form <string>.<tla>');
+            throw new Error(`${this.accountId} can only create sub-accounts of itself, or children of top-level accounts (e.g. bob.near, bob.testnet)`);
         }
 
         const TLA = splitted[1]!;
