@@ -231,7 +231,9 @@ function useGlobalContract(contractIdentifier: { accountId: string } | { codeHas
             : new GlobalContractIdentifier({
                   CodeHash:
                       typeof contractIdentifier.codeHash === 'string'
-                          ? new Uint8Array(contractIdentifier.codeHash.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))
+                          ? new Uint8Array(
+                                contractIdentifier.codeHash.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
+                            )
                           : contractIdentifier.codeHash,
               });
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier: identifier }) });

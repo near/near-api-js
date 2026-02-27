@@ -145,7 +145,9 @@ export class PublicKey extends Enum {
             case KeyType.ED25519:
                 return ed25519.verify(signature, message, data);
             case KeyType.SECP256K1:
-                return secp256k1.verify(signature.subarray(0, 64), message, new Uint8Array([0x04, ...data]), { prehash: false });
+                return secp256k1.verify(signature.subarray(0, 64), message, new Uint8Array([0x04, ...data]), {
+                    prehash: false,
+                });
             default:
                 throw new Error(`Unknown key type: ${keyType}`);
         }
