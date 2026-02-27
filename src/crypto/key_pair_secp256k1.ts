@@ -1,4 +1,4 @@
-import { secp256k1 } from '@noble/curves/secp256k1';
+import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { baseDecode, baseEncode } from '../utils/index.js';
 
 import { type KeyPairString, KeySize, KeyType } from './constants.js';
@@ -59,8 +59,13 @@ export class KeyPairSecp256k1 extends KeyPairBase {
 
     sign(message: Uint8Array): Signature {
         // nearcore expects 65 byte signatures formed by appending the recovery id to the 64 byte signature
-        const sig = secp256k1.sign(message, baseDecode(this.secretKey));
-        return { signature: new Uint8Array([...sig.toCompactRawBytes(), sig.recovery]), publicKey: this.publicKey };
+        // noble v2 'recovered' format is [recovery, r, s] but NEAR expects [r, s, recovery]
+        // prehash: false because NEAR already provides a sha256-hashed message
+        const raw = secp256k1.sign(message, baseDecode(this.secretKey), { prehash: false, format: 'recovered' });
+        const signature = new Uint8Array(65);
+        signature.set(raw.subarray(1), 0); // r, s (64 bytes)
+        signature[64] = raw[0]!; // recovery byte
+        return { signature, publicKey: this.publicKey };
     }
 
     verify(message: Uint8Array, signature: Uint8Array): boolean {

@@ -507,7 +507,7 @@ describe('global contracts', () => {
 
         test('uses global contract with code hash hex string', async () => {
             const codeHashHex = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
-            const expectedBytes = Buffer.from(codeHashHex, 'hex');
+            const expectedBytes = new Uint8Array(codeHashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)));
             await account.useGlobalContract({ codeHash: codeHashHex });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({

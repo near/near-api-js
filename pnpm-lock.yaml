@@ -29,9 +29,6 @@ importers:
       near-seed-phrase:
         specifier: 0.2.1
         version: 0.2.1
-      secp256k1:
-        specifier: 5.0.1
-        version: 5.0.1
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: 0.18.2
