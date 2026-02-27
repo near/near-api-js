@@ -1,6 +1,5 @@
 import { baseDecode, baseEncode } from '@near-js/utils';
-import randombytes from 'randombytes';
-import secp256k1 from 'secp256k1';
+import { secp256k1 } from '@noble/curves/secp256k1';
 
 import { KeyPairString, KeySize, KeyType } from './constants';
 import { KeyPairBase, Signature } from './key_pair_base';
@@ -30,8 +29,8 @@ export class KeyPairSecp256k1 extends KeyPairBase {
         super();
         const decoded = baseDecode(extendedSecretKey);
         const secretKey = new Uint8Array(decoded.slice(0, KeySize.SECRET_KEY));
-        const withHeader = secp256k1.publicKeyCreate(new Uint8Array(secretKey), false);
-        const data = withHeader.subarray(1, withHeader.length); // remove the 0x04 header byte
+        const withHeader = secp256k1.getPublicKey(new Uint8Array(secretKey), false);
+        const data = withHeader.subarray(1); // remove the 0x04 header byte
         this.publicKey = new PublicKey({
             keyType: KeyType.SECP256K1,
             data
@@ -51,18 +50,17 @@ export class KeyPairSecp256k1 extends KeyPairBase {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        // TODO: find better way to generate PK
-        const secretKey = randombytes(KeySize.SECRET_KEY);
-        const withHeader = secp256k1.publicKeyCreate(new Uint8Array(secretKey), false);
-        const publicKey = withHeader.subarray(1, withHeader.length);
+        const secretKey = crypto.getRandomValues(new Uint8Array(KeySize.SECRET_KEY));
+        const withHeader = secp256k1.getPublicKey(secretKey, false);
+        const publicKey = withHeader.subarray(1);
         const extendedSecretKey = new Uint8Array([...secretKey, ...publicKey]);
         return new KeyPairSecp256k1(baseEncode(extendedSecretKey));
     }
 
     sign(message: Uint8Array): Signature {
         // nearcore expects 65 byte signatures formed by appending the recovery id to the 64 byte signature
-        const { signature, recid } = secp256k1.ecdsaSign(message, baseDecode(this.secretKey)); 
-        return { signature: new Uint8Array([...signature, recid]), publicKey: this.publicKey };
+        const sig = secp256k1.sign(message, baseDecode(this.secretKey));
+        return { signature: new Uint8Array([...sig.toCompactRawBytes(), sig.recovery]), publicKey: this.publicKey };
     }
 
     verify(message: Uint8Array, signature: Uint8Array): boolean {

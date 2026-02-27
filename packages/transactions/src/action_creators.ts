@@ -1,4 +1,5 @@
 import type { PublicKey } from '@near-js/crypto';
+import { stringToBytes } from '@near-js/utils';
 
 import {
     AccessKey,
@@ -78,14 +79,13 @@ function deployContract(code: Uint8Array): Action {
 }
 
 /**
- * Converts an input argument to a Buffer, handling cases for both JSON and Uint8Array.
+ * Converts an input argument to a Uint8Array, handling cases for both JSON and Uint8Array.
  * @param args The input argument, either JSON object or Uint8Array.
- * @returns A Buffer representation of the input argument.
+ * @returns A Uint8Array representation of the input argument.
  */
-export function stringifyJsonOrBytes(args: any): Buffer {
-    const isUint8Array =
-        args.byteLength !== undefined && args.byteLength === args.length;
-    return isUint8Array ? args : Buffer.from(JSON.stringify(args));
+export function stringifyJsonOrBytes(args: any): Uint8Array {
+    if (args instanceof Uint8Array) return args;
+    return stringToBytes(JSON.stringify(args));
 }
 
 /**

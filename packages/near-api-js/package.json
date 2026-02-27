@@ -9,6 +9,8 @@
     "homepage": "https://github.com/near/near-api-js",
     "main": "lib/index.js",
     "browser": "lib/browser-index.js",
+    "unpkg": "lib/iife/browser-index.global.js",
+    "jsdelivr": "lib/iife/browser-index.global.js",
     "types": "lib/index.d.ts",
     "dependencies": {
         "@near-js/accounts": "workspace:*",

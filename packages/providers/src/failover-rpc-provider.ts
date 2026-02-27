@@ -99,7 +99,7 @@ export class FailoverRpcProvider implements Provider {
 
                 return result;
             } catch (e) {
-                console.error(e);
+                Logger.warn(e);
                 this.switchToNextProvider();
             }
         }

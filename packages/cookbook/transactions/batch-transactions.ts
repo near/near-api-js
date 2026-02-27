@@ -33,7 +33,7 @@ export default async function batchTransactions(accountId: string = CONTRACT_NAM
     .deployContract(await readFile(wasmPath))
     .functionCall(
       'new',
-      Buffer.from(JSON.stringify({ staking_pool_whitelist_account_id: WHITELIST_ACCOUNT_ID })),
+      { staking_pool_whitelist_account_id: WHITELIST_ACCOUNT_ID },
       10000000000000n,
     )
     .signAndSend();

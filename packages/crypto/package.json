@@ -20,9 +20,7 @@
 		"@near-js/types": "workspace:*",
 		"@near-js/utils": "workspace:*",
 		"@noble/curves": "1.8.1",
-		"borsh": "1.0.0",
-		"randombytes": "2.1.0",
-		"secp256k1": "5.0.1"
+		"borsh": "1.0.0"
 	},
 	"devDependencies": {
 		"@jest/globals": "^29.7.0",

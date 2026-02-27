@@ -225,7 +225,8 @@ describe('with deploy contract', () => {
         });
 
         const contractAccount = new Account(contractId, nearjs.connection.provider, nearjs.connection.signer);
-        const state = (await contractAccount.viewState('')).map(({ key, value }) => [key.toString('utf-8'), value.toString('utf-8')]);
+        const decoder = new TextDecoder();
+        const state = (await contractAccount.viewState('')).map(({ key, value }) => [decoder.decode(key), decoder.decode(value)]);
         expect(state).toEqual([['name', setCallValue]]);
     });
 
@@ -234,7 +235,7 @@ describe('with deploy contract', () => {
             contractId,
             methodName: 'hello', // this is the function defined in hello.wasm file that we are calling
             args: { name: 'trex' },
-            parse: x => JSON.parse(x.toString()).replace('trex', 'friend')
+            parse: x => JSON.parse(new TextDecoder().decode(x)).replace('trex', 'friend')
         });
         expect(result).toEqual('hello friend');
     });

@@ -61,9 +61,9 @@ export class Runtime {
     }
 
     private storageRead(keyLen: bigint, keyPtr: bigint) {
-        const storageKey = Buffer.from(new Uint8Array(this.memory.buffer, Number(keyPtr), Number(keyLen)));
+        const storageKey = new Uint8Array(this.memory.buffer, Number(keyPtr), Number(keyLen));
 
-        const stateVal = this.context.contractState.filter((obj) => Buffer.compare(obj.key, storageKey) === 0).map((obj) => obj.value);
+        const stateVal = this.context.contractState.filter((obj) => obj.key.length === storageKey.length && obj.key.every((b, i) => b === storageKey[i])).map((obj) => obj.value);
         
         if (stateVal.length === 0) return null;
 

@@ -27,7 +27,7 @@ export interface FunctionCallOptions {
     /**
      * Convert input arguments into bytes array.
      */
-    stringify?: (input: any) => Buffer;
+    stringify?: (input: any) => Uint8Array;
 }
 
 /** @deprecated Will be removed in the next major release */

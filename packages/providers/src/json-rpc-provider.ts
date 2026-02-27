@@ -6,12 +6,16 @@
  * @see {@link "@near-js/types".provider | provider} for a list of request and response types
  */
 import {
+    base64Decode,
+    base64Encode,
     baseEncode,
+    bytesToString,
     findSeatPrice,
     formatError,
     getErrorTypeFromErrorMessage,
     parseRpcError,
     ServerError,
+    stringToBytes,
 } from '@near-js/utils';
 import {
     AccessKeyWithPublicKey,
@@ -102,6 +106,7 @@ export class JsonRpcProvider implements Provider {
 
     /**
      * @param connectionInfo Connection info
+     * @param options for items like retries, time to wait, and backoffs
      */
     constructor(connectionInfo: ConnectionInfo, options?: Partial<RequestOptions>) {
         this.connection = connectionInfo || { url: '' };
@@ -204,7 +209,7 @@ export class JsonRpcProvider implements Provider {
 
         return {
             ...data,
-            code: new Uint8Array(Buffer.from(data.code_base64, 'base64')),
+            code: base64Decode(data.code_base64),
         };
     }
 
@@ -213,7 +218,7 @@ export class JsonRpcProvider implements Provider {
         prefix?: string,
         blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<ContractStateView> {
-        const prefixBase64 = Buffer.from(prefix || '').toString('base64');
+        const prefixBase64 = base64Encode(stringToBytes(prefix || ''));
 
         return (this as Provider).query<ContractStateView>({
             ...blockQuery,
@@ -238,7 +243,7 @@ export class JsonRpcProvider implements Provider {
 
         if (result.length === 0) return undefined;
 
-        const serializedResult = Buffer.from(result).toString();
+        const serializedResult = bytesToString(new Uint8Array(result));
 
         try {
             return JSON.parse(serializedResult) as T;
@@ -253,7 +258,7 @@ export class JsonRpcProvider implements Provider {
         args: Record<string, unknown>,
         blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
     ): Promise<CallContractViewFunctionResultRaw> {
-        const argsBase64 = Buffer.from(JSON.stringify(args)).toString('base64');
+        const argsBase64 = base64Encode(stringToBytes(JSON.stringify(args)));
 
         return await (
             this as Provider
@@ -347,7 +352,7 @@ export class JsonRpcProvider implements Provider {
      */
     async sendTransactionUntil(signedTransaction: SignedTransaction, waitUntil: TxExecutionStatus): Promise<FinalExecutionOutcome> {
         const bytes = encodeTransaction(signedTransaction);
-        return this.sendJsonRpc('send_tx', { signed_tx_base64: Buffer.from(bytes).toString('base64'), wait_until: waitUntil });
+        return this.sendJsonRpc('send_tx', { signed_tx_base64: base64Encode(bytes), wait_until: waitUntil });
     }
 
     /**
@@ -501,7 +506,7 @@ export class JsonRpcProvider implements Provider {
      * Returns the next light client block as far in the future as possible from the last known hash
      * to still be able to validate from that hash. This will either return the last block of the
      * next epoch, or the last final known block.
-     * 
+     *
      * @see [https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
      */
     async nextLightClientBlock(request: NextLightClientBlockRequest): Promise<NextLightClientBlockResponse> {

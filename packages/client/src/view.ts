@@ -10,6 +10,7 @@ import type {
   StakedAccount,
   ViewStateResult,
 } from '@near-js/types';
+import { base64Decode, base64Encode, bytesToString, stringToBytes } from '@near-js/utils';
 
 import type {
   AccountState,
@@ -81,7 +82,7 @@ export function callViewMethod({ account, method, args = {}, blockReference, dep
     request: RequestType.CallFunction,
     account,
     args: {
-      args_base64: Buffer.isBuffer(args) ? args : Buffer.from(JSON.stringify(args)).toString('base64'),
+      args_base64: args instanceof Uint8Array ? base64Encode(args) : base64Encode(stringToBytes(JSON.stringify(args))),
       method_name: method,
     },
     blockReference,
@@ -101,7 +102,7 @@ export function callViewMethod({ account, method, args = {}, blockReference, dep
  */
 export async function view<T extends SerializedReturnValue | bigint>({ account, method, args = {}, blockReference, deps }: ViewParams): Promise<T> {
   const { result } = await callViewMethod({ account, method, args, blockReference, deps });
-  const stringResult = Buffer.from(result).toString();
+  const stringResult = bytesToString(new Uint8Array(result));
   try {
     return JSON.parse(stringResult);
   } catch {
@@ -219,7 +220,7 @@ export async function getContractCode({ account, blockReference, deps }: ViewAcc
     deps,
   });
 
-  return { code: Buffer.from(code_base64, 'base64').toString(), code_base64, hash };
+  return { code: bytesToString(base64Decode(code_base64)), code_base64, hash };
 }
 
 /**
@@ -235,7 +236,7 @@ export async function getContractState({ account, prefix, blockReference, deps }
     request: RequestType.ViewState,
     account,
     args: {
-      prefix_base64: Buffer.from(prefix).toString('base64'),
+      prefix_base64: base64Encode(typeof prefix === 'string' ? stringToBytes(prefix) : prefix),
     },
     blockReference,
     deps,

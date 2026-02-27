@@ -5,16 +5,16 @@ import {
     PositionalArgsError,
 } from "@near-js/types";
 import { Connection } from "./connection";
-import { printTxOutcomeLogs } from "@near-js/utils";
+import { base64Decode, base64Encode, bytesToString, printTxOutcomeLogs, stringToBytes } from "@near-js/utils";
 import { ViewFunctionCallOptions } from "./interface";
 import depd from "depd";
 
 function parseJsonFromRawResponse(response: Uint8Array): any {
-    return JSON.parse(Buffer.from(response).toString());
+    return JSON.parse(bytesToString(new Uint8Array(response)));
 }
 
-function bytesJsonStringify(input: any): Buffer {
-    return Buffer.from(JSON.stringify(input));
+function bytesJsonStringify(input: any): Uint8Array {
+    return stringToBytes(JSON.stringify(input));
 }
 
 /** @deprecated Will be removed in the next major release */
@@ -47,7 +47,7 @@ export async function viewState(
     accountId: string,
     prefix: string | Uint8Array,
     blockQuery: BlockReference = { finality: "optimistic" }
-): Promise<Array<{ key: Buffer; value: Buffer }>> {
+): Promise<Array<{ key: Uint8Array; value: Uint8Array }>> {
     const deprecate = depd('viewState()');
     deprecate('It will be removed in the next major release');
 
@@ -55,12 +55,12 @@ export async function viewState(
         request_type: "view_state",
         ...blockQuery,
         account_id: accountId,
-        prefix_base64: Buffer.from(prefix).toString("base64"),
+        prefix_base64: base64Encode(typeof prefix === 'string' ? stringToBytes(prefix) : prefix),
     });
 
     return values.map(({ key, value }) => ({
-        key: Buffer.from(key, "base64"),
-        value: Buffer.from(value, "base64"),
+        key: base64Decode(key),
+        value: base64Decode(value),
     }));
 }
 
@@ -102,7 +102,7 @@ export async function viewFunction(
         ...blockQuery,
         account_id: contractId,
         method_name: methodName,
-        args_base64: encodedArgs.toString("base64"),
+        args_base64: base64Encode(encodedArgs),
     });
 
     if (result.logs) {
@@ -112,6 +112,6 @@ export async function viewFunction(
     return (
         result.result &&
         result.result.length > 0 &&
-        parse(Buffer.from(result.result))
+        parse(new Uint8Array(result.result))
     );
 }

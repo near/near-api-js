@@ -1224,7 +1224,7 @@ export class Account {
      * @param options.contractId NEAR account where the contract is deployed
      * @param options.methodName The view-only method (no state mutations) name on the contract as it is written in the contract code
      * @param options.args Any arguments to the view contract method, wrapped in JSON
-     * @param options.parse Parse the result of the call. Receives a Buffer (bytes array) and converts it to any object. By default result will be treated as json.
+     * @param options.parse Parse the result of the call. Receives a Uint8Array (bytes array) and converts it to any object. By default result will be treated as json.
      * @param options.stringify Convert input arguments into a bytes array. By default the input is treated as a JSON.
      * @param options.blockQuery specifies which block to query state at. By default returns last DEFAULT_FINALITY block (i.e. not necessarily finalized).
      * @returns {Promise<any>}
@@ -1248,7 +1248,7 @@ export class Account {
     async viewState(
         prefix: string | Uint8Array,
         blockQuery: BlockReference = { finality: DEFAULT_FINALITY }
-    ): Promise<Array<{ key: Buffer; value: Buffer }>> {
+    ): Promise<Array<{ key: Uint8Array; value: Uint8Array }>> {
         const deprecate = depd('Account.viewState()');
         deprecate('It will be removed in the next major release, please switch to either Account.getContractState()');
 
