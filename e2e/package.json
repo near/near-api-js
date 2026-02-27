@@ -5,22 +5,13 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "test": "vitest run"
+        "test": "vitest run --pass-with-no-tests"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@near-js/accounts": "file:../packages/accounts",
-        "@near-js/biometric-ed25519": "file:../packages/biometric-ed25519",
-        "@near-js/crypto": "file:../packages/crypto",
-        "@near-js/providers": "file:../packages/providers",
-        "@near-js/signers": "file:../packages/signers",
-        "@near-js/tokens": "file:../packages/tokens",
-        "@near-js/transactions": "file:../packages/transactions",
-        "@near-js/keystores": "file:../packages/keystores",
-        "@near-js/types": "file:../packages/types",
-        "@near-js/utils": "file:../packages/utils"
+        "near-api-js": "file:.."
     },
     "devDependencies": {
         "@types/node": "20.0.0",

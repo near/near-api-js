@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.build.json",
+    "compilerOptions": {
+        "skipLibCheck": true,
+        "noEmit": true,
+        "noPropertyAccessFromIndexSignature": false,
+        "noUncheckedIndexedAccess": false
+    },
+    "include": ["src/**/*", "test", "e2e"],
+    "exclude": ["node_modules", "lib", "dist", "**/node_modules"],
+    "files": []
+}

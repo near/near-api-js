@@ -1,0 +1,41 @@
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "lib": ["ES2023", "dom"],
+        "module": "NodeNext",
+        "target": "es2020",
+        "moduleResolution": "NodeNext",
+        "alwaysStrict": true,
+        "strict": true,
+        "outDir": "./lib",
+        "declaration": true,
+        "preserveSymlinks": false,
+        "preserveWatchOutput": true,
+        "pretty": false,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "experimentalDecorators": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+        "exactOptionalPropertyTypes": false,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedParameters": true,
+        "isolatedModules": true
+    },
+    "include": [
+        "src/index.ts",
+        "src/tokens/index.ts",
+        "src/tokens/mainnet/index.ts",
+        "src/tokens/testnet/index.ts",
+        "src/nep413/index.ts",
+        "src/seed-phrase/index.ts",
+        "src/rpc-errors/index.ts"
+    ]
+}

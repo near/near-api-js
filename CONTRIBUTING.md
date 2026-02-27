@@ -36,7 +36,7 @@ If you want to ask a question please use the following resources available for y
 
 There are many ways to contribute to this project, and many of them do not involve writing any code. Here's a few ideas to get started:
 
-- Simply start using the library. Go through the [user guide](https://docs.near.org/tools/near-api-js/quick-reference). Does everything work as expected? If not, we're always looking for improvements. Let us know on [GitHub Discussions](https://github.com/near/near-api-js/discussions).
+- Simply start using the library. Go through the [user guide](https://docs.near.org/tools/near-api). Does everything work as expected? If not, we're always looking for improvements.
 - Look through the [open issues](https://github.com/near/near-api-js/issues). Provide workarounds or ask for clarification.
 - If you find an issue you would like to fix, [open a pull request](#pull-requests). Issues tagged as [_Good first issue_](https://github.com/near/near-api-js/labels/good_first_issue) are a good place to get started.
 - Take a look at the [enhancements requested](https://github.com/near/near-api-js/labels/enhancement) by others in the community and consider opening a pull request if you see something you want to work on.

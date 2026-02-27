@@ -33,7 +33,7 @@ jobs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
       with:
-        version: 10.4.1
+        version: 10.28.0
 
     - name: Setup Node
       uses: actions/setup-node@v4
@@ -58,3 +58,64 @@ jobs:
     
     - name: E2E tests
       run: pnpm it --ignore-workspace --dir e2e
+
+    - name: Typecheck
+      run: pnpm typecheck
+
+  changeset-checks:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
+    steps:
+    - name: Fetch PullRequest changed files into a file
+      id: files
+      run: gh api repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls/${{ github.event.pull_request.number }}/files > changed_files.json
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Evaluate changesets changes
+      id: changesets
+      run: |
+        FILES_ADDED=$(jq 'map(select(.status == "added") | select(.filename | test("^\\.changeset/[^/]+\\.md$")) | select(.filename != ".changeset/README.md")) | length' changed_files.json)
+        echo "has_added=$([ "$FILES_ADDED" -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
+
+    - name: Evaluate source file changes
+      id: source-files
+      run: |
+        FILES_CHANGED=$(jq 'map(select(.filename | test("^src/"))) | length' changed_files.json)
+        echo "has_changed=$([ "$FILES_CHANGED" -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
+    
+    - name: Fail if source files changed, but no new changeset
+      if: steps.source-files.outputs.has_changed == 'true' && steps.changesets.outputs.has_added == 'false'
+      run: |
+          echo "❌ Source files changed, but no new changset file was added."
+          echo "Please run 'pnpm changeset' and commit the generated file."
+          exit 1
+    
+    - name: Fail if changeset was added, but no source files were changed
+      if: steps.source-files.outputs.has_changed == 'false' && steps.changesets.outputs.has_added == 'true'
+      run: |
+          echo "⚠️ Changeset file was added, but no source files were modified."
+          echo "Please remove the changeset file before merging."
+          exit 1
+
+  title-lint:
+    name: "Lint PR title for Conventional Commits"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        with:
+          types: |
+            feat
+            fix
+            chore
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            revert
+        env:
+          GITHUB_TOKEN: ${{ github.token }} 
