@@ -6,6 +6,7 @@ import {
     buildDelegateAction,
     createTransaction,
     decodeSignedTransaction,
+    decodeTransaction,
     encodeTransaction,
     KeyPair,
     KeyPairSigner,
@@ -34,6 +35,37 @@ test('test sign transaction with different public key', async () => {
 
     await expect(() => signer.signTransaction(transaction)).rejects.toThrow(
         /The public key doesn't match the signer's key/
+    );
+});
+
+test('test sign encoded then decoded transaction with relevant public key', async () => {
+    const signer = new KeyPairSigner(
+        KeyPair.fromString(
+            'ed25519:sDa8GRWHy16zXzE5ALViy17miA7Lo39DWp8DY5HsTBEayarAWefzbgXmSpW4f8tQn3V8odsY7yGLGmgGaQN2BBF'
+        )
+    );
+
+    const transaction = createTransaction(
+        'signer',
+        await signer.getPublicKey(),
+        'receiver',
+        1n,
+        [],
+        new Uint8Array(new Array(32))
+    );
+
+    const encoded = transaction.encode();
+    const decoded = decodeTransaction(encoded);
+
+    const {
+        txHash: hash,
+        signedTransaction: { signature },
+    } = await signer.signTransaction(decoded);
+
+    expect(Buffer.from(hash).toString('hex')).toBe('2571e3539ab5556e39441913e66abd07e634fb9850434006a719306100e641a2');
+
+    expect(Buffer.from(signature.data).toString('hex')).toBe(
+        'bfe2858d227e3116076a8e5ea9c5bef923c7755f19f0137d1acd9bb67973f1b8a7f83dfc0be23e307e106c8807eaa6e14c0fcb46c42acdf293c4a6a81a27fc05'
     );
 });
 
