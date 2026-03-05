@@ -99,7 +99,7 @@ export class PublicKey extends Enum {
         }
 
         if (typeof value === 'object' && value !== null) {
-            const maybeEd25519 = value.ed25519Key;
+            const maybeEd25519 = value['ed25519Key'];
             if (typeof maybeEd25519 === 'object' && maybeEd25519 !== null && 'data' in maybeEd25519) {
                 return new PublicKey({
                     keyType: KeyType.ED25519,
@@ -107,7 +107,7 @@ export class PublicKey extends Enum {
                 });
             }
 
-            const maybeSecp256k1 = value.secp256k1Key;
+            const maybeSecp256k1 = value['secp256k1Key'];
             if (typeof maybeSecp256k1 === 'object' && maybeSecp256k1 !== null && 'data' in maybeSecp256k1) {
                 return new PublicKey({
                     keyType: KeyType.SECP256K1,
