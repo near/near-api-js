@@ -97,6 +97,8 @@ test('serialize and sign transfer tx object', async () => {
 
     const deserialized = decodeSignedTransaction(serialized);
     expect(encodeTransaction(deserialized)).toEqual(serialized);
+    expect(deserialized.transaction.publicKey).toBeInstanceOf(PublicKey);
+    expect(typeof deserialized.transaction.publicKey.toString()).toBe('string');
 });
 
 test('test sign NEP-413 message with callback url', async () => {
