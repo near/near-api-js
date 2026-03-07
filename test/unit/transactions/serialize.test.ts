@@ -119,6 +119,8 @@ test('serialize transfer tx', async () => {
 
     const deserialized = decodeTransaction(serialized);
     expect(encodeTransaction(deserialized)).toEqual(serialized);
+    expect(deserialized.publicKey).toBeInstanceOf(PublicKey);
+    expect(typeof deserialized.publicKey.toString()).toBe('string');
 });
 
 describe('roundtrip test', () => {
