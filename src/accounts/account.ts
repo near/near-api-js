@@ -490,7 +490,9 @@ export class Account {
 
         const splitted = newAccountId.split('.');
         if (splitted.length != 2) {
-            throw new Error('newAccountId needs to be of the form <string>.<tla>');
+            throw new Error(
+                `${this.accountId} can only create sub-accounts of itself, or accounts of the form <account>.<tla>`
+            );
         }
 
         const TLA = splitted[1]!;
