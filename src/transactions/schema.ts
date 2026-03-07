@@ -1,5 +1,5 @@
 import { deserialize, type Schema, serialize } from 'borsh';
-import type { PublicKey } from '../crypto/index.js';
+import { PublicKey } from '../crypto/index.js';
 
 import type { Action, SignedDelegate } from './actions.js';
 import type { DelegateAction } from './delegate.js';
@@ -77,7 +77,7 @@ export class Transaction {
         blockHash: Uint8Array;
     }) {
         this.signerId = signerId;
-        this.publicKey = publicKey;
+        this.publicKey = PublicKey.from(publicKey);
         this.nonce = nonce;
         this.receiverId = receiverId;
         this.actions = actions;
@@ -98,7 +98,7 @@ export class SignedTransaction {
     signature: Signature;
 
     constructor({ transaction, signature }: { transaction: Transaction; signature: Signature }) {
-        this.transaction = transaction;
+        this.transaction = transaction instanceof Transaction ? transaction : new Transaction(transaction);
         this.signature = signature;
     }
 
