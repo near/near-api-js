@@ -41,7 +41,7 @@ import {
     type TxExecutionStatus,
     TypedError,
 } from '../types/index.js';
-import { baseEncode, findSeatPrice } from '../utils/index.js';
+import { base64Decode, base64Encode, baseEncode, bytesToString, findSeatPrice, stringToBytes } from '../utils/index.js';
 import { parseRpcError, parseRpcErrorMessage } from './errors/parse.js';
 import { RpcError } from './errors/rpc.js';
 import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
@@ -229,7 +229,7 @@ export class JsonRpcProvider implements Provider {
 
         return {
             ...data,
-            code: new Uint8Array(Buffer.from(data.code_base64, 'base64')),
+            code: base64Decode(data.code_base64),
         };
     }
 
@@ -259,7 +259,7 @@ export class JsonRpcProvider implements Provider {
                 code_hash:
                     typeof identifier.codeHash === 'string'
                         ? identifier.codeHash
-                        : Buffer.from(identifier.codeHash).toString('hex'),
+                        : Array.from(identifier.codeHash, (b) => b.toString(16).padStart(2, '0')).join(''),
             });
         } else if ('accountId' in identifier) {
             data = await this.query<RawContractCodeView>({
@@ -273,7 +273,7 @@ export class JsonRpcProvider implements Provider {
 
         return {
             ...data,
-            code: new Uint8Array(Buffer.from(data.code_base64, 'base64')),
+            code: base64Decode(data.code_base64),
         };
     }
 
@@ -282,7 +282,7 @@ export class JsonRpcProvider implements Provider {
         prefix,
         blockQuery = { finality: DEFAULT_FINALITY },
     }: ViewContractStateArgs) {
-        const prefixBase64 = Buffer.from(prefix || '').toString('base64');
+        const prefixBase64 = base64Encode(stringToBytes(prefix || ''));
 
         let reference: { block_id: BlockId } | { finality: Finality };
 
@@ -312,7 +312,7 @@ export class JsonRpcProvider implements Provider {
 
         if (result.length === 0) return undefined;
 
-        const serializedResult = Buffer.from(result).toString();
+        const serializedResult = bytesToString(new Uint8Array(result));
 
         try {
             return JSON.parse(serializedResult) as T;
@@ -327,8 +327,8 @@ export class JsonRpcProvider implements Provider {
         args,
         blockQuery = { finality: DEFAULT_FINALITY },
     }: CallFunctionArgs) {
-        const argsBuffer = ArrayBuffer.isView(args) ? Buffer.from(args) : Buffer.from(JSON.stringify(args));
-        const argsBase64 = argsBuffer.toString('base64');
+        const argsBytes = args instanceof Uint8Array ? args : stringToBytes(JSON.stringify(args));
+        const argsBase64 = base64Encode(argsBytes);
 
         if ('blockId' in blockQuery) {
             return this.query<CallResult>({
@@ -436,7 +436,7 @@ export class JsonRpcProvider implements Provider {
     ): Promise<RpcTransactionResponse> {
         const bytes = encodeTransaction(signedTransaction);
         return this.sendJsonRpc('send_tx', {
-            signed_tx_base64: Buffer.from(bytes).toString('base64'),
+            signed_tx_base64: base64Encode(bytes),
             wait_until: waitUntil,
         });
     }

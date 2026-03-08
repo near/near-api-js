@@ -49,8 +49,7 @@
         "@scure/base": "2.0.0",
         "borsh": "2.0.0",
         "is-my-json-valid": "2.20.6",
-        "near-seed-phrase": "0.2.1",
-        "secp256k1": "5.0.1"
+        "near-seed-phrase": "0.2.1"
     },
     "devDependencies": {
         "@arethetypeswrong/cli": "0.18.2",
