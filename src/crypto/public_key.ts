@@ -88,11 +88,35 @@ export class PublicKey extends Enum {
      * @param value The string or PublicKey instance to create a PublicKey from.
      * @returns {PublicKey} The PublicKey instance.
      */
-    static from(value: string | PublicKey): PublicKey {
+    static from(value: string | PublicKey): PublicKey;
+    static from(value: string | PublicKey | Record<string, unknown>): PublicKey {
         if (typeof value === 'string') {
             return PublicKey.fromString(value);
         }
-        return value;
+
+        if (value instanceof PublicKey) {
+            return value;
+        }
+
+        if (typeof value === 'object' && value !== null) {
+            const maybeEd25519 = value['ed25519Key'];
+            if (typeof maybeEd25519 === 'object' && maybeEd25519 !== null && 'data' in maybeEd25519) {
+                return new PublicKey({
+                    keyType: KeyType.ED25519,
+                    data: Uint8Array.from((maybeEd25519 as { data: Uint8Array | number[] }).data),
+                });
+            }
+
+            const maybeSecp256k1 = value['secp256k1Key'];
+            if (typeof maybeSecp256k1 === 'object' && maybeSecp256k1 !== null && 'data' in maybeSecp256k1) {
+                return new PublicKey({
+                    keyType: KeyType.SECP256K1,
+                    data: Uint8Array.from((maybeSecp256k1 as { data: Uint8Array | number[] }).data),
+                });
+            }
+        }
+
+        throw new Error('Unsupported public key format');
     }
 
     /**
