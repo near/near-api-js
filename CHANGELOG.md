@@ -1,5 +1,21 @@
 # near-api-js
 
+## 7.2.0
+
+### Minor Changes
+
+- [#1877](https://github.com/near/near-api-js/pull/1877) [`eb345df`](https://github.com/near/near-api-js/commit/eb345dff3b2c5773d8ee5b23cbb95f9b6e757519) Thanks [@mikedotexe](https://github.com/mikedotexe)! - Replace Buffer usage with Uint8Array and Web Standard APIs (TextEncoder/TextDecoder, @scure/base) for CommonJS compatibility
+
+- [#1872](https://github.com/near/near-api-js/pull/1872) [`dd086d4`](https://github.com/near/near-api-js/commit/dd086d42f4544db3d4ddac7d694054a46efa50cb) Thanks [@gagdiez](https://github.com/gagdiez)! - Added a signer that knows how to use the legacy keystore
+
+- [#1877](https://github.com/near/near-api-js/pull/1877) [`eb345df`](https://github.com/near/near-api-js/commit/eb345dff3b2c5773d8ee5b23cbb95f9b6e757519) Thanks [@mikedotexe](https://github.com/mikedotexe)! - Replace secp256k1 native crypto dependency with @noble/curves/secp256k1, adapting to the v2 API (prehash option, signature byte ordering)
+
+### Patch Changes
+
+- [#1871](https://github.com/near/near-api-js/pull/1871) [`e35f223`](https://github.com/near/near-api-js/commit/e35f223cbb530903e0331f4a64d635a2c024e22b) Thanks [@gagdiez](https://github.com/gagdiez)! - fix account creation error message
+
+- [#1886](https://github.com/near/near-api-js/pull/1886) [`381b240`](https://github.com/near/near-api-js/commit/381b240ac5a068483dc45d52f98fc1675532564b) Thanks [@gagdiez](https://github.com/gagdiez)! - fix: decode transactions into the right types
+
 ## 7.1.1
 
 ### Patch Changes
