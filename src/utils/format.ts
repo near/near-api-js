@@ -31,22 +31,25 @@ for (let i = 0, offset = 5n; i < NEAR_NOMINATION_EXP; i++, offset = offset * BN1
  */
 export function formatNearAmount(balance: string | number | bigint, fracDigits: number = NEAR_NOMINATION_EXP): string {
     let balanceBN = BigInt(balance);
+    const isNegative = balanceBN < 0n;
     if (fracDigits !== NEAR_NOMINATION_EXP) {
         // Adjust balance for rounding at given number of digits
         const roundingExp = NEAR_NOMINATION_EXP - fracDigits - 1;
         if (roundingExp > 0) {
-            balanceBN += ROUNDING_OFFSETS[roundingExp]!;
+            const offset = ROUNDING_OFFSETS[roundingExp]!;
+            balanceBN += isNegative ? -offset : offset;
         }
     }
 
-    balance = balanceBN.toString();
-    const wholeStr = balance.substring(0, balance.length - NEAR_NOMINATION_EXP) || '0';
-    const fractionStr = balance
-        .substring(balance.length - NEAR_NOMINATION_EXP)
+    const absBalance = (balanceBN < 0n ? -balanceBN : balanceBN).toString();
+    const wholeStr = absBalance.substring(0, absBalance.length - NEAR_NOMINATION_EXP) || '0';
+    const fractionStr = absBalance
+        .substring(absBalance.length - NEAR_NOMINATION_EXP)
         .padStart(NEAR_NOMINATION_EXP, '0')
         .substring(0, fracDigits);
+    const formatted = trimTrailingZeroes(`${formatWithCommas(wholeStr)}.${fractionStr}`);
 
-    return trimTrailingZeroes(`${formatWithCommas(wholeStr)}.${fractionStr}`);
+    return balanceBN < 0n && formatted !== '0' ? `-${formatted}` : formatted;
 }
 
 /**

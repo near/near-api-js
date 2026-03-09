@@ -16,13 +16,17 @@ export function yoctoToNear(yocto: bigint | BigintString, decimals: number = NEA
 
     // check if bigint is constructible
     yocto = `${BigInt(yocto)}`;
-    const wholeStr = yocto.substring(0, yocto.length - NEAR_NOMINATION_EXP) || '0';
-    const fractionStr = yocto
-        .substring(yocto.length - NEAR_NOMINATION_EXP)
+    const isNegative = yocto.startsWith('-');
+    const absYocto = isNegative ? yocto.slice(1) : yocto;
+
+    const wholeStr = absYocto.substring(0, absYocto.length - NEAR_NOMINATION_EXP) || '0';
+    const fractionStr = absYocto
+        .substring(absYocto.length - NEAR_NOMINATION_EXP)
         .padStart(NEAR_NOMINATION_EXP, '0')
         .substring(0, decimals);
+    const near = trimTrailingZeroes(`${wholeStr}.${fractionStr}`);
 
-    return trimTrailingZeroes(`${wholeStr}.${fractionStr}`) as unknown as NumericString;
+    return (isNegative && near !== '0' ? `-${near}` : near) as unknown as NumericString;
 }
 
 function trimTrailingZeroes(value: string): string {
