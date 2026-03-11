@@ -13,34 +13,80 @@
     "packageManager": "pnpm@10.28.0",
     "homepage": "https://github.com/near/near-api-js",
     "type": "module",
+    "types": "./dist/esm/index.d.ts",
+    "main": "./dist/cjs/index.cjs",
+    "module": "./dist/esm/index.js",
+    "browser": "./dist/umd/browser.global.js",
     "exports": {
         ".": {
-            "import": "./lib/index.js",
-            "types": "./lib/index.d.ts"
+            "import": {
+                "types": "./dist/esm/index.d.ts",
+                "default": "./dist/esm/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/index.d.cts",
+                "default": "./dist/cjs/index.cjs"
+            }
         },
         "./tokens": {
-            "import": "./lib/tokens/index.js",
-            "types": "./lib/tokens/index.d.ts"
+            "import": {
+                "types": "./dist/esm/tokens/index.d.ts",
+                "default": "./dist/esm/tokens/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/tokens/index.d.cts",
+                "default": "./dist/cjs/tokens/index.cjs"
+            }
         },
         "./tokens/mainnet": {
-            "import": "./lib/tokens/mainnet/index.js",
-            "types": "./lib/tokens/mainnet/index.d.ts"
+            "import": {
+                "types": "./dist/esm/tokens/mainnet/index.d.ts",
+                "default": "./dist/esm/tokens/mainnet/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/tokens/mainnet/index.d.cts",
+                "default": "./dist/cjs/tokens/mainnet/index.cjs"
+            }
         },
         "./tokens/testnet": {
-            "import": "./lib/tokens/testnet/index.js",
-            "types": "./lib/tokens/testnet/index.d.ts"
+            "import": {
+                "types": "./dist/esm/tokens/testnet/index.d.ts",
+                "default": "./dist/esm/tokens/testnet/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/tokens/testnet/index.d.cts",
+                "default": "./dist/cjs/tokens/testnet/index.cjs"
+            }
         },
         "./nep413": {
-            "import": "./lib/nep413/index.js",
-            "types": "./lib/nep413/index.d.ts"
+            "import": {
+                "types": "./dist/esm/nep413/index.d.ts",
+                "default": "./dist/esm/nep413/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/nep413/index.d.cts",
+                "default": "./dist/cjs/nep413/index.cjs"
+            }
         },
         "./seed-phrase": {
-            "import": "./lib/seed-phrase/index.js",
-            "types": "./lib/seed-phrase/index.d.ts"
+            "import": {
+                "types": "./dist/esm/seed-phrase/index.d.ts",
+                "default": "./dist/esm/seed-phrase/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/seed-phrase/index.d.cts",
+                "default": "./dist/cjs/seed-phrase/index.cjs"
+            }
         },
         "./rpc-errors": {
-            "import": "./lib/rpc-errors/index.js",
-            "types": "./lib/rpc-errors/index.d.ts"
+            "import": {
+                "types": "./dist/esm/rpc-errors/index.d.ts",
+                "default": "./dist/esm/rpc-errors/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/rpc-errors/index.d.cts",
+                "default": "./dist/cjs/rpc-errors/index.cjs"
+            }
         }
     },
     "dependencies": {
@@ -70,37 +116,48 @@
         "rimraf": "6.1.2",
         "semver": "7.7.3",
         "ts-node": "10.9.2",
+        "tsup": "^8.5.1",
         "typedoc": "0.28.16",
         "typescript": "5.9.3",
         "vitest": "4.0.17"
     },
-    "keywords": [],
+    "keywords": [
+        "near-protocol",
+        "blockchain",
+        "web3",
+        "rpc",
+        "crypto",
+        "transactions"
+    ],
     "license": "(MIT AND Apache-2.0)",
     "scripts": {
         "compile": "tsc -p ./tsconfig.build.json",
         "dev": "pnpm compile -w",
         "prebuild": "pnpm clean",
-        "build": "tsc -p ./tsconfig.build.json",
+        "build": "tsup && node scripts/fix-cjs-imports.js",
+        "build:tsc": "tsc -p ./tsconfig.build.json",
         "test": "vitest run test",
         "typecheck": "tsc --noEmit -p ./tsconfig.json",
         "lint": "biome check",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib",
-        "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
+        "clean": "pnpm rimraf lib dist",
+        "check-exports": "attw --pack . --ignore-rules no-resolution",
         "docs:generate": "typedoc",
-        "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
+        "autoclave": "rimraf lib && rimraf dist && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
         "release": "changeset publish",
         "rpc:generate": "pnpm openapi-ts",
         "postrpc:generate": "biome check --fix"
     },
     "files": [
-        "lib",
         "dist"
     ],
     "author": "NEAR Inc",
     "sideEffects": false,
     "resolutions": {
         "near-sandbox": "0.0.18"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": ["esbuild"]
     }
 }
