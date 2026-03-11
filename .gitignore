@@ -1,6 +1,7 @@
 #IDE
 .idea
 .vscode
+.claude/
 
 storage
 node_modules

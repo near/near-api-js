@@ -8,6 +8,7 @@
 export * from './accounts/index.js';
 export type {
     CurveType,
+    KeyCurve,
     KeyPairString,
     Signature as CryptoSignature,
 } from './crypto/index.js';
@@ -22,6 +23,14 @@ export {
     KeyType,
     keyToImplicitAddress,
     PublicKey,
+    sha256,
+    curveFromKey,
+    keyFromString,
+    keyToString,
+    publicKeyFromPrivate,
+    privateKeyFromRandom,
+    signHash,
+    signBytes,
 } from './crypto/index.js';
 // ============================================================================
 // Providers
@@ -37,6 +46,10 @@ export * from './signers/index.js';
 export * from './transactions/index.js';
 export * from './types/index.js';
 export { gigaToGas, nearToYocto, teraToGas, yoctoToNear } from './units/index.js';
+// ============================================================================
+// Serialization (Borsh)
+// ============================================================================
+export { serialize, deserialize, type Schema } from './borsh.js';
 // ============================================================================
 // Utilities
 // ============================================================================

@@ -47,9 +47,10 @@
         "@noble/curves": "2.0.1",
         "@noble/hashes": "2.0.1",
         "@scure/base": "2.0.0",
-        "borsh": "2.0.0",
-        "is-my-json-valid": "2.20.6",
         "near-seed-phrase": "0.2.1"
+    },
+    "optionalDependencies": {
+        "is-my-json-valid": "2.20.6"
     },
     "devDependencies": {
         "@arethetypeswrong/cli": "0.18.2",

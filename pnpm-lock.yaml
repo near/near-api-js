@@ -20,12 +20,6 @@ importers:
       '@scure/base':
         specifier: 2.0.0
         version: 2.0.0
-      borsh:
-        specifier: 2.0.0
-        version: 2.0.0
-      is-my-json-valid:
-        specifier: 2.20.6
-        version: 2.20.6
       near-seed-phrase:
         specifier: 0.2.1
         version: 0.2.1
@@ -90,6 +84,10 @@ importers:
       vitest:
         specifier: 4.0.17
         version: 4.0.17(@types/node@25.0.9)(@vitest/ui@4.0.17)(jiti@2.6.1)(yaml@2.8.1)
+    optionalDependencies:
+      is-my-json-valid:
+        specifier: 2.20.6
+        version: 2.20.6
 
   e2e:
     dependencies:
