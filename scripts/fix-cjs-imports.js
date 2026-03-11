@@ -2,9 +2,22 @@
 /**
  * Post-build script to fix CJS import paths.
  *
- * tsup with bundle:false outputs .cjs files but internal require() calls
- * still reference .js extensions from the TypeScript source. This script
- * rewrites those to .cjs so that CJS resolution works correctly.
+ * Root cause: when package.json has "type": "module" and tsup runs with
+ * bundle:false, esbuild outputs each file as .cjs but does NOT rewrite
+ * the internal require() paths. The source files use .js extensions
+ * (standard ESM convention), so the CJS output ends up with:
+ *
+ *   require("./accounts/index.js")   // file is actually index.cjs
+ *
+ * This is a known tsup/esbuild limitation -- esbuild only resolves imports
+ * when bundling. With bundle:false it transpiles each file independently
+ * and preserves the original import specifiers verbatim.
+ *
+ * Note: the js-monorepo (@fastnear/*) has the same issue but hasn't fixed
+ * it because consumers primarily use the ESM or IIFE builds.
+ *
+ * This script rewrites require("./path.js") -> require("./path.cjs") in
+ * all .cjs output files so that Node's CJS resolver finds them correctly.
  */
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';

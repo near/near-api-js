@@ -19,74 +19,32 @@
     "browser": "./dist/umd/browser.global.js",
     "exports": {
         ".": {
-            "import": {
-                "types": "./dist/esm/index.d.ts",
-                "default": "./dist/esm/index.js"
-            },
-            "require": {
-                "types": "./dist/cjs/index.d.cts",
-                "default": "./dist/cjs/index.cjs"
-            }
+            "require": "./dist/cjs/index.cjs",
+            "import": "./dist/esm/index.js"
         },
         "./tokens": {
-            "import": {
-                "types": "./dist/esm/tokens/index.d.ts",
-                "default": "./dist/esm/tokens/index.js"
-            },
-            "require": {
-                "types": "./dist/cjs/tokens/index.d.cts",
-                "default": "./dist/cjs/tokens/index.cjs"
-            }
+            "require": "./dist/cjs/tokens/index.cjs",
+            "import": "./dist/esm/tokens/index.js"
         },
         "./tokens/mainnet": {
-            "import": {
-                "types": "./dist/esm/tokens/mainnet/index.d.ts",
-                "default": "./dist/esm/tokens/mainnet/index.js"
-            },
-            "require": {
-                "types": "./dist/cjs/tokens/mainnet/index.d.cts",
-                "default": "./dist/cjs/tokens/mainnet/index.cjs"
-            }
+            "require": "./dist/cjs/tokens/mainnet/index.cjs",
+            "import": "./dist/esm/tokens/mainnet/index.js"
         },
         "./tokens/testnet": {
-            "import": {
-                "types": "./dist/esm/tokens/testnet/index.d.ts",
-                "default": "./dist/esm/tokens/testnet/index.js"
-            },
-            "require": {
-                "types": "./dist/cjs/tokens/testnet/index.d.cts",
-                "default": "./dist/cjs/tokens/testnet/index.cjs"
-            }
+            "require": "./dist/cjs/tokens/testnet/index.cjs",
+            "import": "./dist/esm/tokens/testnet/index.js"
         },
         "./nep413": {
-            "import": {
-                "types": "./dist/esm/nep413/index.d.ts",
-                "default": "./dist/esm/nep413/index.js"
-            },
-            "require": {
-                "types": "./dist/cjs/nep413/index.d.cts",
-                "default": "./dist/cjs/nep413/index.cjs"
-            }
+            "require": "./dist/cjs/nep413/index.cjs",
+            "import": "./dist/esm/nep413/index.js"
         },
         "./seed-phrase": {
-            "import": {
-                "types": "./dist/esm/seed-phrase/index.d.ts",
-                "default": "./dist/esm/seed-phrase/index.js"
-            },
-            "require": {
-                "types": "./dist/cjs/seed-phrase/index.d.cts",
-                "default": "./dist/cjs/seed-phrase/index.cjs"
-            }
+            "require": "./dist/cjs/seed-phrase/index.cjs",
+            "import": "./dist/esm/seed-phrase/index.js"
         },
         "./rpc-errors": {
-            "import": {
-                "types": "./dist/esm/rpc-errors/index.d.ts",
-                "default": "./dist/esm/rpc-errors/index.js"
-            },
-            "require": {
-                "types": "./dist/cjs/rpc-errors/index.d.cts",
-                "default": "./dist/cjs/rpc-errors/index.cjs"
-            }
+            "require": "./dist/cjs/rpc-errors/index.cjs",
+            "import": "./dist/esm/rpc-errors/index.js"
         }
     },
     "dependencies": {
