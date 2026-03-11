@@ -17,20 +17,20 @@ export type {
 // Cryptography
 // ============================================================================
 export {
+    curveFromKey,
     KeyPair,
     KeyPairEd25519,
     KeyPairSecp256k1,
     KeyType,
-    keyToImplicitAddress,
-    PublicKey,
-    sha256,
-    curveFromKey,
     keyFromString,
+    keyToImplicitAddress,
     keyToString,
-    publicKeyFromPrivate,
+    PublicKey,
     privateKeyFromRandom,
-    signHash,
+    publicKeyFromPrivate,
+    sha256,
     signBytes,
+    signHash,
 } from './crypto/index.js';
 // ============================================================================
 // Providers

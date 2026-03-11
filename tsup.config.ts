@@ -42,11 +42,16 @@ const globalName = 'nearApi';
  * @fastnear/utils, @fastnear/borsh, etc.
  */
 const footerRedefiningGlobal = `
-Object.defineProperty(globalThis, '${globalName}', {
-  value: ${globalName},
-  enumerable: true,
-  configurable: false,
-});
+try {
+  Object.defineProperty(globalThis, '${globalName}', {
+    value: ${globalName},
+    enumerable: true,
+    configurable: false,
+  });
+} catch (error) {
+  console.error('Could not define global "${globalName}" object', error);
+  throw error;
+}
 `;
 
 export default defineConfig([

@@ -7,12 +7,12 @@ export { KeyPairSecp256k1 } from './key_pair_secp256k1.js';
 export { keyToImplicitAddress, PublicKey } from './public_key.js';
 export type { KeyCurve } from './utils.js';
 export {
-    sha256,
     curveFromKey,
     keyFromString,
     keyToString,
-    publicKeyFromPrivate,
     privateKeyFromRandom,
-    signHash,
+    publicKeyFromPrivate,
+    sha256,
     signBytes,
+    signHash,
 } from './utils.js';
