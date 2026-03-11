@@ -1,6 +1,6 @@
 import { sha256 } from '@noble/hashes/sha2.js';
-import { serialize } from 'borsh';
 import { expect, test } from 'vitest';
+import { serialize } from '../../../src/borsh.js';
 import {
     actions as actionCreators,
     buildDelegateAction,

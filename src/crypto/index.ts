@@ -5,3 +5,14 @@ export type { Signature } from './key_pair_base.js';
 export { KeyPairEd25519 } from './key_pair_ed25519.js';
 export { KeyPairSecp256k1 } from './key_pair_secp256k1.js';
 export { keyToImplicitAddress, PublicKey } from './public_key.js';
+export type { KeyCurve } from './utils.js';
+export {
+    curveFromKey,
+    keyFromString,
+    keyToString,
+    privateKeyFromRandom,
+    publicKeyFromPrivate,
+    sha256,
+    signBytes,
+    signHash,
+} from './utils.js';

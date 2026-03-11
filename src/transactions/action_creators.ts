@@ -239,6 +239,10 @@ function useGlobalContract(contractIdentifier: { accountId: string } | { codeHas
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier: identifier }) });
 }
 
+/**
+ * Action creator functions for building NEAR transaction actions.
+ * @alias actionCreators
+ */
 export const actions = {
     addFullAccessKey,
     addFunctionCallAccessKey,
@@ -255,3 +259,6 @@ export const actions = {
     deployGlobalContract,
     useGlobalContract,
 };
+
+/** @deprecated Use {@link actions} instead. Alias for backwards compatibility with @near-js/transactions. */
+export const actionCreators = actions;

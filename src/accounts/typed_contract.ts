@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-constraint */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import validator from 'is-my-json-valid';
 import type { Provider } from '../providers/index.js';
 import type { BlockReference, TxExecutionStatus } from '../types/index.js';
 import type {
@@ -16,7 +15,7 @@ import type {
     SchemaObject,
 } from './abi_types.js';
 import type { Account } from './account.js';
-import { ArgumentSchemaError, UnknownArgumentError } from './errors.js';
+import { ArgumentSchemaError, UnknownArgumentError, type ValidationError } from './errors.js';
 
 type IsNullable<T> = [null] extends [T] ? true : false;
 
@@ -333,7 +332,7 @@ class RawContract<const abi extends AbiRoot, contractId extends string> {
                             const args = params.args ?? {};
 
                             if (abiFunction && abi) {
-                                validateArguments(args, abiFunction, abi);
+                                await validateArguments(args, abiFunction, abi);
                             }
 
                             return provider.callFunction({
@@ -365,7 +364,7 @@ class RawContract<const abi extends AbiRoot, contractId extends string> {
                             const args = params.args ?? {};
 
                             if (abiFunction && abi) {
-                                validateArguments(args, abiFunction, abi);
+                                await validateArguments(args, abiFunction, abi);
                             }
 
                             return params.account.callFunction({
@@ -390,11 +389,18 @@ class RawContract<const abi extends AbiRoot, contractId extends string> {
 
 export const Contract = RawContract as ContractConstructor;
 
-function validateArguments(args: object, abiFunction: AbiFunction, abiRoot: AbiRoot) {
+async function validateArguments(args: object, abiFunction: AbiFunction, abiRoot: AbiRoot) {
     if (typeof args !== 'object' || typeof abiFunction.params !== 'object') return;
 
     if (abiFunction.params.serialization_type === 'json') {
         const params = abiFunction.params.args;
+        let validator: (schema: unknown) => ((value: unknown) => boolean) & { errors: ValidationError[] };
+        try {
+            ({ default: validator } = await import('is-my-json-valid'));
+        } catch {
+            // is-my-json-valid is an optional dependency; skip validation if not installed
+            return;
+        }
         for (const p of params) {
             const arg = args[p.name];
             const typeSchema = p.type_schema;

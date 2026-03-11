@@ -1,4 +1,10 @@
-import type { ValidationError } from 'is-my-json-valid';
+/** Validation error shape from is-my-json-valid (optional dependency). */
+export interface ValidationError {
+    field: string;
+    message: string;
+    value: unknown;
+    type: string;
+}
 
 export class UnsupportedSerializationError extends Error {
     constructor(methodName: string, serializationType: string) {
