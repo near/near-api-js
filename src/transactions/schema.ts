@@ -1,4 +1,4 @@
-import { deserialize, type Schema, serialize } from 'borsh';
+import { deserialize, type Schema, serialize } from '../borsh.js';
 import { PublicKey } from '../crypto/index.js';
 
 import type { Action, SignedDelegate } from './actions.js';

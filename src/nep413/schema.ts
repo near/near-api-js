@@ -1,5 +1,5 @@
 import { sha256 } from '@noble/hashes/sha2.js';
-import { type Schema, serialize } from 'borsh';
+import { type Schema, serialize } from '../borsh.js';
 
 export interface MessagePayload {
     message: string; // The message that wants to be transmitted.
