@@ -6,7 +6,7 @@
         "noPropertyAccessFromIndexSignature": false,
         "noUncheckedIndexedAccess": false
     },
-    "include": ["src/**/*", "test", "e2e"],
+    "include": ["src/**/*", "test"],
     "exclude": ["node_modules", "lib", "dist", "**/node_modules"],
     "files": []
 }
