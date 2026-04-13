@@ -45,7 +45,7 @@
     },
     "dependencies": {
         "@noble/curves": "2.0.1",
-        "@noble/hashes": "2.0.1",
+        "@noble/hashes": "2.2.0",
         "@scure/base": "2.0.0",
         "borsh": "2.0.0",
         "is-my-json-valid": "2.20.6",
