@@ -18,6 +18,7 @@ import {
     type TxExecutionStatus,
     TypedError,
 } from '../types/index.js';
+import { AccountDoesNotExistError } from './errors/handler.js';
 import type {
     CallFunctionArgs,
     Provider,
@@ -80,6 +81,9 @@ export class FailoverRpcProvider implements Provider {
 
                 return result;
             } catch (e) {
+                if (e instanceof AccountDoesNotExistError) {
+                    throw e;
+                }
                 console.error(e);
                 this.switchToNextProvider();
             }
