@@ -1,8 +1,15 @@
-import type { PrepareError, WasmTrap } from '../../rpc/types.gen.js';
+import type { PrepareError, RpcTransactionResponse, WasmTrap } from '../../rpc/types.gen.js';
 import type { BlockHash } from '../../types/index.js';
 import { HandlerError } from './handler.js';
 
 export class ContractExecutionError extends HandlerError {
+    /**
+     * Complete RPC response when this error was derived from a failed submitted transaction.
+     *
+     * It is unavailable for read-only (view) calls: they do not submit a transaction or produce receipts.
+     */
+    public transactionResult?: RpcTransactionResponse;
+
     constructor(
         message: string,
         public readonly blockHash: BlockHash,

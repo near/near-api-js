@@ -4,11 +4,19 @@ import type {
     CryptoHash,
     GlobalContractIdentifier,
     MissingTrieValueContext,
+    RpcTransactionResponse,
 } from '../../rpc/types.gen.js';
 import type { BlockHash } from '../../types/index.js';
 import { RpcError } from './rpc.js';
 
 export class TransactionExecutionError extends RpcError {
+    /**
+     * Complete RPC response when this error was derived from a failed submitted transaction.
+     *
+     * It is unavailable for read-only (view) calls: they do not submit a transaction or produce receipts.
+     */
+    public transactionResult?: RpcTransactionResponse;
+
     constructor(
         message: string,
         public readonly txHash: CryptoHash,

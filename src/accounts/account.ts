@@ -436,7 +436,8 @@ export class Account {
             throw parseTransactionExecutionError(
                 result.status.Failure,
                 result.transaction_outcome.id,
-                result.transaction_outcome.block_hash
+                result.transaction_outcome.block_hash,
+                result
             );
         }
 
