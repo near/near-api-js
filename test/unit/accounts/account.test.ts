@@ -11,10 +11,8 @@ import {
     KeyPairSigner,
     KeyType,
 } from '../../../src/index.js';
-import {
-    AccountAlreadyExistsActionError,
-} from '../../../src/providers/errors/transaction_execution.js';
 import { ContractExecutionError } from '../../../src/providers/errors/contract_execution.js';
+import { AccountAlreadyExistsActionError } from '../../../src/providers/errors/transaction_execution.js';
 import {
     createAccount,
     generateUniqueString,
