@@ -3,6 +3,7 @@ import { TextEncoder } from 'util';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src/index.js';
 import { startSandbox } from '../../sandbox.js';
+import { AccountDoesNotExistError } from '../../../src/providers/errors/handler.js';
 
 global.TextEncoder = TextEncoder;
 
@@ -221,6 +222,39 @@ describe('failover provider', () => {
         const provider = new FailoverRpcProvider(jsonProviders);
 
         expect(await provider.viewNodeStatus()).toBe('second');
+    });
+
+    test('FailoverRpc does not retry account-not-found errors', async () => {
+        let secondProviderCalls = 0;
+        const accountNotFound = new AccountDoesNotExistError('missing.near', 'block-hash', 1);
+        const jsonProviders = [
+            Object.setPrototypeOf(
+                {
+                    viewAccount() {
+                        throw accountNotFound;
+                    },
+                },
+                JsonRpcProvider.prototype
+            ),
+            Object.setPrototypeOf(
+                {
+                    viewAccount() {
+                        secondProviderCalls += 1;
+                        return {
+                            amount: '0',
+                        };
+                    },
+                },
+                JsonRpcProvider.prototype
+            ),
+        ];
+
+        const provider = new FailoverRpcProvider(jsonProviders);
+
+        await expect(
+            provider.viewAccount({ accountId: 'missing.near', blockQuery: { finality: 'final' } })
+        ).rejects.toThrow(AccountDoesNotExistError);
+        expect(secondProviderCalls).toBe(0);
     });
 
     test('FailoverRpc returns error if all providers are unavailable', async () => {
