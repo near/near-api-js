@@ -13,34 +13,46 @@
     "packageManager": "pnpm@10.28.0",
     "homepage": "https://github.com/near/near-api-js",
     "type": "module",
+    "main": "./lib/index.cjs",
+    "module": "./lib/index.js",
+    "types": "./lib/index.d.ts",
+    "unpkg": "./dist/near-api-js.iife.js",
+    "jsdelivr": "./dist/near-api-js.iife.js",
     "exports": {
         ".": {
+            "types": "./lib/index.d.ts",
             "import": "./lib/index.js",
-            "types": "./lib/index.d.ts"
+            "require": "./lib/index.cjs"
         },
         "./tokens": {
+            "types": "./lib/tokens/index.d.ts",
             "import": "./lib/tokens/index.js",
-            "types": "./lib/tokens/index.d.ts"
+            "require": "./lib/tokens/index.cjs"
         },
         "./tokens/mainnet": {
+            "types": "./lib/tokens/mainnet/index.d.ts",
             "import": "./lib/tokens/mainnet/index.js",
-            "types": "./lib/tokens/mainnet/index.d.ts"
+            "require": "./lib/tokens/mainnet/index.cjs"
         },
         "./tokens/testnet": {
+            "types": "./lib/tokens/testnet/index.d.ts",
             "import": "./lib/tokens/testnet/index.js",
-            "types": "./lib/tokens/testnet/index.d.ts"
+            "require": "./lib/tokens/testnet/index.cjs"
         },
         "./nep413": {
+            "types": "./lib/nep413/index.d.ts",
             "import": "./lib/nep413/index.js",
-            "types": "./lib/nep413/index.d.ts"
+            "require": "./lib/nep413/index.cjs"
         },
         "./seed-phrase": {
+            "types": "./lib/seed-phrase/index.d.ts",
             "import": "./lib/seed-phrase/index.js",
-            "types": "./lib/seed-phrase/index.d.ts"
+            "require": "./lib/seed-phrase/index.cjs"
         },
         "./rpc-errors": {
+            "types": "./lib/rpc-errors/index.d.ts",
             "import": "./lib/rpc-errors/index.js",
-            "types": "./lib/rpc-errors/index.d.ts"
+            "require": "./lib/rpc-errors/index.cjs"
         }
     },
     "dependencies": {
@@ -69,6 +81,7 @@
         "rimraf": "6.1.2",
         "semver": "7.7.3",
         "ts-node": "10.9.2",
+        "tsup": "^8.5.0",
         "typedoc": "0.28.16",
         "typescript": "5.9.3",
         "vitest": "4.0.17"
@@ -76,16 +89,17 @@
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
     "scripts": {
-        "compile": "tsc -p ./tsconfig.build.json",
+        "compile": "tsup",
         "dev": "pnpm compile -w",
         "prebuild": "pnpm clean",
-        "build": "tsc -p ./tsconfig.build.json",
+        "build": "tsup",
         "test": "vitest run test",
+        "test:formats": "pnpm build && vitest run test/unit/formats.test.ts",
         "typecheck": "tsc --noEmit -p ./tsconfig.json",
         "lint": "biome check",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib",
+        "clean": "pnpm rimraf lib dist",
         "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
         "docs:generate": "typedoc",
         "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
