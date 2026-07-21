@@ -20,39 +20,74 @@
     "jsdelivr": "./dist/near-api-js.iife.js",
     "exports": {
         ".": {
-            "types": "./lib/index.d.ts",
-            "import": "./lib/index.js",
-            "require": "./lib/index.cjs"
+            "import": {
+                "types": "./lib/index.d.ts",
+                "default": "./lib/index.js"
+            },
+            "require": {
+                "types": "./lib/index.d.cts",
+                "default": "./lib/index.cjs"
+            }
         },
         "./tokens": {
-            "types": "./lib/tokens/index.d.ts",
-            "import": "./lib/tokens/index.js",
-            "require": "./lib/tokens/index.cjs"
+            "import": {
+                "types": "./lib/tokens/index.d.ts",
+                "default": "./lib/tokens/index.js"
+            },
+            "require": {
+                "types": "./lib/tokens/index.d.cts",
+                "default": "./lib/tokens/index.cjs"
+            }
         },
         "./tokens/mainnet": {
-            "types": "./lib/tokens/mainnet/index.d.ts",
-            "import": "./lib/tokens/mainnet/index.js",
-            "require": "./lib/tokens/mainnet/index.cjs"
+            "import": {
+                "types": "./lib/tokens/mainnet/index.d.ts",
+                "default": "./lib/tokens/mainnet/index.js"
+            },
+            "require": {
+                "types": "./lib/tokens/mainnet/index.d.cts",
+                "default": "./lib/tokens/mainnet/index.cjs"
+            }
         },
         "./tokens/testnet": {
-            "types": "./lib/tokens/testnet/index.d.ts",
-            "import": "./lib/tokens/testnet/index.js",
-            "require": "./lib/tokens/testnet/index.cjs"
+            "import": {
+                "types": "./lib/tokens/testnet/index.d.ts",
+                "default": "./lib/tokens/testnet/index.js"
+            },
+            "require": {
+                "types": "./lib/tokens/testnet/index.d.cts",
+                "default": "./lib/tokens/testnet/index.cjs"
+            }
         },
         "./nep413": {
-            "types": "./lib/nep413/index.d.ts",
-            "import": "./lib/nep413/index.js",
-            "require": "./lib/nep413/index.cjs"
+            "import": {
+                "types": "./lib/nep413/index.d.ts",
+                "default": "./lib/nep413/index.js"
+            },
+            "require": {
+                "types": "./lib/nep413/index.d.cts",
+                "default": "./lib/nep413/index.cjs"
+            }
         },
         "./seed-phrase": {
-            "types": "./lib/seed-phrase/index.d.ts",
-            "import": "./lib/seed-phrase/index.js",
-            "require": "./lib/seed-phrase/index.cjs"
+            "import": {
+                "types": "./lib/seed-phrase/index.d.ts",
+                "default": "./lib/seed-phrase/index.js"
+            },
+            "require": {
+                "types": "./lib/seed-phrase/index.d.cts",
+                "default": "./lib/seed-phrase/index.cjs"
+            }
         },
         "./rpc-errors": {
-            "types": "./lib/rpc-errors/index.d.ts",
-            "import": "./lib/rpc-errors/index.js",
-            "require": "./lib/rpc-errors/index.cjs"
+            "import": {
+                "types": "./lib/rpc-errors/index.d.ts",
+                "default": "./lib/rpc-errors/index.js"
+            },
+            "require": {
+                "types": "./lib/rpc-errors/index.d.cts",
+                "default": "./lib/rpc-errors/index.cjs"
+            }
         }
     },
     "dependencies": {
