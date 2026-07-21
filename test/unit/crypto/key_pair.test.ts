@@ -1,6 +1,13 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { describe, expect, test } from 'vitest';
-import { baseEncode, KeyPair, KeyPairEd25519, KeyPairSecp256k1, PublicKey } from '../../../src/index.js';
+import {
+    baseEncode,
+    KeyPair,
+    KeyPairEd25519,
+    KeyPairMLDSA65,
+    KeyPairSecp256k1,
+    PublicKey,
+} from '../../../src/index.js';
 
 const encoder = new TextEncoder();
 
@@ -99,6 +106,15 @@ describe('Using Secp256k1 Curve', () => {
         const keyPair2 = KeyPair.fromString(keyString);
         expect(keyPair2.toString()).toEqual(keyString);
     });
+});
+
+test('ML-DSA-65 signs and verifies', () => {
+    const keyPair = KeyPairMLDSA65.fromRandom();
+    const message = sha256(encoder.encode('message'));
+    const signature = keyPair.sign(message);
+
+    expect(keyPair.verify(message, signature.signature)).toBeTruthy();
+    expect(KeyPair.fromString(keyPair.toString()).getPublicKey().toString()).toEqual(keyPair.getPublicKey().toString());
 });
 
 test('convert to string', async () => {

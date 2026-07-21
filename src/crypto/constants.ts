@@ -13,6 +13,6 @@ export const KeySize = {
     MLDSA65_SIGNATURE: 3309,
 };
 
-export type CurveType = 'ed25519' | 'ED25519' | 'secp256k1' | 'SECP256K1';
+export type CurveType = 'ed25519' | 'ED25519' | 'secp256k1' | 'SECP256K1' | 'ml-dsa-65' | 'ML-DSA-65';
 
-export type KeyPairString = `ed25519:${string}` | `secp256k1:${string}`;
+export type KeyPairString = `ed25519:${string}` | `secp256k1:${string}` | `ml-dsa-65:${string}`;

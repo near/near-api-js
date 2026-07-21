@@ -70,8 +70,8 @@ importers:
         specifier: 0.5.1
         version: 0.5.1
       near-sandbox:
-        specifier: 0.3.0
-        version: 0.3.0
+        specifier: 0.3.1
+        version: 0.3.1
       rimraf:
         specifier: 6.1.2
         version: 6.1.2
@@ -1705,8 +1705,8 @@ packages:
   near-hello@0.5.1:
     resolution: {integrity: sha512-k7S8VFyESWgkKYDso99B4XbxAdo0VX9b3+GAaO5PvMgQjNr/6o09PHRywg/NkBQpf+ZYj7nNpJcyrNJGQsvA3w==}
 
-  near-sandbox@0.3.0:
-    resolution: {integrity: sha512-bsVINj/moYrM07yedE2whEY0pF8ZoU5TtYn4W1A+CXAH3PzYeIYMzrdZzaQoyR+NUV20R5zin7uGtJM4OhhLfg==}
+  near-sandbox@0.3.1:
+    resolution: {integrity: sha512-NZRbUdrWMz4uxiLiFAG3Gnkj30yLp9gUDLT/J+jr8DfDX9EMqCQ58t9rrc5zroBKcJ7+gVDY2gJ6dYOyOtqMDQ==}
     engines: {node: '>=22.22.2'}
     hasBin: true
 
@@ -2863,11 +2863,11 @@ snapshots:
       globby: 11.1.0
       read-yaml-file: 1.1.0
 
+  '@noble/ciphers@2.2.0': {}
+
   '@noble/curves@2.0.1':
     dependencies:
       '@noble/hashes': 2.0.1
-
-  '@noble/ciphers@2.2.0': {}
 
   '@noble/curves@2.2.0':
     dependencies:
@@ -3985,7 +3985,7 @@ snapshots:
 
   near-hello@0.5.1: {}
 
-  near-sandbox@0.3.0:
+  near-sandbox@0.3.1:
     dependencies:
       got: 11.8.6
       json-merge-patch: 1.0.2

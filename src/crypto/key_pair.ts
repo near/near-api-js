@@ -1,6 +1,7 @@
 import type { CurveType, KeyPairString } from './constants.js';
 import { KeyPairBase } from './key_pair_base.js';
 import { KeyPairEd25519 } from './key_pair_ed25519.js';
+import { KeyPairMLDSA65 } from './key_pair_ml_dsa_65.js';
 import { KeyPairSecp256k1 } from './key_pair_secp256k1.js';
 
 export abstract class KeyPair extends KeyPairBase {
@@ -14,6 +15,8 @@ export abstract class KeyPair extends KeyPairBase {
                 return KeyPairEd25519.fromRandom();
             case 'SECP256K1':
                 return KeyPairSecp256k1.fromRandom();
+            case 'ML-DSA-65':
+                return KeyPairMLDSA65.fromRandom();
             default:
                 throw new Error(`Unknown curve ${curve}`);
         }
@@ -32,6 +35,8 @@ export abstract class KeyPair extends KeyPairBase {
                     return new KeyPairEd25519(parts[1]!);
                 case 'SECP256K1':
                     return new KeyPairSecp256k1(parts[1]!);
+                case 'ML-DSA-65':
+                    return new KeyPairMLDSA65(parts[1]!);
                 default:
                     throw new Error(`Unknown curve: ${parts[0]}`);
             }

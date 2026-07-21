@@ -1,5 +1,6 @@
 import { ed25519 } from '@noble/curves/ed25519.js';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
+import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js';
 import { baseDecode, baseEncode } from '../utils/index.js';
 
 import { KeySize, KeyType } from './constants.js';
@@ -198,7 +199,7 @@ export class PublicKey extends Enum {
                     prehash: false,
                 });
             case KeyType.MLDSA65:
-                throw new Error('ML-DSA-65 signature verification is not supported by this package');
+                return ml_dsa65.verify(signature, message, data);
             default:
                 throw new Error(`Unknown key type: ${keyType}`);
         }
