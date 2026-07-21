@@ -2,8 +2,8 @@ import type { Sandbox } from 'near-sandbox';
 import { TextEncoder } from 'util';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src/index.js';
-import { startSandbox } from '../../sandbox.js';
 import { AccountDoesNotExistError } from '../../../src/providers/errors/handler.js';
+import { startSandbox } from '../../sandbox.js';
 
 global.TextEncoder = TextEncoder;
 
