@@ -1,22 +1,22 @@
 import { readFile } from 'fs/promises';
-import { Worker } from 'near-workspaces';
+import type { Sandbox } from 'near-sandbox';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import { Account, Contract, JsonRpcProvider, KeyPair, KeyPairSigner, type KeyPairString } from '../../src/index.js';
 import { NEAR } from '../../src/tokens/index.js';
 import { abi } from '../contracts/guestbook/abi.js';
-import { getRpcUrl, getSecretKey } from './worker.js';
+import { getRootSecretKey, getRpcUrl, ROOT_ACCOUNT_ID, startSandbox } from '../sandbox.js';
 
-let worker: Worker;
+let sandbox: Sandbox;
 let rootAccount: Account;
 let guestbookAccount: Account;
 
 beforeAll(async () => {
-    worker = await Worker.init();
+    sandbox = await startSandbox();
 
-    const provider = new JsonRpcProvider({ url: getRpcUrl(worker) });
-    const signer = KeyPairSigner.fromSecretKey(getSecretKey(worker) as KeyPairString);
+    const provider = new JsonRpcProvider({ url: getRpcUrl(sandbox) });
+    const signer = KeyPairSigner.fromSecretKey(getRootSecretKey() as KeyPairString);
 
-    rootAccount = new Account(worker.rootAccount.accountId, provider, signer);
+    rootAccount = new Account(ROOT_ACCOUNT_ID, provider, signer);
 
     await rootAccount.createAccount({
         newAccountId: `guestbook.${rootAccount.accountId}`,
@@ -35,9 +35,9 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    if (!worker) return;
+    if (!sandbox) return;
 
-    await worker.tearDown();
+    await sandbox.tearDown();
 });
 
 test('Contract has abi', async () => {

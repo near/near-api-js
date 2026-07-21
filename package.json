@@ -7,7 +7,7 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "engines": {
-        "node": ">=20.18.3",
+        "node": ">=22.22.2",
         "pnpm": ">=10.4.1"
     },
     "packageManager": "pnpm@10.28.0",
@@ -65,7 +65,7 @@
         "commitlint": "20.3.1",
         "husky": "9.1.7",
         "near-hello": "0.5.1",
-        "near-workspaces": "5.0.0",
+        "near-sandbox": "0.3.0",
         "rimraf": "6.1.2",
         "semver": "7.7.3",
         "ts-node": "10.9.2",
@@ -98,8 +98,5 @@
         "dist"
     ],
     "author": "NEAR Inc",
-    "sideEffects": false,
-    "resolutions": {
-        "near-sandbox": "0.0.18"
-    }
+    "sideEffects": false
 }
