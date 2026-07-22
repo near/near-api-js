@@ -7,45 +7,91 @@
         "url": "git+https://github.com/near/near-api-js.git"
     },
     "engines": {
-        "node": ">=20.18.3",
+        "node": ">=22.22.2",
         "pnpm": ">=10.4.1"
     },
     "packageManager": "pnpm@10.28.0",
     "homepage": "https://github.com/near/near-api-js",
     "type": "module",
+    "main": "./lib/index.cjs",
+    "module": "./lib/index.js",
+    "types": "./lib/index.d.ts",
     "exports": {
         ".": {
-            "import": "./lib/index.js",
-            "types": "./lib/index.d.ts"
+            "import": {
+                "types": "./lib/index.d.ts",
+                "default": "./lib/index.js"
+            },
+            "require": {
+                "types": "./lib/index.d.cts",
+                "default": "./lib/index.cjs"
+            }
         },
         "./tokens": {
-            "import": "./lib/tokens/index.js",
-            "types": "./lib/tokens/index.d.ts"
+            "import": {
+                "types": "./lib/tokens/index.d.ts",
+                "default": "./lib/tokens/index.js"
+            },
+            "require": {
+                "types": "./lib/tokens/index.d.cts",
+                "default": "./lib/tokens/index.cjs"
+            }
         },
         "./tokens/mainnet": {
-            "import": "./lib/tokens/mainnet/index.js",
-            "types": "./lib/tokens/mainnet/index.d.ts"
+            "import": {
+                "types": "./lib/tokens/mainnet/index.d.ts",
+                "default": "./lib/tokens/mainnet/index.js"
+            },
+            "require": {
+                "types": "./lib/tokens/mainnet/index.d.cts",
+                "default": "./lib/tokens/mainnet/index.cjs"
+            }
         },
         "./tokens/testnet": {
-            "import": "./lib/tokens/testnet/index.js",
-            "types": "./lib/tokens/testnet/index.d.ts"
+            "import": {
+                "types": "./lib/tokens/testnet/index.d.ts",
+                "default": "./lib/tokens/testnet/index.js"
+            },
+            "require": {
+                "types": "./lib/tokens/testnet/index.d.cts",
+                "default": "./lib/tokens/testnet/index.cjs"
+            }
         },
         "./nep413": {
-            "import": "./lib/nep413/index.js",
-            "types": "./lib/nep413/index.d.ts"
+            "import": {
+                "types": "./lib/nep413/index.d.ts",
+                "default": "./lib/nep413/index.js"
+            },
+            "require": {
+                "types": "./lib/nep413/index.d.cts",
+                "default": "./lib/nep413/index.cjs"
+            }
         },
         "./seed-phrase": {
-            "import": "./lib/seed-phrase/index.js",
-            "types": "./lib/seed-phrase/index.d.ts"
+            "import": {
+                "types": "./lib/seed-phrase/index.d.ts",
+                "default": "./lib/seed-phrase/index.js"
+            },
+            "require": {
+                "types": "./lib/seed-phrase/index.d.cts",
+                "default": "./lib/seed-phrase/index.cjs"
+            }
         },
         "./rpc-errors": {
-            "import": "./lib/rpc-errors/index.js",
-            "types": "./lib/rpc-errors/index.d.ts"
+            "import": {
+                "types": "./lib/rpc-errors/index.d.ts",
+                "default": "./lib/rpc-errors/index.js"
+            },
+            "require": {
+                "types": "./lib/rpc-errors/index.d.cts",
+                "default": "./lib/rpc-errors/index.cjs"
+            }
         }
     },
     "dependencies": {
         "@noble/curves": "2.0.1",
         "@noble/hashes": "2.0.1",
+        "@noble/post-quantum": "0.6.1",
         "@scure/base": "2.0.0",
         "borsh": "2.0.0",
         "is-my-json-valid": "2.20.6",
@@ -65,10 +111,11 @@
         "commitlint": "20.3.1",
         "husky": "9.1.7",
         "near-hello": "0.5.1",
-        "near-workspaces": "5.0.0",
+        "near-sandbox": "0.3.1",
         "rimraf": "6.1.2",
         "semver": "7.7.3",
         "ts-node": "10.9.2",
+        "tsup": "^8.5.0",
         "typedoc": "0.28.16",
         "typescript": "5.9.3",
         "vitest": "4.0.17"
@@ -76,11 +123,12 @@
     "keywords": [],
     "license": "(MIT AND Apache-2.0)",
     "scripts": {
-        "compile": "tsc -p ./tsconfig.build.json",
+        "compile": "tsup",
         "dev": "pnpm compile -w",
         "prebuild": "pnpm clean",
-        "build": "tsc -p ./tsconfig.build.json",
+        "build": "tsup",
         "test": "vitest run test",
+        "test:formats": "pnpm build && vitest run test/unit/formats.test.ts",
         "typecheck": "tsc --noEmit -p ./tsconfig.json",
         "lint": "biome check",
         "prefuzz": "pnpm build",
@@ -94,12 +142,8 @@
         "postrpc:generate": "biome check --fix"
     },
     "files": [
-        "lib",
-        "dist"
+        "lib"
     ],
     "author": "NEAR Inc",
-    "sideEffects": false,
-    "resolutions": {
-        "near-sandbox": "0.0.18"
-    }
+    "sideEffects": false
 }

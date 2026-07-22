@@ -1,4 +1,4 @@
-import type { Worker } from 'near-workspaces';
+import type { Sandbox } from 'near-sandbox';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { Contract } from '../../../src/index.js';
 import { deployContract, generateUniqueString, setUpTestConnection } from './test-utils.js';
@@ -12,11 +12,11 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    const worker = nearjs.worker as Worker;
+    const sandbox = nearjs.sandbox as Sandbox;
 
-    if (!worker) return;
+    if (!sandbox) return;
 
-    await worker.tearDown();
+    await sandbox.tearDown();
 });
 
 describe('with promises', () => {

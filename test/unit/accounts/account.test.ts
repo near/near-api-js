@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import type { Worker } from 'near-workspaces';
+import type { Sandbox } from 'near-sandbox';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
     Account,
@@ -32,11 +32,11 @@ beforeAll(async () => {
 afterAll(async () => {
     await workingAccount.deleteAccount(workingAccount.accountId);
 
-    const worker = nearjs.worker as Worker;
+    const sandbox = nearjs.sandbox as Sandbox;
 
-    if (!worker) return;
+    if (!sandbox) return;
 
-    await worker.tearDown();
+    await sandbox.tearDown();
 });
 
 test('create instance of Account with string secret key', async () => {
@@ -113,6 +113,24 @@ test('send money', async () => {
     await sender.transfer({ receiverId: receiver.accountId, amount: 10000n });
     const state = await receiver.getState();
     expect(state.balance.total).toEqual(total + 10000n);
+});
+
+test('all supported key types can authorize transfers', async () => {
+    const keys = [KeyPair.fromRandom('ed25519'), KeyPair.fromRandom('secp256k1'), KeyPair.fromRandom('ml-dsa-65')];
+    const senderId = `keys.${workingAccount.accountId}`;
+
+    await workingAccount.createAccount({
+        newAccountId: senderId,
+        publicKey: keys[0]!.getPublicKey(),
+        nearToTransfer: 1_000_000_000_000_000_000_000_000n,
+    });
+    const senderWithEd25519 = new Account(senderId, nearjs.provider, new KeyPairSigner(keys[0]!));
+    for (const key of keys.slice(1)) await senderWithEd25519.addFullAccessKey(key.getPublicKey());
+
+    for (const key of keys) {
+        const sender = new Account(senderId, nearjs.provider, new KeyPairSigner(key));
+        await sender.transfer({ receiverId: workingAccount.accountId, amount: 1n });
+    }
 });
 
 test('send money through signAndSendTransaction', async () => {
@@ -434,7 +452,7 @@ describe('global contracts', () => {
             await account.deployGlobalContract(contractCode, 'codeHash');
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         deployGlobalContract: expect.objectContaining({
@@ -453,7 +471,7 @@ describe('global contracts', () => {
             await account.deployGlobalContract(contractCode, 'accountId');
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         deployGlobalContract: expect.objectContaining({
@@ -481,7 +499,7 @@ describe('global contracts', () => {
             await account.useGlobalContract({ accountId: 'contract-owner.near' });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         useGlobalContract: expect.objectContaining({
@@ -500,7 +518,7 @@ describe('global contracts', () => {
             await account.useGlobalContract({ codeHash });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         useGlobalContract: expect.objectContaining({
@@ -520,7 +538,7 @@ describe('global contracts', () => {
             await account.useGlobalContract({ codeHash: codeHashHex });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         useGlobalContract: expect.objectContaining({
