@@ -1,20 +1,20 @@
-import { Worker } from 'near-workspaces';
+import type { Sandbox } from 'near-sandbox';
 import { TextEncoder } from 'util';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src/index.js';
 import { AccountDoesNotExistError } from '../../../src/providers/errors/handler.js';
+import { startSandbox } from '../../sandbox.js';
 
 global.TextEncoder = TextEncoder;
 
 ['json provider', 'fallback provider'].forEach((name) => {
     describe(name, () => {
-        let worker: Worker;
+        let sandbox: Sandbox;
         let provider: Provider;
 
         beforeAll(async () => {
-            worker = await Worker.init();
-            // @ts-expect-error accessing protected property
-            const url = worker.manager.config.rpcAddr as string;
+            sandbox = await startSandbox();
+            const url = sandbox.rpcUrl;
 
             if (name === 'json provider') {
                 provider = new JsonRpcProvider({
@@ -27,12 +27,10 @@ global.TextEncoder = TextEncoder;
                     }),
                 ]);
             }
-
-            await new Promise((resolve) => setTimeout(resolve, 2000));
         });
 
         afterAll(async () => {
-            await worker.tearDown();
+            await sandbox.tearDown();
         });
 
         test('rpc fetch node status', async () => {
@@ -92,7 +90,7 @@ global.TextEncoder = TextEncoder;
             const response = await provider.query({
                 block_id: block_id,
                 request_type: 'view_account',
-                account_id: 'test.near',
+                account_id: 'sandbox',
             });
 
             expect(response).toEqual({
@@ -110,7 +108,7 @@ global.TextEncoder = TextEncoder;
             const response = await provider.query({
                 request_type: 'view_account',
                 finality: 'final',
-                account_id: 'test.near',
+                account_id: 'sandbox',
             });
 
             expect(response).toEqual({
@@ -359,7 +357,7 @@ test('final tx result with null', async () => {
     expect(getTransactionLastResult(result)).toEqual(null);
 });
 
-// TODO: Use a near-workspaces Worker when time traveling is available
+// TODO: Exercise this against a local sandbox when time travel is available.
 test('json rpc get next light client block', async () => {
     const provider = new JsonRpcProvider({ url: 'https://rpc.testnet.near.org' });
     const stat = await provider.viewNodeStatus();

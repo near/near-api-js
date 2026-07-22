@@ -28,8 +28,7 @@ export async function setUpTestConnection() {
     return {
         account,
         provider,
-        // return worker, so we can gracefully shut down tests
-        worker: config.worker || undefined,
+        sandbox: config.sandbox || undefined,
     };
 }
 
@@ -38,7 +37,7 @@ export function generateUniqueString(prefix) {
     let result = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1000000)}`;
     const add_symbols = Math.max(RANDOM_ACCOUNT_LENGTH - result.length, 1);
     for (let i = add_symbols; i > 0; --i) result += '0';
-    return `${result}.test.near`;
+    return `${result}.sandbox`;
 }
 
 export async function createAccount({ account, provider }, keyType = KeyType.ED25519) {

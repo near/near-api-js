@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { Worker } = require('near-workspaces');
-const fs = require('fs');
-let worker;
+let sandbox;
 module.exports = async function getConfig(env) {
     switch (env) {
         case 'production':
@@ -37,14 +34,17 @@ module.exports = async function getConfig(env) {
             };
         case 'test':
         case 'ci': {
-            if (!worker) worker = await Worker.init();
-            const keyFile = fs.readFileSync(`${worker.rootAccount.manager.config.homeDir}/validator_key.json`);
-            const keyPair = JSON.parse(keyFile.toString());
+            if (!sandbox) {
+                const { Sandbox } = await import('near-sandbox');
+                sandbox = await Sandbox.start({});
+            }
+            const { DEFAULT_ACCOUNT_ID, DEFAULT_PRIVATE_KEY } = await import('near-sandbox');
             return {
-                networkId: worker.config.network,
-                nodeUrl: worker.manager.config.rpcAddr,
-                masterAccount: worker.rootAccount._accountId,
-                secretKey: keyPair.secret_key || keyPair.private_key,
+                networkId: 'sandbox',
+                nodeUrl: sandbox.rpcUrl,
+                masterAccount: DEFAULT_ACCOUNT_ID,
+                secretKey: DEFAULT_PRIVATE_KEY,
+                sandbox,
             };
         }
         default:

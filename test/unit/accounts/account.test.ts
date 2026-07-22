@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import type { Worker } from 'near-workspaces';
+import type { Sandbox } from 'near-sandbox';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
     Account,
@@ -31,11 +31,11 @@ beforeAll(async () => {
 afterAll(async () => {
     await workingAccount.deleteAccount(workingAccount.accountId);
 
-    const worker = nearjs.worker as Worker;
+    const sandbox = nearjs.sandbox as Sandbox;
 
-    if (!worker) return;
+    if (!sandbox) return;
 
-    await worker.tearDown();
+    await sandbox.tearDown();
 });
 
 test('create instance of Account with string secret key', async () => {
@@ -425,7 +425,7 @@ describe('global contracts', () => {
             await account.deployGlobalContract(contractCode, 'codeHash');
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         deployGlobalContract: expect.objectContaining({
@@ -444,7 +444,7 @@ describe('global contracts', () => {
             await account.deployGlobalContract(contractCode, 'accountId');
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         deployGlobalContract: expect.objectContaining({
@@ -472,7 +472,7 @@ describe('global contracts', () => {
             await account.useGlobalContract({ accountId: 'contract-owner.near' });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         useGlobalContract: expect.objectContaining({
@@ -491,7 +491,7 @@ describe('global contracts', () => {
             await account.useGlobalContract({ codeHash });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         useGlobalContract: expect.objectContaining({
@@ -511,7 +511,7 @@ describe('global contracts', () => {
             await account.useGlobalContract({ codeHash: codeHashHex });
 
             expect(mockSignAndSendTransaction).toHaveBeenCalledWith({
-                receiverId: 'test.near',
+                receiverId: 'sandbox',
                 actions: expect.arrayContaining([
                     expect.objectContaining({
                         useGlobalContract: expect.objectContaining({
