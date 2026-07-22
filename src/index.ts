@@ -18,6 +18,7 @@ export type {
 export {
     KeyPair,
     KeyPairEd25519,
+    KeyPairMLDSA65,
     KeyPairSecp256k1,
     KeyType,
     keyToImplicitAddress,

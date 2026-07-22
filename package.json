@@ -46,6 +46,7 @@
     "dependencies": {
         "@noble/curves": "2.0.1",
         "@noble/hashes": "2.0.1",
+        "@noble/post-quantum": "0.6.1",
         "@scure/base": "2.0.0",
         "borsh": "2.0.0",
         "is-my-json-valid": "2.20.6",
@@ -65,7 +66,7 @@
         "commitlint": "20.3.1",
         "husky": "9.1.7",
         "near-hello": "0.5.1",
-        "near-sandbox": "0.3.0",
+        "near-sandbox": "0.3.1",
         "rimraf": "6.1.2",
         "semver": "7.7.3",
         "ts-node": "10.9.2",
