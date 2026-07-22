@@ -27,7 +27,8 @@
         "noPropertyAccessFromIndexSignature": true,
         "noUncheckedIndexedAccess": true,
         "noUnusedParameters": true,
-        "isolatedModules": true
+        "isolatedModules": true,
+        "ignoreDeprecations": "6.0"
     },
     "include": [
         "src/index.ts",
