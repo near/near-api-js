@@ -1,5 +1,4 @@
 import { ed25519 } from '@noble/curves/ed25519.js';
-import { randomBytes } from '@noble/hashes/utils.js';
 import { baseDecode, baseEncode } from '../utils/index.js';
 
 import { type KeyPairString, KeySize, KeyType } from './constants.js';
@@ -41,7 +40,7 @@ export class KeyPairEd25519 extends KeyPairBase {
      * // returns [SECRET_KEY]
      */
     static fromRandom() {
-        const secretKey = randomBytes(KeySize.SECRET_KEY);
+        const secretKey = crypto.getRandomValues(new Uint8Array(KeySize.SECRET_KEY));
         const publicKey = ed25519.getPublicKey(new Uint8Array(secretKey));
         const extendedSecretKey = new Uint8Array([...secretKey, ...publicKey]);
         return new KeyPairEd25519(baseEncode(extendedSecretKey));

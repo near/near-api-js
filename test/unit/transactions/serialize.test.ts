@@ -10,8 +10,10 @@ import {
     decodeTransaction,
     encodeTransaction,
     KeyPair,
+    KeyType,
     PublicKey,
     SCHEMA,
+    Signature,
 } from '../../../src/index.js';
 
 const {
@@ -48,6 +50,16 @@ test('serialize object', async () => {
     expect(new_value.z).toEqual('123');
     // @ts-expect-error test input
     expect(new_value.q).toEqual([1, 2, 3]);
+});
+
+test('serialize ML-DSA-65 public keys and signatures with Borsh tag 2', () => {
+    const publicKey = new PublicKey({ keyType: KeyType.MLDSA65, data: new Uint8Array(1952) });
+    const signature = new Signature({ keyType: KeyType.MLDSA65, data: new Uint8Array(3309) });
+
+    expect(serialize(SCHEMA.PublicKey, publicKey)).toHaveLength(1953);
+    expect(serialize(SCHEMA.PublicKey, publicKey)[0]).toBe(2);
+    expect(serialize(SCHEMA.Signature, signature)).toHaveLength(3310);
+    expect(serialize(SCHEMA.Signature, signature)[0]).toBe(2);
 });
 
 test('deserialize delegate', async () => {
@@ -119,6 +131,8 @@ test('serialize transfer tx', async () => {
 
     const deserialized = decodeTransaction(serialized);
     expect(encodeTransaction(deserialized)).toEqual(serialized);
+    expect(deserialized.publicKey).toBeInstanceOf(PublicKey);
+    expect(typeof deserialized.publicKey.toString()).toBe('string');
 });
 
 describe('roundtrip test', () => {

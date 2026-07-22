@@ -1,5 +1,5 @@
 import { deserialize, type Schema, serialize } from 'borsh';
-import type { PublicKey } from '../crypto/index.js';
+import { PublicKey } from '../crypto/index.js';
 
 import type { Action, SignedDelegate } from './actions.js';
 import type { DelegateAction } from './delegate.js';
@@ -77,7 +77,7 @@ export class Transaction {
         blockHash: Uint8Array;
     }) {
         this.signerId = signerId;
-        this.publicKey = publicKey;
+        this.publicKey = PublicKey.from(publicKey);
         this.nonce = nonce;
         this.receiverId = receiverId;
         this.actions = actions;
@@ -98,7 +98,7 @@ export class SignedTransaction {
     signature: Signature;
 
     constructor({ transaction, signature }: { transaction: Transaction; signature: Signature }) {
-        this.transaction = transaction;
+        this.transaction = transaction instanceof Transaction ? transaction : new Transaction(transaction);
         this.signature = signature;
     }
 
@@ -122,10 +122,16 @@ export const SCHEMA = new (class BorshSchema {
             data: { array: { type: 'u8', len: 65 } },
         },
     };
+    MlDsa65Signature: Schema = {
+        struct: {
+            data: { array: { type: 'u8', len: 3309 } },
+        },
+    };
     Signature: Schema = {
         enum: [
             { struct: { ed25519Signature: this.Ed25519Signature } },
             { struct: { secp256k1Signature: this.Secp256k1Signature } },
+            { struct: { mlDsa65Signature: this.MlDsa65Signature } },
         ],
     };
     Ed25519Data: Schema = {
@@ -138,8 +144,17 @@ export const SCHEMA = new (class BorshSchema {
             data: { array: { type: 'u8', len: 64 } },
         },
     };
+    MlDsa65Data: Schema = {
+        struct: {
+            data: { array: { type: 'u8', len: 1952 } },
+        },
+    };
     PublicKey: Schema = {
-        enum: [{ struct: { ed25519Key: this.Ed25519Data } }, { struct: { secp256k1Key: this.Secp256k1Data } }],
+        enum: [
+            { struct: { ed25519Key: this.Ed25519Data } },
+            { struct: { secp256k1Key: this.Secp256k1Data } },
+            { struct: { mlDsa65Key: this.MlDsa65Data } },
+        ],
     };
     FunctionCallPermission: Schema = {
         struct: {

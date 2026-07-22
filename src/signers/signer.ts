@@ -1,5 +1,5 @@
 import { sha256 } from '@noble/hashes/sha2.js';
-import { KeyType, type PublicKey } from '../crypto/index.js';
+import type { PublicKey } from '../crypto/index.js';
 import { type MessagePayload, serializeMessage } from '../nep413/schema.js';
 import { SignedDelegate } from '../transactions/actions.js';
 import {
@@ -87,7 +87,7 @@ export abstract class Signer {
         const signedTx = new SignedTransaction({
             transaction,
             signature: new Signature({
-                keyType: transaction.publicKey.ed25519Key ? KeyType.ED25519 : KeyType.SECP256K1,
+                keyType: transaction.publicKey.keyType,
                 data: signature,
             }),
         });

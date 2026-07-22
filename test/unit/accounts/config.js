@@ -1,6 +1,3 @@
-import fs from 'fs';
-import { Worker } from 'near-workspaces';
-
 module.exports = async function getConfig(env) {
     switch (env) {
         case 'production':
@@ -36,15 +33,14 @@ module.exports = async function getConfig(env) {
             };
         case 'test':
         case 'ci': {
-            const worker = await Worker.init();
-            const keyFile = fs.readFileSync(`${worker.rootAccount.manager.config.homeDir}/validator_key.json`);
-            const keyPair = JSON.parse(keyFile.toString());
+            const { DEFAULT_ACCOUNT_ID, DEFAULT_PRIVATE_KEY, Sandbox } = await import('near-sandbox');
+            const sandbox = await Sandbox.start({});
             return {
-                networkId: worker.config.network,
-                nodeUrl: worker.manager.config.rpcAddr,
-                masterAccount: worker.rootAccount._accountId,
-                secretKey: keyPair.secret_key || keyPair.private_key,
-                worker: worker,
+                networkId: 'sandbox',
+                nodeUrl: sandbox.rpcUrl,
+                masterAccount: DEFAULT_ACCOUNT_ID,
+                secretKey: DEFAULT_PRIVATE_KEY,
+                sandbox,
             };
         }
         default:

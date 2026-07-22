@@ -1,4 +1,4 @@
-import type { Worker } from 'near-workspaces';
+import type { Sandbox } from 'near-sandbox';
 import { afterAll, beforeAll, beforeEach, expect, test } from 'vitest';
 import { Account, Contract, KeyPair, KeyPairSigner } from '../../../src/index.js';
 import { AccessKeyDoesNotExistError } from '../../../src/providers/errors/handler.js';
@@ -15,11 +15,11 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    const worker = nearjs.worker as Worker;
+    const sandbox = nearjs.sandbox as Sandbox;
 
-    if (!worker) return;
+    if (!sandbox) return;
 
-    await worker.tearDown();
+    await sandbox.tearDown();
 });
 
 beforeEach(async () => {
@@ -72,8 +72,8 @@ test('remove access key no longer works', async () => {
         expect.fail('should throw an error');
     }
 
-    const worker = near.worker as Worker;
-    await worker.tearDown();
+    const sandbox = near.sandbox as Sandbox;
+    await sandbox.tearDown();
 });
 
 test('view account details after adding access keys', async () => {

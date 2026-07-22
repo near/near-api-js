@@ -9,6 +9,10 @@ class SECP256K1Signature {
     keyType: KeyType = KeyType.SECP256K1;
     data!: Uint8Array;
 }
+class MLDSA65Signature {
+    keyType: KeyType = KeyType.MLDSA65;
+    data!: Uint8Array;
+}
 
 function resolveEnumKeyName(keyType: KeyType) {
     switch (keyType) {
@@ -17,6 +21,9 @@ function resolveEnumKeyName(keyType: KeyType) {
         }
         case KeyType.SECP256K1: {
             return 'secp256k1Signature';
+        }
+        case KeyType.MLDSA65: {
+            return 'mlDsa65Signature';
         }
         default: {
             throw Error(`unknown type ${keyType}`);
@@ -28,6 +35,7 @@ export class Signature extends Enum {
     enum: string;
     ed25519Signature?: ED25519Signature;
     secp256k1Signature?: SECP256K1Signature;
+    mlDsa65Signature?: MLDSA65Signature;
 
     constructor(signature: { keyType: KeyType; data: Uint8Array }) {
         const keyName = resolveEnumKeyName(signature.keyType);
@@ -37,7 +45,7 @@ export class Signature extends Enum {
     }
 
     get signature() {
-        return this.ed25519Signature || this.secp256k1Signature;
+        return this.ed25519Signature || this.secp256k1Signature || this.mlDsa65Signature;
     }
 
     get signatureType(): KeyType {

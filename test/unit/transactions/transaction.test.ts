@@ -4,7 +4,7 @@ import { actions } from '../../../src/index.js';
 const { functionCall } = actions;
 
 test('functionCall with already serialized args', () => {
-    const serializedArgs = Buffer.from('{key: value}');
+    const serializedArgs = new TextEncoder().encode('{key: value}');
     const action = functionCall('methodName', serializedArgs, 1n, 2n);
     expect(action).toMatchObject({
         functionCall: {
@@ -17,7 +17,7 @@ test('functionCall with already serialized args', () => {
 });
 
 test('functionCall with non-serialized args', () => {
-    const serializedArgs = Buffer.from(JSON.stringify({ key: 'value' }));
+    const serializedArgs = new TextEncoder().encode(JSON.stringify({ key: 'value' }));
     const action = functionCall('methodName', { key: 'value' }, 1n, 2n);
     expect(action).toMatchObject({
         functionCall: {
