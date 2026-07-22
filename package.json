@@ -16,8 +16,6 @@
     "main": "./lib/index.cjs",
     "module": "./lib/index.js",
     "types": "./lib/index.d.ts",
-    "unpkg": "./dist/near-api-js.iife.js",
-    "jsdelivr": "./dist/near-api-js.iife.js",
     "exports": {
         ".": {
             "import": {
@@ -134,7 +132,7 @@
         "lint": "biome check",
         "prefuzz": "pnpm build",
         "fuzz": "jsfuzz test/fuzz/borsh-roundtrip.js test/fuzz/corpus/",
-        "clean": "pnpm rimraf lib dist",
+        "clean": "pnpm rimraf lib",
         "check-exports": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
         "docs:generate": "typedoc",
         "autoclave": "rimraf lib && rimraf node_modules && rimraf coverage && rimraf node_modules && rimraf e2e/node_modules && rimraf e2e/coverage && rimraf e2e/tests/node_modules",
@@ -143,8 +141,7 @@
         "postrpc:generate": "biome check --fix"
     },
     "files": [
-        "lib",
-        "dist"
+        "lib"
     ],
     "author": "NEAR Inc",
     "sideEffects": false
