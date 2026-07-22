@@ -5,7 +5,7 @@ import { deployContract, generateUniqueString, setUpTestConnection } from './tes
 
 let nearjs: Awaited<ReturnType<typeof setUpTestConnection>>;
 
-const CONTRACT_CALL_GAS = 300000000000000n;
+const CONTRACT_CALL_GAS = 1000000000000000n;
 
 beforeAll(async () => {
     nearjs = await setUpTestConnection();
