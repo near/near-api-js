@@ -3,7 +3,7 @@ import { TextEncoder } from 'util';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src/index.js';
 import { AccountDoesNotExistError } from '../../../src/providers/errors/handler.js';
-import { startSandbox } from '../../sandbox.js';
+import { fastForwardSandbox, startSandbox } from '../../sandbox.js';
 
 global.TextEncoder = TextEncoder;
 
@@ -27,6 +27,8 @@ global.TextEncoder = TextEncoder;
                     }),
                 ]);
             }
+
+            await fastForwardSandbox(sandbox);
         });
 
         afterAll(async () => {
@@ -79,8 +81,7 @@ global.TextEncoder = TextEncoder;
         });
 
         test('rpc fetch validators info', async () => {
-            const stat = await provider.viewNodeStatus();
-            const validators = await provider.viewValidators({ blockId: stat.sync_info.latest_block_height });
+            const validators = await provider.viewValidators();
             expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
         });
 
