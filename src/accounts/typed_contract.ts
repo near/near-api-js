@@ -62,16 +62,17 @@ type GetViewFunction<
     abiFunction extends AbiFunction = ExtractAbiFunction<abi, functionName>,
     _args extends Record<string, unknown> = ContractFunctionArgs<abi, abiFunction>,
     _return = ContractFunctionReturnType<abi, abiFunction>,
-> = IsNarrowable<abi, AbiRoot> extends true
-    ? IsNever<_args> extends true
-        ? (params?: { blockQuery?: BlockReference }) => Promise<Prettify<_return>>
-        : IsFullyOptional<_args> extends true
-          ? (params?: { blockQuery?: BlockReference; args?: _args }) => Promise<Prettify<_return>>
-          : (params: { blockQuery?: BlockReference; args: _args }) => Promise<Prettify<_return>>
-    : <Response = unknown>(params?: {
-          blockQuery?: BlockReference;
-          args?: Record<string, unknown>;
-      }) => Promise<Response>;
+> =
+    IsNarrowable<abi, AbiRoot> extends true
+        ? IsNever<_args> extends true
+            ? (params?: { blockQuery?: BlockReference }) => Promise<Prettify<_return>>
+            : IsFullyOptional<_args> extends true
+              ? (params?: { blockQuery?: BlockReference; args?: _args }) => Promise<Prettify<_return>>
+              : (params: { blockQuery?: BlockReference; args: _args }) => Promise<Prettify<_return>>
+        : <Response = unknown>(params?: {
+              blockQuery?: BlockReference;
+              args?: Record<string, unknown>;
+          }) => Promise<Response>;
 
 type GetCallFunction<
     abi extends AbiRoot,
@@ -79,28 +80,29 @@ type GetCallFunction<
     abiFunction extends AbiFunction = ExtractAbiFunction<abi, functionName>,
     _args extends Record<string, unknown> = ContractFunctionArgs<abi, abiFunction>,
     _return = ContractFunctionReturnType<abi, abiFunction>,
-> = IsNarrowable<abi, AbiRoot> extends true
-    ? IsNever<_args> extends true
-        ? (params: {
+> =
+    IsNarrowable<abi, AbiRoot> extends true
+        ? IsNever<_args> extends true
+            ? (params: {
+                  deposit?: bigint;
+                  gas?: bigint;
+                  waitUntil?: TxExecutionStatus;
+                  account: Account;
+              }) => Promise<Prettify<_return>>
+            : (params: {
+                  deposit?: bigint;
+                  gas?: bigint;
+                  args: _args;
+                  waitUntil?: TxExecutionStatus;
+                  account: Account;
+              }) => Promise<Prettify<_return>>
+        : <Response = unknown>(params: {
               deposit?: bigint;
               gas?: bigint;
+              args?: Record<string, unknown>;
               waitUntil?: TxExecutionStatus;
               account: Account;
-          }) => Promise<Prettify<_return>>
-        : (params: {
-              deposit?: bigint;
-              gas?: bigint;
-              args: _args;
-              waitUntil?: TxExecutionStatus;
-              account: Account;
-          }) => Promise<Prettify<_return>>
-    : <Response = unknown>(params: {
-          deposit?: bigint;
-          gas?: bigint;
-          args?: Record<string, unknown>;
-          waitUntil?: TxExecutionStatus;
-          account: Account;
-      }) => Promise<Response>;
+          }) => Promise<Response>;
 
 type ContractFunctionReturnType<abi extends AbiRoot, abiFunction extends AbiFunction> = abiFunction extends {
     result: infer Result;
@@ -150,19 +152,16 @@ type EnumValue = NonNullable<SchemaObject['enum']>;
 
 type ResolveEnum<schema extends { enum: EnumValue }> = schema['enum'] extends (infer S)[] ? S : never;
 
-type ResolveType<
-    abi extends AbiRoot,
-    schema extends Schema,
-    type extends any | any[],
-> = ToArray<type> extends (infer T)[]
-    ? T extends 'array'
-        ? ResolveArrayType<abi, schema>
-        : T extends 'object'
-          ? ResolveObjectType<abi, schema>
-          : T extends keyof JSONSchemaTypeMap
-            ? JSONSchemaTypeMap[T]
-            : never
-    : never;
+type ResolveType<abi extends AbiRoot, schema extends Schema, type extends any | any[]> =
+    ToArray<type> extends (infer T)[]
+        ? T extends 'array'
+            ? ResolveArrayType<abi, schema>
+            : T extends 'object'
+              ? ResolveObjectType<abi, schema>
+              : T extends keyof JSONSchemaTypeMap
+                ? JSONSchemaTypeMap[T]
+                : never
+        : never;
 
 type ResolveArrayType<abi extends AbiRoot, schema extends Schema> = schema extends {
     items: infer Items;

@@ -14,8 +14,13 @@
         "near-api-js": "file:.."
     },
     "devDependencies": {
-        "@types/node": "20.0.0",
-        "typescript": "5.4.5",
-        "vitest": "^3.2.4"
+        "@types/node": "26.1.1",
+        "picomatch": "4.0.4",
+        "postcss": "8.5.10",
+        "rollup": "4.59.0",
+        "typescript": "6.0.3",
+        "vite": "7.3.5",
+        "vitest": "^4.1.10",
+        "ws": "8.21.0"
     }
 }
