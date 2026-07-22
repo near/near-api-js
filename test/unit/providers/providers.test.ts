@@ -40,7 +40,7 @@ global.TextEncoder = TextEncoder;
 
         test('rpc fetch block info', async () => {
             const stat = await provider.viewNodeStatus();
-            const height = stat.sync_info.latest_block_height - 1;
+            const height = stat.sync_info.latest_block_height;
             const response = await provider.viewBlock({ blockId: height });
             expect(response.header.height).toEqual(height);
 
@@ -59,7 +59,7 @@ global.TextEncoder = TextEncoder;
 
         test('rpc fetch block changes', async () => {
             const stat = await provider.viewNodeStatus();
-            const height = stat.sync_info.latest_block_height - 1;
+            const height = stat.sync_info.latest_block_height;
             const response = await provider.blockChanges({ blockId: height });
 
             expect(response).toMatchObject({
@@ -70,7 +70,7 @@ global.TextEncoder = TextEncoder;
 
         test('rpc fetch chunk info', async () => {
             const stat = await provider.viewNodeStatus();
-            const height = stat.sync_info.latest_block_height - 1;
+            const height = stat.sync_info.latest_block_height;
             const response = await provider.viewChunk([height, 0]);
             expect(response.header.shard_id).toEqual(0);
             const sameChunk = await provider.viewChunk(response.header.chunk_hash);
@@ -79,13 +79,14 @@ global.TextEncoder = TextEncoder;
         });
 
         test('rpc fetch validators info', async () => {
-            const validators = await provider.viewValidators();
+            const stat = await provider.viewNodeStatus();
+            const validators = await provider.viewValidators({ blockId: stat.sync_info.latest_block_height });
             expect(validators.current_validators.length).toBeGreaterThanOrEqual(1);
         });
 
         test('rpc query with block_id', async () => {
             const stat = await provider.viewNodeStatus();
-            const block_id = stat.sync_info.latest_block_height - 1;
+            const block_id = stat.sync_info.latest_block_height;
 
             const response = await provider.query({
                 block_id: block_id,
