@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { keyToImplicitAddress } from '../../../src/crypto/index.js';
-import { PublicKey } from '../../../src/index.js';
+import { baseEncode, KeyType, PublicKey } from '../../../src/index.js';
 
 test.each`
     publicKey                                                 | expected
@@ -32,4 +32,13 @@ test('keyToImplicitAddress returns hex string with proper padding', () => {
 
     expect(result.length).toEqual(64);
     expect(result).toMatch(/^[0-9a-f]+$/);
+});
+
+test('ML-DSA-65 public keys retain their type and full wire representation', () => {
+    const data = Uint8Array.from({ length: 1952 }, (_, index) => index % 256);
+    const publicKey = PublicKey.fromString(`ml-dsa-65:${baseEncode(data)}`);
+
+    expect(publicKey.keyType).toBe(KeyType.MLDSA65);
+    expect(publicKey.data).toEqual(data);
+    expect(publicKey.toString()).toBe(`ml-dsa-65:${baseEncode(data)}`);
 });

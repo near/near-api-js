@@ -1,5 +1,6 @@
 import { ed25519 } from '@noble/curves/ed25519.js';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
+import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js';
 import { baseDecode, baseEncode } from '../utils/index.js';
 
 import { KeySize, KeyType } from './constants.js';
@@ -10,6 +11,8 @@ function key_type_to_str(keyType: KeyType): string {
             return 'ed25519';
         case KeyType.SECP256K1:
             return 'secp256k1';
+        case KeyType.MLDSA65:
+            return 'ml-dsa-65';
         default:
             throw new Error(`Unknown key type ${keyType}`);
     }
@@ -21,6 +24,8 @@ function str_to_key_type(keyType: string): KeyType {
             return KeyType.ED25519;
         case 'secp256k1':
             return KeyType.SECP256K1;
+        case 'ml-dsa-65':
+            return KeyType.MLDSA65;
         default:
             throw new Error(`Unknown key type ${keyType}`);
     }
@@ -34,6 +39,10 @@ class SECP256K1PublicKey {
     keyType: KeyType = KeyType.SECP256K1;
     data!: Uint8Array;
 }
+class MLDSA65PublicKey {
+    keyType: KeyType = KeyType.MLDSA65;
+    data!: Uint8Array;
+}
 
 function resolveEnumKeyName(keyType: KeyType) {
     switch (keyType) {
@@ -42,6 +51,9 @@ function resolveEnumKeyName(keyType: KeyType) {
         }
         case KeyType.SECP256K1: {
             return 'secp256k1Key';
+        }
+        case KeyType.MLDSA65: {
+            return 'mlDsa65Key';
         }
         default: {
             throw Error(`unknown type ${keyType}`);
@@ -75,6 +87,7 @@ export class PublicKey extends Enum {
     enum: string;
     ed25519Key?: ED25519PublicKey;
     secp256k1Key?: SECP256K1PublicKey;
+    mlDsa65Key?: MLDSA65PublicKey;
 
     constructor(publicKey: { keyType: KeyType; data: Uint8Array }) {
         const keyName = resolveEnumKeyName(publicKey.keyType);
@@ -114,6 +127,14 @@ export class PublicKey extends Enum {
                     data: Uint8Array.from((maybeSecp256k1 as { data: Uint8Array | number[] }).data),
                 });
             }
+
+            const maybeMlDsa65 = value['mlDsa65Key'];
+            if (typeof maybeMlDsa65 === 'object' && maybeMlDsa65 !== null && 'data' in maybeMlDsa65) {
+                return new PublicKey({
+                    keyType: KeyType.MLDSA65,
+                    data: Uint8Array.from((maybeMlDsa65 as { data: Uint8Array | number[] }).data),
+                });
+            }
         }
 
         throw new Error('Unsupported public key format');
@@ -140,7 +161,12 @@ export class PublicKey extends Enum {
         if (!keyType) {
             keyType = decodedPublicKey.length === KeySize.SECP256k1_PUBLIC_KEY ? KeyType.SECP256K1 : KeyType.ED25519;
         }
-        const keySize = keyType === KeyType.ED25519 ? KeySize.ED25519_PUBLIC_KEY : KeySize.SECP256k1_PUBLIC_KEY;
+        const keySize =
+            keyType === KeyType.ED25519
+                ? KeySize.ED25519_PUBLIC_KEY
+                : keyType === KeyType.SECP256K1
+                  ? KeySize.SECP256k1_PUBLIC_KEY
+                  : KeySize.MLDSA65_PUBLIC_KEY;
         if (decodedPublicKey.length !== keySize) {
             throw new Error(`Invalid public key size (${decodedPublicKey.length}), must be ${keySize}`);
         }
@@ -172,13 +198,15 @@ export class PublicKey extends Enum {
                 return secp256k1.verify(signature.subarray(0, 64), message, new Uint8Array([0x04, ...data]), {
                     prehash: false,
                 });
+            case KeyType.MLDSA65:
+                return ml_dsa65.verify(signature, message, data);
             default:
                 throw new Error(`Unknown key type: ${keyType}`);
         }
     }
 
     get keyPair() {
-        return this.ed25519Key || this.secp256k1Key;
+        return this.ed25519Key || this.secp256k1Key || this.mlDsa65Key;
     }
 
     get keyType(): KeyType {

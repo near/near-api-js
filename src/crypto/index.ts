@@ -3,5 +3,6 @@ export { KeyType } from './constants.js';
 export { KeyPair } from './key_pair.js';
 export type { Signature } from './key_pair_base.js';
 export { KeyPairEd25519 } from './key_pair_ed25519.js';
+export { KeyPairMLDSA65 } from './key_pair_ml_dsa_65.js';
 export { KeyPairSecp256k1 } from './key_pair_secp256k1.js';
 export { keyToImplicitAddress, PublicKey } from './public_key.js';
