@@ -3,7 +3,7 @@ import { TextEncoder } from 'util';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src/index.js';
 import { AccountDoesNotExistError } from '../../../src/providers/errors/handler.js';
-import { startSandbox } from '../../sandbox.js';
+import { fastForwardSandbox, startSandbox } from '../../sandbox.js';
 
 global.TextEncoder = TextEncoder;
 
@@ -27,6 +27,8 @@ global.TextEncoder = TextEncoder;
                     }),
                 ]);
             }
+
+            await fastForwardSandbox(sandbox);
         });
 
         afterAll(async () => {
@@ -40,7 +42,7 @@ global.TextEncoder = TextEncoder;
 
         test('rpc fetch block info', async () => {
             const stat = await provider.viewNodeStatus();
-            const height = stat.sync_info.latest_block_height - 1;
+            const height = stat.sync_info.latest_block_height;
             const response = await provider.viewBlock({ blockId: height });
             expect(response.header.height).toEqual(height);
 
@@ -59,7 +61,7 @@ global.TextEncoder = TextEncoder;
 
         test('rpc fetch block changes', async () => {
             const stat = await provider.viewNodeStatus();
-            const height = stat.sync_info.latest_block_height - 1;
+            const height = stat.sync_info.latest_block_height;
             const response = await provider.blockChanges({ blockId: height });
 
             expect(response).toMatchObject({
@@ -70,7 +72,7 @@ global.TextEncoder = TextEncoder;
 
         test('rpc fetch chunk info', async () => {
             const stat = await provider.viewNodeStatus();
-            const height = stat.sync_info.latest_block_height - 1;
+            const height = stat.sync_info.latest_block_height;
             const response = await provider.viewChunk([height, 0]);
             expect(response.header.shard_id).toEqual(0);
             const sameChunk = await provider.viewChunk(response.header.chunk_hash);
@@ -85,7 +87,7 @@ global.TextEncoder = TextEncoder;
 
         test('rpc query with block_id', async () => {
             const stat = await provider.viewNodeStatus();
-            const block_id = stat.sync_info.latest_block_height - 1;
+            const block_id = stat.sync_info.latest_block_height;
 
             const response = await provider.query({
                 block_id: block_id,

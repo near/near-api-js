@@ -47,6 +47,9 @@ jobs:
     - name: Build
       run: pnpm build
 
+    - name: Test published formats
+      run: pnpm test:formats
+
     - name: Lint
       run: pnpm lint
 
