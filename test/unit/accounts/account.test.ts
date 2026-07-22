@@ -11,6 +11,7 @@ import {
     KeyPairSigner,
     KeyType,
 } from '../../../src/index.js';
+import { ContractExecutionError } from '../../../src/providers/errors/contract_execution.js';
 import { AccountAlreadyExistsActionError } from '../../../src/providers/errors/transaction_execution.js';
 import {
     createAccount,
@@ -166,7 +167,9 @@ describe('errors', () => {
             expect.fail('should have thrown');
         } catch (thrown: unknown) {
             expect(thrown).toBeInstanceOf(AccountAlreadyExistsActionError);
-            expect((thrown as AccountAlreadyExistsActionError).accountId).toBe(workingAccount.accountId);
+            const error = thrown as AccountAlreadyExistsActionError;
+            expect(error.accountId).toBe(workingAccount.accountId);
+            expect(error.transactionResult?.transaction_outcome.id).toBe(error.txHash);
         }
     });
 });
@@ -196,14 +199,20 @@ describe('with deploy contract', () => {
     });
 
     test('cross-contact assertion and panic', async () => {
-        await expect(
-            nearjs.account.callFunctionRaw({
+        try {
+            await nearjs.account.callFunctionRaw({
                 contractId: contract.contractId,
                 methodName: 'crossContract',
                 args: {},
                 gas: 300000000000000,
-            })
-        ).rejects.toThrow(/Smart contract panicked: expected to fail./);
+            });
+            expect.fail('should have thrown');
+        } catch (thrown: unknown) {
+            expect(thrown).toBeInstanceOf(ContractExecutionError);
+            const error = thrown as ContractExecutionError;
+            expect(error.message).toMatch(/Smart contract panicked: expected to fail./);
+            expect(error.transactionResult?.transaction_outcome.id).toBeDefined();
+        }
     });
 
     test('cross-contact assertion and panic 2', async () => {

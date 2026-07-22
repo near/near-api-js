@@ -9,6 +9,7 @@ import type {
     InvalidAccessKeyError,
     InvalidTxError,
     ReceiptValidationError,
+    RpcTransactionResponse,
     TxExecutionError,
 } from '../../rpc/types.gen.js';
 import type { BlockHash } from '../../types/index.js';
@@ -618,14 +619,29 @@ export function parseRpcErrorMessage(errorMessage: string, blockHash: string, bl
 export function parseTransactionExecutionError(
     error: TxExecutionError,
     txHash: CryptoHash,
-    blockHash: BlockHash
+    blockHash: BlockHash,
+    transactionResult?: RpcTransactionResponse
 ): RpcError {
-    if ('ActionError' in error) return parseActionError(error.ActionError, txHash, blockHash);
-    if ('InvalidTxError' in error) return parseInvalidTransactionError(error.InvalidTxError, txHash, blockHash);
+    let parsedError: RpcError;
 
-    // ensures all TxExecutionError variants are handled at compile time
-    error satisfies never;
-    return new TransactionExecutionError('Unknown transaction execution error', txHash, blockHash);
+    if ('ActionError' in error) {
+        parsedError = parseActionError(error.ActionError, txHash, blockHash);
+    } else if ('InvalidTxError' in error) {
+        parsedError = parseInvalidTransactionError(error.InvalidTxError, txHash, blockHash);
+    } else {
+        // ensures all TxExecutionError variants are handled at compile time
+        error satisfies never;
+        parsedError = new TransactionExecutionError('Unknown transaction execution error', txHash, blockHash);
+    }
+
+    if (
+        transactionResult &&
+        (parsedError instanceof TransactionExecutionError || parsedError instanceof ContractExecutionError)
+    ) {
+        parsedError.transactionResult = transactionResult;
+    }
+
+    return parsedError;
 }
 
 function parseActionError(
