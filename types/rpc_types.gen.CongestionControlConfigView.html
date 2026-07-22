@@ -1,5 +1,5 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>CongestionControlConfigView | near-api-js - v7.2.0</title><meta name="description" content="Documentation for near-api-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
-<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">near-api-js - v7.2.0</a>
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>CongestionControlConfigView | near-api-js - v7.3.0</title><meta name="description" content="Documentation for near-api-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">near-api-js - v7.3.0</a>
 <div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
 <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
@@ -16,7 +16,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">CongestionControlConfigView</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#allowed_shard_outgoing_gas">allowed_shard_outgoing_gas</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_congestion_incoming_gas">max_congestion_incoming_gas</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_congestion_memory_consumption">max_congestion_memory_consumption</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_congestion_missed_chunks">max_congestion_missed_chunks</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_congestion_outgoing_gas">max_congestion_outgoing_gas</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_outgoing_gas">max_outgoing_gas</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_tx_gas">max_tx_gas</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#min_outgoing_gas">min_outgoing_gas</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#min_tx_gas">min_tx_gas</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#outgoing_receipts_big_size_limit">outgoing_receipts_big_size_limit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#outgoing_receipts_usual_size_limit">outgoing_receipts_usual_size_limit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#reject_tx_congestion_threshold">reject_tx_congestion_threshold</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L871">src/rpc/types.gen.ts:871</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L871">src/rpc/types.gen.ts:871</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -47,7 +47,7 @@
 <p>See [<code>CongestionControlConfig</code>] for more details.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L877">src/rpc/types.gen.ts:877</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L877">src/rpc/types.gen.ts:877</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_congestion_incoming_gas"><code class="tsd-tag">Optional</code><span>max_<wbr/>congestion_<wbr/>incoming_<wbr/>gas</span><a href="#max_congestion_incoming_gas" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_congestion_incoming_gas</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a></div>
@@ -55,7 +55,7 @@
 <p>See [<code>CongestionControlConfig</code>] for more details.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L883">src/rpc/types.gen.ts:883</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L883">src/rpc/types.gen.ts:883</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_congestion_memory_consumption"><code class="tsd-tag">Optional</code><span>max_<wbr/>congestion_<wbr/>memory_<wbr/>consumption</span><a href="#max_congestion_memory_consumption" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_congestion_memory_consumption</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -64,14 +64,14 @@ considered 100% congested.</p>
 <p>See [<code>CongestionControlConfig</code>] for more details.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L890">src/rpc/types.gen.ts:890</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L890">src/rpc/types.gen.ts:890</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_congestion_missed_chunks"><code class="tsd-tag">Optional</code><span>max_<wbr/>congestion_<wbr/>missed_<wbr/>chunks</span><a href="#max_congestion_missed_chunks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_congestion_missed_chunks</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>How many missed chunks in a row in a shard is considered 100% congested.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L894">src/rpc/types.gen.ts:894</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L894">src/rpc/types.gen.ts:894</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_congestion_outgoing_gas"><code class="tsd-tag">Optional</code><span>max_<wbr/>congestion_<wbr/>outgoing_<wbr/>gas</span><a href="#max_congestion_outgoing_gas" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_congestion_outgoing_gas</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a></div>
@@ -80,7 +80,7 @@ considered 100% congested.</p>
 much other shards are allowed to forward to this shard.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L901">src/rpc/types.gen.ts:901</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L901">src/rpc/types.gen.ts:901</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_outgoing_gas"><code class="tsd-tag">Optional</code><span>max_<wbr/>outgoing_<wbr/>gas</span><a href="#max_outgoing_gas" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_outgoing_gas</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a></div>
@@ -89,7 +89,7 @@ another shard per chunk.</p>
 <p>See [<code>CongestionControlConfig</code>] for more details.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L908">src/rpc/types.gen.ts:908</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L908">src/rpc/types.gen.ts:908</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_tx_gas"><code class="tsd-tag">Optional</code><span>max_<wbr/>tx_<wbr/>gas</span><a href="#max_tx_gas" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_tx_gas</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a></div>
@@ -98,7 +98,7 @@ receipts.</p>
 <p>See [<code>CongestionControlConfig</code>] for more details.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L915">src/rpc/types.gen.ts:915</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L915">src/rpc/types.gen.ts:915</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="min_outgoing_gas"><code class="tsd-tag">Optional</code><span>min_<wbr/>outgoing_<wbr/>gas</span><a href="#min_outgoing_gas" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">min_outgoing_gas</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a></div>
@@ -106,7 +106,7 @@ receipts.</p>
 <p>See [<code>CongestionControlConfig</code>] for more details.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L921">src/rpc/types.gen.ts:921</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L921">src/rpc/types.gen.ts:921</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="min_tx_gas"><code class="tsd-tag">Optional</code><span>min_<wbr/>tx_<wbr/>gas</span><a href="#min_tx_gas" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">min_tx_gas</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a></div>
@@ -115,7 +115,7 @@ to receipts, as long as the receiving shard is not congested.</p>
 <p>See [<code>CongestionControlConfig</code>] for more details.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L928">src/rpc/types.gen.ts:928</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L928">src/rpc/types.gen.ts:928</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="outgoing_receipts_big_size_limit"><code class="tsd-tag">Optional</code><span>outgoing_<wbr/>receipts_<wbr/>big_<wbr/>size_<wbr/>limit</span><a href="#outgoing_receipts_big_size_limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">outgoing_receipts_big_size_limit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -124,7 +124,7 @@ to send a lot of receipts without making the state witness too large.
 It limits the total sum of outgoing receipts, not individual receipts.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L934">src/rpc/types.gen.ts:934</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L934">src/rpc/types.gen.ts:934</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="outgoing_receipts_usual_size_limit"><code class="tsd-tag">Optional</code><span>outgoing_<wbr/>receipts_<wbr/>usual_<wbr/>size_<wbr/>limit</span><a href="#outgoing_receipts_usual_size_limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">outgoing_receipts_usual_size_limit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -133,7 +133,7 @@ This limit is pretty small to keep the size of source_receipt_proofs under contr
 It limits the total sum of outgoing receipts, not individual receipts.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L940">src/rpc/types.gen.ts:940</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L940">src/rpc/types.gen.ts:940</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="reject_tx_congestion_threshold"><code class="tsd-tag">Optional</code><span>reject_<wbr/>tx_<wbr/>congestion_<wbr/>threshold</span><a href="#reject_tx_congestion_threshold" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">reject_tx_congestion_threshold</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -141,7 +141,7 @@ It limits the total sum of outgoing receipts, not individual receipts.</p>
 accepting new transactions with the receiver set to the congested shard.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/f554ed7dd2f75265adb11f484ac93829e50e8afe/src/rpc/types.gen.ts#L945">src/rpc/types.gen.ts:945</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L945">src/rpc/types.gen.ts:945</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -160,7 +160,7 @@ accepting new transactions with the receiver set to the congested shard.</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
 <div><a href="#allowed_shard_outgoing_gas"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>allowed_<wbr/>shard_<wbr/>outgoing_<wbr/>gas</span></a><a href="#max_congestion_incoming_gas"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max_<wbr/>congestion_<wbr/>incoming_<wbr/>gas</span></a><a href="#max_congestion_memory_consumption"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max_<wbr/>congestion_<wbr/>memory_<wbr/>consumption</span></a><a href="#max_congestion_missed_chunks"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max_<wbr/>congestion_<wbr/>missed_<wbr/>chunks</span></a><a href="#max_congestion_outgoing_gas"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max_<wbr/>congestion_<wbr/>outgoing_<wbr/>gas</span></a><a href="#max_outgoing_gas"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max_<wbr/>outgoing_<wbr/>gas</span></a><a href="#max_tx_gas"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>max_<wbr/>tx_<wbr/>gas</span></a><a href="#min_outgoing_gas"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>min_<wbr/>outgoing_<wbr/>gas</span></a><a href="#min_tx_gas"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>min_<wbr/>tx_<wbr/>gas</span></a><a href="#outgoing_receipts_big_size_limit"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>outgoing_<wbr/>receipts_<wbr/>big_<wbr/>size_<wbr/>limit</span></a><a href="#outgoing_receipts_usual_size_limit"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>outgoing_<wbr/>receipts_<wbr/>usual_<wbr/>size_<wbr/>limit</span></a><a href="#reject_tx_congestion_threshold"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>reject_<wbr/>tx_<wbr/>congestion_<wbr/>threshold</span></a></div></details></div></details></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="../modules.html">near-api-js - v7.2.0</a>
+<nav class="tsd-navigation"><a href="../modules.html">near-api-js - v7.3.0</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
 <li>Loading...</li></ul></nav></div></div></div><footer>
 <p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
