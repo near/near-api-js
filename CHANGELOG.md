@@ -1,5 +1,19 @@
 # near-api-js
 
+## 7.3.0
+
+### Minor Changes
+
+- [#1947](https://github.com/near/near-api-js/pull/1947) [`9c38966`](https://github.com/near/near-api-js/commit/9c389664b2e46c8705ac9a1554d5721a009b0905) Thanks [@gagdiez](https://github.com/gagdiez)! - feat: added post quantum keys (ml-dsa-65)
+
+- [#1948](https://github.com/near/near-api-js/pull/1948) [`6b67d19`](https://github.com/near/near-api-js/commit/6b67d1959043611efd732cc03ee7e21825ae0b28) Thanks [@gagdiez](https://github.com/gagdiez)! - feat: add error context for function calls
+
+### Patch Changes
+
+- [#1943](https://github.com/near/near-api-js/pull/1943) [`3796f3c`](https://github.com/near/near-api-js/commit/3796f3ca11a33754d82d695947994436d0ee52a4) Thanks [@JRVector9](https://github.com/JRVector9)! - Stop retrying failover RPC providers after an account-not-found response.
+
+- [#1960](https://github.com/near/near-api-js/pull/1960) [`8c543cd`](https://github.com/near/near-api-js/commit/8c543cd1a7791e766fd246b2a7084baa2cd5f4dd) Thanks [@gagdiez](https://github.com/gagdiez)! - chore: updated dependencies
+
 ## 7.2.0
 
 ### Minor Changes
