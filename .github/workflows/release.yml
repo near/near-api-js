@@ -23,13 +23,11 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.28.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.18.3
+          node-version: 24
           cache: pnpm
 
       - name: Install Dependencies
@@ -48,8 +46,5 @@ jobs:
           branch: ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          # setup-node by default reads from this env var
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           # disables Husky so it's NOT triggered when publishing tags for a new release
           HUSKY: 0
