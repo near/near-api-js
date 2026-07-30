@@ -13,7 +13,7 @@
 <h1>Type Alias SyncConcurrency</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">SyncConcurrency</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#apply">apply</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#apply_during_catchup">apply_during_catchup</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#peer_downloads">peer_downloads</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#per_shard">per_shard</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L6418">src/rpc/types.gen.ts:6418</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b78077f9aba9c9128a8b8d5557b892e7c4fa6964/src/rpc/types.gen.ts#L6418">src/rpc/types.gen.ts:6418</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -37,7 +37,7 @@ This is a very disk-heavy task and therefore we set this to a low limit,
 or else the rocksdb contention makes the whole server freeze up.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L6424">src/rpc/types.gen.ts:6424</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b78077f9aba9c9128a8b8d5557b892e7c4fa6964/src/rpc/types.gen.ts#L6424">src/rpc/types.gen.ts:6424</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="apply_during_catchup"><code class="tsd-tag">Optional</code><span>apply_<wbr/>during_<wbr/>catchup</span><a href="#apply_during_catchup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">apply_during_catchup</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -46,14 +46,14 @@ during catchup. We set this to a very low value to avoid overloading the
 node while it is still performing normal tasks.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L6430">src/rpc/types.gen.ts:6430</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b78077f9aba9c9128a8b8d5557b892e7c4fa6964/src/rpc/types.gen.ts#L6430">src/rpc/types.gen.ts:6430</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="peer_downloads"><code class="tsd-tag">Optional</code><span>peer_<wbr/>downloads</span><a href="#peer_downloads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">peer_downloads</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Maximum number of outstanding requests for decentralized state sync.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L6434">src/rpc/types.gen.ts:6434</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b78077f9aba9c9128a8b8d5557b892e7c4fa6964/src/rpc/types.gen.ts#L6434">src/rpc/types.gen.ts:6434</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="per_shard"><code class="tsd-tag">Optional</code><span>per_<wbr/>shard</span><a href="#per_shard" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">per_shard</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -62,7 +62,7 @@ the actual rate limiting is done by the TaskTrackers, but this is useful for
 balancing the shards a little.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/652c3c31f44d27e0354612ce6cf37282675b1ffc/src/rpc/types.gen.ts#L6440">src/rpc/types.gen.ts:6440</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b78077f9aba9c9128a8b8d5557b892e7c4fa6964/src/rpc/types.gen.ts#L6440">src/rpc/types.gen.ts:6440</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
