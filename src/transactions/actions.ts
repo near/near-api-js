@@ -22,10 +22,40 @@ export class FunctionCallPermission {
 
 export class FullAccessPermission {}
 
+export class GasKeyInfo {
+    balance: bigint;
+    numNonces: number;
+
+    constructor({ balance, numNonces }: { balance: bigint; numNonces: number }) {
+        this.balance = balance;
+        this.numNonces = numNonces;
+    }
+}
+
+export class GasKeyFunctionCallPermission {
+    gasKeyInfo: GasKeyInfo;
+    functionCall: FunctionCallPermission;
+
+    constructor({ gasKeyInfo, functionCall }: { gasKeyInfo: GasKeyInfo; functionCall: FunctionCallPermission }) {
+        this.gasKeyInfo = gasKeyInfo;
+        this.functionCall = functionCall;
+    }
+}
+
+export class GasKeyFullAccessPermission {
+    gasKeyInfo: GasKeyInfo;
+
+    constructor({ gasKeyInfo }: { gasKeyInfo: GasKeyInfo }) {
+        this.gasKeyInfo = gasKeyInfo;
+    }
+}
+
 export class AccessKeyPermission extends Enum {
     enum!: string;
     functionCall?: FunctionCallPermission;
     fullAccess?: FullAccessPermission;
+    gasKeyFunctionCall?: GasKeyFunctionCallPermission;
+    gasKeyFullAccess?: GasKeyFullAccessPermission;
 
     constructor(props: any) {
         super(props);
@@ -167,6 +197,152 @@ export class SignedDelegate {
     }
 }
 
+export class DeterministicAccountStateInitV1 {
+    code: GlobalContractIdentifier;
+    data: Map<Uint8Array, Uint8Array>;
+
+    constructor({ code, data }: { code: GlobalContractIdentifier; data: Map<Uint8Array, Uint8Array> }) {
+        this.code = code;
+        this.data = data;
+    }
+}
+
+export class StateInit extends Enum {
+    enum!: string;
+    V1?: DeterministicAccountStateInitV1;
+
+    constructor(props: { V1: DeterministicAccountStateInitV1 }) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
+}
+
+export class DeterministicStateInit {
+    deposit: bigint;
+    stateInit: StateInit;
+
+    constructor({ deposit, stateInit }: { deposit: bigint; stateInit: StateInit }) {
+        this.deposit = deposit;
+        this.stateInit = stateInit;
+    }
+}
+
+export class TransferToGasKey {
+    publicKey: PublicKey;
+    deposit: bigint;
+
+    constructor({ publicKey, deposit }: { publicKey: PublicKey; deposit: bigint }) {
+        this.publicKey = publicKey;
+        this.deposit = deposit;
+    }
+}
+
+export class WithdrawFromGasKey {
+    publicKey: PublicKey;
+    amount: bigint;
+
+    constructor({ publicKey, amount }: { publicKey: PublicKey; amount: bigint }) {
+        this.publicKey = publicKey;
+        this.amount = amount;
+    }
+}
+
+export class Nonce {
+    nonce: bigint;
+
+    constructor({ nonce }: { nonce: bigint }) {
+        this.nonce = nonce;
+    }
+}
+
+export class GasKeyNonce {
+    nonce: bigint;
+    nonceIndex: number;
+
+    constructor({ nonce, nonceIndex }: { nonce: bigint; nonceIndex: number }) {
+        this.nonce = nonce;
+        this.nonceIndex = nonceIndex;
+    }
+}
+
+export class TransactionNonce extends Enum {
+    enum!: string;
+    nonce?: Nonce;
+    gasKeyNonce?: GasKeyNonce;
+
+    constructor(props: { nonce?: Nonce; gasKeyNonce?: GasKeyNonce }) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
+}
+
+export class DelegateActionV2 {
+    senderId: string;
+    receiverId: string;
+    actions: Action[];
+    nonce: TransactionNonce;
+    maxBlockHeight: bigint;
+    publicKey: PublicKey;
+
+    constructor({
+        senderId,
+        receiverId,
+        actions,
+        nonce,
+        maxBlockHeight,
+        publicKey,
+    }: {
+        senderId: string;
+        receiverId: string;
+        actions: Action[];
+        nonce: TransactionNonce;
+        maxBlockHeight: bigint;
+        publicKey: PublicKey;
+    }) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.actions = actions;
+        this.nonce = nonce;
+        this.maxBlockHeight = maxBlockHeight;
+        this.publicKey = publicKey;
+    }
+}
+
+export class VersionedDelegateActionPayloadSchema extends Enum {
+    enum!: string;
+    v2?: DelegateActionV2;
+
+    constructor(props: { v2: DelegateActionV2 }) {
+        super(props);
+        for (const [k, v] of Object.entries(props || {})) {
+            this[k] = v;
+            this.enum = k;
+        }
+    }
+}
+
+export class DelegateV2 {
+    delegateAction: VersionedDelegateActionPayloadSchema;
+    signature: Signature;
+
+    constructor({
+        delegateAction,
+        signature,
+    }: {
+        delegateAction: VersionedDelegateActionPayloadSchema;
+        signature: Signature;
+    }) {
+        this.delegateAction = delegateAction;
+        this.signature = signature;
+    }
+}
+
 /**
  * Contains a list of the valid transaction Actions available with this API
  * @see {@link https://nomicon.io/RuntimeSpec/Actions.html | Actions Spec}
@@ -184,6 +360,10 @@ export class Action extends Enum {
     signedDelegate?: SignedDelegate;
     deployGlobalContract?: DeployGlobalContract;
     useGlobalContract?: UseGlobalContract;
+    deterministicStateInit?: DeterministicStateInit;
+    transferToGasKey?: TransferToGasKey;
+    withdrawFromGasKey?: WithdrawFromGasKey;
+    delegateV2?: DelegateV2;
 
     constructor(props: any) {
         super(props);

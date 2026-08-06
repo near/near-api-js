@@ -77,6 +77,21 @@ export type AccessKeyPermissionView =
               method_names: Array<string>;
               receiver_id: string;
           };
+      }
+    | {
+          GasKeyFunctionCall: {
+              allowance: null | string;
+              balance: string;
+              method_names: Array<string>;
+              num_nonces: number;
+              receiver_id: string;
+          };
+      }
+    | {
+          GasKeyFullAccess: {
+              balance: string;
+              num_nonces: number;
+          };
       };
 
 /**

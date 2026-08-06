@@ -7,10 +7,12 @@ import {
     Action,
     AddKey,
     CreateAccount,
+    DelegateV2,
     DeleteAccount,
     DeleteKey,
     DeployContract,
     DeployGlobalContract,
+    DeterministicStateInit,
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
@@ -18,8 +20,12 @@ import {
     GlobalContractIdentifier,
     SignedDelegate,
     Stake,
+    type StateInit,
     Transfer,
+    TransferToGasKey,
     UseGlobalContract,
+    type VersionedDelegateActionPayloadSchema,
+    WithdrawFromGasKey,
 } from './actions.js';
 import type { DelegateAction } from './delegate.js';
 import type { Signature } from './signature.js';
@@ -239,6 +245,65 @@ function useGlobalContract(contractIdentifier: { accountId: string } | { codeHas
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier: identifier }) });
 }
 
+/**
+ * Creates a deterministic state init action.
+ * @param deposit The attached deposit.
+ * @param stateInit The state init payload.
+ * @returns A new deterministic state init action.
+ */
+function deterministicStateInit(deposit: bigint, stateInit: StateInit): Action {
+    return new Action({
+        deterministicStateInit: new Action({
+            deterministicStateInit: new DeterministicStateInit({
+                deposit,
+                stateInit,
+            }),
+        }),
+    });
+}
+
+/**
+ * Creates a new action for transferring funds to a gas key.
+ * @param publicKey The gas-key public key.
+ * @param deposit The amount to transfer.
+ * @returns A new transfer-to-gas-key action.
+ */
+function transferToGasKey(publicKey: PublicKey, deposit: bigint): Action {
+    return new Action({
+        transferToGasKey: new TransferToGasKey({ publicKey, deposit }),
+    });
+}
+
+/**
+ * Creates a new action for withdrawing funds from a gas key.
+ * @param publicKey The gas-key public key.
+ * @param amount The amount to withdraw.
+ * @returns A new withdraw-from-gas-key action.
+ */
+function withdrawFromGasKey(publicKey: PublicKey, amount: bigint): Action {
+    return new Action({
+        withdrawFromGasKey: new WithdrawFromGasKey({ publicKey, amount }),
+    });
+}
+
+/**
+ * Creates a new action for a v2 delegate payload and signature.
+ * @param delegateAction The versioned delegate action payload.
+ * @param signature The signature associated with the delegate action.
+ * @returns A new action for a v2 delegate.
+ */
+function delegateV2({
+    delegateAction,
+    signature,
+}: {
+    delegateAction: VersionedDelegateActionPayloadSchema;
+    signature: Signature;
+}): Action {
+    return new Action({
+        delegateV2: new DelegateV2({ delegateAction, signature }),
+    });
+}
+
 export const actions = {
     addFullAccessKey,
     addFunctionCallAccessKey,
@@ -254,4 +319,8 @@ export const actions = {
     transfer,
     deployGlobalContract,
     useGlobalContract,
+    deterministicStateInit,
+    transferToGasKey,
+    withdrawFromGasKey,
+    delegateV2,
 };

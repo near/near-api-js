@@ -166,10 +166,29 @@ export const SCHEMA = new (class BorshSchema {
     FullAccessPermission: Schema = {
         struct: {},
     };
+    GasKeyInfo: Schema = {
+        struct: {
+            balance: 'u128',
+            numNonces: 'u16',
+        },
+    };
+    GasKeyFunctionCallPermission: Schema = {
+        struct: {
+            gasKeyInfo: this.GasKeyInfo,
+            functionCall: this.FunctionCallPermission,
+        },
+    };
+    GasKeyFullAccessPermission: Schema = {
+        struct: {
+            gasKeyInfo: this.GasKeyInfo,
+        },
+    };
     AccessKeyPermission: Schema = {
         enum: [
             { struct: { functionCall: this.FunctionCallPermission } },
             { struct: { fullAccess: this.FullAccessPermission } },
+            { struct: { gasKeyFunctionCall: this.GasKeyFunctionCallPermission } },
+            { struct: { gasKeyFullAccess: this.GasKeyFullAccessPermission } },
         ],
     };
     AccessKey: Schema = {
@@ -238,6 +257,38 @@ export const SCHEMA = new (class BorshSchema {
             contractIdentifier: this.GlobalContractIdentifier,
         },
     };
+    DeterministicAccountStateInitV1: Schema = {
+        struct: {
+            code: this.GlobalContractIdentifier,
+            data: {
+                map: {
+                    key: { array: { type: 'u8' } },
+                    value: { array: { type: 'u8' } },
+                },
+            },
+        },
+    };
+    StateInit: Schema = {
+        enum: [{ struct: { V1: this.DeterministicAccountStateInitV1 } }],
+    };
+    DeterministicStateInit: Schema = {
+        struct: {
+            deposit: 'u128',
+            stateInit: this.StateInit,
+        },
+    };
+    TransferToGasKey: Schema = {
+        struct: {
+            publicKey: this.PublicKey,
+            deposit: 'u128',
+        },
+    };
+    WithdrawFromGasKey: Schema = {
+        struct: {
+            publicKey: this.PublicKey,
+            amount: 'u128',
+        },
+    };
     DelegateActionPrefix: Schema = {
         struct: {
             prefix: 'u32',
@@ -257,7 +308,44 @@ export const SCHEMA = new (class BorshSchema {
             { struct: { signedDelegate: 'string' } }, // placeholder to keep the right enum order, should not be used
             { struct: { deployGlobalContract: this.DeployGlobalContract } },
             { struct: { useGlobalContract: this.UseGlobalContract } },
+            { struct: { deterministicStateInit: this.DeterministicStateInit } },
+            { struct: { transferToGasKey: this.TransferToGasKey } },
+            { struct: { withdrawFromGasKey: this.WithdrawFromGasKey } },
+            { struct: { delegateV2: 'string' } },
         ],
+    };
+    Nonce: Schema = {
+        struct: {
+            nonce: 'u64',
+        },
+    };
+    GasKeyNonce: Schema = {
+        struct: {
+            nonce: 'u64',
+            nonceIndex: 'u16',
+        },
+    };
+    TransactionNonce: Schema = {
+        enum: [{ struct: { nonce: this.Nonce } }, { struct: { gasKeyNonce: this.GasKeyNonce } }],
+    };
+    DelegateActionV2: Schema = {
+        struct: {
+            senderId: 'string',
+            receiverId: 'string',
+            actions: { array: { type: this.ClassicActions } },
+            nonce: this.TransactionNonce,
+            maxBlockHeight: 'u64',
+            publicKey: this.PublicKey,
+        },
+    };
+    VersionedDelegateActionPayloadSchema: Schema = {
+        enum: [{ struct: { v2: this.DelegateActionV2 } }],
+    };
+    DelegateV2: Schema = {
+        struct: {
+            delegateAction: this.VersionedDelegateActionPayloadSchema,
+            signature: this.Signature,
+        },
     };
     DelegateAction: Schema = {
         struct: {
@@ -288,6 +376,10 @@ export const SCHEMA = new (class BorshSchema {
             { struct: { signedDelegate: this.SignedDelegate } },
             { struct: { deployGlobalContract: this.DeployGlobalContract } },
             { struct: { useGlobalContract: this.UseGlobalContract } },
+            { struct: { deterministicStateInit: this.DeterministicStateInit } },
+            { struct: { transferToGasKey: this.TransferToGasKey } },
+            { struct: { withdrawFromGasKey: this.WithdrawFromGasKey } },
+            { struct: { delegateV2: this.DelegateV2 } },
         ],
     };
     Transaction: Schema = {
