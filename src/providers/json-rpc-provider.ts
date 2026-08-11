@@ -43,7 +43,7 @@ import {
 } from '../types/index.js';
 import { base64Decode, base64Encode, baseEncode, bytesToString, findSeatPrice, stringToBytes } from '../utils/index.js';
 import { parseRpcError, parseRpcErrorMessage } from './errors/parse.js';
-import { RpcError } from './errors/rpc.js';
+import { RpcError } from '../rpc-errors/index.js';
 import { type ConnectionInfo, fetchJsonRpc, retryConfig } from './fetch_json.js';
 import type { Methods } from './methods.js';
 import type {

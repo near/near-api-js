@@ -18,7 +18,7 @@ import {
     type TxExecutionStatus,
     TypedError,
 } from '../types/index.js';
-import { AccountDoesNotExistError } from './errors/handler.js';
+import { AccountDoesNotExistError } from '../rpc-errors/index.js';
 import type {
     CallFunctionArgs,
     Provider,

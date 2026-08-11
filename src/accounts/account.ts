@@ -1,6 +1,6 @@
 import { type KeyPairString, PublicKey } from '../crypto/index.js';
 import { parseTransactionExecutionError } from '../providers/errors/parse.js';
-import { InvalidNonceError } from '../providers/errors/transaction_execution.js';
+import { InvalidNonceError } from '../rpc-errors/index.js';
 import { JsonRpcProvider, type Provider } from '../providers/index.js';
 import type { RpcTransactionResponse } from '../rpc/types.gen.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
