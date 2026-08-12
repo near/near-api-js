@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.3.1
+
+### Patch Changes
+
+- [#1985](https://github.com/near/near-api-js/pull/1985) [`b298d23`](https://github.com/near/near-api-js/commit/b298d23a4a1f909b770fe7415562a70f3efbbfcf) Thanks [@gagdiez](https://github.com/gagdiez)! - Preserve RPC error constructor identity between the main package and the `rpc-errors` subpath in both ESM and CommonJS builds.
+
 ## 7.3.0
 
 ### Minor Changes
