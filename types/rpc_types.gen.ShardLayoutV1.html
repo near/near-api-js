@@ -13,7 +13,7 @@
 <h1>Type Alias ShardLayoutV1</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">ShardLayoutV1</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#boundary_accounts">boundary_accounts</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.AccountId.html" class="tsd-signature-type tsd-kind-type-alias">AccountId</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#shards_split_map">shards_split_map</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.ShardId.html" class="tsd-signature-type tsd-kind-type-alias">ShardId</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#to_parent_shard_map">to_parent_shard_map</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.ShardId.html" class="tsd-signature-type tsd-kind-type-alias">ShardId</a><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#version">version</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/0180eeb05f6191793f99774728342be9d3dd035b/src/rpc/types.gen.ts#L6039">src/rpc/types.gen.ts:6039</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b298d23a4a1f909b770fe7415562a70f3efbbfcf/src/rpc/types.gen.ts#L6039">src/rpc/types.gen.ts:6039</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -38,7 +38,7 @@ another - or the smallest or largest account possible. The total
 number of shards is equal to the number of boundary accounts plus 1.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/0180eeb05f6191793f99774728342be9d3dd035b/src/rpc/types.gen.ts#L6046">src/rpc/types.gen.ts:6046</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b298d23a4a1f909b770fe7415562a70f3efbbfcf/src/rpc/types.gen.ts#L6046">src/rpc/types.gen.ts:6046</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="shards_split_map"><code class="tsd-tag">Optional</code><span>shards_<wbr/>split_<wbr/>map</span><a href="#shards_split_map" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">shards_split_map</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.ShardId.html" class="tsd-signature-type tsd-kind-type-alias">ShardId</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -47,7 +47,7 @@ Useful for constructing states for the shards.
 None for the genesis shard layout</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/0180eeb05f6191793f99774728342be9d3dd035b/src/rpc/types.gen.ts#L6052">src/rpc/types.gen.ts:6052</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b298d23a4a1f909b770fe7415562a70f3efbbfcf/src/rpc/types.gen.ts#L6052">src/rpc/types.gen.ts:6052</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="to_parent_shard_map"><code class="tsd-tag">Optional</code><span>to_<wbr/>parent_<wbr/>shard_<wbr/>map</span><a href="#to_parent_shard_map" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">to_parent_shard_map</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.ShardId.html" class="tsd-signature-type tsd-kind-type-alias">ShardId</a><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -55,14 +55,14 @@ None for the genesis shard layout</p>
 Since shard_ids always range from 0 to num_shards - 1, we use vec instead of a hashmap</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/0180eeb05f6191793f99774728342be9d3dd035b/src/rpc/types.gen.ts#L6057">src/rpc/types.gen.ts:6057</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b298d23a4a1f909b770fe7415562a70f3efbbfcf/src/rpc/types.gen.ts#L6057">src/rpc/types.gen.ts:6057</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="version"><span>version</span><a href="#version" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">version</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Version of the shard layout, this is useful for uniquely identify the shard layout</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/0180eeb05f6191793f99774728342be9d3dd035b/src/rpc/types.gen.ts#L6061">src/rpc/types.gen.ts:6061</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/b298d23a4a1f909b770fe7415562a70f3efbbfcf/src/rpc/types.gen.ts#L6061">src/rpc/types.gen.ts:6061</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
