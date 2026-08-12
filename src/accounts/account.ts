@@ -1,8 +1,8 @@
 import { type KeyPairString, PublicKey } from '../crypto/index.js';
 import { parseTransactionExecutionError } from '../providers/errors/parse.js';
-import { InvalidNonceError } from '../providers/errors/transaction_execution.js';
 import { JsonRpcProvider, type Provider } from '../providers/index.js';
 import type { RpcTransactionResponse } from '../rpc/types.gen.js';
+import { InvalidNonceError } from '../rpc-errors/index.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
 import type { SignDelegateActionReturn } from '../signers/signer.js';
 import { FungibleToken, type NativeToken, NEAR } from '../tokens/index.js';

@@ -1,3 +1,4 @@
+import type { Plugin } from 'esbuild';
 import { defineConfig } from 'tsup';
 
 const entry = {
@@ -10,6 +11,23 @@ const entry = {
     'rpc-errors/index': 'src/rpc-errors/index.ts',
 };
 
+/**
+ * Keep RPC error constructors behind one runtime module boundary.
+ */
+const externalizeRpcErrors: Plugin = {
+    name: 'externalize-rpc-errors',
+    setup(build) {
+        build.onResolve({ filter: /(?:^|\/)rpc-errors\/index\.js$/ }, (args) => {
+            if (args.kind === 'entry-point') return;
+
+            return {
+                path: 'near-api-js/rpc-errors',
+                external: true,
+            };
+        });
+    },
+};
+
 export default defineConfig({
     entry,
     format: ['esm', 'cjs'],
@@ -17,6 +35,7 @@ export default defineConfig({
     dts: true,
     clean: true,
     splitting: false,
+    esbuildPlugins: [externalizeRpcErrors],
     sourcemap: true,
     target: 'es2020',
     outExtension({ format }) {
