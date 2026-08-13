@@ -89,7 +89,7 @@
         }
     },
     "dependencies": {
-        "@noble/curves": "2.2.0",
+        "@noble/curves": "2.3.0",
         "@noble/hashes": "2.2.0",
         "@noble/post-quantum": "0.6.1",
         "@scure/base": "2.2.0",
