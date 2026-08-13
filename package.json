@@ -105,7 +105,7 @@
         "@commitlint/cli": "21.2.1",
         "@commitlint/config-conventional": "21.2.0",
         "@hey-api/openapi-ts": "^0.99.0",
-        "@types/node": "26.1.1",
+        "@types/node": "26.2.0",
         "@vitest/coverage-v8": "4.1.10",
         "@vitest/ui": "4.1.10",
         "commitlint": "21.2.1",
