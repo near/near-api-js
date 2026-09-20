@@ -71,13 +71,22 @@ export class FailoverRpcProvider implements Provider {
         return provider;
     }
 
-    private async withBackoff<T>(getResult: (provider: Provider) => Promise<T>): Promise<T> {
+    private async withBackoff<T>(
+        getResult: (provider: Provider) => Promise<T>,
+        { undefinedIsResult = false }: { undefinedIsResult?: boolean } = {}
+    ): Promise<T> {
         for (let i = 0; i < this.providers.length; i++) {
             try {
                 // each provider implements own retry logic
                 const result = await getResult(this.currentProvider);
 
-                if (typeof result === 'undefined') continue;
+                // `callFunction` is the one method whose contract admits `undefined`:
+                // a view call that returns nothing decodes to it. Treating that as a
+                // failure loses a valid answer, so only the other methods skip it.
+                if (!undefinedIsResult && typeof result === 'undefined') {
+                    this.switchToNextProvider();
+                    continue;
+                }
 
                 return result;
             } catch (e) {
@@ -129,7 +138,9 @@ export class FailoverRpcProvider implements Provider {
     }
 
     public async callFunction<T extends SerializedReturnValue>(params: CallFunctionArgs): Promise<T | undefined> {
-        return this.withBackoff((currentProvider) => currentProvider.callFunction<T>(params));
+        return this.withBackoff((currentProvider) => currentProvider.callFunction<T>(params), {
+            undefinedIsResult: true,
+        });
     }
 
     public async callFunctionRaw(params: CallFunctionArgs) {

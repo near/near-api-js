@@ -201,6 +201,67 @@ describe('failover provider', () => {
         expect(await provider.viewNodeStatus()).toBe('first');
     });
 
+    test('FailoverRpc returns an empty callFunction result instead of failing over', async () => {
+        // A view call that returns nothing decodes to `undefined`, which is the one
+        // result the Provider contract marks optional. It is an answer, not a failure.
+        let secondProviderCalls = 0;
+        const jsonProviders = [
+            Object.setPrototypeOf(
+                {
+                    callFunction() {
+                        return Promise.resolve(undefined);
+                    },
+                },
+                JsonRpcProvider.prototype
+            ),
+            Object.setPrototypeOf(
+                {
+                    callFunction() {
+                        secondProviderCalls += 1;
+                        return Promise.resolve('second');
+                    },
+                },
+                JsonRpcProvider.prototype
+            ),
+        ];
+
+        const provider = new FailoverRpcProvider(jsonProviders);
+
+        await expect(provider.callFunction({ contractId: 'c.near', method: 'm', args: {} })).resolves.toBeUndefined();
+        expect(secondProviderCalls).toBe(0);
+    });
+
+    test('FailoverRpc advances to the next provider when one yields undefined', async () => {
+        // Methods whose contract has no undefined result still fail over, and each
+        // attempt must reach a different provider rather than re-query the first.
+        const calls: string[] = [];
+        const jsonProviders = [
+            Object.setPrototypeOf(
+                {
+                    viewNodeStatus() {
+                        calls.push('first');
+                        return Promise.resolve(undefined);
+                    },
+                },
+                JsonRpcProvider.prototype
+            ),
+            Object.setPrototypeOf(
+                {
+                    viewNodeStatus() {
+                        calls.push('second');
+                        return Promise.resolve('second');
+                    },
+                },
+                JsonRpcProvider.prototype
+            ),
+        ];
+
+        const provider = new FailoverRpcProvider(jsonProviders);
+
+        expect(await provider.viewNodeStatus()).toBe('second');
+        expect(calls).toEqual(['first', 'second']);
+    });
+
     test('FailoverRpc switches to next provider in case of error', async () => {
         const jsonProviders = [
             Object.setPrototypeOf(
