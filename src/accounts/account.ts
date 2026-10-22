@@ -20,8 +20,10 @@ import { baseDecode, getTransactionLastResult } from '../utils/index.js';
 import { NonceManager } from './nonce-manager.js';
 
 const {
+    addFullAccessGasKey,
     addFullAccessKey,
     addFunctionCallAccessKey,
+    addFunctionCallGasKey,
     createAccount,
     deleteAccount,
     deleteKey,
@@ -29,7 +31,9 @@ const {
     deployGlobalContract,
     functionCall,
     transfer,
+    transferToGasKey,
     useGlobalContract,
+    withdrawFromGasKey,
 } = actions;
 
 const DEFAULT_FINALITY: Finality = 'optimistic';
@@ -51,12 +55,16 @@ export interface CreateTransactionArgs {
     receiverId: string;
     actions: Action[];
     publicKey: string | PublicKey;
+    /** Nonce lane of the gas key signing the transaction, leave empty for regular access keys */
+    nonceIndex?: number;
 }
 
 export interface CreateSignedTransactionArgs {
     receiverId: string;
     actions: Action[];
     signer?: Signer;
+    /** Nonce lane of the gas key signing the transaction, leave empty for regular access keys */
+    nonceIndex?: number;
 }
 
 export interface CreateMetaTransactionArgs {
@@ -80,6 +88,8 @@ export interface SignAndSendTransactionArgs {
     throwOnFailure?: boolean;
     signer?: Signer;
     retries?: number;
+    /** Nonce lane of the gas key signing the transaction, leave empty for regular access keys */
+    nonceIndex?: number;
 }
 
 export interface SignAndSendTransactionsArgs {
@@ -109,6 +119,13 @@ export interface AddFunctionAccessKeyArgs {
     contractId: string;
     methodNames?: string[];
     allowance?: bigint | string | number;
+}
+
+export interface AddFunctionCallGasKeyArgs {
+    publicKey: PublicKey | string;
+    contractId: string;
+    methodNames?: string[];
+    numNonces?: number;
 }
 
 export interface CallFunctionArgs {
@@ -274,14 +291,15 @@ export class Account {
      * @param options.receiverId Account against which to perform the actions
      * @param options.actions Actions to perform
      * @param options.publicKey The public part of the key that will be used to sign the transaction
+     * @param options.nonceIndex The nonce lane of the gas key, creates a `TransactionV1` paid by the gas key balance
      */
-    public async createTransaction({ receiverId, actions, publicKey }: CreateTransactionArgs) {
+    public async createTransaction({ receiverId, actions, publicKey, nonceIndex }: CreateTransactionArgs) {
         if (!publicKey) throw new Error('Please provide a public key');
 
         const pk = PublicKey.from(publicKey);
 
         const [nonce, block] = await Promise.all([
-            this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
+            this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider, nonceIndex),
             this.provider.viewBlock({
                 // block hash referenced in tx must be finalized
                 // to ensure node has it in memory
@@ -291,7 +309,15 @@ export class Account {
 
         const recentBlockHash = block.header.hash;
 
-        return createTransaction(this.accountId, pk, receiverId, nonce, actions, baseDecode(recentBlockHash));
+        return createTransaction(
+            this.accountId,
+            pk,
+            receiverId,
+            nonce,
+            actions,
+            baseDecode(recentBlockHash),
+            nonceIndex
+        );
     }
 
     /**
@@ -301,6 +327,7 @@ export class Account {
         receiverId,
         actions,
         signer = this.signer,
+        nonceIndex,
     }: CreateSignedTransactionArgs): Promise<SignedTransaction> {
         if (!signer) throw new Error('Please set a signer');
 
@@ -308,6 +335,7 @@ export class Account {
             receiverId,
             actions,
             publicKey: await signer.getPublicKey(),
+            nonceIndex,
         });
 
         const { signedTransaction } = await signer.signTransaction(tx);
@@ -386,6 +414,7 @@ export class Account {
      * @param options.receiverId The NEAR account ID of the transaction receiver.
      * @param options.actions The list of actions to be performed in the transaction.
      * @param options.throwOnFailure Whether to throw an error if the transaction fails.
+     * @param options.nonceIndex The nonce lane when the signer holds a gas key, gas is then paid by the gas key balance
      *
      */
     async signAndSendTransaction({
@@ -395,11 +424,13 @@ export class Account {
         throwOnFailure = true,
         signer = this.signer,
         retries = 10,
+        nonceIndex,
     }: SignAndSendTransactionArgs): Promise<RpcTransactionResponse> {
         const signedTx = await this.createSignedTransaction({
             receiverId,
             actions,
             signer,
+            nonceIndex,
         });
 
         let result: RpcTransactionResponse;
@@ -408,7 +439,7 @@ export class Account {
         } catch (error: unknown) {
             if (error instanceof InvalidNonceError) {
                 // invalidate nonce cache so we don't send another transaction with stale nonce
-                await this.nonceManager.invalidate(signedTx.transaction.publicKey);
+                await this.nonceManager.invalidate(signedTx.transaction.publicKey, nonceIndex);
 
                 if (retries > 0) {
                     return this.signAndSendTransaction({
@@ -418,6 +449,7 @@ export class Account {
                         throwOnFailure,
                         signer,
                         retries: retries - 1,
+                        nonceIndex,
                     });
                 }
             }
@@ -630,6 +662,67 @@ export class Account {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [addFullAccessKey(PublicKey.from(publicKey))],
+        });
+    }
+
+    /**
+     * Add a full access gas key to the account. Its balance starts at 0, fund it with {@link transferToGasKey}
+     *
+     * @param publicKey The public key to be added
+     * @param numNonces The number of independent nonce lanes (1-1024, default 1)
+     */
+    public async addFullAccessGasKey(publicKey: PublicKey | string, numNonces = 1) {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [addFullAccessGasKey(PublicKey.from(publicKey), numNonces)],
+        });
+    }
+
+    /**
+     * Add a function call gas key to the account. Its balance starts at 0, fund it with {@link transferToGasKey}
+     *
+     * @param options
+     * @param options.publicKey The key to add to the account
+     * @param options.contractId The contract that this key can call
+     * @param options.methodNames The methods this key is allowed to call
+     * @param options.numNonces The number of independent nonce lanes (1-1024, default 1)
+     */
+    public async addFunctionCallGasKey({
+        publicKey,
+        contractId,
+        methodNames = [],
+        numNonces = 1,
+    }: AddFunctionCallGasKeyArgs) {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [addFunctionCallGasKey(PublicKey.from(publicKey), contractId, methodNames, numNonces)],
+        });
+    }
+
+    /**
+     * Fund a gas key balance. The gas key can belong to any account
+     *
+     * @param accountId The account that owns the gas key
+     * @param publicKey The public key of the gas key
+     * @param amount The amount of yoctoNEAR to transfer to the gas key
+     */
+    public async transferToGasKey(accountId: string, publicKey: PublicKey | string, amount: bigint | string | number) {
+        return this.signAndSendTransaction({
+            receiverId: accountId,
+            actions: [transferToGasKey(PublicKey.from(publicKey), BigInt(amount))],
+        });
+    }
+
+    /**
+     * Move balance from one of this account's gas keys back to the account
+     *
+     * @param publicKey The public key of the gas key
+     * @param amount The amount of yoctoNEAR to withdraw
+     */
+    public async withdrawFromGasKey(publicKey: PublicKey | string, amount: bigint | string | number) {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [withdrawFromGasKey(PublicKey.from(publicKey), BigInt(amount))],
         });
     }
 

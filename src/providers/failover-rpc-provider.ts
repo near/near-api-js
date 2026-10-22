@@ -112,6 +112,10 @@ export class FailoverRpcProvider implements Provider {
         return this.withBackoff((currentProvider) => currentProvider.viewAccessKeyList(params));
     }
 
+    public async viewGasKeyNonces(params: ViewAccessKeyArgs) {
+        return this.withBackoff((currentProvider) => currentProvider.viewGasKeyNonces(params));
+    }
+
     public async viewAccount(params: ViewAccountArgs) {
         return this.withBackoff((currentProvider) => currentProvider.viewAccount(params));
     }

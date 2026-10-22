@@ -11,6 +11,7 @@ import type {
     AccountView,
     CallResult,
     CryptoHash,
+    GasKeyNoncesView,
     ContractCodeView as RawContractCodeView,
     RpcBlockResponse,
     RpcChunkResponse,
@@ -183,6 +184,22 @@ export class JsonRpcProvider implements Provider {
             finality: finalityQuery.finality,
             request_type: 'view_access_key_list',
             account_id: accountId,
+        });
+    }
+
+    /**
+     * Returns the current nonce of each lane of a gas key
+     */
+    public async viewGasKeyNonces({
+        accountId,
+        publicKey,
+        finalityQuery = { finality: DEFAULT_FINALITY },
+    }: ViewAccessKeyArgs) {
+        return this.query<GasKeyNoncesView>({
+            finality: finalityQuery.finality,
+            request_type: 'view_gas_key_nonces',
+            account_id: accountId,
+            public_key: publicKey.toString(),
         });
     }
 
