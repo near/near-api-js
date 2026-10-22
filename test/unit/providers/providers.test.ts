@@ -1,8 +1,15 @@
 import type { Sandbox } from 'near-sandbox';
 import { TextEncoder } from 'util';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src/index.js';
-import { AccountDoesNotExistError } from '../../../src/providers/errors/handler.js';
+import {
+    FailoverRpcError,
+    FailoverRpcProvider,
+    getTransactionLastResult,
+    JsonRpcProvider,
+    type Provider,
+    TypedError,
+} from '../../../src/index.js';
+import { AccountDoesNotExistError, NodeIsSyncingError } from '../../../src/rpc-errors/index.js';
 import { fastForwardSandbox, startSandbox } from '../../sandbox.js';
 
 global.TextEncoder = TextEncoder;
@@ -260,19 +267,21 @@ describe('failover provider', () => {
     });
 
     test('FailoverRpc returns error if all providers are unavailable', async () => {
+        const firstError = new Error('first provider unavailable');
+        const lastError = new NodeIsSyncingError();
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
-                    status() {
-                        throw new Error();
+                    viewNodeStatus() {
+                        throw firstError;
                     },
                 },
                 JsonRpcProvider.prototype
             ),
             Object.setPrototypeOf(
                 {
-                    status() {
-                        throw new Error();
+                    viewNodeStatus() {
+                        throw lastError;
                     },
                 },
                 JsonRpcProvider.prototype
@@ -281,7 +290,16 @@ describe('failover provider', () => {
 
         const provider = new FailoverRpcProvider(jsonProviders);
 
-        await expect(() => provider.viewNodeStatus()).rejects.toThrow();
+        try {
+            await provider.viewNodeStatus();
+            expect.fail('Expected all providers to fail');
+        } catch (error) {
+            expect(error).toBeInstanceOf(FailoverRpcError);
+            expect(error).toBeInstanceOf(TypedError);
+            expect((error as FailoverRpcError).type).toBe('RetriesExceeded');
+            expect((error as FailoverRpcError).errors).toEqual([firstError, lastError]);
+            expect((error as FailoverRpcError).errors[1]).toBeInstanceOf(NodeIsSyncingError);
+        }
     });
 });
 
