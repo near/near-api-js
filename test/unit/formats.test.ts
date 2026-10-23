@@ -51,6 +51,18 @@ describe('published formats', () => {
         expect(cjs.KeyPair).toBeTypeOf('function');
     });
 
+    it('supports ML-DSA-65 in both seed-phrase bundles', async () => {
+        const esm = await import('near-api-js/seed-phrase');
+        const cjs = require('near-api-js/seed-phrase') as typeof esm;
+        for (const bundle of [esm, cjs]) {
+            const generated = bundle.generateSeedPhrase({ keyType: 'ml-dsa-65' });
+            expect(generated.keyPair.toString()).toMatch(/^ml-dsa-65:/);
+            expect(bundle.parseSeedPhrase(generated.seedPhrase, { keyType: 'ml-dsa-65' }).toString()).toBe(
+                generated.keyPair.toString()
+            );
+        }
+    });
+
     it('preserves RPC error identity in the ESM build', async () => {
         const { JsonRpcProvider } = await import('near-api-js');
         const { AccountDoesNotExistError } = await import('near-api-js/rpc-errors');
