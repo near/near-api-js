@@ -16,7 +16,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">ChunkHeaderView</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#balance_burnt">balance_burnt</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.NearToken.html" class="tsd-signature-type tsd-kind-type-alias">NearToken</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#bandwidth_requests">bandwidth_requests</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.BandwidthRequests.html" class="tsd-signature-type tsd-kind-type-alias">BandwidthRequests</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#chunk_hash">chunk_hash</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#congestion_info">congestion_info</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.CongestionInfoView.html" class="tsd-signature-type tsd-kind-type-alias">CongestionInfoView</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#encoded_length">encoded_length</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#encoded_merkle_root">encoded_merkle_root</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#gas_limit">gas_limit</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#gas_used">gas_used</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#height_created">height_created</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#height_included">height_included</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#outcome_root">outcome_root</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#outgoing_receipts_root">outgoing_receipts_root</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#prev_block_hash">prev_block_hash</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#prev_state_root">prev_state_root</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#proposed_split">proposed_split</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.TrieSplit.html" class="tsd-signature-type tsd-kind-type-alias">TrieSplit</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rent_paid">rent_paid</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearToken.html" class="tsd-signature-type tsd-kind-type-alias">NearToken</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#shard_id">shard_id</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.ShardId.html" class="tsd-signature-type tsd-kind-type-alias">ShardId</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#signature">signature</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.Signature.html" class="tsd-signature-type tsd-kind-type-alias">Signature</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#tx_root">tx_root</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#validator_proposals">validator_proposals</a><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.ValidatorStakeView.html" class="tsd-signature-type tsd-kind-type-alias">ValidatorStakeView</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#validator_reward">validator_reward</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearToken.html" class="tsd-signature-type tsd-kind-type-alias">NearToken</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L880">src/rpc/types.gen.ts:880</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L880">src/rpc/types.gen.ts:880</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -53,72 +53,72 @@
 <h3 class="tsd-anchor-link" id="balance_burnt"><span>balance_<wbr/>burnt</span><a href="#balance_burnt" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">balance_burnt</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.NearToken.html" class="tsd-signature-type tsd-kind-type-alias">NearToken</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L881">src/rpc/types.gen.ts:881</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L881">src/rpc/types.gen.ts:881</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="bandwidth_requests"><code class="tsd-tag">Optional</code><span>bandwidth_<wbr/>requests</span><a href="#bandwidth_requests" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">bandwidth_requests</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.BandwidthRequests.html" class="tsd-signature-type tsd-kind-type-alias">BandwidthRequests</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L882">src/rpc/types.gen.ts:882</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L882">src/rpc/types.gen.ts:882</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="chunk_hash"><span>chunk_<wbr/>hash</span><a href="#chunk_hash" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">chunk_hash</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L883">src/rpc/types.gen.ts:883</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L883">src/rpc/types.gen.ts:883</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="congestion_info"><code class="tsd-tag">Optional</code><span>congestion_<wbr/>info</span><a href="#congestion_info" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">congestion_info</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.CongestionInfoView.html" class="tsd-signature-type tsd-kind-type-alias">CongestionInfoView</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L884">src/rpc/types.gen.ts:884</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L884">src/rpc/types.gen.ts:884</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="encoded_length"><span>encoded_<wbr/>length</span><a href="#encoded_length" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">encoded_length</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L885">src/rpc/types.gen.ts:885</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L885">src/rpc/types.gen.ts:885</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="encoded_merkle_root"><span>encoded_<wbr/>merkle_<wbr/>root</span><a href="#encoded_merkle_root" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">encoded_merkle_root</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L886">src/rpc/types.gen.ts:886</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L886">src/rpc/types.gen.ts:886</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="gas_limit"><span>gas_<wbr/>limit</span><a href="#gas_limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">gas_limit</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L887">src/rpc/types.gen.ts:887</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L887">src/rpc/types.gen.ts:887</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="gas_used"><span>gas_<wbr/>used</span><a href="#gas_used" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">gas_used</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L888">src/rpc/types.gen.ts:888</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L888">src/rpc/types.gen.ts:888</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="height_created"><span>height_<wbr/>created</span><a href="#height_created" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">height_created</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L889">src/rpc/types.gen.ts:889</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L889">src/rpc/types.gen.ts:889</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="height_included"><span>height_<wbr/>included</span><a href="#height_included" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">height_included</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L890">src/rpc/types.gen.ts:890</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L890">src/rpc/types.gen.ts:890</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="outcome_root"><span>outcome_<wbr/>root</span><a href="#outcome_root" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">outcome_root</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L891">src/rpc/types.gen.ts:891</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L891">src/rpc/types.gen.ts:891</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="outgoing_receipts_root"><span>outgoing_<wbr/>receipts_<wbr/>root</span><a href="#outgoing_receipts_root" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">outgoing_receipts_root</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L892">src/rpc/types.gen.ts:892</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L892">src/rpc/types.gen.ts:892</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="prev_block_hash"><span>prev_<wbr/>block_<wbr/>hash</span><a href="#prev_block_hash" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">prev_block_hash</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L893">src/rpc/types.gen.ts:893</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L893">src/rpc/types.gen.ts:893</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="prev_state_root"><span>prev_<wbr/>state_<wbr/>root</span><a href="#prev_state_root" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">prev_state_root</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L894">src/rpc/types.gen.ts:894</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L894">src/rpc/types.gen.ts:894</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="proposed_split"><code class="tsd-tag">Optional</code><span>proposed_<wbr/>split</span><a href="#proposed_split" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">proposed_split</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.TrieSplit.html" class="tsd-signature-type tsd-kind-type-alias">TrieSplit</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -128,41 +128,41 @@
 <code>Some(Some(split))</code>: field present and set</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L901">src/rpc/types.gen.ts:901</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L901">src/rpc/types.gen.ts:901</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rent_paid"><code class="tsd-tag">Optional</code><span>rent_<wbr/>paid</span><a href="#rent_paid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rent_paid</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearToken.html" class="tsd-signature-type tsd-kind-type-alias">NearToken</a></div>
 <div class="tsd-comment tsd-typography"><p>TODO(2271): deprecated.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L905">src/rpc/types.gen.ts:905</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L905">src/rpc/types.gen.ts:905</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="shard_id"><span>shard_<wbr/>id</span><a href="#shard_id" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">shard_id</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.ShardId.html" class="tsd-signature-type tsd-kind-type-alias">ShardId</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L906">src/rpc/types.gen.ts:906</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L906">src/rpc/types.gen.ts:906</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signature"><span>signature</span><a href="#signature" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">signature</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.Signature.html" class="tsd-signature-type tsd-kind-type-alias">Signature</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L907">src/rpc/types.gen.ts:907</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L907">src/rpc/types.gen.ts:907</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="tx_root"><span>tx_<wbr/>root</span><a href="#tx_root" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">tx_root</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.CryptoHash.html" class="tsd-signature-type tsd-kind-type-alias">CryptoHash</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L908">src/rpc/types.gen.ts:908</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L908">src/rpc/types.gen.ts:908</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="validator_proposals"><span>validator_<wbr/>proposals</span><a href="#validator_proposals" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">validator_proposals</span><span class="tsd-signature-symbol">:</span> <a href="rpc_types.gen.ValidatorStakeView.html" class="tsd-signature-type tsd-kind-type-alias">ValidatorStakeView</a><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L909">src/rpc/types.gen.ts:909</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L909">src/rpc/types.gen.ts:909</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="validator_reward"><code class="tsd-tag">Optional</code><span>validator_<wbr/>reward</span><a href="#validator_reward" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">validator_reward</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearToken.html" class="tsd-signature-type tsd-kind-type-alias">NearToken</a></div>
 <div class="tsd-comment tsd-typography"><p>TODO(2271): deprecated.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/4c208bbbd630e7a924f2c7461e5e071cc8ea929a/src/rpc/types.gen.ts#L913">src/rpc/types.gen.ts:913</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/a2d3755e0080894d64f2a0d711d20d7ee3a410b0/src/rpc/types.gen.ts#L913">src/rpc/types.gen.ts:913</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
