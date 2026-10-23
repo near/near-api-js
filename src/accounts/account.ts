@@ -55,16 +55,12 @@ export interface CreateTransactionArgs {
     receiverId: string;
     actions: Action[];
     publicKey: string | PublicKey;
-    /** Nonce lane of the gas key signing the transaction, leave empty for regular access keys */
-    nonceIndex?: number;
 }
 
 export interface CreateSignedTransactionArgs {
     receiverId: string;
     actions: Action[];
     signer?: Signer;
-    /** Nonce lane of the gas key signing the transaction, leave empty for regular access keys */
-    nonceIndex?: number;
 }
 
 export interface CreateMetaTransactionArgs {
@@ -88,8 +84,6 @@ export interface SignAndSendTransactionArgs {
     throwOnFailure?: boolean;
     signer?: Signer;
     retries?: number;
-    /** Nonce lane of the gas key signing the transaction, leave empty for regular access keys */
-    nonceIndex?: number;
 }
 
 export interface SignAndSendTransactionsArgs {
@@ -291,15 +285,14 @@ export class Account {
      * @param options.receiverId Account against which to perform the actions
      * @param options.actions Actions to perform
      * @param options.publicKey The public part of the key that will be used to sign the transaction
-     * @param options.nonceIndex The nonce lane of the gas key, creates a `TransactionV1` paid by the gas key balance
      */
-    public async createTransaction({ receiverId, actions, publicKey, nonceIndex }: CreateTransactionArgs) {
+    public async createTransaction({ receiverId, actions, publicKey }: CreateTransactionArgs) {
         if (!publicKey) throw new Error('Please provide a public key');
 
         const pk = PublicKey.from(publicKey);
 
-        const [nonce, block] = await Promise.all([
-            this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider, nonceIndex),
+        const [{ nonce, nonceIndex }, block] = await Promise.all([
+            this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
             this.provider.viewBlock({
                 // block hash referenced in tx must be finalized
                 // to ensure node has it in memory
@@ -327,7 +320,6 @@ export class Account {
         receiverId,
         actions,
         signer = this.signer,
-        nonceIndex,
     }: CreateSignedTransactionArgs): Promise<SignedTransaction> {
         if (!signer) throw new Error('Please set a signer');
 
@@ -335,7 +327,6 @@ export class Account {
             receiverId,
             actions,
             publicKey: await signer.getPublicKey(),
-            nonceIndex,
         });
 
         const { signedTransaction } = await signer.signTransaction(tx);
@@ -414,7 +405,6 @@ export class Account {
      * @param options.receiverId The NEAR account ID of the transaction receiver.
      * @param options.actions The list of actions to be performed in the transaction.
      * @param options.throwOnFailure Whether to throw an error if the transaction fails.
-     * @param options.nonceIndex The nonce lane when the signer holds a gas key, gas is then paid by the gas key balance
      *
      */
     async signAndSendTransaction({
@@ -424,13 +414,11 @@ export class Account {
         throwOnFailure = true,
         signer = this.signer,
         retries = 10,
-        nonceIndex,
     }: SignAndSendTransactionArgs): Promise<RpcTransactionResponse> {
         const signedTx = await this.createSignedTransaction({
             receiverId,
             actions,
             signer,
-            nonceIndex,
         });
 
         let result: RpcTransactionResponse;
@@ -439,7 +427,7 @@ export class Account {
         } catch (error: unknown) {
             if (error instanceof InvalidNonceError) {
                 // invalidate nonce cache so we don't send another transaction with stale nonce
-                await this.nonceManager.invalidate(signedTx.transaction.publicKey, nonceIndex);
+                await this.nonceManager.invalidate(signedTx.transaction.publicKey, signedTx.transaction.nonceIndex);
 
                 if (retries > 0) {
                     return this.signAndSendTransaction({
@@ -449,7 +437,6 @@ export class Account {
                         throwOnFailure,
                         signer,
                         retries: retries - 1,
-                        nonceIndex,
                     });
                 }
             }
