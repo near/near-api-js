@@ -12,7 +12,7 @@
 <li><a href="" aria-current="page">NonceManager</a></li></ul>
 <h1>Class NonceManager</h1></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/3f8136ba18832d2d01f43a41ddfee224eee0d75c/src/accounts/nonce-manager.ts#L4">src/accounts/nonce-manager.ts:4</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/77ee8678c79854df8f6d89af497fb627ea3b013c/src/accounts/nonce-manager.ts#L9">src/accounts/nonce-manager.ts:9</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -36,9 +36,7 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="constructornoncemanager"><span class="tsd-signature-keyword">new</span> <span class="tsd-kind-constructor-signature">NonceManager</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">NonceManager</a><a href="#constructornoncemanager" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">NonceManager</a></h4><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/3f8136ba18832d2d01f43a41ddfee224eee0d75c/src/accounts/nonce-manager.ts#L8">src/accounts/nonce-manager.ts:8</a></li></ul></aside></div></li></ul></section></section></details>
+<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">NonceManager</a></h4></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -46,30 +44,33 @@
 <h3 class="tsd-anchor-link" id="invalidate"><span>invalidate</span><a href="#invalidate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="invalidate-1"><span class="tsd-kind-call-signature">invalidate</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pk</span><span class="tsd-signature-symbol">:</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#invalidate-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="invalidate-1"><span class="tsd-kind-call-signature">invalidate</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pk</span><span class="tsd-signature-symbol">:</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">nonceIndex</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#invalidate-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">pk</span>: <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></span></li></ul></div>
+<li><span><span class="tsd-kind-parameter">pk</span>: <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">nonceIndex</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/3f8136ba18832d2d01f43a41ddfee224eee0d75c/src/accounts/nonce-manager.ts#L48">src/accounts/nonce-manager.ts:48</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/77ee8678c79854df8f6d89af497fb627ea3b013c/src/accounts/nonce-manager.ts#L59">src/accounts/nonce-manager.ts:59</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resolvenextnonce"><span>resolve<wbr/>Next<wbr/>Nonce</span><a href="#resolvenextnonce" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="resolvenextnonce-1"><span class="tsd-kind-call-signature">resolveNextNonce</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">pk</span><span class="tsd-signature-symbol">:</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">accountId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">provider</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Provider</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span><a href="#resolvenextnonce-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="resolvenextnonce-1"><span class="tsd-kind-call-signature">resolveNextNonce</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">pk</span><span class="tsd-signature-symbol">:</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">accountId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">provider</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Provider</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">nonce</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">nonceIndex</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span><a href="#resolvenextnonce-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Select a gas key lane, if needed, and reserve the next nonce.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">pk</span>: <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></span></li>
 <li><span><span class="tsd-kind-parameter">accountId</span>: <span class="tsd-signature-type">string</span></span></li>
 <li><span><span class="tsd-kind-parameter">provider</span>: <span class="tsd-signature-type">Provider</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">nonce</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">nonceIndex</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/3f8136ba18832d2d01f43a41ddfee224eee0d75c/src/accounts/nonce-manager.ts#L13">src/accounts/nonce-manager.ts:13</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/77ee8678c79854df8f6d89af497fb627ea3b013c/src/accounts/nonce-manager.ts#L14">src/accounts/nonce-manager.ts:14</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

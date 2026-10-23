@@ -11,9 +11,9 @@
 <li><a href="../modules/rpc_types.gen.html">rpc/types.gen</a></li>
 <li><a href="" aria-current="page">ExecutionMetadataView</a></li></ul>
 <h1>Type Alias ExecutionMetadataView</h1></div>
-<div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">ExecutionMetadataView</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#gas_profile">gas_profile</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.CostGasUsed.html" class="tsd-signature-type tsd-kind-type-alias">CostGasUsed</a><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#version">version</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">ExecutionMetadataView</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#contracts">contracts</a><span class="tsd-signature-symbol">?:</span> (<a href="rpc_types.gen.AccountContractView.html" class="tsd-signature-type tsd-kind-type-alias">AccountContractView</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span>)<span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#gas_profile">gas_profile</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.CostGasUsed.html" class="tsd-signature-type tsd-kind-type-alias">CostGasUsed</a><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#version">version</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/3f8136ba18832d2d01f43a41ddfee224eee0d75c/src/rpc/types.gen.ts#L1597">src/rpc/types.gen.ts:1597</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/77ee8678c79854df8f6d89af497fb627ea3b013c/src/rpc/types.gen.ts#L1665">src/rpc/types.gen.ts:1665</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -21,22 +21,35 @@
 <div class="tsd-accordion-details">
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading tsd-anchor-link" id="properties">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<div class="tsd-index-list"><a href="#gas_profile" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>gas_<wbr/>profile?</span></a>
+<div class="tsd-index-list"><a href="#contracts" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>contracts?</span></a>
+<a href="#gas_profile" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>gas_<wbr/>profile?</span></a>
 <a href="#version" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>version</span></a>
 </div></section></div></details></section></section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
 <section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="contracts"><code class="tsd-tag">Optional</code><span>contracts</span><a href="#contracts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">contracts</span><span class="tsd-signature-symbol">?:</span> (<a href="rpc_types.gen.AccountContractView.html" class="tsd-signature-type tsd-kind-type-alias">AccountContractView</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span>)<span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
+<div class="tsd-comment tsd-typography"><p>One entry per action in the receipt (V4+ only): the contract attached
+to the receiver account immediately before that action ran. The inner
+<code>Option</code> is <code>Some</code> (a tagged contract object) when the account had a
+contract and <code>None</code> (rendered as JSON <code>null</code>) when it did not (e.g. an
+account with no code, or one that did not yet exist). The outer
+<code>Option</code> is <code>None</code> for older metadata versions.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/77ee8678c79854df8f6d89af497fb627ea3b013c/src/rpc/types.gen.ts#L1674">src/rpc/types.gen.ts:1674</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="gas_profile"><code class="tsd-tag">Optional</code><span>gas_<wbr/>profile</span><a href="#gas_profile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">gas_profile</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.CostGasUsed.html" class="tsd-signature-type tsd-kind-type-alias">CostGasUsed</a><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/3f8136ba18832d2d01f43a41ddfee224eee0d75c/src/rpc/types.gen.ts#L1598">src/rpc/types.gen.ts:1598</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/77ee8678c79854df8f6d89af497fb627ea3b013c/src/rpc/types.gen.ts#L1675">src/rpc/types.gen.ts:1675</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="version"><span>version</span><a href="#version" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">version</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/3f8136ba18832d2d01f43a41ddfee224eee0d75c/src/rpc/types.gen.ts#L1599">src/rpc/types.gen.ts:1599</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/77ee8678c79854df8f6d89af497fb627ea3b013c/src/rpc/types.gen.ts#L1676">src/rpc/types.gen.ts:1676</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -53,7 +66,7 @@
 <h3>On This Page</h3></summary>
 <div class="tsd-accordion-details">
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
-<div><a href="#gas_profile"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>gas_<wbr/>profile</span></a><a href="#version"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>version</span></a></div></details></div></details></div>
+<div><a href="#contracts"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>contracts</span></a><a href="#gas_profile"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>gas_<wbr/>profile</span></a><a href="#version"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>version</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html">near-api-js - v7.3.1</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">

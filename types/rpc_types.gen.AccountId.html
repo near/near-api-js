@@ -15,15 +15,15 @@
 <div class="tsd-comment tsd-typography"><p>AccountId</p>
 <p>NEAR Account Identifier.</p>
 <p>This is a unique, syntactically valid, human-readable account identifier on the NEAR network.</p>
-<p><a href="https://docs.rs/near-account-id/latest/near_account_id/">See the Rust crate documentation for information about validation.</a></p>
-<p>Also see the error kind documentation.</p>
+<p><a href="index.html#account-id-rules">See the crate-level docs for information about validation.</a></p>
+<p>Also see <a href="AccountId#error-kind-precedence">Error kind precedence</a>.</p>
 <h2 id="examples" class="tsd-anchor-link">Examples<a href="#examples" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <pre><code><span class="hl-3">use</span><span class="hl-1"> </span><span class="hl-6">near_account_id</span><span class="hl-1">::</span><span class="hl-3">AccountId</span><span class="hl-1">;</span><br/><br/><span class="hl-0">let</span><span class="hl-1"> </span><span class="hl-3">alice</span><span class="hl-1">: </span><span class="hl-7">AccountId</span><span class="hl-1"> = </span><span class="hl-8">&quot;alice.near&quot;</span><span class="hl-1">.</span><span class="hl-4">parse</span><span class="hl-1">().</span><span class="hl-4">unwrap</span><span class="hl-1">();</span><br/><br/><span class="hl-4">assert</span><span class="hl-1">!(</span><span class="hl-8">&quot;ƒelicia.near&quot;</span><span class="hl-1">.</span><span class="hl-3">parse</span><span class="hl-1">::&lt;</span><span class="hl-7">AccountId</span><span class="hl-1">&gt;().</span><span class="hl-4">is_err</span><span class="hl-1">()); </span><span class="hl-5">// (ƒ is not f)</span>
 </code><button>Copy</button></pre>
 
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/3f8136ba18832d2d01f43a41ddfee224eee0d75c/src/rpc/types.gen.ts#L161">src/rpc/types.gen.ts:161</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/77ee8678c79854df8f6d89af497fb627ea3b013c/src/rpc/types.gen.ts#L211">src/rpc/types.gen.ts:211</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
