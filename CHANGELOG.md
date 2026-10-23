@@ -1,5 +1,26 @@
 # near-api-js
 
+## 7.4.0
+
+### Minor Changes
+
+- [#2004](https://github.com/near/near-api-js/pull/2004) [`77b2904`](https://github.com/near/near-api-js/commit/77b2904569e9c43f21484676160860b5c60c2028) Thanks [@matiasbenary](https://github.com/matiasbenary)! - feat: add gas key (NEP-611) permissions and `TransferToGasKey` / `WithdrawFromGasKey` actions
+
+  - automatically detect gas keys and rotate their nonce lanes when using `Account`, including convenience methods and batch sending; low-level `createTransaction` still accepts an explicit `nonceIndex`
+  - add `Provider.viewGasKeyNonces`
+  - regenerate RPC types from nearcore 2.13.4 and parse the new gas key errors
+  - remove the `EXPERIMENTAL_view_gas_key` / `EXPERIMENTAL_view_gas_key_list` methods, dropped by nearcore
+  - deprecate `GasKeyAlreadyExistsActionError`, `GasKeyPermissionInvalidActionError` and `GasKeyTooManyNoncesRequestedActionError`
+
+### Patch Changes
+
+- [#2005](https://github.com/near/near-api-js/pull/2005) [`8e730f9`](https://github.com/near/near-api-js/commit/8e730f9e17a211a21511ecbbed0c964f2e3b7b38) Thanks [@matiasbenary](https://github.com/matiasbenary)! - Preserve all provider errors in attempt order on `FailoverRpcError.errors`.
+  Return valid empty view-call results without retrying or throwing `RetriesExceeded`.
+  Try subsequent providers after account-not-found errors. If all providers fail, throw
+  `FailoverRpcError` with the original errors in `.errors`, including `AccountDoesNotExistError`.
+
+- [#2003](https://github.com/near/near-api-js/pull/2003) [`0582da4`](https://github.com/near/near-api-js/commit/0582da4105d3a300e84a18d21a3420ea22d27068) Thanks [@quantova-inc](https://github.com/quantova-inc)! - ML-DSA-65 secret keys now follow the NEP-645 string encoding. `KeyPairMLDSA65` accepts the canonical 32-byte FIPS 204 seed, generates and stores new keys in that form, rejects every other length, and validates an imported 4032-byte expanded key against FIPS 204 Algorithm 6 (s1 and s2 ranges, t0, t1 and tr) so a corrupted key is refused instead of producing signatures that never verify.
+
 ## 7.3.1
 
 ### Patch Changes
