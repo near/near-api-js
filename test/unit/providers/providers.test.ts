@@ -259,7 +259,7 @@ describe('failover provider', () => {
         expect(await provider.viewNodeStatus()).toBe('second');
     });
 
-    test('FailoverRpc does not retry account-not-found errors', async () => {
+    test('FailoverRpc switches to next provider after an account-not-found error', async () => {
         let secondProviderCalls = 0;
         const accountNotFound = new AccountDoesNotExistError('missing.near', 'block-hash', 1);
         const jsonProviders = [
@@ -288,9 +288,35 @@ describe('failover provider', () => {
 
         await expect(
             provider.viewAccount({ accountId: 'missing.near', blockQuery: { finality: 'final' } })
-        ).rejects.toThrow(AccountDoesNotExistError);
-        expect(secondProviderCalls).toBe(0);
+        ).resolves.toEqual({ amount: '0' });
+        expect(secondProviderCalls).toBe(1);
     });
+
+    test.each(['account-not-found', 'network'])(
+        'FailoverRpc preserves account-not-found and subsequent %s errors when all providers fail',
+        async (failure) => {
+            const firstError = new AccountDoesNotExistError('missing.near', 'first-block', 1);
+            const secondError =
+                failure === 'account-not-found'
+                    ? new AccountDoesNotExistError('missing.near', 'second-block', 2)
+                    : new Error('Network failure');
+            const firstProvider = new JsonRpcProvider({ url: 'http://first.test' });
+            const secondProvider = new JsonRpcProvider({ url: 'http://second.test' });
+            const firstCall = vi.spyOn(firstProvider, 'viewAccount').mockRejectedValue(firstError);
+            const secondCall = vi.spyOn(secondProvider, 'viewAccount').mockRejectedValue(secondError);
+            const provider = new FailoverRpcProvider([firstProvider, secondProvider]);
+            const params = { accountId: 'missing.near', blockQuery: { finality: 'final' as const } };
+            const response = provider.viewAccount(params);
+
+            await expect(response).rejects.toBeInstanceOf(FailoverRpcError);
+            await expect(response).rejects.toMatchObject({
+                type: 'RetriesExceeded',
+                errors: [firstError, secondError],
+            });
+            expect(firstCall).toHaveBeenCalledExactlyOnceWith(params);
+            expect(secondCall).toHaveBeenCalledExactlyOnceWith(params);
+        }
+    );
 
     test('FailoverRpc returns error if all providers are unavailable', async () => {
         const firstError = new Error('first provider unavailable');

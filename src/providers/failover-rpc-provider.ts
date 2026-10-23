@@ -6,7 +6,6 @@
  */
 
 import type { CryptoHash, RpcQueryRequest, RpcQueryResponse } from '../rpc/index.js';
-import { AccountDoesNotExistError } from '../rpc-errors/index.js';
 import type { SignedTransaction } from '../transactions/index.js';
 import {
     type AccessKeyWithPublicKey,
@@ -95,9 +94,6 @@ export class FailoverRpcProvider implements Provider {
                 // each provider implements own retry logic
                 return await getResult(this.currentProvider);
             } catch (e) {
-                if (e instanceof AccountDoesNotExistError) {
-                    throw e;
-                }
                 errors.push(e);
                 console.error(e);
                 this.switchToNextProvider();
