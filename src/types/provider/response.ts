@@ -2,6 +2,7 @@
  * NEAR RPC API request types and responses
  * @module
  */
+import type { AccessKeyPermissionView } from '../../rpc/types.gen.js';
 import type { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol.js';
 
 export type SerializedReturnValue = string | number | boolean | object;
@@ -168,11 +169,11 @@ export interface FunctionCallPermissionView {
 
 export interface AccessKeyViewRaw extends QueryResponseKind {
     nonce: number;
-    permission: 'FullAccess' | FunctionCallPermissionView;
+    permission: AccessKeyPermissionView;
 }
 export interface AccessKeyView extends QueryResponseKind {
     nonce: bigint;
-    permission: 'FullAccess' | FunctionCallPermissionView;
+    permission: AccessKeyPermissionView;
 }
 
 export interface AccessKeyInfoView {

@@ -8,6 +8,7 @@ import type {
     AccessKeyList,
     CallResult,
     CryptoHash,
+    GasKeyNoncesView,
     RpcBlockResponse,
     RpcChunkResponse,
     RpcGasPriceResponse,
@@ -118,6 +119,12 @@ export interface Provider {
     viewAccessKey(params: ViewAccessKeyArgs): Promise<InternalAccessKeyView>;
     viewAccessKeyList(params: ViewAccessKeyListArgs): Promise<
         AccessKeyList & {
+            block_hash: CryptoHash;
+            block_height: number;
+        }
+    >;
+    viewGasKeyNonces(params: ViewAccessKeyArgs): Promise<
+        GasKeyNoncesView & {
             block_hash: CryptoHash;
             block_height: number;
         }

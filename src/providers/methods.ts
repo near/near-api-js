@@ -23,8 +23,6 @@ import type {
     JsonRpcRequestForExperimentalViewAccessKeyList,
     JsonRpcRequestForExperimentalViewAccount,
     JsonRpcRequestForExperimentalViewCode,
-    JsonRpcRequestForExperimentalViewGasKey,
-    JsonRpcRequestForExperimentalViewGasKeyList,
     JsonRpcRequestForExperimentalViewState,
     JsonRpcRequestForGasPrice,
     JsonRpcRequestForGenesisConfig,
@@ -66,8 +64,6 @@ import type {
     JsonRpcResponseForRpcViewAccessKeyResponseAndRpcViewAccessKeyError,
     JsonRpcResponseForRpcViewAccountResponseAndRpcViewAccountError,
     JsonRpcResponseForRpcViewCodeResponseAndRpcViewCodeError,
-    JsonRpcResponseForRpcViewGasKeyListResponseAndRpcViewGasKeyListError,
-    JsonRpcResponseForRpcViewGasKeyResponseAndRpcViewGasKeyError,
     JsonRpcResponseForRpcViewStateResponseAndRpcViewStateError,
 } from '../rpc/types.gen.js';
 
@@ -221,14 +217,6 @@ export interface Methods {
     EXPERIMENTAL_view_code: {
         request: JsonRpcRequestForExperimentalViewCode;
         response: JsonRpcResponseForRpcViewCodeResponseAndRpcViewCodeError;
-    };
-    EXPERIMENTAL_view_gas_key: {
-        request: JsonRpcRequestForExperimentalViewGasKey;
-        response: JsonRpcResponseForRpcViewGasKeyResponseAndRpcViewGasKeyError;
-    };
-    EXPERIMENTAL_view_gas_key_list: {
-        request: JsonRpcRequestForExperimentalViewGasKeyList;
-        response: JsonRpcResponseForRpcViewGasKeyListResponseAndRpcViewGasKeyListError;
     };
     EXPERIMENTAL_view_state: {
         request: JsonRpcRequestForExperimentalViewState;

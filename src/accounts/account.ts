@@ -20,8 +20,10 @@ import { baseDecode, getTransactionLastResult } from '../utils/index.js';
 import { NonceManager } from './nonce-manager.js';
 
 const {
+    addFullAccessGasKey,
     addFullAccessKey,
     addFunctionCallAccessKey,
+    addFunctionCallGasKey,
     createAccount,
     deleteAccount,
     deleteKey,
@@ -29,7 +31,9 @@ const {
     deployGlobalContract,
     functionCall,
     transfer,
+    transferToGasKey,
     useGlobalContract,
+    withdrawFromGasKey,
 } = actions;
 
 const DEFAULT_FINALITY: Finality = 'optimistic';
@@ -109,6 +113,13 @@ export interface AddFunctionAccessKeyArgs {
     contractId: string;
     methodNames?: string[];
     allowance?: bigint | string | number;
+}
+
+export interface AddFunctionCallGasKeyArgs {
+    publicKey: PublicKey | string;
+    contractId: string;
+    methodNames?: string[];
+    numNonces?: number;
 }
 
 export interface CallFunctionArgs {
@@ -280,7 +291,7 @@ export class Account {
 
         const pk = PublicKey.from(publicKey);
 
-        const [nonce, block] = await Promise.all([
+        const [{ nonce, nonceIndex }, block] = await Promise.all([
             this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
             this.provider.viewBlock({
                 // block hash referenced in tx must be finalized
@@ -291,7 +302,15 @@ export class Account {
 
         const recentBlockHash = block.header.hash;
 
-        return createTransaction(this.accountId, pk, receiverId, nonce, actions, baseDecode(recentBlockHash));
+        return createTransaction(
+            this.accountId,
+            pk,
+            receiverId,
+            nonce,
+            actions,
+            baseDecode(recentBlockHash),
+            nonceIndex
+        );
     }
 
     /**
@@ -408,7 +427,7 @@ export class Account {
         } catch (error: unknown) {
             if (error instanceof InvalidNonceError) {
                 // invalidate nonce cache so we don't send another transaction with stale nonce
-                await this.nonceManager.invalidate(signedTx.transaction.publicKey);
+                await this.nonceManager.invalidate(signedTx.transaction.publicKey, signedTx.transaction.nonceIndex);
 
                 if (retries > 0) {
                     return this.signAndSendTransaction({
@@ -630,6 +649,67 @@ export class Account {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [addFullAccessKey(PublicKey.from(publicKey))],
+        });
+    }
+
+    /**
+     * Add a full access gas key to the account. Its balance starts at 0, fund it with {@link transferToGasKey}
+     *
+     * @param publicKey The public key to be added
+     * @param numNonces The number of independent nonce lanes (1-1024, default 1)
+     */
+    public async addFullAccessGasKey(publicKey: PublicKey | string, numNonces = 1) {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [addFullAccessGasKey(PublicKey.from(publicKey), numNonces)],
+        });
+    }
+
+    /**
+     * Add a function call gas key to the account. Its balance starts at 0, fund it with {@link transferToGasKey}
+     *
+     * @param options
+     * @param options.publicKey The key to add to the account
+     * @param options.contractId The contract that this key can call
+     * @param options.methodNames The methods this key is allowed to call
+     * @param options.numNonces The number of independent nonce lanes (1-1024, default 1)
+     */
+    public async addFunctionCallGasKey({
+        publicKey,
+        contractId,
+        methodNames = [],
+        numNonces = 1,
+    }: AddFunctionCallGasKeyArgs) {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [addFunctionCallGasKey(PublicKey.from(publicKey), contractId, methodNames, numNonces)],
+        });
+    }
+
+    /**
+     * Fund a gas key balance. The gas key can belong to any account
+     *
+     * @param accountId The account that owns the gas key
+     * @param publicKey The public key of the gas key
+     * @param amount The amount of yoctoNEAR to transfer to the gas key
+     */
+    public async transferToGasKey(accountId: string, publicKey: PublicKey | string, amount: bigint | string | number) {
+        return this.signAndSendTransaction({
+            receiverId: accountId,
+            actions: [transferToGasKey(PublicKey.from(publicKey), BigInt(amount))],
+        });
+    }
+
+    /**
+     * Move balance from one of this account's gas keys back to the account
+     *
+     * @param publicKey The public key of the gas key
+     * @param amount The amount of yoctoNEAR to withdraw
+     */
+    public async withdrawFromGasKey(publicKey: PublicKey | string, amount: bigint | string | number) {
+        return this.signAndSendTransaction({
+            receiverId: this.accountId,
+            actions: [withdrawFromGasKey(PublicKey.from(publicKey), BigInt(amount))],
         });
     }
 

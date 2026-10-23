@@ -315,3 +315,8 @@ export class HostEd25519VerifyInvalidInputError extends ContractExecutionError {
         super(`Ed25519 verify invalid input: ${message}`, blockHash, blockHeight);
     }
 }
+export class HostP256VerifyInvalidInputError extends ContractExecutionError {
+    constructor(message: string, blockHash: BlockHash, blockHeight: number) {
+        super(`P256 verify invalid input: ${message}`, blockHash, blockHeight);
+    }
+}

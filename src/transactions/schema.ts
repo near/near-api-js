@@ -33,8 +33,15 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
  * @returns A serialized representation of the input transaction.
  */
 export function encodeTransaction(transaction: Transaction | SignedTransaction) {
-    const schema: Schema = 'signature' in transaction ? SCHEMA.SignedTransaction : SCHEMA.Transaction;
-    return serialize(schema, transaction);
+    if ('signature' in transaction) {
+        if (!isTransactionV1(transaction.transaction)) return serialize(SCHEMA.SignedTransaction, transaction);
+        return serialize(SCHEMA.SignedTransactionV1, {
+            transaction: toTransactionV1(transaction.transaction),
+            signature: transaction.signature,
+        });
+    }
+    if (!isTransactionV1(transaction)) return serialize(SCHEMA.Transaction, transaction);
+    return serialize(SCHEMA.TransactionV1, toTransactionV1(transaction));
 }
 
 /**
@@ -42,7 +49,10 @@ export function encodeTransaction(transaction: Transaction | SignedTransaction) 
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeTransaction(bytes: Uint8Array) {
-    return new Transaction(deserialize(SCHEMA.Transaction, bytes) as Transaction);
+    if (bytes[0] !== TRANSACTION_V1_PREFIX) {
+        return new Transaction(deserialize(SCHEMA.Transaction, bytes) as Transaction);
+    }
+    return fromTransactionV1(deserialize(SCHEMA.TransactionV1, bytes) as TransactionV1Schema);
 }
 
 /**
@@ -50,7 +60,62 @@ export function decodeTransaction(bytes: Uint8Array) {
  * @param bytes Uint8Array data to be decoded
  */
 export function decodeSignedTransaction(bytes: Uint8Array) {
-    return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes) as SignedTransaction);
+    if (bytes[0] !== TRANSACTION_V1_PREFIX) {
+        return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes) as SignedTransaction);
+    }
+    const { transaction, signature } = deserialize(SCHEMA.SignedTransactionV1, bytes) as {
+        transaction: TransactionV1Schema;
+        signature: Signature;
+    };
+    return new SignedTransaction({ transaction: fromTransactionV1(transaction), signature });
+}
+
+/**
+ * `Transaction::V1` is prefixed with a single 0x01 byte, `Transaction::V0` has no prefix.
+ * V0 starts with the u32 length of the signer id, which is never 1 since account ids have at least 2 characters.
+ */
+const TRANSACTION_V1_PREFIX = 1;
+
+export type NonceMode = 'monotonic' | 'strict';
+
+type TransactionV1Schema = Omit<Transaction, 'nonce' | 'nonceIndex' | 'nonceMode' | 'encode'> & {
+    version: number;
+    nonce: { nonce: { nonce: bigint } } | { gasKeyNonce: { nonce: bigint; nonceIndex: number } };
+    nonceMode: { monotonic: object } | { strict: object };
+};
+
+function isTransactionV1(transaction: Transaction): boolean {
+    return transaction.nonceIndex !== undefined || transaction.nonceMode !== undefined;
+}
+
+function toTransactionV1({
+    signerId,
+    publicKey,
+    nonce,
+    nonceIndex,
+    nonceMode = 'monotonic',
+    receiverId,
+    blockHash,
+    actions,
+}: Transaction): TransactionV1Schema {
+    return {
+        version: TRANSACTION_V1_PREFIX,
+        signerId,
+        publicKey,
+        nonce: nonceIndex === undefined ? { nonce: { nonce } } : { gasKeyNonce: { nonce, nonceIndex } },
+        receiverId,
+        blockHash,
+        actions,
+        nonceMode: nonceMode === 'strict' ? { strict: {} } : { monotonic: {} },
+    };
+}
+
+function fromTransactionV1({ nonce, nonceMode, version: _version, ...rest }: TransactionV1Schema): Transaction {
+    return new Transaction({
+        ...rest,
+        ...('gasKeyNonce' in nonce ? nonce.gasKeyNonce : nonce.nonce),
+        nonceMode: 'strict' in nonceMode ? 'strict' : 'monotonic',
+    });
 }
 
 export class Transaction {
@@ -60,6 +125,9 @@ export class Transaction {
     receiverId: string;
     actions: Action[];
     blockHash: Uint8Array;
+    /** Gas key nonce lane, setting it (or `nonceMode`) encodes the transaction as `TransactionV1` */
+    nonceIndex?: number;
+    nonceMode?: NonceMode;
 
     constructor({
         signerId,
@@ -68,6 +136,8 @@ export class Transaction {
         receiverId,
         actions,
         blockHash,
+        nonceIndex,
+        nonceMode,
     }: {
         signerId: string;
         publicKey: PublicKey;
@@ -75,6 +145,8 @@ export class Transaction {
         receiverId: string;
         actions: Action[];
         blockHash: Uint8Array;
+        nonceIndex?: number;
+        nonceMode?: NonceMode;
     }) {
         this.signerId = signerId;
         this.publicKey = PublicKey.from(publicKey);
@@ -82,6 +154,8 @@ export class Transaction {
         this.receiverId = receiverId;
         this.actions = actions;
         this.blockHash = blockHash;
+        if (nonceIndex !== undefined) this.nonceIndex = nonceIndex;
+        if (nonceMode !== undefined) this.nonceMode = nonceMode;
     }
 
     encode(): Uint8Array {
@@ -166,10 +240,24 @@ export const SCHEMA = new (class BorshSchema {
     FullAccessPermission: Schema = {
         struct: {},
     };
+    GasKeyInfo: Schema = {
+        struct: {
+            balance: 'u128',
+            numNonces: 'u16',
+        },
+    };
+    GasKeyFunctionCallPermission: Schema = {
+        struct: {
+            gasKeyInfo: this.GasKeyInfo,
+            functionCall: this.FunctionCallPermission,
+        },
+    };
     AccessKeyPermission: Schema = {
         enum: [
             { struct: { functionCall: this.FunctionCallPermission } },
             { struct: { fullAccess: this.FullAccessPermission } },
+            { struct: { gasKeyFunctionCall: this.GasKeyFunctionCallPermission } },
+            { struct: { gasKeyFullAccess: this.GasKeyInfo } },
         ],
     };
     AccessKey: Schema = {
@@ -238,6 +326,18 @@ export const SCHEMA = new (class BorshSchema {
             contractIdentifier: this.GlobalContractIdentifier,
         },
     };
+    TransferToGasKey: Schema = {
+        struct: {
+            publicKey: this.PublicKey,
+            deposit: 'u128',
+        },
+    };
+    WithdrawFromGasKey: Schema = {
+        struct: {
+            publicKey: this.PublicKey,
+            amount: 'u128',
+        },
+    };
     DelegateActionPrefix: Schema = {
         struct: {
             prefix: 'u32',
@@ -257,6 +357,9 @@ export const SCHEMA = new (class BorshSchema {
             { struct: { signedDelegate: 'string' } }, // placeholder to keep the right enum order, should not be used
             { struct: { deployGlobalContract: this.DeployGlobalContract } },
             { struct: { useGlobalContract: this.UseGlobalContract } },
+            { struct: { deterministicStateInit: 'string' } }, // placeholder to keep the right enum order, should not be used
+            { struct: { transferToGasKey: this.TransferToGasKey } },
+            { struct: { withdrawFromGasKey: this.WithdrawFromGasKey } },
         ],
     };
     DelegateAction: Schema = {
@@ -288,6 +391,9 @@ export const SCHEMA = new (class BorshSchema {
             { struct: { signedDelegate: this.SignedDelegate } },
             { struct: { deployGlobalContract: this.DeployGlobalContract } },
             { struct: { useGlobalContract: this.UseGlobalContract } },
+            { struct: { deterministicStateInit: 'string' } }, // placeholder to keep the right enum order, should not be used
+            { struct: { transferToGasKey: this.TransferToGasKey } },
+            { struct: { withdrawFromGasKey: this.WithdrawFromGasKey } },
         ],
     };
     Transaction: Schema = {
@@ -303,6 +409,34 @@ export const SCHEMA = new (class BorshSchema {
     SignedTransaction: Schema = {
         struct: {
             transaction: this.Transaction,
+            signature: this.Signature,
+        },
+    };
+    TransactionNonce: Schema = {
+        enum: [
+            { struct: { nonce: { struct: { nonce: 'u64' } } } },
+            { struct: { gasKeyNonce: { struct: { nonce: 'u64', nonceIndex: 'u16' } } } },
+        ],
+    };
+    NonceMode: Schema = {
+        enum: [{ struct: { monotonic: { struct: {} } } }, { struct: { strict: { struct: {} } } }],
+    };
+    /** `version` models the 0x01 prefix of `Transaction::V1` so plain borsh produces the signed bytes */
+    TransactionV1: Schema = {
+        struct: {
+            version: 'u8',
+            signerId: 'string',
+            publicKey: this.PublicKey,
+            nonce: this.TransactionNonce,
+            receiverId: 'string',
+            blockHash: { array: { type: 'u8', len: 32 } },
+            actions: { array: { type: this.Action } },
+            nonceMode: this.NonceMode,
+        },
+    };
+    SignedTransactionV1: Schema = {
+        struct: {
+            transaction: this.TransactionV1,
             signature: this.Signature,
         },
     };
