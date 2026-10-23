@@ -1,6 +1,6 @@
 import type { Sandbox } from 'near-sandbox';
 import { TextEncoder } from 'util';
-import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import {
     FailoverRpcError,
     FailoverRpcProvider,
@@ -207,6 +207,32 @@ describe('failover provider', () => {
 
         expect(await provider.viewNodeStatus()).toBe('first');
     });
+
+    test.each([undefined, null, false, 0, ''])(
+        'FailoverRpc returns a view-call result of %j without retrying',
+        async (result) => {
+            const firstProvider = new JsonRpcProvider({ url: 'http://first.test' });
+            const secondProvider = new JsonRpcProvider({ url: 'http://second.test' });
+            const firstCall = vi.spyOn(firstProvider, 'callFunctionRaw').mockResolvedValue({
+                result: result === undefined ? [] : Array.from(new TextEncoder().encode(JSON.stringify(result))),
+                logs: [],
+                block_hash: 'block-hash',
+                block_height: 1,
+            });
+            const secondCall = vi.spyOn(secondProvider, 'callFunction').mockResolvedValue('second');
+            const provider = new FailoverRpcProvider([firstProvider, secondProvider]);
+            const params = {
+                contractId: 'contract.near',
+                method: 'empty_result',
+                args: {},
+                blockQuery: { finality: 'final' as const },
+            };
+
+            await expect(provider.callFunction(params)).resolves.toBe(result);
+            expect(firstCall).toHaveBeenCalledExactlyOnceWith(params);
+            expect(secondCall).not.toHaveBeenCalled();
+        }
+    );
 
     test('FailoverRpc switches to next provider in case of error', async () => {
         const jsonProviders = [

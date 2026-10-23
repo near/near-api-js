@@ -93,11 +93,7 @@ export class FailoverRpcProvider implements Provider {
         for (let i = 0; i < this.providers.length; i++) {
             try {
                 // each provider implements own retry logic
-                const result = await getResult(this.currentProvider);
-
-                if (typeof result === 'undefined') continue;
-
-                return result;
+                return await getResult(this.currentProvider);
             } catch (e) {
                 if (e instanceof AccountDoesNotExistError) {
                     throw e;
