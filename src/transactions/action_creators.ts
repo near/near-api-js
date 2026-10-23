@@ -14,12 +14,16 @@ import {
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
+    GasKeyFunctionCallPermission,
+    GasKeyInfo,
     GlobalContractDeployMode,
     GlobalContractIdentifier,
     SignedDelegate,
     Stake,
     Transfer,
+    TransferToGasKey,
     UseGlobalContract,
+    WithdrawFromGasKey,
 } from './actions.js';
 import type { DelegateAction } from './delegate.js';
 import type { Signature } from './signature.js';
@@ -52,6 +56,40 @@ function functionCallAccessKey(receiverId: string, methodNames: string[], allowa
                 receiverId,
                 allowance,
                 methodNames,
+            }),
+        }),
+    });
+}
+
+/**
+ * Creates a gas key with full access permissions. Its balance starts at 0 and is funded with {@link transferToGasKey}.
+ * @param numNonces The number of independent nonce lanes (1-1024).
+ * @returns A new full access gas key.
+ */
+function fullAccessGasKey(numNonces: number): AccessKey {
+    return new AccessKey({
+        nonce: 0n,
+        permission: new AccessKeyPermission({
+            gasKeyFullAccess: new GasKeyInfo({ balance: 0n, numNonces }),
+        }),
+    });
+}
+
+/**
+ * Creates a gas key with function call permission for a specific receiver and method names.
+ * The gas key balance acts as the allowance, so the function call allowance is always unlimited.
+ * @param receiverId The NEAR account ID of the function call receiver.
+ * @param methodNames An array of method names allowed for function calls.
+ * @param numNonces The number of independent nonce lanes (1-1024).
+ * @returns A new gas key with function call permission.
+ */
+function functionCallGasKey(receiverId: string, methodNames: string[], numNonces: number): AccessKey {
+    return new AccessKey({
+        nonce: 0n,
+        permission: new AccessKeyPermission({
+            gasKeyFunctionCall: new GasKeyFunctionCallPermission({
+                gasKeyInfo: new GasKeyInfo({ balance: 0n, numNonces }),
+                functionCall: new FunctionCallPermission({ receiverId, methodNames }),
             }),
         }),
     });
@@ -166,6 +204,54 @@ function addFunctionCallAccessKey(
 }
 
 /**
+ * Creates a new action for adding a full access gas key.
+ * @param publicKey The public key to be added.
+ * @param numNonces The number of independent nonce lanes (1-1024).
+ * @returns A new action for adding a full access gas key.
+ */
+function addFullAccessGasKey(publicKey: PublicKey, numNonces: number): Action {
+    return addKey(publicKey, fullAccessGasKey(numNonces));
+}
+
+/**
+ * Creates a new action for adding a function call gas key.
+ * @param publicKey The public key to be added.
+ * @param receiverId The NEAR account ID of the function call receiver.
+ * @param methodNames An array of method names allowed for function calls.
+ * @param numNonces The number of independent nonce lanes (1-1024).
+ * @returns A new action for adding a function call gas key.
+ */
+function addFunctionCallGasKey(
+    publicKey: PublicKey,
+    receiverId: string,
+    methodNames: string[],
+    numNonces: number
+): Action {
+    return addKey(publicKey, functionCallGasKey(receiverId, methodNames, numNonces));
+}
+
+/**
+ * Creates a new action for funding a gas key balance. Any account may send it.
+ * @param publicKey The public key of the gas key to fund.
+ * @param deposit The amount (in yoctoNEAR) to transfer to the gas key.
+ * @returns A new action for funding a gas key.
+ */
+function transferToGasKey(publicKey: PublicKey, deposit: bigint): Action {
+    return new Action({ transferToGasKey: new TransferToGasKey({ publicKey, deposit }) });
+}
+
+/**
+ * Creates a new action for moving balance from a gas key back to its owning account.
+ * Not allowed inside a delegate action.
+ * @param publicKey The public key of the gas key to withdraw from.
+ * @param amount The amount (in yoctoNEAR) to withdraw.
+ * @returns A new action for withdrawing from a gas key.
+ */
+function withdrawFromGasKey(publicKey: PublicKey, amount: bigint): Action {
+    return new Action({ withdrawFromGasKey: new WithdrawFromGasKey({ publicKey, amount }) });
+}
+
+/**
  * Creates a new action for deleting a public key.
  * @param publicKey The public key to be deleted.
  * @returns A new action for deleting a public key.
@@ -240,18 +326,24 @@ function useGlobalContract(contractIdentifier: { accountId: string } | { codeHas
 }
 
 export const actions = {
+    addFullAccessGasKey,
     addFullAccessKey,
     addFunctionCallAccessKey,
+    addFunctionCallGasKey,
     createAccount,
     deleteAccount,
     deleteKey,
     deployContract,
+    fullAccessGasKey,
     fullAccessKey,
     functionCall,
     functionCallAccessKey,
+    functionCallGasKey,
     signedDelegate,
     stake,
     transfer,
     deployGlobalContract,
     useGlobalContract,
+    transferToGasKey,
+    withdrawFromGasKey,
 };

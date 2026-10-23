@@ -5,6 +5,12 @@ import { RpcError } from './rpc.js';
 
 export class HandlerError extends RpcError {}
 
+export class ShardNotAppliedError extends HandlerError {
+    constructor(public readonly shardId: ShardId) {
+        super(`Shard ${shardId} is not applied yet`);
+    }
+}
+
 export class AccountDoesNotExistError extends HandlerError {
     constructor(
         public readonly accountId: string,
