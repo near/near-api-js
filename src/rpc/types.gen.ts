@@ -43,11 +43,15 @@ export type AccessKeyCreationConfigView = {
 };
 
 /**
- * Describes information about an access key including the public key.
+ * Describes information about an access key including its on-trie
+ * identifier. For ed25519/secp256k1 access keys the `public_key` field
+ * is the full public key (string form unchanged from before); for
+ * ML-DSA-65 access keys it is a `ml-dsa-65-hash:...` SHA3-256 digest
+ * (the full pubkey is not stored on-chain).
  */
 export type AccessKeyInfoView = {
     access_key: AccessKeyView;
-    public_key: PublicKey;
+    public_key: PublicKeyHandle;
 };
 
 /**
@@ -64,7 +68,13 @@ export type AccessKeyPermission =
     | {
           FunctionCall: FunctionCallPermission;
       }
-    | 'FullAccess';
+    | 'FullAccess'
+    | {
+          GasKeyFunctionCall: [unknown, unknown];
+      }
+    | {
+          GasKeyFullAccess: GasKeyInfo;
+      };
 
 /**
  * Describes the permission scope for an access key. Whether it is a function call or a full access key.
@@ -77,6 +87,21 @@ export type AccessKeyPermissionView =
               method_names: Array<string>;
               receiver_id: string;
           };
+      }
+    | {
+          GasKeyFunctionCall: {
+              allowance?: NearToken | null;
+              balance: NearToken;
+              method_names: Array<string>;
+              num_nonces: number;
+              receiver_id: string;
+          };
+      }
+    | {
+          GasKeyFullAccess: {
+              balance: NearToken;
+              num_nonces: number;
+          };
       };
 
 /**
@@ -86,6 +111,31 @@ export type AccessKeyView = {
     nonce: number;
     permission: AccessKeyPermissionView;
 };
+
+/**
+ * RPC view of a non-empty [`AccountContract`]. The `AccountContract::None`
+ * variant is represented externally as a JSON `null` via `Option`, so this
+ * enum only carries the three "contract is present" cases. Serializes as
+ * an externally-tagged object:
+ *
+ * - `Local(hash)` → `{"local": "<CryptoHash>"}`
+ * - `GlobalHash(hash)` → `{"global_hash": "<CryptoHash>"}`
+ * - `GlobalAccountId(id)` → `{"global_account_id": "<AccountId>"}`
+ *
+ * Mirrors [`AccountContract`] 1:1 (minus `None`) so consumers can preserve
+ * the distinction between a global-by-hash and global-by-account contract
+ * without descending into a nested identifier.
+ */
+export type AccountContractView =
+    | {
+          local: CryptoHash;
+      }
+    | {
+          global_hash: CryptoHash;
+      }
+    | {
+          global_account_id: AccountId;
+      };
 
 /**
  * The structure describes configuration for creation of new accounts.
@@ -144,9 +194,9 @@ export type AccountDataView = {
  *
  * This is a unique, syntactically valid, human-readable account identifier on the NEAR network.
  *
- * [See the Rust crate documentation for information about validation.](https://docs.rs/near-account-id/latest/near_account_id/)
+ * [See the crate-level docs for information about validation.](index.html#account-id-rules)
  *
- * Also see the error kind documentation.
+ * Also see [Error kind precedence](AccountId#error-kind-precedence).
  *
  * ## Examples
  *
@@ -392,9 +442,27 @@ export type ActionErrorKind =
           };
       }
     | {
-          GasKeyAlreadyExists: {
+          InsufficientGasKeyBalance: {
               account_id: AccountId;
+              balance: NearToken;
               public_key: PublicKey;
+              required: NearToken;
+          };
+      }
+    | {
+          GasKeyBalanceTooHigh: {
+              account_id: AccountId;
+              balance: NearToken;
+              /**
+               * Set for DeleteKey (specific key), None for DeleteAccount (aggregate)
+               */
+              public_key?: PublicKey | null;
+          };
+      }
+    | {
+          DelegateActionInvalidNonceIndex: {
+              nonce_index: number;
+              num_nonces: number;
           };
       };
 
@@ -447,6 +515,12 @@ export type ActionView =
           };
       }
     | {
+          DelegateV2: {
+              delegate_action: VersionedDelegateActionPayload;
+              signature: Signature;
+          };
+      }
+    | {
           DeployGlobalContract: {
               code: string;
           };
@@ -476,19 +550,13 @@ export type ActionView =
           };
       }
     | {
-          AddGasKey: {
-              num_nonces: number;
-              permission: AccessKeyPermissionView;
-              public_key: PublicKey;
-          };
-      }
-    | {
-          DeleteGasKey: {
-              public_key: PublicKey;
-          };
-      }
-    | {
           TransferToGasKey: {
+              deposit: NearToken;
+              public_key: PublicKey;
+          };
+      }
+    | {
+          WithdrawFromGasKey: {
               amount: NearToken;
               public_key: PublicKey;
           };
@@ -579,22 +647,23 @@ export type ActionsValidationError =
           };
       }
     | {
-          GasKeyPermissionInvalid: {
-              permission: AccessKeyPermission;
-          };
-      }
-    | {
-          GasKeyTooManyNoncesRequested: {
+          GasKeyInvalidNumNonces: {
               limit: number;
               requested_nonces: number;
           };
+      }
+    | {
+          AddGasKeyWithNonZeroBalance: {
+              balance: NearToken;
+          };
+      }
+    | 'GasKeyFunctionCallAllowanceNotAllowed'
+    | {
+          TotalNumberOfDeployActionsExceeded: {
+              limit: number;
+              number_of_deploy_actions: number;
+          };
       };
-
-export type AddGasKeyAction = {
-    num_nonces: number;
-    permission: AccessKeyPermission;
-    public_key: PublicKey;
-};
 
 /**
  * An action that adds key with public key associated
@@ -711,16 +780,19 @@ export type BlockHeaderView = {
      */
     prev_hash: CryptoHash;
     prev_height?: number | null;
+    prev_last_certified_block_epoch_id?: EpochId | null;
     prev_state_root: CryptoHash;
     random_value: CryptoHash;
     /**
      * TODO(2271): deprecated.
      */
     rent_paid?: NearToken;
+    shard_split?: [unknown, unknown] | null;
     /**
      * Signature of the block producer.
      */
     signature: Signature;
+    spice_chunk_endorsement_stats?: Array<SpiceChunkEndorsementStats> | null;
     /**
      * Legacy json number. Should not be used.
      */
@@ -821,6 +893,13 @@ export type ChunkHeaderView = {
     prev_block_hash: CryptoHash;
     prev_state_root: CryptoHash;
     /**
+     * Proposed trie split for dynamic resharding
+     * `None`: field missing (`ShardChunkHeaderInnerV4` or earlier)
+     * `Some(None)`: field present, but not set (`ChunkHeaderInnerV5` or later)
+     * `Some(Some(split))`: field present and set
+     */
+    proposed_split?: TrieSplit | null;
+    /**
      * TODO(2271): deprecated.
      */
     rent_paid?: NearToken;
@@ -848,6 +927,11 @@ export type CloudArchivalWriterConfig = {
      * Interval at which the system checks for new blocks or chunks to archive.
      */
     polling_interval?: DurationAsStdSchemaProvider;
+    /**
+     * Cadence of state snapshots, in epochs. Higher values reduce bucket cost at
+     * the expense of potentially longer delta replay during reader bootstrap.
+     */
+    snapshot_every_n_epochs?: number;
 };
 
 export type CompilationError =
@@ -1083,12 +1167,41 @@ export type DelegateAction = {
     sender_id: AccountId;
 };
 
-export type DeleteAccountAction = {
-    beneficiary_id: AccountId;
+/**
+ * Delegate action with gas key support: `nonce` selects either the access
+ * key's nonce or one of a gas key's parallel nonces by index, mirroring
+ * `TransactionV1`.
+ */
+export type DelegateActionV2 = {
+    /**
+     * List of actions to be executed.
+     */
+    actions: Array<NonDelegateAction>;
+    /**
+     * The maximal height of the block in the blockchain below which the given DelegateActionV2 is valid.
+     */
+    max_block_height: number;
+    /**
+     * Nonce of the signing key, advanced when this action is processed. For
+     * a gas key it also selects which of the parallel nonces to advance.
+     */
+    nonce: TransactionNonce;
+    /**
+     * Public key used to sign this delegated action.
+     */
+    public_key: PublicKey;
+    /**
+     * Receiver of the delegated actions.
+     */
+    receiver_id: AccountId;
+    /**
+     * Signer of the delegated actions
+     */
+    sender_id: AccountId;
 };
 
-export type DeleteGasKeyAction = {
-    public_key: PublicKey;
+export type DeleteAccountAction = {
+    beneficiary_id: AccountId;
 };
 
 export type DeleteKeyAction = {
@@ -1118,6 +1231,21 @@ export type DeployGlobalContractAction = {
     code: string;
     deploy_mode: GlobalContractDeployMode;
 };
+
+/**
+ * Reason why a gas key transaction failed at the deposit/account level.
+ * In these cases, gas is still charged from the gas key.
+ */
+export const DepositCostFailureReason = {
+    NOT_ENOUGH_BALANCE: 'NotEnoughBalance',
+    LACK_BALANCE_FOR_STATE: 'LackBalanceForState',
+} as const;
+
+/**
+ * Reason why a gas key transaction failed at the deposit/account level.
+ * In these cases, gas is still charged from the gas key.
+ */
+export type DepositCostFailureReason = (typeof DepositCostFailureReason)[keyof typeof DepositCostFailureReason];
 
 export type DetailedDebugStatus = {
     block_production_delay_millis: number;
@@ -1178,36 +1306,6 @@ export type DurationAsStdSchemaProvider = {
 };
 
 /**
- * Configuration for dynamic resharding feature
- */
-export type DynamicReshardingConfigView = {
-    /**
-     * Maximum number of shards in the network.
-     *
-     * See [`CongestionControlConfig`] for more details.
-     */
-    max_number_of_shards: number;
-    /**
-     * Memory threshold over which a shard is marked for a split.
-     *
-     * See [`CongestionControlConfig`] for more details.
-     */
-    memory_usage_threshold: number;
-    /**
-     * Minimum memory usage of a child shard.
-     *
-     * See [`CongestionControlConfig`] for more details.
-     */
-    min_child_memory_usage: number;
-    /**
-     * Minimum number of epochs until next resharding can be scheduled.
-     *
-     * See [`CongestionControlConfig`] for more details.
-     */
-    min_epochs_between_resharding: number;
-};
-
-/**
  * Epoch identifier -- wrapped hash, to make it easier to distinguish.
  * EpochId of epoch T is the hash of last block in T-2
  * EpochId of first two epochs is 0
@@ -1216,27 +1314,11 @@ export type EpochId = CryptoHash;
 
 export type EpochSyncConfig = {
     /**
-     * If true, even if the node started from genesis, it will not perform epoch sync.
-     * There should be no reason to set this flag in production, because on both mainnet
-     * and testnet it would be infeasible to catch up from genesis without epoch sync.
+     * Number of epochs behind the network head beyond which the node will use
+     * epoch sync instead of header sync. At the consumption site, this is
+     * multiplied by epoch_length to get the horizon in blocks.
      */
-    disable_epoch_sync_for_bootstrapping?: boolean;
-    /**
-     * This serves as two purposes: (1) the node will not epoch sync and instead resort to
-     * header sync, if the genesis block is within this many blocks from the current block;
-     * (2) the node will reject an epoch sync proof if the provided proof is for an epoch
-     * that is more than this many blocks behind the current block.
-     */
-    epoch_sync_horizon?: number;
-    /**
-     * If true, the node will ignore epoch sync requests from the network. It is strongly
-     * recommended not to set this flag, because it will prevent other nodes from
-     * bootstrapping. This flag is only included as a kill-switch and may be removed in a
-     * future release. Please note that epoch sync requests are heavily rate limited and
-     * cached, and therefore should not affect the performance of the node or introduce
-     * any non-negligible increase in network traffic.
-     */
-    ignore_epoch_sync_network_requests?: boolean;
+    epoch_sync_horizon_num_epochs?: number;
     /**
      * Timeout for epoch sync requests. The node will continue retrying indefinitely even
      * if this timeout is exceeded.
@@ -1426,6 +1508,20 @@ export type ErrorWrapperForRpcReceiptError =
           name: 'INTERNAL_ERROR';
       };
 
+export type ErrorWrapperForRpcReceiptToTxError =
+    | {
+          cause: RpcRequestValidationErrorKind;
+          name: 'REQUEST_VALIDATION_ERROR';
+      }
+    | {
+          cause: RpcReceiptToTxError;
+          name: 'HANDLER_ERROR';
+      }
+    | {
+          cause: InternalError;
+          name: 'INTERNAL_ERROR';
+      };
+
 export type ErrorWrapperForRpcSplitStorageInfoError =
     | {
           cause: RpcRequestValidationErrorKind;
@@ -1552,34 +1648,6 @@ export type ErrorWrapperForRpcViewCodeError =
           name: 'INTERNAL_ERROR';
       };
 
-export type ErrorWrapperForRpcViewGasKeyError =
-    | {
-          cause: RpcRequestValidationErrorKind;
-          name: 'REQUEST_VALIDATION_ERROR';
-      }
-    | {
-          cause: RpcViewGasKeyError;
-          name: 'HANDLER_ERROR';
-      }
-    | {
-          cause: InternalError;
-          name: 'INTERNAL_ERROR';
-      };
-
-export type ErrorWrapperForRpcViewGasKeyListError =
-    | {
-          cause: RpcRequestValidationErrorKind;
-          name: 'REQUEST_VALIDATION_ERROR';
-      }
-    | {
-          cause: RpcViewGasKeyListError;
-          name: 'HANDLER_ERROR';
-      }
-    | {
-          cause: InternalError;
-          name: 'INTERNAL_ERROR';
-      };
-
 export type ErrorWrapperForRpcViewStateError =
     | {
           cause: RpcRequestValidationErrorKind;
@@ -1595,6 +1663,15 @@ export type ErrorWrapperForRpcViewStateError =
       };
 
 export type ExecutionMetadataView = {
+    /**
+     * One entry per action in the receipt (V4+ only): the contract attached
+     * to the receiver account immediately before that action ran. The inner
+     * `Option` is `Some` (a tagged contract object) when the account had a
+     * contract and `None` (rendered as JSON `null`) when it did not (e.g. an
+     * account with no code, or one that did not yet exist). The outer
+     * `Option` is `None` for older metadata versions.
+     */
+    contracts?: Array<AccountContractView | null> | null;
     gas_profile?: Array<CostGasUsed> | null;
     version: number;
 };
@@ -1751,6 +1828,14 @@ export type ExtCostsConfigView = {
      * Cost for logging per byte
      */
     log_byte?: NearGas;
+    /**
+     * Cost of P-256 ECDSA signature verification base
+     */
+    p256_verify_base?: NearGas;
+    /**
+     * Cost of P-256 ECDSA signature verification per byte
+     */
+    p256_verify_byte?: NearGas;
     /**
      * Cost for calling `promise_and`
      */
@@ -1939,6 +2024,11 @@ export type ExtCostsConfigView = {
      * Per byte cost of arguments and method name.
      */
     yield_create_byte?: NearGas;
+    /**
+     * Base cost for creating a yield promise with a user-provided yield ID
+     * (covers the additional trie writes for the yield_id<->data_id mapping).
+     */
+    yield_create_with_id_base?: NearGas;
     /**
      * Base cost for resuming a yield receipt.
      */
@@ -2200,47 +2290,19 @@ export type GcConfig = {
     gc_step_period?: DurationAsStdSchemaProvider;
 };
 
+export type GasKeyInfo = {
+    balance: NearToken;
+    num_nonces: number;
+};
+
 /**
- * Gas key is like an access key, except it stores a balance separately, and transactions signed
- * with it deduct their cost from the gas key balance instead of the account balance.
+ * Gas key nonces view returned by the `view_gas_key_nonces` RPC query.
  */
-export type GasKey = {
-    /**
-     * The balance of the gas key.
-     */
-    balance: NearToken;
-    /**
-     * The number of nonces this gas key has.
-     */
-    num_nonces: number;
-    /**
-     * Defines the permissions for this gas key.
-     * If this is a `FunctionCallPermission`, the allowance must be None (unlimited).
-     */
-    permission: AccessKeyPermission;
-};
-
-export type GasKeyInfoView = {
-    gas_key: GasKeyView;
-    public_key: PublicKey;
-};
-
-export type GasKeyList = {
-    keys: Array<GasKeyInfoView>;
-};
-
-export type GasKeyView = {
-    balance: NearToken;
+export type GasKeyNoncesView = {
     nonces: Array<number>;
-    num_nonces: number;
-    permission: AccessKeyPermissionView;
 };
 
 export type GenesisConfig = {
-    /**
-     * Expected number of hidden validators per shard.
-     */
-    avg_hidden_validator_seats_per_shard: Array<number>;
     /**
      * Threshold for kicking out block producers, between 0 and 100.
      */
@@ -2323,19 +2385,9 @@ export type GenesisConfig = {
      */
     num_block_producer_seats: number;
     /**
-     * Defines number of shards and number of block producer seats per each shard at genesis.
-     * Note: not used with protocol_feature_chunk_only_producers -- replaced by minimum_validators_per_shard
-     * Note: not used before as all block producers produce chunks for all shards
-     */
-    num_block_producer_seats_per_shard: Array<number>;
-    /**
      * Expected number of blocks per year
      */
     num_blocks_per_year: number;
-    /**
-     * Deprecated.
-     */
-    num_chunk_only_producer_seats?: number;
     /**
      * Number of chunk producers.
      * Don't mess it up with chunk-only producers feature which is deprecated.
@@ -2419,10 +2471,10 @@ export type GlobalContractDeployMode = 'CodeHash' | 'AccountId';
 
 export type GlobalContractIdentifier =
     | {
-          CodeHash: CryptoHash;
+          hash: CryptoHash;
       }
     | {
-          AccountId: AccountId;
+          account_id: AccountId;
       };
 
 export type GlobalContractIdentifierView =
@@ -2553,6 +2605,11 @@ export type HostError =
           Ed25519VerifyInvalidInput: {
               msg: string;
           };
+      }
+    | {
+          P256VerifyInvalidInput: {
+              msg: string;
+          };
       };
 
 export type InternalError = {
@@ -2589,7 +2646,9 @@ export type InvalidAccessKeyError =
               public_key: PublicKey;
           };
       }
-    | 'DepositWithFunctionCall';
+    | 'DepositWithFunctionCall'
+    | 'DelegateActionRequiresNonGasKey'
+    | 'DelegateActionRequiresGasKey';
 
 /**
  * An error happened during TX execution
@@ -2683,6 +2742,33 @@ export type InvalidTxError =
                * The shard that fails making progress.
                */
               shard_id: number;
+          };
+      }
+    | {
+          InvalidNonceIndex: {
+              /**
+               * Number of nonces supported by the key. 0 means no nonce_index allowed (regular key).
+               */
+              num_nonces: number;
+              /**
+               * The nonce_index from the transaction (None if missing).
+               */
+              tx_nonce_index?: number | null;
+          };
+      }
+    | {
+          NotEnoughGasKeyBalance: {
+              balance: NearToken;
+              cost: NearToken;
+              signer_id: AccountId;
+          };
+      }
+    | {
+          NotEnoughBalanceForDeposit: {
+              balance: NearToken;
+              cost: NearToken;
+              reason: DepositCostFailureReason;
+              signer_id: AccountId;
           };
       };
 
@@ -2787,6 +2873,16 @@ export type JsonRpcRequestForExperimentalReceipt = {
 };
 
 /**
+ * JsonRpcRequest_for_EXPERIMENTAL_receipt_to_tx
+ */
+export type JsonRpcRequestForExperimentalReceiptToTx = {
+    id: string;
+    jsonrpc: string;
+    method: 'EXPERIMENTAL_receipt_to_tx';
+    params: RpcReceiptToTxRequest;
+};
+
+/**
  * JsonRpcRequest_for_EXPERIMENTAL_split_storage_info
  */
 export type JsonRpcRequestForExperimentalSplitStorageInfo = {
@@ -2854,26 +2950,6 @@ export type JsonRpcRequestForExperimentalViewCode = {
     jsonrpc: string;
     method: 'EXPERIMENTAL_view_code';
     params: RpcViewCodeRequest;
-};
-
-/**
- * JsonRpcRequest_for_EXPERIMENTAL_view_gas_key
- */
-export type JsonRpcRequestForExperimentalViewGasKey = {
-    id: string;
-    jsonrpc: string;
-    method: 'EXPERIMENTAL_view_gas_key';
-    params: RpcViewGasKeyRequest;
-};
-
-/**
- * JsonRpcRequest_for_EXPERIMENTAL_view_gas_key_list
- */
-export type JsonRpcRequestForExperimentalViewGasKeyList = {
-    id: string;
-    jsonrpc: string;
-    method: 'EXPERIMENTAL_view_gas_key_list';
-    params: RpcViewGasKeyListRequest;
 };
 
 /**
@@ -3292,6 +3368,18 @@ export type JsonRpcResponseForRpcReceiptResponseAndRpcReceiptError = (
     jsonrpc: string;
 };
 
+export type JsonRpcResponseForRpcReceiptToTxResponseAndRpcReceiptToTxError = (
+    | {
+          result: RpcReceiptToTxResponse;
+      }
+    | {
+          error: ErrorWrapperForRpcReceiptToTxError;
+      }
+) & {
+    id: string;
+    jsonrpc: string;
+};
+
 export type JsonRpcResponseForRpcSplitStorageInfoResponseAndRpcSplitStorageInfoError = (
     | {
           result: RpcSplitStorageInfoResponse;
@@ -3412,30 +3500,6 @@ export type JsonRpcResponseForRpcViewCodeResponseAndRpcViewCodeError = (
     jsonrpc: string;
 };
 
-export type JsonRpcResponseForRpcViewGasKeyListResponseAndRpcViewGasKeyListError = (
-    | {
-          result: RpcViewGasKeyListResponse;
-      }
-    | {
-          error: ErrorWrapperForRpcViewGasKeyListError;
-      }
-) & {
-    id: string;
-    jsonrpc: string;
-};
-
-export type JsonRpcResponseForRpcViewGasKeyResponseAndRpcViewGasKeyError = (
-    | {
-          result: RpcViewGasKeyResponse;
-      }
-    | {
-          error: ErrorWrapperForRpcViewGasKeyError;
-      }
-) & {
-    id: string;
-    jsonrpc: string;
-};
-
 export type JsonRpcResponseForRpcViewStateResponseAndRpcViewStateError = (
     | {
           result: RpcViewStateResponse;
@@ -3488,13 +3552,32 @@ export type LimitConfig = {
      */
     max_arguments_length?: number;
     /**
+     * If present, stores max total number of basic blocks across all functions in a contract.
+     * This caps total compilation time for a contract.
+     */
+    max_blocks_per_contract?: number | null;
+    /**
+     * If present, stores max number of basic blocks (block/loop/if) in a single function.
+     * This caps per-function compilation time in Cranelift.
+     */
+    max_blocks_per_function?: number | null;
+    /**
      * Max contract size
      */
     max_contract_size?: number;
     /**
+     * Max number of `DeployContract` and `DeployGlobalContract` actions
+     * combined within a single receipt.
+     */
+    max_deploy_actions_per_receipt?: number;
+    /**
      * If present, stores max number of elements in a single contract's table
      */
     max_elements_per_contract_table?: number | null;
+    /**
+     * If present, stores max byte size of a single function body in a contract
+     */
+    max_function_body_size?: number | null;
     /**
      * If present, stores max number of functions in one contract
      */
@@ -3503,6 +3586,12 @@ export type LimitConfig = {
      * Max amount of gas that can be used, excluding gas attached to promises.
      */
     max_gas_burnt?: NearGas;
+    /**
+     * If present, stores max byte size of the wasm code after gas instrumentation.
+     * This prevents Cranelift's 24-bit SSA counter from overflowing on
+     * pathologically large contracts.
+     */
+    max_instrumented_code_size?: number | null;
     /**
      * Max length of any method name (without terminating character).
      */
@@ -3549,6 +3638,14 @@ export type LimitConfig = {
      */
     max_number_registers?: number;
     /**
+     * If present, stores the max operand stack size (in bytes) at any point
+     * during the execution of a single function. Per-function: not summed
+     * across recursion. Computed by `finite_wasm::max_stack`.
+     */
+    max_operand_stack_bytes_per_function?: number | null;
+    max_params_per_contract?: number | null;
+    max_params_per_function?: number | null;
+    /**
      * Max number of promises that a function call can create
      */
     max_promises_per_function_call_action?: number;
@@ -3583,6 +3680,11 @@ export type LimitConfig = {
      * Max transaction size
      */
     max_transaction_size?: number;
+    /**
+     * If present, stores max number of entries in the wasm type section that
+     * a contract may declare.
+     */
+    max_types_per_contract?: number | null;
     /**
      * Maximum number of bytes for payload passed over a yield resume.
      */
@@ -3693,14 +3795,16 @@ export type NonDelegateAction =
           DeterministicStateInit: DeterministicStateInitAction;
       }
     | {
-          AddGasKey: AddGasKeyAction;
-      }
-    | {
-          DeleteGasKey: DeleteGasKeyAction;
-      }
-    | {
           TransferToGasKey: TransferToGasKeyAction;
+      }
+    | {
+          WithdrawFromGasKey: WithdrawFromGasKeyAction;
       };
+
+/**
+ * Controls how the transaction nonce is validated against the access key nonce.
+ */
+export type NonceMode = 'monotonic' | 'strict';
 
 /**
  * Peer id is the public key.
@@ -3742,7 +3846,15 @@ export type PrepareError =
     | 'TooManyFunctions'
     | 'TooManyLocals'
     | 'TooManyTables'
-    | 'TooManyTableElements';
+    | 'TooManyTableElements'
+    | 'FunctionBodyTooLarge'
+    | 'InstrumentedCodeTooLarge'
+    | 'TooManyBlocksPerFunction'
+    | 'TooManyBlocksPerContract'
+    | 'TooManyTypes'
+    | 'TooManyParamsPerFunction'
+    | 'TooManyParamsPerContract'
+    | 'OperandStackTooLarge';
 
 /**
  * Configures whether the node checks the next or the next next epoch for network version compatibility.
@@ -3755,6 +3867,8 @@ export const ProtocolVersionCheckConfig = { NEXT: 'Next', NEXT_NEXT: 'NextNext' 
 export type ProtocolVersionCheckConfig = (typeof ProtocolVersionCheckConfig)[keyof typeof ProtocolVersionCheckConfig];
 
 export type PublicKey = string;
+
+export type PublicKeyHandle = string;
 
 export type RangeOfUint64 = {
     end: number;
@@ -3786,6 +3900,7 @@ export type ReceiptEnumView =
               already_delivered_shards: Array<ShardId>;
               code: string;
               id: GlobalContractIdentifier;
+              nonce?: number | null;
               target_shard: ShardId;
           };
       };
@@ -3843,6 +3958,9 @@ export type ReceiptValidationError =
 
 export type ReceiptView = {
     predecessor_id: AccountId;
+    /**
+     * Deprecated, retained for backward compatibility.
+     */
     priority?: number;
     receipt: ReceiptEnumView;
     receipt_id: CryptoHash;
@@ -4032,17 +4150,13 @@ export type RpcClientConfigResponse = {
      */
     archive?: boolean;
     /**
-     * Horizon at which instead of fetching block, fetch full state.
-     */
-    block_fetch_horizon?: number;
-    /**
      * Behind this horizon header fetch kicks in.
      */
     block_header_fetch_horizon?: number;
     /**
      * Duration to check for producing / skipping block.
      */
-    block_production_tracking_delay?: [number, number];
+    block_production_tracking_delay?: MutableConfigValue;
     /**
      * Time between check to perform catchup.
      */
@@ -4069,11 +4183,11 @@ export type RpcClientConfigResponse = {
     /**
      * Multiplier for the wait time for all chunks to be received.
      */
-    chunk_wait_mult?: [number, number];
+    chunk_wait_mult?: MutableConfigValue;
     /**
      * Height horizon for the chunk cache. A chunk is removed from the cache
      * if its height + chunks_cache_height_horizon < largest_seen_height.
-     * The default value is DEFAULT_CHUNKS_CACHE_HEIGHT_HORIZON.
+     * The default value is given by default_chunks_cache_height_horizon().
      */
     chunks_cache_height_horizon?: number;
     /**
@@ -4092,7 +4206,7 @@ export type RpcClientConfigResponse = {
     /**
      * Time between running doomslug timer.
      */
-    doomslug_step_period?: [number, number];
+    doomslug_step_period?: MutableConfigValue;
     /**
      * If true, transactions for the next chunk will be prepared early, right after the previous chunk's
      * post-state is ready. This can help produce chunks faster, for high-throughput chains.
@@ -4148,11 +4262,11 @@ export type RpcClientConfigResponse = {
     /**
      * Maximum wait for approvals before producing block.
      */
-    max_block_production_delay?: [number, number];
+    max_block_production_delay?: MutableConfigValue;
     /**
      * Maximum duration before skipping given height.
      */
-    max_block_wait_delay?: [number, number];
+    max_block_wait_delay?: MutableConfigValue;
     /**
      * Max burnt gas per view method.  If present, overrides value stored in
      * genesis file.  The value only affects the RPCs without influencing the
@@ -4162,7 +4276,7 @@ export type RpcClientConfigResponse = {
     /**
      * Minimum duration before producing block.
      */
-    min_block_production_delay?: [number, number];
+    min_block_production_delay?: MutableConfigValue;
     /**
      * Minimum number of peers to start syncing.
      */
@@ -4200,6 +4314,38 @@ export type RpcClientConfigResponse = {
      * for the next or next next epoch.
      */
     protocol_version_check?: ProtocolVersionCheckConfig;
+    /**
+     * Max `±window` accepted on `EXPERIMENTAL_receipt_to_tx` requests.
+     * Caps caller's `window`. Applies to pre-first-scan `CenterOut`
+     * against caller's literal hint; ancestor scans use
+     * `receipt_to_tx_max_hop_distance` instead. Operators raising this
+     * should also raise `receipt_to_tx_max_hop_distance` so backward reach
+     * matches caller's wider hint scope. Requests with `window` over this
+     * rejected with `WindowTooLarge`.
+     */
+    receipt_to_tx_max_hint_window?: number;
+    /**
+     * Max block-distance ancestor scan walks per hop once any scan in
+     * walk refreshed `current_height`. Subsequent column-miss scans visit
+     * `h, h-1, ..., h-max_hop_distance` from most-recent scan-refreshed
+     * anchor, regardless of column hits between. Anchor included —
+     * same-shard local receipts execute in same block as producing
+     * outcome. Raise if cold archival traffic shows ancestor misses —
+     * gap = scan-refreshed anchor to producer-outcome height of receipt
+     * with missing column row (column hits don't reset anchor). Default
+     * 20 (matches `receipt_to_tx_max_hint_window`).
+     */
+    receipt_to_tx_max_hop_distance?: number;
+    /**
+     * Per-request ceiling on outcome rows the `EXPERIMENTAL_receipt_to_tx`
+     * hint-fallback scanner reads across hops + shards. Caps cold-RocksDB
+     * worst case on unauthenticated public endpoint. Default 20_000.
+     * Operators serving cold archival traffic with deep walks or sparse
+     * outcomes may raise; benchmark first (see TODO in
+     * `view_client_actor.rs`). Mid-scan exhaustion fails with
+     * `BudgetExceeded { scanned, limit }`.
+     */
+    receipt_to_tx_max_outcomes_per_request?: number;
     resharding_config?: MutableConfigValue;
     /**
      * Listening rpc port for status.
@@ -4217,6 +4363,10 @@ export type RpcClientConfigResponse = {
      * This option can cause extra load on the database and is not recommended for production use.
      */
     save_latest_witnesses?: boolean;
+    /**
+     * Whether to persist receipt-to-tx origin mappings to disk or not.
+     */
+    save_receipt_to_tx?: boolean;
     /**
      * Whether to persist state changes on disk or not.
      */
@@ -4258,11 +4408,6 @@ export type RpcClientConfigResponse = {
      */
     state_sync?: StateSyncConfig;
     /**
-     * Whether to use the State Sync mechanism.
-     * If disabled, the node will do Block Sync instead of State Sync.
-     */
-    state_sync_enabled?: boolean;
-    /**
      * Additional waiting period after a failed request to external storage
      */
     state_sync_external_backoff?: [number, number];
@@ -4300,6 +4445,12 @@ export type RpcClientConfigResponse = {
      * will be unbounded.
      */
     transaction_pool_size_limit?: number | null;
+    /**
+     * TTL in blocks for gapped strict-nonce transactions in the pool. Transactions with a
+     * nonce gap whose block_hash is older than this many blocks are evicted during
+     * prepare_transactions.
+     */
+    transaction_pool_strict_nonce_ttl_blocks?: number;
     transaction_request_handler_threads?: number;
     /**
      * Upper bound of the byte size of contract state that is still viewable. None is no limit
@@ -4582,10 +4733,6 @@ export type RpcProtocolConfigRequest =
 
 export type RpcProtocolConfigResponse = {
     /**
-     * Expected number of hidden validators per shard.
-     */
-    avg_hidden_validator_seats_per_shard?: Array<number>;
-    /**
      * Threshold for kicking out block producers, between 0 and 100.
      */
     block_producer_kickout_threshold?: number;
@@ -4663,10 +4810,6 @@ export type RpcProtocolConfigResponse = {
      * Number of block producer seats at genesis.
      */
     num_block_producer_seats?: number;
-    /**
-     * Defines number of shards and number of block producer seats per each shard at genesis.
-     */
-    num_block_producer_seats_per_shard?: Array<number>;
     /**
      * Expected number of blocks per year
      */
@@ -4835,7 +4978,9 @@ export type RpcQueryRequest =
           block_id: BlockId;
       } & {
           account_id: AccountId;
+          after_key_base64?: StoreKey | null;
           include_proof?: boolean;
+          limit?: number | null;
           prefix_base64: StoreKey;
           request_type: 'view_state';
       })
@@ -4857,13 +5002,7 @@ export type RpcQueryRequest =
       } & {
           account_id: AccountId;
           public_key: PublicKey;
-          request_type: 'view_gas_key';
-      })
-    | ({
-          block_id: BlockId;
-      } & {
-          account_id: AccountId;
-          request_type: 'view_gas_key_list';
+          request_type: 'view_gas_key_nonces';
       })
     | ({
           block_id: BlockId;
@@ -4901,7 +5040,9 @@ export type RpcQueryRequest =
           finality: Finality;
       } & {
           account_id: AccountId;
+          after_key_base64?: StoreKey | null;
           include_proof?: boolean;
+          limit?: number | null;
           prefix_base64: StoreKey;
           request_type: 'view_state';
       })
@@ -4923,13 +5064,7 @@ export type RpcQueryRequest =
       } & {
           account_id: AccountId;
           public_key: PublicKey;
-          request_type: 'view_gas_key';
-      })
-    | ({
-          finality: Finality;
-      } & {
-          account_id: AccountId;
-          request_type: 'view_gas_key_list';
+          request_type: 'view_gas_key_nonces';
       })
     | ({
           finality: Finality;
@@ -4967,7 +5102,9 @@ export type RpcQueryRequest =
           sync_checkpoint: SyncCheckpoint;
       } & {
           account_id: AccountId;
+          after_key_base64?: StoreKey | null;
           include_proof?: boolean;
+          limit?: number | null;
           prefix_base64: StoreKey;
           request_type: 'view_state';
       })
@@ -4989,13 +5126,7 @@ export type RpcQueryRequest =
       } & {
           account_id: AccountId;
           public_key: PublicKey;
-          request_type: 'view_gas_key';
-      })
-    | ({
-          sync_checkpoint: SyncCheckpoint;
-      } & {
-          account_id: AccountId;
-          request_type: 'view_gas_key_list';
+          request_type: 'view_gas_key_nonces';
       })
     | ({
           sync_checkpoint: SyncCheckpoint;
@@ -5025,8 +5156,7 @@ export type RpcQueryResponse = (
     | CallResult
     | AccessKeyView
     | AccessKeyList
-    | GasKeyView
-    | GasKeyList
+    | GasKeyNoncesView
 ) & {
     block_hash: CryptoHash;
     block_height: number;
@@ -5055,10 +5185,110 @@ export type RpcReceiptRequest = {
 
 export type RpcReceiptResponse = {
     predecessor_id: AccountId;
+    /**
+     * Deprecated, retained for backward compatibility.
+     */
     priority?: number;
     receipt: ReceiptEnumView;
     receipt_id: CryptoHash;
     receiver_id: AccountId;
+};
+
+export type RpcReceiptToTxError =
+    | {
+          info: {
+              receipt_id: CryptoHash;
+          };
+          name: 'UNKNOWN_RECEIPT';
+      }
+    | {
+          info: {
+              limit: number;
+              receipt_id: CryptoHash;
+          };
+          name: 'DEPTH_EXCEEDED';
+      }
+    | {
+          info: {
+              error_message: string;
+          };
+          name: 'UNSUPPORTED';
+      }
+    | {
+          info: {
+              error_message: string;
+          };
+          name: 'INTERNAL_ERROR';
+      }
+    | {
+          name: 'OUTCOMES_NOT_STORED';
+      }
+    | {
+          info: {
+              maximum: number;
+              requested: number;
+          };
+          name: 'WINDOW_TOO_LARGE';
+      }
+    | {
+          info: {
+              error_message: string;
+          };
+          name: 'MALFORMED_HINT';
+      }
+    | {
+          info: {
+              limit: number;
+              scanned: number;
+          };
+          name: 'BUDGET_EXCEEDED';
+      };
+
+/**
+ * RpcReceiptToTxRequest
+ */
+export type RpcReceiptToTxRequest = {
+    /**
+     * Block height near where receipt was created. Enables hint fallback
+     * scan on column miss. Anchor refreshes to each scan-resolved parent's
+     * exact execution height; later ancestors bounded via causality
+     * (emit before execute), so subsequent column-miss scans go
+     * `Ancestor`. Bump `receipt_to_tx_max_hop_distance` if cold archival
+     * gaps exceed default 20.
+     *
+     * Cold-storage cost: per-row latency orders of magnitude over hot. To
+     * bound request cost:
+     * - Supply `block_height` within parent's `±window` (default 5).
+     * - Supply `shard_id`. Omit → all-shards enumeration until walker
+     * crosses `FromReceipt` hop, multiplying cold-read cost.
+     * - Don't widen `window` beyond indexer's accuracy; budget shared
+     * across full ancestry walk.
+     *
+     * Receipt-id-only queries against periods with `save_receipt_to_tx`
+     * disabled stay unsupported: column never written, no self-locating.
+     */
+    block_height?: number | null;
+    receipt_id: CryptoHash;
+    /**
+     * Shard hint. Narrows scan to this shard at hint height. Omit to
+     * enumerate all tracked shards (higher cost). After walker crosses a
+     * receipt-origin hop, shard derived from parent's predecessor account
+     * and hint no longer applies. Best-effort across resharding: layout
+     * shifts can miss producer, walk returns `UnknownReceipt`.
+     */
+    shard_id?: ShardId | null;
+    /**
+     * Pre-first-scan width: `±window` heights around hint. Caps at
+     * `receipt_to_tx_max_hint_window` (default 20). Ignored after first
+     * scan-resolved hop — walker switches to `Ancestor` mode at
+     * `receipt_to_tx_max_hop_distance` width.
+     */
+    window?: number | null;
+};
+
+export type RpcReceiptToTxResponse = {
+    sender_account_id: AccountId;
+    transaction_hash: CryptoHash;
 };
 
 export type RpcRequestValidationErrorKind =
@@ -5122,14 +5352,21 @@ export type RpcStateChangesError =
               error_message: string;
           };
           name: 'INTERNAL_ERROR';
+      }
+    | {
+          info: {
+              shard_id: ShardId;
+          };
+          name: 'SHARD_NOT_APPLIED';
       };
 
 /**
  * RpcStateChangesInBlockByTypeRequest
  *
- * It is a serializable view of `StateChangesRequest`.
+ * It is a [serializable view] of [`StateChangesRequest`].
  *
- * See the Rust crate documentation for more information.
+ * [serializable view]: ./index.html
+ * [`StateChangesRequest`]: ../types/struct.StateChangesRequest.html
  */
 export type RpcStateChangesInBlockByTypeRequest =
     | ({
@@ -5147,20 +5384,8 @@ export type RpcStateChangesInBlockByTypeRequest =
     | ({
           block_id: BlockId;
       } & {
-          changes_type: 'single_gas_key_changes';
-          keys: Array<AccountWithPublicKey>;
-      })
-    | ({
-          block_id: BlockId;
-      } & {
           account_ids: Array<AccountId>;
           changes_type: 'all_access_key_changes';
-      })
-    | ({
-          block_id: BlockId;
-      } & {
-          account_ids: Array<AccountId>;
-          changes_type: 'all_gas_key_changes';
       })
     | ({
           block_id: BlockId;
@@ -5190,20 +5415,8 @@ export type RpcStateChangesInBlockByTypeRequest =
     | ({
           finality: Finality;
       } & {
-          changes_type: 'single_gas_key_changes';
-          keys: Array<AccountWithPublicKey>;
-      })
-    | ({
-          finality: Finality;
-      } & {
           account_ids: Array<AccountId>;
           changes_type: 'all_access_key_changes';
-      })
-    | ({
-          finality: Finality;
-      } & {
-          account_ids: Array<AccountId>;
-          changes_type: 'all_gas_key_changes';
       })
     | ({
           finality: Finality;
@@ -5233,20 +5446,8 @@ export type RpcStateChangesInBlockByTypeRequest =
     | ({
           sync_checkpoint: SyncCheckpoint;
       } & {
-          changes_type: 'single_gas_key_changes';
-          keys: Array<AccountWithPublicKey>;
-      })
-    | ({
-          sync_checkpoint: SyncCheckpoint;
-      } & {
           account_ids: Array<AccountId>;
           changes_type: 'all_access_key_changes';
-      })
-    | ({
-          sync_checkpoint: SyncCheckpoint;
-      } & {
-          account_ids: Array<AccountId>;
-          changes_type: 'all_gas_key_changes';
       })
     | ({
           sync_checkpoint: SyncCheckpoint;
@@ -5444,12 +5645,14 @@ export type RpcValidatorError =
  * RpcValidatorRequest
  */
 export type RpcValidatorRequest =
-    | 'latest'
     | {
           epoch_id: EpochId;
       }
     | {
           block_id: BlockId;
+      }
+    | {
+          latest: null;
       };
 
 /**
@@ -5488,6 +5691,15 @@ export type RpcValidatorResponse = {
      * Kickout in the previous epoch
      */
     prev_epoch_kickout: Array<ValidatorKickoutView>;
+    /**
+     * Per-validator rewards paid out at the start of the previous epoch.
+     * For epoch E, this contains the rewards earned in epoch E-2 that were
+     * added to validator and treasury balances at the first block of epoch
+     * E-1 (via `ValidatorAccountsUpdate`).
+     */
+    validator_reward_paid_prev_epoch?: {
+        [key: string]: NearToken;
+    };
 };
 
 /**
@@ -5737,118 +5949,6 @@ export type RpcViewCodeResponse = {
     hash: CryptoHash;
 };
 
-export type RpcViewGasKeyError =
-    | {
-          info: {
-              block_reference: BlockReference;
-          };
-          name: 'UNKNOWN_BLOCK';
-      }
-    | {
-          info: {
-              block_hash: CryptoHash;
-              block_height: number;
-              requested_account_id: AccountId;
-          };
-          name: 'INVALID_ACCOUNT';
-      }
-    | {
-          info: {
-              block_hash: CryptoHash;
-              block_height: number;
-              requested_account_id: AccountId;
-          };
-          name: 'UNKNOWN_ACCOUNT';
-      }
-    | {
-          info: {
-              block_hash: CryptoHash;
-              block_height: number;
-              public_key: PublicKey;
-          };
-          name: 'UNKNOWN_GAS_KEY';
-      }
-    | {
-          info: {
-              error_message: string;
-          };
-          name: 'INTERNAL_ERROR';
-      };
-
-export type RpcViewGasKeyListError =
-    | {
-          info: {
-              block_reference: BlockReference;
-          };
-          name: 'UNKNOWN_BLOCK';
-      }
-    | {
-          info: {
-              block_hash: CryptoHash;
-              block_height: number;
-              requested_account_id: AccountId;
-          };
-          name: 'INVALID_ACCOUNT';
-      }
-    | {
-          info: {
-              block_hash: CryptoHash;
-              block_height: number;
-              requested_account_id: AccountId;
-          };
-          name: 'UNKNOWN_ACCOUNT';
-      }
-    | {
-          info: {
-              error_message: string;
-          };
-          name: 'INTERNAL_ERROR';
-      };
-
-export type RpcViewGasKeyListRequest = (
-    | {
-          block_id: BlockId;
-      }
-    | {
-          finality: Finality;
-      }
-    | {
-          sync_checkpoint: SyncCheckpoint;
-      }
-) & {
-    account_id: AccountId;
-};
-
-export type RpcViewGasKeyListResponse = {
-    block_hash: CryptoHash;
-    block_height: number;
-    keys: Array<GasKeyInfoView>;
-};
-
-export type RpcViewGasKeyRequest = (
-    | {
-          block_id: BlockId;
-      }
-    | {
-          finality: Finality;
-      }
-    | {
-          sync_checkpoint: SyncCheckpoint;
-      }
-) & {
-    account_id: AccountId;
-    public_key: PublicKey;
-};
-
-export type RpcViewGasKeyResponse = {
-    balance: NearToken;
-    block_hash: CryptoHash;
-    block_height: number;
-    nonces: Array<number>;
-    num_nonces: number;
-    permission: AccessKeyPermissionView;
-};
-
 export type RpcViewStateError =
     | {
           info: {
@@ -5899,7 +5999,9 @@ export type RpcViewStateRequest = (
       }
 ) & {
     account_id: AccountId;
+    after_key_base64?: StoreKey | null;
     include_proof?: boolean;
+    limit?: number | null;
     prefix_base64: StoreKey;
 };
 
@@ -5909,6 +6011,7 @@ export type RpcViewStateRequest = (
 export type RpcViewStateResponse = {
     block_hash: CryptoHash;
     block_height: number;
+    last_key?: StoreKey | null;
     proof?: Array<string>;
     values: Array<StateItem>;
 };
@@ -5918,6 +6021,11 @@ export type RpcViewStateResponse = {
  */
 export type RuntimeConfigView = {
     /**
+     * How much creating an account should cost in NEAR. Taken into account when burning gas for
+     * account creation.
+     */
+    account_creation_charge?: NearToken;
+    /**
      * Config that defines rules for account creation.
      */
     account_creation_config?: AccountCreationConfigView;
@@ -5926,9 +6034,10 @@ export type RuntimeConfigView = {
      */
     congestion_control_config?: CongestionControlConfigView;
     /**
-     * Configuration for dynamic resharding feature.
+     * Minimum price at which the gas attached to a receipt is purchased. The price at which it is
+     * burned might be lower, in which case the difference is refunded after execution.
      */
-    dynamic_resharding_config?: DynamicReshardingConfigView;
+    min_gas_purchase_price?: NearToken;
     /**
      * Amount of yN per byte required to have on the account.  See
      * <https://nomicon.io/Economics/Economics.html#state-stake> for details.
@@ -5973,6 +6082,11 @@ export type RuntimeFeesConfigView = {
      * Describes the cost of creating a data receipt, `DataReceipt`.
      */
     data_receipt_creation_config?: DataReceiptCreationConfigView;
+    /**
+     * Describes the extra cost of verifying an ML-DSA-65 signature above the
+     * cost of verifying the standard signature types.
+     */
+    ml_dsa_65_verification_cost?: NearGas;
     /**
      * Pessimistic gas price inflation ratio.
      */
@@ -6128,6 +6242,11 @@ export type SignedTransactionView = {
     actions: Array<ActionView>;
     hash: CryptoHash;
     nonce: number;
+    nonce_index?: number | null;
+    nonce_mode?: NonceMode | null;
+    /**
+     * Deprecated, retained for backward compatibility.
+     */
     priority_fee?: number;
     public_key: PublicKey;
     receiver_id: AccountId;
@@ -6138,6 +6257,16 @@ export type SignedTransactionView = {
 export type SlashedValidator = {
     account_id: AccountId;
     is_double_sign: boolean;
+};
+
+/**
+ * Per-validator chunk endorsement stats accumulated over a spice epoch,
+ * indexed by the current epoch's validator id. Carried on the last block of
+ * the epoch (see `BlockHeaderInnerRestV7`) and consumed by reward and kickout.
+ */
+export type SpiceChunkEndorsementStats = {
+    expected: number;
+    produced: number;
 };
 
 /**
@@ -6198,9 +6327,10 @@ export type StateChangeCauseView =
       };
 
 /**
- * It is a serializable view of `StateChangeKind`.
+ * It is a [serializable view] of [`StateChangeKind`].
  *
- * See the Rust crate documentation for more information.
+ * [serializable view]: ./index.html
+ * [`StateChangeKind`]: ../types/struct.StateChangeKind.html
  */
 export type StateChangeKindView =
     | {
@@ -6250,40 +6380,25 @@ export type StateChangeWithCauseView = (
           change: {
               access_key: AccessKeyView;
               account_id: AccountId;
-              public_key: PublicKey;
+              public_key: PublicKeyHandle;
           };
           type: 'access_key_update';
       }
     | {
           change: {
               account_id: AccountId;
-              public_key: PublicKey;
+              public_key: PublicKeyHandle;
           };
           type: 'access_key_deletion';
       }
     | {
           change: {
               account_id: AccountId;
-              gas_key: GasKey;
-              public_key: PublicKey;
-          };
-          type: 'gas_key_update';
-      }
-    | {
-          change: {
-              account_id: AccountId;
               index: number;
               nonce: number;
-              public_key: PublicKey;
+              public_key: PublicKeyHandle;
           };
           type: 'gas_key_nonce_update';
-      }
-    | {
-          change: {
-              account_id: AccountId;
-              public_key: PublicKey;
-          };
-          type: 'gas_key_deletion';
       }
     | {
           change: {
@@ -6474,13 +6589,57 @@ export type TrackedShardsConfig =
           Accounts: Array<AccountId>;
       };
 
+export type TransactionNonce =
+    | {
+          Nonce: {
+              nonce: number;
+          };
+      }
+    | {
+          GasKeyNonce: {
+              nonce: number;
+              nonce_index: number;
+          };
+      };
+
 export type TransferAction = {
     deposit: NearToken;
 };
 
+/**
+ * Transfer NEAR to a gas key's balance
+ */
 export type TransferToGasKeyAction = {
+    /**
+     * Amount of NEAR to transfer to the gas key
+     */
     deposit: NearToken;
+    /**
+     * The public key of the gas key to fund
+     */
     public_key: PublicKey;
+};
+
+/**
+ * The result of splitting a memtrie into two possibly even parts, according to `memory_usage`
+ * stored in the trie nodes.
+ *
+ * **NOTE: This is an artificial value calculated according to `TRIE_COST`. Hence, it does not
+ * represent actual memory allocation, but the split ratio should be roughly consistent with that.**
+ */
+export type TrieSplit = {
+    /**
+     * Account ID representing the split path
+     */
+    boundary_account: AccountId;
+    /**
+     * Total `memory_usage` of the left part (excluding the split path)
+     */
+    left_memory: number;
+    /**
+     * Total `memory_usage` of the right part (including the split path)
+     */
+    right_memory: number;
 };
 
 /**
@@ -6505,9 +6664,13 @@ export type UseGlobalContractAction = {
 
 export type VmConfigView = {
     /**
-     * See [VMConfig::deterministic_account_ids](crate::vm::Config::deterministic_account_ids).
+     * See [VMConfig::bls12381_not_in_group_fix](crate::vm::Config::bls12381_not_in_group_fix).
      */
-    deterministic_account_ids?: boolean;
+    bls12381_not_in_group_fix?: boolean;
+    /**
+     * See [VMConfig::chain_id_host_fn](crate::vm::Config::chain_id_host_fn).
+     */
+    chain_id_host_fn?: boolean;
     /**
      * See [VMConfig::discard_custom_sections](crate::vm::Config::discard_custom_sections).
      */
@@ -6517,6 +6680,10 @@ export type VmConfigView = {
      */
     eth_implicit_accounts?: boolean;
     /**
+     * See [VMConfig::eth_implicit_global_contract](crate::vm::Config::eth_implicit_global_contract).
+     */
+    eth_implicit_global_contract?: boolean;
+    /**
      * Costs for runtime externals
      */
     ext_costs?: ExtCostsConfigView;
@@ -6524,6 +6691,10 @@ export type VmConfigView = {
      * See [VMConfig::fix_contract_loading_cost](crate::vm::Config::fix_contract_loading_cost).
      */
     fix_contract_loading_cost?: boolean;
+    /**
+     * See [VMConfig::gas_key_host_fns](crate::vm::Config::gas_key_host_fns).
+     */
+    gas_key_host_fns?: boolean;
     /**
      * See [VMConfig::global_contract_host_fns](crate::vm::Config::global_contract_host_fns).
      */
@@ -6552,6 +6723,14 @@ export type VmConfigView = {
      */
     linear_op_unit_cost?: number;
     /**
+     * See [VMConfig::one_yocto_on_promise](crate::vm::Config::one_yocto_on_promise).
+     */
+    one_yocto_on_promise?: boolean;
+    /**
+     * See [VMConfig::p256_verify_host_fn](crate::vm::Config::p256_verify_host_fn).
+     */
+    p256_verify_host_fn?: boolean;
+    /**
      * See [VMConfig::reftypes_bulk_memory](crate::vm::Config::reftypes_bulk_memory).
      */
     reftypes_bulk_memory?: boolean;
@@ -6560,10 +6739,6 @@ export type VmConfigView = {
      */
     regular_op_cost?: number;
     /**
-     * See [VMConfig::saturating_float_to_int](crate::vm::Config::saturating_float_to_int).
-     */
-    saturating_float_to_int?: boolean;
-    /**
      * See [VMConfig::storage_get_mode](crate::vm::Config::storage_get_mode).
      */
     storage_get_mode?: StorageGetMode;
@@ -6571,6 +6746,10 @@ export type VmConfigView = {
      * See [VMConfig::vm_kind](crate::vm::Config::vm_kind).
      */
     vm_kind?: VmKind;
+    /**
+     * See [VMConfig::yield_with_id_host_fns](crate::vm::Config::yield_with_id_host_fns).
+     */
+    yield_with_id_host_fns?: boolean;
 };
 
 export type VmKind = 'Wasmer0' | 'Wasmtime' | 'Wasmer2' | 'NearVm';
@@ -6643,9 +6822,25 @@ export type Version = {
 };
 
 /**
+ * Versions of the delegate action carried by `Action::DelegateV2`. New
+ * versions add a variant here rather than a new `Action` variant. The variant
+ * is part of the signed payload, so a signature can't be ambiguous across
+ * versions.
+ */
+export type VersionedDelegateActionPayload = {
+    V2: DelegateActionV2;
+};
+
+export type VersionedSignedDelegateAction = {
+    delegate_action: VersionedDelegateActionPayload;
+    signature: Signature;
+};
+
+/**
  * Resulting state values for a view state query request
  */
 export type ViewStateResult = {
+    last_key?: StoreKey | null;
     proof?: Array<string>;
     values: Array<StateItem>;
 };
@@ -6663,6 +6858,23 @@ export type WasmTrap =
     | 'IndirectCallToNull'
     | 'StackOverflow'
     | 'GenericTrap';
+
+/**
+ * Withdraw NEAR from a gas key's balance to the account.
+ *
+ * This action must only be available via transactions, not via contract execution
+ * (there is no corresponding promise batch action host function).
+ */
+export type WithdrawFromGasKeyAction = {
+    /**
+     * Amount of NEAR to transfer from the gas key
+     */
+    amount: NearToken;
+    /**
+     * The public key of the gas key to withdraw from
+     */
+    public_key: PublicKey;
+};
 
 /**
  * Configuration specific to ChunkStateWitness.
@@ -6824,6 +7036,19 @@ export type ExperimentalReceiptResponses = {
 
 export type ExperimentalReceiptResponse = ExperimentalReceiptResponses[keyof ExperimentalReceiptResponses];
 
+export type ExperimentalReceiptToTxData = {
+    body: JsonRpcRequestForExperimentalReceiptToTx;
+    path?: never;
+    query?: never;
+    url: '/EXPERIMENTAL_receipt_to_tx';
+};
+
+export type ExperimentalReceiptToTxResponses = {
+    200: JsonRpcResponseForRpcReceiptToTxResponseAndRpcReceiptToTxError;
+};
+
+export type ExperimentalReceiptToTxResponse = ExperimentalReceiptToTxResponses[keyof ExperimentalReceiptToTxResponses];
+
 export type ExperimentalSplitStorageInfoData = {
     body: JsonRpcRequestForExperimentalSplitStorageInfo;
     path?: never;
@@ -6918,33 +7143,6 @@ export type ExperimentalViewCodeResponses = {
 };
 
 export type ExperimentalViewCodeResponse = ExperimentalViewCodeResponses[keyof ExperimentalViewCodeResponses];
-
-export type ExperimentalViewGasKeyData = {
-    body: JsonRpcRequestForExperimentalViewGasKey;
-    path?: never;
-    query?: never;
-    url: '/EXPERIMENTAL_view_gas_key';
-};
-
-export type ExperimentalViewGasKeyResponses = {
-    200: JsonRpcResponseForRpcViewGasKeyResponseAndRpcViewGasKeyError;
-};
-
-export type ExperimentalViewGasKeyResponse = ExperimentalViewGasKeyResponses[keyof ExperimentalViewGasKeyResponses];
-
-export type ExperimentalViewGasKeyListData = {
-    body: JsonRpcRequestForExperimentalViewGasKeyList;
-    path?: never;
-    query?: never;
-    url: '/EXPERIMENTAL_view_gas_key_list';
-};
-
-export type ExperimentalViewGasKeyListResponses = {
-    200: JsonRpcResponseForRpcViewGasKeyListResponseAndRpcViewGasKeyListError;
-};
-
-export type ExperimentalViewGasKeyListResponse =
-    ExperimentalViewGasKeyListResponses[keyof ExperimentalViewGasKeyListResponses];
 
 export type ExperimentalViewStateData = {
     body: JsonRpcRequestForExperimentalViewState;

@@ -6,7 +6,6 @@
  */
 
 import type { CryptoHash, RpcQueryRequest, RpcQueryResponse } from '../rpc/index.js';
-import { AccountDoesNotExistError } from '../rpc-errors/index.js';
 import type { SignedTransaction } from '../transactions/index.js';
 import {
     type AccessKeyWithPublicKey,
@@ -30,6 +29,22 @@ import type {
     ViewGlobalContractCodeArgs,
     ViewTransactionStatusArgs,
 } from './provider.js';
+
+/**
+ * Error thrown after every provider in a {@link FailoverRpcProvider} has failed.
+ *
+ * Provider failures are retained in attempt order in
+ * {@link FailoverRpcError.errors}.
+ */
+export class FailoverRpcError extends TypedError {
+    public override readonly name = this.constructor.name;
+    public readonly errors: readonly unknown[];
+
+    constructor(providerCount: number, errors: readonly unknown[]) {
+        super(`Exceeded ${providerCount} providers to execute request`, 'RetriesExceeded');
+        this.errors = [...errors];
+    }
+}
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
@@ -72,24 +87,20 @@ export class FailoverRpcProvider implements Provider {
     }
 
     private async withBackoff<T>(getResult: (provider: Provider) => Promise<T>): Promise<T> {
+        const errors: unknown[] = [];
+
         for (let i = 0; i < this.providers.length; i++) {
             try {
                 // each provider implements own retry logic
-                const result = await getResult(this.currentProvider);
-
-                if (typeof result === 'undefined') continue;
-
-                return result;
+                return await getResult(this.currentProvider);
             } catch (e) {
-                if (e instanceof AccountDoesNotExistError) {
-                    throw e;
-                }
+                errors.push(e);
                 console.error(e);
                 this.switchToNextProvider();
             }
         }
 
-        throw new TypedError(`Exceeded ${this.providers.length} providers to execute request`, 'RetriesExceeded');
+        throw new FailoverRpcError(this.providers.length, errors);
     }
 
     async getNetworkId(): Promise<string> {
@@ -110,6 +121,10 @@ export class FailoverRpcProvider implements Provider {
 
     public async viewAccessKeyList(params: ViewAccessKeyListArgs) {
         return this.withBackoff((currentProvider) => currentProvider.viewAccessKeyList(params));
+    }
+
+    public async viewGasKeyNonces(params: ViewAccessKeyArgs) {
+        return this.withBackoff((currentProvider) => currentProvider.viewGasKeyNonces(params));
     }
 
     public async viewAccount(params: ViewAccountArgs) {

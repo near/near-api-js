@@ -7,9 +7,11 @@ import {
     actions,
     baseDecode,
     createTransaction,
+    decodeSignedTransaction,
     decodeTransaction,
     encodeTransaction,
     KeyPair,
+    KeyPairSigner,
     KeyType,
     PublicKey,
     SCHEMA,
@@ -17,7 +19,9 @@ import {
 } from '../../../src/index.js';
 
 const {
+    addFullAccessGasKey,
     addFunctionCallAccessKey,
+    addFunctionCallGasKey,
     createAccount,
     deleteAccount,
     deleteKey,
@@ -27,6 +31,8 @@ const {
     transfer,
     deployGlobalContract,
     useGlobalContract,
+    transferToGasKey,
+    withdrawFromGasKey,
 } = actions;
 
 class Test {
@@ -282,5 +288,121 @@ describe('Global Contract Actions Serialization', () => {
             // Type guard
             expect(deserializedAction.contractIdentifier.AccountId).toBe(contractOwnerAccountId);
         }
+    });
+});
+
+describe('Gas Key Actions Serialization', () => {
+    const signerId = 'test.near';
+    const publicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+    const gasKey = KeyPair.fromRandom('ed25519').getPublicKey();
+    const nonce = 1n;
+    const blockHash = baseDecode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
+
+    const roundtrip = (action) => {
+        const transaction = createTransaction(signerId, publicKey, signerId, nonce, [action], blockHash);
+        const serializedTx = encodeTransaction(transaction);
+        const deserializedTx = decodeTransaction(serializedTx);
+        expect(encodeTransaction(deserializedTx)).toEqual(serializedTx);
+        return deserializedTx.actions[0];
+    };
+
+    test('serialize and deserialize AddKey with full access gas key permission', () => {
+        const action = addFullAccessGasKey(gasKey, 4);
+        // AddKey(5) + PublicKey(33) + nonce(8) + GasKeyFullAccess(3) + balance u128(16) + numNonces u16(2)
+        const bytes = serialize(SCHEMA.Action, action);
+        expect(bytes[0]).toBe(5);
+        expect(bytes[42]).toBe(3);
+        expect(bytes).toHaveLength(61);
+
+        const permission = roundtrip(action).addKey?.accessKey.permission;
+        expect(permission?.gasKeyFullAccess).toStrictEqual({ balance: 0n, numNonces: 4 });
+    });
+
+    test('serialize and deserialize AddKey with function call gas key permission', () => {
+        const action = addFunctionCallGasKey(gasKey, 'contract.near', ['foo', 'bar'], 2);
+        expect(serialize(SCHEMA.Action, action)[42]).toBe(2);
+
+        const permission = roundtrip(action).addKey?.accessKey.permission.gasKeyFunctionCall;
+        expect(permission?.gasKeyInfo).toStrictEqual({ balance: 0n, numNonces: 2 });
+        expect(permission?.functionCall).toStrictEqual({
+            allowance: null,
+            receiverId: 'contract.near',
+            methodNames: ['foo', 'bar'],
+        });
+    });
+
+    test('serialize and deserialize TransferToGasKey action', () => {
+        const action = transferToGasKey(gasKey, 123n);
+        expect(serialize(SCHEMA.Action, action)[0]).toBe(12);
+
+        const deserializedAction = roundtrip(action).transferToGasKey;
+        expect(deserializedAction?.deposit).toBe(123n);
+        expect(PublicKey.from(deserializedAction!.publicKey).toString()).toBe(gasKey.toString());
+    });
+
+    test('serialize and deserialize WithdrawFromGasKey action', () => {
+        const action = withdrawFromGasKey(gasKey, 456n);
+        expect(serialize(SCHEMA.Action, action)[0]).toBe(13);
+
+        const deserializedAction = roundtrip(action).withdrawFromGasKey;
+        expect(deserializedAction?.amount).toBe(456n);
+        expect(PublicKey.from(deserializedAction!.publicKey).toString()).toBe(gasKey.toString());
+    });
+});
+
+describe('TransactionV1 Serialization', () => {
+    const keyPair = KeyPair.fromRandom('ed25519');
+    const blockHash = baseDecode('244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM');
+    const create = (nonceIndex?: number, nonceMode?: 'monotonic' | 'strict') =>
+        createTransaction(
+            'test.near',
+            keyPair.getPublicKey(),
+            'receiver.near',
+            42n,
+            [transfer(1n)],
+            blockHash,
+            nonceIndex,
+            nonceMode
+        );
+
+    test('transaction without nonceIndex keeps the V0 encoding', () => {
+        const transaction = create();
+        expect(encodeTransaction(transaction)).toEqual(serialize(SCHEMA.Transaction, transaction));
+    });
+
+    test('gas key transaction is prefixed with 0x01 and carries the nonce index', () => {
+        const serialized = encodeTransaction(create(7));
+        expect(serialized[0]).toBe(1);
+        // the trailing byte is NonceMode::Monotonic
+        expect(serialized[serialized.length - 1]).toBe(0);
+
+        const decoded = decodeTransaction(serialized);
+        expect(decoded.nonce).toBe(42n);
+        expect(decoded.nonceIndex).toBe(7);
+        expect(decoded.nonceMode).toBe('monotonic');
+        expect(encodeTransaction(decoded)).toEqual(serialized);
+    });
+
+    test('strict nonce mode without nonceIndex is encoded as V1 with a regular nonce', () => {
+        const serialized = encodeTransaction(create(undefined, 'strict'));
+        expect(serialized[0]).toBe(1);
+        expect(serialized[serialized.length - 1]).toBe(1);
+
+        const decoded = decodeTransaction(serialized);
+        expect(decoded.nonceIndex).toBeUndefined();
+        expect(decoded.nonceMode).toBe('strict');
+        expect(encodeTransaction(decoded)).toEqual(serialized);
+    });
+
+    test('signed gas key transaction roundtrips and signs the V1 bytes', async () => {
+        const transaction = create(2);
+        const { txHash, signedTransaction } = await new KeyPairSigner(keyPair).signTransaction(transaction);
+        expect(txHash).toEqual(sha256(encodeTransaction(transaction)));
+
+        const serialized = encodeTransaction(signedTransaction);
+        const decoded = decodeSignedTransaction(serialized);
+        expect(decoded.transaction.nonceIndex).toBe(2);
+        expect(encodeTransaction(decoded)).toEqual(serialized);
+        expect(keyPair.verify(txHash, signedTransaction.signature.data)).toBe(true);
     });
 });

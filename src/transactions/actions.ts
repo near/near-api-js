@@ -22,10 +22,32 @@ export class FunctionCallPermission {
 
 export class FullAccessPermission {}
 
+export class GasKeyInfo {
+    balance: bigint;
+    numNonces: number;
+
+    constructor({ balance, numNonces }: { balance: bigint; numNonces: number }) {
+        this.balance = balance;
+        this.numNonces = numNonces;
+    }
+}
+
+export class GasKeyFunctionCallPermission {
+    gasKeyInfo: GasKeyInfo;
+    functionCall: FunctionCallPermission;
+
+    constructor({ gasKeyInfo, functionCall }: { gasKeyInfo: GasKeyInfo; functionCall: FunctionCallPermission }) {
+        this.gasKeyInfo = gasKeyInfo;
+        this.functionCall = functionCall;
+    }
+}
+
 export class AccessKeyPermission extends Enum {
     enum!: string;
     functionCall?: FunctionCallPermission;
     fullAccess?: FullAccessPermission;
+    gasKeyFunctionCall?: GasKeyFunctionCallPermission;
+    gasKeyFullAccess?: GasKeyInfo;
 
     constructor(props: any) {
         super(props);
@@ -157,6 +179,24 @@ export class DeleteAccount {
         this.beneficiaryId = beneficiaryId;
     }
 }
+export class TransferToGasKey {
+    publicKey: PublicKey;
+    deposit: bigint;
+
+    constructor({ publicKey, deposit }: { publicKey: PublicKey; deposit: bigint }) {
+        this.publicKey = publicKey;
+        this.deposit = deposit;
+    }
+}
+export class WithdrawFromGasKey {
+    publicKey: PublicKey;
+    amount: bigint;
+
+    constructor({ publicKey, amount }: { publicKey: PublicKey; amount: bigint }) {
+        this.publicKey = publicKey;
+        this.amount = amount;
+    }
+}
 export class SignedDelegate {
     delegateAction: DelegateAction;
     signature: Signature;
@@ -184,6 +224,8 @@ export class Action extends Enum {
     signedDelegate?: SignedDelegate;
     deployGlobalContract?: DeployGlobalContract;
     useGlobalContract?: UseGlobalContract;
+    transferToGasKey?: TransferToGasKey;
+    withdrawFromGasKey?: WithdrawFromGasKey;
 
     constructor(props: any) {
         super(props);

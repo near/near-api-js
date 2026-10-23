@@ -25,6 +25,7 @@ import {
     AccountDoesNotExistError,
     ActionExecutionError,
     ActorNoPermissionActionError,
+    AddGasKeyWithNonZeroBalanceActionError,
     AddKeyAlreadyExistsActionError,
     AddKeyMethodNameLengthExceededActionError,
     AddKeyMethodNamesNumberOfBytesExceededActionError,
@@ -39,9 +40,12 @@ import {
     CreateAccountOnlyByRegistrarActionError,
     DelegateActionExpiredActionError,
     DelegateActionInvalidNonceActionError,
+    DelegateActionInvalidNonceIndexActionError,
     DelegateActionInvalidSignatureActionError,
     DelegateActionMustBeOnlyOneActionError,
     DelegateActionNonceTooLargeActionError,
+    DelegateActionRequiresGasKeyActionError,
+    DelegateActionRequiresNonGasKeyActionError,
     DelegateActionSenderDoesNotMatchTxReceiverActionError,
     DeleteAccountStakingActionError,
     DeleteAccountWithLargeStateActionError,
@@ -56,11 +60,11 @@ import {
     FunctionCallMethodNameLengthExceededActionError,
     FunctionCallZeroAttachedGasActionError,
     GarbageCollectedBlockError,
-    GasKeyAlreadyExistsActionError,
+    GasKeyBalanceTooHighActionError,
     GasKeyDoesNotExistActionError,
     GasKeyDoesNotExistError,
-    GasKeyPermissionInvalidActionError,
-    GasKeyTooManyNoncesRequestedActionError,
+    GasKeyFunctionCallAllowanceNotAllowedActionError,
+    GasKeyInvalidNumNoncesActionError,
     GlobalContractCodeDoesNotExistError,
     GlobalContractDoesNotExistActionError,
     HandlerError,
@@ -92,12 +96,14 @@ import {
     HostNumberInputDataDependenciesExceededError,
     HostNumberOfLogsExceededError,
     HostNumberPromisesExceededError,
+    HostP256VerifyInvalidInputError,
     HostProhibitedInViewError,
     HostReturnedValueLengthExceededError,
     HostSizeExceededError,
     HostTotalLogLengthExceededError,
     HostValueLengthExceededError,
     InconsistentStateError,
+    InsufficientGasKeyBalanceActionError,
     InsufficientStakeActionError,
     IntegerOverflowValidationActionError,
     InternalHandlerError,
@@ -108,6 +114,7 @@ import {
     InvalidDataReceiverIdReceiptActionError,
     InvalidDeterministicStateInitReceiverActionError,
     InvalidNonceError,
+    InvalidNonceIndexError,
     InvalidPredecessorIdReceiptActionError,
     InvalidReceiverIdError,
     InvalidReceiverIdReceiptActionError,
@@ -127,6 +134,8 @@ import {
     NoSyncedBlocksError,
     NotConfirmedError,
     NotEnoughBalanceError,
+    NotEnoughBalanceForDepositError,
+    NotEnoughGasKeyBalanceError,
     NotSyncedYetError,
     NumberInputDataDependenciesExceededReceiptActionError,
     OnlyImplicitAccountCreationAllowedActionError,
@@ -139,12 +148,14 @@ import {
     RpcMethodNotFoundError,
     RpcRequestParseError,
     ShardCongestedError,
+    ShardNotAppliedError,
     ShardStuckError,
     SignerDoesNotExistError,
     StorageInconsistentStateError,
     StorageInternalError,
     TooLargeContractStateError,
     TotalNumberOfActionsExceededActionError,
+    TotalNumberOfDeployActionsExceededActionError,
     TotalPrepaidGasExceededActionError,
     TransactionExecutionError,
     TransactionExpiredError,
@@ -346,6 +357,9 @@ function parseHandlerError(rawError: RawHandlerError): HandlerError {
 
         case 'UNKNOWN_TRANSACTION_OR_RECEIPT':
             return new UnknownTransactionOrReceiptError(error.info.transaction_or_receipt_id);
+
+        case 'SHARD_NOT_APPLIED':
+            return new ShardNotAppliedError(error.info.shard_id);
 
         default:
             // ensures all HandlerError variants are handled at compile time
@@ -559,6 +573,10 @@ function parseHostError(error: HostError, blockHash: BlockHash, blockHeight: num
 
     if ('Ed25519VerifyInvalidInput' in error) {
         return new HostEd25519VerifyInvalidInputError(error.Ed25519VerifyInvalidInput.msg, blockHash, blockHeight);
+    }
+
+    if ('P256VerifyInvalidInput' in error) {
+        return new HostP256VerifyInvalidInputError(error.P256VerifyInvalidInput.msg, blockHash, blockHeight);
     }
 
     // ensures all HostError variants are handled at compile time
@@ -805,10 +823,34 @@ function parseActionError(
         );
     }
 
-    if ('GasKeyAlreadyExists' in error.kind) {
-        return new GasKeyAlreadyExistsActionError(
-            error.kind.GasKeyAlreadyExists.account_id,
-            PublicKey.fromString(error.kind.GasKeyAlreadyExists.public_key),
+    if ('InsufficientGasKeyBalance' in error.kind) {
+        return new InsufficientGasKeyBalanceActionError(
+            error.kind.InsufficientGasKeyBalance.account_id,
+            PublicKey.fromString(error.kind.InsufficientGasKeyBalance.public_key),
+            BigInt(error.kind.InsufficientGasKeyBalance.balance),
+            BigInt(error.kind.InsufficientGasKeyBalance.required),
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    }
+
+    if ('GasKeyBalanceTooHigh' in error.kind) {
+        const publicKey = error.kind.GasKeyBalanceTooHigh.public_key;
+        return new GasKeyBalanceTooHighActionError(
+            error.kind.GasKeyBalanceTooHigh.account_id,
+            BigInt(error.kind.GasKeyBalanceTooHigh.balance),
+            publicKey ? PublicKey.fromString(publicKey) : undefined,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    }
+
+    if ('DelegateActionInvalidNonceIndex' in error.kind) {
+        return new DelegateActionInvalidNonceIndexActionError(
+            error.kind.DelegateActionInvalidNonceIndex.nonce_index,
+            error.kind.DelegateActionInvalidNonceIndex.num_nonces,
             actionIndex,
             txHash,
             blockHash
@@ -973,6 +1015,8 @@ function parseActionsValidationError(
                 return new FunctionCallZeroAttachedGasActionError(actionIndex, txHash, blockHash);
             case 'DelegateActionMustBeOnlyOne':
                 return new DelegateActionMustBeOnlyOneActionError(actionIndex, txHash, blockHash);
+            case 'GasKeyFunctionCallAllowanceNotAllowed':
+                return new GasKeyFunctionCallAllowanceNotAllowedActionError(actionIndex, txHash, blockHash);
             default:
                 // ensures all string ActionsValidationError variants are handled at compile time
                 error satisfies never;
@@ -1108,19 +1152,29 @@ function parseActionsValidationError(
         );
     }
 
-    if ('GasKeyPermissionInvalid' in error) {
-        return new GasKeyPermissionInvalidActionError(
-            error.GasKeyPermissionInvalid.permission,
+    if ('GasKeyInvalidNumNonces' in error) {
+        return new GasKeyInvalidNumNoncesActionError(
+            error.GasKeyInvalidNumNonces.limit,
+            error.GasKeyInvalidNumNonces.requested_nonces,
             actionIndex,
             txHash,
             blockHash
         );
     }
 
-    if ('GasKeyTooManyNoncesRequested' in error) {
-        return new GasKeyTooManyNoncesRequestedActionError(
-            error.GasKeyTooManyNoncesRequested.limit,
-            error.GasKeyTooManyNoncesRequested.requested_nonces,
+    if ('AddGasKeyWithNonZeroBalance' in error) {
+        return new AddGasKeyWithNonZeroBalanceActionError(
+            BigInt(error.AddGasKeyWithNonZeroBalance.balance),
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    }
+
+    if ('TotalNumberOfDeployActionsExceeded' in error) {
+        return new TotalNumberOfDeployActionsExceededActionError(
+            error.TotalNumberOfDeployActionsExceeded.limit,
+            error.TotalNumberOfDeployActionsExceeded.number_of_deploy_actions,
             actionIndex,
             txHash,
             blockHash
@@ -1144,6 +1198,10 @@ function parseInvalidAccessKeyError(
                 return new AccessKeyRequiresFullAccessActionError(actionIndex, txHash, blockHash);
             case 'DepositWithFunctionCall':
                 return new AccessKeyDepositWithFunctionCallActionError(actionIndex, txHash, blockHash);
+            case 'DelegateActionRequiresGasKey':
+                return new DelegateActionRequiresGasKeyActionError(actionIndex, txHash, blockHash);
+            case 'DelegateActionRequiresNonGasKey':
+                return new DelegateActionRequiresNonGasKeyActionError(actionIndex, txHash, blockHash);
             default:
                 // ensures all string InvalidAccessKeyError variants are handled at compile time
                 error satisfies never;
@@ -1326,6 +1384,36 @@ function parseInvalidTransactionError(
 
     if ('ActionsValidation' in error) {
         return parseActionsValidationError(error.ActionsValidation, null, txHash, blockHash);
+    }
+
+    if ('InvalidNonceIndex' in error) {
+        return new InvalidNonceIndexError(
+            error.InvalidNonceIndex.num_nonces,
+            error.InvalidNonceIndex.tx_nonce_index ?? undefined,
+            txHash,
+            blockHash
+        );
+    }
+
+    if ('NotEnoughGasKeyBalance' in error) {
+        return new NotEnoughGasKeyBalanceError(
+            BigInt(error.NotEnoughGasKeyBalance.balance),
+            BigInt(error.NotEnoughGasKeyBalance.cost),
+            error.NotEnoughGasKeyBalance.signer_id,
+            txHash,
+            blockHash
+        );
+    }
+
+    if ('NotEnoughBalanceForDeposit' in error) {
+        return new NotEnoughBalanceForDepositError(
+            BigInt(error.NotEnoughBalanceForDeposit.balance),
+            BigInt(error.NotEnoughBalanceForDeposit.cost),
+            error.NotEnoughBalanceForDeposit.signer_id,
+            error.NotEnoughBalanceForDeposit.reason,
+            txHash,
+            blockHash
+        );
     }
 
     // ensures all InvalidTxError variants are handled at compile time

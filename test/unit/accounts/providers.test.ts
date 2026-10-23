@@ -237,72 +237,58 @@ describe('providers errors', () => {
 
         await contract.call.setValue({ args: { value: 'hello' }, account: near.account });
 
-        try {
-            const response = await near.provider.query({
+        await expect(
+            near.provider.query({
                 request_type: 'call_function',
                 finality: 'optimistic',
                 account_id: contract.contractId,
                 method_name: 'methodNameThatDoesNotExist',
                 args_base64: '',
-            });
-            expect(response).toBeUndefined();
-        } catch (thrown: unknown) {
-            expect(thrown).toBeInstanceOf(ContractMethodNotFoundError);
-        }
+            })
+        ).rejects.toBeInstanceOf(ContractMethodNotFoundError);
     });
 
     test('JSON RPC Error - CodeDoesNotExist', async () => {
         const { accountId } = await createAccount(near);
 
-        try {
-            const response = await near.provider.query({
-                request_type: 'call_function',
-                finality: 'optimistic',
-                account_id: accountId,
-                method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
-                args_base64: '',
-            });
-            expect(response).toBeUndefined();
-        } catch (thrown: unknown) {
-            expect(thrown).toBeInstanceOf(ContractCodeDoesNotExistError);
-            expect((thrown as ContractCodeDoesNotExistError).contractId).toEqual(accountId);
-        }
+        const response = near.provider.query({
+            request_type: 'call_function',
+            finality: 'optimistic',
+            account_id: accountId,
+            method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
+            args_base64: '',
+        });
+        await expect(response).rejects.toBeInstanceOf(ContractCodeDoesNotExistError);
+        await expect(response).rejects.toHaveProperty('contractId', accountId);
     });
 
     test('JSON RPC Error - AccountDoesNotExist', async () => {
         const accountName = 'abc.near';
-        try {
-            const response = await near.provider.query({
-                request_type: 'call_function',
-                finality: 'optimistic',
-                account_id: accountName,
-                method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
-                args_base64: '',
-            });
-            expect(response).toBeUndefined();
-        } catch (thrown: unknown) {
-            expect(thrown).toBeInstanceOf(AccountDoesNotExistError);
-            expect((thrown as AccountDoesNotExistError).accountId).toEqual(accountName);
-        }
+        const response = near.provider.query({
+            request_type: 'call_function',
+            finality: 'optimistic',
+            account_id: accountName,
+            method_name: 'methodNameThatDoesNotExistOnContractNotDeployed',
+            args_base64: '',
+        });
+        await expect(response).rejects.toBeInstanceOf(AccountDoesNotExistError);
+        await expect(response).rejects.toHaveProperty('accountId', accountName);
     });
 
     test('JSON RPC Error - AccessKeyDoesNotExist', async () => {
         const { accountId } = await createAccount(near);
 
-        const pk = KeyPair.fromRandom('ed25519').getPublicKey().toString();
+        const publicKey = KeyPair.fromRandom('ed25519').getPublicKey();
+        const pk = publicKey.toString();
 
-        try {
-            const response = await near.provider.query({
-                request_type: 'view_access_key',
-                finality: 'optimistic',
-                account_id: accountId,
-                public_key: pk,
-            });
-            expect(response).toBeUndefined();
-        } catch (thrown: unknown) {
-            expect(thrown).toBeInstanceOf(AccessKeyDoesNotExistError);
-            expect((thrown as AccessKeyDoesNotExistError).publicKey.toString()).toEqual(pk);
-        }
+        const response = near.provider.query({
+            request_type: 'view_access_key',
+            finality: 'optimistic',
+            account_id: accountId,
+            public_key: pk,
+        });
+        await expect(response).rejects.toBeInstanceOf(AccessKeyDoesNotExistError);
+        await expect(response).rejects.toHaveProperty('publicKey', publicKey);
     });
 
     test('JSON RPC Error - RpcMethodNotFoundError', async () => {

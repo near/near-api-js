@@ -1,8 +1,15 @@
 import type { Sandbox } from 'near-sandbox';
 import { TextEncoder } from 'util';
-import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { FailoverRpcProvider, getTransactionLastResult, JsonRpcProvider, type Provider } from '../../../src/index.js';
-import { AccountDoesNotExistError } from '../../../src/providers/errors/handler.js';
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
+import {
+    FailoverRpcError,
+    FailoverRpcProvider,
+    getTransactionLastResult,
+    JsonRpcProvider,
+    type Provider,
+    TypedError,
+} from '../../../src/index.js';
+import { AccountDoesNotExistError, NodeIsSyncingError } from '../../../src/rpc-errors/index.js';
 import { fastForwardSandbox, startSandbox } from '../../sandbox.js';
 
 global.TextEncoder = TextEncoder;
@@ -201,6 +208,32 @@ describe('failover provider', () => {
         expect(await provider.viewNodeStatus()).toBe('first');
     });
 
+    test.each([undefined, null, false, 0, ''])(
+        'FailoverRpc returns a view-call result of %j without retrying',
+        async (result) => {
+            const firstProvider = new JsonRpcProvider({ url: 'http://first.test' });
+            const secondProvider = new JsonRpcProvider({ url: 'http://second.test' });
+            const firstCall = vi.spyOn(firstProvider, 'callFunctionRaw').mockResolvedValue({
+                result: result === undefined ? [] : Array.from(new TextEncoder().encode(JSON.stringify(result))),
+                logs: [],
+                block_hash: 'block-hash',
+                block_height: 1,
+            });
+            const secondCall = vi.spyOn(secondProvider, 'callFunction').mockResolvedValue('second');
+            const provider = new FailoverRpcProvider([firstProvider, secondProvider]);
+            const params = {
+                contractId: 'contract.near',
+                method: 'empty_result',
+                args: {},
+                blockQuery: { finality: 'final' as const },
+            };
+
+            await expect(provider.callFunction(params)).resolves.toBe(result);
+            expect(firstCall).toHaveBeenCalledExactlyOnceWith(params);
+            expect(secondCall).not.toHaveBeenCalled();
+        }
+    );
+
     test('FailoverRpc switches to next provider in case of error', async () => {
         const jsonProviders = [
             Object.setPrototypeOf(
@@ -226,7 +259,7 @@ describe('failover provider', () => {
         expect(await provider.viewNodeStatus()).toBe('second');
     });
 
-    test('FailoverRpc does not retry account-not-found errors', async () => {
+    test('FailoverRpc switches to next provider after an account-not-found error', async () => {
         let secondProviderCalls = 0;
         const accountNotFound = new AccountDoesNotExistError('missing.near', 'block-hash', 1);
         const jsonProviders = [
@@ -255,24 +288,52 @@ describe('failover provider', () => {
 
         await expect(
             provider.viewAccount({ accountId: 'missing.near', blockQuery: { finality: 'final' } })
-        ).rejects.toThrow(AccountDoesNotExistError);
-        expect(secondProviderCalls).toBe(0);
+        ).resolves.toEqual({ amount: '0' });
+        expect(secondProviderCalls).toBe(1);
     });
 
+    test.each(['account-not-found', 'network'])(
+        'FailoverRpc preserves account-not-found and subsequent %s errors when all providers fail',
+        async (failure) => {
+            const firstError = new AccountDoesNotExistError('missing.near', 'first-block', 1);
+            const secondError =
+                failure === 'account-not-found'
+                    ? new AccountDoesNotExistError('missing.near', 'second-block', 2)
+                    : new Error('Network failure');
+            const firstProvider = new JsonRpcProvider({ url: 'http://first.test' });
+            const secondProvider = new JsonRpcProvider({ url: 'http://second.test' });
+            const firstCall = vi.spyOn(firstProvider, 'viewAccount').mockRejectedValue(firstError);
+            const secondCall = vi.spyOn(secondProvider, 'viewAccount').mockRejectedValue(secondError);
+            const provider = new FailoverRpcProvider([firstProvider, secondProvider]);
+            const params = { accountId: 'missing.near', blockQuery: { finality: 'final' as const } };
+            const response = provider.viewAccount(params);
+
+            await expect(response).rejects.toBeInstanceOf(FailoverRpcError);
+            await expect(response).rejects.toMatchObject({
+                type: 'RetriesExceeded',
+                errors: [firstError, secondError],
+            });
+            expect(firstCall).toHaveBeenCalledExactlyOnceWith(params);
+            expect(secondCall).toHaveBeenCalledExactlyOnceWith(params);
+        }
+    );
+
     test('FailoverRpc returns error if all providers are unavailable', async () => {
+        const firstError = new Error('first provider unavailable');
+        const lastError = new NodeIsSyncingError();
         const jsonProviders = [
             Object.setPrototypeOf(
                 {
-                    status() {
-                        throw new Error();
+                    viewNodeStatus() {
+                        throw firstError;
                     },
                 },
                 JsonRpcProvider.prototype
             ),
             Object.setPrototypeOf(
                 {
-                    status() {
-                        throw new Error();
+                    viewNodeStatus() {
+                        throw lastError;
                     },
                 },
                 JsonRpcProvider.prototype
@@ -281,7 +342,16 @@ describe('failover provider', () => {
 
         const provider = new FailoverRpcProvider(jsonProviders);
 
-        await expect(() => provider.viewNodeStatus()).rejects.toThrow();
+        try {
+            await provider.viewNodeStatus();
+            expect.fail('Expected all providers to fail');
+        } catch (error) {
+            expect(error).toBeInstanceOf(FailoverRpcError);
+            expect(error).toBeInstanceOf(TypedError);
+            expect((error as FailoverRpcError).type).toBe('RetriesExceeded');
+            expect((error as FailoverRpcError).errors).toEqual([firstError, lastError]);
+            expect((error as FailoverRpcError).errors[1]).toBeInstanceOf(NodeIsSyncingError);
+        }
     });
 });
 

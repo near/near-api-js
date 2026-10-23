@@ -2,6 +2,7 @@ import type { PublicKey } from '../../crypto/public_key.js';
 import type {
     AccessKeyPermission,
     CryptoHash,
+    DepositCostFailureReason,
     GlobalContractIdentifier,
     MissingTrieValueContext,
     RpcTransactionResponse,
@@ -241,6 +242,7 @@ export class GasKeyDoesNotExistActionError extends ActionExecutionError {
     }
 }
 
+/** @deprecated not returned by the protocol since gas keys are added with `AddKey` */
 export class GasKeyAlreadyExistsActionError extends ActionExecutionError {
     constructor(
         public readonly accountId: string,
@@ -250,6 +252,60 @@ export class GasKeyAlreadyExistsActionError extends ActionExecutionError {
         blockHash: BlockHash
     ) {
         super(`Gas key ${publicKey} already exists on account ${accountId}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class InsufficientGasKeyBalanceActionError extends ActionExecutionError {
+    constructor(
+        public readonly accountId: string,
+        public readonly publicKey: PublicKey,
+        public readonly balance: bigint,
+        public readonly required: bigint,
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(
+            `Gas key ${publicKey} on account ${accountId} has insufficient balance (balance: ${balance}, required: ${required})`,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    }
+}
+
+export class GasKeyBalanceTooHighActionError extends ActionExecutionError {
+    constructor(
+        public readonly accountId: string,
+        public readonly balance: bigint,
+        public readonly publicKey: PublicKey | undefined,
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(
+            `Gas key balance ${balance} on account ${accountId} is too high to be deleted, withdraw it first`,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    }
+}
+
+export class DelegateActionInvalidNonceIndexActionError extends ActionExecutionError {
+    constructor(
+        public readonly nonceIndex: number,
+        public readonly numNonces: number,
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(
+            `Delegate nonce index ${nonceIndex} exceeds number of nonces ${numNonces}`,
+            actionIndex,
+            txHash,
+            blockHash
+        );
     }
 }
 
@@ -507,6 +563,24 @@ export class FunctionCallZeroAttachedGasActionError extends ActionExecutionError
     }
 }
 
+export class GasKeyFunctionCallAllowanceNotAllowedActionError extends ActionExecutionError {
+    constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
+        super(`Function call gas keys can not have an allowance`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class DelegateActionRequiresGasKeyActionError extends ActionExecutionError {
+    constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
+        super(`Delegate action requires a gas key`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class DelegateActionRequiresNonGasKeyActionError extends ActionExecutionError {
+    constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
+        super(`Delegate action can not be signed with a gas key`, actionIndex, txHash, blockHash);
+    }
+}
+
 export class DelegateActionMustBeOnlyOneActionError extends ActionExecutionError {
     constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
         super(`Delegate action must be the only action in transaction`, actionIndex, txHash, blockHash);
@@ -554,6 +628,7 @@ export class DeterministicStateInitValueLengthExceededActionError extends Action
     }
 }
 
+/** @deprecated not returned by the protocol since gas keys are added with `AddKey` */
 export class GasKeyPermissionInvalidActionError extends ActionExecutionError {
     constructor(
         public readonly permission: AccessKeyPermission,
@@ -565,6 +640,7 @@ export class GasKeyPermissionInvalidActionError extends ActionExecutionError {
     }
 }
 
+/** @deprecated replaced by {@link GasKeyInvalidNumNoncesActionError} */
 export class GasKeyTooManyNoncesRequestedActionError extends ActionExecutionError {
     constructor(
         limit: number,
@@ -574,6 +650,46 @@ export class GasKeyTooManyNoncesRequestedActionError extends ActionExecutionErro
         blockHash: BlockHash
     ) {
         super(`Requested ${requested} nonces exceeds limit ${limit}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class GasKeyInvalidNumNoncesActionError extends ActionExecutionError {
+    constructor(
+        public readonly limit: number,
+        public readonly requested: number,
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Requested ${requested} gas key nonces, must be between 1 and ${limit}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class AddGasKeyWithNonZeroBalanceActionError extends ActionExecutionError {
+    constructor(
+        public readonly balance: bigint,
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Gas key must be added with zero balance (got ${balance})`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class TotalNumberOfDeployActionsExceededActionError extends ActionExecutionError {
+    constructor(
+        public readonly limit: number,
+        public readonly numberOfDeployActions: number,
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(
+            `Number of deploy actions ${numberOfDeployActions} exceeds limit ${limit}`,
+            actionIndex,
+            txHash,
+            blockHash
+        );
     }
 }
 
@@ -644,6 +760,46 @@ export class NotEnoughBalanceError extends TransactionExecutionError {
         blockHash: BlockHash
     ) {
         super(`Not enough balance for ${signerId} (balance: ${balance}, cost: ${cost})`, txHash, blockHash);
+    }
+}
+
+export class InvalidNonceIndexError extends TransactionExecutionError {
+    constructor(
+        public readonly numNonces: number,
+        public readonly txNonceIndex: number | undefined,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Invalid nonce index ${txNonceIndex} for key with ${numNonces} nonces`, txHash, blockHash);
+    }
+}
+
+export class NotEnoughGasKeyBalanceError extends TransactionExecutionError {
+    constructor(
+        public readonly balance: bigint,
+        public readonly cost: bigint,
+        public readonly signerId: string,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Not enough gas key balance for ${signerId} (balance: ${balance}, cost: ${cost})`, txHash, blockHash);
+    }
+}
+
+export class NotEnoughBalanceForDepositError extends TransactionExecutionError {
+    constructor(
+        public readonly balance: bigint,
+        public readonly cost: bigint,
+        public readonly signerId: string,
+        public readonly reason: DepositCostFailureReason,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(
+            `Not enough balance for deposit for ${signerId} (balance: ${balance}, cost: ${cost}, reason: ${reason})`,
+            txHash,
+            blockHash
+        );
     }
 }
 
