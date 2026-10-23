@@ -1,11 +1,14 @@
 import { sha256 } from '@noble/hashes/sha2.js';
+import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js';
 import { describe, expect, test } from 'vitest';
 import {
+    baseDecode,
     baseEncode,
     KeyPair,
     KeyPairEd25519,
     KeyPairMLDSA65,
     KeyPairSecp256k1,
+    type KeyPairString,
     PublicKey,
 } from '../../../src/index.js';
 
@@ -115,6 +118,59 @@ test('ML-DSA-65 signs and verifies', () => {
 
     expect(keyPair.verify(message, signature.signature)).toBeTruthy();
     expect(KeyPair.fromString(keyPair.toString()).getPublicKey().toString()).toEqual(keyPair.getPublicKey().toString());
+});
+
+test('ML-DSA-65 accepts the canonical 32-byte seed form', () => {
+    const keyString = 'ml-dsa-65:GdMxikMuRimoKStcDp78N8GXVK54z2HxgNhwKP6F3nMR';
+    const keyPair = KeyPair.fromString(keyString);
+    const seed = Uint8Array.from(
+        Buffer.from('e82fe9d0fd2a6af0798736fc2ed44907faf66d4a7a543499e7f1c04f18a7d3c4', 'hex')
+    );
+    expect(keyPair.getPublicKey().data).toEqual(ml_dsa65.keygen(seed).publicKey);
+    expect(keyPair.toString()).toEqual(keyString);
+    const message = sha256(encoder.encode('message'));
+    expect(keyPair.verify(message, keyPair.sign(message).signature)).toBeTruthy();
+});
+
+test('ML-DSA-65 generates keys in the seed form', () => {
+    expect(baseDecode(KeyPairMLDSA65.fromRandom().secretKey).length).toEqual(32);
+});
+
+test('ML-DSA-65 accepts a valid expanded key and exports it unchanged', () => {
+    const expanded = ml_dsa65.keygen(new Uint8Array(32).fill(3));
+    const keyString = `ml-dsa-65:${baseEncode(expanded.secretKey)}` as KeyPairString;
+    const keyPair = KeyPair.fromString(keyString);
+    expect(keyPair.getPublicKey().data).toEqual(expanded.publicKey);
+    expect(keyPair.toString()).toEqual(keyString);
+});
+
+test('ML-DSA-65 seed and expanded forms of one key agree', () => {
+    const seed = new Uint8Array(32).fill(5);
+    const fromSeed = new KeyPairMLDSA65(baseEncode(seed));
+    const fromExpanded = new KeyPairMLDSA65(baseEncode(ml_dsa65.keygen(seed).secretKey));
+    expect(fromSeed.getPublicKey().toString()).toEqual(fromExpanded.getPublicKey().toString());
+});
+
+test('ML-DSA-65 rejects secret keys of any other length', () => {
+    for (const length of [0, 31, 33, 64, 2560, 4031, 4033, 4896]) {
+        expect(() => new KeyPairMLDSA65(baseEncode(new Uint8Array(length).fill(7)))).toThrow();
+    }
+});
+
+test('ML-DSA-65 rejects expanded keys with a corrupted tr, t0 or s1', () => {
+    const expanded = ml_dsa65.keygen(new Uint8Array(32).fill(4)).secretKey;
+    const cases: Array<[string, number, number]> = [
+        ['tr', 64, 0x01],
+        ['tr last byte', 127, 0x80],
+        ['s1', 128, 0x88],
+        ['t0 first byte', 1536, 0x01],
+        ['t0 last byte', 4031, 0x01],
+    ];
+    for (const [part, offset, mask] of cases) {
+        const corrupted = Uint8Array.from(expanded);
+        corrupted[offset] = corrupted[offset]! ^ mask;
+        expect(() => new KeyPairMLDSA65(baseEncode(corrupted)), part).toThrow();
+    }
 });
 
 test('convert to string', async () => {
