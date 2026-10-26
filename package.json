@@ -108,7 +108,7 @@
         "@types/node": "26.1.1",
         "@vitest/coverage-v8": "4.1.10",
         "@vitest/ui": "4.1.10",
-        "commitlint": "21.2.1",
+        "commitlint": "21.2.4",
         "husky": "9.1.7",
         "near-hello": "0.5.1",
         "near-sandbox": "0.3.1",
