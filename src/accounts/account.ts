@@ -51,7 +51,7 @@ export interface AccountState {
     };
     storageUsage: number;
     codeHash: string;
-    initializationState?: 'initialized' | 'uninitialized';
+    initializationState: 'initialized' | 'uninitialized';
     bootstrapNonce?: bigint;
 }
 
@@ -226,7 +226,7 @@ export class Account {
             },
             storageUsage: state.storage_usage,
             codeHash: state.code_hash,
-            ...(state.state ? { initializationState: state.state } : {}),
+            initializationState: state.state ?? 'initialized',
             ...(state.bootstrap_nonce == null ? {} : { bootstrapNonce: BigInt(state.bootstrap_nonce) }),
         };
     }

@@ -72,6 +72,33 @@ describe('universal accounts (protocol 88)', () => {
         );
     });
 
+    test('canonicalizes mutable data and access keys each time it encodes', () => {
+        const ed = KeyPair.fromRandom('ed25519').getPublicKey();
+        const secp = KeyPair.fromRandom('secp256k1').getPublicKey();
+        const stateInit = new UniversalStateInit();
+
+        stateInit.V1.data.set(bytes('z'), bytes('1'));
+        stateInit.V1.data.set(bytes('a'), bytes('2'));
+        stateInit.V1.accessKeys.push(secp256k1Handle(secp), ed25519Handle(ed), ed25519Handle(ed));
+
+        expect(stateInit.encode()).toEqual(
+            new UniversalStateInit({
+                data: [
+                    [bytes('a'), bytes('2')],
+                    [bytes('z'), bytes('1')],
+                ],
+                accessKeys: [ed, secp],
+            }).encode()
+        );
+    });
+
+    test('rejects unknown public key types instead of encoding them as secp256k1', () => {
+        const key = KeyPair.fromRandom('ed25519').getPublicKey();
+        key.ed25519Key!.keyType = 99 as KeyType;
+
+        expect(() => new UniversalStateInit({ accessKeys: [key] })).toThrow('Unsupported public key type: 99');
+    });
+
     test('decoding restores the class and rejects noncanonical bytes', () => {
         const stateInit = new UniversalStateInit({
             code: { accountId: 'code.near' },
@@ -94,6 +121,14 @@ describe('universal accounts (protocol 88)', () => {
         expect(() => UniversalStateInit.decode(noncanonical)).toThrow();
     });
 });
+
+function ed25519Handle(key: PublicKey) {
+    return { ed25519Key: { data: key.data } };
+}
+
+function secp256k1Handle(key: PublicKey) {
+    return { secp256k1Key: { data: key.data } };
+}
 
 test('account API targets the exact raw-byte-derived receiver', async () => {
     const account = new Account('funder.testnet', 'http://localhost:3030');

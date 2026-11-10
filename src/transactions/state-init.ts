@@ -1,7 +1,7 @@
 import { keccak_256, sha3_256 } from '@noble/hashes/sha3.js';
 import { deserialize, serialize } from 'borsh';
 import { KeyType, PublicKey } from '../crypto/index.js';
-import { baseDecode } from '../utils/index.js';
+import { hashMlDsa65PublicKey } from '../crypto/public_key.js';
 import type { GlobalContractIdentifier } from './actions.js';
 import { type GlobalContractIdentifierInput, globalContractIdentifier } from './global_contract_identifier.js';
 import { SCHEMA } from './schema.js';
@@ -85,12 +85,16 @@ function canonicalAccessKeys(accessKeys: Array<PublicKey | string>): PublicKeyHa
     return canonicalAccessKeyHandles(
         accessKeys.map((value): PublicKeyHandle => {
             const key = PublicKey.from(value);
-            if (key.keyType === KeyType.MLDSA65) {
-                return { mlDsa65Hash: { data: baseDecode(key.toHandle().slice('ml-dsa-65-hash:'.length)) } };
+            switch (key.keyType) {
+                case KeyType.ED25519:
+                    return { ed25519Key: { data: key.data } };
+                case KeyType.SECP256K1:
+                    return { secp256k1Key: { data: key.data } };
+                case KeyType.MLDSA65:
+                    return { mlDsa65Hash: { data: hashMlDsa65PublicKey(key.data) } };
+                default:
+                    throw new Error(`Unsupported public key type: ${key.keyType}`);
             }
-            return key.keyType === KeyType.ED25519
-                ? { ed25519Key: { data: key.data } }
-                : { secp256k1Key: { data: key.data } };
         })
     );
 }
@@ -135,7 +139,13 @@ export class UniversalStateInit implements UniversalStateInitSchema {
 
     /** Canonical Borsh bytes carried opaquely by the UniversalStateInit action. */
     encode(): Uint8Array {
-        return serialize(SCHEMA.UniversalAccountStateInit, this);
+        return serialize(SCHEMA.UniversalAccountStateInit, {
+            V1: {
+                code: this.V1.code,
+                data: canonicalStateInitData(this.V1.data),
+                accessKeys: canonicalAccessKeyHandles(this.V1.accessKeys),
+            },
+        });
     }
 
     deriveAccountId(): string {

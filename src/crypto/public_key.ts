@@ -6,6 +6,13 @@ import { baseDecode, baseEncode } from '../utils/index.js';
 
 import { KeySize, KeyType } from './constants.js';
 
+const ML_DSA_65_PUBLIC_KEY_HASH_DOMAIN = new TextEncoder().encode('near:ml-dsa-65-pubkey-hash:v1');
+
+/** @internal Raw on-trie hash used for ML-DSA-65 public-key handles. */
+export function hashMlDsa65PublicKey(data: Uint8Array): Uint8Array {
+    return sha3_256(new Uint8Array([...ML_DSA_65_PUBLIC_KEY_HASH_DOMAIN, ...data]));
+}
+
 function key_type_to_str(keyType: KeyType): string {
     switch (keyType) {
         case KeyType.ED25519:
@@ -186,8 +193,7 @@ export class PublicKey extends Enum {
     /** On-trie identifier used for access keys and universal state initialization. */
     toHandle(): string {
         if (this.keyType !== KeyType.MLDSA65) return this.toString();
-        const domain = new TextEncoder().encode('near:ml-dsa-65-pubkey-hash:v1');
-        return `ml-dsa-65-hash:${baseEncode(sha3_256(new Uint8Array([...domain, ...this.data])))}`;
+        return `ml-dsa-65-hash:${baseEncode(hashMlDsa65PublicKey(this.data))}`;
     }
 
     /**
