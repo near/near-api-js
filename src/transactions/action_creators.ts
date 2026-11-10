@@ -1,5 +1,5 @@
 import type { PublicKey } from '../crypto/index.js';
-import { baseDecode, stringToBytes } from '../utils/index.js';
+import { stringToBytes } from '../utils/index.js';
 
 import {
     AccessKey,
@@ -11,13 +11,13 @@ import {
     DeleteKey,
     DeployContract,
     DeployGlobalContract,
+    DeterministicStateInit,
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
     GasKeyFunctionCallPermission,
     GasKeyInfo,
     GlobalContractDeployMode,
-    GlobalContractIdentifier,
     SignedDelegate,
     Stake,
     Transfer,
@@ -26,7 +26,9 @@ import {
     WithdrawFromGasKey,
 } from './actions.js';
 import type { DelegateAction } from './delegate.js';
+import { globalContractIdentifier } from './global_contract_identifier.js';
 import type { Signature } from './signature.js';
+import { canonicalStateInitData, type DeterministicAccountStateInit } from './state-init.js';
 
 /**
  * Creates a full access key with full access permissions.
@@ -310,22 +312,19 @@ function deployGlobalContract(code: Uint8Array, deployMode: 'codeHash' | 'accoun
  * @returns A new action for using a global contract.
  */
 function useGlobalContract(contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }): Action {
-    const identifier =
-        'accountId' in contractIdentifier
-            ? new GlobalContractIdentifier({
-                  AccountId: contractIdentifier.accountId,
-              })
-            : new GlobalContractIdentifier({
-                  CodeHash:
-                      typeof contractIdentifier.codeHash === 'string'
-                          ? /^[0-9a-fA-F]{64}$/.test(contractIdentifier.codeHash)
-                              ? new Uint8Array(
-                                    contractIdentifier.codeHash.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
-                                )
-                              : baseDecode(contractIdentifier.codeHash)
-                          : contractIdentifier.codeHash,
-              });
-    return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier: identifier }) });
+    return new Action({
+        useGlobalContract: new UseGlobalContract({ contractIdentifier: globalContractIdentifier(contractIdentifier) }),
+    });
+}
+
+/** Initialize a NEP-616 deterministic account. Deposit pays storage; excess is refunded. */
+function deterministicStateInit(stateInit: DeterministicAccountStateInit, deposit = 0n): Action {
+    return new Action({
+        deterministicStateInit: new DeterministicStateInit({
+            stateInit: { V1: { ...stateInit.V1, data: canonicalStateInitData(stateInit.V1.data) } },
+            deposit,
+        }),
+    });
 }
 
 export const actions = {
@@ -349,4 +348,5 @@ export const actions = {
     useGlobalContract,
     transferToGasKey,
     withdrawFromGasKey,
+    deterministicStateInit,
 };

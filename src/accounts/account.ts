@@ -12,6 +12,8 @@ import {
     buildDelegateAction,
     createTransaction,
     type DelegateAction,
+    type DeterministicAccountStateInit,
+    deriveDeterministicAccountId,
     type SignedDelegate,
     type SignedTransaction,
 } from '../transactions/index.js';
@@ -616,6 +618,20 @@ export class Account {
         return this.signAndSendTransaction({
             receiverId: this.accountId,
             actions: [useGlobalContract(contractIdentifier)],
+        });
+    }
+
+    /** Create or initialize a NEP-616 account. Deposit (yoctoNEAR) covers storage; excess is refunded. */
+    public async createDeterministicAccount({
+        stateInit,
+        deposit = 0n,
+    }: {
+        stateInit: DeterministicAccountStateInit;
+        deposit?: bigint | string;
+    }) {
+        return this.signAndSendTransaction({
+            receiverId: deriveDeterministicAccountId(stateInit),
+            actions: [actions.deterministicStateInit(stateInit, BigInt(deposit))],
         });
     }
 
