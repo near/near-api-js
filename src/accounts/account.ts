@@ -12,8 +12,7 @@ import {
     buildDelegateAction,
     createTransaction,
     type DelegateAction,
-    type DeterministicAccountStateInit,
-    deriveDeterministicAccountId,
+    type DeterministicStateInit,
     type SignedDelegate,
     type SignedTransaction,
 } from '../transactions/index.js';
@@ -626,11 +625,11 @@ export class Account {
         stateInit,
         deposit = 0n,
     }: {
-        stateInit: DeterministicAccountStateInit;
+        stateInit: DeterministicStateInit;
         deposit?: bigint | string;
     }) {
         return this.signAndSendTransaction({
-            receiverId: deriveDeterministicAccountId(stateInit),
+            receiverId: stateInit.deriveAccountId(),
             actions: [actions.deterministicStateInit(stateInit, BigInt(deposit))],
         });
     }

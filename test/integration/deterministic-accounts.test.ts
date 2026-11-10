@@ -2,14 +2,7 @@ import { readFileSync } from 'node:fs';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { DEFAULT_ACCOUNT_ID, DEFAULT_PRIVATE_KEY, Sandbox } from 'near-sandbox';
 import { afterAll, beforeAll, expect, test, vi } from 'vitest';
-import {
-    Account,
-    baseEncode,
-    createDeterministicStateInit,
-    deriveDeterministicAccountId,
-    JsonRpcProvider,
-    nearToYocto,
-} from '../../src/index.js';
+import { Account, baseEncode, DeterministicStateInit, JsonRpcProvider, nearToYocto } from '../../src/index.js';
 
 let sandbox: Sandbox;
 let root: Account;
@@ -47,11 +40,11 @@ afterAll(async () => {
 test.each(['accountId', 'codeHash'] as const)(
     'initializes deterministic code and storage referenced by %s',
     async (mode) => {
-        const stateInit = createDeterministicStateInit({
+        const stateInit = new DeterministicStateInit({
             code: mode === 'accountId' ? { accountId: root.accountId } : { codeHash: hash },
             data: [[new TextEncoder().encode('marker'), new TextEncoder().encode('original')]],
         });
-        const accountId = deriveDeterministicAccountId(stateInit);
+        const accountId = stateInit.deriveAccountId();
         const deposit = nearToYocto('1');
         await finalized(await root.createDeterministicAccount({ stateInit, deposit }));
         const state = await root.provider.viewContractState({ contractId: accountId });
@@ -80,8 +73,8 @@ test.each(['accountId', 'codeHash'] as const)(
 );
 
 test('initializes a prefunded derived account without losing its balance', async () => {
-    const stateInit = createDeterministicStateInit({ code: { codeHash: hash } });
-    const accountId = deriveDeterministicAccountId(stateInit);
+    const stateInit = new DeterministicStateInit({ code: { codeHash: hash } });
+    const accountId = stateInit.deriveAccountId();
     await finalized(await root.transfer({ receiverId: accountId, amount: nearToYocto('1') }));
     const before = await root.provider.viewAccount({ accountId });
     await finalized(await root.createDeterministicAccount({ stateInit }));

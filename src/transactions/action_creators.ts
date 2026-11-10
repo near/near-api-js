@@ -11,7 +11,7 @@ import {
     DeleteKey,
     DeployContract,
     DeployGlobalContract,
-    DeterministicStateInit,
+    DeterministicStateInitAction,
     FullAccessPermission,
     FunctionCall,
     FunctionCallPermission,
@@ -28,7 +28,7 @@ import {
 import type { DelegateAction } from './delegate.js';
 import { globalContractIdentifier } from './global_contract_identifier.js';
 import type { Signature } from './signature.js';
-import { canonicalStateInitData, type DeterministicAccountStateInit } from './state-init.js';
+import { canonicalStateInitData, type DeterministicStateInit } from './state-init.js';
 
 /**
  * Creates a full access key with full access permissions.
@@ -318,9 +318,9 @@ function useGlobalContract(contractIdentifier: { accountId: string } | { codeHas
 }
 
 /** Initialize a NEP-616 deterministic account. Deposit pays storage; excess is refunded. */
-function deterministicStateInit(stateInit: DeterministicAccountStateInit, deposit = 0n): Action {
+function deterministicStateInit(stateInit: DeterministicStateInit, deposit = 0n): Action {
     return new Action({
-        deterministicStateInit: new DeterministicStateInit({
+        deterministicStateInit: new DeterministicStateInitAction({
             stateInit: { V1: { ...stateInit.V1, data: canonicalStateInitData(stateInit.V1.data) } },
             deposit,
         }),
