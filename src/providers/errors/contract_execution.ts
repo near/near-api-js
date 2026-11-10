@@ -320,3 +320,9 @@ export class HostP256VerifyInvalidInputError extends ContractExecutionError {
         super(`P256 verify invalid input: ${message}`, blockHash, blockHeight);
     }
 }
+
+export class HostMlDsaVerifyInvalidInputError extends ContractExecutionError {
+    constructor(message: string, blockHash: BlockHash, blockHeight: number) {
+        super(`ML-DSA verify invalid input: ${message}`, blockHash, blockHeight);
+    }
+}

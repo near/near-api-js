@@ -216,3 +216,69 @@ export class UnknownTransactionOrReceiptError extends HandlerError {
         super(`Unknown transaction or receipt ${transactionOrReceiptId}`);
     }
 }
+
+export class ShardNotTrackedError extends HandlerError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').RpcLightClientProofError,
+            { name: 'SHARD_NOT_TRACKED' }
+        >['info']
+    ) {
+        super(`SHARD_NOT_TRACKED: ${JSON.stringify(details)}`);
+    }
+}
+
+export class TargetShardMismatchError extends HandlerError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').RpcLightClientProofError,
+            { name: 'TARGET_SHARD_MISMATCH' }
+        >['info']
+    ) {
+        super(`TARGET_SHARD_MISMATCH: ${JSON.stringify(details)}`);
+    }
+}
+
+export class StateNotAvailableError extends HandlerError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').RpcLightClientProofError,
+            { name: 'STATE_NOT_AVAILABLE' }
+        >['info']
+    ) {
+        super(`STATE_NOT_AVAILABLE: ${JSON.stringify(details)}`);
+    }
+}
+
+export class ChunkNotCertifiedError extends HandlerError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').RpcLightClientProofError,
+            { name: 'CHUNK_NOT_CERTIFIED' }
+        >['info']
+    ) {
+        super(`CHUNK_NOT_CERTIFIED: ${JSON.stringify(details)}`);
+    }
+}
+
+export class LightClientHeadTooOldError extends HandlerError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').RpcLightClientProofError,
+            { name: 'LIGHT_CLIENT_HEAD_TOO_OLD' }
+        >['info']
+    ) {
+        super(`LIGHT_CLIENT_HEAD_TOO_OLD: ${JSON.stringify(details)}`);
+    }
+}
+
+export class TooManyAccessKeysError extends HandlerError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').RpcQueryError,
+            { name: 'TOO_MANY_ACCESS_KEYS' }
+        >['info']
+    ) {
+        super(`TOO_MANY_ACCESS_KEYS: ${JSON.stringify(details)}`);
+    }
+}

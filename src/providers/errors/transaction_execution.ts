@@ -912,3 +912,166 @@ export class ShardStuckError extends TransactionExecutionError {
         super(`Shard ${shardId} stuck (missed chunks: ${missedChunks})`, txHash, blockHash);
     }
 }
+
+export class TotalPromiseInputSizeExceededActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionErrorKind,
+            { TotalPromiseInputSizeExceeded: unknown }
+        >['TotalPromiseInputSizeExceeded'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Total Promise Input Size Exceeded: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class ReceiptStorageProofSizeExceededActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionErrorKind,
+            { ReceiptStorageProofSizeExceeded: unknown }
+        >['ReceiptStorageProofSizeExceeded'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Receipt Storage Proof Size Exceeded: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class MalformedUniversalStateInitActionError extends ActionExecutionError {
+    constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
+        super('Malformed Universal State Init', actionIndex, txHash, blockHash);
+    }
+}
+
+export class AccountNotInitializedActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionErrorKind,
+            { AccountNotInitialized: unknown }
+        >['AccountNotInitialized'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Account Not Initialized: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class FunctionCallEmptyMethodNameActionError extends ActionExecutionError {
+    constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
+        super('Function Call Empty Method Name', actionIndex, txHash, blockHash);
+    }
+}
+
+export class InvalidUniversalStateInitReceiverActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionsValidationError,
+            { InvalidUniversalStateInitReceiver: unknown }
+        >['InvalidUniversalStateInitReceiver'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Invalid Universal State Init Receiver: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class UniversalStateInitKeyLengthExceededActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionsValidationError,
+            { UniversalStateInitKeyLengthExceeded: unknown }
+        >['UniversalStateInitKeyLengthExceeded'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Universal State Init Key Length Exceeded: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class UniversalStateInitValueLengthExceededActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionsValidationError,
+            { UniversalStateInitValueLengthExceeded: unknown }
+        >['UniversalStateInitValueLengthExceeded'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Universal State Init Value Length Exceeded: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class RemovedProtocolFeatureActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionsValidationError,
+            { RemovedProtocolFeature: unknown }
+        >['RemovedProtocolFeature'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Removed Protocol Feature: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class WithdrawFromGasKeyNotAllowedInDelegateActionError extends ActionExecutionError {
+    constructor(actionIndex: number | null, txHash: CryptoHash, blockHash: BlockHash) {
+        super('Withdraw From Gas Key Not Allowed In Delegate', actionIndex, txHash, blockHash);
+    }
+}
+
+export class TotalNumberOfStateInitKeysExceededActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionsValidationError,
+            { TotalNumberOfStateInitKeysExceeded: unknown }
+        >['TotalNumberOfStateInitKeysExceeded'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Total Number Of State Init Keys Exceeded: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}
+
+export class TotalNumberOfStateInitEntriesExceededActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionsValidationError,
+            { TotalNumberOfStateInitEntriesExceeded: unknown }
+        >['TotalNumberOfStateInitEntriesExceeded'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(
+            `Total Number Of State Init Entries Exceeded: ${JSON.stringify(details)}`,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    }
+}
+
+export class TransferToUniversalAccountNotAllowedActionError extends ActionExecutionError {
+    constructor(
+        public readonly details: Extract<
+            import('../../rpc/types.gen.js').ActionsValidationError,
+            { TransferToUniversalAccountNotAllowed: unknown }
+        >['TransferToUniversalAccountNotAllowed'],
+        actionIndex: number | null,
+        txHash: CryptoHash,
+        blockHash: BlockHash
+    ) {
+        super(`Transfer To Universal Account Not Allowed: ${JSON.stringify(details)}`, actionIndex, txHash, blockHash);
+    }
+}

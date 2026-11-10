@@ -59,6 +59,12 @@ export type AccessKeyInfoView = {
  */
 export type AccessKeyList = {
     keys: Array<AccessKeyInfoView>;
+    /**
+     * Pagination cursor. When `Some`, the listing was truncated and the caller
+     * should issue another request with `after_key` set to this handle to fetch
+     * the next page. `None` means this was the last page.
+     */
+    last_key?: PublicKeyHandle | null;
 };
 
 /**
@@ -108,7 +114,13 @@ export type AccessKeyPermissionView =
  * Describes access key permission scope and nonce.
  */
 export type AccessKeyView = {
+    /**
+     * Current nonce; each transaction signed with this key must use a strictly greater value.
+     */
     nonce: number;
+    /**
+     * Access scope: full access, or a function-call permission with an optional allowance and method/receiver limits.
+     */
     permission: AccessKeyPermissionView;
 };
 
@@ -222,18 +234,69 @@ export type AccountInfo = {
 };
 
 /**
+ * Whether an account's state has been installed.
+ *
+ * Only universal accounts can be uninitialized: they come into existence when
+ * a transfer funds a `0u` id whose state init has not been applied yet. A
+ * deterministic `0s` account waiting for its state init is an ordinary V1
+ * account with no contract, not this.
+ */
+export const AccountState = { INITIALIZED: 'initialized', UNINITIALIZED: 'uninitialized' } as const;
+
+/**
+ * Whether an account's state has been installed.
+ *
+ * Only universal accounts can be uninitialized: they come into existence when
+ * a transfer funds a `0u` id whose state init has not been applied yet. A
+ * deterministic `0s` account waiting for its state init is an ordinary V1
+ * account with no contract, not this.
+ */
+export type AccountState = (typeof AccountState)[keyof typeof AccountState];
+
+/**
  * A view of the account
  */
 export type AccountView = {
+    /**
+     * Liquid (non-staked) account balance, in yoctoNEAR.
+     */
     amount: NearToken;
+    /**
+     * The nonce an uninitialized account's own transactions must use, present
+     * only while it is uninitialized. A self-signed state init is the one
+     * transaction such an account can send, and this is the only way for a
+     * client to learn the nonce it must carry: there is no access key to query.
+     */
+    bootstrap_nonce?: number | null;
+    /**
+     * Hash of the deployed contract code; the all-`1`s hash when no contract is deployed.
+     */
     code_hash: CryptoHash;
+    /**
+     * Set when the account uses a global contract referenced by the deploying account id.
+     */
     global_contract_account_id?: AccountId | null;
+    /**
+     * Set when the account uses a global contract referenced by code hash.
+     */
     global_contract_hash?: CryptoHash | null;
+    /**
+     * Staked balance locked for validation, in yoctoNEAR.
+     */
     locked: NearToken;
     /**
-     * TODO(2271): deprecated.
+     * Whether the account is initialized. Only a universal account can be
+     * uninitialized: it has no access keys, code or data until a
+     * `UniversalStateInit` arrives. Omitted for initialized accounts.
+     */
+    state?: AccountState;
+    /**
+     * Deprecated and unused. TODO(2271): remove.
      */
     storage_paid_at?: number;
+    /**
+     * Total storage used by the account, in bytes.
+     */
     storage_usage: number;
 };
 
@@ -464,6 +527,23 @@ export type ActionErrorKind =
               nonce_index: number;
               num_nonces: number;
           };
+      }
+    | {
+          TotalPromiseInputSizeExceeded: {
+              limit: number;
+              size: number;
+          };
+      }
+    | {
+          ReceiptStorageProofSizeExceeded: {
+              limit: number;
+          };
+      }
+    | 'MalformedUniversalStateInit'
+    | {
+          AccountNotInitialized: {
+              account_id: AccountId;
+          };
       };
 
 export type ActionView =
@@ -559,6 +639,12 @@ export type ActionView =
           WithdrawFromGasKey: {
               amount: NearToken;
               public_key: PublicKey;
+          };
+      }
+    | {
+          UniversalStateInit: {
+              deposit: NearToken;
+              state_init: RawStateInit;
           };
       };
 
@@ -663,6 +749,50 @@ export type ActionsValidationError =
               limit: number;
               number_of_deploy_actions: number;
           };
+      }
+    | 'FunctionCallEmptyMethodName'
+    | {
+          InvalidUniversalStateInitReceiver: {
+              derived_id: AccountId;
+              receiver_id: AccountId;
+          };
+      }
+    | {
+          UniversalStateInitKeyLengthExceeded: {
+              length: number;
+              limit: number;
+          };
+      }
+    | {
+          UniversalStateInitValueLengthExceeded: {
+              length: number;
+              limit: number;
+          };
+      }
+    | 'MalformedUniversalStateInit'
+    | {
+          RemovedProtocolFeature: {
+              protocol_feature: string;
+              version: number;
+          };
+      }
+    | 'WithdrawFromGasKeyNotAllowedInDelegate'
+    | {
+          TotalNumberOfStateInitKeysExceeded: {
+              limit: number;
+              number_of_keys: number;
+          };
+      }
+    | {
+          TotalNumberOfStateInitEntriesExceeded: {
+              limit: number;
+              number_of_entries: number;
+          };
+      }
+    | {
+          TransferToUniversalAccountNotAllowed: {
+              account_id: AccountId;
+          };
       };
 
 /**
@@ -727,6 +857,11 @@ export type BlockHeaderInnerLiteView = {
      */
     block_merkle_root: CryptoHash;
     /**
+     * Merkle root over the block's certified chunk execution results.
+     * `None` for pre-spice headers.
+     */
+    chunk_execution_root?: CryptoHash | null;
+    /**
      * The epoch to which the block that is the current known head belongs
      */
     epoch_id: CryptoHash;
@@ -759,6 +894,7 @@ export type BlockHeaderView = {
     challenges_result: Array<SlashedValidator>;
     challenges_root: CryptoHash;
     chunk_endorsements?: Array<Array<number>> | null;
+    chunk_execution_root?: CryptoHash | null;
     chunk_headers_root: CryptoHash;
     chunk_mask: Array<boolean>;
     chunk_receipts_root: CryptoHash;
@@ -825,6 +961,15 @@ export type BlockReference =
 export type BlockStatusView = {
     hash: CryptoHash;
     height: number;
+};
+
+export type BlockView = {
+    /**
+     * The AccountId of the author of the Block
+     */
+    author: AccountId;
+    chunks: Array<ChunkHeaderView>;
+    header: BlockHeaderView;
 };
 
 /**
@@ -923,6 +1068,11 @@ export type CloudArchivalWriterConfig = {
      * Determines whether block-related data should be written to cloud storage.
      */
     archive_block_data?: boolean;
+    /**
+     * Delay between consecutive batches while the writer is catching up, pacing
+     * how fast it uploads to the storage backend.
+     */
+    catch_up_throttle?: DurationAsStdSchemaProvider;
     /**
      * Interval at which the system checks for new blocks or chunks to archive.
      */
@@ -1410,6 +1560,20 @@ export type ErrorWrapperForRpcGasPriceError =
           name: 'INTERNAL_ERROR';
       };
 
+export type ErrorWrapperForRpcIndexerBlockError =
+    | {
+          cause: RpcRequestValidationErrorKind;
+          name: 'REQUEST_VALIDATION_ERROR';
+      }
+    | {
+          cause: RpcIndexerBlockError;
+          name: 'HANDLER_ERROR';
+      }
+    | {
+          cause: InternalError;
+          name: 'INTERNAL_ERROR';
+      };
+
 export type ErrorWrapperForRpcLightClientNextBlockError =
     | {
           cause: RpcRequestValidationErrorKind;
@@ -1829,6 +1993,14 @@ export type ExtCostsConfigView = {
      */
     log_byte?: NearGas;
     /**
+     * Cost of ML-DSA-65 signature verification base
+     */
+    ml_dsa_verify_base?: NearGas;
+    /**
+     * Cost of ML-DSA-65 signature verification per byte
+     */
+    ml_dsa_verify_byte?: NearGas;
+    /**
      * Cost of P-256 ECDSA signature verification base
      */
     p256_verify_base?: NearGas;
@@ -1884,6 +2056,30 @@ export type ExtCostsConfigView = {
      * Cost of getting sha256 per byte
      */
     sha256_byte?: NearGas;
+    /**
+     * Cost of getting sha3-256 base
+     */
+    sha3_256_base?: NearGas;
+    /**
+     * Cost of getting sha3-256 per byte
+     */
+    sha3_256_byte?: NearGas;
+    /**
+     * Cost of getting sha3-384 base
+     */
+    sha3_384_base?: NearGas;
+    /**
+     * Cost of getting sha3-384 per byte
+     */
+    sha3_384_byte?: NearGas;
+    /**
+     * Cost of getting sha3-512 base
+     */
+    sha3_512_base?: NearGas;
+    /**
+     * Cost of getting sha3-512 per byte
+     */
+    sha3_512_byte?: NearGas;
     /**
      * Storage trie check for key existence cost base
      */
@@ -1977,6 +2173,14 @@ export type ExtCostsConfigView = {
      */
     touching_trie_node?: NearGas;
     /**
+     * Base cost of deriving a `0u` account id from a raw state init.
+     */
+    universal_state_init_to_account_id_base?: NearGas;
+    /**
+     * Per byte of the raw state init.
+     */
+    universal_state_init_to_account_id_byte?: NearGas;
+    /**
      * Base cost of decoding utf16. It's used for `log_utf16`.
      */
     utf16_decoding_base?: NearGas;
@@ -2037,28 +2241,6 @@ export type ExtCostsConfigView = {
      * Per byte cost of resume payload.
      */
     yield_resume_byte?: NearGas;
-};
-
-export type ExternalStorageConfig = {
-    /**
-     * The number of attempts the node will make to obtain a part from peers in
-     * the network before it fetches from external storage.
-     */
-    external_storage_fallback_threshold?: number;
-    /**
-     * Location of state parts.
-     */
-    location?: ExternalStorageLocation;
-    /**
-     * When fetching state parts from external storage, throttle fetch requests
-     * to this many concurrent requests.
-     */
-    num_concurrent_requests?: number;
-    /**
-     * During catchup, the node will use a different number of concurrent requests
-     * to reduce the performance impact of state sync.
-     */
-    num_concurrent_requests_during_catchup?: number;
 };
 
 /**
@@ -2610,7 +2792,55 @@ export type HostError =
           P256VerifyInvalidInput: {
               msg: string;
           };
+      }
+    | {
+          MlDsaVerifyInvalidInput: {
+              msg: string;
+          };
       };
+
+export type IndexerChunkView = {
+    author: AccountId;
+    header: ChunkHeaderView;
+    /**
+     * Receipts that were processed instantly in the same chunk they were created.
+     */
+    instant_receipts?: Array<ReceiptView>;
+    /**
+     * Receipts generated in this chunk from transactions with `signer_id`
+     * equal to `receiver_id`.
+     */
+    local_receipts?: Array<ReceiptView>;
+    /**
+     * Represents receipts generated by execution of the previous chunk.
+     * Note that those are not the receipts executed by this chunk or even
+     * targeting that shard.
+     */
+    receipts: Array<ReceiptView>;
+    transactions: Array<IndexerTransactionWithOutcome>;
+};
+
+export type IndexerExecutionOutcomeWithOptionalReceipt = {
+    execution_outcome: ExecutionOutcomeWithIdView;
+    receipt?: ReceiptView | null;
+};
+
+export type IndexerExecutionOutcomeWithReceipt = {
+    execution_outcome: ExecutionOutcomeWithIdView;
+    receipt: ReceiptView;
+};
+
+export type IndexerShard = {
+    chunk?: IndexerChunkView | null;
+    receipt_execution_outcomes: Array<IndexerExecutionOutcomeWithReceipt>;
+    shard_id: ShardId;
+    state_changes: Array<StateChangeWithCauseView>;
+};
+
+export type IndexerTransactionWithOutcome = {
+    outcome: IndexerExecutionOutcomeWithOptionalReceipt;
+    transaction: SignedTransactionView;
+};
 
 export type InternalError = {
     info: {
@@ -2820,6 +3050,16 @@ export type JsonRpcRequestForExperimentalGenesisConfig = {
     jsonrpc: string;
     method: 'EXPERIMENTAL_genesis_config';
     params: GenesisConfigRequest;
+};
+
+/**
+ * JsonRpcRequest_for_EXPERIMENTAL_indexer_block
+ */
+export type JsonRpcRequestForExperimentalIndexerBlock = {
+    id: string;
+    jsonrpc: string;
+    method: 'EXPERIMENTAL_indexer_block';
+    params: RpcIndexerBlockRequest;
 };
 
 /**
@@ -3143,6 +3383,16 @@ export type JsonRpcRequestForTx = {
 };
 
 /**
+ * JsonRpcRequest_for_tx_status
+ */
+export type JsonRpcRequestForTxStatus = {
+    id: string;
+    jsonrpc: string;
+    method: 'tx_status';
+    params: RpcTransactionStatusRequest;
+};
+
+/**
  * JsonRpcRequest_for_validators
  */
 export type JsonRpcRequestForValidators = {
@@ -3278,6 +3528,18 @@ export type JsonRpcResponseForRpcGasPriceResponseAndRpcGasPriceError = (
       }
     | {
           error: ErrorWrapperForRpcGasPriceError;
+      }
+) & {
+    id: string;
+    jsonrpc: string;
+};
+
+export type JsonRpcResponseForRpcIndexerBlockResponseAndRpcIndexerBlockError = (
+    | {
+          result: RpcIndexerBlockResponse;
+      }
+    | {
+          error: ErrorWrapperForRpcIndexerBlockError;
       }
 ) & {
     id: string;
@@ -3587,6 +3849,11 @@ export type LimitConfig = {
      */
     max_gas_burnt?: NearGas;
     /**
+     * If present, stores max number of globals (entries in the wasm global
+     * section) a contract may declare.
+     */
+    max_globals_per_contract?: number | null;
+    /**
      * If present, stores max byte size of the wasm code after gas instrumentation.
      * This prevents Cranelift's 24-bit SSA counter from overflowing on
      * pathologically large contracts.
@@ -3654,6 +3921,11 @@ export type LimitConfig = {
      */
     max_receipt_size?: number;
     /**
+     * Max combined size (in bytes) of the resolved promise inputs a single
+     * receipt may consume.
+     */
+    max_receipt_total_input_size?: number;
+    /**
      * Maximum number of bytes that can be stored in a single register.
      */
     max_register_size?: number;
@@ -3664,6 +3936,17 @@ export type LimitConfig = {
      * is calculated.
      */
     max_stack_height?: number;
+    /**
+     * Max number of storage entries the `DeterministicStateInit` and
+     * `UniversalStateInit` actions in one receipt may carry, in total.
+     *
+     * Each entry costs `..._state_init_per_entry` to execute, which is counted
+     * into the receipt's congestion gas whether or not it is ever burnt. Without
+     * a cap one receipt reserves several times `max_congestion_outgoing_gas`,
+     * pinning the sending shard at full outgoing congestion, which stops it
+     * accepting transactions.
+     */
+    max_state_init_entries?: number;
     /**
      * If present, stores max number of tables declared globally in one contract
      */
@@ -3686,9 +3969,25 @@ export type LimitConfig = {
      */
     max_types_per_contract?: number | null;
     /**
+     * Max number of access keys the `UniversalStateInit` actions in one receipt
+     * may commit to, in total.
+     *
+     * Each committed key is priced as a full `AddKey`, at the send rate, so the
+     * whole cost lands when a transaction is converted to a receipt. Without a
+     * cap one transaction converts for more gas than a chunk has, and since
+     * conversion happens before anything is charged, transaction selection
+     * admits it anyway. The bound is per receipt because a receipt can carry
+     * many byte-identical copies of a state init and pays for each of them.
+     */
+    max_universal_state_init_keys?: number;
+    /**
      * Maximum number of bytes for payload passed over a yield resume.
      */
     max_yield_payload_size?: number;
+    /**
+     * If present, requires at least this many bytes of contract code per local.
+     */
+    min_contract_size_per_local?: number | null;
     /**
      * Hard limit on the size of storage proof generated while executing a single receipt.
      */
@@ -3799,6 +4098,9 @@ export type NonDelegateAction =
       }
     | {
           WithdrawFromGasKey: WithdrawFromGasKeyAction;
+      }
+    | {
+          UniversalStateInit: UniversalStateInitAction;
       };
 
 /**
@@ -3854,7 +4156,8 @@ export type PrepareError =
     | 'TooManyTypes'
     | 'TooManyParamsPerFunction'
     | 'TooManyParamsPerContract'
-    | 'OperandStackTooLarge';
+    | 'OperandStackTooLarge'
+    | 'TooManyGlobals';
 
 /**
  * Configures whether the node checks the next or the next next epoch for network version compatibility.
@@ -3874,6 +4177,27 @@ export type RangeOfUint64 = {
     end: number;
     start: number;
 };
+
+/**
+ * Raw bytes containing borsh-serialized `UniversalStateInit`.
+ *
+ * This is the protocol's view of a state init, not a mere transport wrapper: the
+ * account ID is SHA3-256 over exactly these bytes. The typed form is a decoded
+ * *view* of them, used to install the state and to price the action, and it is
+ * never re-serialized to derive an ID. From `CanonicalUniversalStateInit` on, only
+ * the canonical encoding is accepted (see `UniversalStateInit::from_raw_strict`), so
+ * each logical value has one ID.
+ *
+ * It also lets an immutable contract pass through a `UniversalStateInit` version it
+ * predates: the bytes travel verbatim, so a version added after the contract was
+ * compiled still works.
+ *
+ * Borsh-serializing `RawStateInit` writes a 4-byte length prefix before the
+ * bytes, which is how the `UniversalStateInit` action carries it as a field;
+ * over serde the bytes are base64. Neither is what the account ID hashes: that
+ * is `self.0` alone, never `borsh::to_vec(self)`.
+ */
+export type RawStateInit = string;
 
 export type ReceiptEnumView =
     | {
@@ -4158,6 +4482,10 @@ export type RpcClientConfigResponse = {
      */
     block_production_tracking_delay?: MutableConfigValue;
     /**
+     * How long to wait for a state sync block request response
+     */
+    block_request_timeout?: [number, number];
+    /**
      * Time between check to perform catchup.
      */
     catchup_step_period?: [number, number];
@@ -4408,14 +4736,6 @@ export type RpcClientConfigResponse = {
      */
     state_sync?: StateSyncConfig;
     /**
-     * Additional waiting period after a failed request to external storage
-     */
-    state_sync_external_backoff?: [number, number];
-    /**
-     * How long to wait for a response from centralized state sync
-     */
-    state_sync_external_timeout?: [number, number];
-    /**
      * How long to wait for a response from p2p state sync
      */
     state_sync_p2p_timeout?: [number, number];
@@ -4469,6 +4789,11 @@ export type RpcClientConfigResponse = {
      * Version of the binary.
      */
     version?: Version;
+    /**
+     * Upper bound on the number of access keys returned by a `view_access_key_list`
+     * query.
+     */
+    view_access_keys_limit?: number;
     /**
      * Number of threads for ViewClientActor pool.
      */
@@ -4529,6 +4854,58 @@ export type RpcHealthRequest = (typeof RpcHealthRequest)[keyof typeof RpcHealthR
 export const RpcHealthResponse = { NULL: null } as const;
 
 export type RpcHealthResponse = (typeof RpcHealthResponse)[keyof typeof RpcHealthResponse];
+
+export type RpcIndexerBlockError =
+    | {
+          info: {
+              error_message: string;
+          };
+          name: 'DATA_UNAVAILABLE';
+      }
+    | {
+          info: {
+              error_message: string;
+          };
+          name: 'INCOMPLETE_DATA';
+      }
+    | {
+          info: {
+              error_message: string;
+          };
+          name: 'UNSUPPORTED';
+      }
+    | {
+          name: 'LIMIT_EXCEEDED';
+      }
+    | {
+          name: 'BUSY';
+      }
+    | {
+          info: {
+              error_message: string;
+          };
+          name: 'INTERNAL_ERROR';
+      };
+
+/**
+ * RpcIndexerBlockRequest
+ */
+export type RpcIndexerBlockRequest = {
+    block_hash: CryptoHash;
+};
+
+/**
+ * Resulting struct represents block with chunks
+ */
+export type RpcIndexerBlockResponse = {
+    block: BlockView;
+    shards: Array<IndexerShard>;
+    /**
+     * The node's configured chunk and execution coverage, in block layout order.
+     * Carried chunks remain None inside the message even for tracked shards.
+     */
+    tracked_shards: Array<ShardId>;
+};
 
 export type RpcKnownProducer = {
     account_id: AccountId;
@@ -4646,6 +5023,40 @@ export type RpcLightClientProofError =
               transaction_or_receipt_id: CryptoHash;
           };
           name: 'UNAVAILABLE_SHARD';
+      }
+    | {
+          info: {
+              shard_id: ShardId;
+          };
+          name: 'SHARD_NOT_TRACKED';
+      }
+    | {
+          info: {
+              account_id: AccountId;
+              account_shard_id: ShardId;
+              requested_shard_id: ShardId;
+          };
+          name: 'TARGET_SHARD_MISMATCH';
+      }
+    | {
+          info: {
+              chunk_id: SpiceChunkId;
+          };
+          name: 'STATE_NOT_AVAILABLE';
+      }
+    | {
+          info: {
+              chunk_id: SpiceChunkId;
+          };
+          name: 'CHUNK_NOT_CERTIFIED';
+      }
+    | {
+          info: {
+              certifying_block_height: number;
+              chunk_id: SpiceChunkId;
+              head_height: number;
+          };
+          name: 'LIGHT_CLIENT_HEAD_TOO_OLD';
       }
     | {
           info: {
@@ -4938,6 +5349,15 @@ export type RpcQueryError =
           info: {
               block_hash: CryptoHash;
               block_height: number;
+              limit: number;
+              requested_account_id: AccountId;
+          };
+          name: 'TOO_MANY_ACCESS_KEYS';
+      }
+    | {
+          info: {
+              block_hash: CryptoHash;
+              block_height: number;
               error: FunctionCallError;
               vm_error: string;
           };
@@ -4995,6 +5415,8 @@ export type RpcQueryRequest =
           block_id: BlockId;
       } & {
           account_id: AccountId;
+          after_key?: PublicKeyHandle | null;
+          limit?: number | null;
           request_type: 'view_access_key_list';
       })
     | ({
@@ -5057,6 +5479,8 @@ export type RpcQueryRequest =
           finality: Finality;
       } & {
           account_id: AccountId;
+          after_key?: PublicKeyHandle | null;
+          limit?: number | null;
           request_type: 'view_access_key_list';
       })
     | ({
@@ -5119,6 +5543,8 @@ export type RpcQueryRequest =
           sync_checkpoint: SyncCheckpoint;
       } & {
           account_id: AccountId;
+          after_key?: PublicKeyHandle | null;
+          limit?: number | null;
           request_type: 'view_access_key_list';
       })
     | ({
@@ -5608,6 +6034,7 @@ export type RpcTransactionError =
           name: 'INTERNAL_ERROR';
       }
     | {
+          info?: TimeoutErrorCause | null;
           name: 'TIMEOUT_ERROR';
       };
 
@@ -5789,6 +6216,15 @@ export type RpcViewAccessKeyListRequest = (
       }
 ) & {
     account_id: AccountId;
+    /**
+     * Pagination cursor: resume the listing strictly after this access key.
+     * Pass the `last_key` returned by the previous page.
+     */
+    after_key?: PublicKeyHandle | null;
+    /**
+     * Maximum number of access keys to return in this page.
+     */
+    limit?: number | null;
 };
 
 /**
@@ -5798,6 +6234,12 @@ export type RpcViewAccessKeyListResponse = {
     block_hash: CryptoHash;
     block_height: number;
     keys: Array<AccessKeyInfoView>;
+    /**
+     * Pagination cursor. When `Some`, the listing was truncated and the caller
+     * should issue another request with `after_key` set to this handle to fetch
+     * the next page. `None` means this was the last page.
+     */
+    last_key?: PublicKeyHandle | null;
 };
 
 export type RpcViewAccessKeyRequest = (
@@ -5821,7 +6263,13 @@ export type RpcViewAccessKeyRequest = (
 export type RpcViewAccessKeyResponse = {
     block_hash: CryptoHash;
     block_height: number;
+    /**
+     * Current nonce; each transaction signed with this key must use a strictly greater value.
+     */
     nonce: number;
+    /**
+     * Access scope: full access, or a function-call permission with an optional allowance and method/receiver limits.
+     */
     permission: AccessKeyPermissionView;
 };
 
@@ -5873,17 +6321,48 @@ export type RpcViewAccountRequest = (
  * A view of the account
  */
 export type RpcViewAccountResponse = {
+    /**
+     * Liquid (non-staked) account balance, in yoctoNEAR.
+     */
     amount: NearToken;
     block_hash: CryptoHash;
     block_height: number;
+    /**
+     * The nonce an uninitialized account's own transactions must use, present
+     * only while it is uninitialized. A self-signed state init is the one
+     * transaction such an account can send, and this is the only way for a
+     * client to learn the nonce it must carry: there is no access key to query.
+     */
+    bootstrap_nonce?: number | null;
+    /**
+     * Hash of the deployed contract code; the all-`1`s hash when no contract is deployed.
+     */
     code_hash: CryptoHash;
+    /**
+     * Set when the account uses a global contract referenced by the deploying account id.
+     */
     global_contract_account_id?: AccountId | null;
+    /**
+     * Set when the account uses a global contract referenced by code hash.
+     */
     global_contract_hash?: CryptoHash | null;
+    /**
+     * Staked balance locked for validation, in yoctoNEAR.
+     */
     locked: NearToken;
     /**
-     * TODO(2271): deprecated.
+     * Whether the account is initialized. Only a universal account can be
+     * uninitialized: it has no access keys, code or data until a
+     * `UniversalStateInit` arrives. Omitted for initialized accounts.
+     */
+    state?: AccountState;
+    /**
+     * Deprecated and unused. TODO(2271): remove.
      */
     storage_paid_at?: number;
+    /**
+     * Total storage used by the account, in bytes.
+     */
     storage_usage: number;
 };
 
@@ -5999,8 +6478,14 @@ export type RpcViewStateRequest = (
       }
 ) & {
     account_id: AccountId;
+    /**
+     * Resume listing after this key (exclusive); must start with `prefix`.
+     */
     after_key_base64?: StoreKey | null;
     include_proof?: boolean;
+    /**
+     * Maximum number of entries to return in this page.
+     */
     limit?: number | null;
     prefix_base64: StoreKey;
 };
@@ -6011,6 +6496,9 @@ export type RpcViewStateRequest = (
 export type RpcViewStateResponse = {
     block_hash: CryptoHash;
     block_height: number;
+    /**
+     * Cursor to resume from: present when more entries remain, absent when the listing is complete.
+     */
     last_key?: StoreKey | null;
     proof?: Array<string>;
     values: Array<StateItem>;
@@ -6262,11 +6750,20 @@ export type SlashedValidator = {
 /**
  * Per-validator chunk endorsement stats accumulated over a spice epoch,
  * indexed by the current epoch's validator id. Carried on the last block of
- * the epoch (see `BlockHeaderInnerRestV7`) and consumed by reward and kickout.
+ * the epoch (see `BlockHeaderInnerRestV8`) and consumed by reward and kickout.
  */
 export type SpiceChunkEndorsementStats = {
     expected: number;
     produced: number;
+};
+
+/**
+ * In spice missing chunks and equivalent to empty chunks so block hash and shard id always
+ * uniquely identifies chunks.
+ */
+export type SpiceChunkId = {
+    block_hash: CryptoHash;
+    shard_id: ShardId;
 };
 
 /**
@@ -6357,15 +6854,46 @@ export type StateChangeWithCauseView = (
            */
           change: {
               account_id: AccountId;
+              /**
+               * Liquid (non-staked) account balance, in yoctoNEAR.
+               */
               amount: NearToken;
+              /**
+               * The nonce an uninitialized account's own transactions must use, present
+               * only while it is uninitialized. A self-signed state init is the one
+               * transaction such an account can send, and this is the only way for a
+               * client to learn the nonce it must carry: there is no access key to query.
+               */
+              bootstrap_nonce?: number | null;
+              /**
+               * Hash of the deployed contract code; the all-`1`s hash when no contract is deployed.
+               */
               code_hash: CryptoHash;
+              /**
+               * Set when the account uses a global contract referenced by the deploying account id.
+               */
               global_contract_account_id?: AccountId | null;
+              /**
+               * Set when the account uses a global contract referenced by code hash.
+               */
               global_contract_hash?: CryptoHash | null;
+              /**
+               * Staked balance locked for validation, in yoctoNEAR.
+               */
               locked: NearToken;
               /**
-               * TODO(2271): deprecated.
+               * Whether the account is initialized. Only a universal account can be
+               * uninitialized: it has no access keys, code or data until a
+               * `UniversalStateInit` arrives. Omitted for initialized accounts.
+               */
+              state?: AccountState;
+              /**
+               * Deprecated and unused. TODO(2271): remove.
                */
               storage_paid_at?: number;
+              /**
+               * Total storage used by the account, in bytes.
+               */
               storage_usage: number;
           };
           type: 'account_update';
@@ -6556,18 +7084,39 @@ export type SyncConcurrency = {
 };
 
 /**
- * Configures how to fetch state parts during state sync.
+ * Syncs state from the peers without reading anything from external storage.
  */
-export type SyncConfig =
-    | 'Peers'
-    | {
-          ExternalStorage: ExternalStorageConfig;
-      };
+export const SyncConfig = { PEERS: 'Peers' } as const;
+
+/**
+ * Syncs state from the peers without reading anything from external storage.
+ */
+export type SyncConfig = (typeof SyncConfig)[keyof typeof SyncConfig];
 
 export type Tier1ProxyView = {
     addr: string;
     peer_id: PublicKey;
 };
+
+/**
+ * Explains why a transaction status request returned a `RpcTransactionError::TimeoutError`:
+ */
+export type TimeoutErrorCause =
+    | {
+          cause: 'NOT_OBSERVED';
+      }
+    | {
+          cause: 'PENDING';
+          status: RpcTransactionResponse;
+      }
+    | {
+          cause: 'DOES_NOT_TRACK_SHARD';
+          shard_id: ShardId;
+      }
+    | {
+          cause: 'ERROR';
+          debug_info: string;
+      };
 
 /**
  * Describes the expected behavior of the node regarding shard tracking.
@@ -6656,6 +7205,20 @@ export type TxExecutionError =
 export type TxExecutionStatus = 'NONE' | 'INCLUDED' | 'EXECUTED_OPTIMISTIC' | 'INCLUDED_FINAL' | 'EXECUTED' | 'FINAL';
 
 /**
+ * Create a `0u` universal account from its state init. The receiver id must
+ * equal `derive_universal_account_id(state_init)`; the attached `deposit`
+ * covers the new account's storage staking.
+ *
+ * The state init travels as the bytes the producer serialized, because the
+ * receiver id commits to exactly those bytes. The typed [`UniversalStateInit`]
+ * is a decoded view of them, used where the state has to be installed or priced.
+ */
+export type UniversalStateInitAction = {
+    deposit: NearToken;
+    state_init: RawStateInit;
+};
+
+/**
  * Use global contract action
  */
 export type UseGlobalContractAction = {
@@ -6679,10 +7242,6 @@ export type VmConfigView = {
      * See [VMConfig::eth_implicit_accounts](crate::vm::Config::eth_implicit_accounts).
      */
     eth_implicit_accounts?: boolean;
-    /**
-     * See [VMConfig::eth_implicit_global_contract](crate::vm::Config::eth_implicit_global_contract).
-     */
-    eth_implicit_global_contract?: boolean;
     /**
      * Costs for runtime externals
      */
@@ -6723,6 +7282,10 @@ export type VmConfigView = {
      */
     linear_op_unit_cost?: number;
     /**
+     * See [VMConfig::ml_dsa_verify_host_fn](crate::vm::Config::ml_dsa_verify_host_fn).
+     */
+    ml_dsa_verify_host_fn?: boolean;
+    /**
      * See [VMConfig::one_yocto_on_promise](crate::vm::Config::one_yocto_on_promise).
      */
     one_yocto_on_promise?: boolean;
@@ -6739,9 +7302,17 @@ export type VmConfigView = {
      */
     regular_op_cost?: number;
     /**
+     * See [VMConfig::sha3_host_fns](crate::vm::Config::sha3_host_fns).
+     */
+    sha3_host_fns?: boolean;
+    /**
      * See [VMConfig::storage_get_mode](crate::vm::Config::storage_get_mode).
      */
     storage_get_mode?: StorageGetMode;
+    /**
+     * See [VMConfig::universal_accounts](crate::vm::Config::universal_accounts).
+     */
+    universal_accounts?: boolean;
     /**
      * See [VMConfig::vm_kind](crate::vm::Config::vm_kind).
      */
@@ -6840,6 +7411,9 @@ export type VersionedSignedDelegateAction = {
  * Resulting state values for a view state query request
  */
 export type ViewStateResult = {
+    /**
+     * Cursor to resume from: present when more entries remain, absent when the listing is complete.
+     */
     last_key?: StoreKey | null;
     proof?: Array<string>;
     values: Array<StateItem>;
@@ -6966,6 +7540,20 @@ export type ExperimentalGenesisConfigResponses = {
 
 export type ExperimentalGenesisConfigResponse =
     ExperimentalGenesisConfigResponses[keyof ExperimentalGenesisConfigResponses];
+
+export type ExperimentalIndexerBlockData = {
+    body: JsonRpcRequestForExperimentalIndexerBlock;
+    path?: never;
+    query?: never;
+    url: '/EXPERIMENTAL_indexer_block';
+};
+
+export type ExperimentalIndexerBlockResponses = {
+    200: JsonRpcResponseForRpcIndexerBlockResponseAndRpcIndexerBlockError;
+};
+
+export type ExperimentalIndexerBlockResponse =
+    ExperimentalIndexerBlockResponses[keyof ExperimentalIndexerBlockResponses];
 
 export type ExperimentalLightClientBlockProofData = {
     body: JsonRpcRequestForExperimentalLightClientBlockProof;
@@ -7390,6 +7978,19 @@ export type TxResponses = {
 };
 
 export type TxResponse = TxResponses[keyof TxResponses];
+
+export type TxStatusData = {
+    body: JsonRpcRequestForTxStatus;
+    path?: never;
+    query?: never;
+    url: '/tx_status';
+};
+
+export type TxStatusResponses = {
+    200: JsonRpcResponseForRpcTransactionResponseAndRpcTransactionError;
+};
+
+export type TxStatusResponse = TxStatusResponses[keyof TxStatusResponses];
 
 export type ValidatorsData = {
     body: JsonRpcRequestForValidators;
