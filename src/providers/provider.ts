@@ -67,6 +67,9 @@ export type ViewAccessKeyArgs = Prettify<
 export type ViewAccessKeyListArgs = Prettify<
     {
         accountId: string;
+        /** Opaque last_key returned by the preceding page, including hashed key handles. */
+        afterKey?: string;
+        limit?: number;
     } & FinalityQuery
 >;
 
