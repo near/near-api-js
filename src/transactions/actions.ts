@@ -149,6 +149,16 @@ export class DeterministicStateInitAction {
         this.deposit = deposit;
     }
 }
+/** Protocol 88 carries the state init as opaque, length-prefixed bytes. */
+export class UniversalStateInitAction {
+    stateInit: Uint8Array;
+    deposit: bigint;
+
+    constructor({ stateInit, deposit }: { stateInit: Uint8Array; deposit: bigint }) {
+        this.stateInit = stateInit;
+        this.deposit = deposit;
+    }
+}
 export class Transfer {
     deposit: bigint;
 
@@ -234,6 +244,7 @@ export class Action extends Enum {
     deployGlobalContract?: DeployGlobalContract;
     useGlobalContract?: UseGlobalContract;
     deterministicStateInit?: DeterministicStateInitAction;
+    universalStateInit?: UniversalStateInitAction;
     transferToGasKey?: TransferToGasKey;
     withdrawFromGasKey?: WithdrawFromGasKey;
 

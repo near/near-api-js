@@ -335,6 +335,33 @@ export const SCHEMA = new (class BorshSchema {
     DeterministicStateInit: Schema = {
         struct: { stateInit: this.DeterministicAccountStateInit, deposit: 'u128' },
     };
+    UniversalStateInit: Schema = {
+        struct: { stateInit: { array: { type: 'u8' } }, deposit: 'u128' },
+    };
+    /** PublicKeyHandle uses tag 3 for an ML-DSA-65 SHA3-256 hash; tag 2 is reserved. */
+    PublicKeyHandle: Schema = {
+        enum: [
+            { struct: { ed25519Key: this.Ed25519Data } },
+            { struct: { secp256k1Key: this.Secp256k1Data } },
+            { struct: { reserved: { struct: {} } } },
+            { struct: { mlDsa65Hash: this.Ed25519Data } },
+        ],
+    };
+    UniversalAccountStateInit: Schema = {
+        enum: [
+            {
+                struct: {
+                    V1: {
+                        struct: {
+                            code: { option: this.GlobalContractIdentifier },
+                            data: this.StateInitData,
+                            accessKeys: { array: { type: this.PublicKeyHandle } },
+                        },
+                    },
+                },
+            },
+        ],
+    };
     TransferToGasKey: Schema = {
         struct: {
             publicKey: this.PublicKey,
@@ -369,6 +396,8 @@ export const SCHEMA = new (class BorshSchema {
             { struct: { deterministicStateInit: this.DeterministicStateInit } },
             { struct: { transferToGasKey: this.TransferToGasKey } },
             { struct: { withdrawFromGasKey: this.WithdrawFromGasKey } },
+            { struct: { delegateV2: 'string' } }, // reserved protocol tag
+            { struct: { universalStateInit: this.UniversalStateInit } },
         ],
     };
     DelegateAction: Schema = {
@@ -403,6 +432,8 @@ export const SCHEMA = new (class BorshSchema {
             { struct: { deterministicStateInit: this.DeterministicStateInit } },
             { struct: { transferToGasKey: this.TransferToGasKey } },
             { struct: { withdrawFromGasKey: this.WithdrawFromGasKey } },
+            { struct: { delegateV2: 'string' } }, // reserved protocol tag
+            { struct: { universalStateInit: this.UniversalStateInit } },
         ],
     };
     Transaction: Schema = {
