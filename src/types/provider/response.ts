@@ -2,7 +2,7 @@
  * NEAR RPC API request types and responses
  * @module
  */
-import type { AccessKeyPermissionView } from '../../rpc/types.gen.js';
+import type { AccessKeyPermissionView, AccountView as RpcAccountView } from '../../rpc/types.gen.js';
 import type { BlockHash, BlockHeight, MerklePath, TxExecutionStatus } from './protocol.js';
 
 export type SerializedReturnValue = string | number | boolean | object;
@@ -90,7 +90,7 @@ export interface QueryResponseKind {
     block_hash: BlockHash;
 }
 
-export interface AccountViewRaw extends QueryResponseKind {
+export interface AccountViewRaw extends QueryResponseKind, RpcAccountView {
     amount: string;
     locked: string;
     code_hash: string;
@@ -98,7 +98,7 @@ export interface AccountViewRaw extends QueryResponseKind {
     storage_paid_at: BlockHeight;
 }
 
-export interface AccountView extends QueryResponseKind {
+export interface AccountView extends QueryResponseKind, Omit<RpcAccountView, 'amount' | 'locked'> {
     amount: bigint;
     locked: bigint;
     code_hash: string;

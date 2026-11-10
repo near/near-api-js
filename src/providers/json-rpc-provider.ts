@@ -178,12 +178,16 @@ export class JsonRpcProvider implements Provider {
 
     public async viewAccessKeyList({
         accountId,
+        afterKey,
+        limit,
         finalityQuery = { finality: DEFAULT_FINALITY },
     }: ViewAccessKeyListArgs) {
         return this.query<AccessKeyList>({
             finality: finalityQuery.finality,
             request_type: 'view_access_key_list',
             account_id: accountId,
+            ...(afterKey === undefined ? {} : { after_key: afterKey }),
+            ...(limit === undefined ? {} : { limit }),
         });
     }
 

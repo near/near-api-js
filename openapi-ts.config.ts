@@ -1,7 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-    input: 'https://raw.githubusercontent.com/near/nearcore/2.13.4/chain/jsonrpc/openapi/openapi.json',
+    input: 'https://raw.githubusercontent.com/near/nearcore/2.14.0/chain/jsonrpc/openapi/openapi.json',
     parser: {
         patch: {
             schemas: {

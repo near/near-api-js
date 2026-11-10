@@ -23,12 +23,14 @@ import {
     AccountAlreadyExistsActionError,
     AccountDoesNotExistActionError,
     AccountDoesNotExistError,
+    AccountNotInitializedActionError,
     ActionExecutionError,
     ActorNoPermissionActionError,
     AddGasKeyWithNonZeroBalanceActionError,
     AddKeyAlreadyExistsActionError,
     AddKeyMethodNameLengthExceededActionError,
     AddKeyMethodNamesNumberOfBytesExceededActionError,
+    ChunkNotCertifiedError,
     ContractCodeDoesNotExistError,
     ContractExecutionError,
     ContractMethodInvalidSignatureError,
@@ -57,6 +59,7 @@ import {
     EpochOutOfBoundsError,
     FlatStorageBlockNotSupportedError,
     FunctionCallArgumentsLengthExceededActionError,
+    FunctionCallEmptyMethodNameActionError,
     FunctionCallMethodNameLengthExceededActionError,
     FunctionCallZeroAttachedGasActionError,
     GarbageCollectedBlockError,
@@ -93,6 +96,7 @@ import {
     HostIteratorWasInvalidatedError,
     HostKeyLengthExceededError,
     HostMemoryAccessViolationError,
+    HostMlDsaVerifyInvalidInputError,
     HostNumberInputDataDependenciesExceededError,
     HostNumberOfLogsExceededError,
     HostNumberPromisesExceededError,
@@ -125,7 +129,10 @@ import {
     InvalidSignerIdReceiptActionError,
     InvalidTransactionError,
     InvalidTransactionVersionError,
+    InvalidUniversalStateInitReceiverActionError,
     LackBalanceForStateActionError,
+    LightClientHeadTooOldError,
+    MalformedUniversalStateInitActionError,
     MemTrieLoadingError,
     MissingTrieValueError,
     NodeIsSyncingError,
@@ -141,6 +148,8 @@ import {
     OnlyImplicitAccountCreationAllowedActionError,
     PrepareWasmError,
     ReceiptSizeExceededActionError,
+    ReceiptStorageProofSizeExceededActionError,
+    RemovedProtocolFeatureActionError,
     RequestRoutedError,
     type RequestValidationError,
     ReturnedValueLengthExceededReceiptActionError,
@@ -149,22 +158,32 @@ import {
     RpcRequestParseError,
     ShardCongestedError,
     ShardNotAppliedError,
+    ShardNotTrackedError,
     ShardStuckError,
     SignerDoesNotExistError,
+    StateNotAvailableError,
     StorageInconsistentStateError,
     StorageInternalError,
+    TargetShardMismatchError,
     TooLargeContractStateError,
+    TooManyAccessKeysError,
     TotalNumberOfActionsExceededActionError,
     TotalNumberOfDeployActionsExceededActionError,
+    TotalNumberOfStateInitEntriesExceededActionError,
+    TotalNumberOfStateInitKeysExceededActionError,
     TotalPrepaidGasExceededActionError,
+    TotalPromiseInputSizeExceededActionError,
     TransactionExecutionError,
     TransactionExpiredError,
     TransactionSizeExceededError,
     TransactionTimeoutError,
+    TransferToUniversalAccountNotAllowedActionError,
     TriesToStakeActionError,
     TriesToUnstakeActionError,
     UnavailableShardError,
     UnexpectedTrieValueError,
+    UniversalStateInitKeyLengthExceededActionError,
+    UniversalStateInitValueLengthExceededActionError,
     UnknownBlockError,
     UnknownChunkError,
     UnknownEpochError,
@@ -175,6 +194,7 @@ import {
     UnsupportedProtocolFeatureActionError,
     ValidatorInfoUnavailableError,
     WasmTrapError,
+    WithdrawFromGasKeyNotAllowedInDelegateActionError,
 } from '../../rpc-errors/index.js';
 import type { BlockHash } from '../../types/index.js';
 import type { Methods } from '../methods.js';
@@ -361,6 +381,18 @@ function parseHandlerError(rawError: RawHandlerError): HandlerError {
         case 'SHARD_NOT_APPLIED':
             return new ShardNotAppliedError(error.info.shard_id);
 
+        case 'SHARD_NOT_TRACKED':
+            return new ShardNotTrackedError(error.info);
+        case 'TARGET_SHARD_MISMATCH':
+            return new TargetShardMismatchError(error.info);
+        case 'STATE_NOT_AVAILABLE':
+            return new StateNotAvailableError(error.info);
+        case 'CHUNK_NOT_CERTIFIED':
+            return new ChunkNotCertifiedError(error.info);
+        case 'LIGHT_CLIENT_HEAD_TOO_OLD':
+            return new LightClientHeadTooOldError(error.info);
+        case 'TOO_MANY_ACCESS_KEYS':
+            return new TooManyAccessKeysError(error.info);
         default:
             // ensures all HandlerError variants are handled at compile time
             error satisfies never;
@@ -579,6 +611,9 @@ function parseHostError(error: HostError, blockHash: BlockHash, blockHeight: num
         return new HostP256VerifyInvalidInputError(error.P256VerifyInvalidInput.msg, blockHash, blockHeight);
     }
 
+    if ('MlDsaVerifyInvalidInput' in error)
+        return new HostMlDsaVerifyInvalidInputError(error.MlDsaVerifyInvalidInput.msg, blockHash, blockHeight);
+
     // ensures all HostError variants are handled at compile time
     error satisfies never;
     return new ContractExecutionError('Unknown host error', blockHash, blockHeight);
@@ -674,6 +709,8 @@ function parseActionError(
                 return new DelegateActionInvalidSignatureActionError(actionIndex, txHash, blockHash);
             case 'DelegateActionExpired':
                 return new DelegateActionExpiredActionError(actionIndex, txHash, blockHash);
+            case 'MalformedUniversalStateInit':
+                return new MalformedUniversalStateInitActionError(actionIndex, txHash, blockHash);
             default:
                 // ensures all string ActionErrorKind variants are handled at compile time
                 error.kind satisfies never;
@@ -913,6 +950,23 @@ function parseActionError(
         return parseInvalidAccessKeyError(error.kind.DelegateActionAccessKeyError, actionIndex, txHash, blockHash);
     }
 
+    if ('TotalPromiseInputSizeExceeded' in error.kind)
+        return new TotalPromiseInputSizeExceededActionError(
+            error.kind.TotalPromiseInputSizeExceeded,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    if ('ReceiptStorageProofSizeExceeded' in error.kind)
+        return new ReceiptStorageProofSizeExceededActionError(
+            error.kind.ReceiptStorageProofSizeExceeded,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    if ('AccountNotInitialized' in error.kind)
+        return new AccountNotInitializedActionError(error.kind.AccountNotInitialized, actionIndex, txHash, blockHash);
+
     // ensures all ActionErrorKind variants are handled at compile time
     error.kind satisfies never;
     return new ActionExecutionError('Unknown action error', actionIndex, txHash, blockHash);
@@ -1017,6 +1071,12 @@ function parseActionsValidationError(
                 return new DelegateActionMustBeOnlyOneActionError(actionIndex, txHash, blockHash);
             case 'GasKeyFunctionCallAllowanceNotAllowed':
                 return new GasKeyFunctionCallAllowanceNotAllowedActionError(actionIndex, txHash, blockHash);
+            case 'FunctionCallEmptyMethodName':
+                return new FunctionCallEmptyMethodNameActionError(actionIndex, txHash, blockHash);
+            case 'WithdrawFromGasKeyNotAllowedInDelegate':
+                return new WithdrawFromGasKeyNotAllowedInDelegateActionError(actionIndex, txHash, blockHash);
+            case 'MalformedUniversalStateInit':
+                return new MalformedUniversalStateInitActionError(actionIndex, txHash, blockHash);
             default:
                 // ensures all string ActionsValidationError variants are handled at compile time
                 error satisfies never;
@@ -1180,6 +1240,51 @@ function parseActionsValidationError(
             blockHash
         );
     }
+
+    if ('InvalidUniversalStateInitReceiver' in error)
+        return new InvalidUniversalStateInitReceiverActionError(
+            error.InvalidUniversalStateInitReceiver,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    if ('UniversalStateInitKeyLengthExceeded' in error)
+        return new UniversalStateInitKeyLengthExceededActionError(
+            error.UniversalStateInitKeyLengthExceeded,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    if ('UniversalStateInitValueLengthExceeded' in error)
+        return new UniversalStateInitValueLengthExceededActionError(
+            error.UniversalStateInitValueLengthExceeded,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    if ('RemovedProtocolFeature' in error)
+        return new RemovedProtocolFeatureActionError(error.RemovedProtocolFeature, actionIndex, txHash, blockHash);
+    if ('TotalNumberOfStateInitKeysExceeded' in error)
+        return new TotalNumberOfStateInitKeysExceededActionError(
+            error.TotalNumberOfStateInitKeysExceeded,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    if ('TotalNumberOfStateInitEntriesExceeded' in error)
+        return new TotalNumberOfStateInitEntriesExceededActionError(
+            error.TotalNumberOfStateInitEntriesExceeded,
+            actionIndex,
+            txHash,
+            blockHash
+        );
+    if ('TransferToUniversalAccountNotAllowed' in error)
+        return new TransferToUniversalAccountNotAllowedActionError(
+            error.TransferToUniversalAccountNotAllowed,
+            actionIndex,
+            txHash,
+            blockHash
+        );
 
     // ensures all ActionsValidationError variants are handled at compile time
     error satisfies never;

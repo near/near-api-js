@@ -22,6 +22,7 @@ import {
     Stake,
     Transfer,
     TransferToGasKey,
+    UniversalStateInitAction,
     UseGlobalContract,
     WithdrawFromGasKey,
 } from './actions.js';
@@ -327,6 +328,11 @@ function deterministicStateInit(stateInit: DeterministicStateInit, deposit = 0n)
     });
 }
 
+/** Initialize a universal account from canonical raw state-init bytes. Requires protocol 88. */
+function universalStateInit(stateInit: Uint8Array, deposit = 0n): Action {
+    return new Action({ universalStateInit: new UniversalStateInitAction({ stateInit, deposit }) });
+}
+
 export const actions = {
     addFullAccessGasKey,
     addFullAccessKey,
@@ -349,4 +355,5 @@ export const actions = {
     transferToGasKey,
     withdrawFromGasKey,
     deterministicStateInit,
+    universalStateInit,
 };

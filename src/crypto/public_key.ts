@@ -1,5 +1,6 @@
 import { ed25519 } from '@noble/curves/ed25519.js';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
+import { sha3_256 } from '@noble/hashes/sha3.js';
 import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js';
 import { baseDecode, baseEncode } from '../utils/index.js';
 
@@ -180,6 +181,13 @@ export class PublicKey extends Enum {
     override toString(): string {
         const encodedKey = baseEncode(this.data);
         return `${key_type_to_str(this.keyType)}:${encodedKey}`;
+    }
+
+    /** On-trie identifier used for access keys and universal state initialization. */
+    toHandle(): string {
+        if (this.keyType !== KeyType.MLDSA65) return this.toString();
+        const domain = new TextEncoder().encode('near:ml-dsa-65-pubkey-hash:v1');
+        return `ml-dsa-65-hash:${baseEncode(sha3_256(new Uint8Array([...domain, ...this.data])))}`;
     }
 
     /**
