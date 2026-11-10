@@ -1,5 +1,5 @@
 import type { PublicKey } from '../crypto/index.js';
-import { stringToBytes } from '../utils/index.js';
+import { baseDecode, stringToBytes } from '../utils/index.js';
 
 import {
     AccessKey,
@@ -306,6 +306,7 @@ function deployGlobalContract(code: Uint8Array, deployMode: 'codeHash' | 'accoun
 /**
  * Creates a new action for using a previously deployed global contract.
  * @param contractIdentifier The global contract identifier (hash or account id).
+ * Code hashes may be RPC base58 strings, 64-character hexadecimal strings, or raw bytes.
  * @returns A new action for using a global contract.
  */
 function useGlobalContract(contractIdentifier: { accountId: string } | { codeHash: string | Uint8Array }): Action {
@@ -317,9 +318,11 @@ function useGlobalContract(contractIdentifier: { accountId: string } | { codeHas
             : new GlobalContractIdentifier({
                   CodeHash:
                       typeof contractIdentifier.codeHash === 'string'
-                          ? new Uint8Array(
-                                contractIdentifier.codeHash.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
-                            )
+                          ? /^[0-9a-fA-F]{64}$/.test(contractIdentifier.codeHash)
+                              ? new Uint8Array(
+                                    contractIdentifier.codeHash.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
+                                )
+                              : baseDecode(contractIdentifier.codeHash)
                           : contractIdentifier.codeHash,
               });
     return new Action({ useGlobalContract: new UseGlobalContract({ contractIdentifier: identifier }) });

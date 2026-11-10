@@ -274,9 +274,7 @@ export class JsonRpcProvider implements Provider {
                 ...reference,
                 request_type: 'view_global_contract_code',
                 code_hash:
-                    typeof identifier.codeHash === 'string'
-                        ? identifier.codeHash
-                        : Array.from(identifier.codeHash, (b) => b.toString(16).padStart(2, '0')).join(''),
+                    typeof identifier.codeHash === 'string' ? identifier.codeHash : baseEncode(identifier.codeHash),
             });
         } else if ('accountId' in identifier) {
             data = await this.query<RawContractCodeView>({
