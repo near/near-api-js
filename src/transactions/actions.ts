@@ -1,8 +1,8 @@
 import type { PublicKey } from '../crypto/index.js';
 import { Enum } from '../types/index.js';
-
 import type { DelegateAction } from './delegate.js';
 import type { Signature } from './signature.js';
+import type { DeterministicStateInitSchema } from './state-init.js';
 
 export class FunctionCallPermission {
     allowance?: bigint;
@@ -140,6 +140,15 @@ export class UseGlobalContract {
         this.contractIdentifier = contractIdentifier;
     }
 }
+export class DeterministicStateInitAction {
+    stateInit: DeterministicStateInitSchema;
+    deposit: bigint;
+
+    constructor({ stateInit, deposit }: { stateInit: DeterministicStateInitSchema; deposit: bigint }) {
+        this.stateInit = stateInit;
+        this.deposit = deposit;
+    }
+}
 export class Transfer {
     deposit: bigint;
 
@@ -224,6 +233,7 @@ export class Action extends Enum {
     signedDelegate?: SignedDelegate;
     deployGlobalContract?: DeployGlobalContract;
     useGlobalContract?: UseGlobalContract;
+    deterministicStateInit?: DeterministicStateInitAction;
     transferToGasKey?: TransferToGasKey;
     withdrawFromGasKey?: WithdrawFromGasKey;
 

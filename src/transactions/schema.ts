@@ -326,6 +326,15 @@ export const SCHEMA = new (class BorshSchema {
             contractIdentifier: this.GlobalContractIdentifier,
         },
     };
+    StateInitData: Schema = {
+        map: { key: { array: { type: 'u8' } }, value: { array: { type: 'u8' } } },
+    };
+    DeterministicAccountStateInit: Schema = {
+        enum: [{ struct: { V1: { struct: { code: this.GlobalContractIdentifier, data: this.StateInitData } } } }],
+    };
+    DeterministicStateInit: Schema = {
+        struct: { stateInit: this.DeterministicAccountStateInit, deposit: 'u128' },
+    };
     TransferToGasKey: Schema = {
         struct: {
             publicKey: this.PublicKey,
@@ -357,7 +366,7 @@ export const SCHEMA = new (class BorshSchema {
             { struct: { signedDelegate: 'string' } }, // placeholder to keep the right enum order, should not be used
             { struct: { deployGlobalContract: this.DeployGlobalContract } },
             { struct: { useGlobalContract: this.UseGlobalContract } },
-            { struct: { deterministicStateInit: 'string' } }, // placeholder to keep the right enum order, should not be used
+            { struct: { deterministicStateInit: this.DeterministicStateInit } },
             { struct: { transferToGasKey: this.TransferToGasKey } },
             { struct: { withdrawFromGasKey: this.WithdrawFromGasKey } },
         ],
@@ -391,7 +400,7 @@ export const SCHEMA = new (class BorshSchema {
             { struct: { signedDelegate: this.SignedDelegate } },
             { struct: { deployGlobalContract: this.DeployGlobalContract } },
             { struct: { useGlobalContract: this.UseGlobalContract } },
-            { struct: { deterministicStateInit: 'string' } }, // placeholder to keep the right enum order, should not be used
+            { struct: { deterministicStateInit: this.DeterministicStateInit } },
             { struct: { transferToGasKey: this.TransferToGasKey } },
             { struct: { withdrawFromGasKey: this.WithdrawFromGasKey } },
         ],
