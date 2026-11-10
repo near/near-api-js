@@ -2,7 +2,7 @@ import { type KeyPairString, PublicKey } from '../crypto/index.js';
 import { parseTransactionExecutionError } from '../providers/errors/parse.js';
 import { JsonRpcProvider, type Provider } from '../providers/index.js';
 import type { RpcTransactionResponse } from '../rpc/types.gen.js';
-import { InvalidNonceError } from '../rpc-errors/index.js';
+import { AccessKeyDoesNotExistError, InvalidNonceError } from '../rpc-errors/index.js';
 import { KeyPairSigner, type SignedMessage, type Signer } from '../signers/index.js';
 import type { SignDelegateActionReturn } from '../signers/signer.js';
 import { FungibleToken, type NativeToken, NEAR } from '../tokens/index.js';
@@ -13,6 +13,7 @@ import {
     createTransaction,
     type DelegateAction,
     type DeterministicStateInit,
+    deriveUniversalAccountId,
     type SignedDelegate,
     type SignedTransaction,
 } from '../transactions/index.js';
@@ -50,6 +51,8 @@ export interface AccountState {
     };
     storageUsage: number;
     codeHash: string;
+    initializationState: 'initialized' | 'uninitialized';
+    bootstrapNonce?: bigint;
 }
 
 export interface CreateTransactionArgs {
@@ -223,6 +226,8 @@ export class Account {
             },
             storageUsage: state.storage_usage,
             codeHash: state.code_hash,
+            initializationState: state.state ?? 'initialized',
+            ...(state.bootstrap_nonce == null ? {} : { bootstrapNonce: BigInt(state.bootstrap_nonce) }),
         };
     }
 
@@ -292,8 +297,24 @@ export class Account {
 
         const pk = PublicKey.from(publicKey);
 
+        const resolveNonce = async (): Promise<{ nonce: bigint; nonceIndex?: number }> => {
+            try {
+                return await this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider);
+            } catch (error) {
+                if (
+                    !(error instanceof AccessKeyDoesNotExistError) ||
+                    receiverId !== this.accountId ||
+                    !actions[0]?.universalStateInit
+                )
+                    throw error;
+                const state = await this.provider.viewAccount({ accountId: this.accountId });
+                if (state.state !== 'uninitialized' || state.bootstrap_nonce == null) throw error;
+                return { nonce: BigInt(state.bootstrap_nonce) + 1n };
+            }
+        };
+
         const [{ nonce, nonceIndex }, block] = await Promise.all([
-            this.nonceManager.resolveNextNonce(pk, this.accountId, this.provider),
+            resolveNonce(),
             this.provider.viewBlock({
                 // block hash referenced in tx must be finalized
                 // to ensure node has it in memory
@@ -631,6 +652,20 @@ export class Account {
         return this.signAndSendTransaction({
             receiverId: stateInit.deriveAccountId(),
             actions: [actions.deterministicStateInit(stateInit, BigInt(deposit))],
+        });
+    }
+
+    /** Initialize a protocol-88 universal account from canonical raw state-init bytes. */
+    public async createUniversalAccount({
+        stateInit,
+        deposit = 0n,
+    }: {
+        stateInit: Uint8Array;
+        deposit?: bigint | string;
+    }) {
+        return this.signAndSendTransaction({
+            receiverId: deriveUniversalAccountId(stateInit),
+            actions: [actions.universalStateInit(stateInit, BigInt(deposit))],
         });
     }
 
