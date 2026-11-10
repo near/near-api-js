@@ -7,8 +7,11 @@ import {
     actions,
     baseDecode,
     createTransaction,
+    DelegateAction,
+    decodeSignedDelegate,
     decodeSignedTransaction,
     decodeTransaction,
+    encodeSignedDelegate,
     encodeTransaction,
     KeyPair,
     KeyPairSigner,
@@ -17,6 +20,7 @@ import {
     SCHEMA,
     Signature,
 } from '../../../src/index.js';
+import { Action, SignedDelegate } from '../../../src/transactions/actions.js';
 
 const {
     addFullAccessGasKey,
@@ -89,6 +93,34 @@ test('deserialize delegate', async () => {
     expect(delegateAction.receiverId).toEqual('hello.near-examples.testnet');
     expect(String(delegateAction.nonce)).toEqual('158895108000003');
 });
+
+test.each(['ed25519', 'secp256k1', 'ml-dsa-65'] as const)(
+    'decodeSignedDelegate reconstructs class instances for %s signatures',
+    async (curve) => {
+        const signer = new KeyPairSigner(KeyPair.fromRandom(curve));
+        const publicKey = await signer.getPublicKey();
+        const delegateAction = new DelegateAction({
+            senderId: 'sender.near',
+            receiverId: 'receiver.near',
+            actions: [transfer(1n)],
+            nonce: 1n,
+            maxBlockHeight: 100n,
+            publicKey,
+        });
+        const { signedDelegate } = await signer.signDelegateAction(delegateAction);
+
+        const decoded = decodeSignedDelegate(encodeSignedDelegate(signedDelegate));
+
+        expect(decoded).toBeInstanceOf(SignedDelegate);
+        expect(decoded.delegateAction).toBeInstanceOf(DelegateAction);
+        expect(decoded.delegateAction.actions[0]).toBeInstanceOf(Action);
+        expect(decoded.delegateAction.publicKey).toBeInstanceOf(PublicKey);
+        expect(decoded.signature).toBeInstanceOf(Signature);
+        expect(decoded.delegateAction.publicKey.toString()).toBe(publicKey.toString());
+        expect(decoded.signature.signatureType).toBe(publicKey.keyType);
+        expect(encodeSignedDelegate(decoded)).toEqual(encodeSignedDelegate(signedDelegate));
+    }
+);
 
 test('serialize multi-action tx', async () => {
     const keyPair = KeyPair.fromString(
