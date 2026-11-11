@@ -19,6 +19,8 @@ It includes all the functionality you need, including account management, transa
 
 ## Quick Start
 
+Use Node.js **22.22.2 or later**. The examples below use ES modules; set `"type": "module"` in your application's `package.json`. TypeScript examples require a TypeScript runner or compilation before execution.
+
 Add `near-api-js` to your project using your favorite package manager:
 
 ```bash
@@ -32,7 +34,7 @@ pnpm add near-api-js
 Start using it!
 
 ```ts
-import { Account, JsonRpcProvider, teraToGas, KeyPairString, nearToYocto } from "near-api-js";
+import { Account, JsonRpcProvider, teraToGas, type KeyPairString, nearToYocto } from "near-api-js";
 
 // Create a testnet provider
 const provider = new JsonRpcProvider({
@@ -49,8 +51,9 @@ const messages = await provider.callFunction({
 console.log(messages);
 
 // To modify state, you need an account to sign the transaction
-const accountId: string = 'example.testnet';
-const privateKey = 'ed25519:5nM...' as KeyPairString;
+const accountId = process.env.NEAR_ACCOUNT_ID;
+const privateKey = process.env.NEAR_PRIVATE_KEY as KeyPairString | undefined;
+if (!accountId || !privateKey) throw new Error('Set NEAR_ACCOUNT_ID and NEAR_PRIVATE_KEY');
 const account = new Account(accountId, provider, privateKey);
 
 // Call the contract
@@ -63,6 +66,10 @@ await account.callFunction({
 });
 ```
 
+Use an existing testnet account and its prefixed private key (for example, `ed25519:...`). The key must have permission to call the contract, and the account must have enough balance for gas and the attached deposit. Setting these environment variables is an application convention; the library does not load credentials automatically.
+
+For JavaScript, omit TypeScript-only syntax such as `type KeyPairString` and the `as` assertion. The feature snippets below reuse `account` and `provider` from this setup unless they define their own.
+
 ## Documentation
 
 - [Learn how to use](https://docs.near.org/tools/near-api) the library in your project
@@ -71,7 +78,17 @@ await account.callFunction({
 
 ## Migration from @near-js/* packages
 
-Check out the [migration guide](MIGRATION.md) to help you move from the old `@near-js/*` packages to `near-api-js`.
+Check out the [migration guide](MIGRATION.md) for v6 / `@near-js/*` imports, account methods, signers, units, and error handling.
+
+## New in 7.5
+
+- Deterministic (`0s…`) accounts: `DeterministicStateInit` builds initial code/storage, derives the account ID, and works with `Account.createDeterministicAccount()`.
+- Universal (`0u…`) accounts: `UniversalStateInit` supports code, storage, and access keys; `Account.createUniversalAccount()` supports initialization, including prefunded self-bootstrap.
+- Access-key pagination: `provider.viewAccessKeyList({ accountId, limit, afterKey })` returns `last_key` for the next page. `Account.getAccessKeyList()` does not yet expose those options.
+- Global contracts: `(await account.getState()).globalContract` identifies the global code used by an account. Global contract helpers accept the base58 hashes returned by RPC.
+- Meta transactions: `SignedDelegate.decode(bytes)` and `decodeSignedDelegate(bytes)` complement signed-delegate encoding.
+
+Gas-key creation, funding, withdrawals, and automatic nonce-lane rotation were added in 7.4. See the [release notes](https://github.com/near/near-api-js/releases) and [API reference](https://near.github.io/near-api-js/) for details. State-init deposits cover storage staking and refund excess; transfer spending balance separately.
 
 ## Features
 
@@ -100,26 +117,17 @@ const balance = yoctoToNear(await account.getBalance(), 2);
 ### Parallel Transactions
 `near-api-js` can send transactions in parallel by rotating multiple keys for an account.
 
-`nonce` collisions are automatically handled by retrying with incremented nonce.
+The SDK reserves nonces locally and retries invalid-nonce failures. Multiple keys can improve concurrency; this example submits ten transfers and spends real testnet balance.
 
 ```typescript
-import { Account, actions, JsonRpcProvider, KeyPair, MultiKeySigner } from "near-api-js"
+import { Account, actions, KeyPair, MultiKeySigner, type Action } from "near-api-js"
 import { NEAR } from "near-api-js/tokens"
 
-const privateKey = ... // 
-const accountId = ... // 
-
-// Create a connection to testnet RPC
-const provider = new JsonRpcProvider({
-  url: "https://test.rpc.fastnear.com",
-})
-
-// Create an account object
-const account = new Account(accountId, provider, privateKey)
+const accountId = account.accountId
 
 // create 10 keys and add them to the account
-const keys = []
-const txActions = []
+const keys: KeyPair[] = []
+const txActions: Action[] = []
 for (let j = 0; j < 10; j++) {
   const newKeyPair = KeyPair.fromRandom('ed25519')
   keys.push(newKeyPair)
@@ -141,7 +149,7 @@ const multiAccount = new Account(accountId, provider, multiKeySigner)
 
 const transfers = []
 
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 10; i++) {
   transfers.push(
     multiAccount.transfer(
       {
@@ -174,14 +182,18 @@ import type {
 You can even type the expected results from contract function calls:
 
 ```typescript
-const provider = new JsonRpcProvider({
-  url: "https://test.rpc.fastnear.com",
-});
-const account = new Account("accountId", provider, "privateKey");
+type Message = { text: string; sender: string };
 
-await provider.callFunction<T>()
-await account.callFunction<T>()
+const messages = await provider.callFunction<Message[]>({
+  contractId: 'guestbook.near-examples.testnet',
+  method: 'get_messages',
+  args: {},
+  blockQuery: { finality: 'final' },
+});
+console.log(messages);
 ```
+
+`Provider.callFunction()` uses `method` and returns the decoded view result (or `undefined` for an empty result). `Account.callFunction()` uses `methodName` and returns the decoded transaction result; use `Account.callFunctionRaw()` for the transaction outcome. Generic types describe the expected JSON shape; they do not validate the contract's response at runtime.
 
 ### Failover RPC Provider
 
@@ -192,25 +204,28 @@ import { JsonRpcProvider, FailoverRpcProvider } from 'near-api-js';
 
 const provider = new FailoverRpcProvider([
   new JsonRpcProvider({ url: 'https://rpc.mainnet.near.org' }),
-  new JsonRpcProvider({ url: 'https://rpc.mainnet.pagoda.co' }),
+  new JsonRpcProvider({ url: 'https://free.rpc.fastnear.com' }),
 ]);
 ```
 
 ### Decoupled Transaction Signing
 You can separately build transactions, sign them, and broadcast them to the network.
 
-This is useful in scenarios where signing and sending need to be decoupled, such as offline signing
+Transaction creation reads the nonce and a recent block hash from RPC. Signing itself can happen separately; broadcast before the transaction's block reference expires.
 
 ```typescript
-import { JsonRpcProvider, Account, KeyPairSigner, actions, nearToYocto, KeyPairString } from "near-api-js";
+import { JsonRpcProvider, Account, KeyPairSigner, actions, nearToYocto, type KeyPairString } from "near-api-js";
 
 const provider = new JsonRpcProvider({
   url: "https://test.rpc.fastnear.com",
 });
 
-// You can create a transaction only knowing the accountId and public key
-const publicKey = '';
-const accountId = '';
+const accountId = process.env.NEAR_ACCOUNT_ID;
+const privateKey = process.env.NEAR_PRIVATE_KEY as KeyPairString | undefined;
+if (!accountId || !privateKey) throw new Error('Set NEAR_ACCOUNT_ID and NEAR_PRIVATE_KEY');
+const signer = KeyPairSigner.fromSecretKey(privateKey);
+const publicKey = await signer.getPublicKey();
+// The account used to construct the transaction needs no signer.
 const account = new Account(accountId, provider);
 
 const transaction = await account.createTransaction({
@@ -220,7 +235,6 @@ const transaction = await account.createTransaction({
 });
 
 // Whoever holds the private key can sign the transaction
-const signer = KeyPairSigner.fromSecretKey(privateKey as KeyPairString);
 const signResult = await signer.signTransaction(transaction);
 console.log(signResult.signedTransaction);
 
@@ -231,8 +245,8 @@ console.log(sendTransactionResult);
 
 ## Browser and Node.js Support
 
-- ✅ **Node.js** - Full support for Node.js 18+
-- ✅ **Browsers** - Works in all modern browsers
+- ✅ **Node.js** - Requires Node.js 22.22.2 or later
+- ✅ **Browsers** - Uses modern Web APIs, including Web Crypto, `TextEncoder`, and `Uint8Array`; use a bundler and a browser supporting those APIs
 - ✅ **ESM** - Native ES modules support
 - ✅ **CommonJS** - For legacy Node.js projects
 - ✅ **TypeScript** - Full type definitions included
@@ -247,13 +261,16 @@ Contributions are welcome! Please check out the [contributing guidelines](https:
 
 2. Run continuous build with:
 
-       pnpm -r compile -w
+       pnpm dev
 
 ### Integration Test
 
-Simply run:
+Build first, then run the unit and sandbox integration suites:
 
+    pnpm build
     pnpm test
+
+The integration tests start local NEAR sandbox nodes; they do not require a public-network faucet. Run package import tests separately with `pnpm --dir e2e test`. Other checks are `pnpm lint`, `pnpm typecheck`, and `pnpm check-exports`.
 
 ## License
 
