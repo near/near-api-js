@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.5.5/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.6.6/schema.json",
     "vcs": {
         "enabled": true,
         "clientKind": "git",
@@ -16,6 +16,12 @@
         "lineWidth": 120,
         "lineEnding": "lf"
     },
+    "overrides": [
+        {
+            "includes": ["**/*.md", "**/*.yml", "**/*.yaml"],
+            "formatter": { "enabled": false }
+        }
+    ],
     "linter": {
         "enabled": true,
         "rules": {
@@ -24,6 +30,7 @@
                 "noForEach": "off",
                 "noBannedTypes": "off",
                 "useLiteralKeys": "off",
+                "useMathMinMax": "off",
                 "useOptionalChain": "off"
             },
             "correctness": {
