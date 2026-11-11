@@ -7,8 +7,11 @@ import {
     actions,
     baseDecode,
     createTransaction,
+    DelegateAction,
+    decodeSignedDelegate,
     decodeSignedTransaction,
     decodeTransaction,
+    encodeSignedDelegate,
     encodeTransaction,
     KeyPair,
     KeyPairSigner,
@@ -16,6 +19,7 @@ import {
     PublicKey,
     SCHEMA,
     Signature,
+    SignedDelegate,
 } from '../../../src/index.js';
 
 const {
@@ -89,6 +93,91 @@ test('deserialize delegate', async () => {
     expect(delegateAction.receiverId).toEqual('hello.near-examples.testnet');
     expect(String(delegateAction.nonce)).toEqual('158895108000003');
 });
+
+test.each(['ed25519', 'secp256k1', 'ml-dsa-65'] as const)(
+    'signed delegate decoding restores usable keys and signatures for %s',
+    async (curve) => {
+        const signer = new KeyPairSigner(KeyPair.fromRandom(curve));
+        const publicKey = await signer.getPublicKey();
+        const delegateAction = new DelegateAction({
+            senderId: 'sender.near',
+            receiverId: 'receiver.near',
+            actions: [transfer(1n)],
+            nonce: 1n,
+            maxBlockHeight: 100n,
+            publicKey,
+        });
+        const { signedDelegate } = await signer.signDelegateAction(delegateAction);
+
+        const decoded = decodeSignedDelegate(encodeSignedDelegate(signedDelegate));
+
+        expect(decoded).toBeInstanceOf(SignedDelegate);
+        expect(decoded.delegateAction).toBeInstanceOf(DelegateAction);
+        expect(decoded.delegateAction.publicKey).toBeInstanceOf(PublicKey);
+        expect(decoded.signature).toBeInstanceOf(Signature);
+        expect(decoded.delegateAction.publicKey.toString()).toBe(publicKey.toString());
+        expect(decoded.signature.signatureType).toBe(publicKey.keyType);
+        expect(decoded.signature.data).toEqual(signedDelegate.signature.data);
+        expect(decoded.delegateAction.actions[0]?.transfer).toEqual({ deposit: 1n });
+        expect(encodeSignedDelegate(decoded)).toEqual(encodeSignedDelegate(signedDelegate));
+        expect(SignedDelegate.decode(signedDelegate.encode()).encode()).toEqual(signedDelegate.encode());
+    }
+);
+
+describe('signed delegate input validation', () => {
+    const signature = new Signature({ keyType: KeyType.ED25519, data: new Uint8Array(64) });
+    const delegateAction = new DelegateAction({
+        senderId: 'sender.near',
+        receiverId: 'receiver.near',
+        actions: [transfer(1n)],
+        nonce: 1n,
+        maxBlockHeight: 100n,
+        publicKey: KeyPair.fromRandom('ed25519').getPublicKey(),
+    });
+    const encoded = encodeSignedDelegate(new SignedDelegate({ delegateAction, signature }));
+
+    test('rejects trailing bytes', () => {
+        expect(() => decodeSignedDelegate(new Uint8Array([...encoded, 9, 9, 9]))).toThrow();
+    });
+
+    test('rejects truncated input', () => {
+        expect(() => decodeSignedDelegate(encoded.slice(0, -1))).toThrow();
+    });
+
+    test.each(['signedDelegate', 'delegateV2'])('rejects the %s placeholder', (tag) => {
+        const bytes = serialize(SCHEMA.SignedDelegate, {
+            delegateAction: { ...delegateAction, actions: [{ [tag]: 'hi' }] },
+            signature,
+        });
+        expect(() => decodeSignedDelegate(bytes)).toThrow('nested or reserved delegate actions');
+    });
+});
+
+test.each(['ed25519', 'secp256k1', 'ml-dsa-65'] as const)(
+    'signed transaction decoding restores %s signatures in V0 and V1',
+    async (curve) => {
+        const signer = new KeyPairSigner(KeyPair.fromRandom(curve));
+        for (const nonceIndex of [undefined, 0]) {
+            const transaction = createTransaction(
+                'sender.near',
+                await signer.getPublicKey(),
+                'receiver.near',
+                1n,
+                [transfer(1n)],
+                new Uint8Array(32),
+                nonceIndex
+            );
+            const { signedTransaction } = await signer.signTransaction(transaction);
+            const bytes = signedTransaction.encode();
+            const decoded = decodeSignedTransaction(bytes);
+
+            expect(decoded.signature).toBeInstanceOf(Signature);
+            expect(decoded.signature.signatureType).toBe(signedTransaction.signature.signatureType);
+            expect(decoded.signature.data).toEqual(signedTransaction.signature.data);
+            expect(decoded.encode()).toEqual(bytes);
+        }
+    }
+);
 
 test('serialize multi-action tx', async () => {
     const keyPair = KeyPair.fromString(

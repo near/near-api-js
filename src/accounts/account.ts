@@ -53,6 +53,7 @@ export interface AccountState {
     codeHash: string;
     initializationState: 'initialized' | 'uninitialized';
     bootstrapNonce?: bigint;
+    globalContract?: { codeHash: string } | { accountId: string };
 }
 
 export interface CreateTransactionArgs {
@@ -228,6 +229,11 @@ export class Account {
             codeHash: state.code_hash,
             initializationState: state.state ?? 'initialized',
             ...(state.bootstrap_nonce == null ? {} : { bootstrapNonce: BigInt(state.bootstrap_nonce) }),
+            ...(state.global_contract_hash
+                ? { globalContract: { codeHash: state.global_contract_hash } }
+                : state.global_contract_account_id
+                  ? { globalContract: { accountId: state.global_contract_account_id } }
+                  : {}),
         };
     }
 

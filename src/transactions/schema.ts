@@ -1,10 +1,10 @@
 import { deserialize, type Schema, serialize } from 'borsh';
-import { PublicKey } from '../crypto/index.js';
+import { KeyType, PublicKey } from '../crypto/index.js';
 
-import type { Action, SignedDelegate } from './actions.js';
-import type { DelegateAction } from './delegate.js';
+import { Action, SignedDelegate } from './actions.js';
+import { DelegateAction } from './delegate.js';
 import { DelegateActionPrefix } from './prefix.js';
-import type { Signature } from './signature.js';
+import { Signature } from './signature.js';
 
 /**
  * Borsh-encode a delegate action for inclusion as an action within a meta transaction
@@ -25,6 +25,49 @@ export function encodeDelegateAction(delegateAction: DelegateAction) {
  */
 export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
     return serialize(SCHEMA.SignedDelegate, signedDelegate);
+}
+
+/**
+ * Decode a complete Borsh signed delegate, restoring its delegate, public key and signature instances.
+ * Action payloads remain plain data. This does not verify the signature or chain validity.
+ */
+export function decodeSignedDelegate(bytes: Uint8Array): SignedDelegate {
+    const { delegateAction, signature } = deserialize(SCHEMA.SignedDelegate, bytes) as {
+        delegateAction: DelegateAction;
+        signature: BorshSignature;
+    };
+    for (const action of delegateAction.actions) {
+        if ('signedDelegate' in action || 'delegateV2' in action)
+            throw new Error('Delegate actions cannot contain nested or reserved delegate actions');
+    }
+    const decoded = new SignedDelegate({
+        delegateAction: new DelegateAction({
+            ...delegateAction,
+            publicKey: PublicKey.from(delegateAction.publicKey),
+            actions: delegateAction.actions.map((action) => new Action(action)),
+        }),
+        signature: signatureFromBorsh(signature),
+    });
+    const encoded = encodeSignedDelegate(decoded);
+    if (encoded.length !== bytes.length || !encoded.every((byte, index) => byte === bytes[index]))
+        throw new Error('Signed delegate must contain exactly one canonical Borsh encoding');
+    return decoded;
+}
+
+type BorshSignature = {
+    ed25519Signature?: { data: Uint8Array };
+    secp256k1Signature?: { data: Uint8Array };
+    mlDsa65Signature?: { data: Uint8Array };
+};
+
+function signatureFromBorsh(signature: BorshSignature): Signature {
+    if (signature.ed25519Signature)
+        return new Signature({ keyType: KeyType.ED25519, data: Uint8Array.from(signature.ed25519Signature.data) });
+    if (signature.secp256k1Signature)
+        return new Signature({ keyType: KeyType.SECP256K1, data: Uint8Array.from(signature.secp256k1Signature.data) });
+    if (signature.mlDsa65Signature)
+        return new Signature({ keyType: KeyType.MLDSA65, data: Uint8Array.from(signature.mlDsa65Signature.data) });
+    throw new Error('Unsupported signature');
 }
 
 /**
@@ -61,13 +104,20 @@ export function decodeTransaction(bytes: Uint8Array) {
  */
 export function decodeSignedTransaction(bytes: Uint8Array) {
     if (bytes[0] !== TRANSACTION_V1_PREFIX) {
-        return new SignedTransaction(deserialize(SCHEMA.SignedTransaction, bytes) as SignedTransaction);
+        const { transaction, signature } = deserialize(SCHEMA.SignedTransaction, bytes) as {
+            transaction: Transaction;
+            signature: BorshSignature;
+        };
+        return new SignedTransaction({ transaction, signature: signatureFromBorsh(signature) });
     }
     const { transaction, signature } = deserialize(SCHEMA.SignedTransactionV1, bytes) as {
         transaction: TransactionV1Schema;
-        signature: Signature;
+        signature: BorshSignature;
     };
-    return new SignedTransaction({ transaction: fromTransactionV1(transaction), signature });
+    return new SignedTransaction({
+        transaction: fromTransactionV1(transaction),
+        signature: signatureFromBorsh(signature),
+    });
 }
 
 /**
