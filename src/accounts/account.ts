@@ -252,11 +252,16 @@ export class Account {
     }
 
     /**
-     * Calls {@link Provider.viewAccessKeyList} to retrieve the account's keys
+     * Calls {@link Provider.viewAccessKeyList} to retrieve one page of the account's keys.
+     * Pass the returned `last_key` unchanged as `afterKey` to request the next page.
+     * Without pagination options, accounts exceeding the node's key limit may be rejected.
+     * @param options Optional page size and cursor
      */
-    public async getAccessKeyList() {
+    public async getAccessKeyList({ limit, afterKey }: { limit?: number; afterKey?: string } = {}) {
         return this.provider.viewAccessKeyList({
             accountId: this.accountId,
+            ...(limit === undefined ? {} : { limit }),
+            ...(afterKey === undefined ? {} : { afterKey }),
             finalityQuery: {
                 finality: DEFAULT_FINALITY,
             },

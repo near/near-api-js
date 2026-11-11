@@ -84,7 +84,7 @@ Check out the [migration guide](MIGRATION.md) for v6 / `@near-js/*` imports, acc
 
 - Deterministic (`0s…`) accounts: `DeterministicStateInit` builds initial code/storage, derives the account ID, and works with `Account.createDeterministicAccount()`.
 - Universal (`0u…`) accounts: `UniversalStateInit` supports code, storage, and access keys; `Account.createUniversalAccount()` supports initialization, including prefunded self-bootstrap.
-- Access-key pagination: `provider.viewAccessKeyList({ accountId, limit, afterKey })` returns `last_key` for the next page. `Account.getAccessKeyList()` does not yet expose those options.
+- Access-key pagination: `provider.viewAccessKeyList({ accountId, limit, afterKey })` returns `last_key` for the next page.
 - Global contracts: `(await account.getState()).globalContract` identifies the global code used by an account. Global contract helpers accept the base58 hashes returned by RPC.
 - Meta transactions: `SignedDelegate.decode(bytes)` and `decodeSignedDelegate(bytes)` complement signed-delegate encoding.
 
@@ -93,6 +93,10 @@ Gas-key creation, funding, withdrawals, and automatic nonce-lane rotation were a
 ## Features
 
 `near-api-js` includes some advanced features to help you build robust applications.
+
+### Access-key pagination
+
+Call `account.getAccessKeyList({ limit: 100 })` to retrieve one page. If the response includes `last_key`, pass it unchanged as `afterKey` in the next call. The return shape is the same as `provider.viewAccessKeyList()`. No-argument calls remain supported, but nodes may reject them for accounts exceeding their unpaginated key limit.
 
 ### Simple Units Conversions
 
