@@ -18,7 +18,7 @@ be used to perform all common actions such as
 transferring tokens and calling functions</p>
 </div></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L158">src/accounts/account.ts:158</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L158">src/accounts/account.ts:158</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -79,15 +79,23 @@ transferring tokens and calling functions</p>
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="constructoraccount"><span class="tsd-signature-keyword">new</span> <span class="tsd-kind-constructor-signature">Account</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">accountId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">provider</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Provider</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">signer</span><span class="tsd-signature-symbol">?:</span> <a href="../types/crypto_constants.KeyPairString.html" class="tsd-signature-type tsd-kind-type-alias">KeyPairString</a> <span class="tsd-signature-symbol">|</span> <a href="signers_signer.Signer.html" class="tsd-signature-type tsd-kind-class">Signer</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Account</a><a href="#constructoraccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Creates a client for an account; does not create the account on-chain.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">accountId</span>: <span class="tsd-signature-type">string</span></span></li>
-<li><span><span class="tsd-kind-parameter">provider</span>: <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Provider</span></span></li>
-<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">signer</span>: <a href="../types/crypto_constants.KeyPairString.html" class="tsd-signature-type tsd-kind-type-alias">KeyPairString</a> <span class="tsd-signature-symbol">|</span> <a href="signers_signer.Signer.html" class="tsd-signature-type tsd-kind-class">Signer</a></span></li></ul></div>
+<li><span><span class="tsd-kind-parameter">accountId</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>Account to query or sign transactions for.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">provider</span>: <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Provider</span></span>
+<div class="tsd-comment tsd-typography"><p>RPC provider instance or endpoint URL.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">signer</span>: <a href="../types/crypto_constants.KeyPairString.html" class="tsd-signature-type tsd-kind-type-alias">KeyPairString</a> <span class="tsd-signature-symbol">|</span> <a href="signers_signer.Signer.html" class="tsd-signature-type tsd-kind-class">Signer</a></span>
+<div class="tsd-comment tsd-typography"><p>Optional signer or curve-prefixed secret key. Read-only operations do not require one.</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">Account</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L164">src/accounts/account.ts:164</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L170">src/accounts/account.ts:170</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -95,12 +103,12 @@ transferring tokens and calling functions</p>
 <h3 class="tsd-anchor-link" id="accountid"><code class="tsd-tag">Readonly</code><span>account<wbr/>Id</span><a href="#accountid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">accountId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L159">src/accounts/account.ts:159</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L159">src/accounts/account.ts:159</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="provider"><code class="tsd-tag">Readonly</code><span>provider</span><a href="#provider" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">provider</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Provider</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L160">src/accounts/account.ts:160</a></li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L160">src/accounts/account.ts:160</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -123,7 +131,7 @@ transferring tokens and calling functions</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L722">src/accounts/account.ts:722</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L774">src/accounts/account.ts:774</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addfullaccesskey"><span>add<wbr/>Full<wbr/>Access<wbr/>Key</span><a href="#addfullaccesskey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -140,17 +148,21 @@ transferring tokens and calling functions</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L709">src/accounts/account.ts:709</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L761">src/accounts/account.ts:761</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addfunctioncallaccesskey"><span>add<wbr/>Function<wbr/>Call<wbr/>Access<wbr/>Key</span><a href="#addfunctioncallaccesskey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="addfunctioncallaccesskey-1"><span class="tsd-kind-call-signature">addFunctionCallAccessKey</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/accounts_account.AddFunctionAccessKeyArgs.html" class="tsd-signature-type tsd-kind-interface">AddFunctionAccessKeyArgs</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span><a href="#addfunctioncallaccesskey-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Adds an access key restricted to function calls on one contract.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">options</span>: <a href="../interfaces/accounts_account.AddFunctionAccessKeyArgs.html" class="tsd-signature-type tsd-kind-interface">AddFunctionAccessKeyArgs</a></span>
+<div class="tsd-comment tsd-typography"><p>Key permission options.</p>
+</div>
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
 <h5 id="allowance"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">allowance</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span></h5></li>
@@ -160,9 +172,10 @@ transferring tokens and calling functions</p>
 <h5 id="methodnames"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">methodNames</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li>
 <li class="tsd-parameter">
 <h5 id="publickey"><span class="tsd-kind-property">publicKey</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The submitted add-key transaction response.</p>
+<aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L692">src/accounts/account.ts:692</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L744">src/accounts/account.ts:744</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="addfunctioncallgaskey"><span>add<wbr/>Function<wbr/>Call<wbr/>Gas<wbr/>Key</span><a href="#addfunctioncallgaskey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -186,7 +199,7 @@ transferring tokens and calling functions</p>
 <h5 id="publickey"><span class="tsd-kind-property">publicKey</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></h5></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L738">src/accounts/account.ts:738</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L790">src/accounts/account.ts:790</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="callfunction"><span>call<wbr/>Function</span><a href="#callfunction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -198,7 +211,9 @@ transferring tokens and calling functions</p>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
-<li><span id="callfunctiont"><span class="tsd-kind-type-parameter">T</span> <span class="tsd-signature-keyword">extends</span> <a href="../types/types_provider_response.SerializedReturnValue.html" class="tsd-signature-type tsd-kind-type-alias">SerializedReturnValue</a></span></li></ul></section>
+<li><span id="callfunctiont"><span class="tsd-kind-type-parameter">T</span> <span class="tsd-signature-keyword">extends</span> <a href="../types/types_provider_response.SerializedReturnValue.html" class="tsd-signature-type tsd-kind-type-alias">SerializedReturnValue</a></span>
+<div class="tsd-comment tsd-typography"><p>Expected result type; no runtime result validation is performed.</p>
+</div></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -218,9 +233,18 @@ transferring tokens and calling functions</p>
 <h5 id="methodname"><span class="tsd-kind-property">methodName</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
 <li class="tsd-parameter">
 <h5 id="waituntil"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">waitUntil</span><span class="tsd-signature-symbol">?: </span><a href="../types/types_provider_protocol.TxExecutionStatus.html" class="tsd-signature-type tsd-kind-type-alias">TxExecutionStatus</a></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#callfunctiont">T</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#callfunctiont">T</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The final success value decoded as JSON when possible, otherwise as a string.
+Returns <code>null</code> when no success value is available at the requested execution milestone.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If signing, submission, or transaction execution fails.</p>
+</div>
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see">See<a href="#see" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="#callfunctionraw" class="tsd-kind-method">callFunctionRaw</a> for logs, receipt outcomes, and transaction metadata.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L799">src/accounts/account.ts:799</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L855">src/accounts/account.ts:855</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="callfunctionraw"><span>call<wbr/>Function<wbr/>Raw</span><a href="#callfunctionraw" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -248,9 +272,14 @@ transferring tokens and calling functions</p>
 <h5 id="methodname"><span class="tsd-kind-property">methodName</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
 <li class="tsd-parameter">
 <h5 id="waituntil"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">waitUntil</span><span class="tsd-signature-symbol">?: </span><a href="../types/types_provider_protocol.TxExecutionStatus.html" class="tsd-signature-type tsd-kind-type-alias">TxExecutionStatus</a></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The RPC transaction response, including execution logs and receipt outcomes when available.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-1">Throws<a href="#throws-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If signing, submission, or transaction execution fails.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L815">src/accounts/account.ts:815</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L873">src/accounts/account.ts:873</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createaccount"><span>create<wbr/>Account</span><a href="#createaccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -271,6 +300,8 @@ transferring tokens and calling functions</p>
 </ul>
 </li>
 </ol>
+<p>Creating <code>name.tla</code> outside this account's subtree calls <code>create_account</code> on the <code>tla</code> account;
+that account must implement the account-creation contract method.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -287,22 +318,34 @@ transferring tokens and calling functions</p>
 <h5 id="publickey"><span class="tsd-kind-property">publicKey</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></h5></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L539">src/accounts/account.ts:539</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L578">src/accounts/account.ts:578</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createdeterministicaccount"><span>create<wbr/>Deterministic<wbr/>Account</span><a href="#createdeterministicaccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="createdeterministicaccount-1"><span class="tsd-kind-call-signature">createDeterministicAccount</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>        <span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">:</span> <a href="transactions_state-init.DeterministicStateInit.html" class="tsd-signature-type tsd-kind-class">DeterministicStateInit</a><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span><a href="#createdeterministicaccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="createdeterministicaccount-1"><span class="tsd-kind-call-signature">createDeterministicAccount</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>        <span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">:</span> <a href="transactions_state-init.DeterministicStateInit.html" class="tsd-signature-type tsd-kind-class">DeterministicStateInit</a><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span><a href="#createdeterministicaccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Create or initialize a NEP-616 account. Deposit (yoctoNEAR) covers storage; excess is refunded.</p>
+<div class="tsd-comment tsd-typography"><p>Creates or initializes a NEP-616 account at the ID derived from its state initialization.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">__namedParameters</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">:</span> <a href="transactions_state-init.DeterministicStateInit.html" class="tsd-signature-type tsd-kind-class">DeterministicStateInit</a> <span class="tsd-signature-symbol">}</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">:</span> <a href="transactions_state-init.DeterministicStateInit.html" class="tsd-signature-type tsd-kind-class">DeterministicStateInit</a> <span class="tsd-signature-symbol">}</span></span>
+<div class="tsd-comment tsd-typography"><p>Initialization and funding options.</p>
+</div>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5><code class="tsd-tag">Optional</code><span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span></h5>
+<div class="tsd-comment tsd-typography"><p>Storage deposit in yoctoNEAR. Defaults to 0; excess is refunded by the protocol.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">: </span><a href="transactions_state-init.DeterministicStateInit.html" class="tsd-signature-type tsd-kind-class">DeterministicStateInit</a></h5>
+<div class="tsd-comment tsd-typography"><p>Global contract reference and raw initial storage used to derive the account ID.</p>
+</div></li></ul></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The submitted transaction response. This account's signer pays for initialization.</p>
+<aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L656">src/accounts/account.ts:656</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L701">src/accounts/account.ts:701</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createmetatransaction"><span>create<wbr/>Meta<wbr/>Transaction</span><a href="#createmetatransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -326,9 +369,10 @@ transferring tokens and calling functions</p>
 <h5 id="publickey"><span class="tsd-kind-property">publicKey</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></h5></li>
 <li class="tsd-parameter">
 <h5 id="receiverid"><span class="tsd-kind-property">receiverId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="transactions_delegate.DelegateAction.html" class="tsd-signature-type tsd-kind-class">DelegateAction</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="transactions_delegate.DelegateAction.html" class="tsd-signature-type tsd-kind-class">DelegateAction</a><span class="tsd-signature-symbol">&gt;</span></h4><p>An unsigned delegate action. Does not reserve a nonce locally or submit a transaction.</p>
+<aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L378">src/accounts/account.ts:378</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L395">src/accounts/account.ts:395</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createsignedmetatransaction"><span>create<wbr/>Signed<wbr/>Meta<wbr/>Transaction</span><a href="#createsignedmetatransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -352,24 +396,39 @@ transferring tokens and calling functions</p>
 <h5 id="receiverid"><span class="tsd-kind-property">receiverId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
 <li class="tsd-parameter">
 <h5 id="signer"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">signer</span><span class="tsd-signature-symbol">?: </span><a href="signers_signer.Signer.html" class="tsd-signature-type tsd-kind-class">Signer</a></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/signers_signer.SignDelegateActionReturn.html" class="tsd-signature-type tsd-kind-interface">SignDelegateActionReturn</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/signers_signer.SignDelegateActionReturn.html" class="tsd-signature-type tsd-kind-interface">SignDelegateActionReturn</a><span class="tsd-signature-symbol">&gt;</span></h4><p>An object containing <code>delegateHash</code> and <code>signedDelegate</code>, ready for a relayer.</p>
+<aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L416">src/accounts/account.ts:416</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L436">src/accounts/account.ts:436</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createsignedtransaction"><span>create<wbr/>Signed<wbr/>Transaction</span><a href="#createsignedtransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="createsignedtransaction-1"><span class="tsd-kind-call-signature">createSignedTransaction</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/accounts_account.CreateSignedTransactionArgs.html" class="tsd-signature-type tsd-kind-interface">CreateSignedTransactionArgs</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="transactions_schema.SignedTransaction.html" class="tsd-signature-type tsd-kind-class">SignedTransaction</a><span class="tsd-signature-symbol">&gt;</span><a href="#createsignedtransaction-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="createsignedtransaction-1"><span class="tsd-kind-call-signature">createSignedTransaction</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/accounts_account.CreateSignedTransactionArgs.html" class="tsd-signature-type tsd-kind-interface">CreateSignedTransactionArgs</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="transactions_schema.SignedTransaction.html" class="tsd-signature-type tsd-kind-class">SignedTransaction</a><span class="tsd-signature-symbol">&gt;</span><a href="#createsignedtransaction-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Create a signed transaction ready to be broadcast by a Provider</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">__namedParameters</span>: <a href="../interfaces/accounts_account.CreateSignedTransactionArgs.html" class="tsd-signature-type tsd-kind-interface">CreateSignedTransactionArgs</a></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="transactions_schema.SignedTransaction.html" class="tsd-signature-type tsd-kind-class">SignedTransaction</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">options</span>: <a href="../interfaces/accounts_account.CreateSignedTransactionArgs.html" class="tsd-signature-type tsd-kind-interface">CreateSignedTransactionArgs</a></span>
+<div class="tsd-comment tsd-typography"><p>Transaction options.</p>
+</div>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5 id="actions"><span class="tsd-kind-property">actions</span><span class="tsd-signature-symbol">: </span><a href="transactions_actions.Action.html" class="tsd-signature-type tsd-kind-class">Action</a><span class="tsd-signature-symbol">[]</span></h5></li>
+<li class="tsd-parameter">
+<h5 id="receiverid"><span class="tsd-kind-property">receiverId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
+<li class="tsd-parameter">
+<h5 id="signer"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">signer</span><span class="tsd-signature-symbol">?: </span><a href="signers_signer.Signer.html" class="tsd-signature-type tsd-kind-class">Signer</a></h5></li></ul></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="transactions_schema.SignedTransaction.html" class="tsd-signature-type tsd-kind-class">SignedTransaction</a><span class="tsd-signature-symbol">&gt;</span></h4><p>A signed transaction, without submitting it to the network.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-2">Throws<a href="#throws-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If no signer is available, transaction construction fails, or signing fails.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L352">src/accounts/account.ts:352</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L366">src/accounts/account.ts:366</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createsubaccount"><span>create<wbr/>Sub<wbr/>Account</span><a href="#createsubaccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -394,7 +453,7 @@ ana.near, you can create sub.ana.near.</p>
 <h5 id="publickey"><span class="tsd-kind-property">publicKey</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></h5></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L578">src/accounts/account.ts:578</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L617">src/accounts/account.ts:617</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createtransaction"><span>create<wbr/>Transaction</span><a href="#createtransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -416,24 +475,42 @@ ana.near, you can create sub.ana.near.</p>
 <h5 id="publickey"><span class="tsd-kind-property">publicKey</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></h5></li>
 <li class="tsd-parameter">
 <h5 id="receiverid"><span class="tsd-kind-property">receiverId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="transactions_schema.Transaction.html" class="tsd-signature-type tsd-kind-class">Transaction</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="transactions_schema.Transaction.html" class="tsd-signature-type tsd-kind-class">Transaction</a><span class="tsd-signature-symbol">&gt;</span></h4><p>An unsigned transaction with a locally reserved nonce and a recent finalized block hash.
+Does not sign or submit it; creating another transaction may advance the local nonce reservation.</p>
+<aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L306">src/accounts/account.ts:306</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L314">src/accounts/account.ts:314</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createuniversalaccount"><span>create<wbr/>Universal<wbr/>Account</span><a href="#createuniversalaccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="createuniversalaccount-1"><span class="tsd-kind-call-signature">createUniversalAccount</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span><a href="#createuniversalaccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="createuniversalaccount-1"><span class="tsd-kind-call-signature">createUniversalAccount</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span><a href="#createuniversalaccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Initialize a protocol-88 universal account from canonical raw state-init bytes.</p>
+<div class="tsd-comment tsd-typography"><p>Initializes a protocol-88 universal account at the ID derived from the supplied state-init bytes.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">__namedParameters</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span> <span class="tsd-signature-symbol">}</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span> <span class="tsd-signature-symbol">}</span></span>
+<div class="tsd-comment tsd-typography"><p>Initialization and funding options.</p>
+</div>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5><code class="tsd-tag">Optional</code><span class="tsd-kind-property">deposit</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">bigint</span></h5>
+<div class="tsd-comment tsd-typography"><p>Deposit in yoctoNEAR. Defaults to 0.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">stateInit</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></h5>
+<div class="tsd-comment tsd-typography"><p>Raw versioned state-init bytes, such as the result of <code>UniversalStateInit.encode()</code>.</p>
+</div></li></ul></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The submitted transaction response. This account's signer pays for initialization.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-remarks">
+<h4 class="tsd-anchor-link" id="remarks">Remarks<a href="#remarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>The bytes are forwarded unchanged; the node validates the state initialization.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L670">src/accounts/account.ts:670</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L722">src/accounts/account.ts:722</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deleteaccount"><span>delete<wbr/>Account</span><a href="#deleteaccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -452,7 +529,7 @@ account</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L611">src/accounts/account.ts:611</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L650">src/accounts/account.ts:650</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deletekey"><span>delete<wbr/>Key</span><a href="#deletekey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -467,7 +544,7 @@ account</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L780">src/accounts/account.ts:780</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L832">src/accounts/account.ts:832</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deploycontract"><span>deploy<wbr/>Contract</span><a href="#deploycontract" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -484,7 +561,7 @@ account</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L623">src/accounts/account.ts:623</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L662">src/accounts/account.ts:662</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deployglobalcontract"><span>deploy<wbr/>Global<wbr/>Contract</span><a href="#deployglobalcontract" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -504,7 +581,7 @@ account</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L636">src/accounts/account.ts:636</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L675">src/accounts/account.ts:675</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getaccesskey"><span>get<wbr/>Access<wbr/>Key</span><a href="#getaccesskey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -520,7 +597,7 @@ specific key in the account</p>
 <li><span><span class="tsd-kind-parameter">publicKey</span>: <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types_provider_response.AccessKeyView.html" class="tsd-signature-type tsd-kind-interface">AccessKeyView</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L244">src/accounts/account.ts:244</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L250">src/accounts/account.ts:250</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getaccesskeylist"><span>get<wbr/>Access<wbr/>Key<wbr/>List</span><a href="#getaccesskeylist" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -539,13 +616,15 @@ Without pagination options, accounts exceeding the node's key limit may be rejec
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.AccessKeyList.html" class="tsd-signature-type tsd-kind-type-alias">AccessKeyList</a> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">block_hash</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">block_height</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L260">src/accounts/account.ts:260</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L266">src/accounts/account.ts:266</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getbalance"><span>get<wbr/>Balance</span><a href="#getbalance" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getbalance-1"><span class="tsd-kind-call-signature">getBalance</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">token</span><span class="tsd-signature-symbol">?:</span> <a href="tokens_ft.NativeToken.html" class="tsd-signature-type tsd-kind-class">NativeToken</a> <span class="tsd-signature-symbol">|</span> <a href="tokens_ft.FungibleToken.html" class="tsd-signature-type tsd-kind-class">FungibleToken</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span><a href="#getbalance-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Queries the token balance available to this account.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -555,7 +634,7 @@ Without pagination options, accounts exceeding the node's key limit may be rejec
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span></h4><p>The available balance of the account in units (e.g. yoctoNEAR).</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L863">src/accounts/account.ts:863</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L921">src/accounts/account.ts:921</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getcontractcode"><span>get<wbr/>Contract<wbr/>Code</span><a href="#getcontractcode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -567,7 +646,7 @@ contract code and its hash</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types_provider_response.ContractCodeView.html" class="tsd-signature-type tsd-kind-interface">ContractCodeView</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L275">src/accounts/account.ts:275</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L281">src/accounts/account.ts:281</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getcontractstate"><span>get<wbr/>Contract<wbr/>State</span><a href="#getcontractstate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -583,7 +662,7 @@ stored on the account's contract</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">prefix</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.ViewStateResult.html" class="tsd-signature-type tsd-kind-type-alias">ViewStateResult</a> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">block_hash</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">block_height</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L288">src/accounts/account.ts:288</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L294">src/accounts/account.ts:294</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getsigner"><span>get<wbr/>Signer</span><a href="#getsigner" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -592,7 +671,7 @@ stored on the account's contract</p>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="signers_signer.Signer.html" class="tsd-signature-type tsd-kind-class">Signer</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L188">src/accounts/account.ts:188</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L194">src/accounts/account.ts:194</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getstate"><span>get<wbr/>State</span><a href="#getstate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -604,7 +683,7 @@ balance, storage usage, and code hash</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/accounts_account.AccountState.html" class="tsd-signature-type tsd-kind-interface">AccountState</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L196">src/accounts/account.ts:196</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L202">src/accounts/account.ts:202</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="relaymetatransaction"><span>relay<wbr/>Meta<wbr/>Transaction</span><a href="#relaymetatransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -620,9 +699,13 @@ balance, storage usage, and code hash</p>
 <div class="tsd-comment tsd-typography"><p>The signed delegate action to relay</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The transaction response from the relayed meta-transaction</p>
-<aside class="tsd-sources">
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-remarks">
+<h4 class="tsd-anchor-link" id="remarks-1">Remarks<a href="#remarks-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>This account signs the outer transaction and pays its gas. The delegate sender authorizes the inner actions.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L873">src/accounts/account.ts:873</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L932">src/accounts/account.ts:932</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setsigner"><span>set<wbr/>Signer</span><a href="#setsigner" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -639,7 +722,7 @@ balance, storage usage, and code hash</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L184">src/accounts/account.ts:184</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L190">src/accounts/account.ts:190</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signandsendtransaction"><span>sign<wbr/>And<wbr/>Send<wbr/>Transaction</span><a href="#signandsendtransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -667,22 +750,49 @@ balance, storage usage, and code hash</p>
 <h5 id="throwonfailure"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">throwOnFailure</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5></li>
 <li class="tsd-parameter">
 <h5 id="waituntil"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">waitUntil</span><span class="tsd-signature-symbol">?: </span><a href="../types/types_provider_protocol.TxExecutionStatus.html" class="tsd-signature-type tsd-kind-type-alias">TxExecutionStatus</a></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The RPC transaction response at the requested execution milestone.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-3">Throws<a href="#throws-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If signing or submission fails, or execution fails with <code>throwOnFailure</code> enabled.
+Execution errors include the RPC response in <code>transactionResult</code>.</p>
+</div>
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-1">See<a href="#see-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="https://github.com/near/near-api-js#reading-after-a-transaction">Reading after a transaction</a></p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L443">src/accounts/account.ts:443</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L469">src/accounts/account.ts:469</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signandsendtransactions"><span>sign<wbr/>And<wbr/>Send<wbr/>Transactions</span><a href="#signandsendtransactions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="signandsendtransactions-1"><span class="tsd-kind-call-signature">signAndSendTransactions</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/accounts_account.SignAndSendTransactionsArgs.html" class="tsd-signature-type tsd-kind-interface">SignAndSendTransactionsArgs</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#signandsendtransactions-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="signandsendtransactions-1"><span class="tsd-kind-call-signature">signAndSendTransactions</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/accounts_account.SignAndSendTransactionsArgs.html" class="tsd-signature-type tsd-kind-interface">SignAndSendTransactionsArgs</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#signandsendtransactions-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Signs and submits multiple independent transactions concurrently.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">__namedParameters</span>: <a href="../interfaces/accounts_account.SignAndSendTransactionsArgs.html" class="tsd-signature-type tsd-kind-interface">SignAndSendTransactionsArgs</a></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">options</span>: <a href="../interfaces/accounts_account.SignAndSendTransactionsArgs.html" class="tsd-signature-type tsd-kind-interface">SignAndSendTransactionsArgs</a></span>
+<div class="tsd-comment tsd-typography"><p>Batch submission options.</p>
+</div>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5 id="signer"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">signer</span><span class="tsd-signature-symbol">?: </span><a href="signers_signer.Signer.html" class="tsd-signature-type tsd-kind-class">Signer</a></h5></li>
+<li class="tsd-parameter">
+<h5 id="throwonfailure"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">throwOnFailure</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5></li>
+<li class="tsd-parameter">
+<h5 id="transactions"><span class="tsd-kind-property">transactions</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">actions</span><span class="tsd-signature-symbol">:</span> <a href="transactions_actions.Action.html" class="tsd-signature-type tsd-kind-class">Action</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">receiverId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">[]</span></h5></li>
+<li class="tsd-parameter">
+<h5 id="waituntil"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">waitUntil</span><span class="tsd-signature-symbol">?: </span><a href="../types/types_provider_protocol.TxExecutionStatus.html" class="tsd-signature-type tsd-kind-type-alias">TxExecutionStatus</a></h5></li></ul></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Responses in input order. The batch is not atomic: other transactions can succeed if one fails.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-4">Throws<a href="#throws-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If the account has no configured signer or any individual submission rejects.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L499">src/accounts/account.ts:499</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L535">src/accounts/account.ts:535</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signnep413message"><span class="deprecated">sign<wbr/>Nep413<wbr/>Message</span><a href="#signnep413message" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -706,13 +816,14 @@ balance, storage usage, and code hash</p>
 <h5 id="nonce"><span class="tsd-kind-property">nonce</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></h5></li>
 <li class="tsd-parameter">
 <h5 id="recipient"><span class="tsd-kind-property">recipient</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/signers_signer.SignedMessage.html" class="tsd-signature-type tsd-kind-interface">SignedMessage</a><span class="tsd-signature-symbol">&gt;</span></h4>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/signers_signer.SignedMessage.html" class="tsd-signature-type tsd-kind-interface">SignedMessage</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The signed message with account ID, public key, and raw signature bytes; no transaction is submitted.</p>
+
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-deprecated">
 <h4 class="tsd-anchor-link" id="deprecated">Deprecated<a href="#deprecated" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>This method is deprecated and will be removed in future versions. Please use <code>signMessage</code> from <code>near-api-js/nep413</code> to sign NEP-413 messages.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L842">src/accounts/account.ts:842</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L900">src/accounts/account.ts:900</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="transfer"><span>transfer</span><a href="#transfer" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -735,9 +846,15 @@ balance, storage usage, and code hash</p>
 <h5 id="receiverid"><span class="tsd-kind-property">receiverId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
 <li class="tsd-parameter">
 <h5 id="token"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">token</span><span class="tsd-signature-symbol">?: </span><a href="tokens_ft.NativeToken.html" class="tsd-signature-type tsd-kind-class">NativeToken</a> <span class="tsd-signature-symbol">|</span> <a href="tokens_ft.FungibleToken.html" class="tsd-signature-type tsd-kind-class">FungibleToken</a></h5></li></ul></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The transfer transaction response.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-remarks">
+<h4 class="tsd-anchor-link" id="remarks-2">Remarks<a href="#remarks-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>For fungible tokens, an unregistered receiver is first registered in a separate transaction
+funded by this account. Registration and transfer are not atomic.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L890">src/accounts/account.ts:890</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L951">src/accounts/account.ts:951</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="transfertogaskey"><span>transfer<wbr/>To<wbr/>Gas<wbr/>Key</span><a href="#transfertogaskey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -760,7 +877,7 @@ balance, storage usage, and code hash</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L757">src/accounts/account.ts:757</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L809">src/accounts/account.ts:809</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="useglobalcontract"><span>use<wbr/>Global<wbr/>Contract</span><a href="#useglobalcontract" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -777,7 +894,7 @@ balance, storage usage, and code hash</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L648">src/accounts/account.ts:648</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L687">src/accounts/account.ts:687</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="withdrawfromgaskey"><span>withdraw<wbr/>From<wbr/>Gas<wbr/>Key</span><a href="#withdrawfromgaskey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -797,7 +914,7 @@ balance, storage usage, and code hash</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/rpc_types.gen.RpcTransactionResponse.html" class="tsd-signature-type tsd-kind-type-alias">RpcTransactionResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/account.ts#L770">src/accounts/account.ts:770</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/account.ts#L822">src/accounts/account.ts:822</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

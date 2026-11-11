@@ -16,16 +16,27 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="exponentialbackoff"><span class="tsd-kind-call-signature">exponentialBackoff</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">startWaitTime</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">retryNumber</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">waitBackoff</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">getResult</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><a href="#exponentialbackoff" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Polls a callback with exponentially increasing delays until it returns a truthy value.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">startWaitTime</span>: <span class="tsd-signature-type">any</span></span></li>
-<li><span><span class="tsd-kind-parameter">retryNumber</span>: <span class="tsd-signature-type">any</span></span></li>
-<li><span><span class="tsd-kind-parameter">waitBackoff</span>: <span class="tsd-signature-type">any</span></span></li>
-<li><span><span class="tsd-kind-parameter">getResult</span>: <span class="tsd-signature-type">any</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">startWaitTime</span>: <span class="tsd-signature-type">any</span></span>
+<div class="tsd-comment tsd-typography"><p>Initial delay in milliseconds after an unsuccessful attempt.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">retryNumber</span>: <span class="tsd-signature-type">any</span></span>
+<div class="tsd-comment tsd-typography"><p>Maximum callback invocations, including the first attempt.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">waitBackoff</span>: <span class="tsd-signature-type">any</span></span>
+<div class="tsd-comment tsd-typography"><p>Multiplier applied to the delay after each unsuccessful attempt.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">getResult</span>: <span class="tsd-signature-type">any</span></span>
+<div class="tsd-comment tsd-typography"><p>Callback to poll. Falsy results, including 0 and false, cause another attempt.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4><p>The first truthy result, or <code>null</code> after all attempts. Callback exceptions propagate without retry.</p>
+<aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/providers/exponential-backoff.ts#L1">src/providers/exponential-backoff.ts:1</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/providers/exponential-backoff.ts#L9">src/providers/exponential-backoff.ts:9</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

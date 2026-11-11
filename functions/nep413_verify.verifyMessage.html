@@ -14,15 +14,38 @@
 <section class="tsd-panel">
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="verifymessage"><span class="tsd-kind-call-signature">verifyMessage</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/nep413_verify.VerifyMessageArgs.html" class="tsd-signature-type tsd-kind-interface">VerifyMessageArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#verifymessage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="verifymessage"><span class="tsd-kind-call-signature">verifyMessage</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/nep413_verify.VerifyMessageArgs.html" class="tsd-signature-type tsd-kind-interface">VerifyMessageArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#verifymessage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Verifies a NEP-413 signature and queries whether the signing key has FullAccess permission on the account.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">__namedParameters</span>: <a href="../interfaces/nep413_verify.VerifyMessageArgs.html" class="tsd-signature-type tsd-kind-interface">VerifyMessageArgs</a></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">params</span>: <a href="../interfaces/nep413_verify.VerifyMessageArgs.html" class="tsd-signature-type tsd-kind-interface">VerifyMessageArgs</a></span>
+<div class="tsd-comment tsd-typography"><p>Message verification options.</p>
+</div>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5 id="payload"><span class="tsd-kind-property">payload</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/nep413_schema.MessagePayload.html" class="tsd-signature-type tsd-kind-interface">MessagePayload</a></h5></li>
+<li class="tsd-parameter">
+<h5 id="provider"><span class="tsd-kind-property">provider</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Provider</span></h5></li>
+<li class="tsd-parameter">
+<h5 id="signature"><span class="tsd-kind-property">signature</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span></h5></li>
+<li class="tsd-parameter">
+<h5 id="signeraccountid"><span class="tsd-kind-property">signerAccountId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
+<li class="tsd-parameter">
+<h5 id="signerpublickey"><span class="tsd-kind-property">signerPublicKey</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="../classes/crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a></h5></li></ul></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Resolves without a value on success; invalid signatures do not return <code>false</code>.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If the key is missing, lacks FullAccess permission, the signature is invalid, or the RPC request fails.</p>
+</div>
+<div class="tsd-tag-remarks">
+<h4 class="tsd-anchor-link" id="remarks">Remarks<a href="#remarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>The application must also check the expected recipient and enforce nonce freshness to prevent replay.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/nep413/verify.ts#L13">src/nep413/verify.ts:13</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/nep413/verify.ts#L25">src/nep413/verify.ts:25</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

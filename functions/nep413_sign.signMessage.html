@@ -14,15 +14,32 @@
 <section class="tsd-panel">
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="signmessage"><span class="tsd-kind-call-signature">signMessage</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/nep413_sign.SignMessageArgs.html" class="tsd-signature-type tsd-kind-interface">SignMessageArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/signers_signer.SignedMessage.html" class="tsd-signature-type tsd-kind-interface">SignedMessage</a><span class="tsd-signature-symbol">&gt;</span><a href="#signmessage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="signmessage"><span class="tsd-kind-call-signature">signMessage</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/nep413_sign.SignMessageArgs.html" class="tsd-signature-type tsd-kind-interface">SignMessageArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/signers_signer.SignedMessage.html" class="tsd-signature-type tsd-kind-interface">SignedMessage</a><span class="tsd-signature-symbol">&gt;</span><a href="#signmessage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Signs a NEP-413 message using an account's configured signer, without submitting a transaction.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">__namedParameters</span>: <a href="../interfaces/nep413_sign.SignMessageArgs.html" class="tsd-signature-type tsd-kind-interface">SignMessageArgs</a></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/signers_signer.SignedMessage.html" class="tsd-signature-type tsd-kind-interface">SignedMessage</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">params</span>: <a href="../interfaces/nep413_sign.SignMessageArgs.html" class="tsd-signature-type tsd-kind-interface">SignMessageArgs</a></span>
+<div class="tsd-comment tsd-typography"><p>Message signing options.</p>
+</div>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5 id="payload"><span class="tsd-kind-property">payload</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/nep413_schema.MessagePayload.html" class="tsd-signature-type tsd-kind-interface">MessagePayload</a></h5></li>
+<li class="tsd-parameter">
+<h5 id="signeraccount"><span class="tsd-kind-property">signerAccount</span><span class="tsd-signature-symbol">: </span><a href="../classes/accounts_account.Account.html" class="tsd-signature-type tsd-kind-class">Account</a></h5></li></ul></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/signers_signer.SignedMessage.html" class="tsd-signature-type tsd-kind-interface">SignedMessage</a><span class="tsd-signature-symbol">&gt;</span></h4><p>The account ID, public key, and raw signature bytes.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If no signer is configured, the nonce is invalid, or signing fails.</p>
+</div>
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see">See<a href="#see" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>verifyMessage for signature and account-key verification.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/nep413/sign.ts#L10">src/nep413/sign.ts:10</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/nep413/sign.ts#L19">src/nep413/sign.ts:19</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

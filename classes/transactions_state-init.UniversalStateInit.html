@@ -19,7 +19,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="tsd-signature-type">UniversalStateInitSchema</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/transactions/state-init.ts#L116">src/transactions/state-init.ts:116</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/transactions/state-init.ts#L136">src/transactions/state-init.ts:136</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -46,15 +46,26 @@
 <h3 class="tsd-anchor-link" id="constructor"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="constructoruniversalstateinit"><span class="tsd-signature-keyword">new</span> <span class="tsd-kind-constructor-signature">UniversalStateInit</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/transactions_state-init.UniversalStateInitOptions.html" class="tsd-signature-type tsd-kind-interface">UniversalStateInitOptions</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">UniversalStateInit</a><a href="#constructoruniversalstateinit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="constructoruniversalstateinit"><span class="tsd-signature-keyword">new</span> <span class="tsd-kind-constructor-signature">UniversalStateInit</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/transactions_state-init.UniversalStateInitOptions.html" class="tsd-signature-type tsd-kind-interface">UniversalStateInitOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">UniversalStateInit</a><a href="#constructoruniversalstateinit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Builds protocol-88 universal account initialization; does not create an account.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">__namedParameters</span>: <a href="../interfaces/transactions_state-init.UniversalStateInitOptions.html" class="tsd-signature-type tsd-kind-interface">UniversalStateInitOptions</a><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
+<li><span><span class="tsd-kind-parameter">options</span>: <a href="../interfaces/transactions_state-init.UniversalStateInitOptions.html" class="tsd-signature-type tsd-kind-interface">UniversalStateInitOptions</a><span class="tsd-signature-symbol"> = {}</span></span>
+<div class="tsd-comment tsd-typography"><p>Initial code, storage, and full-access keys. Defaults to an empty initialization.</p>
+</div>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5 id="accesskeys"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">accessKeys</span><span class="tsd-signature-symbol">?: </span>(<span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="crypto_public_key.PublicKey.html" class="tsd-signature-type tsd-kind-class">PublicKey</a>)<span class="tsd-signature-symbol">[]</span></h5></li>
+<li class="tsd-parameter">
+<h5 id="code"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">code</span><span class="tsd-signature-symbol">?: </span><a href="../types/transactions_global_contract_identifier.GlobalContractIdentifierInput.html" class="tsd-signature-type tsd-kind-type-alias">GlobalContractIdentifierInput</a></h5></li>
+<li class="tsd-parameter">
+<h5 id="data"><code class="tsd-tag">Optional</code><span class="tsd-kind-property">data</span><span class="tsd-signature-symbol">?: </span><a href="../types/transactions_state-init.StateInitData.html" class="tsd-signature-type tsd-kind-type-alias">StateInitData</a></h5></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">UniversalStateInit</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/transactions/state-init.ts#L119">src/transactions/state-init.ts:119</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/transactions/state-init.ts#L147">src/transactions/state-init.ts:147</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -63,7 +74,7 @@
 <div class="tsd-signature"><span class="tsd-kind-property">V1</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">accessKeys</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PublicKeyHandle</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">code</span><span class="tsd-signature-symbol">:</span> <a href="transactions_actions.GlobalContractIdentifier.html" class="tsd-signature-type tsd-kind-class">GlobalContractIdentifier</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">data</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBufferLike</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBufferLike</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <p>Implementation of UniversalStateInitSchema.V1</p>
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/transactions/state-init.ts#L117">src/transactions/state-init.ts:117</a></li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/transactions/state-init.ts#L137">src/transactions/state-init.ts:137</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -73,35 +84,51 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="deriveaccountid-1"><span class="tsd-kind-call-signature">deriveAccountId</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><a href="#deriveaccountid-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>Derives a universal account ID from the current canonical initialization.</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><p><code>0u</code> followed by the lowercase Crockford Base32 encoding of the SHA3-256 digest.
+Does not create an account or check whether it exists.</p>
+<aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/transactions/state-init.ts#L151">src/transactions/state-init.ts:151</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/transactions/state-init.ts#L193">src/transactions/state-init.ts:193</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="encode"><span>encode</span><a href="#encode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="encode-1"><span class="tsd-kind-call-signature">encode</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><a href="#encode-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Canonical Borsh bytes carried opaquely by the UniversalStateInit action.</p>
+<div class="tsd-comment tsd-typography"><p>Encodes the current initialization for use in a universal state-init action.</p>
 </div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Uint8Array</span></h4><p>Canonical Borsh bytes. Storage and access-key handles are re-sorted on every call.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If storage keys contain duplicate byte sequences or serialization fails.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/transactions/state-init.ts#L141">src/transactions/state-init.ts:141</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/transactions/state-init.ts#L178">src/transactions/state-init.ts:178</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="decode"><code class="tsd-tag">Static</code><span>decode</span><a href="#decode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="decode-1"><span class="tsd-kind-call-signature">decode</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">bytes</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">UniversalStateInit</a><a href="#decode-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Decode canonical V1 bytes into a real class instance.</p>
+<div class="tsd-comment tsd-typography"><p>Decodes canonical V1 bytes into a real class instance.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">bytes</span>: <span class="tsd-signature-type">Uint8Array</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">UniversalStateInit</a></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">bytes</span>: <span class="tsd-signature-type">Uint8Array</span></span>
+<div class="tsd-comment tsd-typography"><p>Canonical versioned universal state-init bytes.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">UniversalStateInit</a></h4><p>A state-init instance with the decoded storage and access-key handles.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-1">Throws<a href="#throws-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If decoding fails or re-encoding differs, including noncanonical ordering or trailing bytes.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/transactions/state-init.ts#L128">src/transactions/state-init.ts:128</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/transactions/state-init.ts#L161">src/transactions/state-init.ts:161</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

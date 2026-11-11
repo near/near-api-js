@@ -16,14 +16,25 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="yoctotonear"><span class="tsd-kind-call-signature">yoctoToNear</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">yocto</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">bigint</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">decimals</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><a href="#yoctotonear" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Formats integer yoctoNEAR as a decimal NEAR string.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">yocto</span>: <span class="tsd-signature-type">bigint</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span></span></li>
-<li><span><span class="tsd-kind-parameter">decimals</span>: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = NEAR_NOMINATION_EXP</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">yocto</span>: <span class="tsd-signature-type">bigint</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span></span>
+<div class="tsd-comment tsd-typography"><p>Amount in yoctoNEAR as a bigint or integer string.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">decimals</span>: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = NEAR_NOMINATION_EXP</span></span>
+<div class="tsd-comment tsd-typography"><p>Maximum fractional digits, from 0 to 24. Defaults to 24; fractional values are floored.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span></h4><p>A decimal string with excess fractional digits truncated and trailing zeroes removed.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If the amount is not an integer or the requested precision is outside the supported range.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/units/near.ts#L10">src/units/near.ts:10</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/units/near.ts#L23">src/units/near.ts:23</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

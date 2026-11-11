@@ -11,9 +11,14 @@
 <li><a href="../modules/accounts_typed_contract.html">accounts/typed_contract</a></li>
 <li><a href="" aria-current="page">Contract</a></li></ul>
 <h1>Variable Contract<code class="tsd-tag">Const</code></h1></div>
-<div class="tsd-signature"><span class="tsd-kind-variable">Contract</span><span class="tsd-signature-symbol">:</span> <a href="../types/accounts_typed_contract.ContractConstructor.html" class="tsd-signature-type tsd-kind-type-alias">ContractConstructor</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-variable">Contract</span><span class="tsd-signature-symbol">:</span> <a href="../types/accounts_typed_contract.ContractConstructor.html" class="tsd-signature-type tsd-kind-type-alias">ContractConstructor</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>Creates a contract client from <code>{ contractId, provider, abi? }</code>, without deploying the contract.
+With an ABI, exposes and validates its declared view/change methods. Without an ABI, method names are dynamic
+and arguments are not schema-validated. Use <code>.view.methodName(...)</code> for queries and <code>.call.methodName(...)</code>
+with a signing account for transactions. Return values are not validated against the ABI at runtime.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/accounts/typed_contract.ts#L390">src/accounts/typed_contract.ts:390</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/accounts/typed_contract.ts#L407">src/accounts/typed_contract.ts:407</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

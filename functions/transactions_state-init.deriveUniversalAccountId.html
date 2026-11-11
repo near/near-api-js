@@ -16,15 +16,23 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="deriveuniversalaccountid"><span class="tsd-kind-call-signature">deriveUniversalAccountId</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">stateInit</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><a href="#deriveuniversalaccountid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Derive an ID from the exact raw bytes, without decoding, so future state-init versions can be forwarded.</p>
+<div class="tsd-comment tsd-typography"><p>Derives a universal account ID from exact raw bytes, without decoding or validating them.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">stateInit</span>: <span class="tsd-signature-type">Uint8Array</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">stateInit</span>: <span class="tsd-signature-type">Uint8Array</span></span>
+<div class="tsd-comment tsd-typography"><p>Versioned state-init bytes. Use <code>UniversalStateInit.encode()</code> for canonical V1 bytes.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><p><code>0u</code> followed by lowercase Crockford Base32 of SHA3-256 over the supplied bytes.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-remarks">
+<h4 class="tsd-anchor-link" id="remarks">Remarks<a href="#remarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Future versions can be forwarded unchanged. Different encodings produce different IDs;
+deriving an ID does not imply that the node will accept the bytes for initialization.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/transactions/state-init.ts#L161">src/transactions/state-init.ts:161</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/transactions/state-init.ts#L209">src/transactions/state-init.ts:209</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

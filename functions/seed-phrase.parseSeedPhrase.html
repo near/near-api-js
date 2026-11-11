@@ -16,13 +16,22 @@
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="parseseedphrase"><span class="tsd-kind-call-signature">parseSeedPhrase</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">seedPhrase</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../classes/crypto_key_pair.KeyPair.html" class="tsd-signature-type tsd-kind-class">KeyPair</a><a href="#parseseedphrase" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Derives an Ed25519 key pair from a seed phrase using the <code>near-seed-phrase</code> default derivation path.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">seedPhrase</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="../classes/crypto_key_pair.KeyPair.html" class="tsd-signature-type tsd-kind-class">KeyPair</a></h4><aside class="tsd-sources">
+<li><span><span class="tsd-kind-parameter">seedPhrase</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>Recovery phrase to import. Treat it as a secret.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="../classes/crypto_key_pair.KeyPair.html" class="tsd-signature-type tsd-kind-class">KeyPair</a></h4><p>The derived key pair; does not import credentials into a wallet or create an account.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If the underlying seed phrase parser rejects the phrase.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/d1408d0b4937b2cd1e7a83df539f342a4344aba4/src/seed-phrase/index.ts#L8">src/seed-phrase/index.ts:8</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/6250220c1693cdfe48f3b739e1004dc6015b0b13/src/seed-phrase/index.ts#L14">src/seed-phrase/index.ts:14</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
